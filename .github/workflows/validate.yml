@@ -1,0 +1,209 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate structure and frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check referenced paths exist
+        run: |
+          echo "Checking referenced paths..."
+          test -d skills || { echo "ERROR: skills/ directory missing"; exit 1; }
+          test -d rules || { echo "ERROR: rules/ directory missing"; exit 1; }
+          test -d templates || { echo "ERROR: templates/ directory missing"; exit 1; }
+          test -d snippets || { echo "ERROR: snippets/ directory missing"; exit 1; }
+          test -f VERSION || { echo "ERROR: VERSION file missing"; exit 1; }
+          test -f LICENSE || { echo "ERROR: LICENSE file missing"; exit 1; }
+          echo "All referenced paths exist."
+
+      - name: Validate VERSION file
+        run: |
+          version=$(cat VERSION | tr -d '[:space:]')
+          if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "ERROR: VERSION '$version' is not valid semver"
+            exit 1
+          fi
+          echo "VERSION valid: $version"
+
+      - name: Validate skill frontmatter
+        run: |
+          echo "Checking skill YAML frontmatter..."
+          errors=0
+          for skill in skills/*/SKILL.md; do
+            if [ ! -f "$skill" ]; then continue; fi
+            if ! head -1 "$skill" | grep -q "^---$"; then
+              echo "ERROR: $skill missing YAML frontmatter opening ---"
+              errors=$((errors + 1))
+              continue
+            fi
+            frontmatter=$(sed -n '/^---$/,/^---$/p' "$skill" | sed '1d;$d')
+            if ! echo "$frontmatter" | grep -q "^name:"; then
+              echo "ERROR: $skill missing 'name' in frontmatter"
+              errors=$((errors + 1))
+            fi
+            if ! echo "$frontmatter" | grep -q "^description:"; then
+              echo "ERROR: $skill missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            fi
+            if ! echo "$frontmatter" | grep -q "^standards-version:"; then
+              echo "ERROR: $skill missing 'standards-version' in frontmatter"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "$errors frontmatter error(s) found."
+            exit 1
+          fi
+          echo "All skill frontmatter valid."
+
+      - name: Check skill name matches directory
+        run: |
+          echo "Checking skill names match directory names..."
+          errors=0
+          for skill in skills/*/SKILL.md; do
+            if [ ! -f "$skill" ]; then continue; fi
+            dir_name=$(echo "$skill" | sed 's|skills/\(.*\)/SKILL.md|\1|')
+            fm_name=$(sed -n '/^---$/,/^---$/p' "$skill" | sed '1d;$d' | grep "^name:" | sed 's/^name: *//')
+            if [ "$dir_name" != "$fm_name" ]; then
+              echo "ERROR: $skill has name '$fm_name' but directory is '$dir_name'"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "$errors name mismatch(es) found."
+            exit 1
+          fi
+          echo "All skill names match their directories."
+
+      - name: Validate rule frontmatter
+        run: |
+          echo "Checking rule YAML frontmatter..."
+          errors=0
+          for rule in rules/*.mdc; do
+            if [ ! -f "$rule" ]; then continue; fi
+            if ! head -1 "$rule" | grep -q "^---$"; then
+              echo "ERROR: $rule missing YAML frontmatter opening ---"
+              errors=$((errors + 1))
+              continue
+            fi
+            frontmatter=$(sed -n '/^---$/,/^---$/p' "$rule" | sed '1d;$d')
+            if ! echo "$frontmatter" | grep -q "^description:"; then
+              echo "ERROR: $rule missing 'description' in frontmatter"
+              errors=$((errors + 1))
+            fi
+            if ! echo "$frontmatter" | grep -q "^standards-version:"; then
+              echo "ERROR: $rule missing 'standards-version' in frontmatter"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "$errors frontmatter error(s) found."
+            exit 1
+          fi
+          echo "All rule frontmatter valid."
+
+      - name: Validate snippet Python syntax
+        run: |
+          echo "Checking snippet Python syntax..."
+          errors=0
+          for snippet in snippets/*.py; do
+            if [ ! -f "$snippet" ]; then continue; fi
+            if ! python3 -m py_compile "$snippet" 2>/dev/null; then
+              echo "ERROR: $snippet has invalid Python syntax"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "$errors snippet syntax error(s) found."
+            exit 1
+          fi
+          echo "All snippets have valid Python syntax."
+
+      - name: Validate template Python syntax
+        run: |
+          echo "Checking template Python syntax..."
+          errors=0
+          while IFS= read -r -d '' py; do
+            if ! python3 -m py_compile "$py" 2>/dev/null; then
+              echo "ERROR: $py has invalid Python syntax"
+              errors=$((errors + 1))
+            fi
+          done < <(find templates -name '*.py' -print0)
+          if [ "$errors" -gt 0 ]; then
+            echo "$errors template syntax error(s) found."
+            exit 1
+          fi
+          echo "All template Python files have valid syntax."
+
+      - name: Count components
+        run: |
+          skill_count=$(ls -d skills/*/SKILL.md 2>/dev/null | wc -l)
+          rule_count=$(ls rules/*.mdc 2>/dev/null | wc -l)
+          template_count=$(find templates -mindepth 1 -maxdepth 1 -type d | wc -l)
+          snippet_count=$(ls snippets/*.py 2>/dev/null | wc -l)
+          echo "Skills: $skill_count"
+          echo "Rules: $rule_count"
+          echo "Templates: $template_count"
+          echo "Snippets: $snippet_count"
+
+  validate-counts:
+    name: Validate content counts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check content counts match README
+        run: |
+          python3 << 'PYEOF'
+          import os
+          import sys
+
+          errors = []
+
+          skill_count = len([
+              d for d in os.listdir('skills')
+              if os.path.isdir(os.path.join('skills', d))
+              and os.path.exists(os.path.join('skills', d, 'SKILL.md'))
+          ])
+          rule_count = len([
+              f for f in os.listdir('rules')
+              if f.endswith('.mdc')
+          ])
+          template_count = len([
+              d for d in os.listdir('templates')
+              if os.path.isdir(os.path.join('templates', d))
+          ])
+          snippet_count = len([
+              f for f in os.listdir('snippets')
+              if f.endswith('.py')
+          ])
+
+          readme = open('README.md').read()
+          if f'{skill_count} skills' not in readme:
+              errors.append(f'README skill count mismatch (expected "{skill_count} skills" substring)')
+          if f'{rule_count} rules' not in readme:
+              errors.append(f'README rule count mismatch (expected "{rule_count} rules" substring)')
+          template_word = 'template' if template_count == 1 else 'templates'
+          if f'{template_count} {template_word}' not in readme:
+              errors.append(f'README template count mismatch (expected "{template_count} {template_word}" substring)')
+          if f'{snippet_count} snippets' not in readme:
+              errors.append(f'README snippet count mismatch (expected "{snippet_count} snippets" substring)')
+
+          if errors:
+              for e in errors:
+                  print(f'::error::{e}', file=sys.stderr)
+              sys.exit(1)
+
+          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets')
+          PYEOF

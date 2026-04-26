@@ -1,0 +1,121 @@
+---
+description: Flag new Blender add-ons that ship only a legacy bl_info dict without a blender_manifest.toml. New add-ons must use the Extensions Platform format. bl_info may appear alongside as a fallback for backward compatibility, but the manifest is the source of truth.
+alwaysApply: true
+globs:
+  - "**/__init__.py"
+  - "**/blender_manifest.toml"
+standards-version: 1.9.1
+---
+
+# Target Extensions Platform format
+
+Since Blender 4.2 and required for any new submission to the official
+extensions platform in 5.x, add-ons ship as **Extensions** with a
+`blender_manifest.toml` rather than as legacy add-ons keyed off a
+`bl_info` dict in `__init__.py`.
+
+The legacy `bl_info` dict is still recognized by Blender for backward
+compatibility, but new code should treat the manifest as the source of
+truth. Add-ons that ship only `bl_info`:
+
+- Cannot be submitted to the official extensions platform.
+- Cannot declare `permissions` (network, files, clipboard, camera) and
+  therefore are sandboxed by default with no way to request access.
+- Cannot declare `tags` for discovery.
+- Lose access to manifest-only fields like `tagline`, `website`,
+  `copyright`, structured `license`.
+
+## What this rule flags
+
+Add-on roots (directories whose `__init__.py` calls `bpy.utils.register_class`)
+that contain a `bl_info = {...}` dict but no `blender_manifest.toml` next to
+the `__init__.py`.
+
+```python
+# WRONG: legacy-only, will not be accepted by the extensions platform
+bl_info = {
+    "name": "My Addon",
+    "blender": (4, 5, 0),
+    "version": (0, 1, 0),
+    "category": "Mesh",
+}
+
+
+def register():
+    ...
+
+def unregister():
+    ...
+```
+
+## What to suggest instead
+
+Add a `blender_manifest.toml` in the same directory:
+
+```toml
+schema_version = "1.0.0"
+
+id = "my_addon"
+version = "0.1.0"
+name = "My Addon"
+tagline = "Short description, max 64 chars"
+maintainer = "TMHSDigital <contact@example.com>"
+type = "add-on"
+
+blender_version_min = "4.5.0"
+
+license = ["SPDX:MIT"]
+copyright = ["2026 TMHSDigital"]
+```
+
+It is fine, and often correct, to keep `bl_info` alongside the manifest
+for users on older Blender versions that don't read manifests:
+
+```python
+# Acceptable: manifest is the source of truth, bl_info is a fallback
+bl_info = {
+    "name": "My Addon",
+    "blender": (4, 5, 0),
+    "version": (0, 1, 0),
+    "category": "Mesh",
+}
+```
+
+Blender prefers the manifest when both are present.
+
+## Manifest validation gotchas
+
+Once you've added the manifest, Blender's validator will reject:
+
+- A `tagline` longer than 64 characters.
+- A `tagline` ending with a period (`"Adds a thing."` is rejected;
+  `"Adds a thing"` is accepted).
+- An `id` that is not a valid Python identifier (no hyphens, no leading
+  digits, no spaces).
+- `license` or `copyright` as bare strings instead of arrays of strings.
+- `tags` containing values not in Blender's canonical tag list.
+- Missing `schema_version`.
+
+These are all cheap to fix once the manifest exists. Without the
+manifest, the add-on can't progress beyond local install at all.
+
+## Why it matters
+
+The Extensions Platform was the deliberate replacement for the old
+add-ons site, with sandboxing, signing, dependency resolution, and an
+update mechanism. Add-ons that don't migrate are stuck distributing via
+zip files and direct downloads, and their users miss out on auto-updates
+and explicit permission grants.
+
+For internal-only add-ons that will never be public, the rule is softer:
+the `bl_info`-only form still works on the user's local machine.
+However, even private add-ons benefit from `permissions = { network = ...}`
+declarations being explicit, so the manifest path is recommended even
+internally.
+
+## Related
+
+- Skill `addon-scaffolding`
+- Template `extension-addon-template`
+- Extensions Platform manual:
+  https://docs.blender.org/manual/en/latest/advanced/extensions/index.html

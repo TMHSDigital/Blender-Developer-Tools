@@ -1,0 +1,107 @@
+---
+description: Flag bpy.ops.* calls inside iteration over many objects, meshes, or frames. Each bpy.ops call triggers a full depsgraph evaluation and UI redraw; loops slow down by orders of magnitude. Use bpy.data.* and bmesh instead.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.9.1
+---
+
+# Prefer bpy.data over bpy.ops in loops
+
+`bpy.ops.*` calls are the API surface that mirrors what the user sees in the
+3D viewport. Each call:
+
+1. Resolves a context override (window, area, region, mode).
+2. Runs the operator's `poll`.
+3. Runs the operator's `execute`, which usually mutates state via `bpy.data`.
+4. Triggers a depsgraph evaluation.
+5. Triggers a UI redraw.
+
+For a single user-driven action, that overhead is invisible. Inside a Python
+loop over hundreds of objects, the same overhead amplifies a 50ms job into a
+30-second one and floods the undo stack with one entry per iteration.
+
+## What this rule flags
+
+Any iteration construct (`for`, `while`, comprehension) whose body contains a
+call to `bpy.ops.*`. Examples:
+
+```python
+# WRONG: thousands of depsgraph evaluations
+for obj in bpy.context.selected_objects:
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.subdivide(number_cuts=1)
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+# WRONG: also bad, hidden inside a comprehension
+[bpy.ops.object.delete() for _ in range(100)]
+
+# WRONG: looping over frames calling render via ops
+for frame in range(1, 251):
+    bpy.context.scene.frame_set(frame)
+    bpy.ops.render.render(write_still=True)
+```
+
+## What to suggest instead
+
+For the subdivide-many-meshes case, use `bmesh.ops.subdivide_edges`:
+
+```python
+import bmesh
+
+for obj in bpy.context.selected_objects:
+    if obj.type != 'MESH':
+        continue
+    mesh = obj.data
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(mesh)
+        bmesh.ops.subdivide_edges(bm, edges=bm.edges, cuts=1, use_grid_fill=True)
+        bm.to_mesh(mesh)
+        mesh.update()
+    finally:
+        bm.free()
+```
+
+For the delete-many-objects case, go through `bpy.data`:
+
+```python
+for obj in list(bpy.data.objects):
+    if obj.name.startswith("Temp_"):
+        bpy.data.objects.remove(obj, do_unlink=True)
+```
+
+For the render-frames case, `bpy.ops.render.render` is one of the few `bpy.ops`
+calls that's acceptable in a loop because it's the only path to render. The
+overhead is dominated by the render itself; the `bpy.ops` plumbing is in the
+noise. Headless rendering (`blender --background`) is the right environment
+for this.
+
+## Why it matters
+
+A representative measurement: setting `co` on 10,000 vertices takes about
+3ms via `mesh.vertices.foreach_set`, about 50ms via a Python loop on
+`mesh.vertices`, and 30+ seconds via `bpy.ops.transform.translate` per
+vertex. Three orders of magnitude.
+
+`bpy.ops` also produces an undo entry per call. A loop of 1,000 ops floods
+undo history, breaks user workflow if the script is run interactively, and
+in older Blender versions could OOM the undo system on big meshes.
+
+## Exceptions where bpy.ops in a loop is fine
+
+- One-shot loops over a small fixed set (e.g. iterate two viewports to
+  apply a setting). The overhead is bounded.
+- `bpy.ops.render.render` and similar render-pipeline ops, which have no
+  `bpy.data` equivalent.
+- `bpy.ops.wm.save_as_mainfile` for batch-saving, which is the supported
+  path.
+
+## Related
+
+- Skill `mesh-editing-and-bmesh`
+- Skill `headless-batch-scripting`
+- Snippet `canonical-object-deletion.py`
+- Snippet `bmesh-load-edit-free.py`
+- Snippet `foreach-set-vertices.py`

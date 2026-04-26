@@ -1,0 +1,17 @@
+schema_version = "1.0.0"
+
+id = "example_addon"
+version = "0.1.0"
+name = "Example Addon"
+tagline = "Minimal Extensions Platform starting point"
+maintainer = "TMHSDigital <contact@example.com>"
+type = "add-on"
+
+blender_version_min = "4.5.0"
+
+license = ["SPDX:MIT"]
+copyright = ["2026 TMHSDigital"]
+
+website = "https://github.com/TMHSDigital/Blender-Developer-Tools"
+
+tags = ["Object"]

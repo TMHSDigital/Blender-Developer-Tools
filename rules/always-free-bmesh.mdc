@@ -1,0 +1,135 @@
+---
+description: Flag bmesh.new() calls without a paired bm.free() in a try/finally block. BMesh allocates C-side memory that Python's garbage collector cannot reclaim; missing free() leaks and eventually crashes Blender.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.9.1
+---
+
+# Always free bmesh
+
+`bmesh.new()` returns a Python wrapper around a C-side BMesh structure.
+The structure holds the vertex, edge, face, loop, and attribute layer
+storage that the bmesh module operates on. Python's garbage collector
+sees the wrapper but **cannot free the underlying C memory**. That has
+to be done explicitly with `bm.free()`.
+
+Forgetting `bm.free()` leaks. Long-running scripts and modal operators
+that loop without freeing eventually exhaust memory and crash Blender,
+often after the user has done significant unsaved work.
+
+## What this rule flags
+
+Any `bmesh.new()` call whose return value is not paired with a `.free()`
+in a `try`/`finally` block in the same scope.
+
+```python
+# WRONG: leaks on any exception in to_mesh()
+import bmesh
+
+bm = bmesh.new()
+bm.from_mesh(mesh)
+for v in bm.verts:
+    v.co.z += 0.1
+bm.to_mesh(mesh)
+bm.free()
+```
+
+```python
+# WRONG: leaks if to_mesh() raises
+def edit_mesh(mesh):
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    do_work(bm)
+    bm.to_mesh(mesh)
+    bm.free()
+    return bm
+```
+
+```python
+# WRONG: held in a long-lived variable, never freed
+class MyOperator(bpy.types.Operator):
+    def __init__(self):
+        self.bm = bmesh.new()  # leaks on operator unregister
+```
+
+## The required pattern
+
+```python
+import bmesh
+
+bm = bmesh.new()
+try:
+    bm.from_mesh(mesh)
+
+    for v in bm.verts:
+        v.co.z += 0.1
+
+    bm.to_mesh(mesh)
+    mesh.update()
+finally:
+    bm.free()
+```
+
+The `try`/`finally` covers the case where any operation between `bmesh.new()`
+and `bm.free()` raises. Without it, a `KeyError` reading
+`mesh.vertex_layers_int.get("missing")` skips the `free()`, and the BMesh
+leaks for the remaining session.
+
+For the edit-mode case where the bmesh comes from `bmesh.from_edit_mesh()`,
+**do not call `bm.free()`**. Edit-mode bmeshes are owned by Blender and
+freeing them double-frees and crashes:
+
+```python
+# Edit-mode: Blender owns the bmesh, do not free it
+bm = bmesh.from_edit_mesh(mesh)
+for v in bm.verts:
+    v.co.z += 0.1
+bmesh.update_edit_mesh(mesh)
+# No bm.free() here, on purpose
+```
+
+This rule applies only to bmeshes created with `bmesh.new()`.
+
+## A reusable context manager
+
+If you find yourself writing the `try`/`finally` repeatedly, wrap it:
+
+```python
+import contextlib
+import bmesh
+
+@contextlib.contextmanager
+def bmesh_from(mesh):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(mesh)
+        yield bm
+        bm.to_mesh(mesh)
+        mesh.update()
+    finally:
+        bm.free()
+
+
+with bmesh_from(obj.data) as bm:
+    for v in bm.verts:
+        v.co.z += 0.1
+```
+
+## Why it matters
+
+Blender's process is the user's process. A leak in your add-on doesn't
+just consume memory in a separate worker; it consumes the user's working
+RAM and survives until they restart Blender. For users on machines with
+16GB or less, even modest leaks (a few hundred MB per modal session)
+make Blender unusable after an hour.
+
+The crash itself is hard to diagnose: the OOM may not happen during
+your code's execution at all, but during a later modifier evaluation
+that allocates the last piece of available RAM.
+
+## Related
+
+- Skill `mesh-editing-and-bmesh`
+- Snippet `bmesh-load-edit-free.py`
+- bmesh API: https://docs.blender.org/api/current/bmesh.html

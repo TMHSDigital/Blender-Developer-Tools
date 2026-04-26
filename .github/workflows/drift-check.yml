@@ -1,0 +1,21 @@
+name: Ecosystem drift check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  drift-check:
+    name: Ecosystem drift check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: TMHSDigital/Developer-Tools-Directory/.github/actions/drift-check@v1.9
+        with:
+          mode: self
+          format: gh-summary

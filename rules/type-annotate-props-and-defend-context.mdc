@@ -1,0 +1,131 @@
+---
+description: Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.9.1
+---
+
+# Type-annotate props and defend context
+
+Two disciplines combined into one rule because they show up together in
+the same files: the operator/panel/PropertyGroup classes that define
+`bpy.props` are the same classes that read `context.active_object`.
+
+## Discipline 1: type annotation form for bpy.props
+
+`bpy.props` properties defined on a class **must use Python type
+annotation syntax**, not assignment syntax. The assignment form was
+deprecated when Blender moved to 2.80 and no longer registers correctly.
+
+```python
+# WRONG: deprecated 2.7x style, silently fails to register on 2.8+
+class MyOperator(bpy.types.Operator):
+    bl_idname = "object.my_op"
+    bl_label = "My Op"
+
+    factor = bpy.props.FloatProperty(name="Factor", default=1.0)
+```
+
+```python
+# CORRECT: annotation form, registers on 2.80 through 5.x
+class MyOperator(bpy.types.Operator):
+    bl_idname = "object.my_op"
+    bl_label = "My Op"
+
+    factor: bpy.props.FloatProperty(name="Factor", default=1.0)
+```
+
+This rule applies to:
+
+- `bpy.types.Operator` subclasses (operator redo properties).
+- `bpy.types.PropertyGroup` subclasses (custom data structures).
+- `bpy.types.AddonPreferences` subclasses (per-add-on settings).
+- `bpy.types.UIList`, `bpy.types.Panel`, etc., wherever `bpy.props` are
+  declared.
+
+The `bl_*` static metadata (like `bl_idname`, `bl_label`, `bl_options`)
+**stays as plain class attributes**, not annotations. Mixing the two on
+the same class is normal:
+
+```python
+class MyOperator(bpy.types.Operator):
+    bl_idname = "object.my_op"          # static, plain attribute
+    bl_label = "My Op"                  # static, plain attribute
+    bl_options = {'REGISTER', 'UNDO'}   # static, plain attribute
+
+    factor: bpy.props.FloatProperty(default=1.0)   # registered prop
+    name: bpy.props.StringProperty(default="")     # registered prop
+```
+
+## Discipline 2: defend against None context
+
+`bpy.context.active_object` returns `None` when:
+
+- The user has nothing selected.
+- The active scene has no objects.
+- Blender is running in `--background` mode without an active scene.
+- The user is in a context where the active object is hidden or
+  unavailable (some sub-areas).
+
+`context.selected_objects` returns `[]` in similar situations.
+
+```python
+# WRONG: AttributeError on None, often surfaces only in headless or
+# when the user runs the add-on with nothing selected
+class MyPanel(bpy.types.Panel):
+    bl_idname = "VIEW3D_PT_my_panel"
+    ...
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text=context.active_object.name)
+```
+
+```python
+# WRONG: same problem, just inside an operator
+class MyOperator(bpy.types.Operator):
+    def execute(self, context):
+        obj = context.active_object
+        obj.location.z += 1.0
+        return {'FINISHED'}
+```
+
+```python
+# CORRECT: explicit None guard
+class MyOperator(bpy.types.Operator):
+    bl_idname = "object.my_op"
+    bl_label = "My Op"
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None
+
+    def execute(self, context):
+        obj = context.active_object
+        if obj is None:
+            self.report({'ERROR'}, "No active object")
+            return {'CANCELLED'}
+        obj.location.z += 1.0
+        return {'FINISHED'}
+```
+
+`poll` filters the operator out of menus when the precondition fails so
+the user never sees a clickable button that would error. `execute` still
+double-checks because `poll` is allowed to be slightly stale relative to
+the actual `execute` call (the user can change context between them).
+
+## Why both together
+
+The two disciplines tend to fail together in AI-generated code: a model
+that writes `factor = bpy.props.FloatProperty(...)` typically also
+writes `context.active_object.name` without a guard. Both come from
+training on pre-2.80 tutorials and code where `active_object` was
+practically always non-None in the user-facing scenarios shown.
+
+## Related
+
+- Skill `custom-properties`
+- Skill `operators`
+- Skill `headless-batch-scripting`
+- bpy.props API: https://docs.blender.org/api/current/bpy.props.html
