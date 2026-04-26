@@ -119,6 +119,32 @@ The drift-check workflow enforces these on every push and PR.
 3. **Use Conventional Commits** for the PR title (and ideally the merge commit). Prefixes: `feat:` (minor bump), `fix:` (patch bump), `feat!:` or `BREAKING CHANGE` (major bump), `chore:` / `docs:` / `refactor:` (no release).
 4. **Respond to review** feedback; CI must pass before merge.
 
+## Developer Certificate of Origin and Inbound License Grant
+
+This project uses CC-BY-NC-ND-4.0 as its outbound license, which forbids derivatives. Every pull request is a derivative. Contributions are accepted inbound under a broader grant via the Developer Certificate of Origin (DCO), which resolves the conflict so the project can accept and redistribute contributions.
+
+### Required grant
+
+By submitting a contribution to this repository, you certify that you have the right to do so under the Developer Certificate of Origin (DCO) 1.1, and you grant TMHSDigital a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute your contribution under the project's current license (CC-BY-NC-ND-4.0) or any successor license chosen by the project.
+
+### DCO sign-off
+
+Every commit in a pull request must have a `Signed-off-by:` trailer matching the commit author:
+
+```
+Signed-off-by: Jane Developer <jane@example.com>
+```
+
+Signing is done at commit time:
+
+```bash
+git commit -s -m "feat: add new skill"
+```
+
+The GitHub DCO App enforces this on every PR.
+
+For the full inbound/outbound model and rationale, see [`standards/licensing.md`](https://github.com/TMHSDigital/Developer-Tools-Directory/blob/main/standards/licensing.md) in the Developer-Tools-Directory meta-repo.
+
 ## Code of Conduct
 
 This project follows the guidelines in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). By participating, you agree to uphold them.
