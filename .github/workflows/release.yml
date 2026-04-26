@@ -3,15 +3,6 @@ name: Release
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - ".github/**"
-      - "docs/**"
-      - "LICENSE"
-      - "README.md"
-      - "AGENTS.md"
-      - "CLAUDE.md"
-      - "CHANGELOG.md"
-      - "ROADMAP.md"
   workflow_dispatch: {}
 
 permissions:
