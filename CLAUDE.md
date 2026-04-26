@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Blender Developer Tools** repository is at **v0.1.1**. It packages skills, rules, snippets, and a starter template for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server in v0.1.1; content is consumed directly by the AI when working in Blender add-on or scripting projects.
+The **Blender Developer Tools** repository is at **v0.1.2**. It packages skills, rules, snippets, and a starter template for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server in v0.1.2; content is consumed directly by the AI when working in Blender add-on or scripting projects.
 
-**Version:** 0.1.1
+**Version:** 0.1.2
 **License:** MIT
 **Author:** TMHSDigital
 
