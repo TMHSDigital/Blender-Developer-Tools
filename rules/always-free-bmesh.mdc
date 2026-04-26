@@ -3,7 +3,7 @@ description: Flag bmesh.new() calls without a paired bm.free() in a try/finally 
 alwaysApply: true
 globs:
   - "**/*.py"
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Always free bmesh

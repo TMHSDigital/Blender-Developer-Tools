@@ -1,7 +1,7 @@
 ---
 name: ui-panels
 description: Author Blender UI panels with bpy.types.Panel, declarative draw(), bl_space_type and bl_region_type, layout primitives like row/column/split, and conditional UI via .enabled. Targets 5.1.
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # UI Panels

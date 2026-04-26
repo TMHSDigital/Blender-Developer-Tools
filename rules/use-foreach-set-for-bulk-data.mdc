@@ -1,0 +1,147 @@
+---
+description: Flag Python loops that set vertex coordinates, normals, UVs, or other bulk per-element data one element at a time. For meshes of more than a few thousand elements, this is 100x to 1000x slower than `mesh.vertices.foreach_set("co", flat_array)`, which writes through to C-level storage in one pass.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.9.4
+---
+
+# Use `foreach_set` and `foreach_get` for bulk mesh data
+
+Setting per-vertex, per-loop, or per-face data in a Python `for` loop
+crosses the Python-to-C boundary once per element. For meshes of any
+real size (tens of thousands of vertices and up), this dominates the
+runtime. The same write through `foreach_set` finishes in milliseconds
+because the data goes through one buffer copy.
+
+The same gap exists in the read direction with `foreach_get`.
+
+## What this rule flags
+
+Any of these patterns:
+
+- `for v in mesh.vertices: v.co = ...`
+- `for i, v in enumerate(mesh.vertices): v.co = coords[i]`
+- `for loop in mesh.loops: loop.normal = ...`
+- `for face in mesh.polygons: face.use_smooth = True`
+- Manual `enumerate` loops that index into a parallel array of values
+
+## Wrong
+
+```python
+import math
+
+mesh = obj.data
+
+for i, v in enumerate(mesh.vertices):
+    v.co.x = math.sin(i * 0.01)
+    v.co.y = math.cos(i * 0.01)
+    v.co.z = 0.0
+```
+
+For 100,000 vertices this takes single-digit seconds in pure Python.
+
+## Right
+
+```python
+import math
+import numpy as np
+
+mesh = obj.data
+n = len(mesh.vertices)
+
+coords = np.empty(n * 3, dtype=np.float32)
+i = np.arange(n)
+coords[0::3] = np.sin(i * 0.01)
+coords[1::3] = np.cos(i * 0.01)
+coords[2::3] = 0.0
+
+mesh.vertices.foreach_set("co", coords)
+mesh.update()
+```
+
+Same 100,000 vertices: under a millisecond.
+
+## What `foreach_set` accepts
+
+The signature is `foreach_set(attribute, sequence)` where:
+
+- `attribute` is the name of the per-element attribute as a string
+  (`"co"`, `"normal"`, `"index"`, `"use_smooth"`, etc.).
+- `sequence` is a flat 1D iterable of `len(elements) * components`
+  values. For vector attributes (3 floats per vertex), the buffer is
+  3x as long as the element count.
+
+Any sequence works (list, tuple, numpy array). Numpy arrays are by far
+the fastest because they expose the buffer protocol; lists are copied
+internally.
+
+## Reading: `foreach_get`
+
+Same shape, in reverse:
+
+```python
+import numpy as np
+
+n = len(mesh.vertices)
+coords = np.empty(n * 3, dtype=np.float32)
+mesh.vertices.foreach_get("co", coords)
+
+mesh.vertices.foreach_get("co", coords)
+xs = coords[0::3]
+ys = coords[1::3]
+zs = coords[2::3]
+```
+
+Pre-allocate the buffer; do not let `foreach_get` allocate per call.
+
+## Where else it works
+
+Same pattern applies to:
+
+- `mesh.loops` (per-loop normals, custom split normals, UV coordinates
+  via the UV layer's `data`)
+- `mesh.polygons` (per-face material index, smooth flag, area)
+- `mesh.edges` (per-edge use_seam, use_sharp, crease)
+- `bpy.types.MeshUVLoopLayer.data` and other layer collections
+
+For example, batch-flag every face as smooth-shaded:
+
+```python
+import numpy as np
+
+n = len(mesh.polygons)
+flags = np.ones(n, dtype=np.bool_)
+mesh.polygons.foreach_set("use_smooth", flags)
+mesh.update()
+```
+
+## When the loop is unavoidable
+
+`foreach_set` only works when every element gets a value of the same
+shape. If you need to skip elements based on a per-element predicate
+that the C side cannot see, the loop is unavoidable. In practice this
+is rare; most predicates can be vectorized through numpy masks first
+and then written in a single `foreach_set`.
+
+## Why it matters
+
+The Python-to-C boundary cost is the single biggest performance
+landmine in mesh-heavy add-ons. A user-facing operator that takes ten
+seconds on a 100k-vertex mesh feels broken. The same operator with
+`foreach_set` runs in tens of milliseconds and feels instant.
+
+Beyond user-facing latency, batch and headless scripts that process
+many files multiply the cost: a 5-second-per-file script over 1000
+files costs 80 minutes; the same script with `foreach_set` finishes in
+under a minute.
+
+## Related
+
+- Skill `mesh-editing-and-bmesh`
+- Rule `prefer-data-over-ops-in-loops` (related but distinct: that
+  rule is about `bpy.ops.*`, this one is about per-element Python
+  loops over mesh data)
+- Snippet `foreach-set-vertices.py` (write path)
+- Snippet `foreach-get-vertices.py` (read path)
+- `bpy_prop_collection.foreach_set`: https://docs.blender.org/api/current/bpy.types.bpy_prop_collection.html#bpy.types.bpy_prop_collection.foreach_set

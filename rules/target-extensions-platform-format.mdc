@@ -4,7 +4,7 @@ alwaysApply: true
 globs:
   - "**/__init__.py"
   - "**/blender_manifest.toml"
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Target Extensions Platform format

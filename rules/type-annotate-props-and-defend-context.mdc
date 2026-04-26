@@ -3,7 +3,7 @@ description: Flag two related anti-patterns. (1) bpy.props defined as class-leve
 alwaysApply: true
 globs:
   - "**/*.py"
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Type-annotate props and defend context

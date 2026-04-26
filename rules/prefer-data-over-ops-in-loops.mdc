@@ -3,7 +3,7 @@ description: Flag bpy.ops.* calls inside iteration over many objects, meshes, or
 alwaysApply: true
 globs:
   - "**/*.py"
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Prefer bpy.data over bpy.ops in loops

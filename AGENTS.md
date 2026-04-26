@@ -1,4 +1,4 @@
-<!-- standards-version: 1.9.1 -->
+<!-- standards-version: 1.9.4 -->
 
 # AGENTS.md
 
@@ -12,31 +12,34 @@ fallback. There is no MCP server and no `.cursor-plugin/plugin.json`. This is
 content the AI loads when the user asks Blender questions or works on Blender
 add-ons in Cursor or Claude Code.
 
-The content base for v0.1.0:
+The content base as of v0.2.0:
 
-- 8 skills covering scaffolding, operators, panels, properties, mesh and
-  bmesh, headless batch scripts, slotted-actions animation (5.x), and
-  programmatic geometry nodes.
-- 4 rules encoding the most common AI anti-patterns when writing Blender
-  Python.
-- 1 template (`extension-addon-template`) demonstrating the Extensions
-  Platform format with `register_classes_factory` and a `PointerProperty`
-  binding.
-- 10 snippets covering canonical patterns from the research document.
+- 12 skills covering scaffolding, operators, panels, properties, mesh and
+  bmesh, headless batch scripts, slotted-actions animation (5.x), programmatic
+  geometry nodes, procedural materials and shaders, depsgraph and evaluated
+  data, drivers and application handlers, and `bl_info` to Extensions
+  Platform migration.
+- 6 rules encoding the most common AI anti-patterns when writing Blender
+  Python (ops-in-loops, bmesh leaks, legacy `bl_info`-only, prop assignment,
+  deprecated context-copy override, per-element loops over bulk mesh data).
+- 2 templates: `extension-addon-template` for Extensions Platform add-ons,
+  and `headless-batch-script-template` for unattended batch jobs.
+- 17 snippets covering canonical patterns.
 
 ## Repository structure
 
 ```
 Blender-Developer-Tools/
-  skills/<skill-name>/SKILL.md   # 8 skill files
-  rules/<rule-name>.mdc          # 4 rule files
-  templates/<template-name>/     # 1 starter template
-  snippets/<snippet-name>.py     # 10 standalone Python snippets
+  skills/<skill-name>/SKILL.md   # 12 skill files
+  rules/<rule-name>.mdc          # 6 rule files
+  templates/<template-name>/     # 2 starter templates
+  snippets/<snippet-name>.py     # 17 standalone Python snippets
   .github/workflows/             # validate, drift-check, release, label-sync
   .github/dependabot.yml
   AGENTS.md, CLAUDE.md, README.md, ROADMAP.md, CHANGELOG.md
+  CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
   VERSION                        # source of truth for the repo version
-  LICENSE                        # MIT
+  LICENSE                        # CC-BY-NC-ND-4.0
 ```
 
 ## Branching and commit model
@@ -71,7 +74,7 @@ Each skill lives at `skills/<skill-name>/SKILL.md`. Frontmatter is YAML:
 ---
 name: <kebab-case-skill-name>
 description: <one-line, under 200 chars>
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 ```
 
@@ -90,7 +93,7 @@ Rules are `.mdc` files in `rules/`. Frontmatter:
 ---
 description: <one-line>
 alwaysApply: true
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 ```
 
@@ -100,7 +103,7 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
 ## CI/CD workflows
 
 - `validate.yml` runs file structure checks plus a `validate-counts` job that
-  asserts the README aggregate counts (8 skills, 4 rules, 1 template, 10
+  asserts the README aggregate counts (12 skills, 6 rules, 2 templates, 17
   snippets) match filesystem reality. The counts language in `README.md` is
   load-bearing: the job greps for it.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
@@ -125,4 +128,4 @@ property handling has invalidated a lot of community content.
 
 ## License
 
-MIT. See `LICENSE`.
+CC-BY-NC-ND-4.0. See `LICENSE`.

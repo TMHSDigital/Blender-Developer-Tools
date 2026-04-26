@@ -1,0 +1,102 @@
+---
+description: Flag uses of `bpy.context.copy()` to override context for an operator call. The copy-and-pass pattern was deprecated in Blender 4.x and the override semantics were removed in 5.x. Use `bpy.context.temp_override(**overrides)` as a context manager instead.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.9.4
+---
+
+# Prefer `temp_override` over `context.copy()`
+
+`bpy.context.copy()` returns a dict snapshot of the current context. In
+Blender 4.x and earlier it was common to mutate that dict and pass it as
+the first positional argument to an operator (`bpy.ops.x.y(ctx, ...)`)
+to run the operator under a fabricated context. That mechanism was
+deprecated in 4.x and the operator override semantics were removed in
+5.x. The same code on 5.x either silently ignores the override or fails
+with a confusing argument-type error.
+
+The supported replacement is `bpy.context.temp_override(**overrides)`,
+which works as a context manager and applies cleanly on both 4.5 LTS and
+5.x.
+
+## What this rule flags
+
+Any of the following:
+
+- `bpy.context.copy()` followed by passing the dict to an operator.
+- Direct construction of a context dict and passing it to a `bpy.ops.*`
+  call as a positional dict argument.
+- `bpy.ops.foo.bar(ctx, ...)` where `ctx` is any dict-typed value.
+
+## Wrong
+
+```python
+import bpy
+
+ctx = bpy.context.copy()
+ctx['active_object'] = my_obj
+ctx['selected_objects'] = [my_obj]
+bpy.ops.object.delete(ctx)
+```
+
+```python
+import bpy
+
+bpy.ops.object.delete({
+    'active_object': my_obj,
+    'selected_objects': [my_obj],
+})
+```
+
+Both forms run on 4.x with deprecation warnings. On 5.x they either no-op
+the override silently or raise `TypeError: Calling operator "bpy.ops.object.delete"
+error, expected a string enum, not a dict`.
+
+## Right
+
+```python
+import bpy
+
+with bpy.context.temp_override(active_object=my_obj, selected_objects=[my_obj]):
+    bpy.ops.object.delete()
+```
+
+`temp_override` accepts the same keyword names as the keys you would
+have put in the dict. It restores the previous context on exit, even
+on exception. It is supported on 4.2+ and is the only override path
+on 5.x.
+
+## When you also need a window override
+
+Headless scripts often need `window`, `area`, `region`, or `screen`
+overrides because no UI exists by default. Pass them all to
+`temp_override`:
+
+```python
+window = bpy.context.window_manager.windows[0]
+area = next(a for a in window.screen.areas if a.type == 'VIEW_3D')
+region = next(r for r in area.regions if r.type == 'WINDOW')
+
+with bpy.context.temp_override(window=window, area=area, region=region):
+    bpy.ops.view3d.snap_cursor_to_selected()
+```
+
+## Why it matters
+
+The deprecated path silently drops the override on 5.x in many cases.
+Code that "worked" on 4.x produces wrong results on 5.x without an
+obvious failure. The user reports "my add-on broke after upgrade" and
+the cause is a context override that is now ignored.
+
+`temp_override` is the canonical, supported, and forward-compatible
+replacement. There is no scenario in 5.x where the dict-passing form is
+preferable.
+
+## Related
+
+- Skill `operators`
+- Snippet `temp-override-context.py`
+- `bpy.types.Context.temp_override`: https://docs.blender.org/api/current/bpy.types.Context.html#bpy.types.Context.temp_override
+- Blender 4.0 release notes (deprecation): https://developer.blender.org/docs/release_notes/4.0/python_api/
+- Blender 5.0 release notes (removal): https://developer.blender.org/docs/release_notes/5.0/python_api/

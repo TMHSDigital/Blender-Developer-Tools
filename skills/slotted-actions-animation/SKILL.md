@@ -1,7 +1,7 @@
 ---
 name: slotted-actions-animation
 description: Animate from Python under the Blender 5.x Slotted Actions architecture. Action contains Layers contain Strips contain Channelbags. The action_ensure_channelbag_for_slot bridge utility for 4.5 LTS and 5.x compatibility.
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Slotted Actions Animation
@@ -39,7 +39,7 @@ Pre-5.0 code that walked `action.fcurves` directly does not find anything in a 5
 - On 5.x: ensures the Action has a Layer, a Strip in that Layer, and a Channelbag for the given Slot, then returns the Channelbag.
 - On 4.5 LTS where there is no Slotted Actions concept: returns a shim object that exposes `.fcurves` pointing at `action.fcurves`, so the same calling code works.
 
-> Verify the exact import path against the current Blender 5.1.1 API docs before using this skill in production. The `bpy_extras.anim_utils` location was correct as of the v0.1.0 research date; if Blender moves the helper, fix the import.
+Import path verified against the Blender 5.1 API reference: `bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)`. See [`bpy_extras.anim_utils`](https://docs.blender.org/api/current/bpy_extras.anim_utils.html).
 
 ```python
 import bpy

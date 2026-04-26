@@ -1,7 +1,7 @@
 ---
 name: headless-batch-scripting
 description: Run Blender headless via blender --background --python script.py for batch jobs. What changes without a UI, how to avoid UI-dependent operators, the temp_override pattern when ops must be used, and argparse after the -- separator.
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Headless Batch Scripting

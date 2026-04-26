@@ -1,7 +1,7 @@
 ---
 name: geometry-nodes-python
 description: Programmatically construct Geometry Nodes trees in Blender 5.x via bpy.data.node_groups, interface socket creation, node instantiation by RNA name, link wiring, and applying as a NODES modifier. Includes Bundles for grouped sockets.
-standards-version: 1.9.1
+standards-version: 1.9.4
 ---
 
 # Geometry Nodes in Python

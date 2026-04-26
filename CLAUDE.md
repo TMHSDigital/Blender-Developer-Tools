@@ -1,4 +1,4 @@
-<!-- standards-version: 1.9.1 -->
+<!-- standards-version: 1.9.4 -->
 
 # CLAUDE.md
 
@@ -6,23 +6,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Blender Developer Tools** repository is at **v0.1.3**. It packages skills, rules, snippets, and a starter template for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server in v0.1.3; content is consumed directly by the AI when working in Blender add-on or scripting projects.
+The **Blender Developer Tools** repository is at **v0.1.3**. It packages skills, rules, snippets, and starter templates for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
 
 **Version:** 0.1.3
-**License:** MIT
-**Author:** TMHSDigital
+**License:** CC-BY-NC-ND-4.0
+**Author:** TM Hospitality Strategies
 
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 8 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 4 total
-templates/<template-name>/     - Starter projects, 1 total
-snippets/<snippet-name>.py     - Standalone code patterns, 10 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 12 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
+templates/<template-name>/     - Starter projects, 2 total
+snippets/<snippet-name>.py     - Standalone code patterns, 17 total
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (8)
+## Skills (12)
 
 | Skill | Purpose |
 | --- | --- |
@@ -34,8 +34,12 @@ VERSION                        - Source of truth for the repo version
 | headless-batch-scripting | `blender --background --python`, temp_override, argparse after `--` |
 | slotted-actions-animation | Blender 5.x Slotted Actions, channelbag, 4.5 LTS fallback bridge |
 | geometry-nodes-python | Programmatic GN tree construction, interface sockets, NODES modifier |
+| procedural-materials-and-shaders | Node tree construction for Principled BSDF, emissive, node groups, EEVEE Next vs Cycles |
+| depsgraph-and-evaluated-data | `evaluated_get` / `to_mesh` / `to_mesh_clear` lifetime contract for exporters and measurement |
+| drivers-and-app-handlers | Driver expressions, `driver_namespace`, application handlers including the new 5.1 `exit_pre` |
+| bl-info-migration | Three-step migration from legacy `bl_info` to Extensions Platform, dual-format pattern |
 
-## Rules (4)
+## Rules (6)
 
 | Rule | Scope | What it flags |
 | --- | --- | --- |
@@ -43,8 +47,10 @@ VERSION                        - Source of truth for the repo version
 | always-free-bmesh | `*.py` | `bmesh.new()` without paired `bm.free()` in a `try`/`finally` block |
 | target-extensions-platform-format | Add-on roots | Legacy `bl_info` only add-ons missing `blender_manifest.toml` |
 | type-annotate-props-and-defend-context | `*.py` | `bpy.props` defined as assignments, unguarded `context.active_object` |
+| prefer-temp-override-over-context-copy | `*.py` | `bpy.context.copy()` passed to operators (deprecated 4.x, removed 5.x) |
+| use-foreach-set-for-bulk-data | `*.py` | Python loops over `mesh.vertices` setting bulk attributes one at a time |
 
-## Templates (1)
+## Templates (2)
 
 `templates/extension-addon-template/` is a copy-paste-ready Blender extension demonstrating:
 
@@ -54,9 +60,21 @@ VERSION                        - Source of truth for the repo version
 - A `PointerProperty` bound to `bpy.types.Scene`
 - Symmetric `register()` / `unregister()` with property cleanup before class unregister
 
-## Snippets (10)
+`templates/headless-batch-script-template/` is a working starter for unattended Blender batch jobs:
 
-Small standalone `.py` files at `snippets/<name>.py`, each 5 to 30 lines, covering: canonical object creation and deletion, depsgraph evaluated mesh, bmesh load-edit-free, temp_override context, foreach_set vertex bulk write, register_classes_factory, PointerProperty binding, cross-version property delete, and the `action_ensure_channelbag_for_slot` slotted-actions bridge.
+- `argparse` parsing of args after the `--` separator
+- Iteration over every mesh object via `bpy.data.objects`
+- Modifier application via `bpy.context.temp_override` (not the deprecated context-dict form)
+- glTF export via `bpy.ops.export_scene.gltf`
+- Explicit exit codes for CI integration
+
+## Snippets (17)
+
+Small standalone `.py` files at `snippets/<name>.py`, each 5 to 50 lines.
+
+v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh load-edit-free, temp_override context, foreach_set vertex bulk write, register_classes_factory, PointerProperty binding, cross-version property delete, and the `action_ensure_channelbag_for_slot` slotted-actions bridge.
+
+v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
 ## Development Workflow
 
