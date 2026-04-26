@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-04-26
+
+See [release notes](https://github.com/TMHSDigital/Blender-Developer-Tools/releases/tag/v0.1.1) for details.
+
 ## [0.1.0] - 2026-04-26
 
 Initial release. 8 skills, 4 rules, 1 template, and 10 snippets covering Blender 5.1 Python development with 4.5 LTS fallback support.
