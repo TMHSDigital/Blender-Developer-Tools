@@ -12,6 +12,7 @@ on:
       - "CLAUDE.md"
       - "CHANGELOG.md"
       - "ROADMAP.md"
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -112,6 +113,7 @@ jobs:
         with:
           plugin-version: ${{ steps.new.outputs.version }}
           previous-version: ${{ steps.current.outputs.version }}
+          meta-repo-ref: v1.9.1
 
       - name: Commit version bump
         if: steps.check.outputs.skip == 'false'
