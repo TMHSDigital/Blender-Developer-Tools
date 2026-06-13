@@ -39,7 +39,7 @@ templates/
 
 - **`skills/`** - one directory per skill, each containing `SKILL.md` with YAML frontmatter (`name`, `description`, `standards-version`).
 - **`rules/`** - Cursor-style rules as `.mdc` files with YAML frontmatter (`description`, `alwaysApply`, `globs`, `standards-version`).
-- **`snippets/`** - small standalone `.py` files (5 to 30 lines) demonstrating a single canonical pattern.
+- **`snippets/`** - small standalone `.py` files (5 to 50 lines) demonstrating a single canonical pattern.
 - **`templates/`** - copy-paste starting points; one directory per template.
 
 ## Adding a Skill
@@ -51,7 +51,7 @@ templates/
    ---
    name: procedural-materials
    description: One-line description, under 200 chars.
-   standards-version: <current meta-repo VERSION>
+   standards-version: <current meta-repo STANDARDS_VERSION>
    ---
    ```
 
@@ -69,7 +69,7 @@ templates/
    alwaysApply: true
    globs:
      - "**/*.py"
-   standards-version: <current meta-repo VERSION>
+   standards-version: <current meta-repo STANDARDS_VERSION>
    ---
    ```
 
@@ -78,7 +78,7 @@ templates/
 ## Adding a Snippet
 
 1. Add a `.py` file under `snippets/`, e.g. `snippets/depsgraph-evaluated-mesh.py`.
-2. Keep it 5 to 30 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
+2. Keep it 5 to 50 lines, fully working code, with a header comment naming the snippet and citing the relevant Blender doc URL or research section.
 3. Snippets are validated for Python syntax in CI.
 
 ## Adding a Template
@@ -101,10 +101,10 @@ else:
 
 ## Standards-version Markers
 
-Files that participate in ecosystem drift checking must carry a `standards-version` marker matching the current meta-repo `VERSION`:
+Files that participate in ecosystem drift checking must carry a `standards-version` marker matching the current meta-repo `STANDARDS_VERSION` (which is decoupled from this repo's `VERSION`):
 
-- `AGENTS.md`, `CLAUDE.md`, `ROADMAP.md`: HTML comment first line, e.g. `<!-- standards-version: 1.9.1 -->`.
-- `skills/*/SKILL.md`, `rules/*.mdc`: YAML frontmatter field `standards-version: 1.9.1`.
+- `AGENTS.md`, `CLAUDE.md`, `ROADMAP.md`: HTML comment first line, e.g. `<!-- standards-version: <STANDARDS_VERSION> -->`.
+- `skills/*/SKILL.md`, `rules/*.mdc`: YAML frontmatter field `standards-version: <STANDARDS_VERSION>`.
 
 The drift-check workflow enforces these on every push and PR.
 

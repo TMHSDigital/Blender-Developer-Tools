@@ -1,7 +1,10 @@
-# Cross-version property deletion: property_unset (5.0+) vs del (4.5 LTS).
-# Custom ID properties (the dict-style obj["my_key"] = value) are removed
-# differently across Blender versions. property_unset is the cleaner
-# 5.x-and-up form; del obj["key"] still works on 4.5 LTS.
+# Removing a custom ID property (the dict-style obj["my_key"] = value).
+# ID-property removal is version-stable: `del id_block[key]` works on all
+# Blender versions (4.5 LTS and 5.x alike). There is no version branch here.
+#
+# Do NOT use property_unset() for this. property_unset() RESETS a registered
+# RNA property to its default value; it does not remove a custom ID property.
+# That is a different operation.
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy.types.bpy_struct.html
@@ -13,11 +16,7 @@ def remove_custom_property(id_block, key):
     if key not in id_block.keys():
         return False
 
-    if bpy.app.version >= (5, 0, 0):
-        id_block.property_unset(key)
-    else:
-        del id_block[key]
-
+    del id_block[key]
     return True
 
 

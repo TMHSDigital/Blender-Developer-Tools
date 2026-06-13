@@ -129,6 +129,7 @@ Pair `report({'ERROR'}, ...)` with `return {'CANCELLED'}` so the operator does n
 
 ```python
 import bpy
+from mathutils import Vector
 
 
 class OBJECT_OT_offset_active(bpy.types.Operator):
@@ -157,7 +158,10 @@ class OBJECT_OT_offset_active(bpy.types.Operator):
         offset = (self.offset_x, self.offset_y, self.offset_z)
 
         if self.use_local:
-            obj.location += obj.matrix_world.to_3x3() @ bpy.types.Vector(offset)
+            # Column-normalize the basis so object scale does not distort the
+            # local-axis direction; to_3x3() alone carries scale into the result.
+            basis = obj.matrix_world.to_3x3().normalized()
+            obj.location += basis @ Vector(offset)
         else:
             obj.location.x += self.offset_x
             obj.location.y += self.offset_y

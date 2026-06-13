@@ -23,10 +23,15 @@ def make_tint_group(name="Tint"):
 
     group_in = nodes.new('NodeGroupInput')
     group_out = nodes.new('NodeGroupOutput')
-    mix = nodes.new('ShaderNodeMixRGB')
+    mix = nodes.new('ShaderNodeMix')
+    mix.data_type = 'RGBA'
     mix.blend_type = 'MULTIPLY'
 
-    links.new(group_in.outputs['Color'], mix.inputs['Color1'])
-    links.new(group_in.outputs['Strength'], mix.inputs['Fac'])
-    links.new(mix.outputs['Color'], group_out.inputs['Result'])
+    # ShaderNodeMix shares socket names (Factor/A/B/Result) across every
+    # data_type, so name lookup is ambiguous. Wire the RGBA sockets by index:
+    #   inputs[0]=Factor (Float), inputs[6]=A (Color), inputs[7]=B (Color)
+    #   outputs[2]=Result (Color)
+    links.new(group_in.outputs['Strength'], mix.inputs[0])
+    links.new(group_in.outputs['Color'], mix.inputs[6])
+    links.new(mix.outputs[2], group_out.inputs['Result'])
     return group

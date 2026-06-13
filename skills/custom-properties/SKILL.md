@@ -133,11 +133,11 @@ The order matters. The bound `PointerProperty` references the `PropertyGroup` cl
 
 ```python
 def unregister():
-    del bpy.types.Scene.my_addon  # or property_unset() on 5.0+
+    del bpy.types.Scene.my_addon
     bpy.utils.unregister_class(MY_ADDON_PG_settings)
 ```
 
-See the snippet `cross-version-property-delete.py` for the 5.0+ `property_unset` shape and the 4.5 LTS `del` shape.
+Unbinding a type-level property is `del bpy.types.Scene.my_addon` on all Blender versions. See the snippet `cross-version-property-delete.py` for removing a custom ID property (also `del`, version-stable).
 
 ## CollectionProperty (lists)
 
@@ -231,7 +231,12 @@ This is a frequent AI mistake when generating quick scripts. Always wrap state i
 
 ## Compatibility paths (4.5 LTS vs 5.0+)
 
-In Blender 5.0+, `bpy.types.Scene.my_addon.property_unset(...)` is the preferred unbind for individual props. In 4.5 LTS, `del bpy.types.Scene.my_addon` is still required for `PointerProperty` bindings. The snippet `cross-version-property-delete.py` shows both.
+Two distinct operations, both version-stable via `del`:
+
+- **Unbind a type-level property** (e.g. a `PointerProperty` bound to `bpy.types.Scene`): `del bpy.types.Scene.my_addon`. Same on 4.5 LTS and 5.0+.
+- **Remove a custom ID property** (the dict-style `obj["key"]`): `del obj["key"]`. Same on 4.5 LTS and 5.0+. The snippet `cross-version-property-delete.py` shows this.
+
+Do not reach for `property_unset()` here. It resets a registered RNA property to its default, which is neither unbinding a type property nor removing an ID property.
 
 ## Related
 
