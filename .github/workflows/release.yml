@@ -104,7 +104,7 @@ jobs:
         with:
           plugin-version: ${{ steps.new.outputs.version }}
           previous-version: ${{ steps.current.outputs.version }}
-          meta-repo-ref: v1.9.1
+          meta-repo-ref: v1.15.1
 
       - name: Commit version bump
         if: steps.check.outputs.skip == 'false'

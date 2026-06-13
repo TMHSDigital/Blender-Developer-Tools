@@ -1,7 +1,7 @@
 ---
 name: slotted-actions-animation
 description: Animate from Python under the Blender 5.x Slotted Actions architecture. Action contains Layers contain Strips contain Channelbags. The action_ensure_channelbag_for_slot bridge utility for 4.5 LTS and 5.x compatibility.
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 
 # Slotted Actions Animation
