@@ -3,7 +3,7 @@ description: Flag Python loops that set vertex coordinates, normals, UVs, or oth
 alwaysApply: true
 globs:
   - "**/*.py"
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 
 # Use `foreach_set` and `foreach_get` for bulk mesh data

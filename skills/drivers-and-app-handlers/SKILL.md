@@ -1,7 +1,7 @@
 ---
 name: drivers-and-app-handlers
 description: Drive properties from expressions or other properties via the Driver API, and react to scene events via the bpy.app.handlers callbacks. Covers driver_namespace for Python functions, the new exit_pre handler in 5.1, and the must-be-fast contract for any handler.
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 
 # Drivers and Application Handlers

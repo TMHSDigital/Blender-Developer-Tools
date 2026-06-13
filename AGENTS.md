@@ -1,4 +1,4 @@
-<!-- standards-version: 1.9.4 -->
+<!-- standards-version: 1.10.0 -->
 
 # AGENTS.md
 
@@ -74,7 +74,7 @@ Each skill lives at `skills/<skill-name>/SKILL.md`. Frontmatter is YAML:
 ---
 name: <kebab-case-skill-name>
 description: <one-line, under 200 chars>
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 ```
 
@@ -93,7 +93,7 @@ Rules are `.mdc` files in `rules/`. Frontmatter:
 ---
 description: <one-line>
 alwaysApply: true
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 ```
 
@@ -107,7 +107,7 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   snippets) match filesystem reality. The counts language in `README.md` is
   load-bearing: the job greps for it.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
-  drift-check@v1.9` to enforce ecosystem standards-version markers.
+  drift-check@v1.15` to enforce ecosystem standards-version markers.
 - `release.yml` auto-bumps the version, tags, force-updates floating tags
   `v0` and `v0.1`, and runs `release-doc-sync@v1` to rewrite CHANGELOG.md,
   CLAUDE.md `**Version:**`, and ROADMAP.md `**Current:**`. Triggered on

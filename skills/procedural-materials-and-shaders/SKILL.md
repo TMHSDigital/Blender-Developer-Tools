@@ -1,7 +1,7 @@
 ---
 name: procedural-materials-and-shaders
 description: Build materials and shader graphs from Python by enabling nodes, instantiating shader nodes, setting socket default values, and wiring links. Targets Blender 5.1 EEVEE Next and Cycles. Avoids the (deferred to 2027) Layered Textures roadmap.
-standards-version: 1.9.4
+standards-version: 1.10.0
 ---
 
 # Procedural Materials and Shaders
