@@ -1,5 +1,7 @@
 <h1 align="center">Blender Developer Tools</h1>
 
+---
+
 <p align="center">
   <strong>Skills, rules, snippets, and a starter template for Blender Python development</strong>
 </p>
