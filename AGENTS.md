@@ -8,9 +8,10 @@ Guidance for AI coding agents working on the Blender Developer Tools repository.
 
 Skills, rules, snippets, and a starter template for Blender Python development.
 The repo targets **Blender 5.1** (current stable) with a **Blender 4.5 LTS**
-fallback. There is no MCP server and no `.cursor-plugin/plugin.json`. This is
-content the AI loads when the user asks Blender questions or works on Blender
-add-ons in Cursor or Claude Code.
+fallback. There is no MCP server. It ships a `.cursor-plugin/plugin.json`
+manifest so the ecosystem drift checker classifies it as a `cursor-plugin`.
+This is content the AI loads when the user asks Blender questions or works on
+Blender add-ons in Cursor or Claude Code.
 
 The content base as of v0.2.0:
 
