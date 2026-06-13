@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Blender Developer Tools** repository is at **v0.2.0**. It packages skills, rules, snippets, and starter templates for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
+The **Blender Developer Tools** repository is at **v0.2.1**. It packages skills, rules, snippets, and starter templates for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **License:** CC-BY-NC-ND-4.0
 **Author:** TM Hospitality Strategies
 
@@ -74,7 +74,7 @@ Small standalone `.py` files at `snippets/<name>.py`, each 5 to 50 lines.
 
 v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh load-edit-free, temp_override context, foreach_set vertex bulk write, register_classes_factory, PointerProperty binding, cross-version property delete, and the `action_ensure_channelbag_for_slot` slotted-actions bridge.
 
-v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
+v0.2.1: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
 ## Development Workflow
 
