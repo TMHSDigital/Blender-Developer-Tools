@@ -1,0 +1,38 @@
+{
+  "name": "blender-developer-tools",
+  "displayName": "Blender Developer Tools",
+  "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
+  "version": "0.2.3",
+  "author": {
+    "name": "TMHSDigital",
+    "email": "contact@users.noreply.github.com"
+  },
+  "license": "CC-BY-NC-ND-4.0",
+  "keywords": [
+    "cursor-plugin",
+    "developer-tools",
+    "blender"
+  ],
+  "skills": [
+    "skills/addon-scaffolding/SKILL.md",
+    "skills/operators/SKILL.md",
+    "skills/ui-panels/SKILL.md",
+    "skills/custom-properties/SKILL.md",
+    "skills/mesh-editing-and-bmesh/SKILL.md",
+    "skills/headless-batch-scripting/SKILL.md",
+    "skills/slotted-actions-animation/SKILL.md",
+    "skills/geometry-nodes-python/SKILL.md",
+    "skills/procedural-materials-and-shaders/SKILL.md",
+    "skills/depsgraph-and-evaluated-data/SKILL.md",
+    "skills/drivers-and-app-handlers/SKILL.md",
+    "skills/bl-info-migration/SKILL.md"
+  ],
+  "rules": [
+    "rules/prefer-data-over-ops-in-loops.mdc",
+    "rules/always-free-bmesh.mdc",
+    "rules/target-extensions-platform-format.mdc",
+    "rules/type-annotate-props-and-defend-context.mdc",
+    "rules/prefer-temp-override-over-context-copy.mdc",
+    "rules/use-foreach-set-for-bulk-data.mdc"
+  ]
+}
