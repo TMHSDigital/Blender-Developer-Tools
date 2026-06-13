@@ -6,18 +6,17 @@ import bpy
 
 
 def clear_property(obj, key):
-    """Delete a custom property cross-version.
+    """Delete a custom ID property.
 
-    Blender 5.0 introduced property_unset() as the supported path; on 4.5 LTS
-    fall back to del obj[key]. Either form raises if key is absent, so check first.
+    NOT version-dependent: del obj[key] works on every Blender version
+    (4.5 LTS and 5.x). del raises if key is absent, so check membership first.
+    See get_eevee_engine_id() below for the file's genuine version-divergence
+    example.
     """
     if key not in obj:
         return False
 
-    if bpy.app.version >= (5, 0, 0):
-        obj.property_unset(f'["{key}"]')
-    else:
-        del obj[key]
+    del obj[key]
     return True
 
 

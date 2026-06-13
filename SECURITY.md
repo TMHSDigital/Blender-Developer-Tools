@@ -15,7 +15,7 @@ Please include:
 
 ## Scope
 
-This repository ships Markdown skill files, MDC rule files, Python snippets, and one Blender extension add-on template. The primary security concerns are:
+This repository ships Markdown skill files, MDC rule files, Python snippets, and two starter templates (a Blender extension add-on and a headless batch script). The primary security concerns are:
 
 - **Snippets or templates demonstrating insecure patterns** (executing arbitrary code from `.blend` files, loading remote scripts without validation, leaking filesystem paths into logs).
 - **The extension-addon template declaring over-broad permissions** in `blender_manifest.toml` (e.g. `network`, `files`, `clipboard`, `camera`) without a documented justification.
@@ -28,8 +28,8 @@ Issues with the Blender Python API itself (`bpy`, `bmesh`, `bpy_extras`) belong 
 
 | Version | Supported |
 |---------|-----------|
-| 0.1.x   | Yes       |
-| < 0.1.0 | No        |
+| 0.2.x   | Yes       |
+| < 0.2.0 | No        |
 
 ## Response Timeline
 

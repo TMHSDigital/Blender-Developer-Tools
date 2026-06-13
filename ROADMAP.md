@@ -7,7 +7,7 @@
 | Version | Theme | Skills | Rules | Templates | Snippets | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | v0.1.0 | Foundation | 8 | 4 | 1 | 10 | Shipped |
-| v0.2.0 | Materials, drivers, migration | 12 | 6 | 2 | 17 | **Current** |
+| v0.2.0 | Materials, drivers, migration | 12 | 6 | 2 | 17 | Shipped |
 | v0.3.0 | 5.2 LTS sweep, modal operators, USD | TBD | TBD | TBD | TBD | Planned |
 | v1.0.0 | Stable | TBD | TBD | TBD | TBD | Planned |
 
