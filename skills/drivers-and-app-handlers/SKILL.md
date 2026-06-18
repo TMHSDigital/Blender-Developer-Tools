@@ -155,7 +155,7 @@ The handlers live as lists at `bpy.app.handlers.<event>`. To register, append; t
 | `frame_change_post` | `(scene, depsgraph)` | After frame is set. |
 | `exit_pre` (new in 5.1) | `(*args)` | Before Blender shuts down. Use for resource cleanup, telemetry flush, etc. The argument is not a Scene; accept `*args`. |
 
-The save/load handlers (`save_pre`, `save_post`, `load_pre`, `load_post`) all receive the **file path as a string** as their single argument, **not** a Scene. (Verified empirically on 4.5.10 LTS and 5.1.1, and against `bpy.app.handlers` docs: "Accepts one argument: the file being saved/loaded.") Only the depsgraph/frame-change handlers receive `(scene, depsgraph)`.
+The save/load handlers (`save_pre`, `save_post`, `load_pre`, `load_post`) all receive the **file path as a string** as their single argument, **not** a Scene. (Verified empirically on 4.5.10 LTS and 5.1.1. The [`bpy.app.handlers`](https://docs.blender.org/api/current/bpy.app.handlers.html) docs type these as `Callable[[str], None]`; `save_pre` is described as "on saving a blend file (before). Accepts one argument: the file being saved, an empty string for the startup-file." — the load handlers use the same wording with "the file being loaded".) Only the depsgraph/frame-change handlers receive `(scene, depsgraph)`.
 
 The `exit_pre` handler in 5.1 is particularly useful for add-ons that need to release external resources (sockets, log files, child processes) deterministically before the process terminates.
 
