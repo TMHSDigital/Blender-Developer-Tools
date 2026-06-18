@@ -1,12 +1,14 @@
-# Slotted Actions bridge: action_ensure_channelbag_for_slot.
-# In Blender 5.x, an Action contains Layers contain Strips contain
-# Channelbags, and F-curves live inside Channelbags keyed by an
-# animation slot. The bridging utility ensures the Channelbag exists
-# for the slot bound to the given ID and returns it; on 4.x it returns
-# a compatibility shim that exposes the same .fcurves.new(...) API.
+# Cross-version channelbag access for Slotted Actions.
 #
-# Verify the import path against your Blender version's docs. The
-# canonical location at the time of writing is bpy_extras.anim_utils.
+# The Slotted Actions data model (Action -> Layers -> Strips -> Channelbags,
+# with F-curves living inside a Channelbag keyed by an animation slot) shipped
+# in Blender 4.4. Two version paths, branched on bpy.app.version below:
+#   - 5.0+: legacy action.fcurves was removed; use the new
+#     bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot).
+#   - 4.4 / 4.5 LTS: that ensure-helper does NOT exist (no shim). The legacy
+#     action.fcurves API is still present, so use it directly.
+#
+# Verified on Blender 4.5.10 LTS and 5.1.1. Import path (5.0+):
 #
 # Reference:
 #   https://docs.blender.org/api/current/bpy_extras.anim_utils.html

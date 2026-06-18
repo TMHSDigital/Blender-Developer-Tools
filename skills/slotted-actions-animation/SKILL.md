@@ -1,6 +1,6 @@
 ---
 name: slotted-actions-animation
-description: Animate from Python under the Blender 5.x Slotted Actions architecture. Action contains Layers contain Strips contain Channelbags. The action_ensure_channelbag_for_slot bridge utility for 4.5 LTS and 5.x compatibility.
+description: Animate from Python under the Slotted Actions architecture (data model shipped in Blender 4.4). Action contains Layers contain Strips contain Channelbags. Cross-version channelbag access - action_ensure_channelbag_for_slot is new in 5.0; on 4.4/4.5 LTS use strip.channelbag(slot, ensure=True) or the still-present legacy action.fcurves.
 standards-version: 1.10.0
 ---
 
@@ -17,9 +17,14 @@ Use this skill when the user:
 
 ## What changed and why
 
-Blender 5.0 introduced **Slotted Actions** to support non-linear, multi-target animation. The pre-5.0 Action data model was a flat list of F-curves owned directly by the Action. That made it impossible for one Action to drive two different IDs (e.g. an armature pose and the armature's custom property channels at the same time) without overwriting each other.
+Blender **4.4** introduced the **Slotted Actions** data model to support non-linear, multi-target animation. The old model was a flat list of F-curves owned directly by the Action, which made it impossible for one Action to drive two different IDs (e.g. an armature pose and the armature's custom property channels at the same time) without overwriting each other.
 
-The 5.x model:
+Two version boundaries matter:
+
+- **Blender 4.4 / 4.5 LTS**: the slotted data model (`action.slots`, `action.layers`, `strip.channelbag`) is present **alongside** the legacy flat API (`action.fcurves`, `action.groups`, `action.id_root`), which still works as a proxy. The helper `bpy_extras.anim_utils.action_get_channelbag_for_slot(action, slot)` exists; `action_ensure_channelbag_for_slot` does **not**.
+- **Blender 5.0+**: the legacy flat API was **removed** (`action.fcurves` raises `AttributeError`). The new helper `bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)` is added.
+
+The slotted model:
 
 ```
 Action
@@ -30,44 +35,54 @@ Action
         FCurves[]
 ```
 
-Pre-5.0 code that walked `action.fcurves` directly does not find anything in a 5.x Action because the F-curves live inside a Channelbag inside a Strip inside a Layer.
+On 5.0+, code that walks `action.fcurves` directly raises `AttributeError` because that property was removed; the F-curves live inside a Channelbag inside a Strip inside a Layer. On 4.4 / 4.5 LTS `action.fcurves` still works as a proxy.
 
-## The bridge utility: `action_ensure_channelbag_for_slot`
+## Getting a channelbag across versions
 
-`bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)` is the cross-version helper that:
+`bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)` is **new in Blender 5.0**. It ensures the Action has a Layer, a Strip in that Layer, and a Channelbag for the given Slot, then returns the Channelbag. It does **not** exist on 4.4 / 4.5 LTS — there is no auto-detecting shim, and importing-and-calling it on 4.5 raises `AttributeError`.
 
-- On 5.x: ensures the Action has a Layer, a Strip in that Layer, and a Channelbag for the given Slot, then returns the Channelbag.
-- On 4.5 LTS where there is no Slotted Actions concept: returns a shim object that exposes `.fcurves` pointing at `action.fcurves`, so the same calling code works.
+On 4.4 / 4.5 LTS, ensure the channelbag yourself with `strip.channelbag(slot, ensure=True)` (the slotted model is present there), or just use the still-present legacy `action.fcurves`. So a genuinely cross-version helper must branch on `bpy.app.version`:
 
-Import path verified against the Blender 5.1 API reference: `bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)`. See [`bpy_extras.anim_utils`](https://docs.blender.org/api/current/bpy_extras.anim_utils.html).
+Import path (5.0+) verified against the Blender 5.1 API reference: `bpy_extras.anim_utils.action_ensure_channelbag_for_slot(action, slot)`. See [`bpy_extras.anim_utils`](https://docs.blender.org/api/current/bpy_extras.anim_utils.html).
 
 ```python
 import bpy
-from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
+
+
+def get_channelbag_for_slot(action, slot):
+    """Return the Channelbag for `slot`, creating layer/strip/channelbag as needed.
+
+    Verified on Blender 4.5.10 LTS and 5.1.1.
+    """
+    if bpy.app.version >= (5, 0, 0):
+        from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
+        return action_ensure_channelbag_for_slot(action, slot)
+    # 4.4 / 4.5 LTS: the ensure-helper does not exist; build the path explicitly.
+    layer = action.layers[0] if action.layers else action.layers.new("Layer")
+    strip = layer.strips[0] if layer.strips else layer.strips.new(type='KEYFRAME')
+    return strip.channelbag(slot, ensure=True)
 
 
 def get_channelbag_for_object(obj):
-    """Return the Channelbag (5.x) or fcurves shim (4.5 LTS) for obj's animation."""
+    """Return the Channelbag for obj's animation, creating Action and Slot if needed."""
     if obj.animation_data is None:
         obj.animation_data_create()
 
-    if obj.animation_data.action is None:
+    action = obj.animation_data.action
+    if action is None:
         action = bpy.data.actions.new(name=f"{obj.name}_Action")
         obj.animation_data.action = action
-    else:
-        action = obj.animation_data.action
 
-    # On 5.x, slot may not be set; pick or create one for this ID.
+    # Slots exist on 4.4+; create and bind one for this ID if not set.
     slot = obj.animation_data.action_slot
-    if slot is None and hasattr(action, "slots"):
-        # Create a slot bound to OBJECT type, then assign it.
+    if slot is None:
         slot = action.slots.new(id_type='OBJECT', name=obj.name)
         obj.animation_data.action_slot = slot
 
-    return action_ensure_channelbag_for_slot(action, slot)
+    return get_channelbag_for_slot(action, slot)
 ```
 
-The `hasattr(action, "slots")` check is the version sniff: present in 5.x, absent in 4.5 LTS.
+The version boundary that matters is `bpy.app.version >= (5, 0, 0)` (legacy removed / ensure-helper added), **not** `hasattr(action, "slots")` — `action.slots` is present on 4.4 and 4.5 too, so that check does not distinguish 4.5 from 5.x.
 
 ## Inserting keyframes the cross-version way
 
@@ -94,7 +109,7 @@ For programmatic curve construction (importing motion capture, writing a curve s
 
 ```python
 import bpy
-from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
+# get_channelbag_for_slot is the cross-version helper defined above.
 
 
 def get_or_create_fcurve(obj, data_path, index):
@@ -107,11 +122,11 @@ def get_or_create_fcurve(obj, data_path, index):
         obj.animation_data.action = action
 
     slot = obj.animation_data.action_slot
-    if slot is None and hasattr(action, "slots"):
+    if slot is None:
         slot = action.slots.new(id_type='OBJECT', name=obj.name)
         obj.animation_data.action_slot = slot
 
-    cbag = action_ensure_channelbag_for_slot(action, slot)
+    cbag = get_channelbag_for_slot(action, slot)
 
     fcurve = next(
         (fc for fc in cbag.fcurves if fc.data_path == data_path and fc.array_index == index),
@@ -137,11 +152,11 @@ def bake_translation(obj, frame_value_pairs):
 
 Notes:
 - `options={'FAST'}` skips per-insertion sorting and curve update; call `fc.update()` once at the end.
-- `cbag.fcurves` is the unified access point. On 4.5 LTS, the bridge returns a shim whose `.fcurves` is `action.fcurves`. On 5.x, it's the real Channelbag's F-curves.
+- `cbag.fcurves` is the unified access point on both 4.4/4.5 LTS and 5.x. The `get_channelbag_for_slot` helper above returns the slot's real Channelbag on every version (via `strip.channelbag(slot, ensure=True)` on 4.4/4.5, the ensure-helper on 5.0+).
 
-## The 4.5 LTS path explicitly
+## The legacy `action.fcurves` path (4.4 / 4.5 LTS only)
 
-If you are not yet on 5.x and want pre-bridge code:
+On 4.4 and 4.5 LTS the legacy flat API is still present and is the simplest path if you do not need to target 5.x:
 
 ```python
 import bpy
@@ -158,23 +173,28 @@ fcurve.keyframe_points.insert(1, 0.0)
 fcurve.keyframe_points.insert(24, 5.0)
 ```
 
-This compiles on 4.5 LTS but on 5.x the `action.fcurves` attribute is absent or empty (depending on the exact 5.x version), and curves added there do not drive the animation.
+This works on 4.4 / 4.5 LTS, but on **5.0+** the `action.fcurves` attribute was removed entirely, so `action.fcurves.new(...)` raises `AttributeError`. For 5.x, go through the channelbag (`get_channelbag_for_slot` above).
 
-## Detecting Slotted Actions support
+## Detecting the version boundaries
 
 ```python
 import bpy
 
-def has_slotted_actions():
-    major, minor, _ = bpy.app.version
-    return (major, minor) >= (5, 0)
+def has_slotted_model():
+    # action.slots / layers / strip.channelbag: shipped in Blender 4.4.
+    return bpy.app.version >= (4, 4, 0)
+
+def legacy_fcurves_removed():
+    # action.fcurves / groups / id_root removed, and
+    # action_ensure_channelbag_for_slot added: Blender 5.0.
+    return bpy.app.version >= (5, 0, 0)
 ```
 
-Use the bridge utility unconditionally if you can. Use the version sniff only when the bridge cannot help (e.g. enumerating slots, which is meaningful only on 5.x).
+The slotted data model (and `action.slots`) is meaningful on 4.4 and 4.5 too, so do not gate slot code behind `>= (5, 0)`. The boundary that decides legacy-removal and which channelbag helper exists is `>= (5, 0, 0)` — that is the check `get_channelbag_for_slot` uses above.
 
 ## Common AI mistakes
 
-1. **Using pre-5.0 `action.fcurves.new(...)` in 5.x code**. The call may not raise but the curve will not drive anything because the slot/layer routing isn't set up.
+1. **Using legacy `action.fcurves.new(...)` in 5.x code**. On Blender 5.0+ the `action.fcurves` property was removed, so this raises `AttributeError: 'Action' object has no attribute 'fcurves'`. Go through a channelbag instead.
 
 2. **Forgetting the slot binding**:
 
@@ -197,12 +217,12 @@ Use the bridge utility unconditionally if you can. Use the version sniff only wh
 
 ## Compatibility paths summary
 
-| Operation | 4.5 LTS | 5.x | Cross-version |
+| Operation | 4.4 / 4.5 LTS | 5.x | Cross-version |
 | --- | --- | --- | --- |
 | Insert a single keyframe | `obj.keyframe_insert("location", frame=1)` | Same | High-level API works on both |
-| Get the F-curves for an Action+Object | `action.fcurves` | Channelbag inside Layer/Strip/Slot | `action_ensure_channelbag_for_slot(action, slot)` |
+| Get the F-curves for an Action+Slot | `strip.channelbag(slot, ensure=True)`, or legacy `action.fcurves` | `action_ensure_channelbag_for_slot(action, slot)` | `get_channelbag_for_slot(action, slot)` (branches on version) |
 | Create an Action | `bpy.data.actions.new(...)` | Same | Same |
-| Bind Action to ID | `obj.animation_data.action = action` | Same plus `action_slot` | Set both, the slot setter is a no-op on 4.5 LTS |
+| Bind Action to ID | `obj.animation_data.action = action` + `action_slot` | Same | `action_slot` is settable on 4.4+; set both |
 
 ## Related
 

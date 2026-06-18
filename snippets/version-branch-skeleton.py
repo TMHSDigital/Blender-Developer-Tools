@@ -21,7 +21,11 @@ def clear_property(obj, key):
 
 
 def get_eevee_engine_id():
-    """EEVEE engine identifier renamed from BLENDER_EEVEE to BLENDER_EEVEE_NEXT in 5.x."""
+    """EEVEE engine identifier across versions.
+
+    Legacy EEVEE was removed in 4.2; EEVEE Next used the id 'BLENDER_EEVEE_NEXT'
+    on 4.2 through 4.5 LTS, then reclaimed the plain 'BLENDER_EEVEE' id in 5.0.
+    """
     if bpy.app.version >= (5, 0, 0):
-        return 'BLENDER_EEVEE_NEXT'
-    return 'BLENDER_EEVEE'
+        return 'BLENDER_EEVEE'
+    return 'BLENDER_EEVEE_NEXT'

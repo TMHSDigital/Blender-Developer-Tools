@@ -154,10 +154,10 @@ The argument is the exact RNA `bl_idname` of the node class. A few you'll reach 
 | Vector Math | `ShaderNodeVectorMath` |
 | Mix | `ShaderNodeMix` |
 | Noise Texture | `ShaderNodeTexNoise` |
-| Mesh to SDF Grid (5.0+) | `GeometryNodeMeshToSDFGrid` |
+| Mesh to SDF Grid (4.3+) | `GeometryNodeMeshToSDFGrid` |
 | SDF Grid to Mesh / Volume to Mesh | `GeometryNodeVolumeToMesh` |
 | Repeat Input / Output | `GeometryNodeRepeatInput`, `GeometryNodeRepeatOutput` |
-| For Each Element Input / Output (5.0+) | `GeometryNodeForeachGeometryElementInput`, `GeometryNodeForeachGeometryElementOutput` |
+| For Each Element Input / Output (4.3+) | `GeometryNodeForeachGeometryElementInput`, `GeometryNodeForeachGeometryElementOutput` |
 
 To list all available Geometry node types in your Blender version:
 
@@ -243,8 +243,9 @@ def has_bundles():
     return major >= 5
 
 def has_for_each_element():
-    major, _minor, _patch = bpy.app.version
-    return major >= 5
+    # The For Each Element zone shipped in Blender 4.3, so it is available on
+    # the whole 4.5 LTS / 5.x supported range. (Bundles, by contrast, are 5.0+.)
+    return bpy.app.version >= (4, 3, 0)
 ```
 
 ## Common AI mistakes

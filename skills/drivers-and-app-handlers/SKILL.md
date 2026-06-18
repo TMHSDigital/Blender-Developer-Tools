@@ -145,15 +145,17 @@ The handlers live as lists at `bpy.app.handlers.<event>`. To register, append; t
 
 | Handler | Signature | Fires when |
 | --- | --- | --- |
-| `save_pre` | `(scene)` (some 4.x), `(scene, filepath)` (5.x) | Before the .blend is written. Use to clean up data you don't want serialized. |
-| `save_post` | Same | After the .blend is written. Use for post-save bookkeeping. |
-| `load_pre` | `(scene)` | Before a .blend is loaded. The current scene is still the old one. |
-| `load_post` | `(scene)` | After a .blend is loaded. Use to validate or migrate add-on data. |
+| `save_pre` | `(filepath: str)` | Before the .blend is written. The argument is the file being saved (empty string for the startup file), **not** a Scene. Use to clean up data you don't want serialized. |
+| `save_post` | `(filepath: str)` | After the .blend is written. Same single filepath argument. |
+| `load_pre` | `(filepath: str)` | Before a .blend is loaded. The argument is the file being loaded. |
+| `load_post` | `(filepath: str)` | After a .blend is loaded. Use to validate or migrate add-on data. |
 | `depsgraph_update_pre` | `(scene, depsgraph)` | Before a depsgraph evaluation pass. |
 | `depsgraph_update_post` | `(scene, depsgraph)` | After a depsgraph evaluation pass. Fires very frequently; must be O(1) or near-O(1). |
 | `frame_change_pre` | `(scene, depsgraph)` | Before frame is set. |
 | `frame_change_post` | `(scene, depsgraph)` | After frame is set. |
-| `exit_pre` (new in 5.1) | `(scene)` | Before Blender shuts down. Use for resource cleanup, telemetry flush, etc. |
+| `exit_pre` (new in 5.1) | `(*args)` | Before Blender shuts down. Use for resource cleanup, telemetry flush, etc. The argument is not a Scene; accept `*args`. |
+
+The save/load handlers (`save_pre`, `save_post`, `load_pre`, `load_post`) all receive the **file path as a string** as their single argument, **not** a Scene. (Verified empirically on 4.5.10 LTS and 5.1.1, and against `bpy.app.handlers` docs: "Accepts one argument: the file being saved/loaded.") Only the depsgraph/frame-change handlers receive `(scene, depsgraph)`.
 
 The `exit_pre` handler in 5.1 is particularly useful for add-ons that need to release external resources (sockets, log files, child processes) deterministically before the process terminates.
 
@@ -165,10 +167,15 @@ from bpy.app.handlers import persistent
 
 
 @persistent
-def on_save_pre(scene, filepath):
-    """Clear temporary cache data before save so it doesn't bloat the .blend."""
-    if 'my_addon_cache' in scene:
-        del scene['my_addon_cache']
+def on_save_pre(filepath):
+    """Clear temporary cache data before save so it doesn't bloat the .blend.
+
+    The handler argument is the path being saved (a string), not a Scene, so
+    reach the scene(s) through bpy.data.
+    """
+    for scene in bpy.data.scenes:
+        if 'my_addon_cache' in scene:
+            del scene['my_addon_cache']
 
 
 def register():
@@ -201,7 +208,10 @@ from bpy.app.handlers import persistent
 
 
 @persistent
-def increment_save_count(scene, filepath):
+def increment_save_count(filepath):
+    # save_post passes the saved file path (a string) as its only argument.
+    # Store the running count on the current scene.
+    scene = bpy.context.scene
     counts = scene.get('save_counts', {})
     counts[filepath] = counts.get(filepath, 0) + 1
     scene['save_counts'] = counts
@@ -224,8 +234,11 @@ from bpy.app.handlers import persistent
 
 
 @persistent
-def cleanup_on_exit(scene):
-    """Release the external log file handle before the process terminates."""
+def cleanup_on_exit(*args):
+    """Release the external log file handle before the process terminates.
+
+    exit_pre's argument is unused here; accept *args to stay signature-proof.
+    """
     global _log_handle
     if _log_handle is not None:
         _log_handle.close()
@@ -250,14 +263,14 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 - **Doing real work inside `depsgraph_update_post`.** This handler fires on every depsgraph evaluation, which is many times per second during playback or interaction. Anything more than O(1) bookkeeping causes user-visible slowdown.
 - **Recursively modifying the scene from a depsgraph handler.** The modification triggers another depsgraph evaluation, which calls the handler, which modifies the scene. Infinite loop, often manifesting as a hang.
 - **Asymmetric register/unregister.** The handler is appended on register but not removed on unregister. Disabling the add-on leaves the callback in place. After enable/disable cycles, the callback runs N times per event.
-- **Assuming the `save_pre` signature.** It changed across the 4.x to 5.x window. Use `(scene, filepath=None)` defensively, or `*args` if you don't need the values.
+- **Treating the `save_pre` argument as a Scene.** The save/load handlers receive the **file path string** (empty for the startup file), not a Scene. Name the parameter `filepath` (or take `*args`), and reach scenes via `bpy.context.scene` / `bpy.data.scenes`. A membership test like `'key' in arg0` against the path string is silently wrong, and `del arg0['key']` raises `TypeError`.
 
 ## Version correctness
 
 | Topic | 4.5 LTS | 5.1 stable |
 | --- | --- | --- |
 | `exit_pre` handler | Not available | New in 5.1; use `atexit` fallback for 4.x |
-| `save_pre` signature | `(scene)` in 4.0, varies | `(scene, filepath)` in 5.x |
+| `save_pre` / `save_post` signature | `(filepath)` — a string | `(filepath)` — a string (unchanged) |
 | `driver_namespace` | Available | Same |
 | Driver security | Already restrictive | Same |
 

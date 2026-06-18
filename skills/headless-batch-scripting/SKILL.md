@@ -161,11 +161,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
     parser.add_argument("--frames", default="1")
-    parser.add_argument("--engine", default="CYCLES", choices=["CYCLES", "BLENDER_EEVEE_NEXT"])
+    parser.add_argument("--engine", default="CYCLES", choices=["CYCLES", "EEVEE"])
     args = parser.parse_args(argv)
 
     scene = bpy.context.scene
-    scene.render.engine = args.engine
+    if args.engine == "EEVEE":
+        # EEVEE's engine id is 'BLENDER_EEVEE' on 5.0+, 'BLENDER_EEVEE_NEXT' on 4.2-4.5.
+        scene.render.engine = 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
+    else:
+        scene.render.engine = args.engine
     scene.render.image_settings.file_format = 'PNG'
 
     output_dir = os.path.dirname(args.output) or "."
@@ -185,7 +189,7 @@ if __name__ == "__main__":
 Notes:
 
 - `bpy.ops.render.render(write_still=True)` is one of the few `bpy.ops` calls that work in `--background`.
-- `BLENDER_EEVEE_NEXT` is the 5.x EEVEE engine identifier. On 4.5 LTS, use `BLENDER_EEVEE`. Detect via `bpy.app.version`.
+- EEVEE's engine identifier is `BLENDER_EEVEE` on Blender 5.0+ and `BLENDER_EEVEE_NEXT` on 4.2-4.5 LTS (the id was reclaimed in 5.0 after legacy EEVEE was removed in 4.2). Detect via `bpy.app.version`.
 
 ## Detecting Blender version in scripts
 
@@ -195,9 +199,9 @@ import bpy
 major, minor, _patch = bpy.app.version
 
 if (major, minor) >= (5, 0):
-    eevee_engine = 'BLENDER_EEVEE_NEXT'
-else:
     eevee_engine = 'BLENDER_EEVEE'
+else:
+    eevee_engine = 'BLENDER_EEVEE_NEXT'
 ```
 
 `bpy.app.version` is a `(major, minor, patch)` tuple, always reliable.
