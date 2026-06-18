@@ -8,11 +8,16 @@ from bpy.app.handlers import persistent
 
 
 @persistent
-def on_save_pre(scene, *args):
-    """Strip ephemeral cache before save. Signature is defensive against
-    the (scene) vs (scene, filepath) variation across 4.x and 5.x."""
-    if 'my_addon_cache' in scene:
-        del scene['my_addon_cache']
+def on_save_pre(filepath, *args):
+    """Strip ephemeral cache before save.
+
+    save_pre passes the file path being saved (a string), NOT a Scene -- the
+    same is true on 4.5 LTS and 5.x. Reach the scene(s) via bpy.data; never
+    treat the first argument as a Scene. Verified on Blender 4.5.10 and 5.1.1.
+    """
+    for scene in bpy.data.scenes:
+        if 'my_addon_cache' in scene:
+            del scene['my_addon_cache']
 
 
 def register():
