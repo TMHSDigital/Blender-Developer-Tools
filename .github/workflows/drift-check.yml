@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: TMHSDigital/Developer-Tools-Directory/.github/actions/drift-check@v1.15
         with:
           mode: self
