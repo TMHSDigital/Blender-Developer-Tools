@@ -2,7 +2,7 @@
 
 # Roadmap
 
-**Current:** v0.2.8
+**Current:** v0.2.9
 
 | Version | Theme | Skills | Rules | Templates | Snippets | Status |
 | --- | --- | --- | --- | --- | --- | --- |
