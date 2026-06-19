@@ -116,7 +116,7 @@ The drift-check workflow enforces these on every push and PR.
 
 1. **Update docs** if you change skill or rule lists, content counts, or versioning (`README.md`, `CLAUDE.md`, `ROADMAP.md` as appropriate). The release workflow rewrites `CHANGELOG.md`, `CLAUDE.md` `**Version:**` line, and `ROADMAP.md` `**Current:**` line automatically when a `feat:` or `fix:` commit lands on `main`, so only edit those files for content beyond the version markers.
 2. **Open a PR** against `main` with a clear title and summary of changes.
-3. **Use Conventional Commits** for the PR title (and ideally the merge commit). Prefixes: `feat:` (minor bump), `fix:` (patch bump), `feat!:` or `BREAKING CHANGE` (major bump), `chore:` / `docs:` / `refactor:` (no release).
+3. **Use Conventional Commits** for the PR title (and the squash-merge subject, which is what the release workflow scans). Prefixes: `feat:` (minor bump), `fix:` (patch bump), `feat!:` / `fix!:` / `BREAKING CHANGE` (major bump), `chore:` / `docs:` / `ci:` / `refactor:` (no release — the workflow runs and exits without tagging). A mixed range still releases if any commit since the last tag is a `feat:`/`fix:`. `[skip ci]` remains an optional override and is no longer required to avoid a release for non-release commits.
 4. **Respond to review** feedback; CI must pass before merge.
 
 ## Developer Certificate of Origin and Inbound License Grant

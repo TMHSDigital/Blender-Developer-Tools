@@ -46,12 +46,16 @@ Blender-Developer-Tools/
 ## Branching and commit model
 
 - Single `main` branch. No develop or release branches.
-- Conventional commits drive the auto-release workflow:
+- Conventional commits drive the auto-release workflow. It scans the commit subjects since
+  the last tag and releases only when at least one is release-worthy:
   - `feat:` triggers a minor bump
   - `fix:` triggers a patch bump
-  - `feat!:` or `BREAKING CHANGE` triggers a major bump
-  - Other types (`chore:`, `docs:`, etc.) skip the release path entirely
-    when only those non-content paths change.
+  - `feat!:` / `fix!:` / `BREAKING CHANGE` triggers a major bump
+  - Other types (`chore:`, `docs:`, `ci:`, `refactor:`, etc.) do **not** cut a release: the
+    workflow runs, decides there is nothing to release, and exits without a tag or version
+    bump. A mixed push still releases if any commit in range is a `feat:`/`fix:`.
+  - `[skip ci]` in the head commit still bypasses the workflow entirely. With the commit-type
+    gate above it is now an optional override, not a requirement for non-release commits.
 - Commit messages should describe the why, not the what.
 
 ## Blender version targeting

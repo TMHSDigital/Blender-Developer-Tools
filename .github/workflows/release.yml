@@ -43,15 +43,31 @@ jobs:
           echo "Commits since last release:"
           echo "$commits"
 
+          # Release ONLY when a commit subject since the last tag carries a release-worthy
+          # conventional prefix. docs/chore/ci/refactor/test/style/build/perf land WITHOUT
+          # cutting a release. A mixed push (docs + a real fix) still releases: the scan
+          # matches any release-worthy commit in the range regardless of the others.
+          # [skip ci] (guarded on the job) remains an optional belt-and-suspenders override.
           bump="patch"
-          if echo "$commits" | grep -qiE "^(feat|feature)(\(.+\))?!:|BREAKING CHANGE"; then
-            bump="major"
+          release="false"
+          if [ -z "$last_tag" ]; then
+            # Initial release: no prior tag -> cut the first release at the current VERSION.
+            release="true"
+          elif echo "$commits" | grep -qiE "^(feat|feature|fix)(\(.+\))?!:|BREAKING[ -]CHANGE"; then
+            bump="major"; release="true"
           elif echo "$commits" | grep -qiE "^(feat|feature)(\(.+\))?:"; then
-            bump="minor"
+            bump="minor"; release="true"
+          elif echo "$commits" | grep -qiE "^fix(\(.+\))?:"; then
+            bump="patch"; release="true"
           fi
 
           echo "bump=$bump" >> "$GITHUB_OUTPUT"
-          echo "Bump type: $bump"
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+          if [ "$release" = "true" ]; then
+            echo "Release decision: RELEASE (bump=$bump)"
+          else
+            echo "Release decision: SKIP - no feat:/fix:/feat!: commit since ${last_tag:-<none>}; docs/chore/ci do not cut a release"
+          fi
 
       - name: Compute new version
         id: new
@@ -92,14 +108,14 @@ jobs:
           fi
 
       - name: Update VERSION file
-        if: steps.check.outputs.skip == 'false'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         env:
           NEW_VERSION: ${{ steps.new.outputs.version }}
         run: |
           echo "$NEW_VERSION" > VERSION
 
       - name: Sync release docs
-        if: steps.check.outputs.skip == 'false'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         uses: TMHSDigital/Developer-Tools-Directory/.github/actions/release-doc-sync@v1
         with:
           plugin-version: ${{ steps.new.outputs.version }}
@@ -107,7 +123,7 @@ jobs:
           meta-repo-ref: v1.15.1
 
       - name: Commit version bump
-        if: steps.check.outputs.skip == 'false'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -120,7 +136,7 @@ jobs:
           fi
 
       - name: Create and push tag
-        if: steps.check.outputs.skip == 'false'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         run: |
           new_version="${{ steps.new.outputs.version }}"
           IFS='.' read -r major minor _patch <<< "$new_version"
@@ -134,7 +150,7 @@ jobs:
           git push origin "v$major.$minor" --force
 
       - name: Create GitHub Release
-        if: steps.check.outputs.skip == 'false'
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
