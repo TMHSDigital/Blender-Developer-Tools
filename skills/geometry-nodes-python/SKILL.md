@@ -155,7 +155,8 @@ The argument is the exact RNA `bl_idname` of the node class. A few you'll reach 
 | Mix | `ShaderNodeMix` |
 | Noise Texture | `ShaderNodeTexNoise` |
 | Mesh to SDF Grid (4.3+) | `GeometryNodeMeshToSDFGrid` |
-| SDF Grid to Mesh / Volume to Mesh | `GeometryNodeVolumeToMesh` |
+| Grid to Mesh (meshes an SDF/grid) | `GeometryNodeGridToMesh` |
+| Volume to Mesh (meshes a volume geometry) | `GeometryNodeVolumeToMesh` |
 | Repeat Input / Output | `GeometryNodeRepeatInput`, `GeometryNodeRepeatOutput` |
 | For Each Element Input / Output (4.3+) | `GeometryNodeForeachGeometryElementInput`, `GeometryNodeForeachGeometryElementOutput` |
 
@@ -274,13 +275,19 @@ def has_for_each_element():
 
 6. **Building the tree without group input/output nodes**. The tree's interface sockets only matter once you have `NodeGroupInput` and `NodeGroupOutput` instances connected to actual nodes inside the tree.
 
-## Worked example: replicate the "Mesh to SDF then Volume to Mesh" pipeline
+## Worked example: replicate the "Mesh to SDF then Grid to Mesh" pipeline
+
+An SDF grid is meshed with **Grid to Mesh** (`GeometryNodeGridToMesh`), not **Volume to
+Mesh**. The `Mesh to SDF Grid` output is a *grid* socket; `Volume to Mesh` takes a *volume
+geometry* socket (what `Mesh to Volume` produces), so wiring the SDF grid into it is an
+invalid connection that silently yields no geometry. `Grid to Mesh` has the matching grid
+input. For an SDF the surface is at distance 0, so use `threshold=0.0`.
 
 ```python
 import bpy
 
 
-def build_remesh_via_sdf(voxel_size=0.05, threshold=0.5):
+def build_remesh_via_sdf(voxel_size=0.05, threshold=0.0):
     tree = bpy.data.node_groups.new(name="SDFRemesh", type='GeometryNodeTree')
 
     tree.interface.new_socket(name="Geometry", in_out='INPUT', socket_type='NodeSocketGeometry')
@@ -289,19 +296,19 @@ def build_remesh_via_sdf(voxel_size=0.05, threshold=0.5):
     grp_in = tree.nodes.new('NodeGroupInput')
     grp_out = tree.nodes.new('NodeGroupOutput')
     mesh_to_sdf = tree.nodes.new('GeometryNodeMeshToSDFGrid')
-    volume_to_mesh = tree.nodes.new('GeometryNodeVolumeToMesh')
+    grid_to_mesh = tree.nodes.new('GeometryNodeGridToMesh')
 
     mesh_to_sdf.inputs["Voxel Size"].default_value = voxel_size
-    volume_to_mesh.inputs["Threshold"].default_value = threshold
+    grid_to_mesh.inputs["Threshold"].default_value = threshold  # isosurface at the SDF zero-level
 
     grp_in.location = (-400, 0)
     mesh_to_sdf.location = (-150, 0)
-    volume_to_mesh.location = (150, 0)
+    grid_to_mesh.location = (150, 0)
     grp_out.location = (400, 0)
 
     tree.links.new(grp_in.outputs["Geometry"], mesh_to_sdf.inputs["Mesh"])
-    tree.links.new(mesh_to_sdf.outputs["SDF Grid"], volume_to_mesh.inputs["Volume"])
-    tree.links.new(volume_to_mesh.outputs["Mesh"], grp_out.inputs["Geometry"])
+    tree.links.new(mesh_to_sdf.outputs["SDF Grid"], grid_to_mesh.inputs["Grid"])
+    tree.links.new(grid_to_mesh.outputs["Mesh"], grp_out.inputs["Geometry"])
 
     return tree
 ```

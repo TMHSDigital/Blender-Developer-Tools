@@ -69,7 +69,7 @@ fcurve.driver.expression = 'src_x * 2.0'
 
 Common variable types:
 
-- `'SINGLE_PROP'`: read any RNA property. Set `targets[0].id = some_id` and `targets[0].data_path = 'some.path'`.
+- `'SINGLE_PROP'`: read any RNA property. Set `targets[0].id = some_id` and `targets[0].data_path = 'some.path'`. The target id pointer defaults to the `OBJECT` type; to point at a non-object datablock (a Scene, Material, etc.) set `targets[0].id_type` first, e.g. `targets[0].id_type = 'SCENE'`, otherwise the `id =` assignment raises `TypeError`.
 - `'TRANSFORMS'`: read a transform channel. Set `transform_type` (`LOC_X`, `ROT_Y`, `SCALE_Z`, etc.).
 - `'ROTATION_DIFF'`: angle between two bones in radians.
 - `'LOC_DIFF'`: distance between two object locations.
@@ -107,6 +107,7 @@ fcurve.driver.type = 'SCRIPTED'
 var = fcurve.driver.variables.new()
 var.name = 't'
 var.type = 'SINGLE_PROP'
+var.targets[0].id_type = 'SCENE'  # required before assigning a non-Object id
 var.targets[0].id = bpy.context.scene
 var.targets[0].data_path = 'frame_current'
 
