@@ -32,7 +32,7 @@ jobs:
           - series: "5.1"   # current stable
           - series: "4.5"   # active LTS
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install Blender runtime libraries
         run: |
