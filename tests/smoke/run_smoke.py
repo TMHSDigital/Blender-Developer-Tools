@@ -108,31 +108,31 @@ def smoke_eevee():
     cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); bpy.context.collection.objects.link(cam)
     cam.location = (0,0,10); bpy.context.scene.camera = cam
     sc = bpy.context.scene
-    # the EEVEE-id regression guard: assigning the version-correct id must succeed
+    # THE EEVEE-id polarity guard (CRITICAL #1). Independent of any rendered frame, so it
+    # cannot flake on the GL/EGL context. `eid` is the repo helper's output (under test);
+    # `expected` is computed here from the version, so an inverted helper is caught.
     eid = get_eevee_engine_id()
+    expected = 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
+    assigned = True; err = ""
     try:
         sc.render.engine = eid
     except Exception as e:
-        require("eevee-id-assign", False, f"assigning '{eid}' raised {type(e).__name__}: {e}")
-    require("eevee-id-assign", sc.render.engine == eid, f"engine id '{eid}' valid on this build")
+        assigned = False; err = f"{type(e).__name__}: {e}"
+    require("eevee-engine-id-assigns",
+            assigned and sc.render.engine == expected,
+            f"helper returned '{eid}'; engine='{sc.render.engine if assigned else 'UNASSIGNED('+err+')'}' expected='{expected}'")
+    # Render the non-black frame with Cycles (CPU): reliable on GPU-less headless runners,
+    # where an EEVEE GPU render aborts the process (no EGL). The EEVEE-id regression itself
+    # is already gated by the assignment above; EEVEE *rendering* is not exercised here.
+    sc.render.engine = 'CYCLES'
+    try: sc.cycles.samples = 4
+    except Exception: pass
     sc.render.resolution_x = 16; sc.render.resolution_y = 16; sc.render.image_settings.file_format = 'PNG'
     png = os.path.join(OUT, f"smoke_render_{V[0]}{V[1]}.png"); sc.render.filepath = png
-    # try EEVEE render; if the headless runner has no GPU and it raises, fall back to Cycles (CPU)
-    used = sc.render.engine
-    try:
-        try: sc.eevee.taa_render_samples = 4
-        except Exception: pass
-        bpy.ops.render.render(write_still=True)
-        if not os.path.exists(png): raise RuntimeError("no PNG written")
-    except Exception as e:
-        print(f"  (EEVEE render unavailable headless: {type(e).__name__}; falling back to CYCLES)")
-        sc.render.engine = 'CYCLES'; used = 'CYCLES'
-        try: sc.cycles.samples = 4
-        except Exception: pass
-        bpy.ops.render.render(write_still=True)
-    require("eevee-render-file", os.path.exists(png) and os.path.getsize(png) > 0, f"render PNG written by {used}")
+    bpy.ops.render.render(write_still=True)
+    require("render-file", os.path.exists(png) and os.path.getsize(png) > 0, "1-frame render PNG written (Cycles CPU)")
     img = bpy.data.images.load(png); px = list(img.pixels); mx = max(px) if px else 0.0
-    require("eevee-render-nonblack", mx > 0.05, f"max pixel {round(mx,3)} > 0.05 (engine used: {used})")
+    require("render-nonblack", mx > 0.05, f"max pixel {round(mx,3)} > 0.05 (emissive material renders bright)")
 
 # ---------- slotted actions: correct branch + legacy behaviour ----------
 def smoke_slotted():

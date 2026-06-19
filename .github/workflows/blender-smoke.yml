@@ -34,6 +34,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install Blender runtime libraries
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          # Blender needs these shared libs even in --background (GPU/GL module init);
+          # xvfb provides a virtual display so GL/EGL init does not abort the process.
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libegl1 libxrender1 libxxf86vm1 libxfixes3 libxi6 \
+            libxkbcommon0 libsm6 libice6
+
       - name: Resolve and download Blender ${{ matrix.series }}
         run: |
           set -euo pipefail
@@ -72,17 +82,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/out"
-          "$BLENDER" --background --python tests/smoke/run_smoke.py -- "$RUNNER_TEMP/out"
+          xvfb-run -a "$BLENDER" --background --python tests/smoke/run_smoke.py -- "$RUNNER_TEMP/out"
 
       - name: Build template input scene
         run: |
           set -euo pipefail
-          "$BLENDER" --background --python tests/smoke/make_input.py -- "$RUNNER_TEMP/out/input.blend"
+          xvfb-run -a "$BLENDER" --background --python tests/smoke/make_input.py -- "$RUNNER_TEMP/out/input.blend"
 
       - name: Headless glTF template runs (exit 0, .glb produced)
         run: |
           set -euo pipefail
-          "$BLENDER" --background "$RUNNER_TEMP/out/input.blend" \
+          xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/input.blend" \
             --python tests/smoke/tmpl_gltf.py -- \
             --output "$RUNNER_TEMP/out/out.glb" --apply-modifier SUBSURF
           test -s "$RUNNER_TEMP/out/out.glb" || { echo "::error::glTF output missing/empty"; exit 1; }
@@ -91,7 +101,7 @@ jobs:
       - name: Headless template no-mesh path returns exit 2
         run: |
           set +e
-          "$BLENDER" --background "$RUNNER_TEMP/out/empty.blend" \
+          xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/empty.blend" \
             --python tests/smoke/tmpl_gltf.py -- --output "$RUNNER_TEMP/out/none.glb"
           code=$?
           set -e
@@ -103,7 +113,7 @@ jobs:
           set -euo pipefail
           # Cycles (CPU) so this is reliable on GPU-less runners; the EEVEE-id regression
           # itself is gated in run_smoke.py via engine assignment.
-          "$BLENDER" --background "$RUNNER_TEMP/out/input.blend" \
+          xvfb-run -a "$BLENDER" --background "$RUNNER_TEMP/out/input.blend" \
             --python tests/smoke/tmpl_render.py -- \
             --output "$RUNNER_TEMP/out/render.png" --engine CYCLES
           test -s "$RUNNER_TEMP/out/render.png" || { echo "::error::render PNG missing/empty"; exit 1; }
