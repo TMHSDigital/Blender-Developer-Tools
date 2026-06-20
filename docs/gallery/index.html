@@ -5,83 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Examples Gallery — Blender Developer Tools</title>
   <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Examples Gallery — Blender Developer Tools" />
+  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Examples Gallery — Blender Developer Tools" />
+  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <!-- FOUC guard: apply the saved theme before first paint. Shares the 'theme'
+       key with the fleet landing page, so a visitor's choice carries across. -->
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
   <style>
     :root {
+      --bg: #0d1117; --bg2: #161b22; --surface: #161b22; --surface-2: #1c2128;
+      --border: #30363d; --text: #e6edf3; --text-dim: #8b949e;
       --accent: #7c3aed; --accent-light: #a78bfa;
-      --bg: #0d1117; --bg2: #161b22; --card: #161b22;
-      --text: #e6edf3; --text-dim: #9da7b3; --border: #30363d;
+      --radius: 8px; --radius-lg: 12px; --maxw: 1080px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+    /* auto mode: follow the OS unless the user forced dark */
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+        --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+      }
+    }
+    /* explicit override */
+    [data-theme="light"] {
+      --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+      --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(180deg, var(--bg), var(--bg2)); color: var(--text);
-      line-height: 1.6; min-height: 100vh; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
     a { color: var(--accent-light); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    header { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 1.5rem; }
-    .back { font-size: 0.875rem; color: var(--text-dim); }
-    h1 { font-size: 2rem; margin: 0.75rem 0 0.5rem; }
-    header p { color: var(--text-dim); max-width: 60ch; }
-    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: grid;
-      grid-template-columns: 1fr; gap: 1.5rem; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      overflow: hidden; display: flex; flex-direction: column; }
-    .card-media { display: block; background: #0b0e13; }
+    :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 3px; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: #fff;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0.75rem 1.25rem;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--accent-light); }
+    .theme-toggle { background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.35rem 0.6rem;
+      font-size: 0.95rem; cursor: pointer; line-height: 1; transition: border-color 0.15s, background 0.15s; }
+    .theme-toggle:hover { border-color: var(--accent-light); }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 3rem 1.25rem 1.5rem; }
+    header.hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; line-height: 1.15; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.6rem; font-size: 1.02rem; }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem;
+      display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+    .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      box-shadow: 0 8px 28px rgba(0,0,0,0.28); }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
     .card-media img { display: block; width: 100%; height: auto; }
-    .card-body { padding: 1.25rem 1.5rem 1.5rem; }
-    .card-body h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; }
+    .card-body h2 { font-size: 1.22rem; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
-    .teaches { color: var(--text); margin-bottom: 0.6rem; }
-    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.9rem; }
-    .tag { display: inline-block; font-size: 0.72rem; text-transform: uppercase;
-      letter-spacing: 0.05em; color: var(--accent-light); border: 1px solid var(--accent);
-      border-radius: 999px; padding: 0.05rem 0.5rem; margin-right: 0.35rem; }
-    .card-link { font-weight: 500; }
-    footer { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 3rem;
+    .card-body h2 a:hover { color: var(--accent-light); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--accent-light); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+      border-radius: 999px; padding: 0.08rem 0.55rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; }
+
+    footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 3rem;
       color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
-    @media (min-width: 720px) {
-      main { grid-template-columns: 1fr 1fr; }
+    footer code { background: var(--surface-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; }
+
+    @media (min-width: 720px) { main { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card, .theme-toggle { transition: none; }
+      .card:hover { transform: none; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a class="back" href="../">&larr; Blender Developer Tools</a>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Blender Developer Tools</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
+  </div>
+  <header class="hero">
     <h1>Examples Gallery</h1>
-    <p>Runnable, smoke-gated demos. Each is executed headless on Blender 4.5 LTS and 5.1 by the
-    <code>blender-smoke</code> workflow, so every render reflects code that actually runs.</p>
+    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.</p>
   </header>
-  <main>
+  <main id="main">
       <article class="card">
-        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">
-          <img src="assets/swatch-grid-hero.webp" alt="swatch-grid — Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim" loading="lazy" width="1280" />
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid" aria-label="swatch-grid example on GitHub">
+          <img src="assets/swatch-grid-hero.webp" alt="swatch-grid — Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">swatch-grid</a></h2>
           <p class="teaches">Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
           <p class="witnesses"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</p>
-          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">View example &rarr;</a>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card">
-        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">
-          <img src="assets/turntable-hero.webp" alt="turntable — A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)" loading="lazy" width="1280" />
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable" aria-label="turntable example on GitHub">
+          <img src="assets/turntable-hero.webp" alt="turntable — A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">turntable</a></h2>
           <p class="teaches">A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).</p>
           <p class="witnesses"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</p>
-          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">View example &rarr;</a>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card">
-        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">
-          <img src="assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh — A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh" loading="lazy" width="1280" />
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh" aria-label="gn-sdf-remesh example on GitHub">
+          <img src="assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh — A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">gn-sdf-remesh</a></h2>
           <p class="teaches">A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
           <p class="witnesses"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</p>
-          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">View example &rarr;</a>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
   </main>
@@ -89,5 +148,25 @@
     Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
     &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
   </footer>
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      var root = document.documentElement;
+      var order = ['auto', 'light', 'dark'];
+      var glyph = { auto: '\u263C', light: '\u2600', dark: '\u263D' };
+      function get() { try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; } }
+      function apply(state) {
+        if (state === 'light' || state === 'dark') root.setAttribute('data-theme', state);
+        else root.removeAttribute('data-theme');
+        try { if (state === 'auto') localStorage.removeItem('theme'); else localStorage.setItem('theme', state); } catch (e) {}
+        btn.innerHTML = glyph[state]; btn.setAttribute('aria-label', 'Theme: ' + state + ' (click to change)');
+      }
+      apply(get());
+      btn.addEventListener('click', function () {
+        var next = order[(order.indexOf(get()) + 1) % order.length];
+        apply(next);
+      });
+    })();
+  </script>
 </body>
 </html>

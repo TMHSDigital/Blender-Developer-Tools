@@ -1,6 +1,9 @@
 {
   "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview}; hero/preview/dir are repo-root-relative.",
+  "title": "Examples Gallery",
+  "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
+  "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
   "examples": [
     {
       "name": "swatch-grid",
