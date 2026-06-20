@@ -130,3 +130,19 @@ jobs:
             --python examples/swatch-grid/swatch_grid.py -- \
             --output "$RUNNER_TEMP/out/swatch.png" --engine cycles --samples 8 --width 640
           test -s "$RUNNER_TEMP/out/swatch.png" || { echo "::error::swatch grid output missing/empty"; exit 1; }
+
+      - name: Shipped example - turntable correctness (slotted actions)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): asserts the rotation keys drive
+          # playback via the cross-version channelbag path; exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/turntable/turntable.py --
+
+      - name: Shipped example - GN SDF remesh correctness (GridToMesh)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): asserts the SDF->GridToMesh remesh
+          # yields geometry (eval vcount > 0 and != base); exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gn-sdf-remesh/gn_sdf_remesh.py --
