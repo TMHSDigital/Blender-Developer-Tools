@@ -64,6 +64,33 @@ mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/turntable/"><img src="examples/turntable/preview.webp" alt="Turntable: a copper Suzanne mid-rotation on a dark studio floor, rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [turntable](examples/turntable/)
+
+A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path
+(`get_channelbag_for_slot`). Witnesses the slotted-actions fix: ensure-helper channelbag on
+5.x, `strip.channelbag` on 4.4/4.5.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a smooth torus (before) beside its voxel-remeshed result (after)" /></a>
+</td>
+<td valign="middle">
+
+### [gn-sdf-remesh](examples/gn-sdf-remesh/)
+
+A Geometry Nodes SDF remesh (`MeshToSDFGrid` → `GridToMesh` at the SDF zero-level).
+Witnesses the fix that an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh.
+
+</td>
+</tr>
 </table>
 
 ## How content is organized
