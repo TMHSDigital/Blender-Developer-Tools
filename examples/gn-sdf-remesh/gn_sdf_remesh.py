@@ -19,7 +19,7 @@ import bpy, sys, os, argparse
 def get_eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
-def build_remesh_via_sdf(voxel_size=0.1, threshold=0.0):
+def build_remesh_via_sdf(voxel_size=0.1, threshold=0.0, material=None):
     tree = bpy.data.node_groups.new("SDFRemesh", 'GeometryNodeTree')
     tree.interface.new_socket(name="Geometry", in_out='INPUT', socket_type='NodeSocketGeometry')
     tree.interface.new_socket(name="Geometry", in_out='OUTPUT', socket_type='NodeSocketGeometry')
@@ -30,7 +30,15 @@ def build_remesh_via_sdf(voxel_size=0.1, threshold=0.0):
     grid_to_mesh.inputs["Threshold"].default_value = threshold
     tree.links.new(gi.outputs["Geometry"], mesh_to_sdf.inputs["Mesh"])
     link = tree.links.new(mesh_to_sdf.outputs["SDF Grid"], grid_to_mesh.inputs["Grid"])
-    tree.links.new(grid_to_mesh.outputs["Mesh"], go.inputs["Geometry"])
+    # GN-generated geometry carries no material, so the input mesh's material is dropped on
+    # remesh. Re-apply it inside the tree with a Set Material node (the GN-native fix).
+    out_socket = grid_to_mesh.outputs["Mesh"]
+    if material is not None:
+        set_mat = tree.nodes.new('GeometryNodeSetMaterial')
+        set_mat.inputs["Material"].default_value = material
+        tree.links.new(out_socket, set_mat.inputs["Geometry"])
+        out_socket = set_mat.outputs["Geometry"]
+    tree.links.new(out_socket, go.inputs["Geometry"])
     return tree, link.is_valid
 
 def build():
@@ -89,13 +97,19 @@ def main():
 
     obj = build()
     base = len(obj.data.vertices)
-    tree, link_valid = build_remesh_via_sdf()
+    src_mat = obj.data.materials[0] if obj.data.materials else None
+    tree, link_valid = build_remesh_via_sdf(material=src_mat)
     obj.modifiers.new("sdf", 'NODES').node_group = tree
     dg = bpy.context.evaluated_depsgraph_get(); ev = obj.evaluated_get(dg)
-    m = ev.to_mesh(); evc = len(m.vertices); ev.to_mesh_clear()
-    print(f"link_valid={link_valid} base_vcount={base} eval_vcount={evc}")
+    m = ev.to_mesh(); evc = len(m.vertices)
+    mat_names = [mm.name for mm in m.materials if mm is not None]
+    ev.to_mesh_clear()
+    print(f"link_valid={link_valid} base_vcount={base} eval_vcount={evc} materials={mat_names}")
     if not (link_valid and evc > 0 and evc != base):
         print("ERROR: SDF remesh produced no/unchanged geometry", file=sys.stderr); return 3
+    # the Set Material node must carry the input material onto the remeshed result
+    if src_mat is not None and src_mat.name not in mat_names:
+        print(f"ERROR: material '{src_mat.name}' dropped by remesh", file=sys.stderr); return 6
 
     if args.output:
         if not render_still(obj, args.output, args.engine):
