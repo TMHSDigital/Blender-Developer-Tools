@@ -97,6 +97,9 @@ PAGE = """<!DOCTYPE html>
       backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
     .topbar .back { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
     .topbar .back:hover { color: var(--accent-light); }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--accent-light); }
     .theme-toggle { background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text); border-radius: var(--radius); padding: 0.35rem 0.6rem;
       font-size: 0.95rem; cursor: pointer; line-height: 1; transition: border-color 0.15s, background 0.15s; }
@@ -107,15 +110,15 @@ PAGE = """<!DOCTYPE html>
     header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.6rem; font-size: 1.02rem; }
 
     main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem;
-      display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+      display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
       overflow: hidden; display: flex; flex-direction: column;
       transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
     .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
       box-shadow: 0 8px 28px rgba(0,0,0,0.28); }
     .card-media { display: block; background: var(--bg2); line-height: 0; }
-    .card-media img { display: block; width: 100%; height: auto; }
-    .card-body { padding: 1.15rem 1.4rem 1.45rem; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
     .card-body h2 { font-size: 1.22rem; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
     .card-body h2 a:hover { color: var(--accent-light); text-decoration: none; }
@@ -124,7 +127,7 @@ PAGE = """<!DOCTYPE html>
     .tag { display: inline-block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
       color: var(--accent-light); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
       border-radius: 999px; padding: 0.08rem 0.55rem; margin-right: 0.4rem; vertical-align: 1px; }
-    .card-link { font-weight: 600; font-size: 0.95rem; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
 
     footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 3rem;
       color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
@@ -142,7 +145,10 @@ PAGE = """<!DOCTYPE html>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
     <a class="back" href="../"><span aria-hidden="true">&larr;</span> Blender Developer Tools</a>
-    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
+    <div class="topbar-right">
+      <a class="ghlink" href="__REPO__">GitHub</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
+    </div>
   </div>
   <header class="hero">
     <h1>__TITLE__</h1>
@@ -189,6 +195,7 @@ def page_relative(repo_rel: str) -> str:
 def main() -> int:
     data = json.loads(DATA.read_text(encoding="utf-8"))
     base = data["repoBaseUrl"].rstrip("/")
+    repo_root_url = base.split("/tree/")[0]  # strip /tree/<ref> -> repo home
     site = data.get("siteBaseUrl", "").rstrip("/")
     title = data.get("title", "Examples Gallery")
     desc = data.get("description", "")
@@ -219,7 +226,8 @@ def main() -> int:
                 .replace("__TITLE__", html.escape(title))
                 .replace("__DESC__", html.escape(desc))
                 .replace("__CANONICAL__", html.escape(canonical))
-                .replace("__OGIMAGE__", html.escape(og_image)))
+                .replace("__OGIMAGE__", html.escape(og_image))
+                .replace("__REPO__", html.escape(repo_root_url)))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(out_html, encoding="utf-8")
