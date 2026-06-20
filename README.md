@@ -43,6 +43,29 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
 | Blender 5.2 LTS | Sweep planned for July 2026 (see [ROADMAP.md](ROADMAP.md)) |
 
+## Examples
+
+Runnable, smoke-gated demos live in [`examples/`](examples/) — each is executed headless on
+both Blender 4.5 LTS and 5.1 by the `blender-smoke` workflow, so the screenshots reflect code
+that actually runs.
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/swatch-grid/"><img src="examples/swatch-grid/preview.webp" alt="Swatch grid: a row of six shaded spheres - gold and copper metals, red and blue plastics, an emissive orange, and a matte white - on a reflective studio floor, rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [swatch-grid](examples/swatch-grid/)
+
+A procedural-materials swatch grid — Principled metal and dielectric, the emission pattern,
+and the cross-version `set_specular` shim. Doubles as a live proof of the EEVEE engine-id
+mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
+
+</td>
+</tr>
+</table>
+
 ## How content is organized
 
 ```
