@@ -27,12 +27,16 @@ migration; the **data** (`gallery.json`) and the **visual direction** below are 
 
 ## Layout
 - Container `max-width: 1080px`, centered, `1.25rem` side padding.
-- Grid: **1 column** mobile → **2 columns at ≥720px**, `align-items: start` (cards don't stretch to a shared row height — heroes have mixed aspect ratios, e.g. the 8:3 swatch panorama vs 16:9 stills, and must not be cropped).
-- Card: hero image (full-bleed, natural aspect, never cropped) above a body block; hover lifts `-3px` with an accent-tinted border and soft shadow.
+- Grid: **1 column** mobile → **2 columns at ≥720px**, `align-items: stretch` so paired cards share a row height.
+- **Heroes are a uniform 16:9** (`aspect-ratio: 16/9; object-fit: cover`). This was a deliberate revision: the first cut used mixed aspects (8:3 swatch panorama + 16:9 stills) with `align-items: start`, which — confirmed by headless screenshots — left a ragged empty gap under the short card on desktop. The swatch hero was re-rendered at 16:9 so all three share an aspect; with uniform heroes `object-fit: cover` no longer crops anything. Keep new heroes 16:9.
+- Card is a flex column; the "View example" link is pinned to the bottom (`margin-top: auto`) so footers align across a row. Hover lifts `-3px` with an accent-tinted border and soft shadow.
 
 ## Theme
 - Tri-state **auto / light / dark** mirroring the landing: `data-theme` on `<html>`, persisted in `localStorage['theme']` — **the same key the landing uses**, so a visitor's choice carries across both pages.
 - FOUC guard runs before first paint. `theme-color` meta per scheme. Toggle cycles auto→light→dark with a sun/moon glyph and an accurate `aria-label`.
+
+## Navigation / discoverability
+- The landing→gallery link is **template-blocked** (the landing nav is fleet-generated). The gallery compensates with self-sufficient outbound nav: a top-bar **back link to the landing** (`../`) and a **GitHub repo link**, plus per-card links to each example on GitHub. A visitor who arrives via the README or a direct link can always navigate out.
 
 ## Accessibility
 - Skip-to-content link; `:focus-visible` outlines (accent, 2px); `prefers-reduced-motion` disables hover transform + smooth scroll; descriptive `alt` per hero ("`<name> — <what it teaches>`"); single `h1`, card titles as `h2`.
@@ -41,4 +45,4 @@ migration; the **data** (`gallery.json`) and the **visual direction** below are 
 1. The token set above as CSS variables, light/dark parity with the existing landing palette.
 2. An **Examples grid** section reading `gallery.json` (per-entry `name/dir/teaches/witnessesFix/hero/preview`), cards styled as here.
 3. A **nav link to the gallery** (closes the landing→gallery cross-link gap — impossible today without a template edit).
-4. Keep heroes uncropped (`align-items: start`, natural aspect) — cropping loses content like the swatch panorama's outer spheres.
+4. Standardize heroes at **16:9** with `object-fit: cover` and `align-items: stretch` for an even grid; pin card footers (`margin-top: auto`). (Supersedes the first cut's mixed-aspect/`align-items: start` approach, which read as ragged — see Layout.)
