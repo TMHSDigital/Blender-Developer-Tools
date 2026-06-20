@@ -1,0 +1,14 @@
+{
+  "accent": "#7c3aed",
+  "accentLight": "#a78bfa",
+  "heroGradientFrom": "#0d1117",
+  "heroGradientTo": "#161b22",
+  "links": {
+    "github": "https://github.com/TMHSDigital/Blender-Developer-Tools"
+  },
+  "installSteps": [
+    "Open Cursor IDE and go to <code>Settings</code> &gt; <code>Extensions</code>",
+    "Search for <code>Blender Developer Tools</code>",
+    "Click <code>Install</code> and reload"
+  ]
+}

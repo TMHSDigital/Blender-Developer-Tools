@@ -47,7 +47,8 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 
 Runnable, smoke-gated demos live in [`examples/`](examples/) — each is executed headless on
 both Blender 4.5 LTS and 5.1 by the `blender-smoke` workflow, so the screenshots reflect code
-that actually runs.
+that actually runs. Browse them in the
+**[examples gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**.
 
 <table>
 <tr>

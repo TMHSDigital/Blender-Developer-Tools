@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Examples Gallery — Blender Developer Tools</title>
+  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <style>
+    :root {
+      --accent: #7c3aed; --accent-light: #a78bfa;
+      --bg: #0d1117; --bg2: #161b22; --card: #161b22;
+      --text: #e6edf3; --text-dim: #9da7b3; --border: #30363d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, var(--bg), var(--bg2)); color: var(--text);
+      line-height: 1.6; min-height: 100vh; }
+    a { color: var(--accent-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 1.5rem; }
+    .back { font-size: 0.875rem; color: var(--text-dim); }
+    h1 { font-size: 2rem; margin: 0.75rem 0 0.5rem; }
+    header p { color: var(--text-dim); max-width: 60ch; }
+    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: grid;
+      grid-template-columns: 1fr; gap: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; display: flex; flex-direction: column; }
+    .card-media { display: block; background: #0b0e13; }
+    .card-media img { display: block; width: 100%; height: auto; }
+    .card-body { padding: 1.25rem 1.5rem 1.5rem; }
+    .card-body h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .teaches { color: var(--text); margin-bottom: 0.6rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.9rem; }
+    .tag { display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--accent-light); border: 1px solid var(--accent);
+      border-radius: 999px; padding: 0.05rem 0.5rem; margin-right: 0.35rem; }
+    .card-link { font-weight: 500; }
+    footer { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 3rem;
+      color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+    @media (min-width: 720px) {
+      main { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="../">&larr; Blender Developer Tools</a>
+    <h1>Examples Gallery</h1>
+    <p>Runnable, smoke-gated demos. Each is executed headless on Blender 4.5 LTS and 5.1 by the
+    <code>blender-smoke</code> workflow, so every render reflects code that actually runs.</p>
+  </header>
+  <main>
+      <article class="card">
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">
+          <img src="assets/swatch-grid-hero.webp" alt="swatch-grid — Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim" loading="lazy" width="1280" />
+        </a>
+        <div class="card-body">
+          <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">swatch-grid</a></h2>
+          <p class="teaches">Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</p>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid">View example &rarr;</a>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">
+          <img src="assets/turntable-hero.webp" alt="turntable — A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)" loading="lazy" width="1280" />
+        </a>
+        <div class="card-body">
+          <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">turntable</a></h2>
+          <p class="teaches">A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</p>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/turntable">View example &rarr;</a>
+        </div>
+      </article>
+      <article class="card">
+        <a class="card-media" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">
+          <img src="assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh — A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh" loading="lazy" width="1280" />
+        </a>
+        <div class="card-body">
+          <h2><a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">gn-sdf-remesh</a></h2>
+          <p class="teaches">A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</p>
+          <a class="card-link" href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh">View example &rarr;</a>
+        </div>
+      </article>
+  </main>
+  <footer>
+    Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
+    &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
+  </footer>
+</body>
+</html>

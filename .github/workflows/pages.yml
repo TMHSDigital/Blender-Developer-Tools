@@ -1,0 +1,70 @@
+name: Deploy GitHub Pages
+
+# Builds the fleet landing page (docs/index.html, via the shared Developer-Tools-Directory
+# template) AND the local examples gallery (docs/gallery/index.html, generated from
+# examples/gallery.json by scripts/build_gallery.py). Both ship in the single docs/ artifact;
+# the fleet build only writes docs/index.html + docs/fonts/ + docs/assets/, so it never
+# clobbers docs/gallery/. When the fleet template gains examples support, the gallery step is
+# retired and the data (examples/gallery.json) migrates onto the shared template.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "rules/**"
+      - "mcp-tools.json"
+      - "site.json"
+      - ".cursor-plugin/plugin.json"
+      - "assets/**"
+      - "examples/gallery.json"
+      - "docs/gallery/**"
+      - "scripts/build_gallery.py"
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout site template
+        uses: actions/checkout@v4
+        with:
+          repository: TMHSDigital/Developer-Tools-Directory
+          sparse-checkout: site-template
+          path: _template
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install Jinja2
+
+      - name: Build fleet landing page
+        run: python _template/site-template/build_site.py --repo-root . --out docs
+
+      - name: Build local examples gallery (from examples/gallery.json)
+        # Stdlib-only; regenerates docs/gallery/index.html so the committed page can never
+        # drift from gallery.json. The committed docs/gallery/assets/*.webp are untouched.
+        run: python scripts/build_gallery.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
+      - uses: actions/deploy-pages@v5
+        id: deployment
