@@ -87,7 +87,22 @@ A slotted-actions Z-rotation turntable keyed through the cross-version channelba
 ### [gn-sdf-remesh](examples/gn-sdf-remesh/)
 
 A Geometry Nodes SDF remesh (`MeshToSDFGrid` → `GridToMesh` at the SDF zero-level).
-Witnesses the fix that an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh.
+Witnesses the fix that an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh,
+and that a `Set Material` node carries the material through the remesh.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a faceted base cube (before) beside its smooth subdivision-surface evaluated form (after), rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [depsgraph-export](examples/depsgraph-export/)
+
+A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
+`evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
+modifier-applied geometry (exported vertex count == evaluated > base).
 
 </td>
 </tr>
