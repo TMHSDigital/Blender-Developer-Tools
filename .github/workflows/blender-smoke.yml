@@ -117,3 +117,16 @@ jobs:
             --python tests/smoke/tmpl_render.py -- \
             --output "$RUNNER_TEMP/out/render.png" --engine CYCLES
           test -s "$RUNNER_TEMP/out/render.png" || { echo "::error::render PNG missing/empty"; exit 1; }
+
+      - name: Shipped example - swatch grid renders and self-verifies
+        run: |
+          set -euo pipefail
+          # Run the SHIPPED example file (not a copy). It asserts non-black AND
+          # distinct-region-count == material-count internally and exits non-zero on
+          # failure. Cycles (CPU) for pixels on the GPU-less runner; the example still
+          # asserts the version-correct EEVEE engine id before rendering. Small/low-sample
+          # for speed -- region detection holds at this size.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/swatch-grid/swatch_grid.py -- \
+            --output "$RUNNER_TEMP/out/swatch.png" --engine cycles --samples 8 --width 640
+          test -s "$RUNNER_TEMP/out/swatch.png" || { echo "::error::swatch grid output missing/empty"; exit 1; }
