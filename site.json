@@ -3,6 +3,13 @@
   "accentLight": "#a78bfa",
   "heroGradientFrom": "#0d1117",
   "heroGradientTo": "#161b22",
+  "canonical": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
+  "favicon": "assets/favicon.svg",
+  "ogImage": "https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp",
+  "compatibility": {
+    "claude": "Claude Code",
+    "os": ["Windows", "macOS", "Linux"]
+  },
   "links": {
     "github": "https://github.com/TMHSDigital/Blender-Developer-Tools"
   },
