@@ -89,6 +89,7 @@ Audit pass on v0.1.0 content: standards-version markers bumped from `1.9.1` to `
 
 Not committed; target list for the next content version. (v0.3.0 shipped the smoke-gated `examples/` track.)
 
+- **Fleet Pages examples support** (infra) -- add examples discovery to the meta-repo `site-template/build_site.py` and an Examples grid to `template.html.j2`, so every tool repo gets a gallery from the shared template. This repo's local gallery (`examples/gallery.json` + `docs/gallery/`) is the convergence target: once the shared template reads the same `gallery.json` schema, the local generator (`scripts/build_gallery.py`) and page are retired -- a lift-and-shift, not a rewrite. Unblocks cross-linking the generated landing page to the gallery (today that needs a template edit, so the README links to the live gallery instead).
 - `modal-operators` skill -- `invoke` returning `RUNNING_MODAL`, the `modal()` event handler, modal cancellation patterns
 - `usd-pipelines` skill -- USD export options, `evaluation_mode`, instancing, the USD vs glTF tradeoffs
 - `mathutils-patterns` skill -- `mathutils.Vector`, `Matrix`, `Quaternion`, common transforms, the `@` operator
