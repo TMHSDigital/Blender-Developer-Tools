@@ -8,7 +8,8 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | v0.1.0 | Foundation | 8 | 4 | 1 | 10 | Shipped |
 | v0.2.0 | Materials, drivers, migration | 12 | 6 | 2 | 17 | Shipped |
-| v0.3.0 | 5.2 LTS sweep, modal operators, USD | TBD | TBD | TBD | TBD | Planned |
+| v0.3.0 | Examples and demos (smoke-gated) | 12 | 6 | 2 | 17 | Shipped |
+| v0.4.0 | 5.2 LTS sweep, modal operators, USD | TBD | TBD | TBD | TBD | Planned |
 | v1.0.0 | Stable | TBD | TBD | TBD | TBD | Planned |
 
 ## v0.1.0 - Foundation
@@ -78,9 +79,9 @@ The 7 new snippets:
 
 Audit pass on v0.1.0 content: standards-version markers bumped from `1.9.1` to `1.9.4` across all skills, rules, AGENTS.md, CLAUDE.md, and ROADMAP.md. Verified the `bpy_extras.anim_utils.action_ensure_channelbag_for_slot` import path against the current Blender 5.1 API reference and removed the stale "verify before production" caveat in `slotted-actions-animation/SKILL.md`.
 
-## v0.3.0 (candidate pool)
+## v0.4.0 (candidate pool)
 
-Not committed; target list while v0.2.0 is the current shipping version.
+Not committed; target list for the next content version. (v0.3.0 shipped the smoke-gated `examples/` track.)
 
 - `modal-operators` skill -- `invoke` returning `RUNNING_MODAL`, the `modal()` event handler, modal cancellation patterns
 - `usd-pipelines` skill -- USD export options, `evaluation_mode`, instancing, the USD vs glTF tradeoffs
