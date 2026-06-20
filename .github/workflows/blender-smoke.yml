@@ -146,3 +146,12 @@ jobs:
           # yields geometry (eval vcount > 0 and != base); exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/gn-sdf-remesh/gn_sdf_remesh.py --
+
+      - name: Shipped example - depsgraph-evaluated export
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): asserts wm.obj_export ships the
+          # depsgraph-evaluated (modifier-applied) geometry -- exported vcount == evaluated
+          # > base. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/depsgraph-export/depsgraph_export.py --
