@@ -60,7 +60,7 @@ jobs:
         # drift from gallery.json. The committed docs/gallery/assets/*.webp are untouched.
         run: python scripts/build_gallery.py
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v4
         with:
