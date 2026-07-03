@@ -135,6 +135,34 @@ evaluated copy **and** the flushed-back original, and both must match the closed
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined steel 14-tooth gear at a three-quarter angle on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [bmesh-gear](examples/bmesh-gear/)
+
+A 14-tooth gear built entirely with bmesh — with `bm.free()` in a `try`/`finally`, as the
+ownership contract demands. Asserts the closed-form vert/edge/face counts and that the
+result is watertight (every edge borders exactly two faces).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: a teal sphere and a magenta sphere sharing one TintedGloss node group with different Tint parameters" /></a>
+</td>
+<td valign="middle">
+
+### [shader-node-group](examples/shader-node-group/)
+
+One reusable `TintedGloss` group declared via `tree.interface.new_socket`, instanced in two
+materials with different Tint values. Witnesses the grouping contract: shared datablock
+(`users == 2`), parameters on the group **node** — two spheres, one group, two colors.
+
+</td>
+</tr>
 </table>
 
 ## How content is organized

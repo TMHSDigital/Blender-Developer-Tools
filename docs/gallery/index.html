@@ -175,12 +175,14 @@
   <div class="chips" role="toolbar" aria-label="Filter examples by topic">
     <button class="chip active" data-tag="" type="button">All</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
+    <button class="chip" data-tag="bmesh" type="button">bmesh</button>
     <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
     <button class="chip" data-tag="drivers" type="button">drivers</button>
     <button class="chip" data-tag="export" type="button">export</button>
     <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
     <button class="chip" data-tag="materials" type="button">materials</button>
     <button class="chip" data-tag="mesh" type="button">mesh</button>
+    <button class="chip" data-tag="node-groups" type="button">node-groups</button>
     <button class="chip" data-tag="performance" type="button">performance</button>
     <button class="chip" data-tag="rendering" type="button">rendering</button>
   </div>
@@ -250,6 +252,28 @@
           <p class="teaches">A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.</p>
           <a class="card-link" href="driver-wave/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh bmesh">
+        <a class="card-media" href="bmesh-gear/" aria-label="bmesh-gear example detail page">
+          <img src="assets/bmesh-gear-hero.webp" alt="bmesh-gear — A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="bmesh-gear/">bmesh-gear</a></h2>
+          <p class="teaches">A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).</p>
+          <a class="card-link" href="bmesh-gear/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="materials node-groups">
+        <a class="card-media" href="shader-node-group/" aria-label="shader-node-group example detail page">
+          <img src="assets/shader-node-group-hero.webp" alt="shader-node-group — One reusable shader group declared via tree" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="shader-node-group/">shader-node-group</a></h2>
+          <p class="teaches">One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.</p>
+          <a class="card-link" href="shader-node-group/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>
