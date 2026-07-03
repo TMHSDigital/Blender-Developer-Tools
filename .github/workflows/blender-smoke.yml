@@ -175,3 +175,22 @@ jobs:
           # on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/driver-wave/driver_wave.py --
+
+      - name: Shipped example - bmesh gear (ownership + watertight topology)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): parametric gear via bmesh with
+          # bm.free() in try/finally; asserts closed-form vert/edge/face counts and
+          # that every edge borders exactly two faces. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/bmesh-gear/bmesh_gear.py --
+
+      - name: Shipped example - shader node group (interface sockets + sharing)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): TintedGloss group declared via
+          # tree.interface.new_socket, instanced by two materials; asserts the sockets
+          # exist, the group datablock is shared (users == 2), and the per-instance
+          # Tint values differ. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/shader-node-group/shader_node_group.py --

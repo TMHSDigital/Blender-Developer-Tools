@@ -59,9 +59,11 @@
     "templates/headless-batch-script-template"
   ],
   "examples": [
+    "examples/bmesh-gear",
     "examples/depsgraph-export",
     "examples/driver-wave",
     "examples/gn-sdf-remesh",
+    "examples/shader-node-group",
     "examples/swatch-grid",
     "examples/turntable",
     "examples/wave-displace"

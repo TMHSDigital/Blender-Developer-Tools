@@ -58,6 +58,24 @@
       "hero": "docs/gallery/assets/driver-wave-hero.webp",
       "preview": "examples/driver-wave/preview.webp",
       "tags": ["drivers", "animation"]
+    },
+    {
+      "name": "bmesh-gear",
+      "dir": "examples/bmesh-gear",
+      "teaches": "A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.",
+      "witnessesFix": "Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).",
+      "hero": "docs/gallery/assets/bmesh-gear-hero.webp",
+      "preview": "examples/bmesh-gear/preview.webp",
+      "tags": ["mesh", "bmesh"]
+    },
+    {
+      "name": "shader-node-group",
+      "dir": "examples/shader-node-group",
+      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.",
+      "witnessesFix": "Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.",
+      "hero": "docs/gallery/assets/shader-node-group-hero.webp",
+      "preview": "examples/shader-node-group/preview.webp",
+      "tags": ["materials", "node-groups"]
     }
   ]
 }
