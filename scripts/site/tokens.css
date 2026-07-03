@@ -1,0 +1,35 @@
+/* tokens.css - canonical shared design tokens for the TMHSDigital Developer
+   Tools Directory presentation surfaces.
+
+   Consumed by:
+   - the catalog site (docs/index.html), which mirrors these declarations in its
+     inline :root; tests/test_design_tokens.py enforces the mirror;
+   - the tool-site template (site-template/template.html.j2), which embeds this
+     file directly with a Jinja include of tokens.css.
+
+   Only the tokens that are shared and fixed across both surfaces live here. The
+   per-tool themeable values - accent, accent-light, the hero gradient, and the
+   page background - are NOT here; each surface sets those itself (the template
+   reads them from the tool's site.json). Edit a shared token here and mirror it
+   into docs/index.html; the parity test fails otherwise.
+
+   Container widths are intentionally NOT shared: the catalog is a card grid
+   (1200px) and a tool page is a reading column (1040px). */
+:root {
+  --bg2: #161b22;
+  --bg3: #1c2128;
+  --bg-hover: #22272e;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --text-muted: #6e7681;
+  --green: #3fb950;
+  --blue: #58a6ff;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --hero-h1: 2.5rem;
+  --stat-size: 1.75rem;
+  --link-hover: #c4b5fd;
+}
