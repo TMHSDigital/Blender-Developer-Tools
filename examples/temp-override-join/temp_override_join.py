@@ -48,15 +48,11 @@ def build_cubes():
 
 
 def join_with_temp_override(target, sources):
-    """The contract this example witnesses: temp_override, not context.copy()."""
-    view_layer = bpy.context.view_layer
-    for obj in bpy.data.objects:
-        obj.select_set(False)
-    target.select_set(True)
-    for src in sources:
-        src.select_set(True)
-    view_layer.objects.active = target
+    """The contract this example witnesses: temp_override, not context.copy().
 
+    The override alone fabricates the whole operator context — no select_set,
+    no view_layer.objects.active. That is the point: the scene's real
+    selection state stays untouched."""
     with bpy.context.temp_override(
         active_object=target,
         selected_objects=[target, *sources],
@@ -172,7 +168,7 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (4.2, -5.2, 4.0)
+    cam.location = (5.0, -6.4, 4.6)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')

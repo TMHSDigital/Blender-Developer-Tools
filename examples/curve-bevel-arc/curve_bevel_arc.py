@@ -3,9 +3,11 @@
 Witnesses that renderable tubes are authored on `bpy.types.Curve` directly
 (`splines.new('BEZIER')`, `bezier_points`, `bevel_depth`, `use_fill_caps`) —
 not by meshing first or calling curve operators. The check asserts the
-closed-form point count, bevel depth, filled-cap topology, and that the
-depsgraph-evaluated mesh has a Z span of a tube whose centerline sits at
-`z = bevel_depth` (resting on the floor).
+closed-form point count and bevel depth, the closed-form Z span (tube
+centerline at `z = bevel_depth`, resting on the floor) and X span, plus the
+evaluated vert/face counts as a MEASURED regression gate — curve tessellation
+has no simple closed form, so those two constants pin today's behavior (see
+EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -20,7 +22,10 @@ RADIUS = 1.5
 BEVEL = 0.15
 BEVEL_RES = 4
 RES_U = 12
-# measured for the parameters above with use_fill_caps=True — identical on 4.4 and 5.1
+# MEASURED regression constants, not closed-form: curve-to-mesh tessellation
+# (rings x bevel segments + cap fans) has no simple formula. Verified identical
+# on 4.4, 4.5 LTS, and 5.1. If a future Blender changes tessellation, re-measure
+# by printing len(em.vertices)/len(em.polygons) in check() and update these.
 EXPECT_VERTS = 1044
 EXPECT_FACES = 1028
 

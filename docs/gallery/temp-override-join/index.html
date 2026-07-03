@@ -250,15 +250,11 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
 
 
 <span class="k">def</span> join_with_temp_override(target, sources):
-    <span class="s">&quot;&quot;&quot;The contract this example witnesses: temp_override, not context.copy().&quot;&quot;&quot;</span>
-    view_layer = bpy.context.view_layer
-    <span class="k">for</span> obj <span class="k">in</span> bpy.data.objects:
-        obj.select_set(<span class="k">False</span>)
-    target.select_set(<span class="k">True</span>)
-    <span class="k">for</span> src <span class="k">in</span> sources:
-        src.select_set(<span class="k">True</span>)
-    view_layer.objects.active = target
+    <span class="s">&quot;&quot;&quot;The contract this example witnesses: temp_override, not context.copy().
 
+    The override alone fabricates the whole operator context — no select_set,
+    no view_layer.objects.active. That is the point: the scene&#x27;s real
+    selection state stays untouched.&quot;&quot;&quot;</span>
     <span class="k">with</span> bpy.context.temp_override(
         active_object=target,
         selected_objects=[target, *sources],
@@ -374,7 +370,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">4.2</span>, -<span class="n">5.2</span>, <span class="n">4.0</span>)
+    cam.location = (<span class="n">5.0</span>, -<span class="n">6.4</span>, <span class="n">4.6</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)

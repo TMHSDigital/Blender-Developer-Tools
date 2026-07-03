@@ -203,9 +203,9 @@ def render_still(obj, path, engine):
     light("Rim", (1.5, 4.5, 2.0), 480.0, 4.0, (1.0, 0.75, 0.45))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 55.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.6, -4.2, 2.8)
+    cam.location = (4.6, -5.4, 3.4)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
