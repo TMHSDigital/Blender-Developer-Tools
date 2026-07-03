@@ -43,14 +43,14 @@ def build_remesh_via_sdf(voxel_size=0.1, threshold=0.0, material=None):
 
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.mesh.primitive_torus_add(location=(0, 0, 1.0), major_radius=1.2, minor_radius=0.5)
+    bpy.ops.mesh.primitive_torus_add(location=(0, 0, 0.55), major_radius=1.2, minor_radius=0.5)
     obj = bpy.context.active_object
     for p in obj.data.polygons:
         p.use_smooth = True
-    mat = bpy.data.materials.new("Clay"); mat.use_nodes = True
+    mat = bpy.data.materials.new("Ceramic"); mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
-    b.inputs['Base Color'].default_value = (0.45, 0.55, 0.85, 1)
-    b.inputs['Roughness'].default_value = 0.45
+    b.inputs['Base Color'].default_value = (0.42, 0.028, 0.045, 1)  # crimson ceramic
+    b.inputs['Roughness'].default_value = 0.22
     obj.data.materials.append(mat)
     return obj
 
@@ -59,23 +59,33 @@ def render_still(obj, path, engine):
     sc = bpy.context.scene
     fme = bpy.data.meshes.new("Floor"); bm = bmesh.new()
     bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme); bm.free()
+    fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
+    fb = fmat.node_tree.nodes.get('Principled BSDF')
+    fb.inputs['Base Color'].default_value = (0.055, 0.06, 0.07, 1)  # dark graphite studio
+    fb.inputs['Roughness'].default_value = 0.55
+    fme.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", fme); bpy.context.collection.objects.link(floor)
+    wall = bpy.data.objects.new("Wall", fme.copy()); wall.location = (0, 9.0, 0)
+    wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
-    w.node_tree.nodes["Background"].inputs[0].default_value = (0.05, 0.06, 0.08, 1); sc.world = w
-    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.0); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -6.5, 3.0)
+    w.node_tree.nodes["Background"].inputs[0].default_value = (0.01, 0.011, 0.014, 1); sc.world = w
+    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.55); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -6.5, 2.2)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
-    for nm, loc, en in [("K", (-4, -5, 7), 900), ("F2", (5, -4, 2), 350)]:
-        ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = 5.0
+    # key, cool fill, warm rim
+    for nm, loc, en, sz, col in [("K", (-4, -5, 7), 1100, 5.0, (1.0, 0.98, 0.95)),
+                                 ("F2", (5, -4, 2), 220, 7.0, (0.85, 0.9, 1.0)),
+                                 ("R", (2.5, 6, 4), 700, 3.0, (1.0, 0.72, 0.45))]:
+        ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = sz; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
         lc = lo.constraints.new('TRACK_TO'); lc.target = aim; lc.track_axis = 'TRACK_NEGATIVE_Z'; lc.up_axis = 'UP_Y'
     sc.render.engine = 'CYCLES' if engine == 'cycles' else get_eevee_engine_id()
     if sc.render.engine == 'CYCLES':
-        try: sc.cycles.samples = 16
+        try: sc.cycles.samples = 32
         except Exception: pass
     else:
-        try: sc.eevee.taa_render_samples = 16
+        try: sc.eevee.taa_render_samples = 64
         except Exception: pass
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path

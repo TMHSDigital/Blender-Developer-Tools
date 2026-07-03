@@ -284,24 +284,27 @@ FREQ = <span class="n">1.6</span>
     mat = bpy.data.materials.new(<span class="s">&quot;WaveMat&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.68</span>, <span class="n">0.78</span>, <span class="n">1.0</span>)
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.09</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)  <span class="c"># deep sapphire</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.18</span>
     obj.data.materials.append(mat)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    key = bpy.data.lights.new(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); key.energy = <span class="n">1400.0</span>; key.size = <span class="n">7.0</span>
+    <span class="c"># grazing cool key picks out the crests; warm rim from behind</span>
+    key = bpy.data.lights.new(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); key.energy = <span class="n">2000.0</span>; key.size = <span class="n">6.0</span>
+    key.color = (<span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)
     key_ob = bpy.data.objects.new(<span class="s">&quot;Key&quot;</span>, key)
-    key_ob.location = (-<span class="n">5.0</span>, -<span class="n">6.0</span>, <span class="n">6.5</span>)
-    key_ob.rotation_euler = (math.radians(<span class="n">48</span>), <span class="n">0.0</span>, math.radians(-<span class="n">35</span>))
+    key_ob.location = (-<span class="n">6.5</span>, -<span class="n">5.0</span>, <span class="n">3.2</span>)
+    key_ob.rotation_euler = (math.radians(<span class="n">65</span>), <span class="n">0.0</span>, math.radians(-<span class="n">50</span>))
     scene.collection.objects.link(key_ob)
-    rim = bpy.data.lights.new(<span class="s">&quot;Rim&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); rim.energy = <span class="n">600.0</span>; rim.size = <span class="n">5.0</span>
+    rim = bpy.data.lights.new(<span class="s">&quot;Rim&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); rim.energy = <span class="n">1300.0</span>; rim.size = <span class="n">4.0</span>
+    rim.color = (<span class="n">1.0</span>, <span class="n">0.68</span>, <span class="n">0.38</span>)
     rim_ob = bpy.data.objects.new(<span class="s">&quot;Rim&quot;</span>, rim)
-    rim_ob.location = (<span class="n">4.0</span>, <span class="n">6.0</span>, <span class="n">4.5</span>)
-    rim_ob.rotation_euler = (math.radians(-<span class="n">55</span>), <span class="n">0.0</span>, math.radians(<span class="n">150</span>))
+    rim_ob.location = (<span class="n">4.5</span>, <span class="n">6.5</span>, <span class="n">2.6</span>)
+    rim_ob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">148</span>))
     scene.collection.objects.link(rim_ob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>); cam_data.lens = <span class="n">50.0</span>

@@ -85,8 +85,8 @@ def render_still(objs, path, engine):
     mat = bpy.data.materials.new("ColMat")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.62, 0.68, 0.78, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.45
+    bsdf.inputs["Base Color"].default_value = (1.0, 0.26, 0.012, 1.0)  # selection orange
+    bsdf.inputs["Roughness"].default_value = 0.32
     objs[0].data.materials.append(mat)  # shared mesh -> all columns
 
     # columns stand on the floor: lift each by its DRIVEN half-height
@@ -105,26 +105,38 @@ def render_still(objs, path, engine):
     fmat = bpy.data.materials.new("FloorMat")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.55, 0.57, 0.62, 1.0)
-    fb.inputs["Roughness"].default_value = 0.9
+    fb.inputs["Base Color"].default_value = (0.055, 0.06, 0.07, 1.0)  # dark graphite studio
+    fb.inputs["Roughness"].default_value = 0.5
     floor_me.materials.append(fmat)
     scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new("Wall", floor_me.copy())
+    wall.location = (0.0, 9.0, 0.0)
+    wall.rotation_euler = (math.radians(90), 0.0, 0.0)
+    scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.045, 0.05, 0.06, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
     scene.world = world
 
-    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 1000.0; key.size = 6.0
+    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 1600.0; key.size = 5.0
+    key.color = (1.0, 0.97, 0.92)
     key_ob = bpy.data.objects.new("Key", key)
     key_ob.location = (-4.5, -5.5, 6.5)
     key_ob.rotation_euler = (math.radians(46), 0.0, math.radians(-33))
     scene.collection.objects.link(key_ob)
-    fill = bpy.data.lights.new("Fill", 'AREA'); fill.energy = 350.0; fill.size = 8.0
+    fill = bpy.data.lights.new("Fill", 'AREA'); fill.energy = 260.0; fill.size = 8.0
+    fill.color = (0.8, 0.87, 1.0)
     fill_ob = bpy.data.objects.new("Fill", fill)
     fill_ob.location = (5.5, -4.0, 3.5)
     fill_ob.rotation_euler = (math.radians(62), 0.0, math.radians(48))
     scene.collection.objects.link(fill_ob)
+    rim = bpy.data.lights.new("Rim", 'AREA'); rim.energy = 480.0; rim.size = 5.0
+    rim.color = (0.75, 0.85, 1.0)
+    rim_ob = bpy.data.objects.new("Rim", rim)
+    rim_ob.location = (0.0, 6.5, 3.0)
+    rim_ob.rotation_euler = (math.radians(-78), 0.0, math.radians(180))
+    scene.collection.objects.link(rim_ob)
 
     cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 45.0
     cam = bpy.data.objects.new("Cam", cam_data)

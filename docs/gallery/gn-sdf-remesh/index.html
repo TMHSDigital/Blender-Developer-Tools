@@ -246,14 +246,14 @@ both builds.
 
 <span class="k">def</span> build():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    bpy.ops.mesh.primitive_torus_add(location=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>), major_radius=<span class="n">1.2</span>, minor_radius=<span class="n">0.5</span>)
+    bpy.ops.mesh.primitive_torus_add(location=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.55</span>), major_radius=<span class="n">1.2</span>, minor_radius=<span class="n">0.5</span>)
     obj = bpy.context.active_object
     <span class="k">for</span> p <span class="k">in</span> obj.data.polygons:
         p.use_smooth = <span class="k">True</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;Clay&quot;</span>); mat.use_nodes = <span class="k">True</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;Ceramic&quot;</span>); mat.use_nodes = <span class="k">True</span>
     b = mat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
-    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.45</span>, <span class="n">0.55</span>, <span class="n">0.85</span>, <span class="n">1</span>)
-    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.45</span>
+    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.028</span>, <span class="n">0.045</span>, <span class="n">1</span>)  <span class="c"># crimson ceramic</span>
+    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.22</span>
     obj.data.materials.append(mat)
     <span class="k">return</span> obj
 
@@ -262,23 +262,33 @@ both builds.
     sc = bpy.context.scene
     fme = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>); bm = bmesh.new()
     bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme); bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>); fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
+    fb.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1</span>)  <span class="c"># dark graphite studio</span>
+    fb.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.55</span>
+    fme.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, fme); bpy.context.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, fme.copy()); wall.location = (<span class="n">0</span>, <span class="n">9.0</span>, <span class="n">0</span>)
+    wall.rotation_euler = (<span class="n">1.5708</span>, <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
-    w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">0.08</span>, <span class="n">1</span>); sc.world = w
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">6.5</span>, <span class="n">3.0</span>)
+    w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.01</span>, <span class="n">0.011</span>, <span class="n">0.014</span>, <span class="n">1</span>); sc.world = w
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.55</span>); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">6.5</span>, <span class="n">2.2</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
-    <span class="k">for</span> nm, loc, en <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">900</span>), (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">350</span>)]:
-        ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = <span class="n">5.0</span>
+    <span class="c"># key, cool fill, warm rim</span>
+    <span class="k">for</span> nm, loc, en, sz, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">1100</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.95</span>)),
+                                 (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">220</span>, <span class="n">7.0</span>, (<span class="n">0.85</span>, <span class="n">0.9</span>, <span class="n">1.0</span>)),
+                                 (<span class="s">&quot;R&quot;</span>, (<span class="n">2.5</span>, <span class="n">6</span>, <span class="n">4</span>), <span class="n">700</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>))]:
+        ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = sz; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
         lc = lo.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); lc.target = aim; lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> get_eevee_engine_id()
     <span class="k">if</span> sc.render.engine == <span class="s">&#x27;CYCLES&#x27;</span>:
-        <span class="k">try</span>: sc.cycles.samples = <span class="n">16</span>
+        <span class="k">try</span>: sc.cycles.samples = <span class="n">32</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
     <span class="k">else</span>:
-        <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">16</span>
+        <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">64</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
     sc.render.resolution_x = <span class="n">1280</span>; sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path

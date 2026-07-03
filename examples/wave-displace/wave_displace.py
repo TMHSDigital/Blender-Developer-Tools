@@ -82,24 +82,27 @@ def render_still(obj, path, engine):
     mat = bpy.data.materials.new("WaveMat")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.62, 0.68, 0.78, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.35
+    bsdf.inputs["Base Color"].default_value = (0.012, 0.09, 0.38, 1.0)  # deep sapphire
+    bsdf.inputs["Roughness"].default_value = 0.18
     obj.data.materials.append(mat)
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.045, 0.05, 0.06, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
     scene.world = world
 
-    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 1400.0; key.size = 7.0
+    # grazing cool key picks out the crests; warm rim from behind
+    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 2000.0; key.size = 6.0
+    key.color = (0.9, 0.95, 1.0)
     key_ob = bpy.data.objects.new("Key", key)
-    key_ob.location = (-5.0, -6.0, 6.5)
-    key_ob.rotation_euler = (math.radians(48), 0.0, math.radians(-35))
+    key_ob.location = (-6.5, -5.0, 3.2)
+    key_ob.rotation_euler = (math.radians(65), 0.0, math.radians(-50))
     scene.collection.objects.link(key_ob)
-    rim = bpy.data.lights.new("Rim", 'AREA'); rim.energy = 600.0; rim.size = 5.0
+    rim = bpy.data.lights.new("Rim", 'AREA'); rim.energy = 1300.0; rim.size = 4.0
+    rim.color = (1.0, 0.68, 0.38)
     rim_ob = bpy.data.objects.new("Rim", rim)
-    rim_ob.location = (4.0, 6.0, 4.5)
-    rim_ob.rotation_euler = (math.radians(-55), 0.0, math.radians(150))
+    rim_ob.location = (4.5, 6.5, 2.6)
+    rim_ob.rotation_euler = (math.radians(-68), 0.0, math.radians(148))
     scene.collection.objects.link(rim_ob)
 
     cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 50.0

@@ -81,7 +81,7 @@ A slotted-actions Z-rotation turntable keyed through the cross-version channelba
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a smooth torus (before) beside its voxel-remeshed result (after)" /></a>
+<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a crimson ceramic torus with visible voxel-remesh facets, resting on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
@@ -95,7 +95,7 @@ and that a `Set Material` node carries the material through the remesh.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a faceted base cube (before) beside its smooth subdivision-surface evaluated form (after), rendered with EEVEE" /></a>
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a matte graphite base cube beside its glossy green subdivision-surface evaluated form on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
@@ -109,7 +109,7 @@ modifier-applied geometry (exported vertex count == evaluated > base).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a dense grid displaced into smooth standing-wave dunes, rendered with EEVEE" /></a>
+<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a glossy sapphire-blue surface displaced into smooth standing-wave dunes against a black backdrop" /></a>
 </td>
 <td valign="middle">
 
@@ -123,7 +123,7 @@ the Z span matches the amplitude, and a probe vertex matches the closed-form wav
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen columns whose heights form a sine skyline, each driven by a driver_namespace function, rendered with EEVEE" /></a>
+<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen orange columns whose heights form a sine skyline on a dark studio floor, each driven by a driver_namespace function" /></a>
 </td>
 <td valign="middle">
 
