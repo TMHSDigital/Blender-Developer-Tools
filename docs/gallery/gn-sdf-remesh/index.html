@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gn-sdf-remesh — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-sdf-remesh/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="gn-sdf-remesh — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-sdf-remesh/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-sdf-remesh-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="gn-sdf-remesh — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-sdf-remesh-hero.webp" />
+  <!-- FOUC guard: apply the saved theme before first paint. Shares the 'theme'
+       key with the landing page, so a visitor's choice carries across. -->
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <style>
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --surface: #161b22; --surface-2: #1c2128;
+      --border: #30363d; --text: #e6edf3; --text-dim: #8b949e;
+      --accent: #7c3aed; --accent-light: #a78bfa;
+      --radius: 8px; --radius-lg: 12px; --maxw: 1080px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #8b949e; --code-n: #79c0ff;
+    }
+    /* auto mode: follow the OS unless the user forced dark */
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+        --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+        --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
+      }
+    }
+    /* explicit override */
+    [data-theme="light"] {
+      --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+      --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+      --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 3px; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: #fff;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0.75rem 1.25rem;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--accent-light); }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--accent-light); }
+    .theme-toggle { background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.35rem 0.6rem;
+      font-size: 0.95rem; cursor: pointer; line-height: 1; transition: border-color 0.15s, background 0.15s; }
+    .theme-toggle:hover { border-color: var(--accent-light); }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 3rem 1.25rem 1.5rem; }
+    header.hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; line-height: 1.15; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.6rem; font-size: 1.02rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 999px; padding: 0.25rem 0.85rem; font-size: 0.82rem; font-weight: 500;
+      font-family: var(--font-sans); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--accent-light); border-color: var(--accent); }
+    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+    .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      box-shadow: 0 8px 28px rgba(0,0,0,0.28); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-size: 1.22rem; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--accent-light); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--accent-light); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+      border-radius: 999px; padding: 0.08rem 0.55rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+      border-left: 3px solid var(--accent); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--accent-light); border-color: var(--accent); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-size: 1.15rem; letter-spacing: -0.01em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 3rem;
+      color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+    footer code { background: var(--surface-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card, .theme-toggle { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>gn-sdf-remesh</h1>
+    <p>A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gn-sdf-remesh render">
+      <img src="../assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/gn-sdf-remesh/gn_sdf_remesh.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that remeshes an input mesh through an OpenVDB SDF grid using the <code>build_remesh_via_sdf</code> pattern from the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill: <code>GeometryNodeMeshToSDFGrid</code> → <code>GeometryNodeGridToMesh</code> at the SDF zero-level, attached as a NODES modifier and evaluated via the depsgraph.</p>
+<p><strong>Which fix it witnesses:</strong> an SDF grid is meshed with <strong>Grid to Mesh</strong>, not Volume to Mesh (the <code>Mesh to SDF Grid</code> output is a grid socket; <code>Volume to Mesh</code> takes a volume-geometry socket, so wiring the grid there is an invalid link that yields no geometry). <code>Grid to Mesh</code> has the matching grid input.</p>
+<p><strong>Materials gotcha:</strong> geometry generated by Geometry Nodes carries <strong>no</strong> material, so the input mesh&#x27;s material is dropped on remesh (the result renders with the default white). Re-apply it inside the tree with a <strong>Set Material</strong> node (<code>GeometryNodeSetMaterial</code>) on the remeshed output — this example does that and asserts the material survives onto the evaluated mesh.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check only (no render) — the CI smoke check:
+blender --background --python gn_sdf_remesh.py --
+
+# Also render the remeshed result (EEVEE on a GPU host; --engine cycles on GPU-less hosts):
+blender --background --python gn_sdf_remesh.py -- --output remesh.png
+blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine cycles</code></pre>
+<p>By default it runs only the <strong>frame-independent correctness check</strong>: the depsgraph-evaluated vertex count must be &gt; 0 AND differ from the base mesh (the remesh produced geometry). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/gn-sdf-remesh/gn_sdf_remesh.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-sdf-remesh/gn_sdf_remesh.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Geometry Nodes SDF remesh -- a runnable BDT example.
+
+Builds the `build_remesh_via_sdf` pattern from the geometry-nodes-python skill
+(`GeometryNodeMeshToSDFGrid` -&gt; `GeometryNodeGridToMesh` at the SDF zero-level), attaches it
+as a NODES modifier to an input mesh, and evaluates via the depsgraph. It witnesses the F2
+fix: an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh.
+
+By default it runs only the cheap, frame-independent correctness check (no render): the
+evaluated vertex count must be &gt; 0 AND differ from the base mesh -- proving the remesh
+produced geometry. Exits non-zero on failure. This is the check the CI smoke gate runs on
+both builds.
+
+    blender --background --python gn_sdf_remesh.py --                  # correctness check only
+    blender --background --python gn_sdf_remesh.py -- --output r.png   # also render the result
+    blender --background --python gn_sdf_remesh.py -- --output r.png --engine cycles  # GPU-less
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, sys, os, argparse
+
+<span class="k">def</span> get_eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+<span class="k">def</span> build_remesh_via_sdf(voxel_size=<span class="n">0.1</span>, threshold=<span class="n">0.0</span>, material=<span class="k">None</span>):
+    tree = bpy.data.node_groups.new(<span class="s">&quot;SDFRemesh&quot;</span>, <span class="s">&#x27;GeometryNodeTree&#x27;</span>)
+    tree.interface.new_socket(name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&#x27;INPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketGeometry&#x27;</span>)
+    tree.interface.new_socket(name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&#x27;OUTPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketGeometry&#x27;</span>)
+    gi = tree.nodes.new(<span class="s">&#x27;NodeGroupInput&#x27;</span>); go = tree.nodes.new(<span class="s">&#x27;NodeGroupOutput&#x27;</span>)
+    mesh_to_sdf = tree.nodes.new(<span class="s">&#x27;GeometryNodeMeshToSDFGrid&#x27;</span>)
+    grid_to_mesh = tree.nodes.new(<span class="s">&#x27;GeometryNodeGridToMesh&#x27;</span>)
+    mesh_to_sdf.inputs[<span class="s">&quot;Voxel Size&quot;</span>].default_value = voxel_size
+    grid_to_mesh.inputs[<span class="s">&quot;Threshold&quot;</span>].default_value = threshold
+    tree.links.new(gi.outputs[<span class="s">&quot;Geometry&quot;</span>], mesh_to_sdf.inputs[<span class="s">&quot;Mesh&quot;</span>])
+    link = tree.links.new(mesh_to_sdf.outputs[<span class="s">&quot;SDF Grid&quot;</span>], grid_to_mesh.inputs[<span class="s">&quot;Grid&quot;</span>])
+    <span class="c"># GN-generated geometry carries no material, so the input mesh&#x27;s material is dropped on</span>
+    <span class="c"># remesh. Re-apply it inside the tree with a Set Material node (the GN-native fix).</span>
+    out_socket = grid_to_mesh.outputs[<span class="s">&quot;Mesh&quot;</span>]
+    <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        set_mat = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetMaterial&#x27;</span>)
+        set_mat.inputs[<span class="s">&quot;Material&quot;</span>].default_value = material
+        tree.links.new(out_socket, set_mat.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        out_socket = set_mat.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    tree.links.new(out_socket, go.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="k">return</span> tree, link.is_valid
+
+<span class="k">def</span> build():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    bpy.ops.mesh.primitive_torus_add(location=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>), major_radius=<span class="n">1.2</span>, minor_radius=<span class="n">0.5</span>)
+    obj = bpy.context.active_object
+    <span class="k">for</span> p <span class="k">in</span> obj.data.polygons:
+        p.use_smooth = <span class="k">True</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;Clay&quot;</span>); mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
+    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.45</span>, <span class="n">0.55</span>, <span class="n">0.85</span>, <span class="n">1</span>)
+    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.45</span>
+    obj.data.materials.append(mat)
+    <span class="k">return</span> obj
+
+<span class="k">def</span> render_still(obj, path, engine):
+    <span class="k">import</span> bmesh
+    sc = bpy.context.scene
+    fme = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>); bm = bmesh.new()
+    bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme); bm.free()
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, fme); bpy.context.collection.objects.link(floor)
+    w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
+    w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">0.08</span>, <span class="n">1</span>); sc.world = w
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">6.5</span>, <span class="n">3.0</span>)
+    bpy.context.collection.objects.link(cam); sc.camera = cam
+    c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    <span class="k">for</span> nm, loc, en <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">900</span>), (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">350</span>)]:
+        ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = <span class="n">5.0</span>
+        lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
+        lc = lo.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); lc.target = aim; lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> get_eevee_engine_id()
+    <span class="k">if</span> sc.render.engine == <span class="s">&#x27;CYCLES&#x27;</span>:
+        <span class="k">try</span>: sc.cycles.samples = <span class="n">16</span>
+        <span class="k">except</span> Exception: <span class="k">pass</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">16</span>
+        <span class="k">except</span> Exception: <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>; sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render the remeshed result to this PNG&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>)
+    args = p.parse_args(argv)
+
+    eid = get_eevee_engine_id()
+    expected = <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+    bpy.context.scene.render.engine = eid
+    <span class="k">if</span> bpy.context.scene.render.engine != expected:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: EEVEE id </span>{eid}<span class="s"> != expected </span>{expected}<span class="s">&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">5</span>
+
+    obj = build()
+    base = len(obj.data.vertices)
+    src_mat = obj.data.materials[<span class="n">0</span>] <span class="k">if</span> obj.data.materials <span class="k">else</span> <span class="k">None</span>
+    tree, link_valid = build_remesh_via_sdf(material=src_mat)
+    obj.modifiers.new(<span class="s">&quot;sdf&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>).node_group = tree
+    dg = bpy.context.evaluated_depsgraph_get(); ev = obj.evaluated_get(dg)
+    m = ev.to_mesh(); evc = len(m.vertices)
+    mat_names = [mm.name <span class="k">for</span> mm <span class="k">in</span> m.materials <span class="k">if</span> mm <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    ev.to_mesh_clear()
+    print(<span class="s">f&quot;</span><span class="s">link_valid=</span>{link_valid}<span class="s"> base_vcount=</span>{base}<span class="s"> eval_vcount=</span>{evc}<span class="s"> materials=</span>{mat_names}<span class="s">&quot;</span>)
+    <span class="k">if</span> <span class="k">not</span> (link_valid <span class="k">and</span> evc &gt; <span class="n">0</span> <span class="k">and</span> evc != base):
+        print(<span class="s">&quot;ERROR: SDF remesh produced no/unchanged geometry&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">3</span>
+    <span class="c"># the Set Material node must carry the input material onto the remeshed result</span>
+    <span class="k">if</span> src_mat <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> src_mat.name <span class="k">not</span> <span class="k">in</span> mat_names:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: material &#x27;</span>{src_mat.name}<span class="s">&#x27; dropped by remesh</span><span class="s">&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">6</span>
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, args.output, args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">4</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered </span>{args.output}<span class="s"> (</span>{os.path.getsize(args.output)}<span class="s"> bytes)</span><span class="s">&quot;</span>)
+    print(<span class="s">&quot;gn-sdf-remesh OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> exc:
+        <span class="k">import</span> traceback; traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{type(exc).__name__}<span class="s">: </span>{exc}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh render, full size" />
+  </div>
+  <footer>
+    Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
+    &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
+  </footer>
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      var root = document.documentElement;
+      var order = ['auto', 'light', 'dark'];
+      var glyph = { auto: '\u263C', light: '\u2600', dark: '\u263D' };
+      function get() { try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; } }
+      function apply(state) {
+        if (state === 'light' || state === 'dark') root.setAttribute('data-theme', state);
+        else root.removeAttribute('data-theme');
+        try { if (state === 'auto') localStorage.removeItem('theme'); else localStorage.setItem('theme', state); } catch (e) {}
+        btn.innerHTML = glyph[state]; btn.setAttribute('aria-label', 'Theme: ' + state + ' (click to change)');
+      }
+      apply(get());
+      btn.addEventListener('click', function () {
+        var next = order[(order.indexOf(get()) + 1) % order.length];
+        apply(next);
+      });
+    })();
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

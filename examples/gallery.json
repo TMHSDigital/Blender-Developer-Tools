@@ -1,5 +1,5 @@
 {
-  "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview}; hero/preview/dir are repo-root-relative.",
+  "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview, tags?}; hero/preview/dir are repo-root-relative; tags is an optional additive list driving the gallery filter chips. build_gallery.py also emits a detail page per example at docs/gallery/<name>/.",
   "title": "Examples Gallery",
   "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
@@ -11,7 +11,8 @@
       "teaches": "Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
       "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.",
       "hero": "docs/gallery/assets/swatch-grid-hero.webp",
-      "preview": "examples/swatch-grid/preview.webp"
+      "preview": "examples/swatch-grid/preview.webp",
+      "tags": ["materials", "rendering"]
     },
     {
       "name": "turntable",
@@ -19,7 +20,8 @@
       "teaches": "A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).",
       "witnessesFix": "Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.",
       "hero": "docs/gallery/assets/turntable-hero.webp",
-      "preview": "examples/turntable/preview.webp"
+      "preview": "examples/turntable/preview.webp",
+      "tags": ["animation"]
     },
     {
       "name": "gn-sdf-remesh",
@@ -27,7 +29,8 @@
       "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
       "witnessesFix": "An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.",
       "hero": "docs/gallery/assets/gn-sdf-remesh-hero.webp",
-      "preview": "examples/gn-sdf-remesh/preview.webp"
+      "preview": "examples/gn-sdf-remesh/preview.webp",
+      "tags": ["geometry-nodes", "materials"]
     },
     {
       "name": "depsgraph-export",
@@ -35,7 +38,8 @@
       "teaches": "The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.",
       "witnessesFix": "Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.",
       "hero": "docs/gallery/assets/depsgraph-export-hero.webp",
-      "preview": "examples/depsgraph-export/preview.webp"
+      "preview": "examples/depsgraph-export/preview.webp",
+      "tags": ["depsgraph", "export"]
     }
   ]
 }
