@@ -191,6 +191,36 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: a tall violet rectangular block on a dark studio floor, stretched by a relative Tall shape key at value 0.5" /></a>
+</td>
+<td valign="middle">
+
+### [shape-key-blend](examples/shape-key-blend/)
+
+A relative shape key authored through the data API — `shape_key_add`, per-vertex
+`key_blocks` data, and `.value`. Witnesses that shape keys do not rewrite
+`mesh.vertices`: undeformed top stays at Basis, evaluated z matches
+`basis + value × (key − basis)`.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [curve-bevel-arc](examples/curve-bevel-arc/)
+
+A beveled Bezier semicircle authored on `bpy.types.Curve` — `splines.new('BEZIER')`,
+`bezier_points`, `bevel_depth` — so the curve renders as a tube without a prior mesh
+conversion. Asserts eight points, `bevel_depth == 0.12`, and evaluated topology
+850 verts / 840 faces.
+
+</td>
+</tr>
 </table>
 
 ## How content is organized

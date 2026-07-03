@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>curve-bevel-arc — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/curve-bevel-arc/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/curve-bevel-arc/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>curve-bevel-arc</h1>
+    <p>A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom curve-bevel-arc render">
+      <img src="../assets/curve-bevel-arc-hero.webp" alt="curve-bevel-arc render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.12, and the evaluated mesh has deterministic topology (850 verts, 840 faces) resting on the floor.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/curve-bevel-arc/curve_bevel_arc.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, and <code>bevel_depth</code> — so the curve renders as a tube without a prior mesh conversion.</p>
+<p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.12</code>, and that the depsgraph-evaluated mesh has the deterministic topology (850 verts, 840 faces for these resolution settings) with a Z span that rests on the floor (<code>[≈0, 2 × bevel]</code>).</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python curve_bevel_arc.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python curve_bevel_arc.py -- --output arc.png
+blender --background --python curve_bevel_arc.py -- --output arc.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (wrong point count, bevel, topology, or Z span). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/curve-bevel-arc/curve_bevel_arc.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/curve-bevel-arc/curve_bevel_arc.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Beveled Bezier arc via the curve data API — a runnable example.
+
+Witnesses that renderable tubes are authored on `bpy.types.Curve` directly
+(`splines.new(&#x27;BEZIER&#x27;)`, `bezier_points`, `bevel_depth`) — not by meshing
+first or calling curve operators. The check asserts the closed-form point
+count, bevel depth, and that the depsgraph-evaluated mesh has the
+deterministic topology and Z span of a tube whose centerline sits at
+`z = bevel_depth` (resting on the floor).
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python curve_bevel_arc.py --                 # check only
+    blender --background --python curve_bevel_arc.py -- --output c.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+N_POINTS = <span class="n">8</span>
+RADIUS = <span class="n">1.5</span>
+BEVEL = <span class="n">0.12</span>
+BEVEL_RES = <span class="n">3</span>
+RES_U = <span class="n">12</span>
+<span class="c"># measured for the parameters above — identical on 4.4 and 5.1</span>
+EXPECT_VERTS = <span class="n">850</span>
+EXPECT_FACES = <span class="n">840</span>
+
+
+<span class="k">def</span> build():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    curve = bpy.data.curves.new(<span class="s">&quot;Arc&quot;</span>, <span class="s">&#x27;CURVE&#x27;</span>)
+    curve.dimensions = <span class="s">&#x27;3D&#x27;</span>
+    curve.bevel_depth = BEVEL
+    curve.bevel_resolution = BEVEL_RES
+    curve.resolution_u = RES_U
+
+    spline = curve.splines.new(<span class="s">&#x27;BEZIER&#x27;</span>)
+    spline.bezier_points.add(N_POINTS - <span class="n">1</span>)  <span class="c"># one point exists already</span>
+    <span class="k">for</span> i, bp <span class="k">in</span> enumerate(spline.bezier_points):
+        a = i / (N_POINTS - <span class="n">1</span>) * math.pi  <span class="c"># semicircle in XY</span>
+        <span class="c"># centerline at z=BEVEL so the tube rests on the floor</span>
+        bp.co = (RADIUS * math.cos(a), RADIUS * math.sin(a), BEVEL)
+        bp.handle_left_type = <span class="s">&#x27;AUTO&#x27;</span>
+        bp.handle_right_type = <span class="s">&#x27;AUTO&#x27;</span>
+
+    obj = bpy.data.objects.new(<span class="s">&quot;Arc&quot;</span>, curve)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> check(obj):
+    curve = obj.data
+    <span class="k">if</span> curve.splines[<span class="n">0</span>].type != <span class="s">&#x27;BEZIER&#x27;</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: spline type </span>{curve.splines[<span class="n">0</span>].type}<span class="s"> != BEZIER</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    n = len(curve.splines[<span class="n">0</span>].bezier_points)
+    <span class="k">if</span> n != N_POINTS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: bezier points </span>{n}<span class="s"> != </span>{N_POINTS}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> abs(curve.bevel_depth - BEVEL) &gt; <span class="n">1e-6</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: bevel_depth </span>{curve.bevel_depth}<span class="s"> != </span>{BEVEL}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    em = ev.to_mesh()
+    <span class="k">try</span>:
+        got_v = len(em.vertices)
+        got_f = len(em.polygons)
+        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices]
+        z_lo, z_hi = min(zs), max(zs)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+    <span class="k">if</span> got_v != EXPECT_VERTS <span class="k">or</span> got_f != EXPECT_FACES:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated topology verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> != </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">expected verts=</span>{EXPECT_VERTS}<span class="s"> faces=</span>{EXPECT_FACES}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+
+    <span class="c"># tube diameter ≈ 2 * bevel; centerline at z=BEVEL → span [0, 2*BEVEL]</span>
+    <span class="k">if</span> z_lo &lt; -<span class="n">0.02</span> <span class="k">or</span> z_lo &gt; <span class="n">0.03</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: tube does not rest on floor (z_lo=</span>{z_lo:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    <span class="k">if</span> abs(z_hi - <span class="n">2</span> * BEVEL) &gt; <span class="n">0.03</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: tube height </span>{z_hi:<span class="s">.4f</span>}<span class="s"> != 2*bevel=</span>{<span class="n">2</span> * BEVEL:<span class="s">.4f</span>}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+
+    print(<span class="s">f&quot;</span><span class="s">points=</span>{n}<span class="s"> bevel=</span>{BEVEL}<span class="s"> eval_verts=</span>{got_v}<span class="s"> eval_faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    mat = bpy.data.materials.new(<span class="s">&quot;Rose&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.92</span>, <span class="n">0.14</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)  <span class="c"># rose</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.28</span>
+    obj.data.materials.append(mat)
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">20</span>))
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.4</span>, BEVEL)
+    scene.collection.objects.link(aim)
+
+    <span class="k">def</span> light(name, loc, energy, size, col):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        scene.collection.objects.link(ob)
+        lc = ob.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+        lc.target = aim
+        lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+        lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.8</span>, -<span class="n">4.0</span>, <span class="n">2.4</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    track.target = aim
+    track.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    track.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj = build()
+    code = check(obj)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;curve-bevel-arc OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/curve-bevel-arc-hero.webp" alt="curve-bevel-arc render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
