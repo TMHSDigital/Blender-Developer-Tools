@@ -60,8 +60,10 @@
   ],
   "examples": [
     "examples/depsgraph-export",
+    "examples/driver-wave",
     "examples/gn-sdf-remesh",
     "examples/swatch-grid",
-    "examples/turntable"
+    "examples/turntable",
+    "examples/wave-displace"
   ]
 }

@@ -176,9 +176,12 @@
     <button class="chip active" data-tag="" type="button">All</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
     <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
+    <button class="chip" data-tag="drivers" type="button">drivers</button>
     <button class="chip" data-tag="export" type="button">export</button>
     <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
     <button class="chip" data-tag="materials" type="button">materials</button>
+    <button class="chip" data-tag="mesh" type="button">mesh</button>
+    <button class="chip" data-tag="performance" type="button">performance</button>
     <button class="chip" data-tag="rendering" type="button">rendering</button>
   </div>
   <main id="main">
@@ -225,6 +228,28 @@
           <p class="teaches">The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.</p>
           <a class="card-link" href="depsgraph-export/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh performance">
+        <a class="card-media" href="wave-displace/" aria-label="wave-displace example detail page">
+          <img src="assets/wave-displace-hero.webp" alt="wave-displace — Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="wave-displace/">wave-displace</a></h2>
+          <p class="teaches">Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.</p>
+          <a class="card-link" href="wave-displace/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="drivers animation">
+        <a class="card-media" href="driver-wave/" aria-label="driver-wave example detail page">
+          <img src="assets/driver-wave-hero.webp" alt="driver-wave — A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="driver-wave/">driver-wave</a></h2>
+          <p class="teaches">A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.</p>
+          <a class="card-link" href="driver-wave/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

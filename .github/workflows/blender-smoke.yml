@@ -155,3 +155,23 @@ jobs:
           # > base. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/depsgraph-export/depsgraph_export.py --
+
+      - name: Shipped example - wave displace (foreach bulk IO)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): 9409 verts displaced via one
+          # foreach_get + one foreach_set; asserts count unchanged, Z span matches the
+          # amplitude, and a probe vertex matches the closed-form wave. Exits non-zero
+          # on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/wave-displace/wave_displace.py --
+
+      - name: Shipped example - driver wave (driver_namespace + depsgraph)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): sixteen SCRIPTED drivers call a
+          # driver_namespace function; asserts the driven values on the evaluated copy
+          # AND the flushed-back original both match the closed form. Exits non-zero
+          # on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/driver-wave/driver_wave.py --

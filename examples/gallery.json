@@ -40,6 +40,24 @@
       "hero": "docs/gallery/assets/depsgraph-export-hero.webp",
       "preview": "examples/depsgraph-export/preview.webp",
       "tags": ["depsgraph", "export"]
+    },
+    {
+      "name": "wave-displace",
+      "dir": "examples/wave-displace",
+      "teaches": "Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
+      "witnessesFix": "The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.",
+      "hero": "docs/gallery/assets/wave-displace-hero.webp",
+      "preview": "examples/wave-displace/preview.webp",
+      "tags": ["mesh", "performance"]
+    },
+    {
+      "name": "driver-wave",
+      "dir": "examples/driver-wave",
+      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.",
+      "witnessesFix": "Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.",
+      "hero": "docs/gallery/assets/driver-wave-hero.webp",
+      "preview": "examples/driver-wave/preview.webp",
+      "tags": ["drivers", "animation"]
     }
   ]
 }

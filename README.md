@@ -107,6 +107,34 @@ modifier-applied geometry (exported vertex count == evaluated > base).
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a dense grid displaced into smooth standing-wave dunes, rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [wave-displace](examples/wave-displace/)
+
+Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with **one
+`foreach_get` and one `foreach_set`**, no per-vertex access. Asserts the count is unchanged,
+the Z span matches the amplitude, and a probe vertex matches the closed-form wave.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen columns whose heights form a sine skyline, each driven by a driver_namespace function, rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [driver-wave](examples/driver-wave/)
+
+A `driver_namespace` function driving sixteen column heights through SCRIPTED drivers.
+Witnesses the evaluation contract: driven values appear after a view-layer update on the
+evaluated copy **and** the flushed-back original, and both must match the closed form.
+
+</td>
+</tr>
 </table>
 
 ## How content is organized
