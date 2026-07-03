@@ -32,6 +32,7 @@ ehthumbs.db
 
 # Local planning docs (not published)
 docs/site-upgrade-plan.md
+docs/new-example-prompt.md
 
 # Landing-page build outputs (generated at deploy time by scripts/site/build_site.py;
 # docs/gallery/ stays committed)
@@ -44,3 +45,4 @@ dist/
 build/
 *.zip
 *.log
+docs/new-example-prompt.md
