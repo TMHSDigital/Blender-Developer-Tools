@@ -163,6 +163,34 @@ materials with different Tint values. Witnesses the grouping contract: shared da
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber L-shaped mesh made of three joined unit cubes on a dark studio floor, viewed into the open corner" /></a>
+</td>
+<td valign="middle">
+
+### [temp-override-join](examples/temp-override-join/)
+
+Three unit cubes joined into one L-shaped mesh under `bpy.context.temp_override` — the
+supported replacement for the removed `context.copy()` dict-pass form. Asserts one mesh
+remains, sources are gone, and topology is verts = 8 × blocks, faces = 6 × blocks.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: nine lime-green cubes in a 3x3 grid on a dark studio floor, instanced via Geometry Nodes Instance on Points" /></a>
+</td>
+<td valign="middle">
+
+### [gn-instance-grid](examples/gn-instance-grid/)
+
+A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
+attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
+verts = 72, faces = 54, and `Set Material` carries the lime accent.
+
+</td>
+</tr>
 </table>
 
 ## How content is organized
