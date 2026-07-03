@@ -4,8 +4,9 @@ Witnesses the prefer-temp-override-over-context-copy contract: operators that
 need a fabricated active/selection context must run under
 `bpy.context.temp_override(**kwargs)`, not the deprecated
 `bpy.ops.*(bpy.context.copy())` dict-pass form (removed in 5.x). Three unit
-cubes are joined into one mesh; the check asserts the closed-form topology
-and that only the target object remains.
+cubes are joined into a staircase; the check asserts closed-form topology,
+that only the target remains, and that the local Z span spans all three steps
+(proving every source contributed geometry).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -16,10 +17,14 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 
 CUBE_SIZE = 1.0
-# L-shape footprint: origin, +X, -Y — open corner faces the standard -Y camera
-OFFSETS = ((0.0, 0.0), (CUBE_SIZE, 0.0), (0.0, -CUBE_SIZE))
-EXPECT_VERTS = 8 * len(OFFSETS)
-EXPECT_FACES = 6 * len(OFFSETS)
+HALF = CUBE_SIZE / 2
+STEPS = 3
+# staircase along +X: step i sits on the previous, center at (i, 0, i+0.5) * CUBE_SIZE
+EXPECT_VERTS = 8 * STEPS
+EXPECT_FACES = 6 * STEPS
+# target origin is step 0; joined local Z spans [-HALF, (STEPS-1)*CUBE_SIZE + HALF]
+EXPECT_Z_LO = -HALF
+EXPECT_Z_HI = (STEPS - 1) * CUBE_SIZE + HALF
 
 
 def build_cubes():
@@ -33,13 +38,12 @@ def build_cubes():
         bm.free()
 
     objs = []
-    for i, (x, y) in enumerate(OFFSETS):
-        # each object needs its own mesh datablock so join keeps all geometry
+    for i in range(STEPS):
         obj = bpy.data.objects.new(f"Block.{i}", me.copy())
-        obj.location = (x, y, CUBE_SIZE / 2)
+        obj.location = (i * CUBE_SIZE, 0.0, (i + 0.5) * CUBE_SIZE)
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
-    bpy.data.meshes.remove(me)  # template only
+    bpy.data.meshes.remove(me)
     return objs
 
 
@@ -81,15 +85,23 @@ def check(joined, source_names):
               file=sys.stderr)
         return 5
 
-    # sources must be gone (join consumes them) — names captured before join
     still_alive = [n for n in source_names if n in bpy.data.objects]
     if still_alive:
         print(f"ERROR: source objects still present after join: {still_alive}",
               file=sys.stderr)
         return 6
 
-    print(f"blocks={len(OFFSETS)} verts={got_v} faces={got_f} "
-          f"mesh_objects=1 override=temp_override")
+    # Z span proves every step contributed — a no-op override leaves only step 0
+    zs = [v.co.z for v in joined.data.vertices]
+    z_lo, z_hi = min(zs), max(zs)
+    if abs(z_lo - EXPECT_Z_LO) > 1e-4 or abs(z_hi - EXPECT_Z_HI) > 1e-4:
+        print(f"ERROR: local z [{z_lo:.4f}, {z_hi:.4f}] != "
+              f"[{EXPECT_Z_LO:.4f}, {EXPECT_Z_HI:.4f}] — join did not merge all steps",
+              file=sys.stderr)
+        return 7
+
+    print(f"steps={STEPS} verts={got_v} faces={got_f} "
+          f"z={z_lo:.3f}..{z_hi:.3f} override=temp_override")
     return 0
 
 
@@ -104,12 +116,12 @@ def render_still(obj, path, engine):
     mat = bpy.data.materials.new("Amber")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.98, 0.42, 0.02, 1.0)  # amber
-    bsdf.inputs["Roughness"].default_value = 0.22
+    bsdf.inputs["Base Color"].default_value = (0.98, 0.38, 0.02, 1.0)  # amber
+    bsdf.inputs["Roughness"].default_value = 0.20
     obj.data.materials.clear()
     obj.data.materials.append(mat)
-    # L-shape rests on the floor; center the footprint on the origin
-    obj.location = (-CUBE_SIZE / 2, CUBE_SIZE / 2, CUBE_SIZE / 2)
+    # center the staircase footprint; origin is step-0 center
+    obj.location = (-(STEPS - 1) * CUBE_SIZE / 2, 0.0, HALF)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -137,7 +149,7 @@ def render_still(obj, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, CUBE_SIZE / 2)
+    aim.location = (0.0, 0.0, STEPS * CUBE_SIZE / 2)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -153,15 +165,14 @@ def render_still(obj, path, engine):
         lc.track_axis = 'TRACK_NEGATIVE_Z'
         lc.up_axis = 'UP_Y'
 
-    light("Key", (-3.5, -4.5, 5.5), 1400.0, 6.0, (1.0, 0.98, 0.94))
-    light("Fill", (5.0, -3.5, 2.5), 320.0, 8.0, (0.8, 0.87, 1.0))
-    light("Rim", (1.5, 4.5, 2.0), 420.0, 4.0, (1.0, 0.75, 0.45))
+    light("Key", (-4.0, -5.0, 6.0), 1500.0, 6.0, (1.0, 0.98, 0.94))
+    light("Fill", (5.0, -3.5, 3.0), 340.0, 8.0, (0.8, 0.87, 1.0))
+    light("Rim", (1.5, 5.0, 2.5), 480.0, 4.0, (1.0, 0.75, 0.45))
 
-    # look into the open corner of the L so both arms read
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.8, -3.6, 2.8)
+    cam.location = (4.2, -5.2, 4.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -204,7 +215,7 @@ def main():
     if args.output:
         if not render_still(joined, os.path.abspath(args.output), args.engine):
             print("ERROR: render produced no file", file=sys.stderr)
-            return 7
+            return 8
         print(f"rendered still {args.output}")
 
     print("temp-override-join OK")

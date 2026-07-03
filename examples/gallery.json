@@ -80,8 +80,8 @@
     {
       "name": "temp-override-join",
       "dir": "examples/temp-override-join",
-      "teaches": "Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
-      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, and topology is verts = 8 × blocks, faces = 6 × blocks.",
+      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
+      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.",
       "hero": "docs/gallery/assets/temp-override-join-hero.webp",
       "preview": "examples/temp-override-join/preview.webp",
       "tags": ["operators", "context"]
@@ -89,8 +89,8 @@
     {
       "name": "gn-instance-grid",
       "dir": "examples/gn-instance-grid",
-      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry.",
-      "witnessesFix": "Realized instances produce closed-form topology: eval verts = grid points × cube verts (3 × 3 × 8 = 72), and Set Material carries the accent onto the evaluated mesh.",
+      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.",
+      "witnessesFix": "Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.",
       "hero": "docs/gallery/assets/gn-instance-grid-hero.webp",
       "preview": "examples/gn-instance-grid/preview.webp",
       "tags": ["geometry-nodes", "instancing"]
@@ -98,8 +98,8 @@
     {
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
-      "teaches": "A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh.",
-      "witnessesFix": "Shape keys do not rewrite mesh.vertices: undeformed top z stays at Basis, and evaluated z matches basis + value × (key − basis).",
+      "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
+      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",
       "tags": ["mesh", "shape-keys"]
@@ -107,8 +107,8 @@
     {
       "name": "curve-bevel-arc",
       "dir": "examples/curve-bevel-arc",
-      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion.",
-      "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.12, and the evaluated mesh has deterministic topology (850 verts, 840 faces) resting on the floor.",
+      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
+      "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.",
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
       "tags": ["curves", "bevel"]

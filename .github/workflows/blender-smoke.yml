@@ -198,9 +198,10 @@ jobs:
       - name: Shipped example - temp-override join (context override)
         run: |
           set -euo pipefail
-          # Frame-independent check only (no render): three cubes joined under
+          # Frame-independent check only (no render): three-step staircase joined under
           # bpy.context.temp_override; asserts one mesh remains, sources are gone,
-          # and topology is verts=24 faces=18. Exits non-zero on failure.
+          # topology verts=24 faces=18, and local Z spans all steps. Exits non-zero
+          # on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/temp-override-join/temp_override_join.py --
 
@@ -208,17 +209,18 @@ jobs:
         run: |
           set -euo pipefail
           # Frame-independent check only (no render): generative GN tree instances a
-          # cube on a 3x3 grid and realizes; asserts eval verts=72 faces=54 and Set
-          # Material carries Lime. Exits non-zero on failure.
+          # cube on a 3x3 grid and realizes; asserts eval verts=72 faces=54, Set
+          # Material carries Lime, and corner center matches the grid. Exits non-zero
+          # on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/gn-instance-grid/gn_instance_grid.py --
 
       - name: Shipped example - shape-key blend (data API + evaluated mesh)
         run: |
           set -euo pipefail
-          # Frame-independent check only (no render): relative Tall shape key at
-          # value=0.5; asserts undeformed mesh stays at Basis and evaluated z matches
-          # basis + value*(key-basis). Exits non-zero on failure.
+          # Frame-independent check only (no render): relative Tall key lifts+flares
+          # at value=0.5; asserts undeformed mesh stays at Basis and every evaluated
+          # vert matches basis + value*(key-basis). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/shape-key-blend/shape_key_blend.py --
 
@@ -226,7 +228,7 @@ jobs:
         run: |
           set -euo pipefail
           # Frame-independent check only (no render): beveled Bezier semicircle via
-          # curve data API; asserts 8 points, bevel_depth=0.12, eval verts=850
-          # faces=840, tube rests on floor. Exits non-zero on failure.
+          # curve data API; asserts 8 points, bevel_depth=0.15, fill caps, eval
+          # verts=1044 faces=1028, tube rests on floor. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/curve-bevel-arc/curve_bevel_arc.py --

@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>temp-override-join — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta name="description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/temp-override-join/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="temp-override-join — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta property="og:description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/temp-override-join/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="temp-override-join — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta name="twitter:description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,21 +170,21 @@
   </div>
   <header class="hero">
     <h1>temp-override-join</h1>
-    <p>Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
+    <p>Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom temp-override-join render">
       <img src="../assets/temp-override-join-hero.webp" alt="temp-override-join render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, and topology is verts = 8 × blocks, faces = 6 × blocks.</div>
+    <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/temp-override-join/temp_override_join.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that joins three unit cubes into one L-shaped mesh using <code>bpy.context.temp_override</code>, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/prefer-temp-override-over-context-copy.mdc"><code>prefer-temp-override-over-context-copy</code></a> rule and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> skill: operators that need a fabricated active/selection context run under <code>temp_override(**kwargs)</code>, not the deprecated <code>bpy.context.copy()</code> dict-pass form removed in Blender 5.x.</p>
-<p><strong>What it witnesses:</strong> <code>object.join</code> under <code>temp_override</code> actually consumes the sources. The check asserts the closed-form topology — verts = 8 × blocks, faces = 6 × blocks — that exactly one mesh object remains (the target), and that the source objects are gone. If the override is ignored (the 5.x failure mode of the old dict-pass path), join no-ops and the counts fail.</p>
+<p>A runnable example that joins three unit cubes into a staircase using <code>bpy.context.temp_override</code>, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/prefer-temp-override-over-context-copy.mdc"><code>prefer-temp-override-over-context-copy</code></a> rule and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> skill: operators that need a fabricated active/selection context run under <code>temp_override(**kwargs)</code>, not the deprecated <code>bpy.context.copy()</code> dict-pass form removed in Blender 5.x.</p>
+<p><strong>What it witnesses:</strong> <code>object.join</code> under <code>temp_override</code> actually consumes the sources. The check asserts closed-form topology (verts = 8 × steps, faces = 6 × steps), that exactly one mesh remains, that the sources are gone, and that the local Z span covers all three steps (<code>[-0.5, 2.5]</code>). A no-op override (the 5.x failure mode of the old dict-pass path) leaves only step 0 and the Z span fails.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python temp_override_join.py --
@@ -192,7 +192,7 @@ blender --background --python temp_override_join.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python temp_override_join.py -- --output join.png
 blender --background --python temp_override_join.py -- --output join.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong object count, topology mismatch, or sources still alive). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (wrong object count, topology mismatch, sources still alive, or incomplete Z span). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -206,8 +206,9 @@ Witnesses the prefer-temp-override-over-context-copy contract: operators that
 need a fabricated active/selection context must run under
 `bpy.context.temp_override(**kwargs)`, not the deprecated
 `bpy.ops.*(bpy.context.copy())` dict-pass form (removed in 5.x). Three unit
-cubes are joined into one mesh; the check asserts the closed-form topology
-and that only the target object remains.
+cubes are joined into a staircase; the check asserts closed-form topology,
+that only the target remains, and that the local Z span spans all three steps
+(proving every source contributed geometry).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -218,10 +219,14 @@ check. Pass --output to also render a still:
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
 CUBE_SIZE = <span class="n">1.0</span>
-<span class="c"># L-shape footprint: origin, +X, -Y — open corner faces the standard -Y camera</span>
-OFFSETS = ((<span class="n">0.0</span>, <span class="n">0.0</span>), (CUBE_SIZE, <span class="n">0.0</span>), (<span class="n">0.0</span>, -CUBE_SIZE))
-EXPECT_VERTS = <span class="n">8</span> * len(OFFSETS)
-EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
+HALF = CUBE_SIZE / <span class="n">2</span>
+STEPS = <span class="n">3</span>
+<span class="c"># staircase along +X: step i sits on the previous, center at (i, 0, i+0.5) * CUBE_SIZE</span>
+EXPECT_VERTS = <span class="n">8</span> * STEPS
+EXPECT_FACES = <span class="n">6</span> * STEPS
+<span class="c"># target origin is step 0; joined local Z spans [-HALF, (STEPS-1)*CUBE_SIZE + HALF]</span>
+EXPECT_Z_LO = -HALF
+EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
 
 
 <span class="k">def</span> build_cubes():
@@ -235,13 +240,12 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
         bm.free()
 
     objs = []
-    <span class="k">for</span> i, (x, y) <span class="k">in</span> enumerate(OFFSETS):
-        <span class="c"># each object needs its own mesh datablock so join keeps all geometry</span>
+    <span class="k">for</span> i <span class="k">in</span> range(STEPS):
         obj = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Block.</span>{i}<span class="s">&quot;</span>, me.copy())
-        obj.location = (x, y, CUBE_SIZE / <span class="n">2</span>)
+        obj.location = (i * CUBE_SIZE, <span class="n">0.0</span>, (i + <span class="n">0.5</span>) * CUBE_SIZE)
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
-    bpy.data.meshes.remove(me)  <span class="c"># template only</span>
+    bpy.data.meshes.remove(me)
     <span class="k">return</span> objs
 
 
@@ -283,15 +287,23 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
               file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
 
-    <span class="c"># sources must be gone (join consumes them) — names captured before join</span>
     still_alive = [n <span class="k">for</span> n <span class="k">in</span> source_names <span class="k">if</span> n <span class="k">in</span> bpy.data.objects]
     <span class="k">if</span> still_alive:
         print(<span class="s">f&quot;</span><span class="s">ERROR: source objects still present after join: </span>{still_alive}<span class="s">&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
-    print(<span class="s">f&quot;</span><span class="s">blocks=</span>{len(OFFSETS)}<span class="s"> verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">mesh_objects=1 override=temp_override</span><span class="s">&quot;</span>)
+    <span class="c"># Z span proves every step contributed — a no-op override leaves only step 0</span>
+    zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> joined.data.vertices]
+    z_lo, z_hi = min(zs), max(zs)
+    <span class="k">if</span> abs(z_lo - EXPECT_Z_LO) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(z_hi - EXPECT_Z_HI) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: local z [</span>{z_lo:<span class="s">.4f</span>}<span class="s">, </span>{z_hi:<span class="s">.4f</span>}<span class="s">] != </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">[</span>{EXPECT_Z_LO:<span class="s">.4f</span>}<span class="s">, </span>{EXPECT_Z_HI:<span class="s">.4f</span>}<span class="s">] — join did not merge all steps</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+
+    print(<span class="s">f&quot;</span><span class="s">steps=</span>{STEPS}<span class="s"> verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s"> override=temp_override</span><span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -306,12 +318,12 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
     mat = bpy.data.materials.new(<span class="s">&quot;Amber&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.98</span>, <span class="n">0.42</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)  <span class="c"># amber</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.98</span>, <span class="n">0.38</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)  <span class="c"># amber</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.20</span>
     obj.data.materials.clear()
     obj.data.materials.append(mat)
-    <span class="c"># L-shape rests on the floor; center the footprint on the origin</span>
-    obj.location = (-CUBE_SIZE / <span class="n">2</span>, CUBE_SIZE / <span class="n">2</span>, CUBE_SIZE / <span class="n">2</span>)
+    <span class="c"># center the staircase footprint; origin is step-0 center</span>
+    obj.location = (-(STEPS - <span class="n">1</span>) * CUBE_SIZE / <span class="n">2</span>, <span class="n">0.0</span>, HALF)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -339,7 +351,7 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, STEPS * CUBE_SIZE / <span class="n">2</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -355,15 +367,14 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">2.5</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
 
-    <span class="c"># look into the open corner of the L so both arms read</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.8</span>, -<span class="n">3.6</span>, <span class="n">2.8</span>)
+    cam.location = (<span class="n">4.2</span>, -<span class="n">5.2</span>, <span class="n">4.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -406,7 +417,7 @@ EXPECT_FACES = <span class="n">6</span> * len(OFFSETS)
     <span class="k">if</span> args.output:
         <span class="k">if</span> <span class="k">not</span> render_still(joined, os.path.abspath(args.output), args.engine):
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">7</span>
+            <span class="k">return</span> <span class="n">8</span>
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;temp-override-join OK&quot;</span>)

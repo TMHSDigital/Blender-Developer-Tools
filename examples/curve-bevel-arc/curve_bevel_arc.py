@@ -1,10 +1,10 @@
 """Beveled Bezier arc via the curve data API — a runnable example.
 
 Witnesses that renderable tubes are authored on `bpy.types.Curve` directly
-(`splines.new('BEZIER')`, `bezier_points`, `bevel_depth`) — not by meshing
-first or calling curve operators. The check asserts the closed-form point
-count, bevel depth, and that the depsgraph-evaluated mesh has the
-deterministic topology and Z span of a tube whose centerline sits at
+(`splines.new('BEZIER')`, `bezier_points`, `bevel_depth`, `use_fill_caps`) —
+not by meshing first or calling curve operators. The check asserts the
+closed-form point count, bevel depth, filled-cap topology, and that the
+depsgraph-evaluated mesh has a Z span of a tube whose centerline sits at
 `z = bevel_depth` (resting on the floor).
 
 By default it runs only the correctness check (no render) — the CI smoke
@@ -17,12 +17,12 @@ import bpy, bmesh, sys, os, math, argparse
 
 N_POINTS = 8
 RADIUS = 1.5
-BEVEL = 0.12
-BEVEL_RES = 3
+BEVEL = 0.15
+BEVEL_RES = 4
 RES_U = 12
-# measured for the parameters above — identical on 4.4 and 5.1
-EXPECT_VERTS = 850
-EXPECT_FACES = 840
+# measured for the parameters above with use_fill_caps=True — identical on 4.4 and 5.1
+EXPECT_VERTS = 1044
+EXPECT_FACES = 1028
 
 
 def build():
@@ -32,6 +32,7 @@ def build():
     curve.bevel_depth = BEVEL
     curve.bevel_resolution = BEVEL_RES
     curve.resolution_u = RES_U
+    curve.use_fill_caps = True  # solid ends — not a hollow pipe
 
     spline = curve.splines.new('BEZIER')
     spline.bezier_points.add(N_POINTS - 1)  # one point exists already
@@ -59,6 +60,9 @@ def check(obj):
     if abs(curve.bevel_depth - BEVEL) > 1e-6:
         print(f"ERROR: bevel_depth {curve.bevel_depth} != {BEVEL}", file=sys.stderr)
         return 5
+    if not curve.use_fill_caps:
+        print("ERROR: use_fill_caps is False — ends should be capped", file=sys.stderr)
+        return 6
 
     bpy.context.view_layer.update()
     dg = bpy.context.evaluated_depsgraph_get()
@@ -69,6 +73,9 @@ def check(obj):
         got_f = len(em.polygons)
         zs = [v.co.z for v in em.vertices]
         z_lo, z_hi = min(zs), max(zs)
+        # arc spans x in [-RADIUS, +RADIUS] at the endpoints
+        xs = [v.co.x for v in em.vertices]
+        x_span = max(xs) - min(xs)
     finally:
         ev.to_mesh_clear()
 
@@ -76,19 +83,24 @@ def check(obj):
         print(f"ERROR: evaluated topology verts={got_v} faces={got_f} != "
               f"expected verts={EXPECT_VERTS} faces={EXPECT_FACES}",
               file=sys.stderr)
-        return 6
-
-    # tube diameter ≈ 2 * bevel; centerline at z=BEVEL → span [0, 2*BEVEL]
-    if z_lo < -0.02 or z_lo > 0.03:
-        print(f"ERROR: tube does not rest on floor (z_lo={z_lo:.4f})", file=sys.stderr)
         return 7
-    if abs(z_hi - 2 * BEVEL) > 0.03:
+
+    # tube diameter = 2 * bevel; centerline at z=BEVEL → span [0, 2*BEVEL]
+    if abs(z_lo) > 1e-4:
+        print(f"ERROR: tube does not rest on floor (z_lo={z_lo:.6f})", file=sys.stderr)
+        return 8
+    if abs(z_hi - 2 * BEVEL) > 1e-4:
         print(f"ERROR: tube height {z_hi:.4f} != 2*bevel={2 * BEVEL:.4f}",
               file=sys.stderr)
-        return 8
+        return 9
+    # diameter adds 2*BEVEL to the arc's 2*RADIUS span
+    expect_x_span = 2 * RADIUS + 2 * BEVEL
+    if abs(x_span - expect_x_span) > 0.05:
+        print(f"ERROR: x span {x_span:.4f} != {expect_x_span:.4f}", file=sys.stderr)
+        return 10
 
-    print(f"points={n} bevel={BEVEL} eval_verts={got_v} eval_faces={got_f} "
-          f"z={z_lo:.3f}..{z_hi:.3f}")
+    print(f"points={n} bevel={BEVEL} caps=True eval_verts={got_v} "
+          f"eval_faces={got_f} z={z_lo:.3f}..{z_hi:.3f} x_span={x_span:.3f}")
     return 0
 
 
@@ -101,10 +113,10 @@ def render_still(obj, path, engine):
     mat = bpy.data.materials.new("Rose")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.92, 0.14, 0.42, 1.0)  # rose
-    bsdf.inputs["Roughness"].default_value = 0.28
+    bsdf.inputs["Base Color"].default_value = (0.95, 0.10, 0.38, 1.0)  # rose
+    bsdf.inputs["Roughness"].default_value = 0.24
     obj.data.materials.append(mat)
-    obj.rotation_euler = (0.0, 0.0, math.radians(-20))
+    obj.rotation_euler = (0.0, 0.0, math.radians(-18))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -132,7 +144,7 @@ def render_still(obj, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.4, BEVEL)
+    aim.location = (0.0, 0.35, BEVEL)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -148,14 +160,14 @@ def render_still(obj, path, engine):
         lc.track_axis = 'TRACK_NEGATIVE_Z'
         lc.up_axis = 'UP_Y'
 
-    light("Key", (-3.5, -4.5, 5.5), 1400.0, 6.0, (1.0, 0.98, 0.94))
-    light("Fill", (5.0, -3.5, 2.5), 320.0, 8.0, (0.8, 0.87, 1.0))
-    light("Rim", (1.5, 4.5, 2.0), 420.0, 4.0, (1.0, 0.75, 0.45))
+    light("Key", (-3.5, -4.5, 5.5), 1500.0, 6.0, (1.0, 0.98, 0.94))
+    light("Fill", (5.0, -3.5, 2.5), 340.0, 8.0, (0.8, 0.87, 1.0))
+    light("Rim", (1.5, 4.5, 2.0), 480.0, 4.0, (1.0, 0.75, 0.45))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.8, -4.0, 2.4)
+    cam.location = (3.0, -4.2, 2.6)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -195,7 +207,7 @@ def main():
     if args.output:
         if not render_still(obj, os.path.abspath(args.output), args.engine):
             print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+            return 11
         print(f"rendered still {args.output}")
 
     print("curve-bevel-arc OK")

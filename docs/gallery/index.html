@@ -284,34 +284,34 @@
       </article>
       <article class="card" data-tags="operators context">
         <a class="card-media" href="temp-override-join/" aria-label="temp-override-join example detail page">
-          <img src="assets/temp-override-join-hero.webp" alt="temp-override-join — Join three unit cubes into one L-shaped mesh under bpy" loading="lazy" decoding="async" />
+          <img src="assets/temp-override-join-hero.webp" alt="temp-override-join — Join three unit cubes into a staircase under bpy" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="temp-override-join/">temp-override-join</a></h2>
-          <p class="teaches">Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, and topology is verts = 8 × blocks, faces = 6 × blocks.</p>
+          <p class="teaches">Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.</p>
           <a class="card-link" href="temp-override-join/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card" data-tags="geometry-nodes instancing">
         <a class="card-media" href="gn-instance-grid/" aria-label="gn-instance-grid example detail page">
-          <img src="assets/gn-instance-grid-hero.webp" alt="gn-instance-grid — A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry" loading="lazy" decoding="async" />
+          <img src="assets/gn-instance-grid-hero.webp" alt="gn-instance-grid — A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="gn-instance-grid/">gn-instance-grid</a></h2>
-          <p class="teaches">A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Realized instances produce closed-form topology: eval verts = grid points × cube verts (3 × 3 × 8 = 72), and Set Material carries the accent onto the evaluated mesh.</p>
+          <p class="teaches">A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.</p>
           <a class="card-link" href="gn-instance-grid/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card" data-tags="mesh shape-keys">
         <a class="card-media" href="shape-key-blend/" aria-label="shape-key-blend example detail page">
-          <img src="assets/shape-key-blend-hero.webp" alt="shape-key-blend — A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and " loading="lazy" decoding="async" />
+          <img src="assets/shape-key-blend-hero.webp" alt="shape-key-blend — A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / " loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="shape-key-blend/">shape-key-blend</a></h2>
-          <p class="teaches">A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: undeformed top z stays at Basis, and evaluated z matches basis + value × (key − basis).</p>
+          <p class="teaches">A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.</p>
           <a class="card-link" href="shape-key-blend/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
@@ -321,8 +321,8 @@
         </a>
         <div class="card-body">
           <h2><a href="curve-bevel-arc/">curve-bevel-arc</a></h2>
-          <p class="teaches">A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.12, and the evaluated mesh has deterministic topology (850 verts, 840 faces) resting on the floor.</p>
+          <p class="teaches">A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.</p>
           <a class="card-link" href="curve-bevel-arc/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>

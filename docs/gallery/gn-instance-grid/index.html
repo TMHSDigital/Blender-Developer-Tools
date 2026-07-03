@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>gn-instance-grid — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry." />
+  <meta name="description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-instance-grid/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="gn-instance-grid — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry." />
+  <meta property="og:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-instance-grid/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-instance-grid — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry." />
+  <meta name="twitter:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,21 +170,21 @@
   </div>
   <header class="hero">
     <h1>gn-instance-grid</h1>
-    <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry.</p>
+    <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gn-instance-grid render">
       <img src="../assets/gn-instance-grid-hero.webp" alt="gn-instance-grid render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology: eval verts = grid points × cube verts (3 × 3 × 8 = 72), and Set Material carries the accent onto the evaluated mesh.</div>
+    <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gn-instance-grid/gn_instance_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Transform — and attaches it as a <code>NODES</code> modifier, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill. The tree has no Group Input: the grid and cube primitives live inside the node group.</p>
-<p><strong>What it witnesses:</strong> instancing is not free geometry until you realize it. The check asserts the closed-form evaluated topology — verts = grid points × cube verts (3 × 3 × 8 = 72), faces = 9 × 6 — and that a <code>Set Material</code> node carries the lime accent onto the evaluated mesh. If Realize Instances is omitted, the evaluated mesh is empty and the counts fail.</p>
+<p>A runnable example that builds a generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Transform → Set Shade Smooth — and attaches it as a <code>NODES</code> modifier, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill. The tree has no Group Input: the grid and cube primitives live inside the node group.</p>
+<p><strong>What it witnesses:</strong> instancing is not free geometry until you realize it. The check asserts the closed-form evaluated topology — verts = grid points × cube verts (3 × 3 × 8 = 72), faces = 9 × 6 — that a <code>Set Material</code> node carries the lime accent, and that the corner instance center sits at its closed-form grid coordinate. If Realize Instances is omitted, the evaluated mesh is empty and the counts fail.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_instance_grid.py --
@@ -192,7 +192,7 @@ blender --background --python gn_instance_grid.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gn_instance_grid.py -- --output grid.png
 blender --background --python gn_instance_grid.py -- --output grid.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong carrier, topology mismatch, or missing material). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (wrong carrier, topology mismatch, missing material, or misplaced corner). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -207,7 +207,8 @@ a generative GeometryNodeTree (Mesh Grid → Instance on Points → Realize
 Instances → Transform) attached as a NODES modifier, with no Group Input
 geometry. The check asserts the closed-form evaluated topology —
 verts = grid_points × cube_verts — proving instances were realized, not
-left as empty instance geometry.
+left as empty instance geometry, and that a corner instance sits at its
+closed-form grid coordinate.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -219,13 +220,17 @@ check. Pass --output to also render a still:
 
 GRID_X = <span class="n">3</span>
 GRID_Y = <span class="n">3</span>
-GRID_SIZE = <span class="n">2.0</span>
-CUBE_SIZE = <span class="n">0.35</span>
+GRID_SIZE = <span class="n">2.4</span>
+CUBE_SIZE = <span class="n">0.42</span>
 CUBE_VERTS = <span class="n">8</span>
 CUBE_FACES = <span class="n">6</span>
 GRID_POINTS = GRID_X * GRID_Y
 EXPECT_VERTS = GRID_POINTS * CUBE_VERTS
 EXPECT_FACES = GRID_POINTS * CUBE_FACES
+<span class="c"># Mesh Grid spans [-GRID_SIZE/2, +GRID_SIZE/2]; corner point at (+half, +half)</span>
+GRID_HALF = GRID_SIZE / <span class="n">2</span>
+<span class="c"># after Transform lift, corner cube center is at (GRID_HALF, GRID_HALF, CUBE_SIZE/2)</span>
+CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
 
 
 <span class="k">def</span> build_instance_grid_tree(material=<span class="k">None</span>):
@@ -251,11 +256,16 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
     <span class="c"># cubes are centered on grid points at z=0; lift so they rest on the floor</span>
     xform.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
 
+    <span class="c"># crisp facets — matches the other studio examples</span>
+    shade = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetShadeSmooth&#x27;</span>)
+    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+
     tree.links.new(grid.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Points&quot;</span>])
     tree.links.new(cube.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Instance&quot;</span>])
     tree.links.new(iop.outputs[<span class="s">&quot;Instances&quot;</span>], realize.inputs[<span class="s">&quot;Geometry&quot;</span>])
     tree.links.new(realize.outputs[<span class="s">&quot;Geometry&quot;</span>], xform.inputs[<span class="s">&quot;Geometry&quot;</span>])
-    out_socket = xform.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    tree.links.new(xform.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    out_socket = shade.outputs[<span class="s">&quot;Geometry&quot;</span>]
 
     <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
         set_mat = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetMaterial&#x27;</span>)
@@ -278,8 +288,8 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
     mat = bpy.data.materials.new(<span class="s">&quot;Lime&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.28</span>, <span class="n">0.92</span>, <span class="n">0.08</span>, <span class="n">1.0</span>)  <span class="c"># lime</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.24</span>
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.22</span>, <span class="n">0.95</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)  <span class="c"># lime</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
 
     tree = build_instance_grid_tree(material=mat)
     mod = obj.modifiers.new(<span class="s">&quot;instance_grid&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>)
@@ -300,6 +310,16 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
         got_v = len(em.vertices)
         got_f = len(em.polygons)
         mat_names = [m.name <span class="k">for</span> m <span class="k">in</span> em.materials <span class="k">if</span> m <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+        <span class="c"># corner instance: the 8 verts nearest CORNER_CENTER should average to it</span>
+        corner = [v.co <span class="k">for</span> v <span class="k">in</span> em.vertices
+                  <span class="k">if</span> (v.co.x &gt; GRID_HALF - CUBE_SIZE <span class="k">and</span> v.co.y &gt; GRID_HALF - CUBE_SIZE)]
+        <span class="k">if</span> len(corner) != CUBE_VERTS:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: corner instance has </span>{len(corner)}<span class="s"> verts, expected </span>{CUBE_VERTS}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        cx = sum(c.x <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
+        cy = sum(c.y <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
+        cz = sum(c.z <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
     <span class="k">finally</span>:
         ev.to_mesh_clear()
 
@@ -307,15 +327,24 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
         print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated topology verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">expected verts=</span>{EXPECT_VERTS}<span class="s"> faces=</span>{EXPECT_FACES}<span class="s">&quot;</span>,
               file=sys.stderr)
-        <span class="k">return</span> <span class="n">4</span>
+        <span class="k">return</span> <span class="n">5</span>
 
     <span class="k">if</span> <span class="s">&quot;Lime&quot;</span> <span class="k">not</span> <span class="k">in</span> mat_names:
         print(<span class="s">f&quot;</span><span class="s">ERROR: Set Material did not carry Lime onto evaluated mesh </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">(materials=</span>{mat_names}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
-        <span class="k">return</span> <span class="n">5</span>
+        <span class="k">return</span> <span class="n">6</span>
+
+    <span class="k">for</span> got, exp, axis <span class="k">in</span> ((cx, CORNER_CENTER[<span class="n">0</span>], <span class="s">&#x27;x&#x27;</span>),
+                           (cy, CORNER_CENTER[<span class="n">1</span>], <span class="s">&#x27;y&#x27;</span>),
+                           (cz, CORNER_CENTER[<span class="n">2</span>], <span class="s">&#x27;z&#x27;</span>)):
+        <span class="k">if</span> abs(got - exp) &gt; <span class="n">1e-3</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: corner center </span>{axis}<span class="s">=</span>{got:<span class="s">.4f</span>}<span class="s"> != </span>{exp:<span class="s">.4f</span>}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
 
     print(<span class="s">f&quot;</span><span class="s">grid=</span>{GRID_X}<span class="s">x</span>{GRID_Y}<span class="s"> points=</span>{GRID_POINTS}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">eval_verts=</span>{got_v}<span class="s"> eval_faces=</span>{got_f}<span class="s"> material=Lime</span><span class="s">&quot;</span>)
+          <span class="s">f&quot;</span><span class="s">eval_verts=</span>{got_v}<span class="s"> eval_faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">corner=(</span>{cx:<span class="s">.2f</span>}<span class="s">,</span>{cy:<span class="s">.2f</span>}<span class="s">,</span>{cz:<span class="s">.2f</span>}<span class="s">) material=Lime</span><span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -351,31 +380,34 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="c"># tip the grid so depth reads; cubes already rest on the floor via the tree</span>
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">24</span>))
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
+    scene.collection.objects.link(aim)
+
+    <span class="k">def</span> light(name, loc, energy, size, col):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy
         ld.size = size
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
+        lc = ob.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+        lc.target = aim
+        lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+        lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>), (-<span class="n">82</span>, <span class="n">0</span>, <span class="n">165</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
 
-    <span class="c"># tip the grid so depth reads; cubes already rest on the floor via the tree</span>
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">22</span>))
-
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
-    scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># three-quarter view so the 3x3 grid reads as depth, not a flat array</span>
-    cam.location = (<span class="n">3.2</span>, -<span class="n">3.8</span>, <span class="n">2.6</span>)
+    cam.location = (<span class="n">3.6</span>, -<span class="n">4.2</span>, <span class="n">2.8</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -415,7 +447,7 @@ EXPECT_FACES = GRID_POINTS * CUBE_FACES
     <span class="k">if</span> args.output:
         <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+            <span class="k">return</span> <span class="n">8</span>
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;gn-instance-grid OK&quot;</span>)
