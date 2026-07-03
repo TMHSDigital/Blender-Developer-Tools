@@ -33,6 +33,12 @@ ehthumbs.db
 # Local planning docs (not published)
 docs/site-upgrade-plan.md
 
+# Landing-page build outputs (generated at deploy time by scripts/site/build_site.py;
+# docs/gallery/ stays committed)
+docs/index.html
+docs/fonts/
+docs/assets/
+
 # Build artifacts
 dist/
 build/

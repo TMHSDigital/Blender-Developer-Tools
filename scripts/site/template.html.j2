@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% set og_image = site.ogImage | default('https://tmhsdigital.github.io/Developer-Tools-Directory/assets/logo.png', true) %}
+  <title>{{ plugin.displayName }}</title>
+  <meta name="description" content="{{ plugin.description }}" />
+  {% if site.canonical %}<link rel="canonical" href="{{ site.canonical }}" />{% endif %}
+  <meta property="og:title" content="{{ plugin.displayName }}" />
+  <meta property="og:description" content="{{ plugin.description }}" />
+  <meta property="og:type" content="website" />
+  {% if site.canonical %}<meta property="og:url" content="{{ site.canonical }}" />{% endif %}
+  <meta property="og:image" content="{{ og_image }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ plugin.displayName }}" />
+  <meta name="twitter:description" content="{{ plugin.description }}" />
+  <meta name="twitter:image" content="{{ og_image }}" />
+  {% if site.favicon %}<link rel="icon" href="{{ site.favicon }}" />{% endif %}
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-regular.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-bold.woff2" />
+  <script>
+    (function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');else if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();
+  </script>
+  <style>
+    @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/inter-bold.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Shared design tokens, single source of truth (see tokens.css). */
+{% include 'tokens.css' %}
+
+    /* Per-tool themeable values; the rest come from tokens.css above. */
+    :root {
+      --accent: {{ site.accent | default('#7c3aed') }};
+      --accent-light: {{ site.accentLight | default('#a78bfa') }};
+      --bg: {{ site.heroGradientFrom | default('#0d1117') }};
+      --nav-bg: rgba(13,17,23,0.85);
+      --hero-from: {{ site.heroGradientFrom | default('#0d1117') }};
+      --hero-to: {{ site.heroGradientTo | default('#161b22') }};
+    }
+
+    /* LIGHT THEME (OS preference, no explicit data-theme) */
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme="dark"]) {
+        --bg: #f6f8fa; --bg2: #ffffff; --bg3: #f0f2f5;
+        --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+        --nav-bg: rgba(255,255,255,0.88);
+        --hero-from: #f0f2f5; --hero-to: #f6f8fa;
+      }
+      html:not([data-theme="dark"]) a { color: var(--accent); }
+      html:not([data-theme="dark"]) a:hover { color: var(--accent); }
+      html:not([data-theme="dark"]) .hero h1 { background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+      html:not([data-theme="dark"]) .data-table tr:hover td { background: rgba(0,0,0,0.03); }
+      html:not([data-theme="dark"]) .search-input { background: var(--bg3); }
+      html:not([data-theme="dark"]) .install-steps code { background: var(--bg3); }
+    }
+    /* LIGHT THEME (explicit toggle) */
+    [data-theme="light"] {
+      --bg: #f6f8fa; --bg2: #ffffff; --bg3: #f0f2f5;
+      --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+      --nav-bg: rgba(255,255,255,0.88);
+      --hero-from: #f0f2f5; --hero-to: #f6f8fa;
+    }
+    [data-theme="light"] a { color: var(--accent); }
+    [data-theme="light"] a:hover { color: var(--accent); }
+    [data-theme="light"] .hero h1 { background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+    [data-theme="light"] .data-table tr:hover td { background: rgba(0,0,0,0.03); }
+    [data-theme="light"] .search-input { background: var(--bg3); }
+    [data-theme="light"] .install-steps code { background: var(--bg3); }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+    a { color: var(--accent-light); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--link-hover); }
+
+    /* NAV */
+    .nav { position: sticky; top: 0; z-index: 100; background: var(--nav-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 1.5rem; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--text); white-space: nowrap; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+    .nav-links a { color: var(--text-dim); font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-light); }
+    .nav-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.5rem; }
+    .nav-toggle svg { width: 24px; height: 24px; }
+    .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); cursor: pointer; padding: 0.25rem 0.5rem; font-size: 0.8125rem; transition: color 0.2s, border-color 0.2s; display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-sans); }
+    .theme-toggle:hover { color: var(--accent-light); border-color: var(--accent); }
+    .theme-toggle svg { width: 14px; height: 14px; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 4rem 1.5rem 4.5rem; background: linear-gradient(180deg, var(--hero-from) 0%, var(--hero-to) 70%, var(--bg) 100%); position: relative; }
+    .hero-inner { max-width: 720px; margin: 0 auto; }
+    .hero-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.3); border: 2px solid var(--border); }
+    .hero h1 { font-size: var(--hero-h1); font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 1.125rem; color: var(--text-dim); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .stats { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .stat { text-align: center; }
+    .stat-val { font-size: var(--stat-size); font-weight: 700; color: var(--accent-light); font-family: var(--font-mono); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.25rem; }
+    .hero-badges { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.875rem; font-weight: 500; transition: border-color 0.2s, background 0.2s; }
+    .badge:hover { border-color: var(--accent); background: var(--bg3); color: var(--text); }
+    .badge svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* CONTENT AREA */
+    .content-area { max-width: 1040px; margin: 0 auto; padding: 2rem 1.5rem 0; }
+
+    /* SECTIONS */
+    .section { background: var(--bg2); border: 1px solid var(--border); border-top: 2px solid var(--accent); border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 1.25rem; box-shadow: 0 -2px 20px color-mix(in srgb, var(--accent) 8%, transparent); }
+    .section-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.625rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .section-header h2 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+    .count { font-size: 0.8125rem; font-weight: 500; color: var(--text-dim); background: var(--bg3); padding: 0.15rem 0.6rem; border-radius: 12px; }
+    .section-actions { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; }
+    .btn-sm { padding: 0.3rem 0.75rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: color 0.2s, border-color 0.2s; font-family: var(--font-sans); }
+    .btn-sm:hover { color: var(--accent-light); border-color: var(--accent); }
+    a.btn-sm { text-decoration: none; display: inline-flex; align-items: center; }
+
+    /* EXAMPLES */
+    .example-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .example-card { display: block; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+    .example-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .example-card img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+    .example-card-body { padding: 0.75rem 0.875rem 0.875rem; }
+    .example-card-body h3 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 0.35rem; color: var(--text); font-family: var(--font-mono); }
+    .example-card-body p { font-size: 0.8125rem; color: var(--text-dim); line-height: 1.45; margin: 0; }
+
+    /* SEARCH */
+    .search-wrap { margin-bottom: 1rem; position: relative; }
+    .search-input { width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.25rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.875rem; font-family: var(--font-sans); outline: none; transition: border-color 0.2s; }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-dim); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); pointer-events: none; }
+    .search-icon svg { width: 16px; height: 16px; }
+    .search-meta { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.35rem; }
+    .search-shortcut { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.625rem; color: var(--text-dim); background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.4rem; font-family: var(--font-mono); pointer-events: none; }
+
+    /* DETAILS / COLLAPSIBLE */
+    details.cat-group { margin-bottom: 0.25rem; }
+    details.cat-group > summary { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.75rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; list-style: none; font-weight: 600; font-size: 0.875rem; color: var(--text); transition: background 0.15s; }
+    details.cat-group > summary::-webkit-details-marker { display: none; }
+    details.cat-group > summary::before { content: ''; display: inline-block; width: 0; height: 0; border-left: 5px solid var(--accent-light); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform 0.2s; flex-shrink: 0; }
+    details.cat-group[open] > summary::before { transform: rotate(90deg); }
+    details.cat-group > summary:hover { background: var(--bg3); }
+    details.cat-group > summary .cat-count { font-weight: 400; color: var(--text-dim); font-size: 0.75rem; margin-left: auto; }
+    details.cat-group > .cat-body { overflow: hidden; }
+
+    /* EXPAND ANIMATION */
+    .cat-body-anim { transition: max-height 0.25s ease, opacity 0.2s ease; overflow: hidden; }
+
+    /* TABLE */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+    .data-table th { text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid rgba(48,54,61,0.5); color: var(--text-dim); vertical-align: top; }
+    .data-table tr:hover td { background: rgba(22,27,34,0.5); }
+    .data-table .name-cell { color: var(--text); font-weight: 500; white-space: nowrap; }
+    .data-table .scope-cell { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent-light); }
+    tr.hidden-row { display: none; }
+
+    /* INSTALL */
+    .install-steps { list-style: none; counter-reset: step; }
+    .install-steps li { counter-increment: step; display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(48,54,61,0.4); }
+    .install-steps li::before { content: counter(step); flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.8125rem; }
+    .install-steps code { background: var(--bg2); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.85em; position: relative; }
+    .copy-icon { display: inline-flex; align-items: center; margin-left: 0.35rem; padding: 0.15rem; cursor: pointer; color: var(--text-dim); transition: color 0.2s; vertical-align: middle; }
+    .copy-icon:hover { color: var(--accent-light); }
+    .copy-icon svg { width: 14px; height: 14px; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100%); background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.8125rem; font-weight: 500; opacity: 0; transition: transform 0.3s, opacity 0.3s; z-index: 200; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* BACK TO TOP */
+    .back-to-top { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 150; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .back-to-top.visible { opacity: 1; pointer-events: auto; }
+    .back-to-top svg { width: 20px; height: 20px; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 2rem 1.5rem 2.5rem; color: var(--text-dim); font-size: 0.8125rem; margin-top: 1rem; }
+    footer a { color: var(--accent-light); }
+    .footer-inner { max-width: 1040px; margin: 0 auto; }
+    .footer-links { display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .footer-links a { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--text-dim); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent-light); }
+    .footer-links svg { width: 16px; height: 16px; }
+    .footer-divider { width: 60px; height: 2px; background: var(--accent); margin: 0 auto 1rem; border-radius: 1px; opacity: 0.4; }
+    .footer-meta { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.75rem; }
+    .footer-meta span { opacity: 0.7; }
+    .footer-directory { margin-top: 0.75rem; font-size: 0.6875rem; opacity: 0.5; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .hero-logo { width: 64px; height: 64px; }
+      .stats { gap: 1.25rem; }
+      .stat-val { font-size: 1.5rem; }
+      .nav-links { gap: 0.75rem; }
+      .nav-links a { font-size: 0.8rem; }
+      .data-table { font-size: 0.875rem; }
+    }
+    @media (max-width: 640px) {
+      .nav-toggle { display: block; }
+      .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; flex-direction: column; background: var(--nav-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; gap: 0.75rem; }
+      .nav-links.open { display: flex; }
+      .hero { padding: 3rem 1rem 2.5rem; }
+      .hero h1 { font-size: 1.5rem; }
+      .hero-badges { flex-direction: column; align-items: center; }
+      .content-area { padding: 0 0.75rem; }
+      .section { padding: 1.25rem 1rem; border-radius: 8px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .section-actions { margin-left: 0; }
+    }
+
+    /* SKILL DETAIL ROWS */
+    details.skill-row { border-bottom: 1px solid rgba(48,54,61,0.5); }
+    details.skill-row > summary { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0.75rem; cursor: pointer; list-style: none; transition: background 0.15s; }
+    details.skill-row > summary::-webkit-details-marker { display: none; }
+    details.skill-row > summary::before { content: ''; display: inline-block; width: 0; height: 0; margin-top: 0.4rem; border-left: 5px solid var(--accent-light); border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform 0.2s; flex-shrink: 0; }
+    details.skill-row[open] > summary::before { transform: rotate(90deg); }
+    details.skill-row > summary:hover { background: var(--bg3); }
+    .skill-name { font-weight: 500; color: var(--text); flex: 0 1 12rem; min-width: 0; }
+    .skill-desc { color: var(--text-dim); font-size: 0.875rem; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+    /* Narrow screens: stack name above description (the two-column flex row leaves the name
+       too cramped). flex-wrap + a full-width basis on .skill-desc drops it to its own line
+       under the triangle+name; indent it to align under the name. */
+    @media (max-width: 620px) {
+      details.skill-row > summary { flex-wrap: wrap; }
+      .skill-name { flex: 1 1 0; }
+      .skill-desc { flex: 1 0 100%; margin-left: 1.1rem; }
+    }
+    .skill-detail { padding: 0.5rem 0.75rem 1rem 1.75rem; }
+    .skill-detail-group { margin-bottom: 0.75rem; }
+    .skill-detail-group strong { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.35rem; }
+    .skill-detail-group ul { list-style: disc; padding-left: 1.25rem; font-size: 0.875rem; color: var(--text); }
+    .skill-detail-group li { margin-bottom: 0.2rem; }
+    .skill-tools { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .skill-tools code { background: var(--bg3); padding: 0.15rem 0.5rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-light); }
+    .skill-category-label { display: inline-block; font-size: 0.6875rem; color: var(--text-dim); background: var(--bg3); padding: 0.1rem 0.5rem; border-radius: 10px; }
+
+    /* QUICK START */
+    .quick-start { position: relative; max-width: 640px; margin: 0 auto 2rem; }
+    .quick-start-title { font-size: 0.8125rem; color: var(--text-dim); text-align: center; margin-bottom: 0.5rem; font-weight: 500; }
+    .quick-start-block { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 3rem 1rem 1.25rem; font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-light); overflow-x: auto; white-space: pre; line-height: 1.6; }
+    .quick-start-copy { position: absolute; top: 0.625rem; right: 0.625rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); cursor: pointer; padding: 0.3rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s, border-color 0.2s; }
+    .quick-start-copy:hover { color: var(--accent-light); border-color: var(--accent); }
+    .quick-start-copy svg { width: 16px; height: 16px; }
+
+    /* COMPATIBILITY BADGES */
+    .compat-row { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .compat-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 999px; font-size: 0.75rem; font-weight: 500; color: var(--accent-light); white-space: nowrap; }
+    .compat-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* CHANGELOG */
+    .changelog-entry { margin-bottom: 1.25rem; }
+    .changelog-version { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .changelog-date { font-size: 0.8125rem; color: var(--text-dim); margin-left: 0.5rem; }
+    .changelog-heading { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-light); margin: 0.75rem 0 0.35rem; }
+    .changelog-items { list-style: disc; padding-left: 1.25rem; font-size: 0.875rem; color: var(--text-dim); }
+    .changelog-items li { margin-bottom: 0.2rem; }
+    .changelog-link { display: inline-block; margin-top: 0.75rem; font-size: 0.8125rem; }
+
+    /* RELATED TOOLS */
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .related-card { display: flex; flex-direction: column; padding: 1rem 1.25rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.2s, transform 0.15s; text-decoration: none; color: inherit; }
+    .related-card:hover { border-color: var(--accent); transform: translateY(-2px); color: inherit; }
+    .related-card-name { font-weight: 600; font-size: 0.9375rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem; }
+    .related-card-name svg { width: 14px; height: 14px; color: var(--accent-light); flex-shrink: 0; }
+    .related-card-desc { font-size: 0.8125rem; color: var(--text-dim); margin-top: 0.35rem; }
+
+    /* SR ONLY */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+    /* SKIP LINK */
+    .skip-link { position: absolute; left: 0.5rem; top: -3rem; z-index: 300; background: var(--accent); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; transition: top 0.15s; }
+    .skip-link:focus { top: 0.5rem; color: #fff; }
+
+    /* REDUCED MOTION */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="nav-brand">{{ plugin.displayName }}</span>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <ul class="nav-links">
+        {% if skills %}<li><a href="#skills">Skills</a></li>{% endif %}
+        {% if rules %}<li><a href="#rules">Rules</a></li>{% endif %}
+        {% if examples %}<li><a href="#examples">Examples</a></li>{% endif %}
+        {% if mcp_tools %}<li><a href="#mcp-tools">MCP Tools</a></li>{% endif %}
+        <li><a href="#install">Install</a></li>
+        {% if has_changelog %}<li><a href="#changelog">Changelog</a></li>{% endif %}
+        {% if site.relatedTools %}<li><a href="#related">Related</a></li>{% endif %}
+        <li><a href="{{ site.links.github | default(plugin.repository) }}">GitHub</a></li>
+        <li>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      {% if plugin.logo %}<img class="hero-logo" src="{{ plugin.logo }}" alt="{{ plugin.displayName }} logo" />{% endif %}
+      <h1>{{ plugin.displayName }}</h1>
+      <p>{{ plugin.description }}</p>
+      <div class="stats">
+        {% if skill_count %}<div class="stat"><div class="stat-val" data-target="{{ skill_count }}">0</div><div class="stat-lbl">Skills</div></div>{% endif %}
+        {% if rule_count %}<div class="stat"><div class="stat-val" data-target="{{ rule_count }}">0</div><div class="stat-lbl">Rules</div></div>{% endif %}
+        {% if mcp_tool_count %}<div class="stat"><div class="stat-val" data-target="{{ mcp_tool_count }}">0</div><div class="stat-lbl">MCP Tools</div></div>{% endif %}
+        {% if snippet_count %}<div class="stat"><div class="stat-val" data-target="{{ snippet_count }}">0</div><div class="stat-lbl">Snippets</div></div>{% endif %}
+        {% if template_count %}<div class="stat"><div class="stat-val" data-target="{{ template_count }}">0</div><div class="stat-lbl">Templates</div></div>{% endif %}
+        {% if example_count %}<div class="stat"><div class="stat-val" data-target="{{ example_count }}">0</div><div class="stat-lbl">Examples</div></div>{% endif %}
+      </div>
+      {% if site.compatibility %}
+      <div class="compat-row">
+        {% if site.compatibility.cursor %}
+        <span class="compat-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Cursor {{ site.compatibility.cursor }}
+        </span>
+        {% endif %}
+        {% if site.compatibility.os %}
+        <span class="compat-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          {{ site.compatibility.os | join(' / ') }}
+        </span>
+        {% endif %}
+        {% if site.compatibility.node %}
+        <span class="compat-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Node {{ site.compatibility.node }}
+        </span>
+        {% endif %}
+        {% if site.compatibility.claude %}
+        <span class="compat-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M9 12l2 2 4-4"/></svg>
+          {{ site.compatibility.claude }}
+        </span>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="hero-badges">
+        <a class="badge" href="{{ site.links.github | default(plugin.repository) }}">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        {% if site.links.npm %}
+        <a class="badge" href="{{ site.links.npm }}">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 0v16h16V0H0zm13 13H8V5H5v8H3V3h10v10z"/></svg>
+          npm
+        </a>
+        {% endif %}
+      </div>
+
+      {% if site.quickStart %}
+      <div class="quick-start">
+        <div class="quick-start-title">{{ site.quickStart.title | default('Get started') }}</div>
+        <div class="quick-start-block" id="quickStartCode">{{ site.quickStart.command }}</div>
+        <button class="quick-start-copy" id="quickStartCopy" aria-label="Copy command">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/></svg>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Content sections -->
+  <div class="content-area">
+
+  <!-- Skills -->
+  {% if skills %}
+  <section class="section" id="skills">
+    <div class="section-header">
+      <h2>Skills</h2>
+      <span class="count">{{ skill_count }}</span>
+      <div class="section-actions">
+        <button class="btn-sm toggle-section" data-target="skills-body">Expand</button>
+      </div>
+    </div>
+    <details class="cat-group" id="skills-body">
+      <summary class="sr-only">Skills list</summary>
+      <div class="cat-body">
+        {% for skill in skills %}
+        <details class="skill-row">
+          <summary>
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-desc">{{ skill.description }}</span>
+          </summary>
+          <div class="skill-detail">
+            {% if skill.triggers %}
+            <div class="skill-detail-group">
+              <strong>Triggers</strong>
+              <ul>{% for t in skill.triggers %}<li>{{ t }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+            {% if skill.tools %}
+            <div class="skill-detail-group">
+              <strong>MCP Tools</strong>
+              <div class="skill-tools">{% for tool in skill.tools %}<code>{{ tool }}</code>{% endfor %}</div>
+            </div>
+            {% endif %}
+            <span class="skill-category-label">{{ skill.category }}</span>
+          </div>
+        </details>
+        {% endfor %}
+      </div>
+    </details>
+  </section>
+  {% endif %}
+
+  <!-- Rules -->
+  {% if rules %}
+  <section class="section" id="rules">
+    <div class="section-header">
+      <h2>Rules</h2>
+      <span class="count">{{ rule_count }}</span>
+      <div class="section-actions">
+        <button class="btn-sm toggle-section" data-target="rules-body">Expand</button>
+      </div>
+    </div>
+    <details class="cat-group" id="rules-body">
+      <summary class="sr-only">Rules list</summary>
+      <div class="cat-body">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Scope</th><th>Description</th></tr></thead>
+          <tbody>
+            {% for rule in rules %}
+            <tr>
+              <td class="name-cell">{{ rule.name }}</td>
+              <td class="scope-cell">{{ rule.scope }}</td>
+              <td>{{ rule.description }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+  {% endif %}
+
+  <!-- Examples -->
+  {% if examples %}
+  <section class="section" id="examples">
+    <div class="section-header">
+      <h2>Examples</h2>
+      <span class="count">{{ example_count }}</span>
+      <div class="section-actions">
+        <a class="btn-sm" href="gallery/">Full gallery &rarr;</a>
+      </div>
+    </div>
+    <div class="example-grid">
+      {% for ex in examples %}
+      <a class="example-card" href="gallery/">
+        <img src="{{ ex.heroSite }}" alt="{{ ex.name }} render" loading="lazy" width="1280" height="720" />
+        <div class="example-card-body">
+          <h3>{{ ex.name }}</h3>
+          <p>{{ ex.teaches }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- MCP Tools -->
+  {% if mcp_tools %}
+  <section class="section" id="mcp-tools">
+    <div class="section-header">
+      <h2>MCP Tools</h2>
+      <span class="count">{{ mcp_tool_count }}</span>
+      {% if mcp_grouped | length > 1 %}
+      <div class="section-actions">
+        <button class="btn-sm" id="toggleAllCats">Expand all</button>
+      </div>
+      {% endif %}
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04z"/></svg></span>
+      <input class="search-input" id="toolSearch" type="text" placeholder="Filter tools..." autocomplete="off" />
+      <span class="search-shortcut">/</span>
+      <div class="search-meta" id="toolSearchMeta"></div>
+    </div>
+    {% if mcp_grouped | length > 1 %}
+      {% for category, tools in mcp_grouped.items() %}
+      <details class="cat-group" data-cat="{{ category }}">
+        <summary>{{ category }} <span class="cat-count">{{ tools | length }}</span></summary>
+        <div class="cat-body">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Description</th></tr></thead>
+            <tbody>
+              {% for tool in tools %}
+              <tr data-tool>
+                <td class="name-cell">{{ tool.name }}</td>
+                <td>{{ tool.description }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      {% endfor %}
+    {% else %}
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Description</th></tr></thead>
+        <tbody>
+          {% for tool in mcp_tools %}
+          <tr data-tool>
+            <td class="name-cell">{{ tool.name }}</td>
+            <td>{{ tool.description }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <!-- Install -->
+  {% if site.installSteps %}
+  <section class="section" id="install">
+    <div class="section-header">
+      <h2>Installation</h2>
+      <div class="section-actions">
+        <button class="btn-sm toggle-section" data-target="install-body">Expand</button>
+      </div>
+    </div>
+    <details class="cat-group" id="install-body">
+      <summary class="sr-only">Installation steps</summary>
+      <div class="cat-body">
+        <ol class="install-steps">
+          {% for step in site.installSteps %}
+          <li><span>{{ step | safe }}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+    </details>
+  </section>
+  {% endif %}
+
+  <!-- Changelog -->
+  {% if has_changelog %}
+  <section class="section" id="changelog">
+    <div class="section-header">
+      <h2>Changelog</h2>
+      <div class="section-actions">
+        <button class="btn-sm toggle-section" data-target="changelog-body">Expand</button>
+      </div>
+    </div>
+    <details class="cat-group" id="changelog-body">
+      <summary class="sr-only">Recent changelog</summary>
+      <div class="cat-body">
+        {% for entry in changelog %}
+        <div class="changelog-entry">
+          <span class="changelog-version">v{{ entry.version }}</span>
+          {% if entry.date %}<span class="changelog-date">{{ entry.date }}</span>{% endif %}
+          {% for sec in entry.sections %}
+          <div class="changelog-heading">{{ sec.heading }}</div>
+          <ul class="changelog-items">
+            {% for item in sec.entries %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+          {% endfor %}
+        </div>
+        {% endfor %}
+        <a class="changelog-link" href="{{ site.links.github | default(plugin.repository) }}/blob/main/CHANGELOG.md">View full changelog on GitHub &rarr;</a>
+      </div>
+    </details>
+  </section>
+  {% endif %}
+
+  <!-- Related Tools -->
+  {% if site.relatedTools %}
+  <section class="section" id="related">
+    <div class="section-header">
+      <h2>Related Tools</h2>
+      <span class="count">{{ site.relatedTools | length }}</span>
+    </div>
+    <div class="related-grid">
+      {% for tool in site.relatedTools %}
+      <a class="related-card" href="{{ tool.url }}">
+        <span class="related-card-name">
+          {{ tool.name }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+        </span>
+        <span class="related-card-desc">{{ tool.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  </div><!-- /.content-area -->
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="{{ site.links.github | default(plugin.repository) }}">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        {% if site.links.npm %}
+        <a href="{{ site.links.npm }}">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 0v16h16V0H0zm13 13H8V5H5v8H3V3h10v10z"/></svg>
+          npm
+        </a>
+        {% endif %}
+        <a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 1.75V13.5h13.05l.001-11.75H1.5zM0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v11.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V1.75zM9.22 3.72a.75.75 0 000 1.06L10.69 6.25H6.75a.75.75 0 000 1.5h3.94l-1.47 1.47a.75.75 0 101.06 1.06l2.75-2.75a.75.75 0 000-1.06L10.28 3.72a.75.75 0 00-1.06 0z"/></svg>
+          All Tools
+        </a>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-meta">
+        <span>v{{ plugin.version | default('0.0.0') }}</span>
+        <span>&middot;</span>
+        <span>{{ plugin.license | default('CC-BY-NC-ND-4.0') }}</span>
+        <span>&middot;</span>
+        <span>Built {{ build_date }}</span>
+      </div>
+      <div class="footer-directory">
+        Part of <a href="https://tmhsdigital.github.io/Developer-Tools-Directory/">TMHSDigital Developer Tools</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Back to top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script>
+    /* Toast */
+    (function () {
+      var toastEl = document.getElementById('toast');
+      var timer;
+      window.showToast = function (msg) {
+        clearTimeout(timer);
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        timer = setTimeout(function () { toastEl.classList.remove('show'); }, 2000);
+      };
+    })();
+
+    /* Parse an SVG string and append its children as real nodes. No HTML sink
+       used (parity with the catalog's DOMParser approach). */
+    function svgChildrenInto(target, svgString) {
+      while (target.firstChild) target.removeChild(target.firstChild);
+      var doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+      var src = doc.documentElement;
+      if (src && src.nodeName === 'svg') {
+        Array.prototype.slice.call(src.childNodes).forEach(function (k) {
+          target.appendChild(document.importNode(k, true));
+        });
+      }
+    }
+
+    /* Theme toggle (dark / light / auto) */
+    (function () {
+      var SVG_NS = 'http://www.w3.org/2000/svg';
+      var btn = document.getElementById('themeToggle');
+      var icon = document.getElementById('themeIcon');
+      var iconSvgs = {
+        light: '<svg xmlns="' + SVG_NS + '"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+        dark: '<svg xmlns="' + SVG_NS + '"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+        auto: '<svg xmlns="' + SVG_NS + '"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20V2z"/></svg>'
+      };
+      var states = ['dark', 'light', 'auto'];
+      function getState() { return localStorage.getItem('theme') || 'auto'; }
+      function apply(state) {
+        if (state === 'light') { document.documentElement.setAttribute('data-theme', 'light'); }
+        else if (state === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+        else { document.documentElement.removeAttribute('data-theme'); }
+        if (state === 'auto') localStorage.removeItem('theme');
+        else localStorage.setItem('theme', state);
+        updateIcon(state);
+      }
+      function updateIcon(state) {
+        svgChildrenInto(icon, iconSvgs[state] || iconSvgs.auto);
+        btn.title = 'Theme: ' + state;
+        btn.setAttribute('aria-label', 'Theme: ' + state + ' (click to change)');
+      }
+      btn.addEventListener('click', function () {
+        var cur = getState();
+        var next = states[(states.indexOf(cur) + 1) % states.length];
+        apply(next);
+      });
+      updateIcon(getState());
+    })();
+
+    /* Animated stat counters */
+    (function () {
+      var prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          var target = parseInt(el.getAttribute('data-target'), 10);
+          if (isNaN(target)) return;
+          observer.unobserve(el);
+          if (prefersReduce) { el.textContent = target; return; }
+          var duration = 1200, start = performance.now();
+          function tick(now) {
+            var p = Math.min((now - start) / duration, 1);
+            el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll('.stat-val[data-target]').forEach(function (el) { observer.observe(el); });
+    })();
+
+    /* Copy to clipboard with toast */
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(function () { showToast('Copied to clipboard'); });
+    }
+
+    /* Quick-start copy button */
+    (function () {
+      var btn = document.getElementById('quickStartCopy');
+      var block = document.getElementById('quickStartCode');
+      if (!btn || !block) return;
+      btn.addEventListener('click', function () { copyText(block.textContent.trim()); });
+    })();
+
+    /* Auto-add copy buttons next to <code> in install steps */
+    (function () {
+      var COPY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"/></svg>';
+      document.querySelectorAll('.install-steps code').forEach(function (code) {
+        var btn = document.createElement('span');
+        btn.className = 'copy-icon';
+        btn.title = 'Copy';
+        svgChildrenInto(btn, COPY_SVG);
+        btn.addEventListener('click', function () { copyText(code.textContent); });
+        code.parentNode.insertBefore(btn, code.nextSibling);
+      });
+    })();
+
+    /* MCP tool search / filter */
+    (function () {
+      var input = document.getElementById('toolSearch');
+      var meta = document.getElementById('toolSearchMeta');
+      if (!input) return;
+      var rows = document.querySelectorAll('#mcp-tools [data-tool]');
+      var total = rows.length;
+      function filter() {
+        var q = input.value.toLowerCase().trim();
+        var shown = 0;
+        rows.forEach(function (tr) {
+          var text = tr.textContent.toLowerCase();
+          var match = !q || text.indexOf(q) !== -1;
+          tr.classList.toggle('hidden-row', !match);
+          if (match) shown++;
+        });
+        if (q) {
+          meta.textContent = shown + ' of ' + total;
+          document.querySelectorAll('.cat-group').forEach(function (d) {
+            var vis = d.querySelectorAll('[data-tool]:not(.hidden-row)').length;
+            if (vis > 0) { d.open = true; d.style.display = ''; }
+            else { d.style.display = 'none'; }
+          });
+        } else {
+          meta.textContent = '';
+          document.querySelectorAll('.cat-group').forEach(function (d) { d.style.display = ''; });
+        }
+      }
+      input.addEventListener('input', filter);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          input.focus();
+        }
+      });
+    })();
+
+    /* Expand / collapse all categories */
+    (function () {
+      var btn = document.getElementById('toggleAllCats');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var details = document.querySelectorAll('#mcp-tools .cat-group');
+        var allOpen = Array.prototype.every.call(details, function (d) { return d.open; });
+        details.forEach(function (d) { d.open = !allOpen; });
+        btn.textContent = allOpen ? 'Expand all' : 'Collapse all';
+      });
+    })();
+
+    /* Section collapse/expand toggles */
+    (function () {
+      document.querySelectorAll('.toggle-section').forEach(function (btn) {
+        var targetId = btn.getAttribute('data-target');
+        var details = document.getElementById(targetId);
+        if (!details) return;
+        function updateLabel() { btn.textContent = details.open ? 'Collapse' : 'Expand'; }
+        btn.addEventListener('click', function () { details.open = !details.open; updateLabel(); });
+        details.addEventListener('toggle', updateLabel);
+      });
+    })();
+
+    /* Smooth expand/collapse animation */
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.querySelectorAll('details.cat-group').forEach(function (det) {
+        var body = det.querySelector('.cat-body');
+        if (!body) return;
+        det.addEventListener('toggle', function () {
+          if (det.open) {
+            body.style.maxHeight = '0';
+            body.style.opacity = '0';
+            body.classList.add('cat-body-anim');
+            requestAnimationFrame(function () {
+              body.style.maxHeight = body.scrollHeight + 'px';
+              body.style.opacity = '1';
+            });
+            setTimeout(function () { body.style.maxHeight = 'none'; body.classList.remove('cat-body-anim'); }, 260);
+          }
+        });
+      });
+    })();
+
+    /* Scroll spy */
+    (function () {
+      var links = document.querySelectorAll('.nav-links a[href^="#"]');
+      if (!links.length) return;
+      var sections = [];
+      links.forEach(function (link) {
+        var id = link.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if (el) sections.push({ el: el, link: link });
+      });
+      function onScroll() {
+        var scrollY = window.scrollY + 80;
+        var current = null;
+        sections.forEach(function (s) { if (s.el.offsetTop <= scrollY) current = s; });
+        links.forEach(function (l) { l.classList.remove('active'); });
+        if (current) current.link.classList.add('active');
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+
+    /* Back to top */
+    (function () {
+      var btn = document.getElementById('backToTop');
+      window.addEventListener('scroll', function () {
+        btn.classList.toggle('visible', window.scrollY > 400);
+      }, { passive: true });
+      btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    })();
+
+    /* Mobile nav toggle */
+    (function () {
+      var toggle = document.querySelector('.nav-toggle');
+      var links = document.querySelector('.nav-links');
+      if (!toggle || !links) return;
+      toggle.addEventListener('click', function () { links.classList.toggle('open'); });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { links.classList.remove('open'); });
+      });
+    })();
+  </script>
+
+</body>
+</html>

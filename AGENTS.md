@@ -125,6 +125,12 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   each release. Triggered on push to `main` for content-changing paths only.
 - `label-sync.yml` self-heals labels via `gh label create --force` per
   label, then applies them to the PR.
+- `pages.yml` builds the landing page from the **locally vendored** template
+  at `scripts/site/` (originally scaffolded from Developer-Tools-Directory's
+  site-template, now owned by this repo — the fleet template only scaffolds
+  new tools) plus the examples gallery via `scripts/build_gallery.py`, then
+  deploys `docs/`. `docs/index.html`, `docs/fonts/`, and `docs/assets/` are
+  build outputs and gitignored; `docs/gallery/` is committed.
 
 ## Where to look for canonical references
 
