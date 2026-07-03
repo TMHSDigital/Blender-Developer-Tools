@@ -14,8 +14,9 @@
     "github": "https://github.com/TMHSDigital/Blender-Developer-Tools"
   },
   "installSteps": [
-    "Open Cursor IDE and go to <code>Settings</code> &gt; <code>Extensions</code>",
-    "Search for <code>Blender Developer Tools</code>",
-    "Click <code>Install</code> and reload"
+    "Clone the repo: <code>git clone https://github.com/TMHSDigital/Blender-Developer-Tools</code>",
+    "<strong>Cursor:</strong> copy <code>rules/</code> into your project's <code>.cursor/rules/</code> — they auto-apply via scope globs; reference skills by name in chat",
+    "<strong>Claude Code:</strong> copy <code>skills/</code> and <code>rules/</code> into your project workspace, or point Claude Code at the checkout",
+    "Grab <code>snippets/</code> and <code>templates/</code> as starting points for add-ons and headless batch jobs"
   ]
 }
