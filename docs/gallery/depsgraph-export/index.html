@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Examples Gallery — Blender Developer Tools</title>
-  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
-  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
-  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <title>depsgraph-export — Examples — Blender Developer Tools</title>
+  <meta name="description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/depsgraph-export/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Examples Gallery — Blender Developer Tools" />
-  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
-  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
-  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <meta property="og:title" content="depsgraph-export — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/depsgraph-export/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/depsgraph-export-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Examples Gallery — Blender Developer Tools" />
-  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
-  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <meta name="twitter:title" content="depsgraph-export — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/depsgraph-export-hero.webp" />
   <!-- FOUC guard: apply the saved theme before first paint. Shares the 'theme'
        key with the landing page, so a visitor's choice carries across. -->
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
@@ -165,73 +165,103 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Blender Developer Tools</a>
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
     </div>
   </div>
   <header class="hero">
-    <h1>Examples Gallery</h1>
-    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.</p>
+    <h1>depsgraph-export</h1>
+    <p>The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
   </header>
-  <div class="chips" role="toolbar" aria-label="Filter examples by topic">
-    <button class="chip active" data-tag="" type="button">All</button>
-    <button class="chip" data-tag="animation" type="button">animation</button>
-    <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
-    <button class="chip" data-tag="export" type="button">export</button>
-    <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
-    <button class="chip" data-tag="materials" type="button">materials</button>
-    <button class="chip" data-tag="rendering" type="button">rendering</button>
-  </div>
   <main id="main">
-    <div class="grid">
-      <article class="card" data-tags="materials rendering">
-        <a class="card-media" href="swatch-grid/" aria-label="swatch-grid example detail page">
-          <img src="assets/swatch-grid-hero.webp" alt="swatch-grid — Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim" loading="lazy" decoding="async" />
-        </a>
-        <div class="card-body">
-          <h2><a href="swatch-grid/">swatch-grid</a></h2>
-          <p class="teaches">Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</p>
-          <a class="card-link" href="swatch-grid/">View example <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </article>
-      <article class="card" data-tags="animation">
-        <a class="card-media" href="turntable/" aria-label="turntable example detail page">
-          <img src="assets/turntable-hero.webp" alt="turntable — A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)" loading="lazy" decoding="async" />
-        </a>
-        <div class="card-body">
-          <h2><a href="turntable/">turntable</a></h2>
-          <p class="teaches">A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</p>
-          <a class="card-link" href="turntable/">View example <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </article>
-      <article class="card" data-tags="geometry-nodes materials">
-        <a class="card-media" href="gn-sdf-remesh/" aria-label="gn-sdf-remesh example detail page">
-          <img src="assets/gn-sdf-remesh-hero.webp" alt="gn-sdf-remesh — A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh" loading="lazy" decoding="async" />
-        </a>
-        <div class="card-body">
-          <h2><a href="gn-sdf-remesh/">gn-sdf-remesh</a></h2>
-          <p class="teaches">A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</p>
-          <a class="card-link" href="gn-sdf-remesh/">View example <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </article>
-      <article class="card" data-tags="depsgraph export">
-        <a class="card-media" href="depsgraph-export/" aria-label="depsgraph-export example detail page">
-          <img src="assets/depsgraph-export-hero.webp" alt="depsgraph-export — The depsgraph lifetime contract — evaluated_get()" loading="lazy" decoding="async" />
-        </a>
-        <div class="card-body">
-          <h2><a href="depsgraph-export/">depsgraph-export</a></h2>
-          <p class="teaches">The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.</p>
-          <a class="card-link" href="depsgraph-export/">View example <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </article>
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom depsgraph-export render">
+      <img src="../assets/depsgraph-export-hero.webp" alt="depsgraph-export render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/depsgraph-export/depsgraph_export.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
+    <section class="detail-section md">
+<p>A runnable example that proves <strong>modifiers actually ship in exports</strong> and demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> lifetime contract. It builds a cube with a SUBSURF modifier, measures the evaluated mesh via <code>evaluated_get().to_mesh()</code> (paired with <code>to_mesh_clear()</code>), exports through <code>wm.obj_export</code>, and asserts the exported vertex count equals the <strong>evaluated</strong> (modifier-applied) count and is strictly greater than the base mesh.</p>
+<p><strong>What it witnesses:</strong> the <code>evaluated_get</code> → <code>to_mesh</code> → <code>to_mesh_clear</code> contract, and that <code>wm.obj_export</code> writes the depsgraph-evaluated geometry (so modifiers are baked into the export) rather than the unmodified base mesh.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (writes an OBJ to a temp path, asserts the counts) — the CI check:
+blender --background --python depsgraph_export.py --
+
+# Write the exported OBJ to a specific path:
+blender --background --python depsgraph_export.py -- --output remeshed.obj</code></pre>
+<p>It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The <code>blender-smoke</code> workflow runs this check on Blender 4.5 LTS and 5.1: base 8 → evaluated/exported 98 vertices with a 2-level SUBSURF.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/depsgraph-export/depsgraph_export.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/depsgraph-export/depsgraph_export.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Candidate B: depsgraph-evaluated export (SCRATCH).
+
+Witnesses the depsgraph lifetime contract AND that modifiers actually ship in exports. Builds
+a cube with a SUBSURF modifier, measures the evaluated mesh via evaluated_get().to_mesh()
+(paired with to_mesh_clear()), exports through wm.obj_export, and asserts the exported vertex
+count equals the EVALUATED (modifier-applied) count and is strictly greater than the base.
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, argparse
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: write the exported OBJ here (else a temp path)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    me = bpy.data.meshes.new(<span class="s">&quot;Cube&quot;</span>); bm = bmesh.new(); bmesh.ops.create_cube(bm, size=<span class="n">2.0</span>); bm.to_mesh(me); bm.free()
+    obj = bpy.data.objects.new(<span class="s">&quot;Cube&quot;</span>, me); bpy.context.collection.objects.link(obj)
+    obj.modifiers.new(<span class="s">&quot;ss&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>).levels = <span class="n">2</span>
+    base = len(obj.data.vertices)
+
+    <span class="c"># depsgraph lifetime contract: evaluate, read, then release with to_mesh_clear</span>
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    em = ev.to_mesh()
+    eval_vcount = len(em.vertices)
+    ev.to_mesh_clear()  <span class="c"># must be paired; releases the temporary mesh</span>
+
+    <span class="k">import</span> tempfile
+    out = args.output <span class="k">or</span> os.path.join(tempfile.gettempdir(), <span class="s">&quot;depsgraph_export.obj&quot;</span>)
+    os.makedirs(os.path.dirname(os.path.abspath(out)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
+    <span class="c"># obj_export writes the evaluated (modifier-applied) geometry by default</span>
+    bpy.ops.wm.obj_export(filepath=out, export_selected_objects=<span class="k">False</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(out) <span class="k">and</span> os.path.getsize(out) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: no OBJ written&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">4</span>
+    exported = <span class="n">0</span>
+    <span class="k">with</span> open(out) <span class="k">as</span> f:
+        <span class="k">for</span> line <span class="k">in</span> f:
+            <span class="k">if</span> line.startswith(<span class="s">&quot;v &quot;</span>): exported += <span class="n">1</span>
+
+    print(<span class="s">f&quot;</span><span class="s">base_vcount=</span>{base}<span class="s"> eval_vcount=</span>{eval_vcount}<span class="s"> exported_vcount=</span>{exported}<span class="s">&quot;</span>)
+    <span class="k">if</span> <span class="k">not</span> (eval_vcount &gt; base):
+        print(<span class="s">&quot;ERROR: evaluated mesh did not apply the modifier&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> exported != eval_vcount:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: export (</span>{exported}<span class="s">) != evaluated (</span>{eval_vcount}<span class="s">); modifier did not ship</span><span class="s">&quot;</span>,
+              file=sys.stderr); <span class="k">return</span> <span class="n">5</span>
+    print(<span class="s">&quot;depsgraph-export OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
   </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/depsgraph-export-hero.webp" alt="depsgraph-export render, full size" />
+  </div>
   <footer>
     Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
     &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
@@ -257,19 +287,25 @@
     })();
 
     (function () {
-      var chips = document.querySelectorAll('.chip');
-      var cards = document.querySelectorAll('.card');
-      chips.forEach(function (chip) {
-        chip.addEventListener('click', function () {
-          chips.forEach(function (c) { c.classList.remove('active'); });
-          chip.classList.add('active');
-          var tag = chip.getAttribute('data-tag');
-          cards.forEach(function (card) {
-            var tags = (card.getAttribute('data-tags') || '').split(' ');
-            card.classList.toggle('hidden', !!tag && tags.indexOf(tag) === -1);
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
           });
         });
-      });
+      }
     })();
 
   </script>

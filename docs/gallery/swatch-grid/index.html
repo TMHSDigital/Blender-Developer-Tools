@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>swatch-grid — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/swatch-grid/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="swatch-grid — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/swatch-grid/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="swatch-grid — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
+  <!-- FOUC guard: apply the saved theme before first paint. Shares the 'theme'
+       key with the landing page, so a visitor's choice carries across. -->
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <style>
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --surface: #161b22; --surface-2: #1c2128;
+      --border: #30363d; --text: #e6edf3; --text-dim: #8b949e;
+      --accent: #7c3aed; --accent-light: #a78bfa;
+      --radius: 8px; --radius-lg: 12px; --maxw: 1080px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #8b949e; --code-n: #79c0ff;
+    }
+    /* auto mode: follow the OS unless the user forced dark */
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+        --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+        --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
+      }
+    }
+    /* explicit override */
+    [data-theme="light"] {
+      --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
+      --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
+      --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 3px; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: #fff;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0.75rem 1.25rem;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--accent-light); }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--accent-light); }
+    .theme-toggle { background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.35rem 0.6rem;
+      font-size: 0.95rem; cursor: pointer; line-height: 1; transition: border-color 0.15s, background 0.15s; }
+    .theme-toggle:hover { border-color: var(--accent-light); }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 3rem 1.25rem 1.5rem; }
+    header.hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; line-height: 1.15; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.6rem; font-size: 1.02rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 999px; padding: 0.25rem 0.85rem; font-size: 0.82rem; font-weight: 500;
+      font-family: var(--font-sans); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--accent-light); border-color: var(--accent); }
+    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+    .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+      box-shadow: 0 8px 28px rgba(0,0,0,0.28); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-size: 1.22rem; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--accent-light); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--accent-light); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+      border-radius: 999px; padding: 0.08rem 0.55rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+      border-left: 3px solid var(--accent); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--accent-light); border-color: var(--accent); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-size: 1.15rem; letter-spacing: -0.01em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 3rem;
+      color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+    footer code { background: var(--surface-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card, .theme-toggle { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>swatch-grid</h1>
+    <p>Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom swatch-grid render">
+      <img src="../assets/swatch-grid-hero.webp" alt="swatch-grid render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/swatch-grid/swatch_grid.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that renders a 3×2 grid of spheres — one material per cell — to a single PNG. It demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> patterns end to end:</p>
+<ul><li><strong>Principled BSDF</strong> metals (gold, copper: high metallic, low roughness) and dielectrics (red/blue plastic, white rough), configured with <strong>string socket lookups</strong> and <strong>4-tuple colors</strong>.</li><li>The <strong>emission</strong> pattern (an emissive orange swatch).</li><li>The cross-version <strong><code>set_specular</code> shim</strong> (<code>Specular</code> → <code>Specular IOR Level</code>, renamed in Blender 4.0).</li></ul>
+<p>It doubles as a live proof of the <strong>EEVEE engine-id</strong> behavior: the version-branch helper resolves <code>BLENDER_EEVEE</code> on Blender 5.x and <code>BLENDER_EEVEE_NEXT</code> on 4.2–4.5, and the chosen id is asserted against the running build before rendering — so a regression in that mapping fails the example, not just the docs.</p>
+<h2>Run</h2>
+<pre><code># Default: render with the build&#x27;s EEVEE engine (needs a GPU/display)
+blender --background --python swatch_grid.py -- --output swatch.png
+
+# GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still
+# asserted; only the final pixels use Cycles.
+blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
+<p>The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no network). It <strong>exits non-zero</strong> on any failure, including a render that comes out uniformly black or without the expected six distinct swatch regions — the same honest check the CI smoke gate runs on both Blender 4.5 LTS and 5.1.</p>
+<h2>Verified</h2>
+<p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/swatch-grid/swatch_grid.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/swatch-grid/swatch_grid.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Procedural-materials swatch grid -- a runnable BDT example.
+
+Renders a 3x2 grid of spheres, one per material, demonstrating the
+`procedural-materials-and-shaders` patterns end to end: Principled BSDF (metal +
+dielectric), the emission pattern, the cross-version `set_specular` shim, string socket
+lookups, and 4-tuple colors. It also doubles as a live proof of the EEVEE engine-id fix:
+the version-branch helper resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_EEVEE_NEXT`
+on 4.2-4.5, and the chosen id is asserted against the build before rendering.
+
+Run headless:
+    blender --background --python swatch_grid.py -- --output swatch.png
+    blender --background --python swatch_grid.py -- --output s.png --engine cycles --samples 8 --width 640
+
+Dependency-light and deterministic (fixed camera/layout, no HDRI, no network). Exits
+non-zero on any failure, including a render that comes out black or without the expected
+number of distinct swatch regions.
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy
+<span class="k">import</span> bmesh
+<span class="k">import</span> sys
+<span class="k">import</span> os
+<span class="k">import</span> math
+<span class="k">import</span> argparse
+<span class="k">import</span> numpy <span class="k">as</span> np
+
+GRID_COLS, GRID_ROWS = <span class="n">3</span>, <span class="n">2</span>
+MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
+
+
+<span class="c"># --- patterns copied from the procedural-materials-and-shaders skill ---</span>
+<span class="k">def</span> get_eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> set_specular(bsdf, value):
+    <span class="s">&quot;&quot;&quot;&#x27;Specular&#x27; was renamed to &#x27;Specular IOR Level&#x27; in Blender 4.0; support both.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&#x27;Specular IOR Level&#x27;</span> <span class="k">in</span> bsdf.inputs:
+        bsdf.inputs[<span class="s">&#x27;Specular IOR Level&#x27;</span>].default_value = value
+        <span class="k">return</span> <span class="s">&#x27;Specular IOR Level&#x27;</span>
+    <span class="k">if</span> <span class="s">&#x27;Specular&#x27;</span> <span class="k">in</span> bsdf.inputs:
+        bsdf.inputs[<span class="s">&#x27;Specular&#x27;</span>].default_value = value
+        <span class="k">return</span> <span class="s">&#x27;Specular&#x27;</span>
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> make_principled(name, base_color, metallic, roughness, specular=<span class="k">None</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nt.nodes.clear()
+    bsdf = nt.nodes.new(<span class="s">&#x27;ShaderNodeBsdfPrincipled&#x27;</span>)
+    bsdf.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = base_color
+    bsdf.inputs[<span class="s">&#x27;Metallic&#x27;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = roughness
+    resolved = set_specular(bsdf, specular) <span class="k">if</span> specular <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="k">None</span>
+    out = nt.nodes.new(<span class="s">&#x27;ShaderNodeOutputMaterial&#x27;</span>)
+    nt.links.new(bsdf.outputs[<span class="s">&#x27;BSDF&#x27;</span>], out.inputs[<span class="s">&#x27;Surface&#x27;</span>])
+    <span class="k">return</span> mat, resolved
+
+
+<span class="k">def</span> make_emissive(name, color, strength):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nt.nodes.clear()
+    emis = nt.nodes.new(<span class="s">&#x27;ShaderNodeEmission&#x27;</span>)
+    emis.inputs[<span class="s">&#x27;Color&#x27;</span>].default_value = color
+    emis.inputs[<span class="s">&#x27;Strength&#x27;</span>].default_value = strength
+    out = nt.nodes.new(<span class="s">&#x27;ShaderNodeOutputMaterial&#x27;</span>)
+    nt.links.new(emis.outputs[<span class="s">&#x27;Emission&#x27;</span>], out.inputs[<span class="s">&#x27;Surface&#x27;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_materials():
+    <span class="s">&quot;&quot;&quot;Return a list of (material, label) covering metal, dielectric, emissive, and the
+    set_specular shim. The list order maps left-to-right, top-to-bottom across the grid.&quot;&quot;&quot;</span>
+    mats, specular_socket = [], <span class="k">None</span>
+    m, specular_socket = make_principled(<span class="s">&quot;Gold&quot;</span>, (<span class="n">1.00</span>, <span class="n">0.77</span>, <span class="n">0.34</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.15</span>)
+    mats.append(m)
+    m, _ = make_principled(<span class="s">&quot;Copper&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.64</span>, <span class="n">0.54</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
+    mats.append(m)
+    m, sr = make_principled(<span class="s">&quot;RedPlastic&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.40</span>, specular=<span class="n">0.5</span>)
+    mats.append(m)
+    specular_socket = specular_socket <span class="k">or</span> sr
+    m, _ = make_principled(<span class="s">&quot;BluePlastic&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.20</span>, <span class="n">0.80</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.30</span>, specular=<span class="n">0.5</span>)
+    mats.append(m)
+    mats.append(make_emissive(<span class="s">&quot;EmissiveOrange&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.05</span>, <span class="n">1</span>), <span class="n">6.0</span>))
+    m, _ = make_principled(<span class="s">&quot;WhiteRough&quot;</span>, (<span class="n">0.90</span>, <span class="n">0.90</span>, <span class="n">0.92</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.70</span>, specular=<span class="n">0.3</span>)
+    mats.append(m)
+    <span class="k">return</span> mats, specular_socket
+
+
+<span class="k">def</span> build_scene(mats):
+    xs = [-<span class="n">2.2</span>, <span class="n">0.0</span>, <span class="n">2.2</span>]
+    zs = [<span class="n">1.1</span>, -<span class="n">1.1</span>]
+    i = <span class="n">0</span>
+    <span class="k">for</span> r <span class="k">in</span> range(GRID_ROWS):
+        <span class="k">for</span> c <span class="k">in</span> range(GRID_COLS):
+            me = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">S</span>{i}<span class="s">&quot;</span>)
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=<span class="n">0.92</span>)
+            bm.to_mesh(me)
+            bm.free()
+            <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+                poly.use_smooth = <span class="k">True</span>
+            ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">S</span>{i}<span class="s">&quot;</span>, me)
+            ob.location = (xs[c], <span class="n">0.0</span>, zs[r])
+            bpy.context.collection.objects.link(ob)
+            ob.data.materials.append(mats[i])
+            i += <span class="n">1</span>
+    <span class="c"># ortho camera framed exactly on the grid cells</span>
+    cam_d = bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)
+    cam_d.type = <span class="s">&#x27;ORTHO&#x27;</span>
+    cam_d.ortho_scale = <span class="n">6.6</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, cam_d)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">10.0</span>, <span class="n">0.0</span>)
+    cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>)
+    bpy.context.collection.objects.link(cam)
+    bpy.context.scene.camera = cam
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    bpy.context.collection.objects.link(aim)
+    <span class="k">for</span> lname, loc, energy <span class="k">in</span> [(<span class="s">&quot;KeyL&quot;</span>, (-<span class="n">5</span>, -<span class="n">6</span>, <span class="n">4</span>), <span class="n">1500</span>), (<span class="s">&quot;FillL&quot;</span>, (<span class="n">5</span>, -<span class="n">6</span>, -<span class="n">2</span>), <span class="n">700</span>)]:
+        ld = bpy.data.lights.new(lname, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy
+        ld.size = <span class="n">5.0</span>
+        lo = bpy.data.objects.new(lname, ld)
+        lo.location = loc
+        bpy.context.collection.objects.link(lo)
+        con = lo.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+        con.target = aim
+        con.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+        con.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    world = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.03</span>, <span class="n">0.035</span>, <span class="n">1</span>)
+    bpy.context.scene.world = world
+
+
+<span class="k">def</span> verify_png(path):
+    <span class="s">&quot;&quot;&quot;Honest capture: not uniformly black AND distinct swatch regions == MATERIAL_COUNT.&quot;&quot;&quot;</span>
+    img = bpy.data.images.load(path)
+    w, h = img.size
+    arr = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, <span class="n">4</span>)[..., :<span class="n">3</span>]
+    gmax = float(arr.max())
+    cw, ch, ph = w // GRID_COLS, h // GRID_ROWS, <span class="n">24</span>
+    means = []
+    <span class="k">for</span> r <span class="k">in</span> range(GRID_ROWS):
+        <span class="k">for</span> c <span class="k">in</span> range(GRID_COLS):
+            cx, cy = c * cw + cw // <span class="n">2</span>, r * ch + ch // <span class="n">2</span>
+            means.append(arr[cy - ph:cy + ph, cx - ph:cx + ph, :].reshape(-<span class="n">1</span>, <span class="n">3</span>).mean(axis=<span class="n">0</span>))
+    kept = []
+    <span class="k">for</span> cm <span class="k">in</span> means:
+        <span class="k">if</span> all(np.linalg.norm(cm - k) &gt; <span class="n">0.10</span> <span class="k">for</span> k <span class="k">in</span> kept):
+            kept.append(cm)
+    <span class="k">return</span> gmax, len(kept)
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser(description=<span class="s">&quot;Render a procedural-materials swatch grid.&quot;</span>)
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, required=<span class="k">True</span>, help=<span class="s">&quot;Output PNG path&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>,
+                   help=<span class="s">&quot;auto/eevee use the version-correct EEVEE id; cycles for GPU-less hosts&quot;</span>)
+    p.add_argument(<span class="s">&quot;--samples&quot;</span>, type=int, default=<span class="n">32</span>)
+    p.add_argument(<span class="s">&quot;--width&quot;</span>, type=int, default=<span class="n">1280</span>)
+    p.add_argument(<span class="s">&quot;--no-verify&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    <span class="c"># Empty the factory file FIRST so the materials we create below survive.</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    mats, specular_socket = build_materials()
+    build_scene(mats)
+
+    sc = bpy.context.scene
+    <span class="c"># EEVEE engine-id proof: frame-independent, must hold even when we render with Cycles.</span>
+    eid = get_eevee_engine_id()
+    expected = <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+    sc.render.engine = eid
+    <span class="k">if</span> sc.render.engine != expected:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: EEVEE id helper returned &#x27;</span>{eid}<span class="s">&#x27;, engine is &#x27;</span>{sc.render.engine}<span class="s">&#x27;, </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">expected &#x27;</span>{expected}<span class="s">&#x27;</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+    print(<span class="s">f&quot;</span><span class="s">eevee_engine_id=</span>{eid}<span class="s"> (expected </span>{expected}<span class="s">) OK; set_specular resolved &#x27;</span>{specular_socket}<span class="s">&#x27;</span><span class="s">&quot;</span>)
+
+    render_engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> args.engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eid
+    sc.render.engine = render_engine
+    <span class="k">if</span> render_engine == <span class="s">&#x27;CYCLES&#x27;</span>:
+        sc.cycles.samples = args.samples
+    <span class="k">else</span>:
+        sc.eevee.taa_render_samples = args.samples
+    sc.render.resolution_x = args.width
+    sc.render.resolution_y = int(args.width * <span class="n">9</span> / <span class="n">16</span>)
+    sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    sc.render.filepath = args.output
+    os.makedirs(os.path.dirname(os.path.abspath(args.output)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(args.output) <span class="k">and</span> os.path.getsize(args.output) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: no output written&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    print(<span class="s">f&quot;</span><span class="s">rendered </span>{args.output}<span class="s"> with </span>{render_engine}<span class="s"> (</span>{os.path.getsize(args.output)}<span class="s"> bytes)</span><span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> args.no_verify:
+        gmax, regions = verify_png(args.output)
+        non_black = gmax &gt; <span class="n">0.05</span>
+        regions_ok = regions == MATERIAL_COUNT
+        print(<span class="s">f&quot;</span><span class="s">verify: max_pixel=</span>{gmax:<span class="s">.3f</span>}<span class="s"> non_black=</span>{non_black}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">distinct_regions=</span>{regions}<span class="s"> materials=</span>{MATERIAL_COUNT}<span class="s"> ok=</span>{regions_ok}<span class="s">&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> (non_black <span class="k">and</span> regions_ok):
+            print(<span class="s">&quot;ERROR: render failed verification (black or wrong region count)&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> exc:  <span class="c"># blender exits 0 on an uncaught traceback; force non-zero</span>
+        <span class="k">import</span> traceback
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{type(exc).__name__}<span class="s">: </span>{exc}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/swatch-grid-hero.webp" alt="swatch-grid render, full size" />
+  </div>
+  <footer>
+    Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
+    &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
+  </footer>
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      var root = document.documentElement;
+      var order = ['auto', 'light', 'dark'];
+      var glyph = { auto: '\u263C', light: '\u2600', dark: '\u263D' };
+      function get() { try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; } }
+      function apply(state) {
+        if (state === 'light' || state === 'dark') root.setAttribute('data-theme', state);
+        else root.removeAttribute('data-theme');
+        try { if (state === 'auto') localStorage.removeItem('theme'); else localStorage.setItem('theme', state); } catch (e) {}
+        btn.innerHTML = glyph[state]; btn.setAttribute('aria-label', 'Theme: ' + state + ' (click to change)');
+      }
+      apply(get());
+      btn.addEventListener('click', function () {
+        var next = order[(order.indexOf(get()) + 1) % order.length];
+        apply(next);
+      });
+    })();
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
