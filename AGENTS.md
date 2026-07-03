@@ -111,12 +111,18 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   asserts the README aggregate counts (12 skills, 6 rules, 2 templates, 17
   snippets) match filesystem reality. The counts language in `README.md` is
   load-bearing: the job greps for it.
+- `validate.yml` also runs a `validate-manifest` job that checks
+  `.cursor-plugin/plugin.json` against reality: every listed path must exist,
+  every skill, rule, snippet, template, and example on disk must be listed,
+  and the manifest `version` must equal `VERSION`. The release pipeline owns
+  the manifest `version` line (see `release.yml` below) — never hand-edit it.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
   drift-check@v1.15` to enforce ecosystem standards-version markers.
 - `release.yml` auto-bumps the version, tags, force-updates floating tags
   `v0` and `v0.1`, and runs `release-doc-sync@v1` to rewrite CHANGELOG.md,
-  CLAUDE.md `**Version:**`, and ROADMAP.md `**Current:**`. Triggered on
-  push to `main` for content-changing paths only.
+  CLAUDE.md `**Version:**`, and ROADMAP.md `**Current:**`. It also rewrites
+  the `"version"` line in `.cursor-plugin/plugin.json` so the manifest tracks
+  each release. Triggered on push to `main` for content-changing paths only.
 - `label-sync.yml` self-heals labels via `gh label create --force` per
   label, then applies them to the PR.
 
