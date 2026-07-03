@@ -157,6 +157,62 @@ jobs:
           echo "Templates: $template_count"
           echo "Snippets: $snippet_count"
 
+  validate-manifest:
+    name: Validate plugin manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check plugin.json matches filesystem and VERSION
+        run: |
+          python3 << 'PYEOF'
+          import glob
+          import json
+          import os
+          import sys
+
+          errors = []
+          manifest = json.load(open('.cursor-plugin/plugin.json'))
+
+          version = open('VERSION').read().strip()
+          if manifest.get('version') != version:
+              errors.append(
+                  f"plugin.json version '{manifest.get('version')}' != VERSION '{version}'"
+              )
+
+          # Every manifest path must exist on disk.
+          for key in ('skills', 'rules', 'snippets', 'templates', 'examples'):
+              for path in manifest.get(key, []):
+                  if not os.path.exists(path):
+                      errors.append(f'{key}: manifest lists missing path {path}')
+
+          # Every content file/dir on disk must be listed in the manifest.
+          expected = {
+              'skills': sorted(glob.glob('skills/*/SKILL.md')),
+              'rules': sorted(glob.glob('rules/*.mdc')),
+              'snippets': sorted(glob.glob('snippets/*.py')),
+              'templates': sorted(
+                  d for d in glob.glob('templates/*') if os.path.isdir(d)
+              ),
+              'examples': sorted(
+                  d for d in glob.glob('examples/*') if os.path.isdir(d)
+              ),
+          }
+          for key, paths in expected.items():
+              listed = {p.replace('\\', '/') for p in manifest.get(key, [])}
+              for path in paths:
+                  if path.replace('\\', '/') not in listed:
+                      errors.append(f'{key}: {path} on disk but not in manifest')
+
+          if errors:
+              for e in errors:
+                  print(f'::error::{e}', file=sys.stderr)
+              sys.exit(1)
+
+          counts = {k: len(manifest.get(k, [])) for k in expected}
+          print(f'Manifest verified at v{version}: {counts}')
+          PYEOF
+
   validate-counts:
     name: Validate content counts
     runs-on: ubuntu-latest

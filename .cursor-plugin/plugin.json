@@ -2,7 +2,7 @@
   "name": "blender-developer-tools",
   "displayName": "Blender Developer Tools",
   "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
-  "version": "0.2.3",
+  "version": "0.5.0",
   "author": {
     "name": "TMHSDigital",
     "email": "contact@users.noreply.github.com"
@@ -34,5 +34,34 @@
     "rules/type-annotate-props-and-defend-context.mdc",
     "rules/prefer-temp-override-over-context-copy.mdc",
     "rules/use-foreach-set-for-bulk-data.mdc"
+  ],
+  "snippets": [
+    "snippets/action-ensure-channelbag-for-slot.py",
+    "snippets/app-handler-registration.py",
+    "snippets/bmesh-load-edit-free.py",
+    "snippets/canonical-object-creation.py",
+    "snippets/canonical-object-deletion.py",
+    "snippets/cross-version-property-delete.py",
+    "snippets/depsgraph-evaluated-mesh.py",
+    "snippets/driver-with-custom-function.py",
+    "snippets/foreach-get-vertices.py",
+    "snippets/foreach-set-vertices.py",
+    "snippets/pointerproperty-binding.py",
+    "snippets/principled-bsdf-material.py",
+    "snippets/register-classes-factory.py",
+    "snippets/shader-node-group.py",
+    "snippets/temp-override-context.py",
+    "snippets/usd-export-evaluation-mode.py",
+    "snippets/version-branch-skeleton.py"
+  ],
+  "templates": [
+    "templates/extension-addon-template",
+    "templates/headless-batch-script-template"
+  ],
+  "examples": [
+    "examples/depsgraph-export",
+    "examples/gn-sdf-remesh",
+    "examples/swatch-grid",
+    "examples/turntable"
   ]
 }

@@ -122,6 +122,27 @@ jobs:
           previous-version: ${{ steps.current.outputs.version }}
           meta-repo-ref: v1.15.1
 
+      - name: Sync plugin manifest version
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        env:
+          NEW_VERSION: ${{ steps.new.outputs.version }}
+        run: |
+          python3 - << 'PYEOF'
+          import os
+          import re
+
+          path = '.cursor-plugin/plugin.json'
+          text = open(path).read()
+          text = re.sub(
+              r'^(  "version": ")[^"]+(",)$',
+              rf'\g<1>{os.environ["NEW_VERSION"]}\g<2>',
+              text,
+              count=1,
+              flags=re.M,
+          )
+          open(path, 'w').write(text)
+          PYEOF
+
       - name: Commit version bump
         if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
         run: |
