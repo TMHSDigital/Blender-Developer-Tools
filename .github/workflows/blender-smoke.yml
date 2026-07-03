@@ -194,3 +194,21 @@ jobs:
           # Tint values differ. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/shader-node-group/shader_node_group.py --
+
+      - name: Shipped example - temp-override join (context override)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): three cubes joined under
+          # bpy.context.temp_override; asserts one mesh remains, sources are gone,
+          # and topology is verts=24 faces=18. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/temp-override-join/temp_override_join.py --
+
+      - name: Shipped example - GN instance grid (Instance on Points)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): generative GN tree instances a
+          # cube on a 3x3 grid and realizes; asserts eval verts=72 faces=54 and Set
+          # Material carries Lime. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gn-instance-grid/gn_instance_grid.py --

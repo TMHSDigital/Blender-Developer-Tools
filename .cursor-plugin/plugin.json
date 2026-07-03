@@ -62,9 +62,11 @@
     "examples/bmesh-gear",
     "examples/depsgraph-export",
     "examples/driver-wave",
+    "examples/gn-instance-grid",
     "examples/gn-sdf-remesh",
     "examples/shader-node-group",
     "examples/swatch-grid",
+    "examples/temp-override-join",
     "examples/turntable",
     "examples/wave-displace"
   ]

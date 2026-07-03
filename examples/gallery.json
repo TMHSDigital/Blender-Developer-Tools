@@ -76,6 +76,24 @@
       "hero": "docs/gallery/assets/shader-node-group-hero.webp",
       "preview": "examples/shader-node-group/preview.webp",
       "tags": ["materials", "node-groups"]
+    },
+    {
+      "name": "temp-override-join",
+      "dir": "examples/temp-override-join",
+      "teaches": "Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
+      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, and topology is verts = 8 × blocks, faces = 6 × blocks.",
+      "hero": "docs/gallery/assets/temp-override-join-hero.webp",
+      "preview": "examples/temp-override-join/preview.webp",
+      "tags": ["operators", "context"]
+    },
+    {
+      "name": "gn-instance-grid",
+      "dir": "examples/gn-instance-grid",
+      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry.",
+      "witnessesFix": "Realized instances produce closed-form topology: eval verts = grid points × cube verts (3 × 3 × 8 = 72), and Set Material carries the accent onto the evaluated mesh.",
+      "hero": "docs/gallery/assets/gn-instance-grid-hero.webp",
+      "preview": "examples/gn-instance-grid/preview.webp",
+      "tags": ["geometry-nodes", "instancing"]
     }
   ]
 }

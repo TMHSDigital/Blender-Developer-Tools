@@ -176,13 +176,16 @@
     <button class="chip active" data-tag="" type="button">All</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
     <button class="chip" data-tag="bmesh" type="button">bmesh</button>
+    <button class="chip" data-tag="context" type="button">context</button>
     <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
     <button class="chip" data-tag="drivers" type="button">drivers</button>
     <button class="chip" data-tag="export" type="button">export</button>
     <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
+    <button class="chip" data-tag="instancing" type="button">instancing</button>
     <button class="chip" data-tag="materials" type="button">materials</button>
     <button class="chip" data-tag="mesh" type="button">mesh</button>
     <button class="chip" data-tag="node-groups" type="button">node-groups</button>
+    <button class="chip" data-tag="operators" type="button">operators</button>
     <button class="chip" data-tag="performance" type="button">performance</button>
     <button class="chip" data-tag="rendering" type="button">rendering</button>
   </div>
@@ -274,6 +277,28 @@
           <p class="teaches">One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.</p>
           <a class="card-link" href="shader-node-group/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="operators context">
+        <a class="card-media" href="temp-override-join/" aria-label="temp-override-join example detail page">
+          <img src="assets/temp-override-join-hero.webp" alt="temp-override-join — Join three unit cubes into one L-shaped mesh under bpy" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="temp-override-join/">temp-override-join</a></h2>
+          <p class="teaches">Join three unit cubes into one L-shaped mesh under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, and topology is verts = 8 × blocks, faces = 6 × blocks.</p>
+          <a class="card-link" href="temp-override-join/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="geometry-nodes instancing">
+        <a class="card-media" href="gn-instance-grid/" aria-label="gn-instance-grid example detail page">
+          <img src="assets/gn-instance-grid-hero.webp" alt="gn-instance-grid — A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gn-instance-grid/">gn-instance-grid</a></h2>
+          <p class="teaches">A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances — attached as a NODES modifier with no Group Input geometry.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Realized instances produce closed-form topology: eval verts = grid points × cube verts (3 × 3 × 8 = 72), and Set Material carries the accent onto the evaluated mesh.</p>
+          <a class="card-link" href="gn-instance-grid/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>
