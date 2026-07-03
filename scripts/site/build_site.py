@@ -80,6 +80,14 @@ def _extract_trigger_section(body: str) -> list[str]:
     return triggers
 
 
+def _truncate_words(text: str, limit: int) -> str:
+    """Cut *text* at a word boundary under *limit* chars, with an ellipsis."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0].rstrip(",;:")
+    return cut + "…"
+
+
 def parse_skills(repo_root: Path) -> list[dict]:
     skills_dir = repo_root / "skills"
     if not skills_dir.is_dir():
@@ -97,7 +105,7 @@ def parse_skills(repo_root: Path) -> list[dict]:
         name = meta.get("name", "").replace("-", " ").replace("_", " ").title()
         if not name:
             name = skill_dir.name.replace("-", " ").replace("_", " ").title()
-        description = meta.get("description", "")[:200]
+        description = _truncate_words(meta.get("description", ""), 200)
 
         if not description:
             for line in body.splitlines():
@@ -154,7 +162,7 @@ def parse_rules(repo_root: Path) -> list[dict]:
                 key, _, val = stripped.partition(":")
                 key_lower = key.strip().lower()
                 if key_lower == "description":
-                    description = val.strip()[:200]
+                    description = _truncate_words(val.strip(), 200)
                 elif key_lower in ("globs", "scope"):
                     scope = val.strip()
                 continue
@@ -163,6 +171,7 @@ def parse_rules(repo_root: Path) -> list[dict]:
 
         results.append({
             "name": name,
+            "slug": rule_file.stem,
             "description": description,
             "scope": scope,
         })
@@ -371,6 +380,15 @@ def main():
         "example_count": len(examples),
         "snippet_count": len(plugin.get("snippets", [])),
         "template_count": len(plugin.get("templates", [])),
+        # basenames for display: snippets/foo-bar.py -> foo-bar
+        "snippets": [
+            {"name": p.split("/")[-1].removesuffix(".py"), "path": p}
+            for p in plugin.get("snippets", [])
+        ],
+        "templates": [
+            {"name": p.split("/")[-1], "path": p}
+            for p in plugin.get("templates", [])
+        ],
         "mcp_tools": mcp_tools,
         "mcp_tool_count": len(mcp_tools),
         "mcp_grouped": mcp_grouped,

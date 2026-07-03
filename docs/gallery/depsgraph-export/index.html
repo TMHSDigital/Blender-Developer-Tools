@@ -7,8 +7,7 @@
   <meta name="description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/depsgraph-export/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
-  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
-  <meta name="theme-color" content="#f6f8fa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="depsgraph-export — Examples — Blender Developer Tools" />
   <meta property="og:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
@@ -18,90 +17,85 @@
   <meta name="twitter:title" content="depsgraph-export — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/depsgraph-export-hero.webp" />
-  <!-- FOUC guard: apply the saved theme before first paint. Shares the 'theme'
-       key with the landing page, so a visitor's choice carries across. -->
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
   <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
     :root {
-      --bg: #0d1117; --bg2: #161b22; --surface: #161b22; --surface-2: #1c2128;
-      --border: #30363d; --text: #e6edf3; --text-dim: #8b949e;
-      --accent: #7c3aed; --accent-light: #a78bfa;
-      --radius: 8px; --radius-lg: 12px; --maxw: 1080px;
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
-      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #8b949e; --code-n: #79c0ff;
-    }
-    /* auto mode: follow the OS unless the user forced dark */
-    @media (prefers-color-scheme: light) {
-      :root:not([data-theme="dark"]) {
-        --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
-        --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
-        --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
-      }
-    }
-    /* explicit override */
-    [data-theme="light"] {
-      --bg: #f6f8fa; --bg2: #ffffff; --surface: #ffffff; --surface-2: #f0f2f5;
-      --border: #d0d7de; --text: #1f2328; --text-dim: #656d76;
-      --code-k: #cf222e; --code-s: #0a3069; --code-c: #6e7781; --code-n: #0550ae;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
       line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    a { color: var(--accent-light); text-decoration: none; }
+    a { color: var(--select); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    :focus-visible { outline: 2px solid var(--accent-light); outline-offset: 2px; border-radius: 3px; }
-    .skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: #fff;
-      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
     .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
 
     .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
-      justify-content: space-between; gap: 1rem; padding: 0.75rem 1.25rem;
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
       backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-    .topbar .back { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
-    .topbar .back:hover { color: var(--accent-light); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
     .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
-    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.9rem; font-weight: 500; }
-    .topbar-right .ghlink:hover { color: var(--accent-light); }
-    .theme-toggle { background: var(--surface-2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius); padding: 0.35rem 0.6rem;
-      font-size: 0.95rem; cursor: pointer; line-height: 1; transition: border-color 0.15s, background 0.15s; }
-    .theme-toggle:hover { border-color: var(--accent-light); }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
 
-    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 3rem 1.25rem 1.5rem; }
-    header.hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; line-height: 1.15; }
-    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.6rem; font-size: 1.02rem; }
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
 
     /* ---- index: filter chips ---- */
     .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
       display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-      border-radius: 999px; padding: 0.25rem 0.85rem; font-size: 0.82rem; font-weight: 500;
-      font-family: var(--font-sans); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
-    .chip:hover { color: var(--accent-light); border-color: var(--accent); }
-    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
 
     main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
     .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
       overflow: hidden; display: flex; flex-direction: column;
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
-    .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-      box-shadow: 0 8px 28px rgba(0,0,0,0.28); }
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
     .card.hidden { display: none; }
     .card-media { display: block; background: var(--bg2); line-height: 0; }
     .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
-    .card-body h2 { font-size: 1.22rem; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
     .card-body h2 a { color: var(--text); }
-    .card-body h2 a:hover { color: var(--accent-light); text-decoration: none; }
-    .teaches { color: var(--text); margin-bottom: 0.7rem; }
-    .witnesses { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem; }
-    .tag { display: inline-block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--accent-light); border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-      border-radius: 999px; padding: 0.08rem 0.55rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
     .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
 
     /* ---- detail page ---- */
@@ -109,9 +103,9 @@
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
     .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
-    .callout { border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
-      border-left: 3px solid var(--accent); border-radius: var(--radius);
-      background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
       padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
     .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
     .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
@@ -120,9 +114,10 @@
     .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
       color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
       font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
-    .copy-btn:hover { color: var(--accent-light); border-color: var(--accent); }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
     .detail-section { margin-top: 2.25rem; }
-    .detail-section > h2 { font-size: 1.15rem; letter-spacing: -0.01em; padding-bottom: 0.5rem;
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
 
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
@@ -150,14 +145,17 @@
     .lightbox.open { display: flex; }
     .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
 
-    footer { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 3rem;
-      color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
-    footer code { background: var(--surface-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; }
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
 
     @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .card, .theme-toggle { transition: none; }
+      .card { transition: none; }
       .card:hover { transform: none; }
     }
   </style>
@@ -168,7 +166,6 @@
     <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: auto (click to change)">&#9788;</button>
     </div>
   </div>
   <header class="hero">
@@ -263,28 +260,13 @@ count equals the EVALUATED (modifier-applied) count and is strictly greater than
     <img src="../assets/depsgraph-export-hero.webp" alt="depsgraph-export render, full size" />
   </div>
   <footer>
-    Generated from <code>examples/gallery.json</code> by <code>scripts/build_gallery.py</code>.
-    &nbsp;&bull;&nbsp; CC-BY-NC-ND-4.0
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
   </footer>
   <script>
-    (function () {
-      var btn = document.getElementById('themeToggle');
-      var root = document.documentElement;
-      var order = ['auto', 'light', 'dark'];
-      var glyph = { auto: '\u263C', light: '\u2600', dark: '\u263D' };
-      function get() { try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; } }
-      function apply(state) {
-        if (state === 'light' || state === 'dark') root.setAttribute('data-theme', state);
-        else root.removeAttribute('data-theme');
-        try { if (state === 'auto') localStorage.removeItem('theme'); else localStorage.setItem('theme', state); } catch (e) {}
-        btn.innerHTML = glyph[state]; btn.setAttribute('aria-label', 'Theme: ' + state + ' (click to change)');
-      }
-      apply(get());
-      btn.addEventListener('click', function () {
-        var next = order[(order.indexOf(get()) + 1) % order.length];
-        apply(next);
-      });
-    })();
 
     (function () {
       var hero = document.getElementById('heroZoom');

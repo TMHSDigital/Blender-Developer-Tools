@@ -1,8 +1,4 @@
 {
-  "accent": "#7c3aed",
-  "accentLight": "#a78bfa",
-  "heroGradientFrom": "#0d1117",
-  "heroGradientTo": "#161b22",
   "canonical": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
   "favicon": "assets/favicon.svg",
   "ogImage": "https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp",
