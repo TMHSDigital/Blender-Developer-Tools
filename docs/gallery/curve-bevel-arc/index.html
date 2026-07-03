@@ -205,9 +205,11 @@ blender --background --python curve_bevel_arc.py -- --output arc.png --engine cy
 Witnesses that renderable tubes are authored on `bpy.types.Curve` directly
 (`splines.new(&#x27;BEZIER&#x27;)`, `bezier_points`, `bevel_depth`, `use_fill_caps`) —
 not by meshing first or calling curve operators. The check asserts the
-closed-form point count, bevel depth, filled-cap topology, and that the
-depsgraph-evaluated mesh has a Z span of a tube whose centerline sits at
-`z = bevel_depth` (resting on the floor).
+closed-form point count and bevel depth, the closed-form Z span (tube
+centerline at `z = bevel_depth`, resting on the floor) and X span, plus the
+evaluated vert/face counts as a MEASURED regression gate — curve tessellation
+has no simple closed form, so those two constants pin today&#x27;s behavior (see
+EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -222,7 +224,10 @@ RADIUS = <span class="n">1.5</span>
 BEVEL = <span class="n">0.15</span>
 BEVEL_RES = <span class="n">4</span>
 RES_U = <span class="n">12</span>
-<span class="c"># measured for the parameters above with use_fill_caps=True — identical on 4.4 and 5.1</span>
+<span class="c"># MEASURED regression constants, not closed-form: curve-to-mesh tessellation</span>
+<span class="c"># (rings x bevel segments + cap fans) has no simple formula. Verified identical</span>
+<span class="c"># on 4.4, 4.5 LTS, and 5.1. If a future Blender changes tessellation, re-measure</span>
+<span class="c"># by printing len(em.vertices)/len(em.polygons) in check() and update these.</span>
 EXPECT_VERTS = <span class="n">1044</span>
 EXPECT_FACES = <span class="n">1028</span>
 

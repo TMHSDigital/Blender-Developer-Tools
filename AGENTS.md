@@ -6,14 +6,15 @@ Guidance for AI coding agents working on the Blender Developer Tools repository.
 
 ## Repository overview
 
-Skills, rules, snippets, and a starter template for Blender Python development.
+Skills, rules, snippets, starter templates, and runnable smoke-gated examples
+for Blender Python development.
 The repo targets **Blender 5.1** (current stable) with a **Blender 4.5 LTS**
 fallback. There is no MCP server. It ships a `.cursor-plugin/plugin.json`
 manifest so the ecosystem drift checker classifies it as a `cursor-plugin`.
 This is content the AI loads when the user asks Blender questions or works on
 Blender add-ons in Cursor or Claude Code.
 
-The content base as of v0.2.0:
+The content base (counts are CI-enforced against README.md and the manifest):
 
 - 12 skills covering scaffolding, operators, panels, properties, mesh and
   bmesh, headless batch scripts, slotted-actions animation (5.x), programmatic
@@ -26,6 +27,11 @@ The content base as of v0.2.0:
 - 2 templates: `extension-addon-template` for Extensions Platform add-ons,
   and `headless-batch-script-template` for unattended batch jobs.
 - 17 snippets covering canonical patterns.
+- 12 examples under `examples/<name>/`: runnable scripts that assert a real
+  API contract with deterministic checks, exit non-zero on failure, and
+  optionally render a still via `--output`. Each is executed headless on
+  Blender 4.5 LTS and 5.1 by `blender-smoke.yml`; its render ships in the
+  site gallery. Anatomy and authoring rules: copy `examples/bmesh-gear/`.
 
 ## Repository structure
 
@@ -35,7 +41,11 @@ Blender-Developer-Tools/
   rules/<rule-name>.mdc          # 6 rule files
   templates/<template-name>/     # 2 starter templates
   snippets/<snippet-name>.py     # 17 standalone Python snippets
-  .github/workflows/             # validate, drift-check, release, label-sync
+  examples/<name>/               # 12 runnable smoke-gated examples (+ gallery.json)
+  scripts/build_gallery.py       # generates docs/gallery/ (stdlib only)
+  scripts/site/                  # vendored landing-page build (build_site.py + template)
+  docs/gallery/                  # committed generated gallery pages + hero assets
+  .github/workflows/             # validate, blender-smoke, drift-check, release, pages, label-sync
   .github/dependabot.yml
   AGENTS.md, CLAUDE.md, README.md, ROADMAP.md, CHANGELOG.md
   CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
@@ -116,6 +126,10 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   every skill, rule, snippet, template, and example on disk must be listed,
   and the manifest `version` must equal `VERSION`. The release pipeline owns
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
+- `blender-smoke.yml` executes every shipped example (check-only, no render)
+  plus snippet/template smoke tests inside REAL headless Blender, on both
+  4.5 LTS and 5.1, on every PR and a weekly schedule. A new example is not
+  shipped until it has a step here.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
   drift-check@v1.15` to enforce ecosystem standards-version markers.
 - `release.yml` auto-bumps the version, tags, force-updates floating tags

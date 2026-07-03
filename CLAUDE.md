@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The **Blender Developer Tools** repository is at **v0.9.1**. It packages skills, rules, snippets, and starter templates for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
+The **Blender Developer Tools** repository is at **v0.9.1**. It packages skills, rules, snippets, starter templates, and runnable smoke-gated examples for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
 
 **Version:** 0.9.1
 **License:** CC-BY-NC-ND-4.0
@@ -19,6 +19,10 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 12 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
 templates/<template-name>/     - Starter projects, 2 total
 snippets/<snippet-name>.py     - Standalone code patterns, 17 total
+examples/<name>/               - Runnable smoke-gated examples, 12 total (+ gallery.json)
+scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
+scripts/site/                  - Vendored landing-page build (Jinja2)
+docs/gallery/                  - Committed generated gallery pages + hero renders
 VERSION                        - Source of truth for the repo version
 ```
 
@@ -76,9 +80,24 @@ v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh 
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
+## Examples (12)
+
+Runnable scripts at `examples/<name>/`, each asserting a real API contract with
+deterministic checks (exit non-zero on failure) and optionally rendering a still via
+`--output`. All twelve run headless on Blender 4.5 LTS and 5.1 in `blender-smoke.yml`;
+their renders ship in the site gallery at `docs/gallery/`. `examples/gallery.json` is the
+gallery's source of truth. When authoring a new one, copy the anatomy of
+`examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and
+wire all of: gallery.json entry, `.cursor-plugin/plugin.json` examples array (CI-gated),
+a `blender-smoke.yml` step, a README gallery row, hero webp (1280×720) in
+`docs/gallery/assets/` + preview webp (1200×675), then run `python scripts/build_gallery.py`.
+
 ## Development Workflow
 
-This is a content repository, no build step. Edit `SKILL.md`, `.mdc`, `.py`, and `.toml` files directly.
+This is a content repository, no build step for skills/rules/snippets/templates — edit
+`SKILL.md`, `.mdc`, `.py`, and `.toml` files directly. The website is generated:
+`scripts/build_gallery.py` (stdlib) regenerates `docs/gallery/` and must be re-run after
+touching `examples/`; the landing page builds from `scripts/site/` at deploy time.
 
 The AI consumes content via:
 
@@ -109,7 +128,7 @@ The release pipeline is automated via `release.yml` on push to `main` for conten
 
 When adding content to a future version:
 
-1. Add files under `skills/`, `rules/`, `snippets/`, or `templates/`.
+1. Add files under `skills/`, `rules/`, `snippets/`, `templates/`, or `examples/`.
 2. Update README.md aggregate counts (the `validate-counts` job enforces correctness).
 3. Update ROADMAP.md candidate pool entries.
 4. Use `feat:` for new content, `fix:` for corrections.
