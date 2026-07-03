@@ -165,15 +165,15 @@ materials with different Tint values. Witnesses the grouping contract: shared da
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber L-shaped mesh made of three joined unit cubes on a dark studio floor, viewed into the open corner" /></a>
+<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber three-step staircase of joined unit cubes on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
 ### [temp-override-join](examples/temp-override-join/)
 
-Three unit cubes joined into one L-shaped mesh under `bpy.context.temp_override` — the
-supported replacement for the removed `context.copy()` dict-pass form. Asserts one mesh
-remains, sources are gone, and topology is verts = 8 × blocks, faces = 6 × blocks.
+Three unit cubes joined into a staircase under `bpy.context.temp_override` — the supported
+replacement for the removed `context.copy()` dict-pass form. Asserts one mesh remains,
+sources are gone, and local Z spans all three steps.
 
 </td>
 </tr>
@@ -193,16 +193,15 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: a tall violet rectangular block on a dark studio floor, stretched by a relative Tall shape key at value 0.5" /></a>
+<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: a violet truncated pyramid on a dark studio floor, lifted and flared by a relative Tall shape key at value 0.5" /></a>
 </td>
 <td valign="middle">
 
 ### [shape-key-blend](examples/shape-key-blend/)
 
-A relative shape key authored through the data API — `shape_key_add`, per-vertex
-`key_blocks` data, and `.value`. Witnesses that shape keys do not rewrite
-`mesh.vertices`: undeformed top stays at Basis, evaluated z matches
-`basis + value × (key − basis)`.
+A relative Tall shape key that lifts and flares the top face — authored through
+`shape_key_add` / `key_blocks` / `.value`. Witnesses that shape keys do not rewrite
+`mesh.vertices`: every evaluated vert matches `basis + value × (key − basis)`.
 
 </td>
 </tr>
@@ -215,9 +214,9 @@ A relative shape key authored through the data API — `shape_key_add`, per-vert
 ### [curve-bevel-arc](examples/curve-bevel-arc/)
 
 A beveled Bezier semicircle authored on `bpy.types.Curve` — `splines.new('BEZIER')`,
-`bezier_points`, `bevel_depth` — so the curve renders as a tube without a prior mesh
-conversion. Asserts eight points, `bevel_depth == 0.12`, and evaluated topology
-850 verts / 840 faces.
+`bezier_points`, `bevel_depth`, `use_fill_caps` — so the curve renders as a solid tube
+without a prior mesh conversion. Asserts eight points, `bevel_depth == 0.15`, and
+evaluated topology 1044 verts / 1028 faces.
 
 </td>
 </tr>

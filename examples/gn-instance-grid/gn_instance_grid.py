@@ -5,7 +5,8 @@ a generative GeometryNodeTree (Mesh Grid → Instance on Points → Realize
 Instances → Transform) attached as a NODES modifier, with no Group Input
 geometry. The check asserts the closed-form evaluated topology —
 verts = grid_points × cube_verts — proving instances were realized, not
-left as empty instance geometry.
+left as empty instance geometry, and that a corner instance sits at its
+closed-form grid coordinate.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -17,13 +18,17 @@ import bpy, bmesh, sys, os, math, argparse
 
 GRID_X = 3
 GRID_Y = 3
-GRID_SIZE = 2.0
-CUBE_SIZE = 0.35
+GRID_SIZE = 2.4
+CUBE_SIZE = 0.42
 CUBE_VERTS = 8
 CUBE_FACES = 6
 GRID_POINTS = GRID_X * GRID_Y
 EXPECT_VERTS = GRID_POINTS * CUBE_VERTS
 EXPECT_FACES = GRID_POINTS * CUBE_FACES
+# Mesh Grid spans [-GRID_SIZE/2, +GRID_SIZE/2]; corner point at (+half, +half)
+GRID_HALF = GRID_SIZE / 2
+# after Transform lift, corner cube center is at (GRID_HALF, GRID_HALF, CUBE_SIZE/2)
+CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / 2)
 
 
 def build_instance_grid_tree(material=None):
@@ -49,11 +54,16 @@ def build_instance_grid_tree(material=None):
     # cubes are centered on grid points at z=0; lift so they rest on the floor
     xform.inputs["Translation"].default_value = (0.0, 0.0, CUBE_SIZE / 2)
 
+    # crisp facets — matches the other studio examples
+    shade = tree.nodes.new('GeometryNodeSetShadeSmooth')
+    shade.inputs["Shade Smooth"].default_value = False
+
     tree.links.new(grid.outputs["Mesh"], iop.inputs["Points"])
     tree.links.new(cube.outputs["Mesh"], iop.inputs["Instance"])
     tree.links.new(iop.outputs["Instances"], realize.inputs["Geometry"])
     tree.links.new(realize.outputs["Geometry"], xform.inputs["Geometry"])
-    out_socket = xform.outputs["Geometry"]
+    tree.links.new(xform.outputs["Geometry"], shade.inputs["Geometry"])
+    out_socket = shade.outputs["Geometry"]
 
     if material is not None:
         set_mat = tree.nodes.new('GeometryNodeSetMaterial')
@@ -76,8 +86,8 @@ def build():
     mat = bpy.data.materials.new("Lime")
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.28, 0.92, 0.08, 1.0)  # lime
-    bsdf.inputs["Roughness"].default_value = 0.24
+    bsdf.inputs["Base Color"].default_value = (0.22, 0.95, 0.06, 1.0)  # lime
+    bsdf.inputs["Roughness"].default_value = 0.22
 
     tree = build_instance_grid_tree(material=mat)
     mod = obj.modifiers.new("instance_grid", 'NODES')
@@ -98,6 +108,16 @@ def check(obj):
         got_v = len(em.vertices)
         got_f = len(em.polygons)
         mat_names = [m.name for m in em.materials if m is not None]
+        # corner instance: the 8 verts nearest CORNER_CENTER should average to it
+        corner = [v.co for v in em.vertices
+                  if (v.co.x > GRID_HALF - CUBE_SIZE and v.co.y > GRID_HALF - CUBE_SIZE)]
+        if len(corner) != CUBE_VERTS:
+            print(f"ERROR: corner instance has {len(corner)} verts, expected {CUBE_VERTS}",
+                  file=sys.stderr)
+            return 4
+        cx = sum(c.x for c in corner) / CUBE_VERTS
+        cy = sum(c.y for c in corner) / CUBE_VERTS
+        cz = sum(c.z for c in corner) / CUBE_VERTS
     finally:
         ev.to_mesh_clear()
 
@@ -105,15 +125,24 @@ def check(obj):
         print(f"ERROR: evaluated topology verts={got_v} faces={got_f} != "
               f"expected verts={EXPECT_VERTS} faces={EXPECT_FACES}",
               file=sys.stderr)
-        return 4
+        return 5
 
     if "Lime" not in mat_names:
         print(f"ERROR: Set Material did not carry Lime onto evaluated mesh "
               f"(materials={mat_names})", file=sys.stderr)
-        return 5
+        return 6
+
+    for got, exp, axis in ((cx, CORNER_CENTER[0], 'x'),
+                           (cy, CORNER_CENTER[1], 'y'),
+                           (cz, CORNER_CENTER[2], 'z')):
+        if abs(got - exp) > 1e-3:
+            print(f"ERROR: corner center {axis}={got:.4f} != {exp:.4f}",
+                  file=sys.stderr)
+            return 7
 
     print(f"grid={GRID_X}x{GRID_Y} points={GRID_POINTS} "
-          f"eval_verts={got_v} eval_faces={got_f} material=Lime")
+          f"eval_verts={got_v} eval_faces={got_f} "
+          f"corner=({cx:.2f},{cy:.2f},{cz:.2f}) material=Lime")
     return 0
 
 
@@ -149,31 +178,34 @@ def render_still(obj, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    # tip the grid so depth reads; cubes already rest on the floor via the tree
+    obj.rotation_euler = (0.0, 0.0, math.radians(24))
+
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = (0.0, 0.0, CUBE_SIZE / 2)
+    scene.collection.objects.link(aim)
+
+    def light(name, loc, energy, size, col):
         ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy
         ld.size = size
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
+        lc = ob.constraints.new('TRACK_TO')
+        lc.target = aim
+        lc.track_axis = 'TRACK_NEGATIVE_Z'
+        lc.up_axis = 'UP_Y'
 
-    light("Key", (-3.5, -4.5, 5.5), 1400.0, 6.0, (1.0, 0.98, 0.94), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 320.0, 8.0, (0.8, 0.87, 1.0), (65, 0, 50))
-    light("Rim", (1.5, 4.5, 2.0), 420.0, 4.0, (1.0, 0.75, 0.45), (-82, 0, 165))
+    light("Key", (-3.5, -4.5, 5.5), 1500.0, 6.0, (1.0, 0.98, 0.94))
+    light("Fill", (5.0, -3.5, 2.5), 340.0, 8.0, (0.8, 0.87, 1.0))
+    light("Rim", (1.5, 4.5, 2.0), 480.0, 4.0, (1.0, 0.75, 0.45))
 
-    # tip the grid so depth reads; cubes already rest on the floor via the tree
-    obj.rotation_euler = (0.0, 0.0, math.radians(22))
-
-    aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, CUBE_SIZE / 2)
-    scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    # three-quarter view so the 3x3 grid reads as depth, not a flat array
-    cam.location = (3.2, -3.8, 2.6)
+    cam.location = (3.6, -4.2, 2.8)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -213,7 +245,7 @@ def main():
     if args.output:
         if not render_still(obj, os.path.abspath(args.output), args.engine):
             print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+            return 8
         print(f"rendered still {args.output}")
 
     print("gn-instance-grid OK")

@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>shape-key-blend — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh." />
+  <meta name="description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shape-key-blend/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="shape-key-blend — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh." />
+  <meta property="og:description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shape-key-blend/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="shape-key-blend — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh." />
+  <meta name="twitter:description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,21 +170,21 @@
   </div>
   <header class="hero">
     <h1>shape-key-blend</h1>
-    <p>A relative shape key authored entirely through the data API — shape_key_add, per-vertex key_blocks data, and .value — read back from the depsgraph-evaluated mesh.</p>
+    <p>A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom shape-key-blend render">
       <img src="../assets/shape-key-blend-hero.webp" alt="shape-key-blend render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: undeformed top z stays at Basis, and evaluated z matches basis + value × (key − basis).</div>
+    <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/shape-key-blend/shape_key_blend.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that authors a relative shape key entirely through the data API — <code>shape_key_add</code>, per-vertex <code>key_blocks[&quot;Tall&quot;].data[i].co</code>, and <code>.value</code> — then reads the blend back from the depsgraph-evaluated mesh.</p>
-<p><strong>What it witnesses:</strong> shape keys do not rewrite <code>mesh.vertices</code>. The undeformed mesh stays at Basis; the closed-form blend <code>co = basis + value × (key − basis)</code> appears only on the evaluated mesh. The check asserts key names <code>Basis</code>/<code>Tall</code>, <code>Tall.value == 0.5</code>, undeformed top z equals the basis half-extent, and evaluated z matches <code>[−half, half + value × lift]</code>.</p>
+<p>A runnable example that authors a relative shape key entirely through the data API — <code>shape_key_add</code>, per-vertex <code>key_blocks[&quot;Tall&quot;].data[i].co</code>, and <code>.value</code> — then reads the blend back from the depsgraph-evaluated mesh. The Tall key both lifts and flares the top face, so the silhouette is a truncated pyramid.</p>
+<p><strong>What it witnesses:</strong> shape keys do not rewrite <code>mesh.vertices</code>. The undeformed mesh stays at Basis; every evaluated vertex matches the closed-form blend <code>co = basis + value × (key − basis)</code>. The check also asserts the flared top half-extent (<code>0.5 + value × flare</code>) so a uniform-scale mistake cannot pass.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shape_key_blend.py --
@@ -192,7 +192,7 @@ blender --background --python shape_key_blend.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python shape_key_blend.py -- --output blend.png
 blender --background --python shape_key_blend.py -- --output blend.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing keys, wrong value, or evaluated z mismatch). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (missing keys, wrong value, per-vert blend mismatch, or flare miss). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -209,6 +209,9 @@ relative blend: co = basis + value * (key - basis). AI often keys the
 wrong block, forgets Basis, or reads undeformed `mesh.vertices` instead of
 the evaluated mesh.
 
+The Tall key both lifts and flares the top face, so the silhouette is a
+truncated pyramid — clearly a blend, not a uniformly scaled box.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
@@ -218,12 +221,13 @@ check. Pass --output to also render a still:
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
 CUBE_SIZE = <span class="n">1.0</span>
-LIFT = <span class="n">1.2</span>
+LIFT = <span class="n">2.0</span>
+FLARE = <span class="n">0.45</span>  <span class="c"># extra half-extent on top face in XY at full key</span>
 BLEND = <span class="n">0.5</span>
-<span class="c"># cube spans [-half, +half]; top verts start at +half</span>
 HALF = CUBE_SIZE / <span class="n">2</span>
 EXPECT_TOP_Z = HALF + BLEND * LIFT
 EXPECT_BOT_Z = -HALF
+EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top verts</span>
 
 
 <span class="k">def</span> build():
@@ -246,8 +250,17 @@ EXPECT_BOT_Z = -HALF
         co = tall.data[i].co
         <span class="k">if</span> co.z &gt; <span class="n">0.0</span>:
             co.z += LIFT
+            <span class="c"># flare top face outward so the blend reads as a taper, not a box</span>
+            co.x = math.copysign(HALF + FLARE, co.x)
+            co.y = math.copysign(HALF + FLARE, co.y)
     tall.value = BLEND
     <span class="k">return</span> obj
+
+
+<span class="k">def</span> blended_co(basis_kb, key_kb, i, value):
+    b = basis_kb.data[i].co
+    k = key_kb.data[i].co
+    <span class="k">return</span> b + value * (k - b)
 
 
 <span class="k">def</span> check(obj):
@@ -259,6 +272,7 @@ EXPECT_BOT_Z = -HALF
     <span class="k">if</span> names != [<span class="s">&quot;Basis&quot;</span>, <span class="s">&quot;Tall&quot;</span>]:
         print(<span class="s">f&quot;</span><span class="s">ERROR: key names </span>{names}<span class="s"> != [&#x27;Basis&#x27;, &#x27;Tall&#x27;]</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
+    basis = keys.key_blocks[<span class="s">&quot;Basis&quot;</span>]
     tall = keys.key_blocks[<span class="s">&quot;Tall&quot;</span>]
     <span class="k">if</span> abs(tall.value - BLEND) &gt; <span class="n">1e-6</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: Tall.value </span>{tall.value}<span class="s"> != </span>{BLEND}<span class="s">&quot;</span>, file=sys.stderr)
@@ -266,9 +280,11 @@ EXPECT_BOT_Z = -HALF
 
     <span class="c"># undeformed mesh.vertices stay at Basis — the trap this example catches</span>
     raw_top = max(v.co.z <span class="k">for</span> v <span class="k">in</span> obj.data.vertices)
-    <span class="k">if</span> abs(raw_top - HALF) &gt; <span class="n">1e-4</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: undeformed top z </span>{raw_top}<span class="s"> != basis </span>{HALF}<span class="s"> </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">(shape keys do not rewrite mesh.vertices)</span><span class="s">&quot;</span>, file=sys.stderr)
+    raw_xy = max(max(abs(v.co.x), abs(v.co.y)) <span class="k">for</span> v <span class="k">in</span> obj.data.vertices)
+    <span class="k">if</span> abs(raw_top - HALF) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(raw_xy - HALF) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: undeformed mesh not at Basis </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(top_z=</span>{raw_top}<span class="s">, xy=</span>{raw_xy}<span class="s">, expected half=</span>{HALF}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
     bpy.context.view_layer.update()
@@ -276,19 +292,32 @@ EXPECT_BOT_Z = -HALF
     ev = obj.evaluated_get(dg)
     em = ev.to_mesh()
     <span class="k">try</span>:
+        <span class="c"># every evaluated vert must match the closed-form blend from key_blocks</span>
+        <span class="k">for</span> i, v <span class="k">in</span> enumerate(em.vertices):
+            expect = blended_co(basis, tall, i, BLEND)
+            <span class="k">if</span> (v.co - expect).length &gt; <span class="n">1e-4</span>:
+                print(<span class="s">f&quot;</span><span class="s">ERROR: vert </span>{i}<span class="s"> evaluated </span>{tuple(v.co)}<span class="s"> != </span><span class="s">&quot;</span>
+                      <span class="s">f&quot;</span><span class="s">blend </span>{tuple(expect)}<span class="s">&quot;</span>, file=sys.stderr)
+                <span class="k">return</span> <span class="n">7</span>
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices]
+        top_xy = [max(abs(v.co.x), abs(v.co.y)) <span class="k">for</span> v <span class="k">in</span> em.vertices <span class="k">if</span> v.co.z &gt; <span class="n">0.0</span>]
         top = max(zs)
         bot = min(zs)
+        flare = max(top_xy)
     <span class="k">finally</span>:
         ev.to_mesh_clear()
 
     <span class="k">if</span> abs(top - EXPECT_TOP_Z) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(bot - EXPECT_BOT_Z) &gt; <span class="n">1e-4</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated z [</span>{bot:<span class="s">.4f</span>}<span class="s">, </span>{top:<span class="s">.4f</span>}<span class="s">] != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">[</span>{EXPECT_BOT_Z:<span class="s">.4f</span>}<span class="s">, </span>{EXPECT_TOP_Z:<span class="s">.4f</span>}<span class="s">]</span><span class="s">&quot;</span>, file=sys.stderr)
-        <span class="k">return</span> <span class="n">7</span>
+        <span class="k">return</span> <span class="n">8</span>
+    <span class="k">if</span> abs(flare - EXPECT_TOP_HALF) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: top flare </span>{flare:<span class="s">.4f</span>}<span class="s"> != </span>{EXPECT_TOP_HALF:<span class="s">.4f</span>}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
 
     print(<span class="s">f&quot;</span><span class="s">keys=</span>{names}<span class="s"> value=</span>{BLEND}<span class="s"> eval_z=</span>{bot:<span class="s">.3f</span>}<span class="s">..</span>{top:<span class="s">.3f</span>}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">undeformed_top=</span>{raw_top:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+          <span class="s">f&quot;</span><span class="s">top_half=</span>{flare:<span class="s">.3f</span>}<span class="s"> undeformed_top=</span>{raw_top:<span class="s">.3f</span>}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -303,13 +332,13 @@ EXPECT_BOT_Z = -HALF
     mat = bpy.data.materials.new(<span class="s">&quot;Violet&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.48</span>, <span class="n">0.08</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)  <span class="c"># violet</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.24</span>
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.52</span>, <span class="n">0.06</span>, <span class="n">0.98</span>, <span class="n">1.0</span>)  <span class="c"># violet</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
     obj.data.materials.clear()
     obj.data.materials.append(mat)
     <span class="c"># bottom verts stay at -HALF; lift so the block rests on the floor</span>
     obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, HALF)
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">32</span>))
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -336,9 +365,9 @@ EXPECT_BOT_Z = -HALF
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="c"># world-space mid-height of the blended block (bottom at 0, top at HALF+EXPECT_TOP_Z)</span>
+    world_top = HALF + EXPECT_TOP_Z
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, (HALF + EXPECT_TOP_Z) / <span class="n">2</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, world_top / <span class="n">2</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -354,14 +383,14 @@ EXPECT_BOT_Z = -HALF
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.2</span>, -<span class="n">5.0</span>, <span class="n">2.2</span>)
+    cam.location = (<span class="n">3.6</span>, -<span class="n">4.8</span>, <span class="n">2.4</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -401,7 +430,7 @@ EXPECT_BOT_Z = -HALF
     <span class="k">if</span> args.output:
         <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+            <span class="k">return</span> <span class="n">10</span>
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;shape-key-blend OK&quot;</span>)

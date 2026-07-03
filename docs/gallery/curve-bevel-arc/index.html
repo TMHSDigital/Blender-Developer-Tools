@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>curve-bevel-arc — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <meta name="description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/curve-bevel-arc/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <meta property="og:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/curve-bevel-arc/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion." />
+  <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,21 +170,21 @@
   </div>
   <header class="hero">
     <h1>curve-bevel-arc</h1>
-    <p>A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth — so the curve renders as a tube without a prior mesh conversion.</p>
+    <p>A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom curve-bevel-arc render">
       <img src="../assets/curve-bevel-arc-hero.webp" alt="curve-bevel-arc render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.12, and the evaluated mesh has deterministic topology (850 verts, 840 faces) resting on the floor.</div>
+    <div class="callout"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/curve-bevel-arc/curve_bevel_arc.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, and <code>bevel_depth</code> — so the curve renders as a tube without a prior mesh conversion.</p>
-<p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.12</code>, and that the depsgraph-evaluated mesh has the deterministic topology (850 verts, 840 faces for these resolution settings) with a Z span that rests on the floor (<code>[≈0, 2 × bevel]</code>).</p>
+<p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, <code>bevel_depth</code>, and <code>use_fill_caps</code> — so the curve renders as a solid tube without a prior mesh conversion.</p>
+<p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.15</code>, <code>use_fill_caps</code>, and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts, 1028 faces for these resolution settings) with a Z span that rests on the floor (<code>[0, 2 × bevel]</code>) and an X span of <code>2 × radius + 2 × bevel</code>.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python curve_bevel_arc.py --
@@ -192,7 +192,7 @@ blender --background --python curve_bevel_arc.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python curve_bevel_arc.py -- --output arc.png
 blender --background --python curve_bevel_arc.py -- --output arc.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong point count, bevel, topology, or Z span). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (wrong point count, bevel, caps, topology, or span). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -203,10 +203,10 @@ blender --background --python curve_bevel_arc.py -- --output arc.png --engine cy
       <pre><span class="s">&quot;&quot;&quot;Beveled Bezier arc via the curve data API — a runnable example.
 
 Witnesses that renderable tubes are authored on `bpy.types.Curve` directly
-(`splines.new(&#x27;BEZIER&#x27;)`, `bezier_points`, `bevel_depth`) — not by meshing
-first or calling curve operators. The check asserts the closed-form point
-count, bevel depth, and that the depsgraph-evaluated mesh has the
-deterministic topology and Z span of a tube whose centerline sits at
+(`splines.new(&#x27;BEZIER&#x27;)`, `bezier_points`, `bevel_depth`, `use_fill_caps`) —
+not by meshing first or calling curve operators. The check asserts the
+closed-form point count, bevel depth, filled-cap topology, and that the
+depsgraph-evaluated mesh has a Z span of a tube whose centerline sits at
 `z = bevel_depth` (resting on the floor).
 
 By default it runs only the correctness check (no render) — the CI smoke
@@ -219,12 +219,12 @@ check. Pass --output to also render a still:
 
 N_POINTS = <span class="n">8</span>
 RADIUS = <span class="n">1.5</span>
-BEVEL = <span class="n">0.12</span>
-BEVEL_RES = <span class="n">3</span>
+BEVEL = <span class="n">0.15</span>
+BEVEL_RES = <span class="n">4</span>
 RES_U = <span class="n">12</span>
-<span class="c"># measured for the parameters above — identical on 4.4 and 5.1</span>
-EXPECT_VERTS = <span class="n">850</span>
-EXPECT_FACES = <span class="n">840</span>
+<span class="c"># measured for the parameters above with use_fill_caps=True — identical on 4.4 and 5.1</span>
+EXPECT_VERTS = <span class="n">1044</span>
+EXPECT_FACES = <span class="n">1028</span>
 
 
 <span class="k">def</span> build():
@@ -234,6 +234,7 @@ EXPECT_FACES = <span class="n">840</span>
     curve.bevel_depth = BEVEL
     curve.bevel_resolution = BEVEL_RES
     curve.resolution_u = RES_U
+    curve.use_fill_caps = <span class="k">True</span>  <span class="c"># solid ends — not a hollow pipe</span>
 
     spline = curve.splines.new(<span class="s">&#x27;BEZIER&#x27;</span>)
     spline.bezier_points.add(N_POINTS - <span class="n">1</span>)  <span class="c"># one point exists already</span>
@@ -261,6 +262,9 @@ EXPECT_FACES = <span class="n">840</span>
     <span class="k">if</span> abs(curve.bevel_depth - BEVEL) &gt; <span class="n">1e-6</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: bevel_depth </span>{curve.bevel_depth}<span class="s"> != </span>{BEVEL}<span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
+    <span class="k">if</span> <span class="k">not</span> curve.use_fill_caps:
+        print(<span class="s">&quot;ERROR: use_fill_caps is False — ends should be capped&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
 
     bpy.context.view_layer.update()
     dg = bpy.context.evaluated_depsgraph_get()
@@ -271,6 +275,9 @@ EXPECT_FACES = <span class="n">840</span>
         got_f = len(em.polygons)
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices]
         z_lo, z_hi = min(zs), max(zs)
+        <span class="c"># arc spans x in [-RADIUS, +RADIUS] at the endpoints</span>
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> em.vertices]
+        x_span = max(xs) - min(xs)
     <span class="k">finally</span>:
         ev.to_mesh_clear()
 
@@ -278,19 +285,24 @@ EXPECT_FACES = <span class="n">840</span>
         print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated topology verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">expected verts=</span>{EXPECT_VERTS}<span class="s"> faces=</span>{EXPECT_FACES}<span class="s">&quot;</span>,
               file=sys.stderr)
-        <span class="k">return</span> <span class="n">6</span>
-
-    <span class="c"># tube diameter ≈ 2 * bevel; centerline at z=BEVEL → span [0, 2*BEVEL]</span>
-    <span class="k">if</span> z_lo &lt; -<span class="n">0.02</span> <span class="k">or</span> z_lo &gt; <span class="n">0.03</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: tube does not rest on floor (z_lo=</span>{z_lo:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">7</span>
-    <span class="k">if</span> abs(z_hi - <span class="n">2</span> * BEVEL) &gt; <span class="n">0.03</span>:
+
+    <span class="c"># tube diameter = 2 * bevel; centerline at z=BEVEL → span [0, 2*BEVEL]</span>
+    <span class="k">if</span> abs(z_lo) &gt; <span class="n">1e-4</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: tube does not rest on floor (z_lo=</span>{z_lo:<span class="s">.6f</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    <span class="k">if</span> abs(z_hi - <span class="n">2</span> * BEVEL) &gt; <span class="n">1e-4</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: tube height </span>{z_hi:<span class="s">.4f</span>}<span class="s"> != 2*bevel=</span>{<span class="n">2</span> * BEVEL:<span class="s">.4f</span>}<span class="s">&quot;</span>,
               file=sys.stderr)
-        <span class="k">return</span> <span class="n">8</span>
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="c"># diameter adds 2*BEVEL to the arc&#x27;s 2*RADIUS span</span>
+    expect_x_span = <span class="n">2</span> * RADIUS + <span class="n">2</span> * BEVEL
+    <span class="k">if</span> abs(x_span - expect_x_span) &gt; <span class="n">0.05</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: x span </span>{x_span:<span class="s">.4f</span>}<span class="s"> != </span>{expect_x_span:<span class="s">.4f</span>}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
 
-    print(<span class="s">f&quot;</span><span class="s">points=</span>{n}<span class="s"> bevel=</span>{BEVEL}<span class="s"> eval_verts=</span>{got_v}<span class="s"> eval_faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">points=</span>{n}<span class="s"> bevel=</span>{BEVEL}<span class="s"> caps=True eval_verts=</span>{got_v}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">eval_faces=</span>{got_f}<span class="s"> z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s"> x_span=</span>{x_span:<span class="s">.3f</span>}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -303,10 +315,10 @@ EXPECT_FACES = <span class="n">840</span>
     mat = bpy.data.materials.new(<span class="s">&quot;Rose&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.92</span>, <span class="n">0.14</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)  <span class="c"># rose</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.28</span>
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.95</span>, <span class="n">0.10</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)  <span class="c"># rose</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.24</span>
     obj.data.materials.append(mat)
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">20</span>))
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">18</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -334,7 +346,7 @@ EXPECT_FACES = <span class="n">840</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.4</span>, BEVEL)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.35</span>, BEVEL)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -350,14 +362,14 @@ EXPECT_FACES = <span class="n">840</span>
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.8</span>, -<span class="n">4.0</span>, <span class="n">2.4</span>)
+    cam.location = (<span class="n">3.0</span>, -<span class="n">4.2</span>, <span class="n">2.6</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -397,7 +409,7 @@ EXPECT_FACES = <span class="n">840</span>
     <span class="k">if</span> args.output:
         <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+            <span class="k">return</span> <span class="n">11</span>
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;curve-bevel-arc OK&quot;</span>)
