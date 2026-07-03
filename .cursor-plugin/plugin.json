@@ -2,7 +2,7 @@
   "name": "blender-developer-tools",
   "displayName": "Blender Developer Tools",
   "description": "Cursor and Claude Code skills, rules, snippets, and templates for Blender Python add-on and scripting development",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "author": {
     "name": "TMHSDigital",
     "email": "contact@users.noreply.github.com"
