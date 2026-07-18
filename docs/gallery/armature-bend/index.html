@@ -434,8 +434,8 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.05</span>, <span class="n">0.055</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -446,7 +446,7 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.033</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
@@ -457,9 +457,14 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">1500.0</span>, <span class="n">7.0</span>, (<span class="n">1.0</span>, <span class="n">0.97</span>, <span class="n">0.92</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">500.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">900.0</span>, <span class="n">5.0</span>, (<span class="n">0.55</span>, <span class="n">0.75</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    <span class="c"># a shaped warm key from the upper left, a faint cool fill so the shadow</span>
+    <span class="c"># side of each tube stays legible, a cool rim to lift the silhouettes off</span>
+    <span class="c"># the backdrop, and a warm wedge raking the back wall — the falloff pool</span>
+    <span class="c"># behind the subjects that the rest of the gallery stages against.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">650.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">520.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">45.0</span>
@@ -481,6 +486,9 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX (the 4.x/5.x default) desaturates the BoneTint bands toward pastel,</span>
+    <span class="c"># hiding exactly the weight boundaries the LBS check asserts.</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 

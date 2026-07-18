@@ -229,8 +229,8 @@ def render_still(rigs, path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.05, 0.055, 0.065, 1.0)
-    fb.inputs["Roughness"].default_value = 0.55
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -241,7 +241,7 @@ def render_still(rigs, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.03, 0.033, 0.04, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
     def light(name, loc, energy, size, col, rot):
@@ -252,9 +252,14 @@ def render_still(rigs, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), 1500.0, 7.0, (1.0, 0.97, 0.92), (48, 0, -38))
-    light("Fill", (5.0, -4.0, 3.0), 500.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
-    light("Rim", (0.5, 4.5, 5.0), 900.0, 5.0, (0.55, 0.75, 1.0), (-55, 0, 175))
+    # a shaped warm key from the upper left, a faint cool fill so the shadow
+    # side of each tube stays legible, a cool rim to lift the silhouettes off
+    # the backdrop, and a warm wedge raking the back wall — the falloff pool
+    # behind the subjects that the rest of the gallery stages against.
+    light("Key", (-4.0, -5.0, 6.0), 650.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
+    light("Fill", (5.0, -4.0, 3.0), 110.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
+    light("Rim", (0.5, 4.5, 5.0), 350.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
+    light("Wedge", (2.5, 3.5, 4.2), 520.0, 6.0, (1.0, 0.76, 0.5), (-72, 0, 195))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 45.0
@@ -276,6 +281,9 @@ def render_still(rigs, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX (the 4.x/5.x default) desaturates the BoneTint bands toward pastel,
+    # hiding exactly the weight boundaries the LBS check asserts.
+    scene.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 
