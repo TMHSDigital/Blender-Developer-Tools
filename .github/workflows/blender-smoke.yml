@@ -274,3 +274,15 @@ jobs:
           # on its closed form. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/parent-inverse-orrery/parent_inverse_orrery.py --
+
+      - name: Shipped example - grease pencil rosette (GPv3 attribute API)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): five nested rose curves drawn
+          # as GPv3 strokes; asserts the version-gated datablock address (4.5:
+          # grease_pencils_v3 with grease_pencils still legacy; 5.x: grease_pencils
+          # is GPv3, legacy names gone), lazy attribute-layer materialization from
+          # point writes, and a closed-form round-trip of every position through
+          # the raw POINT attribute buffer. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/grease-pencil-rosette/grease_pencil_rosette.py --
