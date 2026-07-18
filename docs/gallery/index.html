@@ -175,6 +175,7 @@
   <div class="chips" role="toolbar" aria-label="Filter examples by topic">
     <button class="chip active" data-tag="" type="button">All</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
+    <button class="chip" data-tag="armature" type="button">armature</button>
     <button class="chip" data-tag="attributes" type="button">attributes</button>
     <button class="chip" data-tag="bevel" type="button">bevel</button>
     <button class="chip" data-tag="bmesh" type="button">bmesh</button>
@@ -385,6 +386,17 @@
           <p class="teaches">Grease Pencil v3&#x27;s attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.</p>
           <p class="witnesses"><span class="tag">witnesses</span> The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.</p>
           <a class="card-link" href="grease-pencil-rosette/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="armature depsgraph">
+        <a class="card-media" href="armature-bend/" aria-label="armature-bend example detail page">
+          <img src="assets/armature-bend-hero.webp" alt="armature-bend — Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="armature-bend/">armature-bend</a></h2>
+          <p class="teaches">Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal Σ wᵢ·(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected — a straight tube fails.</p>
+          <a class="card-link" href="armature-bend/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>
