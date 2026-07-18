@@ -175,6 +175,7 @@
   <div class="chips" role="toolbar" aria-label="Filter examples by topic">
     <button class="chip active" data-tag="" type="button">All</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
+    <button class="chip" data-tag="attributes" type="button">attributes</button>
     <button class="chip" data-tag="bevel" type="button">bevel</button>
     <button class="chip" data-tag="bmesh" type="button">bmesh</button>
     <button class="chip" data-tag="compositor" type="button">compositor</button>
@@ -348,6 +349,17 @@
           <p class="teaches">Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.</p>
           <a class="card-link" href="damped-track-aim/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh materials attributes">
+        <a class="card-media" href="color-attribute-wheel/" aria-label="color-attribute-wheel example detail page">
+          <img src="assets/color-attribute-wheel-hero.webp" alt="color-attribute-wheel — The modern color-attributes API — mesh" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="color-attribute-wheel/">color-attribute-wheel</a></h2>
+          <p class="teaches">The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> CORNER-domain attributes are sized to loop count, not vertex count; the check asserts that, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.</p>
+          <a class="card-link" href="color-attribute-wheel/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

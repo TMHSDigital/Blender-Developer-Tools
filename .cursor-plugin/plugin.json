@@ -60,6 +60,7 @@
   ],
   "examples": [
     "examples/bmesh-gear",
+    "examples/color-attribute-wheel",
     "examples/compositor-glare",
     "examples/curve-bevel-arc",
     "examples/damped-track-aim",
