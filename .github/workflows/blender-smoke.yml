@@ -264,3 +264,14 @@ jobs:
           # failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/color-attribute-wheel/color_attribute_wheel.py --
+
+      - name: Shipped example - parent inverse orrery (matrix_parent_inverse)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): a data-API orrery whose arms,
+          # planets, and moon are parented with the keep-world idiom; asserts bare
+          # `.parent =` teleports a probe, matrix_parent_inverse restores it exactly,
+          # matrix_world is stale until view_layer.update(), and every orbit lands
+          # on its closed form. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/parent-inverse-orrery/parent_inverse_orrery.py --

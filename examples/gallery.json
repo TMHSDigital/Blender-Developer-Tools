@@ -184,6 +184,18 @@
         "materials",
         "attributes"
       ]
+    },
+    {
+      "name": "parent-inverse-orrery",
+      "dir": "examples/parent-inverse-orrery",
+      "teaches": "Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.",
+      "witnessesFix": "Bare `.parent =` really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.",
+      "hero": "docs/gallery/assets/parent-inverse-orrery-hero.webp",
+      "preview": "examples/parent-inverse-orrery/preview.webp",
+      "tags": [
+        "objects",
+        "transforms"
+      ]
     }
   ]
 }
