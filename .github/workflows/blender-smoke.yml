@@ -298,3 +298,16 @@ jobs:
           # Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/armature-bend/armature_bend.py --
+
+      - name: Shipped example - text version stamp (TextCurve solids + version string)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a TextCurve whose body is the live
+          # bpy.app.version_string; asserts the Curve subclass and built-in
+          # font contracts, that flat text is filled but planar, the closed
+          # form z-extent = 2*(extrude+bevel_depth), body edits regenerating
+          # geometry, that version_string starts with the dotted version tuple
+          # ("4.5.11 LTS" is not bare semver), and that a Mesh reference dies
+          # at to_mesh_clear(). Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/text-version-stamp/text_version_stamp.py --

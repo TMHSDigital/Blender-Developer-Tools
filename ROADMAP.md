@@ -97,7 +97,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Refresh the `slotted-actions-animation` skill against any 5.2 changes
 - Bump `blender_version_min` in the templates if 5.2 APIs are used
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
-- Gallery coverage follow-ups from the GPv3 review: `text-version-stamp` (TextCurve self-labeling renders); lower priority: light-linking, bulk `pixels.foreach_set`, VSE sequences-to-strips witness (`grease-pencil-rosette` and `armature-bend` shipped first)
+- Gallery coverage follow-ups from the GPv3 review: light-linking, bulk `pixels.foreach_set`, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, and `text-version-stamp` shipped first)
 
 ## Future (uncommitted)
 
