@@ -12,14 +12,18 @@ patterns end to end:
   Blender 4.0).
 
 It doubles as a live proof of the **EEVEE engine-id** behavior: the version-branch helper
-resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_EEVEE_NEXT` on 4.2–4.5, and the chosen
-id is asserted against the running build before rendering — so a regression in that mapping
-fails the example, not just the docs.
+resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_EEVEE_NEXT` on 4.2–4.5, and the check
+witnesses the inversion for real — the *other* era's id must be **rejected** by the running
+build (assignment raises `TypeError`) and the helper's id accepted — so a regression in
+that mapping fails the example, not just the docs.
 
 ## Run
 
 ```bash
-# Default: render with the build's EEVEE engine (needs a GPU/display)
+# Cheap correctness check (materials + engine-id witness, no render):
+blender --background --python swatch_grid.py --
+
+# Render and pixel-verify with the build's EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
 
 # GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still

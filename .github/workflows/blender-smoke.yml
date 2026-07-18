@@ -160,9 +160,8 @@ jobs:
         run: |
           set -euo pipefail
           # Frame-independent check only (no render): 9409 verts displaced via one
-          # foreach_get + one foreach_set; asserts count unchanged, Z span matches the
-          # amplitude, and a probe vertex matches the closed-form wave. Exits non-zero
-          # on failure.
+          # foreach_get + one foreach_set; asserts the Z span matches the amplitude
+          # and every vertex matches the closed-form wave. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/wave-displace/wave_displace.py --
 

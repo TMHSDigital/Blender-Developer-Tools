@@ -26,7 +26,7 @@ ORBIT_RADIUS = 1.85
 CORE_RADIUS = 0.32
 NEEDLE_DEPTH = 1.05
 NEEDLE_RADIUS = 0.055
-# Local +Z must face the core; cos(3°) ≈ 0.9986 — leave a little room for
+# Local +Z must face the core; 0.998 = cos(3.6°) — leave a little room for
 # cone tessellation / float noise while still catching a flipped axis.
 MIN_AIM_DOT = 0.998
 LIFT = 1.55
@@ -279,7 +279,6 @@ def render_still(core, needles, path, engine):
     scene.collection.objects.link(floor)
 
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.data = floor_me.copy()
     wall.data.materials.clear()
     wall.data.materials.append(
         make_dielectric("StudioWall", (0.012, 0.013, 0.016), roughness=0.55)
@@ -353,18 +352,8 @@ def render_still(core, needles, path, engine):
             scene.eevee.taa_render_samples = 128
         except AttributeError:
             pass
-        # Bloom helps the ember core read without a compositor tree.
-        for attr, val in (
-            ("use_bloom", True),
-            ("bloom_intensity", 0.12),
-            ("bloom_threshold", 0.85),
-            ("bloom_radius", 4.5),
-        ):
-            if hasattr(scene.eevee, attr):
-                try:
-                    setattr(scene.eevee, attr, val)
-                except Exception:
-                    pass
+        # No bloom here on purpose: EEVEE has no use_bloom on 4.2+ or 5.x —
+        # glow lives in the compositor (see examples/compositor-glare).
 
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720

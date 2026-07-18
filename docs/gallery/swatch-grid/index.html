@@ -185,9 +185,12 @@
     <section class="detail-section md">
 <p>A runnable example that renders a 3×2 grid of spheres — one material per cell — to a single PNG. It demonstrates the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> patterns end to end:</p>
 <ul><li><strong>Principled BSDF</strong> metals (gold, copper: high metallic, low roughness) and dielectrics (red/blue plastic, white rough), configured with <strong>string socket lookups</strong> and <strong>4-tuple colors</strong>.</li><li>The <strong>emission</strong> pattern (an emissive orange swatch).</li><li>The cross-version <strong><code>set_specular</code> shim</strong> (<code>Specular</code> → <code>Specular IOR Level</code>, renamed in Blender 4.0).</li></ul>
-<p>It doubles as a live proof of the <strong>EEVEE engine-id</strong> behavior: the version-branch helper resolves <code>BLENDER_EEVEE</code> on Blender 5.x and <code>BLENDER_EEVEE_NEXT</code> on 4.2–4.5, and the chosen id is asserted against the running build before rendering — so a regression in that mapping fails the example, not just the docs.</p>
+<p>It doubles as a live proof of the <strong>EEVEE engine-id</strong> behavior: the version-branch helper resolves <code>BLENDER_EEVEE</code> on Blender 5.x and <code>BLENDER_EEVEE_NEXT</code> on 4.2–4.5, and the check witnesses the inversion for real — the *other* era&#x27;s id must be <strong>rejected</strong> by the running build (assignment raises <code>TypeError</code>) and the helper&#x27;s id accepted — so a regression in that mapping fails the example, not just the docs.</p>
 <h2>Run</h2>
-<pre><code># Default: render with the build&#x27;s EEVEE engine (needs a GPU/display)
+<pre><code># Cheap correctness check (materials + engine-id witness, no render):
+blender --background --python swatch_grid.py --
+
+# Render and pixel-verify with the build&#x27;s EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
 
 # GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still
@@ -212,7 +215,10 @@ lookups, and 4-tuple colors. It also doubles as a live proof of the EEVEE engine
 the version-branch helper resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_EEVEE_NEXT`
 on 4.2-4.5, and the chosen id is asserted against the build before rendering.
 
-Run headless:
+By default it runs only the correctness check (no render) — the CI smoke check.
+Pass --output to also render and pixel-verify a still:
+
+    blender --background --python swatch_grid.py --                       # check only
     blender --background --python swatch_grid.py -- --output swatch.png
     blender --background --python swatch_grid.py -- --output s.png --engine cycles --samples 8 --width 640
 
@@ -304,9 +310,11 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
         <span class="k">for</span> c <span class="k">in</span> range(GRID_COLS):
             me = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">S</span>{i}<span class="s">&quot;</span>)
             bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=<span class="n">0.92</span>)
-            bm.to_mesh(me)
-            bm.free()
+            <span class="k">try</span>:
+                bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=<span class="n">0.92</span>)
+                bm.to_mesh(me)
+            <span class="k">finally</span>:
+                bm.free()
             <span class="k">for</span> poly <span class="k">in</span> me.polygons:
                 poly.use_smooth = <span class="k">True</span>
             ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">S</span>{i}<span class="s">&quot;</span>, me)
@@ -364,7 +372,7 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
 <span class="k">def</span> main():
     argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
     p = argparse.ArgumentParser(description=<span class="s">&quot;Render a procedural-materials swatch grid.&quot;</span>)
-    p.add_argument(<span class="s">&quot;--output&quot;</span>, required=<span class="k">True</span>, help=<span class="s">&quot;Output PNG path&quot;</span>)
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>,
                    help=<span class="s">&quot;auto/eevee use the version-correct EEVEE id; cycles for GPU-less hosts&quot;</span>)
     p.add_argument(<span class="s">&quot;--samples&quot;</span>, type=int, default=<span class="n">32</span>)
@@ -378,15 +386,25 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     build_scene(mats)
 
     sc = bpy.context.scene
-    <span class="c"># EEVEE engine-id proof: frame-independent, must hold even when we render with Cycles.</span>
+    <span class="c"># EEVEE engine-id proof: frame-independent, must hold even when we render with</span>
+    <span class="c"># Cycles. Witness the inversion for real: the OTHER era&#x27;s id must be rejected</span>
+    <span class="c"># by this build, and the helper&#x27;s id must be accepted.</span>
     eid = get_eevee_engine_id()
-    expected = <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
-    sc.render.engine = eid
-    <span class="k">if</span> sc.render.engine != expected:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: EEVEE id helper returned &#x27;</span>{eid}<span class="s">&#x27;, engine is &#x27;</span>{sc.render.engine}<span class="s">&#x27;, </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">expected &#x27;</span>{expected}<span class="s">&#x27;</span><span class="s">&quot;</span>, file=sys.stderr)
+    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>
+    <span class="k">try</span>:
+        sc.render.engine = wrong
+        print(<span class="s">f&quot;</span><span class="s">ERROR: wrong-era EEVEE id &#x27;</span>{wrong}<span class="s">&#x27; was accepted by this build — </span><span class="s">&quot;</span>
+              <span class="s">&quot;the engine-id inversion this example witnesses is gone&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
-    print(<span class="s">f&quot;</span><span class="s">eevee_engine_id=</span>{eid}<span class="s"> (expected </span>{expected}<span class="s">) OK; set_specular resolved &#x27;</span>{specular_socket}<span class="s">&#x27;</span><span class="s">&quot;</span>)
+    <span class="k">except</span> TypeError:
+        <span class="k">pass</span>  <span class="c"># correctly rejected</span>
+    sc.render.engine = eid  <span class="c"># the helper&#x27;s id must exist (raises TypeError if not)</span>
+    print(<span class="s">f&quot;</span><span class="s">eevee_engine_id=</span>{eid}<span class="s"> accepted, &#x27;</span>{wrong}<span class="s">&#x27; rejected OK; </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">set_specular resolved &#x27;</span>{specular_socket}<span class="s">&#x27;</span><span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> args.output:
+        print(<span class="s">&quot;swatch-grid OK&quot;</span>)
+        <span class="k">return</span> <span class="n">0</span>
 
     render_engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> args.engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eid
     sc.render.engine = render_engine
@@ -414,6 +432,7 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
         <span class="k">if</span> <span class="k">not</span> (non_black <span class="k">and</span> regions_ok):
             print(<span class="s">&quot;ERROR: render failed verification (black or wrong region count)&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">3</span>
+    print(<span class="s">&quot;swatch-grid OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 

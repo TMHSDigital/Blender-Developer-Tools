@@ -23,7 +23,7 @@ BASE = 0.28
 
 def wave_scale(i):
     """The driver function: column height profile, 0.4..2.4."""
-    return 1.4 + math.sin(i * 0.6) if i >= 0 else 1.0
+    return 1.4 + math.sin(i * 0.6)
 
 
 def build_columns():
@@ -148,6 +148,11 @@ def render_still(objs, path, engine):
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
         scene.cycles.samples = 32
+    else:
+        try:
+            scene.eevee.taa_render_samples = 64
+        except AttributeError:
+            pass
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'

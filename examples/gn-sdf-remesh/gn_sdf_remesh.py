@@ -58,7 +58,10 @@ def render_still(obj, path, engine):
     import bmesh
     sc = bpy.context.scene
     fme = bpy.data.meshes.new("Floor"); bm = bmesh.new()
-    bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme); bm.free()
+    try:
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme)
+    finally:
+        bm.free()
     fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
     fb = fmat.node_tree.nodes.get('Principled BSDF')
     fb.inputs['Base Color'].default_value = (0.055, 0.06, 0.07, 1)  # dark graphite studio
@@ -99,11 +102,16 @@ def main():
     p.add_argument("--engine", choices=["auto", "cycles"], default="auto")
     args = p.parse_args(argv)
 
+    # EEVEE-id inversion witnessed for real: the OTHER era's id must be
+    # rejected by this build, the helper's accepted
     eid = get_eevee_engine_id()
-    expected = 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
-    bpy.context.scene.render.engine = eid
-    if bpy.context.scene.render.engine != expected:
-        print(f"ERROR: EEVEE id {eid} != expected {expected}", file=sys.stderr); return 5
+    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'
+    try:
+        bpy.context.scene.render.engine = wrong
+        print(f"ERROR: wrong-era EEVEE id '{wrong}' was accepted", file=sys.stderr); return 5
+    except TypeError:
+        pass  # correctly rejected
+    bpy.context.scene.render.engine = eid  # raises TypeError if the helper's id is invalid
 
     obj = build()
     base = len(obj.data.vertices)

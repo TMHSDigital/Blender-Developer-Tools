@@ -177,14 +177,14 @@
       <img src="../assets/wave-displace-hero.webp" alt="wave-displace render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.</div>
+    <div class="callout"><span class="tag">witnesses</span> The bulk path is correct, not just fast: the Z span matches the wave amplitude and every vertex matches the closed-form wave, so a stride bug in the flat buffer cannot hide.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/wave-displace/wave_displace.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
 <p>A runnable example that displaces a 96×96 grid (9,409 vertices) into a standing wave using <strong>one <code>foreach_get</code> and one <code>foreach_set</code></strong> — the bulk-IO pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/use-foreach-set-for-bulk-data.mdc"><code>use-foreach-set-for-bulk-data</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> skill — instead of 9,409 individual <code>mesh.vertices[i].co</code> accesses.</p>
-<p><strong>What it witnesses:</strong> the bulk path is not just faster, it is *correct* — the check asserts the vertex count is unchanged, the flat grid gained the expected Z span (the write actually landed), and a probe vertex matches the closed-form wave exactly.</p>
+<p><strong>What it witnesses:</strong> the bulk path is not just faster, it is *correct* — the check asserts the flat grid gained the expected Z span (the write actually landed) and that <strong>every</strong> vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer cannot hide behind a lucky probe.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python wave_displace.py --
@@ -192,7 +192,7 @@ blender --background --python wave_displace.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python wave_displace.py -- --output wave.png
 blender --background --python wave_displace.py -- --output wave.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (count changed, span wrong, or probe mismatch). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (span wrong, or any vertex off the closed form). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -205,9 +205,10 @@ blender --background --python wave_displace.py -- --output wave.png --engine cyc
 Witnesses the use-foreach-set rule at real scale: a 96x96 grid (9409 verts) is
 displaced into a standing wave by reading every coordinate with one
 `foreach_get`, rewriting Z in Python, and writing back with one `foreach_set`
-— no per-vertex `mesh.vertices[i].co` access. Asserts the vertex count is
-unchanged, the flat grid gained the expected Z span, and a probe vertex
-matches the closed-form wave. Exits non-zero on failure.
+— no per-vertex `mesh.vertices[i].co` access. Asserts the flat grid gained
+the expected Z span and that EVERY vertex matches the closed-form wave (a
+stride or interleave bug in the flat buffer cannot hide). Exits non-zero on
+failure.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -244,7 +245,7 @@ FREQ = <span class="n">1.6</span>
 
 <span class="k">def</span> displace(me):
     n = len(me.vertices)
-    buf = array(<span class="s">&quot;f&quot;</span>, [<span class="n">0.0</span>]) * (n * <span class="n">3</span>)
+    buf = array(<span class="s">&quot;f&quot;</span>, [<span class="n">0.0</span>] * (n * <span class="n">3</span>))
     me.vertices.foreach_get(<span class="s">&quot;co&quot;</span>, buf)          <span class="c"># ONE bulk read</span>
     <span class="k">for</span> i <span class="k">in</span> range(n):
         x, y = buf[i * <span class="n">3</span>], buf[i * <span class="n">3</span> + <span class="n">1</span>]
@@ -256,20 +257,18 @@ FREQ = <span class="n">1.6</span>
 
 <span class="k">def</span> check(obj, n_before):
     me = obj.data
-    <span class="k">if</span> len(me.vertices) != n_before:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: vertex count changed (</span>{n_before}<span class="s"> -&gt; </span>{len(me.vertices)}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
-        <span class="k">return</span> <span class="n">3</span>
     zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices]
     span = max(zs) - min(zs)
     <span class="k">if</span> <span class="k">not</span> (<span class="n">1.6</span> * AMP &lt; span &lt;= <span class="n">2.0</span> * AMP + <span class="n">1e-4</span>):
         print(<span class="s">f&quot;</span><span class="s">ERROR: z-span </span>{span:<span class="s">.4f</span>}<span class="s"> not in (</span>{<span class="n">1.6</span> * AMP:<span class="s">.4f</span>}<span class="s">, </span>{<span class="n">2</span> * AMP:<span class="s">.4f</span>}<span class="s">]</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
-    probe = me.vertices[<span class="n">0</span>].co
-    expect = wave_z(probe.x, probe.y)
-    <span class="k">if</span> abs(probe.z - expect) &gt; <span class="n">1e-5</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: probe z </span>{probe.z:<span class="s">.6f</span>}<span class="s"> != wave </span>{expect:<span class="s">.6f</span>}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="c"># every vertex must match the closed form, read back per-vertex — a stride</span>
+    <span class="c"># or interleave bug in the flat foreach buffer cannot hide behind one probe</span>
+    worst = max(abs(v.co.z - wave_z(v.co.x, v.co.y)) <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">if</span> worst &gt; <span class="n">1e-5</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: worst vertex is </span>{worst:<span class="s">.6f</span>}<span class="s"> off the closed-form wave</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
-    print(<span class="s">f&quot;</span><span class="s">verts=</span>{n_before}<span class="s"> z_span=</span>{span:<span class="s">.4f</span>}<span class="s"> probe_ok=True</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">verts=</span>{n_before}<span class="s"> z_span=</span>{span:<span class="s">.4f</span>}<span class="s"> max_err=</span>{worst:<span class="s">.2e</span>}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -317,6 +316,11 @@ FREQ = <span class="n">1.6</span>
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
         scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>

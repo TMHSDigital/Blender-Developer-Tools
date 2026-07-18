@@ -56,7 +56,7 @@
       "name": "wave-displace",
       "dir": "examples/wave-displace",
       "teaches": "Bulk vertex IO at real scale \u2014 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
-      "witnessesFix": "The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.",
+      "witnessesFix": "The bulk path is correct, not just fast: the Z span matches the wave amplitude and every vertex matches the closed-form wave, so a stride bug in the flat buffer cannot hide.",
       "hero": "docs/gallery/assets/wave-displace-hero.webp",
       "preview": "examples/wave-displace/preview.webp",
       "tags": [

@@ -7,8 +7,9 @@ A runnable example that displaces a 96×96 grid (9,409 vertices) into a standing
 9,409 individual `mesh.vertices[i].co` accesses.
 
 **What it witnesses:** the bulk path is not just faster, it is *correct* — the check asserts
-the vertex count is unchanged, the flat grid gained the expected Z span (the write actually
-landed), and a probe vertex matches the closed-form wave exactly.
+the flat grid gained the expected Z span (the write actually landed) and that **every**
+vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer
+cannot hide behind a lucky probe.
 
 ## Run
 
@@ -21,5 +22,5 @@ blender --background --python wave_displace.py -- --output wave.png
 blender --background --python wave_displace.py -- --output wave.png --engine cycles
 ```
 
-It exits non-zero on failure (count changed, span wrong, or probe mismatch). The
+It exits non-zero on failure (span wrong, or any vertex off the closed form). The
 `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.

@@ -226,7 +226,7 @@ BASE = <span class="n">0.28</span>
 
 <span class="k">def</span> wave_scale(i):
     <span class="s">&quot;&quot;&quot;The driver function: column height profile, 0.4..2.4.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">1.4</span> + math.sin(i * <span class="n">0.6</span>) <span class="k">if</span> i &gt;= <span class="n">0</span> <span class="k">else</span> <span class="n">1.0</span>
+    <span class="k">return</span> <span class="n">1.4</span> + math.sin(i * <span class="n">0.6</span>)
 
 
 <span class="k">def</span> build_columns():
@@ -351,6 +351,11 @@ BASE = <span class="n">0.28</span>
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
         scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
