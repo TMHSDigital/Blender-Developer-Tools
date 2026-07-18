@@ -189,8 +189,12 @@
 <pre><code># Cheap correctness check (writes an OBJ to a temp path, asserts the counts) — the CI check:
 blender --background --python depsgraph_export.py --
 
+# Also render a still of base vs evaluated (EEVEE on a GPU host; cycles on GPU-less hosts):
+blender --background --python depsgraph_export.py -- --output depsgraph.png
+blender --background --python depsgraph_export.py -- --output depsgraph.png --engine cycles
+
 # Write the exported OBJ to a specific path:
-blender --background --python depsgraph_export.py -- --output remeshed.obj</code></pre>
+blender --background --python depsgraph_export.py -- --obj exported.obj</code></pre>
 <p>It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The <code>blender-smoke</code> workflow runs this check on Blender 4.5 LTS and 5.1: base 8 → evaluated/exported 98 vertices with a 2-level SUBSURF.</p>
     </section>
     <section class="detail-section src">
@@ -199,25 +203,39 @@ blender --background --python depsgraph_export.py -- --output remeshed.obj</code
         <code>examples/depsgraph-export/depsgraph_export.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/depsgraph-export/depsgraph_export.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;Candidate B: depsgraph-evaluated export (SCRATCH).
+      <pre><span class="s">&quot;&quot;&quot;Depsgraph-evaluated export — a runnable example.
 
-Witnesses the depsgraph lifetime contract AND that modifiers actually ship in exports. Builds
-a cube with a SUBSURF modifier, measures the evaluated mesh via evaluated_get().to_mesh()
-(paired with to_mesh_clear()), exports through wm.obj_export, and asserts the exported vertex
-count equals the EVALUATED (modifier-applied) count and is strictly greater than the base.
+Witnesses the depsgraph lifetime contract AND that modifiers actually ship in
+exports. Builds a cube with a SUBSURF modifier, measures the evaluated mesh via
+evaluated_get().to_mesh() (paired with to_mesh_clear()), exports through
+wm.obj_export, and asserts the exported vertex count equals the EVALUATED
+(modifier-applied) count and is strictly greater than the base.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python depsgraph_export.py --                 # check only
+    blender --background --python depsgraph_export.py -- --output d.png  # + render
 &quot;&quot;&quot;</span>
-<span class="k">import</span> bpy, bmesh, sys, os, argparse
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile
 
-<span class="k">def</span> main():
-    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
-    p = argparse.ArgumentParser()
-    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: write the exported OBJ here (else a temp path)&quot;</span>)
-    args = p.parse_args(argv)
 
+<span class="k">def</span> build():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    me = bpy.data.meshes.new(<span class="s">&quot;Cube&quot;</span>); bm = bmesh.new(); bmesh.ops.create_cube(bm, size=<span class="n">2.0</span>); bm.to_mesh(me); bm.free()
-    obj = bpy.data.objects.new(<span class="s">&quot;Cube&quot;</span>, me); bpy.context.collection.objects.link(obj)
+    me = bpy.data.meshes.new(<span class="s">&quot;Cube&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">2.0</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(<span class="s">&quot;Cube&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
     obj.modifiers.new(<span class="s">&quot;ss&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>).levels = <span class="n">2</span>
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> check(obj, obj_path):
     base = len(obj.data.vertices)
 
     <span class="c"># depsgraph lifetime contract: evaluate, read, then release with to_mesh_clear</span>
@@ -227,26 +245,151 @@ count equals the EVALUATED (modifier-applied) count and is strictly greater than
     eval_vcount = len(em.vertices)
     ev.to_mesh_clear()  <span class="c"># must be paired; releases the temporary mesh</span>
 
-    <span class="k">import</span> tempfile
-    out = args.output <span class="k">or</span> os.path.join(tempfile.gettempdir(), <span class="s">&quot;depsgraph_export.obj&quot;</span>)
+    out = obj_path <span class="k">or</span> os.path.join(tempfile.gettempdir(), <span class="s">&quot;depsgraph_export.obj&quot;</span>)
     os.makedirs(os.path.dirname(os.path.abspath(out)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
     <span class="c"># obj_export writes the evaluated (modifier-applied) geometry by default</span>
     bpy.ops.wm.obj_export(filepath=out, export_selected_objects=<span class="k">False</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(out) <span class="k">and</span> os.path.getsize(out) &gt; <span class="n">0</span>):
-        print(<span class="s">&quot;ERROR: no OBJ written&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">4</span>
+        print(<span class="s">&quot;ERROR: no OBJ written&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
     exported = <span class="n">0</span>
     <span class="k">with</span> open(out) <span class="k">as</span> f:
         <span class="k">for</span> line <span class="k">in</span> f:
-            <span class="k">if</span> line.startswith(<span class="s">&quot;v &quot;</span>): exported += <span class="n">1</span>
+            <span class="k">if</span> line.startswith(<span class="s">&quot;v &quot;</span>):
+                exported += <span class="n">1</span>
 
     print(<span class="s">f&quot;</span><span class="s">base_vcount=</span>{base}<span class="s"> eval_vcount=</span>{eval_vcount}<span class="s"> exported_vcount=</span>{exported}<span class="s">&quot;</span>)
     <span class="k">if</span> <span class="k">not</span> (eval_vcount &gt; base):
-        print(<span class="s">&quot;ERROR: evaluated mesh did not apply the modifier&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">3</span>
+        print(<span class="s">&quot;ERROR: evaluated mesh did not apply the modifier&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
     <span class="k">if</span> exported != eval_vcount:
         print(<span class="s">f&quot;</span><span class="s">ERROR: export (</span>{exported}<span class="s">) != evaluated (</span>{eval_vcount}<span class="s">); modifier did not ship</span><span class="s">&quot;</span>,
-              file=sys.stderr); <span class="k">return</span> <span class="n">5</span>
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> principled(name, color, metallic, roughness):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    <span class="s">&quot;&quot;&quot;Base cube beside its evaluated form — the two counts the check compares.&quot;&quot;&quot;</span>
+    scene = bpy.context.scene
+
+    <span class="c"># left: the base mesh, modifier-free (a plain copy of the datablock)</span>
+    base_obj = bpy.data.objects.new(<span class="s">&quot;Base&quot;</span>, obj.data.copy())
+    base_obj.location = (-<span class="n">1.7</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    base_obj.data.materials.append(
+        principled(<span class="s">&quot;Graphite&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.17</span>, <span class="n">0.19</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
+    bpy.context.collection.objects.link(base_obj)
+
+    <span class="c"># right: the SUBSURF object — what the depsgraph evaluates and the OBJ ships.</span>
+    <span class="c"># Rest it on the floor by measuring its own EVALUATED bounds (the subsurf</span>
+    <span class="c"># limit surface shrinks, so the base-mesh -1.0 is not where it ends).</span>
+    dg = bpy.context.evaluated_depsgraph_get()
+    em = obj.evaluated_get(dg).to_mesh()
+    bottom = min(v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices)
+    obj.evaluated_get(dg).to_mesh_clear()
+    obj.location = (<span class="n">1.8</span>, <span class="n">0.0</span>, -bottom)
+    obj.data.materials.append(
+        principled(<span class="s">&quot;EvalGreen&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.32</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.15</span>))
+    <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
+        poly.use_smooth = <span class="k">True</span>
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    floor_me.materials.append(principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.24</span>, <span class="n">0.24</span>, <span class="n">0.25</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.6</span>))
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.data.materials.clear()
+    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.055</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.6</span>))
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = \
+        (<span class="n">0.035</span>, <span class="n">0.04</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">1000.0</span>, <span class="n">8.0</span>, (<span class="n">1.0</span>, <span class="n">0.99</span>, <span class="n">0.96</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">350.0</span>, <span class="n">9.0</span>, (<span class="n">0.85</span>, <span class="n">0.9</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">4.0</span>), <span class="n">120.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.65</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">165</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">42.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">9.0</span>, <span class="n">3.1</span>)
+    cam.rotation_euler = (math.radians(<span class="n">76</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--obj&quot;</span>, default=<span class="k">None</span>,
+                   help=<span class="s">&quot;optional: write the exported OBJ here (else a temp path)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj = build()
+    code = check(obj, args.obj)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
     print(<span class="s">&quot;depsgraph-export OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
+
 
 <span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
     <span class="k">try</span>:

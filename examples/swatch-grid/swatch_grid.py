@@ -7,7 +7,10 @@ lookups, and 4-tuple colors. It also doubles as a live proof of the EEVEE engine
 the version-branch helper resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_EEVEE_NEXT`
 on 4.2-4.5, and the chosen id is asserted against the build before rendering.
 
-Run headless:
+By default it runs only the correctness check (no render) — the CI smoke check.
+Pass --output to also render and pixel-verify a still:
+
+    blender --background --python swatch_grid.py --                       # check only
     blender --background --python swatch_grid.py -- --output swatch.png
     blender --background --python swatch_grid.py -- --output s.png --engine cycles --samples 8 --width 640
 
@@ -99,9 +102,11 @@ def build_scene(mats):
         for c in range(GRID_COLS):
             me = bpy.data.meshes.new(f"S{i}")
             bm = bmesh.new()
-            bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=24, radius=0.92)
-            bm.to_mesh(me)
-            bm.free()
+            try:
+                bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=24, radius=0.92)
+                bm.to_mesh(me)
+            finally:
+                bm.free()
             for poly in me.polygons:
                 poly.use_smooth = True
             ob = bpy.data.objects.new(f"S{i}", me)
@@ -159,7 +164,7 @@ def verify_png(path):
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser(description="Render a procedural-materials swatch grid.")
-    p.add_argument("--output", required=True, help="Output PNG path")
+    p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", choices=["auto", "eevee", "cycles"], default="auto",
                    help="auto/eevee use the version-correct EEVEE id; cycles for GPU-less hosts")
     p.add_argument("--samples", type=int, default=32)
@@ -173,15 +178,25 @@ def main():
     build_scene(mats)
 
     sc = bpy.context.scene
-    # EEVEE engine-id proof: frame-independent, must hold even when we render with Cycles.
+    # EEVEE engine-id proof: frame-independent, must hold even when we render with
+    # Cycles. Witness the inversion for real: the OTHER era's id must be rejected
+    # by this build, and the helper's id must be accepted.
     eid = get_eevee_engine_id()
-    expected = 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
-    sc.render.engine = eid
-    if sc.render.engine != expected:
-        print(f"ERROR: EEVEE id helper returned '{eid}', engine is '{sc.render.engine}', "
-              f"expected '{expected}'", file=sys.stderr)
+    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'
+    try:
+        sc.render.engine = wrong
+        print(f"ERROR: wrong-era EEVEE id '{wrong}' was accepted by this build — "
+              "the engine-id inversion this example witnesses is gone", file=sys.stderr)
         return 5
-    print(f"eevee_engine_id={eid} (expected {expected}) OK; set_specular resolved '{specular_socket}'")
+    except TypeError:
+        pass  # correctly rejected
+    sc.render.engine = eid  # the helper's id must exist (raises TypeError if not)
+    print(f"eevee_engine_id={eid} accepted, '{wrong}' rejected OK; "
+          f"set_specular resolved '{specular_socket}'")
+
+    if not args.output:
+        print("swatch-grid OK")
+        return 0
 
     render_engine = 'CYCLES' if args.engine == 'cycles' else eid
     sc.render.engine = render_engine
@@ -209,6 +224,7 @@ def main():
         if not (non_black and regions_ok):
             print("ERROR: render failed verification (black or wrong region count)", file=sys.stderr)
             return 3
+    print("swatch-grid OK")
     return 0
 
 

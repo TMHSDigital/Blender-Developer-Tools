@@ -8,7 +8,7 @@ local axis at a target without the roll fights Track To is known for.
 
 **What it witnesses:** every spike carries exactly one unmuted `DAMPED_TRACK`
 bound to the core on `TRACK_Z`. After a depsgraph update, each evaluated local
-`+Z` aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3°). A missing
+`+Z` aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3.6°). A missing
 constraint, a muted one, a `TRACK_TO` stand-in, or a flipped axis fails the
 check.
 

@@ -250,7 +250,7 @@
         <div class="card-body">
           <h2><a href="wave-displace/">wave-displace</a></h2>
           <p class="teaches">Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> The bulk path is correct, not just fast: the Z span matches the wave amplitude and every vertex matches the closed-form wave, so a stride bug in the flat buffer cannot hide.</p>
           <a class="card-link" href="wave-displace/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>

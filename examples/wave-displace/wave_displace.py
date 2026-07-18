@@ -3,9 +3,10 @@
 Witnesses the use-foreach-set rule at real scale: a 96x96 grid (9409 verts) is
 displaced into a standing wave by reading every coordinate with one
 `foreach_get`, rewriting Z in Python, and writing back with one `foreach_set`
-— no per-vertex `mesh.vertices[i].co` access. Asserts the vertex count is
-unchanged, the flat grid gained the expected Z span, and a probe vertex
-matches the closed-form wave. Exits non-zero on failure.
+— no per-vertex `mesh.vertices[i].co` access. Asserts the flat grid gained
+the expected Z span and that EVERY vertex matches the closed-form wave (a
+stride or interleave bug in the flat buffer cannot hide). Exits non-zero on
+failure.
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -42,7 +43,7 @@ def build_grid():
 
 def displace(me):
     n = len(me.vertices)
-    buf = array("f", [0.0]) * (n * 3)
+    buf = array("f", [0.0] * (n * 3))
     me.vertices.foreach_get("co", buf)          # ONE bulk read
     for i in range(n):
         x, y = buf[i * 3], buf[i * 3 + 1]
@@ -54,20 +55,18 @@ def displace(me):
 
 def check(obj, n_before):
     me = obj.data
-    if len(me.vertices) != n_before:
-        print(f"ERROR: vertex count changed ({n_before} -> {len(me.vertices)})", file=sys.stderr)
-        return 3
     zs = [v.co.z for v in me.vertices]
     span = max(zs) - min(zs)
     if not (1.6 * AMP < span <= 2.0 * AMP + 1e-4):
         print(f"ERROR: z-span {span:.4f} not in ({1.6 * AMP:.4f}, {2 * AMP:.4f}]", file=sys.stderr)
         return 4
-    probe = me.vertices[0].co
-    expect = wave_z(probe.x, probe.y)
-    if abs(probe.z - expect) > 1e-5:
-        print(f"ERROR: probe z {probe.z:.6f} != wave {expect:.6f}", file=sys.stderr)
+    # every vertex must match the closed form, read back per-vertex — a stride
+    # or interleave bug in the flat foreach buffer cannot hide behind one probe
+    worst = max(abs(v.co.z - wave_z(v.co.x, v.co.y)) for v in me.vertices)
+    if worst > 1e-5:
+        print(f"ERROR: worst vertex is {worst:.6f} off the closed-form wave", file=sys.stderr)
         return 5
-    print(f"verts={n_before} z_span={span:.4f} probe_ok=True")
+    print(f"verts={n_before} z_span={span:.4f} max_err={worst:.2e}")
     return 0
 
 
@@ -115,6 +114,11 @@ def render_still(obj, path, engine):
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
         scene.cycles.samples = 32
+    else:
+        try:
+            scene.eevee.taa_render_samples = 64
+        except AttributeError:
+            pass
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'

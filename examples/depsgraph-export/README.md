@@ -17,8 +17,12 @@ export) rather than the unmodified base mesh.
 # Cheap correctness check (writes an OBJ to a temp path, asserts the counts) — the CI check:
 blender --background --python depsgraph_export.py --
 
+# Also render a still of base vs evaluated (EEVEE on a GPU host; cycles on GPU-less hosts):
+blender --background --python depsgraph_export.py -- --output depsgraph.png
+blender --background --python depsgraph_export.py -- --output depsgraph.png --engine cycles
+
 # Write the exported OBJ to a specific path:
-blender --background --python depsgraph_export.py -- --output remeshed.obj
+blender --background --python depsgraph_export.py -- --obj exported.obj
 ```
 
 It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The

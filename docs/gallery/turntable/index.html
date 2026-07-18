@@ -273,7 +273,10 @@ FRAMES = <span class="n">36</span>
     <span class="k">import</span> bmesh
     sc = bpy.context.scene
     fme = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>); bm = bmesh.new()
-    bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme); bm.free()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme)
+    <span class="k">finally</span>:
+        bm.free()
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, fme); bpy.context.collection.objects.link(floor)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
     w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.04</span>, <span class="n">0.05</span>, <span class="n">0.07</span>, <span class="n">1</span>); sc.world = w
@@ -305,12 +308,16 @@ FRAMES = <span class="n">36</span>
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>)
     args = p.parse_args(argv)
 
-    <span class="c"># the EEVEE-id mapping is asserted regardless of whether we render</span>
+    <span class="c"># the EEVEE-id mapping is asserted regardless of whether we render: the</span>
+    <span class="c"># OTHER era&#x27;s id must be rejected by this build, the helper&#x27;s accepted</span>
     eid = get_eevee_engine_id()
-    expected = <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
-    bpy.context.scene.render.engine = eid
-    <span class="k">if</span> bpy.context.scene.render.engine != expected:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: EEVEE id </span>{eid}<span class="s"> != expected </span>{expected}<span class="s">&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">5</span>
+    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>
+    <span class="k">try</span>:
+        bpy.context.scene.render.engine = wrong
+        print(<span class="s">f&quot;</span><span class="s">ERROR: wrong-era EEVEE id &#x27;</span>{wrong}<span class="s">&#x27; was accepted</span><span class="s">&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">5</span>
+    <span class="k">except</span> TypeError:
+        <span class="k">pass</span>  <span class="c"># correctly rejected</span>
+    bpy.context.scene.render.engine = eid  <span class="c"># raises TypeError if the helper&#x27;s id is invalid</span>
 
     obj = build()
     <span class="k">if</span> <span class="k">not</span> correctness(obj):

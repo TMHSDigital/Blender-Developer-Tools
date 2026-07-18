@@ -184,7 +184,7 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that aims twelve brass spikes at an ember core with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
-<p><strong>What it witnesses:</strong> every spike carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
+<p><strong>What it witnesses:</strong> every spike carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3.6°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
@@ -228,7 +228,7 @@ ORBIT_RADIUS = <span class="n">1.85</span>
 CORE_RADIUS = <span class="n">0.32</span>
 NEEDLE_DEPTH = <span class="n">1.05</span>
 NEEDLE_RADIUS = <span class="n">0.055</span>
-<span class="c"># Local +Z must face the core; cos(3°) ≈ 0.9986 — leave a little room for</span>
+<span class="c"># Local +Z must face the core; 0.998 = cos(3.6°) — leave a little room for</span>
 <span class="c"># cone tessellation / float noise while still catching a flipped axis.</span>
 MIN_AIM_DOT = <span class="n">0.998</span>
 LIFT = <span class="n">1.55</span>
@@ -481,7 +481,6 @@ LIFT = <span class="n">1.55</span>
     scene.collection.objects.link(floor)
 
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.data = floor_me.copy()
     wall.data.materials.clear()
     wall.data.materials.append(
         make_dielectric(<span class="s">&quot;StudioWall&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.013</span>, <span class="n">0.016</span>), roughness=<span class="n">0.55</span>)
@@ -555,18 +554,8 @@ LIFT = <span class="n">1.55</span>
             scene.eevee.taa_render_samples = <span class="n">128</span>
         <span class="k">except</span> AttributeError:
             <span class="k">pass</span>
-        <span class="c"># Bloom helps the ember core read without a compositor tree.</span>
-        <span class="k">for</span> attr, val <span class="k">in</span> (
-            (<span class="s">&quot;use_bloom&quot;</span>, <span class="k">True</span>),
-            (<span class="s">&quot;bloom_intensity&quot;</span>, <span class="n">0.12</span>),
-            (<span class="s">&quot;bloom_threshold&quot;</span>, <span class="n">0.85</span>),
-            (<span class="s">&quot;bloom_radius&quot;</span>, <span class="n">4.5</span>),
-        ):
-            <span class="k">if</span> hasattr(scene.eevee, attr):
-                <span class="k">try</span>:
-                    setattr(scene.eevee, attr, val)
-                <span class="k">except</span> Exception:
-                    <span class="k">pass</span>
+        <span class="c"># No bloom here on purpose: EEVEE has no use_bloom on 4.2+ or 5.x —</span>
+        <span class="c"># glow lives in the compositor (see examples/compositor-glare).</span>
 
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
