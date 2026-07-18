@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>16 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>17 examples</strong>
 </p>
 
 ---
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 16 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 17 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -279,6 +279,23 @@ A brass orrery parented entirely through the data API — the keep-world idiom
 carries arms, planets, and a two-level moon through spinning pivots. Asserts bare
 `.parent =` really teleports, `matrix_world` is stale until `view_layer.update()`,
 and every orbit lands on its closed form.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" alt="Grease pencil rosette: five nested neon rose curves drawn as tapered Grease Pencil v3 strokes, cyan through magenta to red, glowing against a dark studio wall with a soft blue halo" /></a>
+</td>
+<td valign="middle">
+
+### [grease-pencil-rosette](examples/grease-pencil-rosette/)
+
+Five nested rose curves drawn with the Grease Pencil v3 attribute API — layer →
+`frames.new().drawing` → `add_strokes` → per-point position, radius, opacity, and
+vertex color. Asserts the GPv3 address break: on 4.5 GPv3 is `grease_pencils_v3`
+while `grease_pencils` is still legacy; on 5.x legacy is gone and GPv3 owns the
+name. Point writes lazily materialize attribute layers, and every position
+round-trips through the raw `POINT` buffer.
 
 </td>
 </tr>

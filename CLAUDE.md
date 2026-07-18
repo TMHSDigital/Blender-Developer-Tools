@@ -19,7 +19,7 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 12 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
 templates/<template-name>/     - Starter projects, 2 total
 snippets/<snippet-name>.py     - Standalone code patterns, 17 total
-examples/<name>/               - Runnable smoke-gated examples, 16 total (+ gallery.json)
+examples/<name>/               - Runnable smoke-gated examples, 17 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
@@ -80,11 +80,11 @@ v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh 
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
-## Examples (16)
+## Examples (17)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
-`--output`. All sixteen run headless on Blender 4.5 LTS and 5.1 in `blender-smoke.yml`;
+`--output`. All seventeen run headless on Blender 4.5 LTS and 5.1 in `blender-smoke.yml`;
 their renders ship in the site gallery at `docs/gallery/`. `examples/gallery.json` is the
 gallery's source of truth. When authoring a new one, copy the anatomy of
 `examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and

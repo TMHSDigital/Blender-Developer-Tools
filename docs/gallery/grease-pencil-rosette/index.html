@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>grease-pencil-rosette — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Grease Pencil v3&#x27;s attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/grease-pencil-rosette/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="grease-pencil-rosette — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Grease Pencil v3&#x27;s attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/grease-pencil-rosette/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grease-pencil-rosette-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="grease-pencil-rosette — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Grease Pencil v3&#x27;s attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grease-pencil-rosette-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>grease-pencil-rosette</h1>
+    <p>Grease Pencil v3&#x27;s attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom grease-pencil-rosette render">
+      <img src="../assets/grease-pencil-rosette-hero.webp" alt="grease-pencil-rosette render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/grease-pencil-rosette/grease_pencil_rosette.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that draws five nested neon rose curves as Grease Pencil v3 strokes — layer → <code>frames.new(1).drawing</code> → <code>add_strokes([counts])</code> → per-point <code>position</code>, <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> — the attribute-based API that replaced legacy GPencil across the 4.x-to-5.x window, the largest bpy API break the gallery witnesses.</p>
+<p><strong>What it witnesses:</strong> GPv3 lives at *different addresses* on the two supported versions, and the check asserts each side&#x27;s actual contract:</p>
+<ul><li><strong>Blender 4.5 LTS</strong> — GPv3 is <code>bpy.data.grease_pencils_v3</code> (<code>GreasePencilv3</code>), while <code>bpy.data.grease_pencils</code> still holds <strong>legacy</strong> GPencil whose frames carry <code>.strokes</code> directly and have no <code>.drawing</code>. Same collection name, incompatible API — the trap is asserted, not just avoided.</li><li><strong>Blender 5.x</strong> — legacy is gone: GPv3 took over the <code>bpy.data.grease_pencils</code> name, and <code>grease_pencils_v3</code> / <code>bpy.types.GPencilStroke</code> no longer exist.</li></ul>
+<p>On the shared GPv3 surface it then asserts that stroke points are *views over attribute layers*: writing <code>pt.radius</code> / <code>pt.opacity</code> / <code>pt.vertex_color</code> lazily materializes <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> (POINT) and <code>cyclic</code> (CURVE) layers in <code>drawing.attributes</code>, and every closed-form rose position round-trips exactly through the raw <code>position</code> attribute buffer via <code>foreach_get</code>.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python grease_pencil_rosette.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python grease_pencil_rosette.py -- --output rosette.png
+blender --background --python grease_pencil_rosette.py -- --output rosette.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (wrong version gate, structural mismatch, missing attribute layers, or attribute-buffer deviation from the closed form). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/grease-pencil-rosette/grease_pencil_rosette.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/grease-pencil-rosette/grease_pencil_rosette.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A neon rose-curve set drawn with GPv3 strokes — a runnable example.
+
+Witnesses the Grease Pencil v3 rewrite, the largest bpy API break in the
+4.x-to-5.x window. GPv3 is present on both supported versions but lives at
+DIFFERENT addresses:
+
+- Blender 4.5 LTS: GPv3 is `bpy.data.grease_pencils_v3` (`GreasePencilv3`);
+  `bpy.data.grease_pencils` still holds LEGACY GPencil datablocks whose frames
+  carry `.strokes` directly — same collection name, incompatible API.
+- Blender 5.x: legacy is gone, GPv3 took over the `bpy.data.grease_pencils`
+  name (`GreasePencil`), and `grease_pencils_v3` / `GPencilStroke` no longer
+  exist.
+
+The shared GPv3 surface is attribute-based: layer -&gt; frames.new(n).drawing -&gt;
+add_strokes([counts]) -&gt; point.position/radius/opacity/vertex_color, where
+stroke points are views over attribute layers that materialize lazily in
+`drawing.attributes`. The check asserts the address divergence on each side,
+the legacy trap on 4.5, the structural contract, lazy attribute
+materialization, and a closed-form round-trip of every position through the
+raw POINT attribute buffer.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python grease_pencil_rosette.py --                # check only
+    blender --background --python grease_pencil_rosette.py -- --output r.png # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, sys, os, math, argparse, colorsys
+
+RINGS = <span class="n">5</span>           <span class="c"># nested rose curves, one stroke each</span>
+POINTS = <span class="n">192</span>        <span class="c"># samples per stroke</span>
+R_OUTER = <span class="n">1.55</span>      <span class="c"># radius of the outermost rose</span>
+BASE_RADIUS = <span class="n">0.02</span>  <span class="c"># base line half-width in world units</span>
+TOL = <span class="n">1e-4</span>
+
+
+<span class="k">def</span> rose_point(ring, i):
+    <span class="s">&quot;&quot;&quot;Closed-form sample i of ring&#x27;s rose curve r = a*(0.72 + 0.28*cos(k*t)),
+    laid out upright in the XZ plane. Single source of truth for build &amp; check.&quot;&quot;&quot;</span>
+    k = <span class="n">3</span> + ring                          <span class="c"># petal frequency</span>
+    a = R_OUTER * (<span class="n">1.0</span> - ring / (RINGS + <span class="n">1.5</span>))
+    phase = ring * math.pi / <span class="n">7.0</span>
+    t = <span class="n">2.0</span> * math.pi * i / POINTS
+    r = a * (<span class="n">0.72</span> + <span class="n">0.28</span> * math.cos(k * t))
+    <span class="k">return</span> (r * math.cos(t + phase), <span class="n">0.0</span>, r * math.sin(t + phase))
+
+
+<span class="k">def</span> point_radius(ring, i):
+    <span class="s">&quot;&quot;&quot;Calligraphic taper: width swells on the petal tips.&quot;&quot;&quot;</span>
+    k = <span class="n">3</span> + ring
+    t = <span class="n">2.0</span> * math.pi * i / POINTS
+    <span class="k">return</span> BASE_RADIUS * (<span class="n">0.55</span> + <span class="n">1.45</span> * (<span class="n">0.5</span> + <span class="n">0.5</span> * math.cos(k * t)))
+
+
+<span class="k">def</span> ring_color(ring, i):
+    <span class="s">&quot;&quot;&quot;Neon hue per ring, drifting slightly along the stroke.&quot;&quot;&quot;</span>
+    h = (<span class="n">0.52</span> + ring / RINGS * <span class="n">0.55</span> + <span class="n">0.04</span> * math.sin(<span class="n">2</span> * math.pi * i / POINTS)) % <span class="n">1.0</span>
+    r, g, b = colorsys.hsv_to_rgb(h, <span class="n">0.96</span>, <span class="n">1.0</span>)
+    <span class="k">return</span> (r, g, b, <span class="n">1.0</span>)
+
+
+<span class="k">def</span> gp_data_new(name):
+    <span class="s">&quot;&quot;&quot;THE version gate this example exists for: GPv3 datablock creation.&quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">return</span> bpy.data.grease_pencils.new(name)      <span class="c"># GPv3 owns the name in 5.x</span>
+    <span class="k">return</span> bpy.data.grease_pencils_v3.new(name)       <span class="c"># 4.5 LTS: GPv3 lives at _v3</span>
+
+
+<span class="k">def</span> build_rosette():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    gp = gp_data_new(<span class="s">&quot;Rosette&quot;</span>)
+    layer = gp.layers.new(<span class="s">&quot;Ink&quot;</span>)
+    frame = layer.frames.new(<span class="n">1</span>)
+    drawing = frame.drawing
+
+    drawing.add_strokes([POINTS] * RINGS)
+    <span class="k">for</span> ring, stroke <span class="k">in</span> enumerate(drawing.strokes):
+        stroke.cyclic = <span class="k">True</span>
+        <span class="k">for</span> i, pt <span class="k">in</span> enumerate(stroke.points):
+            pt.position = rose_point(ring, i)
+            pt.radius = point_radius(ring, i)
+            pt.opacity = <span class="n">1.0</span>
+            pt.vertex_color = ring_color(ring, i)
+
+    mat = bpy.data.materials.new(<span class="s">&quot;Neon Ink&quot;</span>)
+    bpy.data.materials.create_gpencil_data(mat)       <span class="c"># same helper on 4.5 and 5.x</span>
+    mat.grease_pencil.color = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)    <span class="c"># vertex colors carry the hue</span>
+    gp.materials.append(mat)
+
+    obj = bpy.data.objects.new(<span class="s">&quot;Rosette&quot;</span>, gp)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> check_version_gate():
+    <span class="s">&quot;&quot;&quot;Assert the API break each side actually exposes.&quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">if</span> hasattr(bpy.data, <span class="s">&quot;grease_pencils_v3&quot;</span>) <span class="k">or</span> hasattr(bpy.types, <span class="s">&quot;GPencilStroke&quot;</span>):
+            print(<span class="s">&quot;ERROR: 5.x still exposes legacy GP names — gate is wrong&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        print(<span class="s">&quot;5.x contract: grease_pencils is GPv3; _v3 alias and GPencilStroke are gone&quot;</span>)
+    <span class="k">else</span>:
+        <span class="k">if</span> <span class="k">not</span> hasattr(bpy.data, <span class="s">&quot;grease_pencils_v3&quot;</span>) <span class="k">or</span> <span class="k">not</span> hasattr(bpy.types, <span class="s">&quot;GPencilStroke&quot;</span>):
+            print(<span class="s">&quot;ERROR: 4.5 is missing grease_pencils_v3 or legacy GPencilStroke&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        <span class="c"># The trap: on 4.5 `bpy.data.grease_pencils` is LEGACY GPencil. Its frames</span>
+        <span class="c"># carry `.strokes` directly and have no `.drawing` — code written for one</span>
+        <span class="c"># API fails on the other despite the identical collection name.</span>
+        legacy = bpy.data.grease_pencils.new(<span class="s">&quot;_legacy_probe&quot;</span>)
+        <span class="k">try</span>:
+            lframe = legacy.layers.new(<span class="s">&quot;L&quot;</span>).frames.new(<span class="n">1</span>)
+            <span class="k">if</span> hasattr(lframe, <span class="s">&quot;drawing&quot;</span>) <span class="k">or</span> <span class="k">not</span> hasattr(lframe, <span class="s">&quot;strokes&quot;</span>):
+                print(<span class="s">&quot;ERROR: 4.5 grease_pencils did not behave as legacy GPencil&quot;</span>, file=sys.stderr)
+                <span class="k">return</span> <span class="n">3</span>
+        <span class="k">finally</span>:
+            bpy.data.grease_pencils.remove(legacy)
+        print(<span class="s">&quot;4.5 contract: grease_pencils is legacy (frame.strokes); GPv3 lives at _v3&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check(obj):
+    code = check_version_gate()
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> obj.type != <span class="s">&#x27;GREASEPENCIL&#x27;</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: object type </span>{obj.type!r}<span class="s"> != &#x27;GREASEPENCIL&#x27;</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    gp = obj.data
+    <span class="k">if</span> len(gp.layers) != <span class="n">1</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(gp.layers)}<span class="s"> layers != 1</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    frame = gp.layers[<span class="n">0</span>].frames[<span class="n">0</span>]
+    <span class="k">if</span> frame.frame_number != <span class="n">1</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: frame_number </span>{frame.frame_number}<span class="s"> != 1</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    drawing = frame.drawing
+
+    strokes = drawing.strokes
+    <span class="k">if</span> len(strokes) != RINGS <span class="k">or</span> any(len(s.points) != POINTS <span class="k">for</span> s <span class="k">in</span> strokes):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: stroke topology != </span>{RINGS}<span class="s"> x </span>{POINTS}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+    <span class="k">if</span> <span class="k">not</span> all(s.cyclic <span class="k">for</span> s <span class="k">in</span> strokes):
+        print(<span class="s">&quot;ERROR: not every stroke is cyclic&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    <span class="c"># Lazy materialization: writing through the point view must have created</span>
+    <span class="c"># these attribute layers on the drawing (they are absent on a fresh drawing).</span>
+    attrs = {a.name: (a.domain, a.data_type) <span class="k">for</span> a <span class="k">in</span> drawing.attributes}
+    expected = {
+        <span class="s">&quot;position&quot;</span>: (<span class="s">&#x27;POINT&#x27;</span>, <span class="s">&#x27;FLOAT_VECTOR&#x27;</span>),
+        <span class="s">&quot;radius&quot;</span>: (<span class="s">&#x27;POINT&#x27;</span>, <span class="s">&#x27;FLOAT&#x27;</span>),
+        <span class="s">&quot;opacity&quot;</span>: (<span class="s">&#x27;POINT&#x27;</span>, <span class="s">&#x27;FLOAT&#x27;</span>),
+        <span class="s">&quot;vertex_color&quot;</span>: (<span class="s">&#x27;POINT&#x27;</span>, <span class="s">&#x27;FLOAT_COLOR&#x27;</span>),
+        <span class="s">&quot;cyclic&quot;</span>: (<span class="s">&#x27;CURVE&#x27;</span>, <span class="s">&#x27;BOOLEAN&#x27;</span>),
+    }
+    <span class="k">for</span> name, sig <span class="k">in</span> expected.items():
+        <span class="k">if</span> attrs.get(name) != sig:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: attribute </span>{name!r}<span class="s"> is </span>{attrs.get(name)}<span class="s"> != </span>{sig}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+
+    <span class="c"># Round-trip: the raw POINT attribute buffer must hold every closed-form</span>
+    <span class="c"># position — stroke points are views over this buffer, not copies.</span>
+    pos = drawing.attributes[<span class="s">&quot;position&quot;</span>]
+    n = len(pos.data)
+    <span class="k">if</span> n != RINGS * POINTS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: position buffer </span>{n}<span class="s"> points != </span>{RINGS * POINTS}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    buf = [<span class="n">0.0</span>] * (<span class="n">3</span> * n)
+    pos.data.foreach_get(<span class="s">&quot;vector&quot;</span>, buf)
+    worst = <span class="n">0.0</span>
+    <span class="k">for</span> ring <span class="k">in</span> range(RINGS):
+        <span class="k">for</span> i <span class="k">in</span> range(POINTS):
+            j = <span class="n">3</span> * (ring * POINTS + i)
+            ex, ey, ez = rose_point(ring, i)
+            worst = max(worst, abs(buf[j] - ex), abs(buf[j + <span class="n">1</span>] - ey), abs(buf[j + <span class="n">2</span>] - ez))
+    <span class="k">if</span> worst &gt; TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: attribute buffer deviates </span>{worst}<span class="s"> &gt; </span>{TOL}<span class="s"> from closed form</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+
+    <span class="k">if</span> len(gp.materials) != <span class="n">1</span> <span class="k">or</span> gp.materials[<span class="n">0</span>].grease_pencil <span class="k">is</span> <span class="k">None</span>:
+        print(<span class="s">&quot;ERROR: grease pencil material missing its gpencil settings&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+
+    print(<span class="s">f&quot;</span><span class="s">rings=</span>{RINGS}<span class="s"> points/stroke=</span>{POINTS}<span class="s"> attrs=lazy-materialized </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">round-trip worst=</span>{worst:<span class="s">.2e</span>}<span class="s"> object=GREASEPENCIL</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    obj.data.layers[<span class="n">0</span>].use_lights = <span class="k">False</span>   <span class="c"># neon ink stays unlit and vivid</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.9</span>)
+    obj.rotation_euler = (math.radians(<span class="n">4</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="c"># unlit saturated ink wants the graphic transform, not AgX&#x27;s filmic desaturation</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+
+    <span class="k">import</span> bmesh
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">6.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.01</span>, <span class="n">0.012</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># the strokes are unlit; this only paints a soft halo on the wall behind them</span>
+    light(<span class="s">&quot;Halo&quot;</span>, (<span class="n">0.0</span>, <span class="n">3.2</span>, <span class="n">1.9</span>), <span class="n">260.0</span>, <span class="n">7.0</span>, (<span class="n">0.4</span>, <span class="n">0.45</span>, <span class="n">1.0</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">9.5</span>, <span class="n">1.9</span>)
+    cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj = build_rosette()
+    code = check(obj)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;grease-pencil-rosette OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/grease-pencil-rosette-hero.webp" alt="grease-pencil-rosette render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

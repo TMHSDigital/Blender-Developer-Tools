@@ -68,6 +68,7 @@
     "examples/driver-wave",
     "examples/gn-instance-grid",
     "examples/gn-sdf-remesh",
+    "examples/grease-pencil-rosette",
     "examples/parent-inverse-orrery",
     "examples/shader-node-group",
     "examples/shape-key-blend",
