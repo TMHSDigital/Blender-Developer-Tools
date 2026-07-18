@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>13 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>14 examples</strong>
 </p>
 
 ---
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 13 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 14 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -232,6 +232,21 @@ Bloom through the compositor on both sides of the 5.0 rewrite — a `Glare` (Fog
 node fed by `Render Layers`, wired via `scene.compositing_node_group` on 5.x and
 `scene.node_tree` on 4.x. Witnesses with pixels that the halo falls off strictly with
 the compositor on and is exactly zero with it off — and that EEVEE has no `use_bloom`.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/damped-track-aim/"><img src="examples/damped-track-aim/preview.webp" alt="Damped Track aim: twelve metallic needles in a ring around a cyan emissive core, each tip constrained to point at the core on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [damped-track-aim](examples/damped-track-aim/)
+
+Aim constraints via the data API — `Object.constraints.new('DAMPED_TRACK')` with
+`target` and `TRACK_Z`, not `bpy.ops.object.constraint_add` in a headless loop.
+Asserts twelve unmuted Damped Track constraints and evaluated local `+Z` alignment
+toward the core (dot ≥ 0.998).
 
 </td>
 </tr>

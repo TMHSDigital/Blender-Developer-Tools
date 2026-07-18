@@ -62,6 +62,7 @@
     "examples/bmesh-gear",
     "examples/compositor-glare",
     "examples/curve-bevel-arc",
+    "examples/damped-track-aim",
     "examples/depsgraph-export",
     "examples/driver-wave",
     "examples/gn-instance-grid",
