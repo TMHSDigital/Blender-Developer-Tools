@@ -237,7 +237,7 @@ the compositor on and is exactly zero with it off — and that EEVEE has no `use
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/damped-track-aim/"><img src="examples/damped-track-aim/preview.webp" alt="Damped Track aim: twelve metallic needles in a ring around a cyan emissive core, each tip constrained to point at the core on a dark studio floor" /></a>
+<a href="examples/damped-track-aim/"><img src="examples/damped-track-aim/preview.webp" alt="Damped Track aim: brass spikes in a tilted cage around an ember core on a dark studio plinth, each tip constrained toward the center" /></a>
 </td>
 <td valign="middle">
 
