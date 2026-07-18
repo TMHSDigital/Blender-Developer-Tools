@@ -97,7 +97,9 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Refresh the `slotted-actions-animation` skill against any 5.2 changes
 - Bump `blender_version_min` in the templates if 5.2 APIs are used
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
-- Gallery coverage follow-ups from the GPv3 review: light-linking, bulk `pixels.foreach_set`, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, and `text-version-stamp` shipped first)
+- Gallery coverage follow-ups from the GPv3 review: light-linking, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, `text-version-stamp`, and `image-pixels-testcard` shipped first)
+- UV-layer authoring witness: `bmesh.ops.create_grid(calc_uvs=True)` silently creates no UV layer unless one already exists, and an Image Texture without UVs samples texel (0,0) everywhere (found while authoring `image-pixels-testcard`)
+- Image save-format witness: float images saved to PNG with varying alpha suffer premultiply quantization (~0.98 worst-case round-trip error at 8-bit alpha extremes); EXR vs PNG storage contract
 
 ## Future (uncommitted)
 

@@ -70,6 +70,7 @@
     "examples/gn-instance-grid",
     "examples/gn-sdf-remesh",
     "examples/grease-pencil-rosette",
+    "examples/image-pixels-testcard",
     "examples/parent-inverse-orrery",
     "examples/shader-node-group",
     "examples/shape-key-blend",
