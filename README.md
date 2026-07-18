@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>18 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>19 examples</strong>
 </p>
 
 ---
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 18 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 19 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -313,6 +313,24 @@ vertex groups, posed into a curl and read back through the depsgraph. Asserts th
 linear blend skinning — every evaluated vertex equals
 Σ wᵢ · (`pose_bone.matrix` @ `bone.matrix_local.inverted()`) @ rest, with the root
 ring pinned and the tip deflected. A straight tube is a failure.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/text-version-stamp/"><img src="examples/text-version-stamp/preview.webp" alt="Text version stamp: beveled brass 5.1.2 numerals standing on a dark studio floor over a glowing teal underline, with a small steel BLENDER caption above — the body text is the live bpy.app.version_string" /></a>
+</td>
+<td valign="middle">
+
+### [text-version-stamp](examples/text-version-stamp/)
+
+A beveled 3D stamp of the running Blender version — a `TextCurve` whose `body` is the
+live `bpy.app.version_string`, so every render self-documents which Blender made it.
+Asserts the TextCurve solids closed form (evaluated z-extent = 2 × (extrude +
+bevel_depth), bevel widening the outline by 2 × bevel_depth), that flat text is filled
+but planar, that body edits regenerate geometry, that `version_string` is not bare
+semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
+`to_mesh_clear()`.
 
 </td>
 </tr>

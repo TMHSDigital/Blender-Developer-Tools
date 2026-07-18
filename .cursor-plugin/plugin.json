@@ -75,6 +75,7 @@
     "examples/shape-key-blend",
     "examples/swatch-grid",
     "examples/temp-override-join",
+    "examples/text-version-stamp",
     "examples/turntable",
     "examples/wave-displace"
   ]
