@@ -244,11 +244,15 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="s">&quot;&quot;&quot;Vertex coords and per-vertex (h, s, v) in the same order as vidx().&quot;&quot;&quot;</span>
     coords = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)]
     hsv = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)]  <span class="c"># center: fully desaturated, white</span>
+    <span class="c"># the hue origin is rotated off the picture horizontal: red is the</span>
+    <span class="c"># perceptually sharpest hue transition, and the 0/360-degree wrap reads</span>
+    <span class="c"># as a seam artifact when it lies level in frame</span>
+    angle0 = math.radians(-<span class="n">52.0</span>)
     <span class="k">for</span> r <span class="k">in</span> range(<span class="n">1</span>, RINGS + <span class="n">1</span>):
         radius = R_OUTER * r / RINGS
         sat = min(<span class="n">1.0</span>, (r / RINGS) * <span class="n">1.4</span>)
         <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
-            angle = <span class="n">2.0</span> * math.pi * s / SEGMENTS
+            angle = angle0 + <span class="n">2.0</span> * math.pi * s / SEGMENTS
             coords.append((radius * math.cos(angle), radius * math.sin(angle), <span class="n">0.0</span>))
             hsv.append((s / SEGMENTS, sat, <span class="n">1.0</span>))
     <span class="k">return</span> coords, hsv
@@ -360,7 +364,11 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="k">if</span> <span class="s">&quot;Emission Color&quot;</span> <span class="k">in</span> bsdf.inputs:  <span class="c"># Principled gained built-in emission in 4.x+</span>
         nt.links.new(attr_node.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>])
         bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.12</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    <span class="c"># fully matte: any specular component reflects the wall/floor horizon as</span>
+    <span class="c"># a hard line across the disc face</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
+    <span class="k">if</span> <span class="s">&quot;Specular IOR Level&quot;</span> <span class="k">in</span> bsdf.inputs:
+        bsdf.inputs[<span class="s">&quot;Specular IOR Level&quot;</span>].default_value = <span class="n">0.0</span>
 
     <span class="c"># The step AI code most often skips: the attribute must actually be wired</span>
     <span class="c"># into the shader, not just present on the mesh.</span>
@@ -385,8 +393,11 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="k">if</span> mat <span class="k">is</span> <span class="k">None</span>:
         <span class="k">return</span> <span class="k">False</span>
     obj.data.materials.append(mat)
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
-    obj.rotation_euler = (math.radians(<span class="n">14</span>), <span class="n">0.0</span>, math.radians(<span class="n">12</span>))
+    <span class="c"># stand the disc up toward the camera like an easel: the wheel is the</span>
+    <span class="c"># subject, so it should present nearly face-on and fill the frame instead</span>
+    <span class="c"># of lying foreshortened on the floor.</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.34</span>)
+    obj.rotation_euler = (math.radians(<span class="n">52</span>), <span class="n">0.0</span>, math.radians(<span class="n">10</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -424,9 +435,15 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="c"># a bright soft key from above reads the hue ring clearly; a low cool fill</span>
     <span class="c"># keeps the shadow side legible; a faint warm rim separates the disc edge</span>
     <span class="c"># from the dark backdrop without washing out the attribute colors.</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.0</span>, -<span class="n">3.0</span>, <span class="n">5.5</span>), <span class="n">380.0</span>, <span class="n">11.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.96</span>), (<span class="n">58</span>, <span class="n">0</span>, -<span class="n">28</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.5</span>, -<span class="n">2.5</span>, <span class="n">1.6</span>), <span class="n">140.0</span>, <span class="n">9.0</span>, (<span class="n">0.78</span>, <span class="n">0.86</span>, <span class="n">1.0</span>), (<span class="n">68</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.0</span>, -<span class="n">3.0</span>, <span class="n">5.5</span>), <span class="n">320.0</span>, <span class="n">8.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.96</span>), (<span class="n">58</span>, <span class="n">0</span>, -<span class="n">28</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.5</span>, -<span class="n">2.5</span>, <span class="n">1.6</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.78</span>, <span class="n">0.86</span>, <span class="n">1.0</span>), (<span class="n">68</span>, <span class="n">0</span>, <span class="n">55</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">3.6</span>, <span class="n">2.2</span>), <span class="n">170.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.78</span>, <span class="n">0.55</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">175</span>))
+    <span class="c"># a warm wedge raking the back wall — the falloff pool behind the subject</span>
+    <span class="c"># the rest of the gallery stages against.</span>
+    <span class="c"># placed between the disc and the back wall so it can only rake the wall:</span>
+    <span class="c"># from any position in front, its grazing terminator draws a hard line</span>
+    <span class="c"># across the flat disc face.</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.0</span>, <span class="n">5.2</span>, <span class="n">3.6</span>), <span class="n">220.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = obj.location
@@ -435,7 +452,7 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">7.4</span>, <span class="n">3.6</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.0</span>, <span class="n">2.4</span>)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = aim
     con.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>

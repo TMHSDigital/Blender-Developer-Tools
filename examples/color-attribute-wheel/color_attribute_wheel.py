@@ -42,11 +42,15 @@ def wheel_geometry():
     """Vertex coords and per-vertex (h, s, v) in the same order as vidx()."""
     coords = [(0.0, 0.0, 0.0)]
     hsv = [(0.0, 0.0, 1.0)]  # center: fully desaturated, white
+    # the hue origin is rotated off the picture horizontal: red is the
+    # perceptually sharpest hue transition, and the 0/360-degree wrap reads
+    # as a seam artifact when it lies level in frame
+    angle0 = math.radians(-52.0)
     for r in range(1, RINGS + 1):
         radius = R_OUTER * r / RINGS
         sat = min(1.0, (r / RINGS) * 1.4)
         for s in range(SEGMENTS):
-            angle = 2.0 * math.pi * s / SEGMENTS
+            angle = angle0 + 2.0 * math.pi * s / SEGMENTS
             coords.append((radius * math.cos(angle), radius * math.sin(angle), 0.0))
             hsv.append((s / SEGMENTS, sat, 1.0))
     return coords, hsv
@@ -158,7 +162,11 @@ def build_material():
     if "Emission Color" in bsdf.inputs:  # Principled gained built-in emission in 4.x+
         nt.links.new(attr_node.outputs["Color"], bsdf.inputs["Emission Color"])
         bsdf.inputs["Emission Strength"].default_value = 0.12
-    bsdf.inputs["Roughness"].default_value = 0.62
+    # fully matte: any specular component reflects the wall/floor horizon as
+    # a hard line across the disc face
+    bsdf.inputs["Roughness"].default_value = 0.85
+    if "Specular IOR Level" in bsdf.inputs:
+        bsdf.inputs["Specular IOR Level"].default_value = 0.0
 
     # The step AI code most often skips: the attribute must actually be wired
     # into the shader, not just present on the mesh.
@@ -183,8 +191,11 @@ def render_still(obj, path, engine):
     if mat is None:
         return False
     obj.data.materials.append(mat)
-    obj.location = (0.0, 0.0, 0.55)
-    obj.rotation_euler = (math.radians(14), 0.0, math.radians(12))
+    # stand the disc up toward the camera like an easel: the wheel is the
+    # subject, so it should present nearly face-on and fill the frame instead
+    # of lying foreshortened on the floor.
+    obj.location = (0.0, 0.0, 1.34)
+    obj.rotation_euler = (math.radians(52), 0.0, math.radians(10))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -222,9 +233,15 @@ def render_still(obj, path, engine):
     # a bright soft key from above reads the hue ring clearly; a low cool fill
     # keeps the shadow side legible; a faint warm rim separates the disc edge
     # from the dark backdrop without washing out the attribute colors.
-    light("Key", (-2.0, -3.0, 5.5), 380.0, 11.0, (1.0, 0.98, 0.96), (58, 0, -28))
-    light("Fill", (4.5, -2.5, 1.6), 140.0, 9.0, (0.78, 0.86, 1.0), (68, 0, 55))
+    light("Key", (-2.0, -3.0, 5.5), 320.0, 8.0, (1.0, 0.98, 0.96), (58, 0, -28))
+    light("Fill", (4.5, -2.5, 1.6), 90.0, 9.0, (0.78, 0.86, 1.0), (68, 0, 55))
     light("Rim", (0.5, 3.6, 2.2), 170.0, 4.0, (1.0, 0.78, 0.55), (-70, 0, 175))
+    # a warm wedge raking the back wall — the falloff pool behind the subject
+    # the rest of the gallery stages against.
+    # placed between the disc and the back wall so it can only rake the wall:
+    # from any position in front, its grazing terminator draws a hard line
+    # across the flat disc face.
+    light("Wedge", (2.0, 5.2, 3.6), 220.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     aim = bpy.data.objects.new("Aim", None)
     aim.location = obj.location
@@ -233,7 +250,7 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.4, 3.6)
+    cam.location = (0.0, -8.0, 2.4)
     con = cam.constraints.new('TRACK_TO')
     con.target = aim
     con.track_axis = 'TRACK_NEGATIVE_Z'

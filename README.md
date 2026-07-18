@@ -252,7 +252,7 @@ toward the core (dot ≥ 0.998).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel disc with a white center fading into a vivid rainbow rim, resting on a dark studio floor" /></a>
+<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel disc with a white center fading into a vivid rainbow rim, leaning upright toward the camera on a dark studio floor with a warm light pool behind it" /></a>
 </td>
 <td valign="middle">
 
