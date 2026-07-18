@@ -286,3 +286,15 @@ jobs:
           # the raw POINT attribute buffer. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/grease-pencil-rosette/grease_pencil_rosette.py --
+
+      - name: Shipped example - armature bend (edit_bones + LBS closed form)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a four-bone chain skins a tapered tube via
+          # name-bound vertex groups; asserts edit_bones is empty outside edit
+          # mode and holds the closed-form chain inside it, then compares every
+          # depsgraph-evaluated vertex against re-implemented linear blend
+          # skinning (root ring pinned, tip deflected — a straight tube fails).
+          # Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/armature-bend/armature_bend.py --

@@ -59,6 +59,7 @@
     "templates/headless-batch-script-template"
   ],
   "examples": [
+    "examples/armature-bend",
     "examples/bmesh-gear",
     "examples/color-attribute-wheel",
     "examples/compositor-glare",

@@ -175,7 +175,7 @@
     {
       "name": "color-attribute-wheel",
       "dir": "examples/color-attribute-wheel",
-      "teaches": "The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.",
+      "teaches": "The modern color-attributes API \u2014 mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.",
       "witnessesFix": "CORNER-domain attributes are sized to loop count, not vertex count; the check asserts that, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.",
       "hero": "docs/gallery/assets/color-attribute-wheel-hero.webp",
       "preview": "examples/color-attribute-wheel/preview.webp",
@@ -188,7 +188,7 @@
     {
       "name": "parent-inverse-orrery",
       "dir": "examples/parent-inverse-orrery",
-      "teaches": "Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.",
+      "teaches": "Data-API parenting for a brass orrery \u2014 the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.",
       "witnessesFix": "Bare `.parent =` really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.",
       "hero": "docs/gallery/assets/parent-inverse-orrery-hero.webp",
       "preview": "examples/parent-inverse-orrery/preview.webp",
@@ -200,13 +200,25 @@
     {
       "name": "grease-pencil-rosette",
       "dir": "examples/grease-pencil-rosette",
-      "teaches": "Grease Pencil v3's attribute-based API — layer → frames.new().drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.",
+      "teaches": "Grease Pencil v3's attribute-based API \u2014 layer \u2192 frames.new().drawing \u2192 add_strokes \u2192 per-point position/radius/opacity/vertex_color \u2014 drawing five nested neon rose curves.",
       "witnessesFix": "The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.",
       "hero": "docs/gallery/assets/grease-pencil-rosette-hero.webp",
       "preview": "examples/grease-pencil-rosette/preview.webp",
       "tags": [
         "grease-pencil",
         "attributes"
+      ]
+    },
+    {
+      "name": "armature-bend",
+      "dir": "examples/armature-bend",
+      "teaches": "Rigging end to end in the data API \u2014 edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation \u2014 bending a tapered tube through rest, half, and full curl.",
+      "witnessesFix": "edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal \u03a3 w\u1d62\u00b7(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected \u2014 a straight tube fails.",
+      "hero": "docs/gallery/assets/armature-bend-hero.webp",
+      "preview": "examples/armature-bend/preview.webp",
+      "tags": [
+        "armature",
+        "depsgraph"
       ]
     }
   ]
