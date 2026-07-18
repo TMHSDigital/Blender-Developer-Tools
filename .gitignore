@@ -23,6 +23,7 @@ env/
 *.blend2
 *.blend3
 *.blend@
+.scratch
 
 # OS
 .DS_Store
@@ -45,4 +46,3 @@ dist/
 build/
 *.zip
 *.log
-docs/new-example-prompt.md

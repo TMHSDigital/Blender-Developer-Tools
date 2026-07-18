@@ -177,6 +177,7 @@
     <button class="chip" data-tag="animation" type="button">animation</button>
     <button class="chip" data-tag="bevel" type="button">bevel</button>
     <button class="chip" data-tag="bmesh" type="button">bmesh</button>
+    <button class="chip" data-tag="compositor" type="button">compositor</button>
     <button class="chip" data-tag="context" type="button">context</button>
     <button class="chip" data-tag="curves" type="button">curves</button>
     <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
@@ -324,6 +325,17 @@
           <p class="teaches">A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.</p>
           <a class="card-link" href="curve-bevel-arc/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="compositor rendering">
+        <a class="card-media" href="compositor-glare/" aria-label="compositor-glare example detail page">
+          <img src="assets/compositor-glare-hero.webp" alt="compositor-glare — Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="compositor-glare/">compositor-glare</a></h2>
+          <p class="teaches">Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.</p>
+          <a class="card-link" href="compositor-glare/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

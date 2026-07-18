@@ -112,6 +112,15 @@
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
       "tags": ["curves", "bevel"]
+    },
+    {
+      "name": "compositor-glare",
+      "dir": "examples/compositor-glare",
+      "teaches": "Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node's legacy properties vs 5.x menu sockets.",
+      "witnessesFix": "scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.",
+      "hero": "docs/gallery/assets/compositor-glare-hero.webp",
+      "preview": "examples/compositor-glare/preview.webp",
+      "tags": ["compositor", "rendering"]
     }
   ]
 }

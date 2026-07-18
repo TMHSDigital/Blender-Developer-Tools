@@ -232,3 +232,14 @@ jobs:
           # verts=1044 faces=1028, tube rests on floor. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/curve-bevel-arc/curve_bevel_arc.py --
+
+      - name: Shipped example - compositor glare (Fog Glow + 5.x node group)
+        run: |
+          set -euo pipefail
+          # Two tiny 1-sample Cycles renders (compositor on vs off, ~seconds each):
+          # asserts the cross-version compositor plumbing (compositing_node_group
+          # on 5.x, scene.node_tree on 4.x), the Glare Fog Glow configuration, a
+          # strictly-falling halo with the compositor on, and exactly-zero halo
+          # pixels with it off. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/compositor-glare/compositor_glare.py --

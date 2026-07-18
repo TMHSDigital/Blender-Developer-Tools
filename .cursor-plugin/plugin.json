@@ -60,6 +60,7 @@
   ],
   "examples": [
     "examples/bmesh-gear",
+    "examples/compositor-glare",
     "examples/curve-bevel-arc",
     "examples/depsgraph-export",
     "examples/driver-wave",

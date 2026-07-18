@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>compositor-glare — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/compositor-glare/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="compositor-glare — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/compositor-glare/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/compositor-glare-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="compositor-glare — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/compositor-glare-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>compositor-glare</h1>
+    <p>Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node&#x27;s legacy properties vs 5.x menu sockets.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom compositor-glare render">
+      <img src="../assets/compositor-glare-hero.webp" alt="compositor-glare render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/compositor-glare/compositor_glare.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that puts bloom where it actually lives: the compositor. Three emissive rings are rendered, then a <code>Glare</code> (Fog Glow) node fed by <code>Render Layers</code> grows the halo — wired through <code>scene.compositing_node_group</code> on Blender 5.x and through <code>scene.node_tree</code> on 4.x, because the 5.0 compositor rewrite removed the scene-level tree entirely (<code>scene.use_nodes = True</code> now raises <code>AttributeError</code>).</p>
+<p>The Glare node changed shape with it: on 4.x it takes legacy enum properties (<code>glare_type=&#x27;FOG_GLOW&#x27;</code>, <code>quality=&#x27;HIGH&#x27;</code>, <code>size=6</code>), while on 5.x the same choices are menu/float <strong>input sockets</strong> (<code>inputs[&#x27;Type&#x27;].default_value = &#x27;Fog Glow&#x27;</code>). The 4.x <code>threshold</code> property is a dead shim — the real threshold is the <code>Threshold</code> input socket on both versions. And EEVEE has no <code>use_bloom</code> toggle on either version (removed in 4.2): bloom is a compositor node, period.</p>
+<p><strong>What it witnesses:</strong> the halo is the compositor&#x27;s output, proven with pixels. The check renders the scene twice at 96×54 (single-sample Cycles, noise-free) — once with <code>use_compositing</code> on, once off — and samples a column of pixels above the middle ring&#x27;s silhouette via <code>world_to_camera_view</code>. With the compositor on, the halo luminance just outside the silhouette is far above zero and falls off strictly with distance (the Fog Glow kernel signature); with it off, those same pixels are exactly zero. The structural check pins the wiring (<code>Render Layers → Glare → output</code>), the version-correct tree plumbing, and the absence of any EEVEE bloom toggle.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (two tiny renders) — the CI check:
+blender --background --python compositor_glare.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python compositor_glare.py -- --output rings.png
+blender --background --python compositor_glare.py -- --output rings.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (wrong tree plumbing, wrong Glare configuration, a missing or non-falling halo, or halo pixels that appear without the compositor). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/compositor-glare/compositor_glare.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/compositor-glare/compositor_glare.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Bloom through the compositor across the 4.x -&gt; 5.x boundary — a runnable example.
+
+Witnesses the compositor-plumbing contract that AI-generated Blender code breaks
+constantly:
+
+- Blender 5.x removed `scene.node_tree` / `scene.use_nodes`: the scene compositor
+  is now a node GROUP assigned to `scene.compositing_node_group`, with an
+  `Image` output declared via `tree.interface.new_socket`. The old one-liner
+  `scene.use_nodes = True` raises AttributeError on 5.x.
+- The Glare node itself changed shape: on 4.x it is configured with legacy enum
+  properties (`glare_type=&#x27;FOG_GLOW&#x27;`, `quality=&#x27;HIGH&#x27;`, `size=6`); on 5.x the
+  same choices are menu/float INPUT sockets (`inputs[&#x27;Type&#x27;].default_value =
+  &#x27;Fog Glow&#x27;`). The legacy `threshold` property is a dead shim on 4.x — the real
+  threshold lives in the `Threshold` input socket on BOTH versions.
+- EEVEE has no `use_bloom` toggle on either version (removed in 4.2). Bloom is
+  a compositor node, and the check proves it with pixels: a halo appears beyond
+  the ring silhouette, falls off strictly with distance, and vanishes entirely
+  when `scene.render.use_compositing` is off.
+
+By default it runs only the correctness check (two 96x54 single-sample Cycles
+renders, compositor on vs off) — the CI smoke check. Pass --output to also
+render a still:
+
+    blender --background --python compositor_glare.py --                 # check only
+    blender --background --python compositor_glare.py -- --output n.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy
+<span class="k">import</span> sys
+<span class="k">import</span> os
+<span class="k">import</span> math
+<span class="k">import</span> tempfile
+<span class="k">import</span> argparse
+<span class="k">from</span> bpy_extras.object_utils <span class="k">import</span> world_to_camera_view
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+RING_MAJOR = <span class="n">0.7</span>
+RING_MINOR = <span class="n">0.12</span>
+RING_Z = <span class="n">0.85</span>                <span class="c"># ring center height; bottom edge grazes the floor</span>
+RING_SPECS = (               <span class="c"># three neon rings standing in the XZ plane (name, x, y, color, strength)</span>
+    (<span class="s">&quot;RingViolet&quot;</span>, -<span class="n">1.55</span>, <span class="n">0.55</span>, (<span class="n">0.55</span>, <span class="n">0.15</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">12.0</span>),
+    (<span class="s">&quot;RingCyan&quot;</span>,    <span class="n">0.0</span>,  <span class="n">0.0</span>,  (<span class="n">0.10</span>, <span class="n">0.90</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">18.0</span>),  <span class="c"># the ring the check samples</span>
+    (<span class="s">&quot;RingAmber&quot;</span>,   <span class="n">1.55</span>, <span class="n">0.45</span>, (<span class="n">1.00</span>, <span class="n">0.45</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">9.0</span>),
+)
+
+CHECK_W, CHECK_H = <span class="n">96</span>, <span class="n">54</span>    <span class="c"># tiny, noise-free: 1-sample Cycles, pure emission</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> make_emissive(name, color, strength):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nt.nodes.clear()
+    emis = nt.nodes.new(<span class="s">&#x27;ShaderNodeEmission&#x27;</span>)
+    emis.inputs[<span class="s">&#x27;Color&#x27;</span>].default_value = color
+    emis.inputs[<span class="s">&#x27;Strength&#x27;</span>].default_value = strength
+    out = nt.nodes.new(<span class="s">&#x27;ShaderNodeOutputMaterial&#x27;</span>)
+    nt.links.new(emis.outputs[<span class="s">&#x27;Emission&#x27;</span>], out.inputs[<span class="s">&#x27;Surface&#x27;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> configure_fog_glow(glare):
+    <span class="s">&quot;&quot;&quot;Same Fog Glow on both sides of the 5.0 compositor rewrite.
+
+    4.x: legacy enum properties; `size` is the old kernel int and the real
+    threshold is the `Threshold` input socket (the `threshold` property is a
+    dead shim — it always reads 0.0 on 4.5).
+    5.x: `glare_type`/`quality`/`size` properties are gone; Type and Quality
+    are menu sockets that take their DISPLAY names, Size is a 0..1 factor.
+    &quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        glare.inputs[<span class="s">&#x27;Type&#x27;</span>].default_value = <span class="s">&#x27;Fog Glow&#x27;</span>
+        glare.inputs[<span class="s">&#x27;Quality&#x27;</span>].default_value = <span class="s">&#x27;High&#x27;</span>
+        glare.inputs[<span class="s">&#x27;Size&#x27;</span>].default_value = <span class="n">0.85</span>
+    <span class="k">else</span>:
+        glare.glare_type = <span class="s">&#x27;FOG_GLOW&#x27;</span>
+        glare.quality = <span class="s">&#x27;HIGH&#x27;</span>
+        glare.size = <span class="n">6</span>
+    glare.inputs[<span class="s">&#x27;Threshold&#x27;</span>].default_value = <span class="n">1.0</span>  <span class="c"># input socket on BOTH versions</span>
+
+
+<span class="k">def</span> build_compositor(scene):
+    <span class="s">&quot;&quot;&quot;Wire Render Layers -&gt; Glare (Fog Glow) -&gt; output, cross-version.
+
+    Returns (tree, glare_node). 5.x builds a compositor node group and assigns
+    it to scene.compositing_node_group; 4.x uses the scene&#x27;s own node tree.
+    &quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        tree = bpy.data.node_groups.new(<span class="s">&quot;BloomComposite&quot;</span>, <span class="s">&#x27;CompositorNodeTree&#x27;</span>)
+        tree.interface.new_socket(name=<span class="s">&quot;Image&quot;</span>, in_out=<span class="s">&#x27;INPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketColor&#x27;</span>)
+        tree.interface.new_socket(name=<span class="s">&quot;Image&quot;</span>, in_out=<span class="s">&#x27;OUTPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketColor&#x27;</span>)
+        out_node = tree.nodes.new(<span class="s">&quot;NodeGroupOutput&quot;</span>)
+        scene.compositing_node_group = tree
+    <span class="k">else</span>:
+        scene.use_nodes = <span class="k">True</span>
+        tree = scene.node_tree
+        tree.nodes.clear()
+        out_node = tree.nodes.new(<span class="s">&quot;CompositorNodeComposite&quot;</span>)
+    rl = tree.nodes.new(<span class="s">&quot;CompositorNodeRLayers&quot;</span>)
+    glare = tree.nodes.new(<span class="s">&quot;CompositorNodeGlare&quot;</span>)
+    configure_fog_glow(glare)
+    tree.links.new(rl.outputs[<span class="s">&quot;Image&quot;</span>], glare.inputs[<span class="s">&quot;Image&quot;</span>])
+    tree.links.new(glare.outputs[<span class="s">&quot;Image&quot;</span>], out_node.inputs[<span class="s">&quot;Image&quot;</span>])
+    <span class="k">return</span> tree, glare
+
+
+<span class="k">def</span> build_scene():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    scene = bpy.context.scene
+
+    <span class="k">for</span> name, x, y, color, strength <span class="k">in</span> RING_SPECS:
+        bpy.ops.mesh.primitive_torus_add(
+            major_radius=RING_MAJOR, minor_radius=RING_MINOR,
+            major_segments=<span class="n">64</span>, minor_segments=<span class="n">16</span>,
+            location=(x, y, RING_Z), rotation=(math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>))
+        ring = bpy.context.active_object
+        ring.name = name
+        ring.data.materials.append(make_emissive(<span class="s">f&quot;</span><span class="s">Neon</span>{name[<span class="n">4</span>:]}<span class="s">&quot;</span>, color, strength))
+        <span class="k">for</span> poly <span class="k">in</span> ring.data.polygons:
+            poly.use_smooth = <span class="k">True</span>
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    <span class="c"># level, centered camera: the top silhouette of the middle ring is exactly</span>
+    <span class="c"># (0, 0, RING_Z + RING_MAJOR + RING_MINOR) with pure black world above it</span>
+    cam.location = (<span class="n">0.0</span>, -<span class="n">6.0</span>, RING_Z)
+    cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+
+    tree, glare = build_compositor(scene)
+    bpy.context.view_layer.update()
+    <span class="k">return</span> scene, tree, glare
+
+
+<span class="k">def</span> link_chain_ok(tree, glare, out_node):
+    <span class="s">&quot;&quot;&quot;Every hop Render Layers -&gt; Glare -&gt; output must be a real link.&quot;&quot;&quot;</span>
+    rl = next((n <span class="k">for</span> n <span class="k">in</span> tree.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;CompositorNodeRLayers&quot;</span>), <span class="k">None</span>)
+    <span class="k">if</span> rl <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">False</span>
+    hop1 = any(l.from_node == rl <span class="k">and</span> l.to_node == glare <span class="k">for</span> l <span class="k">in</span> tree.links)
+    hop2 = any(l.from_node == glare <span class="k">and</span> l.to_node == out_node <span class="k">for</span> l <span class="k">in</span> tree.links)
+    <span class="k">return</span> hop1 <span class="k">and</span> hop2
+
+
+<span class="k">def</span> check_structure(scene, tree, glare):
+    is_5x = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
+    <span class="c"># the divergence itself: scene.node_tree exists only on 4.x</span>
+    <span class="k">if</span> hasattr(scene, <span class="s">&quot;node_tree&quot;</span>) == is_5x:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: scene.node_tree presence </span>{hasattr(scene, <span class="s">&#x27;node_tree&#x27;</span>)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">contradicts version </span>{bpy.app.version_string}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> is_5x:
+        <span class="k">if</span> scene.compositing_node_group != tree:
+            print(<span class="s">&quot;ERROR: compositing_node_group is not the tree we built&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        outs = [s <span class="k">for</span> s <span class="k">in</span> tree.interface.items_tree
+                <span class="k">if</span> getattr(s, <span class="s">&quot;in_out&quot;</span>, <span class="k">None</span>) == <span class="s">&#x27;OUTPUT&#x27;</span> <span class="k">and</span> s.name == <span class="s">&quot;Image&quot;</span>]
+        <span class="k">if</span> <span class="k">not</span> outs:
+            print(<span class="s">&quot;ERROR: compositor group has no Image output socket&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        out_node = next(n <span class="k">for</span> n <span class="k">in</span> tree.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;NodeGroupOutput&quot;</span>)
+        <span class="k">if</span> glare.inputs[<span class="s">&#x27;Type&#x27;</span>].default_value != <span class="s">&#x27;Fog Glow&#x27;</span>:
+            print(<span class="s">&quot;ERROR: 5.x Glare Type menu is not &#x27;Fog Glow&#x27;&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+    <span class="k">else</span>:
+        out_node = next(n <span class="k">for</span> n <span class="k">in</span> tree.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;CompositorNodeComposite&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> (glare.glare_type == <span class="s">&#x27;FOG_GLOW&#x27;</span> <span class="k">and</span> glare.quality == <span class="s">&#x27;HIGH&#x27;</span> <span class="k">and</span> glare.size == <span class="n">6</span>):
+            print(<span class="s">&quot;ERROR: 4.x Glare legacy properties not as configured&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> glare.inputs[<span class="s">&#x27;Threshold&#x27;</span>].default_value != <span class="n">1.0</span>:
+        print(<span class="s">&quot;ERROR: Glare Threshold input != 1.0&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> <span class="k">not</span> link_chain_ok(tree, glare, out_node):
+        print(<span class="s">&quot;ERROR: Render Layers -&gt; Glare -&gt; output link chain broken&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="c"># negative witness: bloom cannot come from EEVEE on either version</span>
+    <span class="k">if</span> getattr(getattr(scene, <span class="s">&quot;eevee&quot;</span>, <span class="k">None</span>), <span class="s">&quot;use_bloom&quot;</span>, <span class="k">None</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        print(<span class="s">&quot;ERROR: unexpected EEVEE use_bloom toggle — the example&#x27;s premise is stale&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> render_frame(scene, path, use_compositing):
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    scene.render.resolution_x = CHECK_W
+    scene.render.resolution_y = CHECK_H
+    scene.render.resolution_percentage = <span class="n">100</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.use_compositing = use_compositing
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> sample_column(scene, path):
+    <span class="s">&quot;&quot;&quot;Luminance (R+G+B) on the middle ring&#x27;s tube, then marching up in image
+    space from its top silhouette pixel: the halo profile of the bloom kernel.&quot;&quot;&quot;</span>
+    img = bpy.data.images.load(path)
+    w, h = img.size
+    <span class="k">if</span> (w, h) != (CHECK_W, CHECK_H):
+        bpy.data.images.remove(img)
+        <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span><span class="s">reloaded </span>{path}<span class="s"> at </span>{(w, h)}<span class="s">, expected </span>{(CHECK_W, CHECK_H)}<span class="s">&quot;</span>)
+    px = img.pixels[:]
+    bpy.data.images.remove(img)
+
+    <span class="k">def</span> lum(x, y):
+        x, y = max(<span class="n">0</span>, min(w - <span class="n">1</span>, x)), max(<span class="n">0</span>, min(h - <span class="n">1</span>, y))
+        i = (y * w + x) * <span class="n">4</span>
+        <span class="k">return</span> px[i] + px[i + <span class="n">1</span>] + px[i + <span class="n">2</span>]
+
+    <span class="k">def</span> project(co):
+        ndc = world_to_camera_view(scene, scene.camera, Vector(co))
+        <span class="k">return</span> int(ndc.x * w), int(ndc.y * h)
+
+    on_x, on_y = project((<span class="n">0.0</span>, <span class="n">0.0</span>, RING_Z + RING_MAJOR))            <span class="c"># on the tube</span>
+    sil_x, sil_y = project((<span class="n">0.0</span>, <span class="n">0.0</span>, RING_Z + RING_MAJOR + RING_MINOR))  <span class="c"># silhouette</span>
+    <span class="k">return</span> (lum(on_x, on_y), [lum(sil_x, sil_y + d) <span class="k">for</span> d <span class="k">in</span> (<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>)])
+
+
+<span class="k">def</span> check_pixels(scene):
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;compositor_glare_&quot;</span>)
+    <span class="k">try</span>:
+        on_path = os.path.join(tmp, <span class="s">&quot;on.png&quot;</span>)
+        off_path = os.path.join(tmp, <span class="s">&quot;off.png&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> render_frame(scene, on_path, <span class="k">True</span>):
+            print(<span class="s">&quot;ERROR: compositor-on check render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        <span class="k">if</span> <span class="k">not</span> render_frame(scene, off_path, <span class="k">False</span>):
+            print(<span class="s">&quot;ERROR: compositor-off check render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        tube_on, halo_on = sample_column(scene, on_path)
+        tube_off, halo_off = sample_column(scene, off_path)
+
+        <span class="k">if</span> tube_on &lt; <span class="n">1.5</span> <span class="k">or</span> tube_off &lt; <span class="n">1.5</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: ring tube not bright (on=</span>{tube_on:<span class="s">.3f</span>}<span class="s"> off=</span>{tube_off:<span class="s">.3f</span>}<span class="s">)</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        <span class="k">if</span> halo_on[<span class="n">0</span>] &lt; <span class="n">0.10</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: no bloom halo beyond the silhouette (halo+1px=</span>{halo_on[<span class="n">0</span>]:<span class="s">.3f</span>}<span class="s">)</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        <span class="k">if</span> <span class="k">not</span> (halo_on[<span class="n">0</span>] &gt; halo_on[<span class="n">1</span>] &gt; halo_on[<span class="n">2</span>]):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: halo does not fall off strictly: </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{[<span class="s">&#x27;%.3f&#x27;</span> % v <span class="k">for</span> v <span class="k">in</span> halo_on]}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        <span class="k">if</span> max(halo_off) &gt; <span class="n">0.02</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: halo present WITHOUT the compositor </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(</span>{[<span class="s">&#x27;%.3f&#x27;</span> % v <span class="k">for</span> v <span class="k">in</span> halo_off]}<span class="s">) — bloom is not from the Glare node</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        print(<span class="s">f&quot;</span><span class="s">pixels: tube=</span>{tube_on:<span class="s">.3f</span>}<span class="s"> halo(+1/+2/+3px)=</span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{<span class="s">&#x27;/&#x27;</span>.join(<span class="s">&#x27;%.3f&#x27;</span> % v <span class="k">for</span> v <span class="k">in</span> halo_on)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">compositor-off halo max=</span>{max(halo_off):<span class="s">.3f</span>}<span class="s">&quot;</span>)
+        <span class="k">return</span> <span class="n">0</span>
+    <span class="k">finally</span>:
+        <span class="k">for</span> f <span class="k">in</span> (<span class="s">&quot;on.png&quot;</span>, <span class="s">&quot;off.png&quot;</span>):
+            p = os.path.join(tmp, f)
+            <span class="k">if</span> os.path.exists(p):
+                os.remove(p)
+        os.rmdir(tmp)
+
+
+<span class="k">def</span> render_still(scene, path, engine, samples, width):
+    <span class="s">&quot;&quot;&quot;Dark-studio beauty pass: the same rings, now grounded on a reflective
+    floor — the glow and its reflection are the compositor&#x27;s doing.&quot;&quot;&quot;</span>
+    <span class="c"># glossy dark floor stays below the bloom threshold; only the rings bloom</span>
+    mesh = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    half = <span class="n">30.0</span>
+    mesh.from_pydata([(-half, -half, <span class="n">0.0</span>), (half, -half, <span class="n">0.0</span>),
+                      (half, half, <span class="n">0.0</span>), (-half, half, <span class="n">0.0</span>)], [], [(<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>)])
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.04</span>, <span class="n">0.045</span>, <span class="n">0.055</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.25</span>
+    fb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.6</span>
+    mesh.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, mesh)
+    scene.collection.objects.link(floor)
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.5</span>, -<span class="n">4.0</span>, <span class="n">5.5</span>), <span class="n">500.0</span>, <span class="n">6.0</span>, (<span class="n">0.85</span>, <span class="n">0.9</span>, <span class="n">1.0</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">30</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.5</span>, -<span class="n">3.0</span>, <span class="n">2.5</span>), <span class="n">300.0</span>, <span class="n">8.0</span>, (<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.7</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">40</span>))
+
+    <span class="c"># a slightly elevated, centered camera for the still — all three rings in</span>
+    <span class="c"># frame with headroom for the glow, floor reflection anchoring the bottom</span>
+    cam = scene.camera
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.4</span>, <span class="n">2.0</span>)
+    cam.rotation_euler = (math.radians(<span class="n">79</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = samples
+        scene.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = samples
+            scene.eevee.use_raytracing = <span class="k">True</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = width
+    scene.render.resolution_y = int(width * <span class="n">9</span> / <span class="n">16</span>)
+    scene.render.resolution_percentage = <span class="n">100</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;WEBP&#x27;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.use_compositing = <span class="k">True</span>
+    scene.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still here (.png or .webp)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--samples&quot;</span>, type=int, default=<span class="n">32</span>, help=<span class="s">&quot;--output sample count&quot;</span>)
+    p.add_argument(<span class="s">&quot;--width&quot;</span>, type=int, default=<span class="n">1280</span>, help=<span class="s">&quot;--output width; height is width*9/16&quot;</span>)
+    args = p.parse_args(argv)
+
+    scene, tree, glare = build_scene()
+    code = check_structure(scene, tree, glare)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    print(<span class="s">f&quot;</span><span class="s">structure OK on </span>{bpy.app.version_string}<span class="s">: </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span>{<span class="s">&#x27;compositing_node_group&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;scene.node_tree&#x27;</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">-&gt; Glare(Fog Glow) -&gt; output; no EEVEE use_bloom</span><span class="s">&quot;</span>)
+
+    code = check_pixels(scene)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(scene, os.path.abspath(args.output), args.engine, args.samples,
+                            args.width):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;compositor-glare OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/compositor-glare-hero.webp" alt="compositor-glare render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
