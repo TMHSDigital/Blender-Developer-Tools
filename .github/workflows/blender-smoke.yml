@@ -253,3 +253,14 @@ jobs:
           # aligns toward the core (dot ≥ 0.998). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/damped-track-aim/damped_track_aim.py --
+
+      - name: Shipped example - color attribute wheel (color_attributes CORNER domain)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): an HSV wheel disc colored via
+          # mesh.color_attributes.new() on the CORNER domain; asserts the attribute
+          # is sized to loop count (not vertex count), is active_color, and probe
+          # loops match the closed-form HSV for their vertex. Exits non-zero on
+          # failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/color-attribute-wheel/color_attribute_wheel.py --

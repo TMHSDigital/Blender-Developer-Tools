@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>color-attribute-wheel — Examples — Blender Developer Tools</title>
+  <meta name="description" content="The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/color-attribute-wheel/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="color-attribute-wheel — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/color-attribute-wheel/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/color-attribute-wheel-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="color-attribute-wheel — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/color-attribute-wheel-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>color-attribute-wheel</h1>
+    <p>The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom color-attribute-wheel render">
+      <img src="../assets/color-attribute-wheel-hero.webp" alt="color-attribute-wheel render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> CORNER-domain attributes are sized to loop count, not vertex count; the check asserts that, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/color-attribute-wheel/color_attribute_wheel.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds an HSV color wheel disc entirely with <code>bmesh</code> and colors it with <code>Mesh.color_attributes.new()</code> — the modern attributes API, not the deprecated <code>Mesh.vertex_colors</code> alias AI code keeps reaching for. It witnesses the domain trap that comes with it: a <code>CORNER</code>-domain attribute is sized to <code>len(mesh.loops)</code>, not <code>len(mesh.vertices)</code>, so per-vertex data has to be expanded across face corners before it is written. The material wires the same attribute into a Shader <code>Attribute</code> node (<code>attribute_type=&#x27;GEOMETRY&#x27;</code>) feeding Base Color — the step AI code most often skips, leaving the mesh gray even when the attribute data is correct.</p>
+<p><strong>What it witnesses:</strong> a <code>FLOAT_COLOR</code> attribute on the <code>CORNER</code> domain, filled with one <code>foreach_get</code> (loop → vertex index) and one <code>foreach_set</code> (loop color), never a per-loop Python assignment. The check asserts the attribute is sized to the loop count and *not* the vertex count, that it is <code>color_attributes.active_color</code> (so a renderer or exporter actually picks it up), and that several probe loops match the closed-form HSV value for the vertex they reference. A separate check in the render path confirms the <code>Attribute</code> node is actually linked to Base Color, not just present in the node tree.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python color_attribute_wheel.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python color_attribute_wheel.py -- --output wheel.png
+blender --background --python color_attribute_wheel.py -- --output wheel.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (missing/mis-sized/mis-domained attribute, wrong active attribute, a probe color mismatch, or an unlinked Attribute node). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/color-attribute-wheel/color_attribute_wheel.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel/color_attribute_wheel.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;HSV color-attribute wheel -- a runnable example.
+
+Witnesses the modern color-attribute contract that AI-generated Blender code
+routinely gets wrong: `Mesh.color_attributes.new()` (not the deprecated
+`Mesh.vertex_colors.new()` alias), and the domain trap that comes with it --
+a `CORNER`-domain attribute is sized to `len(mesh.loops)`, not
+`len(mesh.vertices)`, so code that fills it with a per-vertex-sized buffer
+either raises or silently miscolors every shared vertex. This example builds
+a polar disc where every vertex carries one hue/saturation pair, expands that
+per-vertex data across face corners with one `foreach_get` (loop -&gt;
+vertex_index) and one `foreach_set` (loop color), and marks the attribute
+`active_color` so it is the one a renderer or exporter actually picks up. The
+material wires the same attribute into a Shader `Attribute` node
+(`attribute_type=&#x27;GEOMETRY&#x27;`) feeding Base Color -- a step AI code frequently
+skips, leaving the mesh gray even though the attribute data is correct.
+
+By default it runs only the correctness check (no render) -- the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python color_attribute_wheel.py --                 # check only
+    blender --background --python color_attribute_wheel.py -- --output w.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, colorsys, argparse
+<span class="k">from</span> array <span class="k">import</span> array
+
+RINGS = <span class="n">14</span>
+SEGMENTS = <span class="n">72</span>
+R_OUTER = <span class="n">1.6</span>
+
+N_VERTS = <span class="n">1</span> + RINGS * SEGMENTS
+N_FACES = SEGMENTS + (RINGS - <span class="n">1</span>) * SEGMENTS
+N_LOOPS = <span class="n">3</span> * SEGMENTS + <span class="n">4</span> * (RINGS - <span class="n">1</span>) * SEGMENTS
+ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
+
+
+<span class="k">def</span> vidx(r, s):
+    <span class="s">&quot;&quot;&quot;Vertex index for ring r (0 = center) and segment s, matching build order.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> r == <span class="n">0</span> <span class="k">else</span> <span class="n">1</span> + (r - <span class="n">1</span>) * SEGMENTS + (s % SEGMENTS)
+
+
+<span class="k">def</span> wheel_geometry():
+    <span class="s">&quot;&quot;&quot;Vertex coords and per-vertex (h, s, v) in the same order as vidx().&quot;&quot;&quot;</span>
+    coords = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)]
+    hsv = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)]  <span class="c"># center: fully desaturated, white</span>
+    <span class="k">for</span> r <span class="k">in</span> range(<span class="n">1</span>, RINGS + <span class="n">1</span>):
+        radius = R_OUTER * r / RINGS
+        sat = min(<span class="n">1.0</span>, (r / RINGS) * <span class="n">1.4</span>)
+        <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
+            angle = <span class="n">2.0</span> * math.pi * s / SEGMENTS
+            coords.append((radius * math.cos(angle), radius * math.sin(angle), <span class="n">0.0</span>))
+            hsv.append((s / SEGMENTS, sat, <span class="n">1.0</span>))
+    <span class="k">return</span> coords, hsv
+
+
+<span class="k">def</span> build_wheel():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    coords, hsv = wheel_geometry()
+    me = bpy.data.meshes.new(<span class="s">&quot;ColorWheel&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        verts = [bm.verts.new(co) <span class="k">for</span> co <span class="k">in</span> coords]
+        <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
+            bm.faces.new([verts[vidx(<span class="n">0</span>, <span class="n">0</span>)], verts[vidx(<span class="n">1</span>, s)], verts[vidx(<span class="n">1</span>, s + <span class="n">1</span>)]])
+        <span class="k">for</span> r <span class="k">in</span> range(<span class="n">1</span>, RINGS):
+            <span class="k">for</span> s <span class="k">in</span> range(SEGMENTS):
+                bm.faces.new([
+                    verts[vidx(r, s)], verts[vidx(r, s + <span class="n">1</span>)],
+                    verts[vidx(r + <span class="n">1</span>, s + <span class="n">1</span>)], verts[vidx(r + <span class="n">1</span>, s)],
+                ])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()  <span class="c"># the always-free-bmesh contract</span>
+
+    <span class="c"># The contract this example witnesses: a CORNER-domain color attribute,</span>
+    <span class="c"># created via color_attributes (not the deprecated vertex_colors alias),</span>
+    <span class="c"># sized to loops -- then filled by expanding per-vertex HSV across corners</span>
+    <span class="c"># with bulk foreach_get / foreach_set, never a per-loop Python assignment.</span>
+    attr = me.color_attributes.new(ATTR_NAME, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=<span class="s">&#x27;CORNER&#x27;</span>)
+    n_loops = len(me.loops)
+    loop_vert = array(<span class="s">&#x27;i&#x27;</span>, [<span class="n">0</span>]) * n_loops
+    me.loops.foreach_get(<span class="s">&quot;vertex_index&quot;</span>, loop_vert)
+    flat = array(<span class="s">&#x27;f&#x27;</span>, [<span class="n">0.0</span>]) * (n_loops * <span class="n">4</span>)
+    <span class="k">for</span> i, vi <span class="k">in</span> enumerate(loop_vert):
+        h, s, v = hsv[vi]
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        flat[i * <span class="n">4</span>], flat[i * <span class="n">4</span> + <span class="n">1</span>], flat[i * <span class="n">4</span> + <span class="n">2</span>], flat[i * <span class="n">4</span> + <span class="n">3</span>] = r, g, b, <span class="n">1.0</span>
+    attr.data.foreach_set(<span class="s">&quot;color&quot;</span>, flat)
+    me.color_attributes.active_color = attr  <span class="c"># the step AI code most often forgets</span>
+
+    obj = bpy.data.objects.new(<span class="s">&quot;ColorWheel&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj, hsv
+
+
+<span class="k">def</span> check(obj, hsv):
+    me = obj.data
+    got = (len(me.vertices), len(me.polygons), len(me.loops))
+    expect = (N_VERTS, N_FACES, N_LOOPS)
+    <span class="k">if</span> got != expect:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: topology (verts,faces,loops)=</span>{got}<span class="s"> != expected </span>{expect}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+
+    attr = me.color_attributes.get(ATTR_NAME)
+    <span class="k">if</span> attr <span class="k">is</span> <span class="k">None</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: color attribute &#x27;</span>{ATTR_NAME}<span class="s">&#x27; missing</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> attr.domain != <span class="s">&#x27;CORNER&#x27;</span> <span class="k">or</span> attr.data_type != <span class="s">&#x27;FLOAT_COLOR&#x27;</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: attribute domain/type = </span>{attr.domain}<span class="s">/</span>{attr.data_type}<span class="s">, </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">expected CORNER/FLOAT_COLOR</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+    <span class="k">if</span> len(attr.data) != len(me.loops) <span class="k">or</span> len(attr.data) == len(me.vertices):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: attribute is sized </span>{len(attr.data)}<span class="s">, expected loop count </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{len(me.loops)}<span class="s"> and distinct from vertex count </span>{len(me.vertices)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">-- CORNER domain must not be POINT-sized</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+
+    active = me.color_attributes.active_color
+    <span class="k">if</span> active <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> active.name != attr.name:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: active_color is </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{active.name <span class="k">if</span> active <span class="k">else</span> <span class="k">None</span>!r}<span class="s">, expected </span>{ATTR_NAME!r}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+
+    n_loops = len(me.loops)
+    loop_vert = array(<span class="s">&#x27;i&#x27;</span>, [<span class="n">0</span>]) * n_loops
+    me.loops.foreach_get(<span class="s">&quot;vertex_index&quot;</span>, loop_vert)
+    colors = array(<span class="s">&#x27;f&#x27;</span>, [<span class="n">0.0</span>]) * (n_loops * <span class="n">4</span>)
+    attr.data.foreach_get(<span class="s">&quot;color&quot;</span>, colors)
+    probes = sorted({<span class="n">0</span>, SEGMENTS + <span class="n">1</span>, n_loops // <span class="n">2</span>, n_loops - <span class="n">1</span>})
+    <span class="k">for</span> li <span class="k">in</span> probes:
+        vi = loop_vert[li]
+        h, s, v = hsv[vi]
+        er, eg, eb = colorsys.hsv_to_rgb(h, s, v)
+        gr, gg, gb, ga = colors[li * <span class="n">4</span>:li * <span class="n">4</span> + <span class="n">4</span>]
+        <span class="k">if</span> max(abs(gr - er), abs(gg - eg), abs(gb - eb), abs(ga - <span class="n">1.0</span>)) &gt; <span class="n">1e-5</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: loop </span>{li}<span class="s"> (vertex </span>{vi}<span class="s">) color </span>{(gr, gg, gb, ga)}<span class="s"> != </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">expected </span>{(er, eg, eb, <span class="n">1.0</span>)}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+
+    print(<span class="s">f&quot;</span><span class="s">verts=</span>{got[<span class="n">0</span>]}<span class="s"> faces=</span>{got[<span class="n">1</span>]}<span class="s"> loops=</span>{got[<span class="n">2</span>]}<span class="s"> attribute=&#x27;</span>{attr.name}<span class="s">&#x27; </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">domain=</span>{attr.domain}<span class="s"> active=True probes_ok=</span>{len(probes)}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> build_material():
+    mat = bpy.data.materials.new(<span class="s">&quot;Wheel&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    attr_node = nt.nodes.new(<span class="s">&#x27;ShaderNodeAttribute&#x27;</span>)
+    attr_node.attribute_type = <span class="s">&#x27;GEOMETRY&#x27;</span>
+    attr_node.attribute_name = ATTR_NAME
+    nt.links.new(attr_node.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">if</span> <span class="s">&quot;Emission Color&quot;</span> <span class="k">in</span> bsdf.inputs:  <span class="c"># Principled gained built-in emission in 4.x+</span>
+        nt.links.new(attr_node.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>])
+        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.12</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+
+    <span class="c"># The step AI code most often skips: the attribute must actually be wired</span>
+    <span class="c"># into the shader, not just present on the mesh.</span>
+    wired = any(
+        link.from_node.name == attr_node.name
+        <span class="k">and</span> link.from_socket.name == <span class="s">&quot;Color&quot;</span>
+        <span class="k">and</span> link.to_socket == bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>]
+        <span class="k">for</span> link <span class="k">in</span> nt.links
+    )
+    <span class="k">if</span> <span class="k">not</span> wired:
+        print(<span class="s">&quot;ERROR: Attribute node is not linked to Base Color&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
+        poly.use_smooth = <span class="k">True</span>
+
+    mat = build_material()
+    <span class="k">if</span> mat <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">False</span>
+    obj.data.materials.append(mat)
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
+    obj.rotation_euler = (math.radians(<span class="n">14</span>), <span class="n">0.0</span>, math.radians(<span class="n">12</span>))
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># a bright soft key from above reads the hue ring clearly; a low cool fill</span>
+    <span class="c"># keeps the shadow side legible; a faint warm rim separates the disc edge</span>
+    <span class="c"># from the dark backdrop without washing out the attribute colors.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.0</span>, -<span class="n">3.0</span>, <span class="n">5.5</span>), <span class="n">380.0</span>, <span class="n">11.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.96</span>), (<span class="n">58</span>, <span class="n">0</span>, -<span class="n">28</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.5</span>, -<span class="n">2.5</span>, <span class="n">1.6</span>), <span class="n">140.0</span>, <span class="n">9.0</span>, (<span class="n">0.78</span>, <span class="n">0.86</span>, <span class="n">1.0</span>), (<span class="n">68</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">3.6</span>, <span class="n">2.2</span>), <span class="n">170.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.78</span>, <span class="n">0.55</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">175</span>))
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = obj.location
+    scene.collection.objects.link(aim)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.4</span>, <span class="n">3.6</span>)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    con.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">64</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX (the 4.x/5.x default) compresses bright regions toward white, which</span>
+    <span class="c"># would hide exactly the saturation gradient this example is showing off.</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj, hsv = build_wheel()
+    code = check(obj, hsv)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;color-attribute-wheel OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/color-attribute-wheel-hero.webp" alt="color-attribute-wheel render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
