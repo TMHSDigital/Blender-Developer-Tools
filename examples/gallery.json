@@ -1,18 +1,21 @@
 {
   "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview, tags?}; hero/preview/dir are repo-root-relative; tags is an optional additive list driving the gallery filter chips. build_gallery.py also emits a detail page per example at docs/gallery/<name>/.",
   "title": "Examples Gallery",
-  "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
+  "description": "Runnable, smoke-gated Blender Python examples \u2014 each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
   "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
   "examples": [
     {
       "name": "swatch-grid",
       "dir": "examples/swatch-grid",
-      "teaches": "Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
-      "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.",
+      "teaches": "Procedural Principled materials \u2014 metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
+      "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2\u20134.5.",
       "hero": "docs/gallery/assets/swatch-grid-hero.webp",
       "preview": "examples/swatch-grid/preview.webp",
-      "tags": ["materials", "rendering"]
+      "tags": [
+        "materials",
+        "rendering"
+      ]
     },
     {
       "name": "turntable",
@@ -21,106 +24,153 @@
       "witnessesFix": "Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.",
       "hero": "docs/gallery/assets/turntable-hero.webp",
       "preview": "examples/turntable/preview.webp",
-      "tags": ["animation"]
+      "tags": [
+        "animation"
+      ]
     },
     {
       "name": "gn-sdf-remesh",
       "dir": "examples/gn-sdf-remesh",
-      "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
+      "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid \u2192 GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
       "witnessesFix": "An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.",
       "hero": "docs/gallery/assets/gn-sdf-remesh-hero.webp",
       "preview": "examples/gn-sdf-remesh/preview.webp",
-      "tags": ["geometry-nodes", "materials"]
+      "tags": [
+        "geometry-nodes",
+        "materials"
+      ]
     },
     {
       "name": "depsgraph-export",
       "dir": "examples/depsgraph-export",
-      "teaches": "The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.",
+      "teaches": "The depsgraph lifetime contract \u2014 evaluated_get().to_mesh() paired with to_mesh_clear() \u2014 measured against an OBJ export of the same object.",
       "witnessesFix": "Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.",
       "hero": "docs/gallery/assets/depsgraph-export-hero.webp",
       "preview": "examples/depsgraph-export/preview.webp",
-      "tags": ["depsgraph", "export"]
+      "tags": [
+        "depsgraph",
+        "export"
+      ]
     },
     {
       "name": "wave-displace",
       "dir": "examples/wave-displace",
-      "teaches": "Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
+      "teaches": "Bulk vertex IO at real scale \u2014 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
       "witnessesFix": "The bulk path is correct, not just fast: vertex count unchanged, Z span matches the wave amplitude, probe vertex matches the closed form exactly.",
       "hero": "docs/gallery/assets/wave-displace-hero.webp",
       "preview": "examples/wave-displace/preview.webp",
-      "tags": ["mesh", "performance"]
+      "tags": [
+        "mesh",
+        "performance"
+      ]
     },
     {
       "name": "driver-wave",
       "dir": "examples/driver-wave",
-      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.",
+      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers \u2014 the sine skyline is entirely driver-evaluated.",
       "witnessesFix": "Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.",
       "hero": "docs/gallery/assets/driver-wave-hero.webp",
       "preview": "examples/driver-wave/preview.webp",
-      "tags": ["drivers", "animation"]
+      "tags": [
+        "drivers",
+        "animation"
+      ]
     },
     {
       "name": "bmesh-gear",
       "dir": "examples/bmesh-gear",
-      "teaches": "A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.",
+      "teaches": "A 14-tooth gear built entirely with bmesh \u2014 profile ring, face, extrude \u2014 with bm.free() in a try/finally, exactly as the ownership contract demands.",
       "witnessesFix": "Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).",
       "hero": "docs/gallery/assets/bmesh-gear-hero.webp",
       "preview": "examples/bmesh-gear/preview.webp",
-      "tags": ["mesh", "bmesh"]
+      "tags": [
+        "mesh",
+        "bmesh"
+      ]
     },
     {
       "name": "shader-node-group",
       "dir": "examples/shader-node-group",
-      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.",
+      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values \u2014 two spheres, one group, two colors.",
       "witnessesFix": "Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.",
       "hero": "docs/gallery/assets/shader-node-group-hero.webp",
       "preview": "examples/shader-node-group/preview.webp",
-      "tags": ["materials", "node-groups"]
+      "tags": [
+        "materials",
+        "node-groups"
+      ]
     },
     {
       "name": "temp-override-join",
       "dir": "examples/temp-override-join",
-      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
-      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.",
+      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override \u2014 the supported replacement for the removed context.copy() dict-pass form.",
+      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 \u00d7 steps, and local Z spans all three steps.",
       "hero": "docs/gallery/assets/temp-override-join-hero.webp",
       "preview": "examples/temp-override-join/preview.webp",
-      "tags": ["operators", "context"]
+      "tags": [
+        "operators",
+        "context"
+      ]
     },
     {
       "name": "gn-instance-grid",
       "dir": "examples/gn-instance-grid",
-      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.",
+      "teaches": "A generative Geometry Nodes tree \u2014 Mesh Grid \u2192 Instance on Points \u2192 Realize Instances \u2192 Set Shade Smooth \u2014 attached as a NODES modifier with no Group Input geometry.",
       "witnessesFix": "Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.",
       "hero": "docs/gallery/assets/gn-instance-grid-hero.webp",
       "preview": "examples/gn-instance-grid/preview.webp",
-      "tags": ["geometry-nodes", "instancing"]
+      "tags": [
+        "geometry-nodes",
+        "instancing"
+      ]
     },
     {
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
-      "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
-      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
+      "teaches": "A relative Tall shape key that lifts and flares the top face \u2014 authored via shape_key_add / key_blocks / .value \u2014 read back from the depsgraph-evaluated mesh.",
+      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value \u00d7 (key \u2212 basis), including the flared top half-extent.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",
-      "tags": ["mesh", "shape-keys"]
+      "tags": [
+        "mesh",
+        "shape-keys"
+      ]
     },
     {
       "name": "curve-bevel-arc",
       "dir": "examples/curve-bevel-arc",
-      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
+      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve \u2014 splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps \u2014 so the curve renders as a solid tube without a prior mesh conversion.",
       "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.",
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
-      "tags": ["curves", "bevel"]
+      "tags": [
+        "curves",
+        "bevel"
+      ]
     },
     {
       "name": "compositor-glare",
       "dir": "examples/compositor-glare",
-      "teaches": "Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node's legacy properties vs 5.x menu sockets.",
+      "teaches": "Bloom where it actually lives \u2014 a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node's legacy properties vs 5.x menu sockets.",
       "witnessesFix": "scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.",
       "hero": "docs/gallery/assets/compositor-glare-hero.webp",
       "preview": "examples/compositor-glare/preview.webp",
-      "tags": ["compositor", "rendering"]
+      "tags": [
+        "compositor",
+        "rendering"
+      ]
+    },
+    {
+      "name": "damped-track-aim",
+      "dir": "examples/damped-track-aim",
+      "teaches": "Aim constraints via the data API \u2014 Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop.",
+      "witnessesFix": "Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot \u2265 0.998). TRACK_TO stand-ins and flipped axes fail.",
+      "hero": "docs/gallery/assets/damped-track-aim-hero.webp",
+      "preview": "examples/damped-track-aim/preview.webp",
+      "tags": [
+        "constraints",
+        "animation"
+      ]
     }
   ]
 }

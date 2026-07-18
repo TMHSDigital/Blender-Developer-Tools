@@ -243,3 +243,13 @@ jobs:
           # pixels with it off. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/compositor-glare/compositor_glare.py --
+
+      - name: Shipped example - damped-track aim (DAMPED_TRACK data API)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): twelve needles aim at an
+          # emissive core via Object.constraints.new('DAMPED_TRACK') on TRACK_Z;
+          # asserts one unmuted constraint per needle and evaluated local +Z
+          # aligns toward the core (dot ≥ 0.998). Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/damped-track-aim/damped_track_aim.py --
