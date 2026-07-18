@@ -311,3 +311,18 @@ jobs:
           # at to_mesh_clear(). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/text-version-stamp/text_version_stamp.py --
+
+      - name: Shipped example - image pixels testcard (flat RGBA buffer + save lifecycle)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a procedural broadcast test card written with
+          # one pixels.foreach_set; asserts the buffer is always flat RGBA
+          # (channels == 4 even with alpha=False, RGB-stride writes raise), the
+          # byte round-trip error is <= 0.5/255 and strictly > 0 (storage really
+          # is 8-bit) while float_buffer=True round-trips at float32 precision,
+          # scale() reallocates so stale-size bulk reads raise, and save() flips
+          # source to FILE and drops the buffer (pixels silently re-load from
+          # disk — proven with an imposter file) while save_render() preserves
+          # it. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/image-pixels-testcard/image_pixels_testcard.py --

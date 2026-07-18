@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>19 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>20 examples</strong>
 </p>
 
 ---
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 19 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 20 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -331,6 +331,25 @@ bevel_depth), bevel widening the outline by 2 × bevel_depth), that flat text is
 but planar, that body edits regenerate geometry, that `version_string` is not bare
 semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 `to_mesh_clear()`.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — over a teal underglow on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [image-pixels-testcard](examples/image-pixels-testcard/)
+
+A procedural broadcast test card written into `bpy.data.images.new()` with one
+`pixels.foreach_set()` call. Asserts the buffer is always flat RGBA (`channels == 4`
+even with `alpha=False`), that byte storage quantizes at exactly ≤ 0.5/255 and
+strictly > 0 while `float_buffer=True` round-trips at float32 precision, that
+`scale()` reallocates (stale-size reads raise), and the `save()` trap: `source`
+silently flips to `FILE`, the buffer drops, and later `pixels` reads come from
+whatever sits on disk — proven with an imposter file. `save_render()` is the
+non-destructive path.
 
 </td>
 </tr>
