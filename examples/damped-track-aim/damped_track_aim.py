@@ -22,43 +22,58 @@ import bpy, bmesh, sys, os, math, argparse
 from mathutils import Vector
 
 N_NEEDLES = 12
-ORBIT_RADIUS = 2.05
-CORE_RADIUS = 0.38
-NEEDLE_DEPTH = 1.15
-NEEDLE_RADIUS = 0.09
+ORBIT_RADIUS = 1.85
+CORE_RADIUS = 0.32
+NEEDLE_DEPTH = 1.05
+NEEDLE_RADIUS = 0.055
 # Local +Z must face the core; cos(3°) ≈ 0.9986 — leave a little room for
 # cone tessellation / float noise while still catching a flipped axis.
 MIN_AIM_DOT = 0.998
+LIFT = 1.55
 
 
 def orbit_positions(n, radius):
-    """Ring in XY plus two polar needles — every tip reads clearly in a 3/4 view."""
+    """Tilted equatorial ring + poles — readable as a cage, not a flat wreath."""
     pts = []
     ring = n - 2
+    tilt = math.radians(18.0)
     for i in range(ring):
-        a = 2.0 * math.pi * i / ring
-        pts.append(Vector((radius * math.cos(a), radius * math.sin(a), 0.0)))
-    pts.append(Vector((0.0, 0.0, radius)))
-    pts.append(Vector((0.0, 0.0, -radius)))
+        a = 2.0 * math.pi * i / ring + math.radians(9.0)
+        x = radius * math.cos(a)
+        y = radius * math.sin(a) * math.cos(tilt)
+        z = radius * math.sin(a) * math.sin(tilt)
+        pts.append(Vector((x, y, z)))
+    pts.append(Vector((0.0, 0.0, radius * 0.92)))
+    pts.append(Vector((0.0, 0.0, -radius * 0.92)))
     return pts
 
 
 def make_needle_mesh():
-    """Unit cone along +Z (tip at +Z) — TRACK_Z then aims the tip at the core."""
+    """Long tapered spike with tip on +Z — TRACK_Z aims the tip at the core."""
     me = bpy.data.meshes.new("Needle")
     bm = bmesh.new()
     try:
         bmesh.ops.create_cone(
             bm,
             cap_ends=True,
-            segments=10,
+            segments=48,
             radius1=NEEDLE_RADIUS,
             radius2=0.0,
             depth=NEEDLE_DEPTH,
         )
+        # Slight belly toward the base so it reads as turned metal, not a pencil.
+        for v in bm.verts:
+            # Map z from [-d/2, +d/2] → t in [0,1] (base→tip).
+            t = (v.co.z + NEEDLE_DEPTH * 0.5) / NEEDLE_DEPTH
+            flare = 1.0 + 0.55 * ((1.0 - t) ** 2)
+            v.co.x *= flare
+            v.co.y *= flare
+        bm.normal_update()
         bm.to_mesh(me)
     finally:
         bm.free()
+    for poly in me.polygons:
+        poly.use_smooth = True
     return me
 
 
@@ -66,34 +81,83 @@ def make_core_mesh():
     me = bpy.data.meshes.new("Core")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=16, radius=CORE_RADIUS)
+        bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=24, radius=CORE_RADIUS)
         bm.to_mesh(me)
     finally:
         bm.free()
+    for poly in me.polygons:
+        poly.use_smooth = True
     return me
 
 
-def make_metal(name, color, roughness=0.28, metallic=1.0):
+def make_plinth_mesh():
+    me = bpy.data.meshes.new("Plinth")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cone(
+            bm,
+            cap_ends=True,
+            segments=64,
+            radius1=1.55,
+            radius2=1.35,
+            depth=0.12,
+        )
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for poly in me.polygons:
+        poly.use_smooth = True
+    return me
+
+
+def set_specular(bsdf, value):
+    """4.x Specular → 5.x Specular IOR Level."""
+    socks = bsdf.inputs
+    if "Specular IOR Level" in socks:
+        socks["Specular IOR Level"].default_value = value
+    elif "Specular" in socks:
+        socks["Specular"].default_value = value
+
+
+def make_metal(name, color, roughness=0.22, metallic=1.0):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = (*color, 1.0)
     bsdf.inputs["Roughness"].default_value = roughness
     bsdf.inputs["Metallic"].default_value = metallic
+    set_specular(bsdf, 0.5)
     return mat
 
 
-def make_emissive(name, color, strength):
+def make_core_material():
+    """Dark shell + ember emission so the core has form, not a clipped white blob."""
+    mat = bpy.data.materials.new("CoreEmber")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (0.02, 0.01, 0.015, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.18
+    bsdf.inputs["Metallic"].default_value = 0.85
+    set_specular(bsdf, 0.6)
+    # Principled emission — present on both 4.5 and 5.x.
+    if "Emission Color" in bsdf.inputs:
+        bsdf.inputs["Emission Color"].default_value = (1.0, 0.22, 0.04, 1.0)
+        bsdf.inputs["Emission Strength"].default_value = 6.5
+    elif "Emission" in bsdf.inputs:
+        bsdf.inputs["Emission"].default_value = (1.0, 0.22, 0.04, 1.0)
+        if "Emission Strength" in bsdf.inputs:
+            bsdf.inputs["Emission Strength"].default_value = 6.5
+    return mat
+
+
+def make_dielectric(name, color, roughness=0.35):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    nodes = mat.node_tree.nodes
-    links = mat.node_tree.links
-    nodes.clear()
-    out = nodes.new("ShaderNodeOutputMaterial")
-    emit = nodes.new("ShaderNodeEmission")
-    emit.inputs["Color"].default_value = (*color, 1.0)
-    emit.inputs["Strength"].default_value = strength
-    links.new(emit.outputs["Emission"], out.inputs["Surface"])
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+    bsdf.inputs["Roughness"].default_value = roughness
+    bsdf.inputs["Metallic"].default_value = 0.0
+    set_specular(bsdf, 0.45)
     return mat
 
 
@@ -101,23 +165,20 @@ def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     col = bpy.context.collection
 
-    # Lift the whole constellation so the south polar needle clears the floor.
-    lift = ORBIT_RADIUS + 0.25
-
     core = bpy.data.objects.new("Core", make_core_mesh())
-    # Modest emission so the cyan reads as colour, not a white clip.
-    core.data.materials.append(make_emissive("CoreEmit", (0.25, 0.75, 1.0), 4.5))
-    core.location = (0.0, 0.0, lift)
+    core.data.materials.append(make_core_material())
+    core.location = (0.0, 0.0, LIFT)
     col.objects.link(core)
 
     needle_me = make_needle_mesh()
-    metal = make_metal("NeedleMetal", (0.82, 0.78, 0.70), roughness=0.18)
+    # Warm brass — rim light + ember core will ping reflections hard.
+    metal = make_metal("NeedleMetal", (0.78, 0.55, 0.28), roughness=0.16)
     needle_me.materials.append(metal)
 
     needles = []
     for i, loc in enumerate(orbit_positions(N_NEEDLES, ORBIT_RADIUS)):
         ob = bpy.data.objects.new(f"Needle_{i:02d}", needle_me)
-        ob.location = (loc.x, loc.y, loc.z + lift)
+        ob.location = (loc.x, loc.y, loc.z + LIFT)
         # Deliberate identity rotation — the constraint alone must do the aiming.
         ob.rotation_euler = (0.0, 0.0, 0.0)
         col.objects.link(ob)
@@ -204,29 +265,45 @@ def eevee_engine_id():
 def render_still(core, needles, path, engine):
     scene = bpy.context.scene
 
+    # Soft cyclorama — one curved-feeling backdrop via oversized floor + back plane.
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=40.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
-    fmat = make_metal("StudioFloor", (0.045, 0.05, 0.055), roughness=0.42, metallic=0.35)
+    fmat = make_dielectric("StudioFloor", (0.035, 0.037, 0.042), roughness=0.22)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
+
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 9.0, 0.0)
+    wall.data = floor_me.copy()
+    wall.data.materials.clear()
+    wall.data.materials.append(
+        make_dielectric("StudioWall", (0.012, 0.013, 0.016), roughness=0.55)
+    )
+    wall.location = (0.0, 11.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
+    plinth = bpy.data.objects.new("Plinth", make_plinth_mesh())
+    plinth.data.materials.append(
+        make_metal("PlinthMetal", (0.06, 0.065, 0.07), roughness=0.38)
+    )
+    plinth.location = (0.0, 0.0, 0.06)
+    scene.collection.objects.link(plinth)
+
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.006, 0.007, 0.01, 1.0)
+    bg = world.node_tree.nodes["Background"]
+    bg.inputs["Color"].default_value = (0.004, 0.0045, 0.006, 1.0)
+    bg.inputs["Strength"].default_value = 0.35
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, ORBIT_RADIUS + 0.25)
+    aim.location = (0.0, 0.0, LIFT)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -236,40 +313,64 @@ def render_still(core, needles, path, engine):
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
+        # Illuminate without drawing the area-light quad into the beauty pass.
+        ob.visible_camera = False
         scene.collection.objects.link(ob)
         lc = ob.constraints.new("TRACK_TO")
         lc.target = aim
         lc.track_axis = "TRACK_NEGATIVE_Z"
         lc.up_axis = "UP_Y"
+        return ob
 
-    light("Key", (-4.0, -4.5, 6.5), 900.0, 6.0, (1.0, 0.97, 0.92))
-    light("Fill", (5.0, -3.0, 3.8), 220.0, 8.0, (0.75, 0.85, 1.0))
-    light("Rim", (1.2, 5.0, 3.2), 380.0, 4.0, (1.0, 0.7, 0.4))
+    # Product lighting: soft warm key, cool fill, hot rim that skims the spikes.
+    light("Key", (-3.8, -5.2, LIFT + 3.2), 1100.0, 5.5, (1.0, 0.95, 0.9))
+    light("Fill", (5.2, -2.8, LIFT + 1.4), 320.0, 9.0, (0.6, 0.75, 1.0))
+    light("Rim", (1.0, 4.5, LIFT + 1.8), 1200.0, 2.8, (1.0, 0.42, 0.15))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 65.0
+    cam_data.dof.use_dof = False
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (5.2, -5.6, 4.4)
+    # Offset three-quarter — full cage in frame, plinth reflection, not dead-center.
+    cam.location = (5.1, -5.6, LIFT + 1.15)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
+    # Bias look-at slightly down so the floor reflection earns space.
+    aim.location = (0.15, 0.0, LIFT - 0.12)
     track.target = aim
     track.track_axis = "TRACK_NEGATIVE_Z"
     track.up_axis = "UP_Y"
 
-    # Keep references live for the renderer (needles share one mesh).
     _ = (core, needles)
 
     scene.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
+        scene.cycles.use_denoising = True
     else:
         try:
-            scene.eevee.taa_render_samples = 64
+            scene.eevee.taa_render_samples = 128
         except AttributeError:
             pass
+        # Bloom helps the ember core read without a compositor tree.
+        for attr, val in (
+            ("use_bloom", True),
+            ("bloom_intensity", 0.12),
+            ("bloom_threshold", 0.85),
+            ("bloom_radius", 4.5),
+        ):
+            if hasattr(scene.eevee, attr):
+                try:
+                    setattr(scene.eevee, attr, val)
+                except Exception:
+                    pass
+
     scene.render.resolution_x = 1280
     scene.render.resolution_y = 720
+    scene.render.film_transparent = False
+    scene.view_settings.view_transform = "Filmic"
+    scene.view_settings.look = "Medium High Contrast"
     scene.render.image_settings.file_format = "PNG"
     scene.render.filepath = path
     bpy.ops.render.render(write_still=True)

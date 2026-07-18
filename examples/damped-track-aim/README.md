@@ -1,12 +1,12 @@
 # Damped Track Aim
 
-A runnable example that aims twelve metallic needles at an emissive core with
+A runnable example that aims twelve brass spikes at an ember core with
 `Object.constraints.new('DAMPED_TRACK')` — the data-API path, not
 `bpy.ops.object.constraint_add` (which needs an active object and fails in
 headless loops). Damped Track is the twist-stable aim constraint: it points one
 local axis at a target without the roll fights Track To is known for.
 
-**What it witnesses:** every needle carries exactly one unmuted `DAMPED_TRACK`
+**What it witnesses:** every spike carries exactly one unmuted `DAMPED_TRACK`
 bound to the core on `TRACK_Z`. After a depsgraph update, each evaluated local
 `+Z` aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3°). A missing
 constraint, a muted one, a `TRACK_TO` stand-in, or a flipped axis fails the

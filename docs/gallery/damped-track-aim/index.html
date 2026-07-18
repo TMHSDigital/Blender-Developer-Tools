@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>damped-track-aim — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop." />
+  <meta name="description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/damped-track-aim/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="damped-track-aim — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop." />
+  <meta property="og:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/damped-track-aim/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/damped-track-aim-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="damped-track-aim — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop." />
+  <meta name="twitter:description" content="Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/damped-track-aim-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,7 +170,7 @@
   </div>
   <header class="hero">
     <h1>damped-track-aim</h1>
-    <p>Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop.</p>
+    <p>Aim constraints via the data API — Object.constraints.new(&#x27;DAMPED_TRACK&#x27;) with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom damped-track-aim render">
@@ -183,8 +183,8 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that aims twelve metallic needles at an emissive core with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
-<p><strong>What it witnesses:</strong> every needle carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
+<p>A runnable example that aims twelve brass spikes at an ember core with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
+<p><strong>What it witnesses:</strong> every spike carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
@@ -224,43 +224,58 @@ check. Pass --output to also render a still:
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 N_NEEDLES = <span class="n">12</span>
-ORBIT_RADIUS = <span class="n">2.05</span>
-CORE_RADIUS = <span class="n">0.38</span>
-NEEDLE_DEPTH = <span class="n">1.15</span>
-NEEDLE_RADIUS = <span class="n">0.09</span>
+ORBIT_RADIUS = <span class="n">1.85</span>
+CORE_RADIUS = <span class="n">0.32</span>
+NEEDLE_DEPTH = <span class="n">1.05</span>
+NEEDLE_RADIUS = <span class="n">0.055</span>
 <span class="c"># Local +Z must face the core; cos(3°) ≈ 0.9986 — leave a little room for</span>
 <span class="c"># cone tessellation / float noise while still catching a flipped axis.</span>
 MIN_AIM_DOT = <span class="n">0.998</span>
+LIFT = <span class="n">1.55</span>
 
 
 <span class="k">def</span> orbit_positions(n, radius):
-    <span class="s">&quot;&quot;&quot;Ring in XY plus two polar needles — every tip reads clearly in a 3/4 view.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Tilted equatorial ring + poles — readable as a cage, not a flat wreath.&quot;&quot;&quot;</span>
     pts = []
     ring = n - <span class="n">2</span>
+    tilt = math.radians(<span class="n">18.0</span>)
     <span class="k">for</span> i <span class="k">in</span> range(ring):
-        a = <span class="n">2.0</span> * math.pi * i / ring
-        pts.append(Vector((radius * math.cos(a), radius * math.sin(a), <span class="n">0.0</span>)))
-    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, radius)))
-    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -radius)))
+        a = <span class="n">2.0</span> * math.pi * i / ring + math.radians(<span class="n">9.0</span>)
+        x = radius * math.cos(a)
+        y = radius * math.sin(a) * math.cos(tilt)
+        z = radius * math.sin(a) * math.sin(tilt)
+        pts.append(Vector((x, y, z)))
+    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, radius * <span class="n">0.92</span>)))
+    pts.append(Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -radius * <span class="n">0.92</span>)))
     <span class="k">return</span> pts
 
 
 <span class="k">def</span> make_needle_mesh():
-    <span class="s">&quot;&quot;&quot;Unit cone along +Z (tip at +Z) — TRACK_Z then aims the tip at the core.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Long tapered spike with tip on +Z — TRACK_Z aims the tip at the core.&quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Needle&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_cone(
             bm,
             cap_ends=<span class="k">True</span>,
-            segments=<span class="n">10</span>,
+            segments=<span class="n">48</span>,
             radius1=NEEDLE_RADIUS,
             radius2=<span class="n">0.0</span>,
             depth=NEEDLE_DEPTH,
         )
+        <span class="c"># Slight belly toward the base so it reads as turned metal, not a pencil.</span>
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            <span class="c"># Map z from [-d/2, +d/2] → t in [0,1] (base→tip).</span>
+            t = (v.co.z + NEEDLE_DEPTH * <span class="n">0.5</span>) / NEEDLE_DEPTH
+            flare = <span class="n">1.0</span> + <span class="n">0.55</span> * ((<span class="n">1.0</span> - t) ** <span class="n">2</span>)
+            v.co.x *= flare
+            v.co.y *= flare
+        bm.normal_update()
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
     <span class="k">return</span> me
 
 
@@ -268,34 +283,83 @@ MIN_AIM_DOT = <span class="n">0.998</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Core&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">16</span>, radius=CORE_RADIUS)
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=CORE_RADIUS)
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
     <span class="k">return</span> me
 
 
-<span class="k">def</span> make_metal(name, color, roughness=<span class="n">0.28</span>, metallic=<span class="n">1.0</span>):
+<span class="k">def</span> make_plinth_mesh():
+    me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cone(
+            bm,
+            cap_ends=<span class="k">True</span>,
+            segments=<span class="n">64</span>,
+            radius1=<span class="n">1.55</span>,
+            radius2=<span class="n">1.35</span>,
+            depth=<span class="n">0.12</span>,
+        )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> set_specular(bsdf, value):
+    <span class="s">&quot;&quot;&quot;4.x Specular → 5.x Specular IOR Level.&quot;&quot;&quot;</span>
+    socks = bsdf.inputs
+    <span class="k">if</span> <span class="s">&quot;Specular IOR Level&quot;</span> <span class="k">in</span> socks:
+        socks[<span class="s">&quot;Specular IOR Level&quot;</span>].default_value = value
+    <span class="k">elif</span> <span class="s">&quot;Specular&quot;</span> <span class="k">in</span> socks:
+        socks[<span class="s">&quot;Specular&quot;</span>].default_value = value
+
+
+<span class="k">def</span> make_metal(name, color, roughness=<span class="n">0.22</span>, metallic=<span class="n">1.0</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    set_specular(bsdf, <span class="n">0.5</span>)
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> make_emissive(name, color, strength):
+<span class="k">def</span> make_core_material():
+    <span class="s">&quot;&quot;&quot;Dark shell + ember emission so the core has form, not a clipped white blob.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;CoreEmber&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.01</span>, <span class="n">0.015</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.18</span>
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.85</span>
+    set_specular(bsdf, <span class="n">0.6</span>)
+    <span class="c"># Principled emission — present on both 4.5 and 5.x.</span>
+    <span class="k">if</span> <span class="s">&quot;Emission Color&quot;</span> <span class="k">in</span> bsdf.inputs:
+        bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.22</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
+        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">6.5</span>
+    <span class="k">elif</span> <span class="s">&quot;Emission&quot;</span> <span class="k">in</span> bsdf.inputs:
+        bsdf.inputs[<span class="s">&quot;Emission&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.22</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
+        <span class="k">if</span> <span class="s">&quot;Emission Strength&quot;</span> <span class="k">in</span> bsdf.inputs:
+            bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">6.5</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> make_dielectric(name, color, roughness=<span class="n">0.35</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    nodes = mat.node_tree.nodes
-    links = mat.node_tree.links
-    nodes.clear()
-    out = nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
-    emit = nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
-    emit.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
-    emit.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = strength
-    links.new(emit.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
+    set_specular(bsdf, <span class="n">0.45</span>)
     <span class="k">return</span> mat
 
 
@@ -303,23 +367,20 @@ MIN_AIM_DOT = <span class="n">0.998</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     col = bpy.context.collection
 
-    <span class="c"># Lift the whole constellation so the south polar needle clears the floor.</span>
-    lift = ORBIT_RADIUS + <span class="n">0.25</span>
-
     core = bpy.data.objects.new(<span class="s">&quot;Core&quot;</span>, make_core_mesh())
-    <span class="c"># Modest emission so the cyan reads as colour, not a white clip.</span>
-    core.data.materials.append(make_emissive(<span class="s">&quot;CoreEmit&quot;</span>, (<span class="n">0.25</span>, <span class="n">0.75</span>, <span class="n">1.0</span>), <span class="n">4.5</span>))
-    core.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, lift)
+    core.data.materials.append(make_core_material())
+    core.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT)
     col.objects.link(core)
 
     needle_me = make_needle_mesh()
-    metal = make_metal(<span class="s">&quot;NeedleMetal&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.78</span>, <span class="n">0.70</span>), roughness=<span class="n">0.18</span>)
+    <span class="c"># Warm brass — rim light + ember core will ping reflections hard.</span>
+    metal = make_metal(<span class="s">&quot;NeedleMetal&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.55</span>, <span class="n">0.28</span>), roughness=<span class="n">0.16</span>)
     needle_me.materials.append(metal)
 
     needles = []
     <span class="k">for</span> i, loc <span class="k">in</span> enumerate(orbit_positions(N_NEEDLES, ORBIT_RADIUS)):
         ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Needle_</span>{i:<span class="s">02d</span>}<span class="s">&quot;</span>, needle_me)
-        ob.location = (loc.x, loc.y, loc.z + lift)
+        ob.location = (loc.x, loc.y, loc.z + LIFT)
         <span class="c"># Deliberate identity rotation — the constraint alone must do the aiming.</span>
         ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
         col.objects.link(ob)
@@ -406,29 +467,45 @@ MIN_AIM_DOT = <span class="n">0.998</span>
 <span class="k">def</span> render_still(core, needles, path, engine):
     scene = bpy.context.scene
 
+    <span class="c"># Soft cyclorama — one curved-feeling backdrop via oversized floor + back plane.</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">40.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = make_metal(<span class="s">&quot;StudioFloor&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.055</span>), roughness=<span class="n">0.42</span>, metallic=<span class="n">0.35</span>)
+    fmat = make_dielectric(<span class="s">&quot;StudioFloor&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.037</span>, <span class="n">0.042</span>), roughness=<span class="n">0.22</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
+
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.data = floor_me.copy()
+    wall.data.materials.clear()
+    wall.data.materials.append(
+        make_dielectric(<span class="s">&quot;StudioWall&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.013</span>, <span class="n">0.016</span>), roughness=<span class="n">0.55</span>)
+    )
+    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
+    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, make_plinth_mesh())
+    plinth.data.materials.append(
+        make_metal(<span class="s">&quot;PlinthMetal&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.065</span>, <span class="n">0.07</span>), roughness=<span class="n">0.38</span>)
+    )
+    plinth.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.06</span>)
+    scene.collection.objects.link(plinth)
+
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.006</span>, <span class="n">0.007</span>, <span class="n">0.01</span>, <span class="n">1.0</span>)
+    bg = world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>]
+    bg.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.004</span>, <span class="n">0.0045</span>, <span class="n">0.006</span>, <span class="n">1.0</span>)
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.35</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, ORBIT_RADIUS + <span class="n">0.25</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, LIFT)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -438,40 +515,64 @@ MIN_AIM_DOT = <span class="n">0.998</span>
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
+        <span class="c"># Illuminate without drawing the area-light quad into the beauty pass.</span>
+        ob.visible_camera = <span class="k">False</span>
         scene.collection.objects.link(ob)
         lc = ob.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
         lc.target = aim
         lc.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
         lc.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+        <span class="k">return</span> ob
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.5</span>, <span class="n">6.5</span>), <span class="n">900.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.97</span>, <span class="n">0.92</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.0</span>, <span class="n">3.8</span>), <span class="n">220.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.2</span>, <span class="n">5.0</span>, <span class="n">3.2</span>), <span class="n">380.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.7</span>, <span class="n">0.4</span>))
+    <span class="c"># Product lighting: soft warm key, cool fill, hot rim that skims the spikes.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.8</span>, -<span class="n">5.2</span>, LIFT + <span class="n">3.2</span>), <span class="n">1100.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.2</span>, -<span class="n">2.8</span>, LIFT + <span class="n">1.4</span>), <span class="n">320.0</span>, <span class="n">9.0</span>, (<span class="n">0.6</span>, <span class="n">0.75</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.0</span>, <span class="n">4.5</span>, LIFT + <span class="n">1.8</span>), <span class="n">1200.0</span>, <span class="n">2.8</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.15</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">65.0</span>
+    cam_data.dof.use_dof = <span class="k">False</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">5.2</span>, -<span class="n">5.6</span>, <span class="n">4.4</span>)
+    <span class="c"># Offset three-quarter — full cage in frame, plinth reflection, not dead-center.</span>
+    cam.location = (<span class="n">5.1</span>, -<span class="n">5.6</span>, LIFT + <span class="n">1.15</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    <span class="c"># Bias look-at slightly down so the floor reflection earns space.</span>
+    aim.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, LIFT - <span class="n">0.12</span>)
     track.target = aim
     track.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
     track.up_axis = <span class="s">&quot;UP_Y&quot;</span>
 
-    <span class="c"># Keep references live for the renderer (needles share one mesh).</span>
     _ = (core, needles)
 
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
-        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.samples = <span class="n">64</span>
+        scene.cycles.use_denoising = <span class="k">True</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
-            scene.eevee.taa_render_samples = <span class="n">64</span>
+            scene.eevee.taa_render_samples = <span class="n">128</span>
         <span class="k">except</span> AttributeError:
             <span class="k">pass</span>
+        <span class="c"># Bloom helps the ember core read without a compositor tree.</span>
+        <span class="k">for</span> attr, val <span class="k">in</span> (
+            (<span class="s">&quot;use_bloom&quot;</span>, <span class="k">True</span>),
+            (<span class="s">&quot;bloom_intensity&quot;</span>, <span class="n">0.12</span>),
+            (<span class="s">&quot;bloom_threshold&quot;</span>, <span class="n">0.85</span>),
+            (<span class="s">&quot;bloom_radius&quot;</span>, <span class="n">4.5</span>),
+        ):
+            <span class="k">if</span> hasattr(scene.eevee, attr):
+                <span class="k">try</span>:
+                    setattr(scene.eevee, attr, val)
+                <span class="k">except</span> Exception:
+                    <span class="k">pass</span>
+
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
+    scene.render.film_transparent = <span class="k">False</span>
+    scene.view_settings.view_transform = <span class="s">&quot;Filmic&quot;</span>
+    scene.view_settings.look = <span class="s">&quot;Medium High Contrast&quot;</span>
     scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     scene.render.filepath = path
     bpy.ops.render.render(write_still=<span class="k">True</span>)
