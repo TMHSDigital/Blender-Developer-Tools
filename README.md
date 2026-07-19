@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>24 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>25 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 24 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 25 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -466,7 +466,7 @@ round-trips through the raw `POINT` buffer.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 1 example</summary>
+<summary><strong>Game asset pipeline</strong> — 2 examples</summary>
 
 <table>
 <tr>
@@ -484,6 +484,23 @@ Witnesses the +Y-up convention baked into vertex data with no node rotation,
 loop), V-flipped UVs, and per-triangle material bindings — all against the
 depsgraph-evaluated mesh. The exporter/importer RNA signatures are probed
 byte-identical on 4.5.11 and 5.1.2 and guarded against future renames.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/lod-decimate-chain/"><img src="examples/lod-decimate-chain/preview.webp" alt="LOD decimate chain: three retro rockets side by side on a dark studio floor - cream body, red nose and fins, teal porthole - showing smooth LOD0, halved LOD1, and visibly crunched LOD2 with a hexagonal porthole" /></a>
+</td>
+<td valign="middle">
+
+### [lod-decimate-chain](examples/lod-decimate-chain/)
+
+One recognizable asset at three LODs via `DECIMATE` modifiers evaluated through
+the depsgraph. Asserts the reduction is non-destructive (the original datablock
+keeps its closed-form counts), each LOD's evaluated triangle count lands within
+5% of `ratio x base` (measured 0.0–0.44%), and the silhouette-critical bbox
+survives within 1e-3 — with the aggressive-ratio nose-tip collapse documented
+as the caught failure mode.
 
 </td>
 </tr>
