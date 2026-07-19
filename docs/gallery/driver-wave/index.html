@@ -308,8 +308,8 @@ BASE = <span class="n">0.28</span>
     fmat = bpy.data.materials.new(<span class="s">&quot;FloorMat&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)  <span class="c"># dark graphite studio</span>
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)  <span class="c"># dark staged studio</span>
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
@@ -319,32 +319,36 @@ BASE = <span class="n">0.28</span>
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    key = bpy.data.lights.new(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); key.energy = <span class="n">1600.0</span>; key.size = <span class="n">5.0</span>
-    key.color = (<span class="n">1.0</span>, <span class="n">0.97</span>, <span class="n">0.92</span>)
+    <span class="c"># warm shaped key, faint cool fill, warm wedge pooling on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    key = bpy.data.lights.new(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); key.energy = <span class="n">650.0</span>; key.size = <span class="n">4.5</span>
+    key.color = (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)
     key_ob = bpy.data.objects.new(<span class="s">&quot;Key&quot;</span>, key)
     key_ob.location = (-<span class="n">4.5</span>, -<span class="n">5.5</span>, <span class="n">6.5</span>)
     key_ob.rotation_euler = (math.radians(<span class="n">46</span>), <span class="n">0.0</span>, math.radians(-<span class="n">33</span>))
     scene.collection.objects.link(key_ob)
-    fill = bpy.data.lights.new(<span class="s">&quot;Fill&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); fill.energy = <span class="n">260.0</span>; fill.size = <span class="n">8.0</span>
-    fill.color = (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>)
+    fill = bpy.data.lights.new(<span class="s">&quot;Fill&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); fill.energy = <span class="n">110.0</span>; fill.size = <span class="n">8.0</span>
+    fill.color = (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)
     fill_ob = bpy.data.objects.new(<span class="s">&quot;Fill&quot;</span>, fill)
     fill_ob.location = (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">3.5</span>)
     fill_ob.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, math.radians(<span class="n">48</span>))
     scene.collection.objects.link(fill_ob)
-    rim = bpy.data.lights.new(<span class="s">&quot;Rim&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); rim.energy = <span class="n">480.0</span>; rim.size = <span class="n">5.0</span>
-    rim.color = (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)
-    rim_ob = bpy.data.objects.new(<span class="s">&quot;Rim&quot;</span>, rim)
-    rim_ob.location = (<span class="n">0.0</span>, <span class="n">6.5</span>, <span class="n">3.0</span>)
-    rim_ob.rotation_euler = (math.radians(-<span class="n">78</span>), <span class="n">0.0</span>, math.radians(<span class="n">180</span>))
-    scene.collection.objects.link(rim_ob)
+    wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); wedge.energy = <span class="n">380.0</span>; wedge.size = <span class="n">6.0</span>
+    wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
+    wedge_ob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
+    wedge_ob.location = (<span class="n">2.5</span>, <span class="n">6.0</span>, <span class="n">4.0</span>)
+    wedge_ob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
+    scene.collection.objects.link(wedge_ob)
 
-    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>); cam_data.lens = <span class="n">45.0</span>
+    <span class="c"># lens/distance chosen so all sixteen columns (span 11.1 units) sit inside</span>
+    <span class="c"># the frame with a small margin -- the skyline must not clip</span>
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>); cam_data.lens = <span class="n">42.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">13.0</span>, <span class="n">2.4</span>)
-    cam.rotation_euler = (math.radians(<span class="n">83</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">13.5</span>, <span class="n">2.0</span>)
+    cam.rotation_euler = (math.radians(<span class="n">86</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
@@ -360,6 +364,8 @@ BASE = <span class="n">0.28</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX would wash the orange columns toward tan (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 

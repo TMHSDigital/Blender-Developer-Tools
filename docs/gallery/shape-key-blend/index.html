@@ -333,12 +333,27 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.52</span>, <span class="n">0.06</span>, <span class="n">0.98</span>, <span class="n">1.0</span>)  <span class="c"># violet</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
     obj.data.materials.clear()
     obj.data.materials.append(mat)
-    <span class="c"># bottom verts stay at -HALF; lift so the block rests on the floor</span>
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, HALF)
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
+
+    <span class="c"># the still shows the blend as a progression: Basis (0), half blend, and</span>
+    <span class="c"># the checked BLEND value, left to right — one silhouette per key value,</span>
+    <span class="c"># so a failed blend is visible as three identical boxes. The two extra</span>
+    <span class="c"># blocks are render-only copies; the check already ran on `obj`.</span>
+    blocks = []
+    <span class="k">for</span> value, x <span class="k">in</span> ((<span class="n">0.0</span>, -<span class="n">1.9</span>), (BLEND / <span class="n">2</span>, <span class="n">0.0</span>), (<span class="k">None</span>, <span class="n">1.9</span>)):
+        <span class="k">if</span> value <span class="k">is</span> <span class="k">None</span>:
+            ob = obj
+        <span class="k">else</span>:
+            me = obj.data.copy()
+            me.shape_keys.key_blocks[<span class="s">&quot;Tall&quot;</span>].value = value
+            ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">ShapeBlock_</span>{value}<span class="s">&quot;</span>, me)
+            bpy.context.collection.objects.link(ob)
+        <span class="c"># bottom verts stay at -HALF; lift so each block rests on the floor</span>
+        ob.location = (x, <span class="n">0.0</span>, HALF)
+        ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
+        blocks.append(ob)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -350,8 +365,8 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -362,7 +377,7 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
     world_top = HALF + EXPECT_TOP_Z
@@ -383,14 +398,24 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.0</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge pooling on the</span>
+    <span class="c"># back wall (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">4.5</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
+    wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
+    wedge.energy = <span class="n">380.0</span>
+    wedge.size = <span class="n">6.0</span>
+    wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
+    wob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
+    wob.location = (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>)
+    wob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
+    scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.6</span>, -<span class="n">4.8</span>, <span class="n">2.4</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.8</span>, <span class="n">2.05</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -409,6 +434,8 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     scene.render.resolution_x = <span class="n">1280</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    <span class="c"># AgX would wash the violet toward pastel grey (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     scene.render.filepath = path
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
