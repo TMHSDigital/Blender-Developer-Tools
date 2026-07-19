@@ -224,8 +224,8 @@
     {
       "name": "text-version-stamp",
       "dir": "examples/text-version-stamp",
-      "teaches": "The TextCurve data API — curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it.",
-      "witnessesFix": "TextCurve solids are exactly predictable: evaluated z-extent = 2 × (extrude + bevel_depth), bevel widens the outline by 2 × bevel_depth, editing body regenerates geometry — and version_string is not bare semver on LTS (\"4.5.11 LTS\"), so parse bpy.app.version instead.",
+      "teaches": "The TextCurve data API \u2014 curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion \u2014 so every render self-documents which Blender produced it.",
+      "witnessesFix": "TextCurve solids are exactly predictable: evaluated z-extent = 2 \u00d7 (extrude + bevel_depth), bevel widens the outline by 2 \u00d7 bevel_depth, editing body regenerates geometry \u2014 and version_string is not bare semver on LTS (\"4.5.11 LTS\"), so parse bpy.app.version instead.",
       "hero": "docs/gallery/assets/text-version-stamp-hero.webp",
       "preview": "examples/text-version-stamp/preview.webp",
       "tags": [
@@ -237,14 +237,28 @@
     {
       "name": "image-pixels-testcard",
       "dir": "examples/image-pixels-testcard",
-      "teaches": "The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.",
-      "witnessesFix": "pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly > 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).",
+      "teaches": "The Image pixel-buffer contract \u2014 a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.",
+      "witnessesFix": "pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly \u2264 0.5/255 and strictly > 0, stale-size bulk reads raise after scale() \u2014 and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).",
       "hero": "docs/gallery/assets/image-pixels-testcard-hero.webp",
       "preview": "examples/image-pixels-testcard/preview.webp",
       "tags": [
         "images",
         "performance",
         "rendering"
+      ]
+    },
+    {
+      "name": "uv-layer-grid",
+      "dir": "examples/uv-layer-grid",
+      "teaches": "The UV-layer authoring hazard \u2014 bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",
+      "witnessesFix": "calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback.",
+      "hero": "docs/gallery/assets/uv-layer-grid-hero.webp",
+      "preview": "examples/uv-layer-grid/preview.webp",
+      "tags": [
+        "mesh",
+        "bmesh",
+        "uv",
+        "materials"
       ]
     }
   ]

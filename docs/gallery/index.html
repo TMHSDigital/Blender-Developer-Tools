@@ -199,6 +199,7 @@
     <button class="chip" data-tag="rendering" type="button">rendering</button>
     <button class="chip" data-tag="shape-keys" type="button">shape-keys</button>
     <button class="chip" data-tag="transforms" type="button">transforms</button>
+    <button class="chip" data-tag="uv" type="button">uv</button>
   </div>
   <main id="main">
     <div class="grid">
@@ -420,6 +421,17 @@
           <p class="teaches">The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.</p>
           <p class="witnesses"><span class="tag">witnesses</span> pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly &gt; 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).</p>
           <a class="card-link" href="image-pixels-testcard/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh bmesh uv materials">
+        <a class="card-media" href="uv-layer-grid/" aria-label="uv-layer-grid example detail page">
+          <img src="assets/uv-layer-grid-hero.webp" alt="uv-layer-grid — The UV-layer authoring hazard — bmesh" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="uv-layer-grid/">uv-layer-grid</a></h2>
+          <p class="teaches">The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback.</p>
+          <a class="card-link" href="uv-layer-grid/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

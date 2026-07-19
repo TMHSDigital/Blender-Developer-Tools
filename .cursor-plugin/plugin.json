@@ -78,6 +78,7 @@
     "examples/temp-override-join",
     "examples/text-version-stamp",
     "examples/turntable",
+    "examples/uv-layer-grid",
     "examples/wave-displace"
   ]
 }
