@@ -75,17 +75,31 @@ def render_still(obj, path, engine):
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme)
     finally:
         bm.free()
+    # dark staged studio: shared floor/wall material, warm shaped key, faint
+    # cool fill, cool rim, warm wedge on the back wall (docs/VISUAL-STYLE.md)
+    fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
+    fb = fmat.node_tree.nodes["Principled BSDF"]
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
+    fme.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", fme); bpy.context.collection.objects.link(floor)
+    wall = bpy.data.objects.new("Wall", fme.copy()); wall.location = (0, 9.0, 0)
+    wall.rotation_euler = (math.radians(90), 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
-    w.node_tree.nodes["Background"].inputs[0].default_value = (0.04, 0.05, 0.07, 1); sc.world = w
+    w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
     aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.0); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -7, 3.0)
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -5.9, 2.4)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
-    for nm, loc, en in [("K", (-4, -5, 7), 900), ("F2", (5, -4, 2), 350)]:
-        ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = 5.0
+    for nm, loc, en, size, col in [("K", (-4, -5, 7), 620, 5.0, (1.0, 0.96, 0.9)),
+                                   ("F2", (5, -4, 2), 130, 8.0, (0.75, 0.85, 1.0)),
+                                   ("R", (0.5, 4.5, 4.0), 300, 4.0, (0.6, 0.78, 1.0))]:
+        ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = size; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
         lc = lo.constraints.new('TRACK_TO'); lc.target = aim; lc.track_axis = 'TRACK_NEGATIVE_Z'; lc.up_axis = 'UP_Y'
+    wd = bpy.data.lights.new("Wedge", 'AREA'); wd.energy = 380; wd.size = 6.0; wd.color = (1.0, 0.76, 0.5)
+    wo = bpy.data.objects.new("Wedge", wd); wo.location = (2.5, 5.5, 4.0)
+    wo.rotation_euler = (math.radians(-68), 0, math.radians(190)); bpy.context.collection.objects.link(wo)
     sc.render.engine = 'CYCLES' if engine == 'cycles' else get_eevee_engine_id()
     if sc.render.engine == 'CYCLES':
         try: sc.cycles.samples = 16
@@ -96,6 +110,8 @@ def render_still(obj, path, engine):
     sc.frame_set(FRAMES // 4)
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
+    # AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)
+    sc.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

@@ -109,12 +109,12 @@ def render_still(obj, path, engine):
         bm.to_mesh(floor_me)
     finally:
         bm.free()
-    floor_me.materials.append(principled("Studio", (0.24, 0.24, 0.25, 1.0), 0.0, 0.6))
+    floor_me.materials.append(principled("Studio", (0.03, 0.032, 0.037, 1.0), 0.0, 0.7))
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
     wall.data.materials.clear()
-    wall.data.materials.append(principled("Wall", (0.045, 0.05, 0.055, 1.0), 0.0, 0.6))
+    wall.data.materials.append(principled("Wall", (0.03, 0.032, 0.037, 1.0), 0.0, 0.7))
     wall.location = (0.0, 9.0, 0.0)
     wall.rotation_euler = (math.pi / 2, 0.0, 0.0)
     scene.collection.objects.link(wall)
@@ -122,7 +122,7 @@ def render_still(obj, path, engine):
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = \
-        (0.035, 0.04, 0.05, 1.0)
+        (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
     def light(name, loc, energy, size, col, rot):
@@ -133,9 +133,11 @@ def render_still(obj, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), 1000.0, 8.0, (1.0, 0.99, 0.96), (46, 0, -35))
-    light("Fill", (5.0, -3.5, 3.0), 350.0, 9.0, (0.85, 0.9, 1.0), (62, 0, 50))
-    light("Rim", (1.5, 5.0, 4.0), 120.0, 6.0, (1.0, 0.85, 0.65), (-70, 0, 165))
+    # warm shaped key, faint cool fill, warm wedge on the back wall
+    # (docs/VISUAL-STYLE.md)
+    light("Key", (-4.0, -5.0, 6.0), 650.0, 5.0, (1.0, 0.96, 0.9), (46, 0, -35))
+    light("Fill", (5.0, -3.5, 3.0), 120.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
+    light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 42.0
@@ -157,6 +159,9 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would flatten the graphite-vs-green contrast this still hinges on
+    # (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

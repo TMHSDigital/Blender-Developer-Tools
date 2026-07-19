@@ -91,6 +91,7 @@ gallery's source of truth. When authoring a new one, copy the anatomy of
 wire all of: gallery.json entry, `.cursor-plugin/plugin.json` examples array (CI-gated),
 a `blender-smoke.yml` step, a README gallery row, hero webp (1280×720) in
 `docs/gallery/assets/` + preview webp (1200×675), then run `python scripts/build_gallery.py`.
+Renders must conform to the gallery look spec at `docs/VISUAL-STYLE.md`.
 
 ## Development Workflow
 

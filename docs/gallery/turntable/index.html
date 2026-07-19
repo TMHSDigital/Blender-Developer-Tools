@@ -277,17 +277,31 @@ FRAMES = <span class="n">36</span>
         bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme)
     <span class="k">finally</span>:
         bm.free()
+    <span class="c"># dark staged studio: shared floor/wall material, warm shaped key, faint</span>
+    <span class="c"># cool fill, cool rim, warm wedge on the back wall (docs/VISUAL-STYLE.md)</span>
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>); fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    fme.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, fme); bpy.context.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, fme.copy()); wall.location = (<span class="n">0</span>, <span class="n">9.0</span>, <span class="n">0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
-    w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.04</span>, <span class="n">0.05</span>, <span class="n">0.07</span>, <span class="n">1</span>); sc.world = w
+    w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>); sc.world = w
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">7</span>, <span class="n">3.0</span>)
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">5.9</span>, <span class="n">2.4</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
-    <span class="k">for</span> nm, loc, en <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">900</span>), (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">350</span>)]:
-        ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = <span class="n">5.0</span>
+    <span class="k">for</span> nm, loc, en, size, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">620</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
+                                   (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">130</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)),
+                                   (<span class="s">&quot;R&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">300</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))]:
+        ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = size; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
         lc = lo.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); lc.target = aim; lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    wd = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>); wd.energy = <span class="n">380</span>; wd.size = <span class="n">6.0</span>; wd.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
+    wo = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wd); wo.location = (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>)
+    wo.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0</span>, math.radians(<span class="n">190</span>)); bpy.context.collection.objects.link(wo)
     sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> get_eevee_engine_id()
     <span class="k">if</span> sc.render.engine == <span class="s">&#x27;CYCLES&#x27;</span>:
         <span class="k">try</span>: sc.cycles.samples = <span class="n">16</span>
@@ -298,6 +312,8 @@ FRAMES = <span class="n">36</span>
     sc.frame_set(FRAMES // <span class="n">4</span>)
     sc.render.resolution_x = <span class="n">1280</span>; sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path
+    <span class="c"># AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)</span>
+    sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 

@@ -314,12 +314,12 @@ check. Pass --output to also render a still:
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    floor_me.materials.append(principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.24</span>, <span class="n">0.24</span>, <span class="n">0.25</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.6</span>))
+    floor_me.materials.append(principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
     wall.data.materials.clear()
-    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.055</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.6</span>))
+    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
     wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
@@ -327,7 +327,7 @@ check. Pass --output to also render a still:
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = \
-        (<span class="n">0.035</span>, <span class="n">0.04</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
+        (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
@@ -338,9 +338,11 @@ check. Pass --output to also render a still:
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">1000.0</span>, <span class="n">8.0</span>, (<span class="n">1.0</span>, <span class="n">0.99</span>, <span class="n">0.96</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">350.0</span>, <span class="n">9.0</span>, (<span class="n">0.85</span>, <span class="n">0.9</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">4.0</span>), <span class="n">120.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.65</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">165</span>))
+    <span class="c"># warm shaped key, faint cool fill, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">650.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">42.0</span>
@@ -362,6 +364,9 @@ check. Pass --output to also render a still:
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX would flatten the graphite-vs-green contrast this still hinges on</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 

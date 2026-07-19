@@ -105,8 +105,8 @@ def render_still(objs, path, engine):
     fmat = bpy.data.materials.new("FloorMat")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.055, 0.06, 0.07, 1.0)  # dark graphite studio
-    fb.inputs["Roughness"].default_value = 0.5
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)  # dark staged studio
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
@@ -116,32 +116,36 @@ def render_still(objs, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 1600.0; key.size = 5.0
-    key.color = (1.0, 0.97, 0.92)
+    # warm shaped key, faint cool fill, warm wedge pooling on the back wall
+    # (docs/VISUAL-STYLE.md)
+    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 650.0; key.size = 4.5
+    key.color = (1.0, 0.96, 0.9)
     key_ob = bpy.data.objects.new("Key", key)
     key_ob.location = (-4.5, -5.5, 6.5)
     key_ob.rotation_euler = (math.radians(46), 0.0, math.radians(-33))
     scene.collection.objects.link(key_ob)
-    fill = bpy.data.lights.new("Fill", 'AREA'); fill.energy = 260.0; fill.size = 8.0
-    fill.color = (0.8, 0.87, 1.0)
+    fill = bpy.data.lights.new("Fill", 'AREA'); fill.energy = 110.0; fill.size = 8.0
+    fill.color = (0.75, 0.85, 1.0)
     fill_ob = bpy.data.objects.new("Fill", fill)
     fill_ob.location = (5.5, -4.0, 3.5)
     fill_ob.rotation_euler = (math.radians(62), 0.0, math.radians(48))
     scene.collection.objects.link(fill_ob)
-    rim = bpy.data.lights.new("Rim", 'AREA'); rim.energy = 480.0; rim.size = 5.0
-    rim.color = (0.75, 0.85, 1.0)
-    rim_ob = bpy.data.objects.new("Rim", rim)
-    rim_ob.location = (0.0, 6.5, 3.0)
-    rim_ob.rotation_euler = (math.radians(-78), 0.0, math.radians(180))
-    scene.collection.objects.link(rim_ob)
+    wedge = bpy.data.lights.new("Wedge", 'AREA'); wedge.energy = 380.0; wedge.size = 6.0
+    wedge.color = (1.0, 0.76, 0.5)
+    wedge_ob = bpy.data.objects.new("Wedge", wedge)
+    wedge_ob.location = (2.5, 6.0, 4.0)
+    wedge_ob.rotation_euler = (math.radians(-68), 0.0, math.radians(190))
+    scene.collection.objects.link(wedge_ob)
 
-    cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 45.0
+    # lens/distance chosen so all sixteen columns (span 11.1 units) sit inside
+    # the frame with a small margin -- the skyline must not clip
+    cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 42.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -13.0, 2.4)
-    cam.rotation_euler = (math.radians(83), 0.0, 0.0)
+    cam.location = (0.0, -13.5, 2.0)
+    cam.rotation_euler = (math.radians(86), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
@@ -157,6 +161,8 @@ def render_still(objs, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would wash the orange columns toward tan (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

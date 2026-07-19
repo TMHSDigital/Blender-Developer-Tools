@@ -31,7 +31,8 @@ The content base (counts are CI-enforced against README.md and the manifest):
   API contract with deterministic checks, exit non-zero on failure, and
   optionally render a still via `--output`. Each is executed headless on
   Blender 4.5 LTS and 5.1 by `blender-smoke.yml`; its render ships in the
-  site gallery. Anatomy and authoring rules: copy `examples/bmesh-gear/`.
+  site gallery. Anatomy and authoring rules: copy `examples/bmesh-gear/`;
+  the render look is specified in `docs/VISUAL-STYLE.md`.
 
 ## Repository structure
 

@@ -133,8 +133,8 @@ def render_still(obj, path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.055, 0.06, 0.07, 1.0)
-    fb.inputs["Roughness"].default_value = 0.5
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -145,7 +145,7 @@ def render_still(obj, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
@@ -165,14 +165,23 @@ def render_still(obj, path, engine):
         lc.track_axis = 'TRACK_NEGATIVE_Z'
         lc.up_axis = 'UP_Y'
 
-    light("Key", (-3.5, -4.5, 5.5), 1500.0, 6.0, (1.0, 0.98, 0.94))
-    light("Fill", (5.0, -3.5, 2.5), 340.0, 8.0, (0.8, 0.87, 1.0))
-    light("Rim", (1.5, 4.5, 2.0), 480.0, 4.0, (1.0, 0.75, 0.45))
+    # warm shaped key, faint cool fill, warm wedge on the back wall
+    # (docs/VISUAL-STYLE.md)
+    light("Key", (-3.5, -4.5, 5.5), 550.0, 4.5, (1.0, 0.96, 0.9))
+    light("Fill", (5.0, -3.5, 2.5), 110.0, 8.0, (0.75, 0.85, 1.0))
+    wedge = bpy.data.lights.new("Wedge", 'AREA')
+    wedge.energy = 380.0
+    wedge.size = 6.0
+    wedge.color = (1.0, 0.76, 0.5)
+    wob = bpy.data.objects.new("Wedge", wedge)
+    wob.location = (2.5, 5.5, 4.0)
+    wob.rotation_euler = (math.radians(-68), 0.0, math.radians(190))
+    scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.0, -4.2, 2.6)
+    cam.location = (2.4, -3.4, 1.7)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -192,6 +201,8 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would wash the rose tube toward salmon (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

@@ -287,24 +287,29 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     <span class="s">&quot;&quot;&quot;Return a list of (material, label) covering metal, dielectric, emissive, and the
     set_specular shim. The list order maps left-to-right, top-to-bottom across the grid.&quot;&quot;&quot;</span>
     mats, specular_socket = [], <span class="k">None</span>
-    m, specular_socket = make_principled(<span class="s">&quot;Gold&quot;</span>, (<span class="n">1.00</span>, <span class="n">0.77</span>, <span class="n">0.34</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.15</span>)
+    <span class="c"># polished vs brushed: the roughness gap is what separates the two metals</span>
+    <span class="c"># on the dark stage -- their sampled patch means must stay &gt; 0.10 apart</span>
+    <span class="c"># for verify_png, and a mirror finish vs a broad soft highlight does it</span>
+    m, specular_socket = make_principled(<span class="s">&quot;Gold&quot;</span>, (<span class="n">1.00</span>, <span class="n">0.77</span>, <span class="n">0.34</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.08</span>)
     mats.append(m)
-    m, _ = make_principled(<span class="s">&quot;Copper&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.64</span>, <span class="n">0.54</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
+    m, _ = make_principled(<span class="s">&quot;Copper&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.47</span>, <span class="n">0.36</span>, <span class="n">1</span>), <span class="n">1.0</span>, <span class="n">0.55</span>)
     mats.append(m)
     m, sr = make_principled(<span class="s">&quot;RedPlastic&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.40</span>, specular=<span class="n">0.5</span>)
     mats.append(m)
     specular_socket = specular_socket <span class="k">or</span> sr
     m, _ = make_principled(<span class="s">&quot;BluePlastic&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.20</span>, <span class="n">0.80</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.30</span>, specular=<span class="n">0.5</span>)
     mats.append(m)
-    mats.append(make_emissive(<span class="s">&quot;EmissiveOrange&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.05</span>, <span class="n">1</span>), <span class="n">6.0</span>))
+    <span class="c"># strength stays low enough that the Standard view transform keeps the</span>
+    <span class="c"># hue: at 6.0 every channel clips and the swatch reads white-yellow</span>
+    mats.append(make_emissive(<span class="s">&quot;EmissiveOrange&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.05</span>, <span class="n">1</span>), <span class="n">1.4</span>))
     m, _ = make_principled(<span class="s">&quot;WhiteRough&quot;</span>, (<span class="n">0.90</span>, <span class="n">0.90</span>, <span class="n">0.92</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.70</span>, specular=<span class="n">0.3</span>)
     mats.append(m)
     <span class="k">return</span> mats, specular_socket
 
 
 <span class="k">def</span> build_scene(mats):
-    xs = [-<span class="n">2.2</span>, <span class="n">0.0</span>, <span class="n">2.2</span>]
-    zs = [<span class="n">1.1</span>, -<span class="n">1.1</span>]
+    xs = [-<span class="n">2.3</span>, <span class="n">0.0</span>, <span class="n">2.3</span>]
+    zs = [<span class="n">1.15</span>, -<span class="n">1.15</span>]
     i = <span class="n">0</span>
     <span class="k">for</span> r <span class="k">in</span> range(GRID_ROWS):
         <span class="k">for</span> c <span class="k">in</span> range(GRID_COLS):
@@ -322,21 +327,47 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
             bpy.context.collection.objects.link(ob)
             ob.data.materials.append(mats[i])
             i += <span class="n">1</span>
-    <span class="c"># ortho camera framed exactly on the grid cells</span>
+    <span class="c"># ortho camera framed on the grid cells: verify_png() samples the image at</span>
+    <span class="c"># each cell center, so every sphere must stay inside its third/half of the</span>
+    <span class="c"># frame. ortho height = ortho_scale * 9/16 = 4.39 units for a grid that</span>
+    <span class="c"># spans 4.14 -- nothing clips, nothing drifts out of its cell.</span>
     cam_d = bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)
     cam_d.type = <span class="s">&#x27;ORTHO&#x27;</span>
-    cam_d.ortho_scale = <span class="n">6.6</span>
+    cam_d.ortho_scale = <span class="n">7.8</span>
     cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, cam_d)
     cam.location = (<span class="n">0.0</span>, -<span class="n">10.0</span>, <span class="n">0.0</span>)
     cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>)
     bpy.context.collection.objects.link(cam)
     bpy.context.scene.camera = cam
+
+    <span class="c"># dark staged backdrop behind the grid (docs/VISUAL-STYLE.md)</span>
+    wall_me = bpy.data.meshes.new(<span class="s">&quot;Wall&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(wall_me)
+    <span class="k">finally</span>:
+        bm.free()
+    wmat, _ = make_principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
+    wall_me.materials.append(wmat)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, wall_me)
+    wall.location = (<span class="n">0.0</span>, <span class="n">2.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    bpy.context.collection.objects.link(wall)
+
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     bpy.context.collection.objects.link(aim)
-    <span class="k">for</span> lname, loc, energy <span class="k">in</span> [(<span class="s">&quot;KeyL&quot;</span>, (-<span class="n">5</span>, -<span class="n">6</span>, <span class="n">4</span>), <span class="n">1500</span>), (<span class="s">&quot;FillL&quot;</span>, (<span class="n">5</span>, -<span class="n">6</span>, -<span class="n">2</span>), <span class="n">700</span>)]:
+    <span class="c"># warm shaped key, faint cool fill, and a warm wedge pooling on the</span>
+    <span class="c"># backdrop -- the gallery&#x27;s staged look</span>
+    <span class="k">for</span> lname, loc, energy, size, col <span class="k">in</span> [
+        (<span class="s">&quot;KeyL&quot;</span>, (-<span class="n">5</span>, -<span class="n">6</span>, <span class="n">4</span>), <span class="n">900</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
+        (<span class="s">&quot;FillL&quot;</span>, (<span class="n">5</span>, -<span class="n">6</span>, -<span class="n">2</span>), <span class="n">220</span>, <span class="n">6.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)),
+        (<span class="s">&quot;WedgeL&quot;</span>, (<span class="n">2.6</span>, <span class="n">1.3</span>, <span class="n">4.4</span>), <span class="n">260</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)),
+    ]:
         ld = bpy.data.lights.new(lname, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy
-        ld.size = <span class="n">5.0</span>
+        ld.size = size
+        ld.color = col
         lo = bpy.data.objects.new(lname, ld)
         lo.location = loc
         bpy.context.collection.objects.link(lo)
@@ -344,9 +375,12 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
         con.target = aim
         con.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         con.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+    <span class="c"># the wedge aims past the spheres at the wall, not at the grid</span>
+    bpy.data.objects[<span class="s">&quot;WedgeL&quot;</span>].constraints.clear()
+    bpy.data.objects[<span class="s">&quot;WedgeL&quot;</span>].rotation_euler = (math.radians(-<span class="n">56</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
     world = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.03</span>, <span class="n">0.035</span>, <span class="n">1</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>)
     bpy.context.scene.world = world
 
 
@@ -416,6 +450,9 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     sc.render.resolution_y = int(args.width * <span class="n">9</span> / <span class="n">16</span>)
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     sc.render.filepath = args.output
+    <span class="c"># AgX would desaturate the swatches toward pastel -- exactly the material</span>
+    <span class="c"># colors this example exists to show (docs/VISUAL-STYLE.md)</span>
+    sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     os.makedirs(os.path.dirname(os.path.abspath(args.output)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(args.output) <span class="k">and</span> os.path.getsize(args.output) &gt; <span class="n">0</span>):
