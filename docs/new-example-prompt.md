@@ -98,11 +98,12 @@ objects are not visible unintentionally, and materials, lighting, background, an
 camera feel designed rather than left at Blender defaults.
 
 Contact-sheet gate (required before shipping the still): place the new hero beside
-the pinned calibration set — currently `armature-bend`, `damped-track-aim`,
-`bmesh-gear` — and compare stage darkness, wedge warmth, subject fill, saturation,
-and thumbnail legibility side by side. Do not ship until the new image holds up in
-that lineup—not merely "looks fine alone." Update this named set (here and in
-`CLAUDE.md`) whenever a new example outclasses one of them. One successful render
+the pinned calibration set — canonical membership is listed in `CLAUDE.md`
+§ Quality Gates for Example Runs — and compare stage darkness, wedge warmth,
+subject fill, saturation, and thumbnail legibility side by side. Do not ship until
+the new image holds up in that lineup—not merely "looks fine alone." When a new
+example outclasses a member, update the pinned set in `CLAUDE.md`, its canonical
+home. One successful render
 command is not proof that the image is good, and neither is the second. Commit the
 composite under `docs/gallery/contact-sheets/`, link it in the PR body, and report
 per-criterion verdicts including mean luminance versus the calibration images — a
