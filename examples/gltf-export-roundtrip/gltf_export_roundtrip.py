@@ -474,15 +474,17 @@ def render_still(authored, roundtrip, path, engine):
     pm = bpy.data.materials.new("PlaqueMetal")
     pm.use_nodes = True
     pb = pm.node_tree.nodes["Principled BSDF"]
-    pb.inputs["Base Color"].default_value = (0.16, 0.17, 0.19, 1.0)
-    pb.inputs["Metallic"].default_value = 0.9
-    pb.inputs["Roughness"].default_value = 0.3
+    # diffuse light-grey, not metal: the AUTHORED/ROUND-TRIP labels are the
+    # render's argument and must survive thumbnail scale on the dark floor
+    pb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
+    pb.inputs["Metallic"].default_value = 0.2
+    pb.inputs["Roughness"].default_value = 0.6
 
     def plaque(text, x):
         cu = bpy.data.curves.new("Plaque", 'FONT')
         cu.body = text
         cu.align_x = 'CENTER'
-        cu.size = 0.24
+        cu.size = 0.30
         cu.extrude = 0.008
         ob = bpy.data.objects.new("Plaque", cu)
         ob.location = (x, -1.55, 0.01)

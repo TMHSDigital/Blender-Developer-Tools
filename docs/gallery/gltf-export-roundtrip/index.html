@@ -184,6 +184,7 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that builds a sci-fi supply crate — 35 beveled box shells with three material slots and box-mapped UVs — exports it with <code>bpy.ops.export_scene.gltf</code>, parses the file on disk, re-imports it, and verifies the whole round-trip against the depsgraph-evaluated mesh, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/headless-batch-scripting/SKILL.md"><code>headless-batch-scripting</code></a>.</p>
+<p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export here.</p>
 <p><strong>What it witnesses:</strong> the interchange contracts AI-generated export code most often gets silently wrong.</p>
 <p>1. <strong>The +Y-up convention is baked into vertex data.</strong> glTF is +Y-up, Blender is +Z-up, and <code>export_yup=True</code> (the default) writes <code>(x, y, z) -&gt; (x, z, -y)</code> directly into the POSITION buffer — the node carries <strong>no</strong> rotation or scale. The check parses the <code>.gltf</code> JSON and asserts the accessor bounds equal the axis-converted evaluated bounding box, and that the node transform is absent. Exporting with <code>export_yup=False</code> ships raw Z-up data every engine displays lying on its back. 2. <strong><code>export_apply=True</code> ships the evaluated mesh, not the base cage.</strong> The crate&#x27;s bevel modifier lives only in the depsgraph; with flat shading and UV seams the exporter splits exactly one vertex per evaluated loop (7,560), so the on-disk POSITION count is an exact witness. <code>export_apply=False</code> silently writes the 624-vertex cage. 3. <strong>The round-trip is faithful.</strong> Re-imported positions (bit-exact here), loop normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin is top-left) and flipped back on import — both flips are proven by reading the <code>.bin</code> buffer directly.</p>
 <p><strong>Version witness (probed on Blender 4.5.11 LTS and 5.1.2):</strong> the operator signatures are byte-identical — 109 exporter properties, 20 importer properties, same defaults — and the exported JSON differs only in <code>asset.generator</code> (&quot;Khronos glTF Blender I/O v4.5.51&quot; vs &quot;v5.1.20&quot;). The example therefore runs identical kwargs on both versions and guards forward drift explicitly: every kwarg it passes must still exist in the operator&#x27;s RNA, so a future rename fails loudly instead of drifting silently. One genuine 5.x removal surfaced during authoring: <code>Mesh.calc_normals()</code> is gone (loop normals auto-compute on read) — calling it is itself a cross-version hazard, noted in the code.</p>
@@ -680,15 +681,17 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
     pm = bpy.data.materials.new(<span class="s">&quot;PlaqueMetal&quot;</span>)
     pm.use_nodes = <span class="k">True</span>
     pb = pm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.16</span>, <span class="n">0.17</span>, <span class="n">0.19</span>, <span class="n">1.0</span>)
-    pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.9</span>
-    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    <span class="c"># diffuse light-grey, not metal: the AUTHORED/ROUND-TRIP labels are the</span>
+    <span class="c"># render&#x27;s argument and must survive thumbnail scale on the dark floor</span>
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
 
     <span class="k">def</span> plaque(text, x):
         cu = bpy.data.curves.new(<span class="s">&quot;Plaque&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
         cu.body = text
         cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
-        cu.size = <span class="n">0.24</span>
+        cu.size = <span class="n">0.30</span>
         cu.extrude = <span class="n">0.008</span>
         ob = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, cu)
         ob.location = (x, -<span class="n">1.55</span>, <span class="n">0.01</span>)
