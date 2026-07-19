@@ -76,9 +76,37 @@ def lathe_part(bm, rings, mat):
     return out
 
 
+def box_part(bm, size, loc, rot, mat, part_of, bone):
+    """One box shell (rot in degrees XYZ); tags `bone` for its verts."""
+    n0f, n0v = len(bm.faces), len(bm.verts)
+    m = (mathutils.Matrix.Translation(loc)
+         @ mathutils.Euler(tuple(math.radians(a) for a in rot)).to_matrix().to_4x4()
+         @ mathutils.Matrix.Diagonal((*size, 1.0)))
+    bmesh.ops.create_cube(bm, size=1.0, matrix=m)
+    for f in bm.faces[n0f:]:
+        f.material_index = mat
+    part_of.extend([bone] * (len(bm.verts) - n0v))
+
+
+def cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone):
+    """One cylinder/cone shell along a rotated axis; tags `bone` for its verts."""
+    n0f, n0v = len(bm.faces), len(bm.verts)
+    m = (mathutils.Matrix.Translation(loc)
+         @ mathutils.Euler(tuple(math.radians(a) for a in rot)).to_matrix().to_4x4())
+    bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=24,
+                          radius1=r1, radius2=r2, depth=depth, matrix=m)
+    for f in bm.faces[n0f:]:
+        f.material_index = mat
+    part_of.extend([bone] * (len(bm.verts) - n0v))
+
+
 def build_arm():
-    """The mech arm: mount + pauldron, upper arm, elbow boot + ball, forearm,
-    wrist boot + ball, hand plate, three claw prongs — every ring closed form."""
+    """The mech arm, built as a machine: bolted pedestal and shoulder fairing
+    (Root), a shoulder hub and upper arm ending in clevis cheeks (Shoulder),
+    the elbow hinge pin inside a ribbed flex bellows (the >4-influence zone),
+    a long plated forearm (Elbow), wrist bellows and collar (Wrist), and a
+    palm with three two-segment fingers (Claw). Every part is closed form;
+    the flex bellows keep the z ranges the five-bone bumps are tuned for."""
     me = bpy.data.meshes.new("MechArm")
     part_of = []   # creation-order bone name (or 'FLEX') per mesh vertex
     bm = bmesh.new()
@@ -88,59 +116,71 @@ def build_arm():
                 for v in ring:
                     part_of.append(bone)
 
-        # pedestal mount + pauldron cap (rigid on Root)
-        tag(lathe_part(bm, [(-0.35, 0.32), (-0.05, 0.32), (0.0, 0.48),
-                            (0.10, 0.50), (0.22, 0.34), (0.28, 0.14)],
-                       GUNMETAL), "Root")
-        # upper arm armor with two plate ridges (rigid on Shoulder)
-        tag(lathe_part(bm, [(0.10, 0.26), (0.30, 0.30), (0.38, 0.33),
-                            (0.46, 0.30), (0.70, 0.29), (0.78, 0.32),
-                            (0.86, 0.29), (1.10, 0.27), (1.15, 0.26)],
-                       ORANGE), "Shoulder")
-        # elbow flex boot (broad blend — the >4-influence region)
-        tag(lathe_part(bm, [(1.15, 0.25), (1.22, 0.20), (1.28, 0.24),
-                            (1.35, 0.20), (1.42, 0.24), (1.48, 0.21), (1.55, 0.24)], RUBBER), "FLEX")
-        n0 = len(bm.verts)
-        bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=12, radius=0.23)
-        for v in bm.verts[n0:]:
-            v.co.z += 1.35
-            part_of.append("Elbow")
-        # forearm armor with ridges + teal accent ring (rigid on Elbow)
-        tag(lathe_part(bm, [(1.55, 0.24), (1.70, 0.26), (1.76, 0.28),
-                            (1.82, 0.26), (2.00, 0.24), (2.10, 0.27),
-                            (2.16, 0.27), (2.22, 0.24), (2.45, 0.22)],
-                       ORANGE), "Elbow")
-        # teal accent ring sealing the elbow boot — the primary
-        # five-influence zone the limit prunes
-        tag(lathe_part(bm, [(1.33, 0.245), (1.39, 0.245)], ACCENT), "Elbow")
-        # wrist flex boot + ball (second >4-influence region)
-        tag(lathe_part(bm, [(2.45, 0.21), (2.52, 0.17), (2.60, 0.20),
-                            (2.68, 0.16), (2.76, 0.19), (2.84, 0.16), (2.95, 0.15)], RUBBER), "FLEX")
-        n0 = len(bm.verts)
-        bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=12, radius=0.20)
-        for v in bm.verts[n0:]:
-            v.co.z += 2.72
-            part_of.append("Wrist")
-        # hand plate (rigid on Wrist)
-        tag(lathe_part(bm, [(2.55, 0.16), (2.90, 0.17)], GUNMETAL), "Wrist")
-        # three claw prongs, splayed at 120 deg (rigid on Claw)
-        for k in range(3):
-            a = 2 * math.pi * k / 3
-            dx, dy = math.cos(a), math.sin(a)
-            rings = []
-            for z, r, off in ((2.90, 0.10, 0.13), (3.12, 0.08, 0.19),
-                              (3.40, 0.03, 0.28)):
-                rings.append([bm.verts.new((off * dx + r * math.cos(2 * math.pi * s / 12),
-                                            off * dy + r * math.sin(2 * math.pi * s / 12), z))
-                              for s in range(12)])
-            for j in range(len(rings) - 1):
-                for s in range(12):
-                    f = bm.faces.new((rings[j][s], rings[j][(s + 1) % 12],
-                                      rings[j + 1][(s + 1) % 12], rings[j + 1][s]))
+        # bolted pedestal + shoulder fairing (rigid on Root)
+        tag(lathe_part(bm, [(-0.35, 0.34), (-0.05, 0.34), (0.0, 0.40),
+                            (0.06, 0.42)], GUNMETAL), "Root")
+        tag(lathe_part(bm, [(0.02, 0.40), (0.10, 0.44), (0.22, 0.33),
+                            (0.30, 0.17), (0.34, 0.07)], GUNMETAL), "Root")
+        for k in range(6):  # the fairing's bolt ring
+            a = 2 * math.pi * k / 6
+            cone_part(bm, 0.05, 0.04, 0.06,
+                      (0.36 * math.cos(a), 0.36 * math.sin(a), 0.03),
+                      (0, 0, 0), GUNMETAL, part_of, "Root")
+        # shoulder hub poking through the fairing (rigid on Shoulder)
+        cone_part(bm, 0.19, 0.19, 0.56, (0.0, 0.0, 0.62), (90, 0, 0),
+                  GUNMETAL, part_of, "Shoulder")
+        # upper arm shell, slimmer than the old barrel (rigid on Shoulder)
+        tag(lathe_part(bm, [(0.45, 0.19), (0.60, 0.23), (0.80, 0.24),
+                            (1.00, 0.23), (1.15, 0.21)], ORANGE), "Shoulder")
+        # clevis cheeks the hinge pin rides in (rigid on Shoulder)
+        for sy in (-1, 1):
+            box_part(bm, (0.12, 0.05, 0.42), (0.0, sy * 0.165, 1.24),
+                     (0, 0, 0), ORANGE, part_of, "Shoulder")
+        # elbow flex bellows: the five-influence zone the limit prunes
+        tag(lathe_part(bm, [(1.15, 0.17), (1.20, 0.20), (1.26, 0.16),
+                            (1.33, 0.20), (1.40, 0.16), (1.47, 0.20),
+                            (1.55, 0.17)], RUBBER), "FLEX")
+        # the hinge pin through the cheeks, capped both ends (rides Elbow)
+        cone_part(bm, 0.15, 0.15, 0.46, (0.0, 0.0, 1.35), (90, 0, 0),
+                  GUNMETAL, part_of, "Elbow")
+        for sy in (-1, 1):
+            cone_part(bm, 0.18, 0.18, 0.05, (0.0, sy * 0.225, 1.35),
+                      (90, 0, 0), GUNMETAL, part_of, "Elbow")
+        # bright seal ring on the bellows middle — the accent marking the
+        # primary pruned-weight zone
+        tag(lathe_part(bm, [(1.33, 0.215), (1.37, 0.215)], ACCENT), "Elbow")
+        # long plated forearm with two ridges (rigid on Elbow)
+        tag(lathe_part(bm, [(1.55, 0.19), (1.75, 0.21), (1.80, 0.23),
+                            (1.86, 0.21), (2.05, 0.20), (2.18, 0.22),
+                            (2.24, 0.20), (2.45, 0.18)], ORANGE), "Elbow")
+        # armor blade along the forearm's back (rigid on Elbow)
+        box_part(bm, (0.10, 0.05, 0.60), (0.0, 0.235, 2.02),
+                 (0, 0, 0), ORANGE, part_of, "Elbow")
+        # wrist flex bellows (second blend zone) + collar
+        tag(lathe_part(bm, [(2.45, 0.16), (2.51, 0.19), (2.57, 0.15),
+                            (2.64, 0.18), (2.70, 0.15), (2.75, 0.16)],
+                       RUBBER), "FLEX")
+        tag(lathe_part(bm, [(2.75, 0.16), (2.85, 0.175), (2.90, 0.16)],
+                       GUNMETAL), "Wrist")
+        # palm block (rigid on Wrist)
+        box_part(bm, (0.26, 0.20, 0.14), (0.0, 0.0, 2.99),
+                 (0, 0, 0), GUNMETAL, part_of, "Wrist")
+        # three two-segment fingers, splayed (rigid on Claw)
+        for a_deg in (90.0, 210.0, 330.0):
+            a = math.radians(a_deg)
+            for pos, tilt, size in (((0.09, 3.11), 12.0, (0.075, 0.11, 0.22)),
+                                    ((0.15, 3.28), 26.0, (0.06, 0.095, 0.18))):
+                off, z = pos
+                m = (mathutils.Matrix.Translation((0.0, 0.0, z))
+                     @ mathutils.Matrix.Rotation(a, 4, 'Z')
+                     @ mathutils.Matrix.Translation((off, 0.0, 0.0))
+                     @ mathutils.Matrix.Rotation(math.radians(tilt), 4, 'Y')
+                     @ mathutils.Matrix.Diagonal((*size, 1.0)))
+                n0f, n0v = len(bm.faces), len(bm.verts)
+                bmesh.ops.create_cube(bm, size=1.0, matrix=m)
+                for f in bm.faces[n0f:]:
                     f.material_index = GUNMETAL
-            for ring in rings:
-                for v in ring:
-                    part_of.append("Claw")
+                part_of.extend(["Claw"] * (len(bm.verts) - n0v))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(me)
     finally:
@@ -371,10 +411,10 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 52.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (5.3, -6.2, 2.1)
+    cam.location = (5.8, -6.9, 2.2)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.55, 0.0, 1.45)
+    target.location = (0.45, 0.0, 1.5)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
