@@ -338,3 +338,15 @@ jobs:
           # non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/uv-layer-grid/uv_layer_grid.py --
+
+      - name: Shipped example - png vs exr alpha (float PNG false unpremul)
+        run: |
+          set -euo pipefail
+          # Check only (no render): float_buffer=True Image.save() to PNG writes
+          # RGBA16 and unpremultiplies as if associated-alpha, so straight-authored
+          # dark values at low alpha clamp to white (closed-form err 0.98 at
+          # RGB 0.02 / a=1/255); OpenEXR round-trips within 1e-5; byte→PNG is
+          # straight RGBA8; EXR color_mode=RGB drops alpha to opaque. Exits
+          # non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/png-exr-alpha/png_exr_alpha.py --

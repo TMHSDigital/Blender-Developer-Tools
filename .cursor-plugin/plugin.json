@@ -72,6 +72,7 @@
     "examples/grease-pencil-rosette",
     "examples/image-pixels-testcard",
     "examples/parent-inverse-orrery",
+    "examples/png-exr-alpha",
     "examples/shader-node-group",
     "examples/shape-key-blend",
     "examples/swatch-grid",

@@ -248,6 +248,19 @@
       ]
     },
     {
+      "name": "png-exr-alpha",
+      "dir": "examples/png-exr-alpha",
+      "teaches": "Float-image PNG save trap \u2014 float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).",
+      "witnessesFix": "float\u2192PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte\u2192PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.",
+      "hero": "docs/gallery/assets/png-exr-alpha-hero.webp",
+      "preview": "examples/png-exr-alpha/preview.webp",
+      "tags": [
+        "images",
+        "rendering",
+        "alpha"
+      ]
+    },
+    {
       "name": "uv-layer-grid",
       "dir": "examples/uv-layer-grid",
       "teaches": "The UV-layer authoring hazard \u2014 bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",

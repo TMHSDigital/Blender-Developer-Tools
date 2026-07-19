@@ -99,8 +99,10 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
 - Gallery coverage follow-ups from the GPv3 review: light-linking, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, `text-version-stamp`, and `image-pixels-testcard` shipped first)
 - ~~UV-layer authoring witness~~ **SHIPPED** as `examples/uv-layer-grid/` — `create_grid(..., calc_uvs=True)` silent no-op without a pre-existing UV layer; closed-form UV fill + explicit assignment fallback; dual-panel render (flat texel (0,0) vs neon checker)
-- Image save-format witness: float images saved to PNG with varying alpha suffer premultiply quantization (~0.98 worst-case round-trip error at 8-bit alpha extremes); EXR vs PNG storage contract
+- ~~Image save-format witness~~ **SHIPPED** as `examples/png-exr-alpha/` — float→PNG is RGBA16 and false-unpremultiplies as if associated-alpha (closed-form err 0.98 at RGB 0.02 / a=1/255); OpenEXR preserves float RGBA; byte→PNG is straight RGBA8; `EXR color_mode='RGB'` drops alpha
 - Attribute domain witness: writing a POINT-domain color attribute and reading it as if it were CORNER (or vice versa) silently shears colors across shared verts — companion to `color-attribute-wheel`
+- Light-linking collection witness: object light linking / receiver collections so a key illuminates only the hero (common AI miss when staging multi-light studios)
+- VSE sequences-to-strips witness: building a short cut list from `sequences.new_effect` / movie strips and asserting frame ranges survive reload
 
 ## Future (uncommitted)
 

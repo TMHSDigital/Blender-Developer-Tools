@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>21 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>22 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 21 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 22 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -85,7 +85,7 @@ or expand a category below.
 </p>
 
 <details>
-<summary><strong>Materials, shading &amp; compositing</strong> — 5 examples</summary>
+<summary><strong>Materials, shading &amp; compositing</strong> — 6 examples</summary>
 
 <table>
 <tr>
@@ -166,12 +166,22 @@ non-destructive path.
 
 </td>
 </tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/png-exr-alpha/"><img src="examples/png-exr-alpha/preview.webp" alt="PNG vs EXR alpha: two easel panels on a dark studio floor — left float→PNG false-unpremul clamps dark mid-tones to white at low alpha, right the EXR-clean authored straight buffer with surviving red and green primaries" /></a>
+</td>
+<td valign="middle">
+
+### [png-exr-alpha](examples/png-exr-alpha/)
+
+`float_buffer=True` images saved to PNG are written as RGBA16 and unpremultiplied
+as if associated-alpha — straight-authored dark values at low alpha clamp to white
+(closed-form error **0.98** at `(0.02, a=1/255)`). OpenEXR preserves float RGBA;
+byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping alpha.
+
+</td>
+</tr>
 </table>
-
-</details>
-
-<details>
-<summary><strong>Mesh, curves &amp; text</strong> — 7 examples</summary>
 
 <table>
 <tr>
