@@ -458,6 +458,17 @@
           <a class="card-link" href="vse-cut-list/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="export uv">
+        <a class="card-media" href="gltf-export-roundtrip/" aria-label="gltf-export-roundtrip example detail page">
+          <img src="assets/gltf-export-roundtrip-hero.webp" alt="gltf-export-roundtrip — A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gltf-export-roundtrip/">gltf-export-roundtrip</a></h2>
+          <p class="teaches">A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> export_yup bakes (x, y, z) -&gt; (x, z, -y) into the vertex data with no node rotation (probed identical on 4.5.11 and 5.1.2); export_apply ships the evaluated mesh, not the base cage; exporter/importer RNA is guarded so a future kwarg rename fails loudly.</p>
+          <a class="card-link" href="gltf-export-roundtrip/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

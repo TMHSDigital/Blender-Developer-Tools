@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>23 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>24 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 22 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 24 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -458,6 +458,32 @@ vertex color. Asserts the GPv3 address break: on 4.5 GPv3 is `grease_pencils_v3`
 while `grease_pencils` is still legacy; on 5.x legacy is gone and GPv3 owns the
 name. Point writes lazily materialize attribute layers, and every position
 round-trips through the raw `POINT` buffer.
+
+</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary><strong>Game asset pipeline</strong> — 1 example</summary>
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gltf-export-roundtrip/"><img src="examples/gltf-export-roundtrip/preview.webp" alt="glTF export round-trip: two identical olive-drab sci-fi supply crates on a dark studio floor - authored beside re-imported - with teal status strips, riveted panels, and corner armor, proving the export/import round-trip preserves the asset" /></a>
+</td>
+<td valign="middle">
+
+### [gltf-export-roundtrip](examples/gltf-export-roundtrip/)
+
+A game-prop supply crate round-tripped through `bpy.ops.export_scene.gltf` and
+the importer — the check reads the `.gltf` JSON and `.bin` buffer directly.
+Witnesses the +Y-up convention baked into vertex data with no node rotation,
+`export_apply` shipping the evaluated mesh (one disk vertex per evaluated
+loop), V-flipped UVs, and per-triangle material bindings — all against the
+depsgraph-evaluated mesh. The exporter/importer RNA signatures are probed
+byte-identical on 4.5.11 and 5.1.2 and guarded against future renames.
 
 </td>
 </tr>
