@@ -287,11 +287,18 @@ check. Pass --output to also render a still:
     <span class="s">&quot;&quot;&quot;Base cube beside its evaluated form — the two counts the check compares.&quot;&quot;&quot;</span>
     scene = bpy.context.scene
 
+    <span class="c"># one hero material on BOTH objects: the two silhouettes share a color so</span>
+    <span class="c"># the only visible difference is the thing the check measures — base-mesh</span>
+    <span class="c"># geometry versus the depsgraph-evaluated subsurf</span>
+    hero = principled(<span class="s">&quot;Teal&quot;</span>, (<span class="n">0.012</span>, <span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.2</span>)
+
     <span class="c"># left: the base mesh, modifier-free (a plain copy of the datablock)</span>
     base_obj = bpy.data.objects.new(<span class="s">&quot;Base&quot;</span>, obj.data.copy())
     base_obj.location = (-<span class="n">1.7</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
-    base_obj.data.materials.append(
-        principled(<span class="s">&quot;Graphite&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.10</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>))
+    <span class="c"># turned off camera-parallel so the key rakes the front face into a</span>
+    <span class="c"># gradient instead of one flat tone</span>
+    base_obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">32</span>))
+    base_obj.data.materials.append(hero)
     bpy.context.collection.objects.link(base_obj)
 
     <span class="c"># right: the SUBSURF object — what the depsgraph evaluates and the OBJ ships.</span>
@@ -302,8 +309,7 @@ check. Pass --output to also render a still:
     bottom = min(v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices)
     obj.evaluated_get(dg).to_mesh_clear()
     obj.location = (<span class="n">1.8</span>, <span class="n">0.0</span>, -bottom)
-    obj.data.materials.append(
-        principled(<span class="s">&quot;EvalGreen&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.32</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.15</span>))
+    obj.data.materials.append(hero)
     <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
         poly.use_smooth = <span class="k">True</span>
 
@@ -345,10 +351,10 @@ check. Pass --output to also render a still:
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">46.0</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.2</span>, <span class="n">2.7</span>)
-    cam.rotation_euler = (math.radians(<span class="n">78</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.4</span>, <span class="n">3.0</span>)
+    cam.rotation_euler = (math.radians(<span class="n">76</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
 

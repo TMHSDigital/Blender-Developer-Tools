@@ -295,15 +295,31 @@ TOOTH_DUTY = <span class="n">0.45</span>
     scene = bpy.context.scene
     <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
         poly.use_smooth = <span class="k">False</span>  <span class="c"># crisp machined facets</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;Steel&quot;</span>)
+    <span class="c"># machined brass: a flat metal face lit by area lights renders as one</span>
+    <span class="c"># featureless gradient, so the finish carries the design — concentric</span>
+    <span class="c"># turning marks (a RINGS wave driving roughness) break the face into</span>
+    <span class="c"># rings that each catch the key at a different angle</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;MachinedBrass&quot;</span>)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.75</span>, <span class="n">0.77</span>, <span class="n">0.8</span>, <span class="n">1.0</span>)
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.72</span>, <span class="n">0.44</span>, <span class="n">0.16</span>, <span class="n">1.0</span>)
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    rings = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    rings.wave_type = <span class="s">&#x27;RINGS&#x27;</span>
+    rings.rings_direction = <span class="s">&#x27;SPHERICAL&#x27;</span>  <span class="c"># concentric from center, not X-axis bands</span>
+    rings.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">16.0</span>
+    rings.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">0.5</span>
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.0</span>
+    rough.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">1.0</span>
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.14</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.36</span>
+    nt.links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     obj.data.materials.append(mat)
     obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.85</span>)
-    obj.rotation_euler = (math.radians(<span class="n">38</span>), <span class="n">0.0</span>, math.radians(<span class="n">22</span>))
+    obj.rotation_euler = (math.radians(<span class="n">46</span>), <span class="n">0.0</span>, math.radians(<span class="n">22</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -341,9 +357,11 @@ TOOTH_DUTY = <span class="n">0.45</span>
 
     <span class="c"># metals live on reflections: soft warm key, restrained cool fill, and the</span>
     <span class="c"># warm wedge raking the back wall (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">700.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">160.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">550.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">130.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># a small hot glint: brass needs one crisp specular streak to read machined</span>
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.8</span>, -<span class="n">5.2</span>, <span class="n">6.2</span>), <span class="n">900.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.7</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">18</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
