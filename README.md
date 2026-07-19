@@ -13,11 +13,23 @@
 
 <p align="center">
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/validate.yml?branch=main&style=flat-square&label=validate" alt="Validate" /></a>
+  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/blender-smoke.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/blender-smoke.yml?branch=main&style=flat-square&label=blender%204.5%20%2B%205.1%20smoke" alt="Blender smoke tests" /></a>
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/drift-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/drift-check.yml?branch=main&style=flat-square&label=drift-check" alt="Drift check" /></a>
 </p>
 
 <p align="center">
   <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>20 examples</strong>
+</p>
+
+<p align="center">
+  <a href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/">Examples Gallery</a>
+  &nbsp;&bull;&nbsp; <a href="#quick-start">Quick start</a>
+  &nbsp;&bull;&nbsp; <a href="#examples">Examples</a>
+  &nbsp;&bull;&nbsp; <a href="skills/">Skills</a>
+  &nbsp;&bull;&nbsp; <a href="rules/">Rules</a>
+  &nbsp;&bull;&nbsp; <a href="templates/">Templates</a>
+  &nbsp;&bull;&nbsp; <a href="snippets/">Snippets</a>
+  &nbsp;&bull;&nbsp; <a href="ROADMAP.md">Roadmap</a>
 </p>
 
 ---
@@ -35,6 +47,20 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | **Templates** | A working Extensions Platform add-on starter and a headless batch script starter |
 | **Snippets** | 17 small standalone Python files demonstrating canonical patterns |
 
+## Quick start
+
+```bash
+git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
+```
+
+- **Cursor** — point Cursor at the checkout (or symlink `rules/` into your project). The `.mdc` rules apply automatically by glob scope; skills are referenced by name in chat.
+- **Claude Code** — copy `skills/` and `rules/` into your project workspace, or keep this repo as a checkout that Claude Code references directly.
+- **Run an example** — every example is a self-checking headless script (exit non-zero on failure, no GPU needed for the check):
+
+```bash
+blender --background --python examples/bmesh-gear/bmesh_gear.py --
+```
+
 ## Supported Blender versions
 
 | Version | Status |
@@ -47,8 +73,19 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 
 Runnable, smoke-gated demos live in [`examples/`](examples/) — each is executed headless on
 both Blender 4.5 LTS and 5.1 by the `blender-smoke` workflow, so the screenshots reflect code
-that actually runs. Browse them in the
-**[examples gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**.
+that actually runs. Browse them all with filters and full-size renders in the
+**[examples gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**,
+or expand a category below.
+
+<p align="center">
+  <a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" width="24%" alt="Grease pencil rosette: five nested neon rose curves glowing against a dark studio wall" /></a>
+  <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun and three planets" /></a>
+  <a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" width="24%" alt="Compositor glare: three neon rings with colored bloom halos" /></a>
+  <a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" width="24%" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card" /></a>
+</p>
+
+<details>
+<summary><strong>Materials, shading &amp; compositing</strong> — 5 examples</summary>
 
 <table>
 <tr>
@@ -62,90 +99,6 @@ that actually runs. Browse them in the
 A procedural-materials swatch grid — Principled metal and dielectric, the emission pattern,
 and the cross-version `set_specular` shim. Doubles as a live proof of the EEVEE engine-id
 mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/turntable/"><img src="examples/turntable/preview.webp" alt="Turntable: a copper Suzanne mid-rotation on a dark studio floor, rendered with EEVEE" /></a>
-</td>
-<td valign="middle">
-
-### [turntable](examples/turntable/)
-
-A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path
-(`get_channelbag_for_slot`). Witnesses the slotted-actions fix: ensure-helper channelbag on
-5.x, `strip.channelbag` on 4.4/4.5.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a crimson ceramic torus with visible voxel-remesh facets, resting on a dark studio floor" /></a>
-</td>
-<td valign="middle">
-
-### [gn-sdf-remesh](examples/gn-sdf-remesh/)
-
-A Geometry Nodes SDF remesh (`MeshToSDFGrid` → `GridToMesh` at the SDF zero-level).
-Witnesses the fix that an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh,
-and that a `Set Material` node carries the material through the remesh.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a matte graphite base cube beside its glossy green subdivision-surface evaluated form on a dark studio floor" /></a>
-</td>
-<td valign="middle">
-
-### [depsgraph-export](examples/depsgraph-export/)
-
-A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
-`evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
-modifier-applied geometry (exported vertex count == evaluated > base).
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a glossy sapphire-blue surface displaced into smooth standing-wave dunes against a black backdrop" /></a>
-</td>
-<td valign="middle">
-
-### [wave-displace](examples/wave-displace/)
-
-Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with **one
-`foreach_get` and one `foreach_set`**, no per-vertex access. Asserts the count is unchanged,
-the Z span matches the amplitude, and a probe vertex matches the closed-form wave.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen orange columns whose heights form a sine skyline on a dark studio floor, each driven by a driver_namespace function" /></a>
-</td>
-<td valign="middle">
-
-### [driver-wave](examples/driver-wave/)
-
-A `driver_namespace` function driving sixteen column heights through SCRIPTED drivers.
-Witnesses the evaluation contract: driven values appear after a view-layer update on the
-evaluated copy **and** the flushed-back original, and both must match the closed form.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined steel 14-tooth gear at a three-quarter angle on a dark studio floor" /></a>
-</td>
-<td valign="middle">
-
-### [bmesh-gear](examples/bmesh-gear/)
-
-A 14-tooth gear built entirely with bmesh — with `bm.free()` in a `try`/`finally`, as the
-ownership contract demands. Asserts the closed-form vert/edge/face counts and that the
-result is watertight (every edge borders exactly two faces).
 
 </td>
 </tr>
@@ -165,29 +118,87 @@ materials with different Tint values. Witnesses the grouping contract: shared da
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber three-step staircase of joined unit cubes on a dark studio floor" /></a>
+<a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" alt="Compositor glare: three neon rings - violet, cyan, and amber - with colored bloom halos and mirrored reflections on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
-### [temp-override-join](examples/temp-override-join/)
+### [compositor-glare](examples/compositor-glare/)
 
-Three unit cubes joined into a staircase under `bpy.context.temp_override` — the supported
-replacement for the removed `context.copy()` dict-pass form. Asserts one mesh remains,
-sources are gone, and local Z spans all three steps.
+Bloom through the compositor on both sides of the 5.0 rewrite — a `Glare` (Fog Glow)
+node fed by `Render Layers`, wired via `scene.compositing_node_group` on 5.x and
+`scene.node_tree` on 4.x. Witnesses with pixels that the halo falls off strictly with
+the compositor on and is exactly zero with it off — and that EEVEE has no `use_bloom`.
 
 </td>
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: nine lime-green cubes in a 3x3 grid on a dark studio floor, instanced via Geometry Nodes Instance on Points" /></a>
+<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel disc with a white center fading into a vivid rainbow rim, leaning upright toward the camera on a dark studio floor with a warm light pool behind it" /></a>
 </td>
 <td valign="middle">
 
-### [gn-instance-grid](examples/gn-instance-grid/)
+### [color-attribute-wheel](examples/color-attribute-wheel/)
 
-A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
-attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
-verts = 72, faces = 54, and `Set Material` carries the lime accent.
+The modern color-attributes API — `mesh.color_attributes.new()` on the `CORNER`
+domain, not the deprecated `vertex_colors` alias, filled by expanding per-vertex
+HSV across face corners with `foreach_get`/`foreach_set`. Asserts the attribute
+is sized to loop count (not vertex count), is `active_color`, and that the
+shader `Attribute` node is actually linked to Base Color.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — over a teal underglow on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [image-pixels-testcard](examples/image-pixels-testcard/)
+
+A procedural broadcast test card written into `bpy.data.images.new()` with one
+`pixels.foreach_set()` call. Asserts the buffer is always flat RGBA (`channels == 4`
+even with `alpha=False`), that byte storage quantizes at exactly ≤ 0.5/255 and
+strictly > 0 while `float_buffer=True` round-trips at float32 precision, that
+`scale()` reallocates (stale-size reads raise), and the `save()` trap: `source`
+silently flips to `FILE`, the buffer drops, and later `pixels` reads come from
+whatever sits on disk — proven with an imposter file. `save_render()` is the
+non-destructive path.
+
+</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary><strong>Mesh, curves &amp; text</strong> — 6 examples</summary>
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined steel 14-tooth gear at a three-quarter angle on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [bmesh-gear](examples/bmesh-gear/)
+
+A 14-tooth gear built entirely with bmesh — with `bm.free()` in a `try`/`finally`, as the
+ownership contract demands. Asserts the closed-form vert/edge/face counts and that the
+result is watertight (every edge borders exactly two faces).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a glossy sapphire-blue surface displaced into smooth standing-wave dunes against a black backdrop" /></a>
+</td>
+<td valign="middle">
+
+### [wave-displace](examples/wave-displace/)
+
+Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with **one
+`foreach_get` and one `foreach_set`**, no per-vertex access. Asserts the count is unchanged,
+the Z span matches the amplitude, and a probe vertex matches the closed-form wave.
 
 </td>
 </tr>
@@ -222,16 +233,105 @@ evaluated topology 1044 verts / 1028 faces.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" alt="Compositor glare: three neon rings - violet, cyan, and amber - with colored bloom halos and mirrored reflections on a dark studio floor" /></a>
+<a href="examples/text-version-stamp/"><img src="examples/text-version-stamp/preview.webp" alt="Text version stamp: beveled brass 5.1.2 numerals standing on a dark studio floor over a glowing teal underline, with a small steel BLENDER caption above — the body text is the live bpy.app.version_string" /></a>
 </td>
 <td valign="middle">
 
-### [compositor-glare](examples/compositor-glare/)
+### [text-version-stamp](examples/text-version-stamp/)
 
-Bloom through the compositor on both sides of the 5.0 rewrite — a `Glare` (Fog Glow)
-node fed by `Render Layers`, wired via `scene.compositing_node_group` on 5.x and
-`scene.node_tree` on 4.x. Witnesses with pixels that the halo falls off strictly with
-the compositor on and is exactly zero with it off — and that EEVEE has no `use_bloom`.
+A beveled 3D stamp of the running Blender version — a `TextCurve` whose `body` is the
+live `bpy.app.version_string`, so every render self-documents which Blender made it.
+Asserts the TextCurve solids closed form (evaluated z-extent = 2 × (extrude +
+bevel_depth), bevel widening the outline by 2 × bevel_depth), that flat text is filled
+but planar, that body edits regenerate geometry, that `version_string` is not bare
+semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
+`to_mesh_clear()`.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a matte graphite base cube beside its glossy green subdivision-surface evaluated form on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [depsgraph-export](examples/depsgraph-export/)
+
+A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
+`evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
+modifier-applied geometry (exported vertex count == evaluated > base).
+
+</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary><strong>Geometry Nodes</strong> — 2 examples</summary>
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-sdf-remesh/"><img src="examples/gn-sdf-remesh/preview.webp" alt="Geometry Nodes SDF remesh: a crimson ceramic torus with visible voxel-remesh facets, resting on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [gn-sdf-remesh](examples/gn-sdf-remesh/)
+
+A Geometry Nodes SDF remesh (`MeshToSDFGrid` → `GridToMesh` at the SDF zero-level).
+Witnesses the fix that an SDF grid is meshed with **Grid to Mesh**, not Volume to Mesh,
+and that a `Set Material` node carries the material through the remesh.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: nine lime-green cubes in a 3x3 grid on a dark studio floor, instanced via Geometry Nodes Instance on Points" /></a>
+</td>
+<td valign="middle">
+
+### [gn-instance-grid](examples/gn-instance-grid/)
+
+A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
+attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
+verts = 72, faces = 54, and `Set Material` carries the lime accent.
+
+</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary><strong>Animation, rigging &amp; constraints</strong> — 5 examples</summary>
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/turntable/"><img src="examples/turntable/preview.webp" alt="Turntable: a copper Suzanne mid-rotation on a dark studio floor, rendered with EEVEE" /></a>
+</td>
+<td valign="middle">
+
+### [turntable](examples/turntable/)
+
+A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path
+(`get_channelbag_for_slot`). Witnesses the slotted-actions fix: ensure-helper channelbag on
+5.x, `strip.channelbag` on 4.4/4.5.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/driver-wave/"><img src="examples/driver-wave/preview.webp" alt="Driver wave: sixteen orange columns whose heights form a sine skyline on a dark studio floor, each driven by a driver_namespace function" /></a>
+</td>
+<td valign="middle">
+
+### [driver-wave](examples/driver-wave/)
+
+A `driver_namespace` function driving sixteen column heights through SCRIPTED drivers.
+Witnesses the evaluation contract: driven values appear after a view-layer update on the
+evaluated copy **and** the flushed-back original, and both must match the closed form.
 
 </td>
 </tr>
@@ -247,55 +347,6 @@ Aim constraints via the data API — `Object.constraints.new('DAMPED_TRACK')` wi
 `target` and `TRACK_Z`, not `bpy.ops.object.constraint_add` in a headless loop.
 Asserts twelve unmuted Damped Track constraints and evaluated local `+Z` alignment
 toward the core (dot ≥ 0.998).
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel disc with a white center fading into a vivid rainbow rim, leaning upright toward the camera on a dark studio floor with a warm light pool behind it" /></a>
-</td>
-<td valign="middle">
-
-### [color-attribute-wheel](examples/color-attribute-wheel/)
-
-The modern color-attributes API — `mesh.color_attributes.new()` on the `CORNER`
-domain, not the deprecated `vertex_colors` alias, filled by expanding per-vertex
-HSV across face corners with `foreach_get`/`foreach_set`. Asserts the attribute
-is sized to loop count (not vertex count), is `active_color`, and that the
-shader `Attribute` node is actually linked to Base Color.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
-</td>
-<td valign="middle">
-
-### [parent-inverse-orrery](examples/parent-inverse-orrery/)
-
-A brass orrery parented entirely through the data API — the keep-world idiom
-`child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()`
-carries arms, planets, and a two-level moon through spinning pivots. Asserts bare
-`.parent =` really teleports, `matrix_world` is stale until `view_layer.update()`,
-and every orbit lands on its closed form.
-
-</td>
-</tr>
-<tr>
-<td width="46%" valign="middle">
-<a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" alt="Grease pencil rosette: five nested neon rose curves drawn as tapered Grease Pencil v3 strokes, cyan through magenta to red, glowing against a dark studio wall with a soft blue halo" /></a>
-</td>
-<td valign="middle">
-
-### [grease-pencil-rosette](examples/grease-pencil-rosette/)
-
-Five nested rose curves drawn with the Grease Pencil v3 attribute API — layer →
-`frames.new().drawing` → `add_strokes` → per-point position, radius, opacity, and
-vertex color. Asserts the GPv3 address break: on 4.5 GPv3 is `grease_pencils_v3`
-while `grease_pencils` is still legacy; on 5.x legacy is gone and GPv3 owns the
-name. Point writes lazily materialize attribute layers, and every position
-round-trips through the raw `POINT` buffer.
 
 </td>
 </tr>
@@ -318,42 +369,62 @@ ring pinned and the tip deflected. A straight tube is a failure.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/text-version-stamp/"><img src="examples/text-version-stamp/preview.webp" alt="Text version stamp: beveled brass 5.1.2 numerals standing on a dark studio floor over a glowing teal underline, with a small steel BLENDER caption above — the body text is the live bpy.app.version_string" /></a>
+<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
-### [text-version-stamp](examples/text-version-stamp/)
+### [parent-inverse-orrery](examples/parent-inverse-orrery/)
 
-A beveled 3D stamp of the running Blender version — a `TextCurve` whose `body` is the
-live `bpy.app.version_string`, so every render self-documents which Blender made it.
-Asserts the TextCurve solids closed form (evaluated z-extent = 2 × (extrude +
-bevel_depth), bevel widening the outline by 2 × bevel_depth), that flat text is filled
-but planar, that body edits regenerate geometry, that `version_string` is not bare
-semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
-`to_mesh_clear()`.
+A brass orrery parented entirely through the data API — the keep-world idiom
+`child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()`
+carries arms, planets, and a two-level moon through spinning pivots. Asserts bare
+`.parent =` really teleports, `matrix_world` is stale until `view_layer.update()`,
+and every orbit lands on its closed form.
+
+</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary><strong>Context &amp; Grease Pencil</strong> — 2 examples</summary>
+
+<table>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber three-step staircase of joined unit cubes on a dark studio floor" /></a>
+</td>
+<td valign="middle">
+
+### [temp-override-join](examples/temp-override-join/)
+
+Three unit cubes joined into a staircase under `bpy.context.temp_override` — the supported
+replacement for the removed `context.copy()` dict-pass form. Asserts one mesh remains,
+sources are gone, and local Z spans all three steps.
 
 </td>
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — over a teal underglow on a dark studio floor" /></a>
+<a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" alt="Grease pencil rosette: five nested neon rose curves drawn as tapered Grease Pencil v3 strokes, cyan through magenta to red, glowing against a dark studio wall with a soft blue halo" /></a>
 </td>
 <td valign="middle">
 
-### [image-pixels-testcard](examples/image-pixels-testcard/)
+### [grease-pencil-rosette](examples/grease-pencil-rosette/)
 
-A procedural broadcast test card written into `bpy.data.images.new()` with one
-`pixels.foreach_set()` call. Asserts the buffer is always flat RGBA (`channels == 4`
-even with `alpha=False`), that byte storage quantizes at exactly ≤ 0.5/255 and
-strictly > 0 while `float_buffer=True` round-trips at float32 precision, that
-`scale()` reallocates (stale-size reads raise), and the `save()` trap: `source`
-silently flips to `FILE`, the buffer drops, and later `pixels` reads come from
-whatever sits on disk — proven with an imposter file. `save_render()` is the
-non-destructive path.
+Five nested rose curves drawn with the Grease Pencil v3 attribute API — layer →
+`frames.new(1).drawing` → `add_strokes` → per-point position, radius, opacity, and
+vertex color. Asserts the GPv3 address break: on 4.5 GPv3 is `grease_pencils_v3`
+while `grease_pencils` is still legacy; on 5.x legacy is gone and GPv3 owns the
+name. Point writes lazily materialize attribute layers, and every position
+round-trips through the raw `POINT` buffer.
 
 </td>
 </tr>
 </table>
+
+</details>
 
 ## How content is organized
 
@@ -400,7 +471,17 @@ When community content (Stack Overflow, older add-on source) conflicts with the 
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md). v0.2.0 shipped procedural materials, depsgraph queries, drivers and app handlers, `bl_info` to manifest migration, two new rules, and the headless batch script template. v0.3.0 candidates include modal operators, USD pipelines, and `mathutils` patterns.
+See [ROADMAP.md](ROADMAP.md) for the candidate pool and what ships next — including the
+planned Blender 5.2 LTS sweep (July 2026). Releases are cut automatically from
+conventional commits; the full history lives in [CHANGELOG.md](CHANGELOG.md).
+
+## Contributing
+
+Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+workflow, [SECURITY.md](SECURITY.md) for reporting vulnerabilities, and
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards. New examples must
+follow the anatomy of [`examples/bmesh-gear/`](examples/bmesh-gear/) and the render
+look in [`docs/VISUAL-STYLE.md`](docs/VISUAL-STYLE.md).
 
 ## License
 
