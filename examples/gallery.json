@@ -285,6 +285,18 @@
         "sequencer",
         "rendering"
       ]
+    },
+    {
+      "name": "gltf-export-roundtrip",
+      "dir": "examples/gltf-export-roundtrip",
+      "teaches": "A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout.",
+      "witnessesFix": "export_yup bakes (x, y, z) -> (x, z, -y) into the vertex data with no node rotation (probed identical on 4.5.11 and 5.1.2); export_apply ships the evaluated mesh, not the base cage; exporter/importer RNA is guarded so a future kwarg rename fails loudly.",
+      "hero": "docs/gallery/assets/gltf-export-roundtrip-hero.webp",
+      "preview": "examples/gltf-export-roundtrip/preview.webp",
+      "tags": [
+        "export",
+        "uv"
+      ]
     }
   ]
 }

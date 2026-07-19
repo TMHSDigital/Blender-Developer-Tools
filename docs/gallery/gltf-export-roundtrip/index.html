@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gltf-export-roundtrip — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gltf-export-roundtrip/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="gltf-export-roundtrip — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gltf-export-roundtrip/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-export-roundtrip-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="gltf-export-roundtrip — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-export-roundtrip-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>gltf-export-roundtrip</h1>
+    <p>A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gltf-export-roundtrip render">
+      <img src="../assets/gltf-export-roundtrip-hero.webp" alt="gltf-export-roundtrip render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> export_yup bakes (x, y, z) -&gt; (x, z, -y) into the vertex data with no node rotation (probed identical on 4.5.11 and 5.1.2); export_apply ships the evaluated mesh, not the base cage; exporter/importer RNA is guarded so a future kwarg rename fails loudly.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/gltf-export-roundtrip/gltf_export_roundtrip.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a sci-fi supply crate — 35 beveled box shells with three material slots and box-mapped UVs — exports it with <code>bpy.ops.export_scene.gltf</code>, parses the file on disk, re-imports it, and verifies the whole round-trip against the depsgraph-evaluated mesh, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/headless-batch-scripting/SKILL.md"><code>headless-batch-scripting</code></a>.</p>
+<p><strong>What it witnesses:</strong> the interchange contracts AI-generated export code most often gets silently wrong.</p>
+<p>1. <strong>The +Y-up convention is baked into vertex data.</strong> glTF is +Y-up, Blender is +Z-up, and <code>export_yup=True</code> (the default) writes <code>(x, y, z) -&gt; (x, z, -y)</code> directly into the POSITION buffer — the node carries <strong>no</strong> rotation or scale. The check parses the <code>.gltf</code> JSON and asserts the accessor bounds equal the axis-converted evaluated bounding box, and that the node transform is absent. Exporting with <code>export_yup=False</code> ships raw Z-up data every engine displays lying on its back. 2. <strong><code>export_apply=True</code> ships the evaluated mesh, not the base cage.</strong> The crate&#x27;s bevel modifier lives only in the depsgraph; with flat shading and UV seams the exporter splits exactly one vertex per evaluated loop (7,560), so the on-disk POSITION count is an exact witness. <code>export_apply=False</code> silently writes the 624-vertex cage. 3. <strong>The round-trip is faithful.</strong> Re-imported positions (bit-exact here), loop normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin is top-left) and flipped back on import — both flips are proven by reading the <code>.bin</code> buffer directly.</p>
+<p><strong>Version witness (probed on Blender 4.5.11 LTS and 5.1.2):</strong> the operator signatures are byte-identical — 109 exporter properties, 20 importer properties, same defaults — and the exported JSON differs only in <code>asset.generator</code> (&quot;Khronos glTF Blender I/O v4.5.51&quot; vs &quot;v5.1.20&quot;). The example therefore runs identical kwargs on both versions and guards forward drift explicitly: every kwarg it passes must still exist in the operator&#x27;s RNA, so a future rename fails loudly instead of drifting silently. One genuine 5.x removal surfaced during authoring: <code>Mesh.calc_normals()</code> is gone (loop normals auto-compute on read) — calling it is itself a cross-version hazard, noted in the code.</p>
+<p>Two more authoring hazards are pinned in comments: exact face-plane coincidences between kit-bashed shells weld loops on export (the count check catches it), and <code>read_factory_settings</code> mid-check frees the original mesh — touching a freed RNA raises <code>ReferenceError</code>, so counts are captured before the wipe.</p>
+<p>The render stages the authored crate beside the actual re-imported one — same bevels, same materials carried through the file itself. If the axis conversion broke, the right twin would lie on its side; if the modifier contract broke, its silhouette would lose the rounded edges.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python gltf_export_roundtrip.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python gltf_export_roundtrip.py -- --output crate.png
+blender --background --python gltf_export_roundtrip.py -- --output crate.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (RNA kwarg drift, cage drift, missing on-disk conversion, vertex-split drift, or any round-trip excursion beyond tolerance). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/gltf-export-roundtrip/gltf_export_roundtrip.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip/gltf_export_roundtrip.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A sci-fi supply crate round-tripped through glTF export/import — a runnable example.
+
+Witnesses the contracts of the game-asset interchange path that AI-generated
+code most often gets silently wrong:
+
+1. The +Y-up convention. glTF is +Y-up, Blender is +Z-up, and
+   ``export_yup=True`` (the default) bakes the conversion into the vertex
+   data itself — (x, y, z) -&gt; (x, z, -y) on disk — with no node rotation.
+   The check parses the exported .gltf JSON and asserts the POSITION accessor
+   bounds equal the axis-converted evaluated bounding box, and that the node
+   carries neither rotation nor scale. Exporting with ``export_yup=False``
+   writes raw Z-up data that every engine will display lying on its back.
+2. Modifiers ship evaluated geometry. ``export_apply=True`` applies the
+   crate&#x27;s bevel modifier: the re-imported mesh matches the
+   depsgraph-evaluated mesh, not the base cage. With ``export_apply=False``
+   the file silently contains the low-poly cage.
+3. The round-trip is faithful. Positions, loop normals, UVs, and material
+   bindings of the re-imported mesh match the evaluated mesh within float
+   tolerances. UVs are V-flipped on disk (glTF texture origin is top-left)
+   and flipped back on import — the check proves both flips, reading the
+   .bin buffer directly.
+
+Version witness (probed during authoring on Blender 4.5.11 LTS and 5.1.2):
+the operator signatures are byte-identical — 109 exporter properties, 20
+importer properties, same defaults — and the exported JSON differs only in
+``asset.generator`` (&quot;Khronos glTF Blender I/O v4.5.51&quot; vs &quot;v5.1.20&quot;). The
+example therefore runs identical kwargs on both versions and guards forward
+drift explicitly: every kwarg it passes must still exist in the operator&#x27;s
+RNA (a rename fails the check loudly instead of drifting silently).
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python gltf_export_roundtrip.py --                 # check only
+    blender --background --python gltf_export_roundtrip.py -- --output c.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
+<span class="k">import</span> mathutils
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Crate specification. Every part is an axis-aligned box, so every base-cage</span>
+<span class="c"># vertex is a closed form: center +/- size/2. The parts interpenetrate on</span>
+<span class="c"># purpose — kit-bashed shells are how real game props are assembled — and the</span>
+<span class="c"># bevel modifier rounds each shell independently.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+PAINT, TRIM, GLOW = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>
+BEVEL_WIDTH = <span class="n">0.03</span>
+BEVEL_SEGMENTS = <span class="n">2</span>
+
+<span class="c"># (name, center, size, material) — 35 shells. Geometry rules that keep the</span>
+<span class="c"># exporter&#x27;s seam-splitting exact: no two shells share a face plane (exact</span>
+<span class="c"># float coincidences weld loops on export), interpenetration is fine, and the</span>
+<span class="c"># bevel width stays under half of every box dimension.</span>
+PARTS = [
+    (<span class="s">&quot;body&quot;</span>,        (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.73</span>),       (<span class="n">2.00</span>, <span class="n">1.40</span>, <span class="n">1.10</span>), PAINT),
+    (<span class="s">&quot;lid&quot;</span>,         (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.42</span>),       (<span class="n">2.14</span>, <span class="n">1.54</span>, <span class="n">0.26</span>), PAINT),
+    (<span class="s">&quot;lid_plate&quot;</span>,   (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.57</span>),       (<span class="n">0.90</span>, <span class="n">0.50</span>, <span class="n">0.08</span>), TRIM),
+    (<span class="s">&quot;panel_front&quot;</span>, (<span class="n">0.0</span>, -<span class="n">0.725</span>, <span class="n">0.75</span>),    (<span class="n">1.50</span>, <span class="n">0.08</span>, <span class="n">0.70</span>), PAINT),
+    (<span class="s">&quot;panel_back&quot;</span>,  (<span class="n">0.0</span>, <span class="n">0.725</span>, <span class="n">0.75</span>),     (<span class="n">1.50</span>, <span class="n">0.08</span>, <span class="n">0.70</span>), PAINT),
+    (<span class="s">&quot;panel_left&quot;</span>,  (-<span class="n">1.025</span>, <span class="n">0.0</span>, <span class="n">0.75</span>),    (<span class="n">0.08</span>, <span class="n">1.00</span>, <span class="n">0.70</span>), PAINT),
+    (<span class="s">&quot;panel_right&quot;</span>, (<span class="n">1.025</span>, <span class="n">0.0</span>, <span class="n">0.75</span>),     (<span class="n">0.08</span>, <span class="n">1.00</span>, <span class="n">0.70</span>), PAINT),
+    (<span class="s">&quot;strip&quot;</span>,       (<span class="n">0.0</span>, -<span class="n">0.78</span>, <span class="n">1.05</span>),     (<span class="n">1.60</span>, <span class="n">0.10</span>, <span class="n">0.12</span>), GLOW),
+]
+PARTS += [(<span class="s">&quot;foot&quot;</span>, (sx * <span class="n">0.85</span>, sy * <span class="n">0.55</span>, <span class="n">0.09</span>), (<span class="n">0.30</span>, <span class="n">0.30</span>, <span class="n">0.24</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+PARTS += [(<span class="s">&quot;cornerA&quot;</span>, (sx * <span class="n">1.045</span>, sy * <span class="n">0.63</span>, <span class="n">0.73</span>), (<span class="n">0.08</span>, <span class="n">0.24</span>, <span class="n">1.16</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+PARTS += [(<span class="s">&quot;cornerB&quot;</span>, (sx * <span class="n">0.92</span>, sy * <span class="n">0.70</span>, <span class="n">0.73</span>), (<span class="n">0.24</span>, <span class="n">0.08</span>, <span class="n">1.16</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+PARTS += [(<span class="s">&quot;handle_post&quot;</span>, (sx * <span class="n">1.06</span>, sy * <span class="n">0.25</span>, <span class="n">1.00</span>), (<span class="n">0.10</span>, <span class="n">0.08</span>, <span class="n">0.30</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+PARTS += [(<span class="s">&quot;handle_bar&quot;</span>, (sx * <span class="n">1.06</span>, <span class="n">0.0</span>, <span class="n">1.13</span>), (<span class="n">0.10</span>, <span class="n">0.60</span>, <span class="n">0.08</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+PARTS += [(<span class="s">&quot;latch&quot;</span>, (sx * <span class="n">0.55</span>, -<span class="n">0.74</span>, <span class="n">1.38</span>), (<span class="n">0.10</span>, <span class="n">0.08</span>, <span class="n">0.14</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+<span class="c"># rivets frame the front panel&#x27;s visible band below the glow strip</span>
+PARTS += [(<span class="s">&quot;rivet&quot;</span>, (sx * <span class="n">0.66</span>, -<span class="n">0.78</span>, sz), (<span class="n">0.08</span>, <span class="n">0.08</span>, <span class="n">0.08</span>), TRIM)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sz <span class="k">in</span> (<span class="n">0.47</span>, <span class="n">0.90</span>)]
+<span class="c"># three status pips on the lid plate share the strip&#x27;s emissive language</span>
+PARTS += [(<span class="s">&quot;pip&quot;</span>, (sx * <span class="n">0.18</span>, <span class="n">0.0</span>, <span class="n">1.60</span>), (<span class="n">0.08</span>, <span class="n">0.08</span>, <span class="n">0.08</span>), GLOW)
+          <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>)]
+
+UV_SCALE = <span class="n">0.4</span>          <span class="c"># box-map scale; authored UVs are a closed form of position</span>
+EXPORT_KWARGS = dict(
+    export_format=<span class="s">&#x27;GLTF_SEPARATE&#x27;</span>,   <span class="c"># parseable .gltf JSON + .bin buffer</span>
+    export_apply=<span class="k">True</span>,               <span class="c"># contract 2: ship the evaluated (beveled) mesh</span>
+    export_yup=<span class="k">True</span>,                 <span class="c"># contract 1: bake the +Y-up conversion</span>
+    export_texcoords=<span class="k">True</span>,
+    export_normals=<span class="k">True</span>,
+    export_materials=<span class="s">&#x27;EXPORT&#x27;</span>,
+    export_animations=<span class="k">False</span>,
+    export_image_format=<span class="s">&#x27;NONE&#x27;</span>,      <span class="c"># geometry contract only; no textures to pack</span>
+)
+
+POS_TOL = <span class="n">2e-5</span>          <span class="c"># float32 on disk vs float32 in Blender, plus axis math</span>
+NRM_TOL = <span class="n">2e-4</span>
+UV_TOL = <span class="n">3e-5</span>
+UNIT_TOL = <span class="n">1e-3</span>         <span class="c"># |length(n) - 1| for re-imported loop normals</span>
+KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key grid for attribute lookups</span>
+
+
+<span class="k">def</span> box_corners(center, size):
+    cx, cy, cz = center
+    hx, hy, hz = (s / <span class="n">2</span> <span class="k">for</span> s <span class="k">in</span> size)
+    <span class="k">return</span> [(cx + sx * hx, cy + sy * hy, cz + sz * hz)
+            <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sz <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+
+
+<span class="k">def</span> boxmap_uv(co, normal):
+    <span class="s">&quot;&quot;&quot;Closed-form UV for a loop: project onto the face&#x27;s dominant axis plane.&quot;&quot;&quot;</span>
+    ax = max(range(<span class="n">3</span>), key=<span class="k">lambda</span> i: abs(normal[i]))
+    <span class="k">if</span> ax == <span class="n">2</span>:
+        <span class="k">return</span> (<span class="n">0.5</span> + UV_SCALE * co.x, <span class="n">0.5</span> + UV_SCALE * co.y)
+    <span class="k">if</span> ax == <span class="n">0</span>:
+        <span class="k">return</span> (<span class="n">0.5</span> + UV_SCALE * co.z, <span class="n">0.5</span> + UV_SCALE * co.y)
+    <span class="k">return</span> (<span class="n">0.5</span> + UV_SCALE * co.x, <span class="n">0.5</span> + UV_SCALE * co.z)
+
+
+<span class="k">def</span> build_crate():
+    <span class="s">&quot;&quot;&quot;The supply crate: 35 beveled box shells, 3 material slots, box-mapped UVs.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;SupplyCrate&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> _name, center, size, mat <span class="k">in</span> PARTS:
+            n0 = len(bm.faces)
+            m = (mathutils.Matrix.Translation(center)
+                 @ mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
+            <span class="k">for</span> f <span class="k">in</span> bm.faces[n0:]:
+                f.material_index = mat
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()  <span class="c"># the ownership contract, as always</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">False</span>  <span class="c"># crisp low-poly facets; normals are unambiguous</span>
+    uv = me.uv_layers.new(name=<span class="s">&quot;UVMap&quot;</span>)
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
+            loop = me.loops[li]
+            uv.data[li].uv = boxmap_uv(me.vertices[loop.vertex_index].co, poly.normal)
+    obj = bpy.data.objects.new(<span class="s">&quot;SupplyCrate&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    mod = obj.modifiers.new(<span class="s">&quot;EdgeRounding&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+    mod.width = BEVEL_WIDTH
+    mod.segments = BEVEL_SEGMENTS
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> make_materials():
+    <span class="s">&quot;&quot;&quot;Authored PBR set: olive drab paint, gunmetal trim, teal status glow.&quot;&quot;&quot;</span>
+    <span class="k">def</span> pbr(name, base, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">0.0</span>):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+        <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+            sock.default_value = (*emission, <span class="n">1.0</span>)
+            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+        <span class="k">return</span> mat
+    <span class="k">return</span> [
+        pbr(<span class="s">&quot;Paint&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.18</span>, <span class="n">0.12</span>), <span class="n">0.15</span>, <span class="n">0.50</span>),
+        pbr(<span class="s">&quot;Trim&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.13</span>, <span class="n">0.15</span>), <span class="n">0.90</span>, <span class="n">0.35</span>),
+        pbr(<span class="s">&quot;Glow&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.20</span>, <span class="n">0.25</span>), <span class="n">0.0</span>, <span class="n">0.40</span>,
+            emission=(<span class="n">0.10</span>, <span class="n">0.75</span>, <span class="n">0.85</span>), strength=<span class="n">3.0</span>),
+    ]
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Evaluated-mesh capture: the independent reference the file must carry.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="k">def</span> capture_evaluated(obj):
+    <span class="s">&quot;&quot;&quot;Snapshot the depsgraph-evaluated mesh, then release it (lifetime contract).&quot;&quot;&quot;</span>
+    deps = bpy.context.evaluated_depsgraph_get()
+    ob_eval = obj.evaluated_get(deps)
+    me = ob_eval.to_mesh()
+    <span class="k">try</span>:
+        <span class="c"># loop normals auto-compute on read; Mesh.calc_normals() was removed in</span>
+        <span class="c"># 5.0 (deprecated 4.x) — calling it is itself a cross-version hazard</span>
+        me.calc_loop_triangles()
+        uv = me.uv_layers.active.data
+        <span class="k">return</span> {
+            <span class="s">&quot;verts&quot;</span>: [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices],
+            <span class="s">&quot;loops&quot;</span>: [tuple(me.vertices[l.vertex_index].co) <span class="k">for</span> l <span class="k">in</span> me.loops],
+            <span class="s">&quot;normals&quot;</span>: [tuple(l.normal) <span class="k">for</span> l <span class="k">in</span> me.loops],
+            <span class="s">&quot;uvs&quot;</span>: [tuple(uv[i].uv) <span class="k">for</span> i <span class="k">in</span> range(len(me.loops))],
+            <span class="s">&quot;tris&quot;</span>: [(t.material_index, tuple(t.center))
+                     <span class="k">for</span> t <span class="k">in</span> me.loop_triangles],
+        }
+    <span class="k">finally</span>:
+        ob_eval.to_mesh_clear()  <span class="c"># the reference dies here, by contract</span>
+
+
+<span class="k">def</span> key_of(p, digits=KEY_DIGITS):
+    <span class="k">return</span> tuple(round(c, digits) <span class="k">for</span> c <span class="k">in</span> p)
+
+
+<span class="k">def</span> set_map(positions, values):
+    <span class="s">&quot;&quot;&quot;position key -&gt; set of attribute values (split loops share positions).&quot;&quot;&quot;</span>
+    m = {}
+    <span class="k">for</span> p, v <span class="k">in</span> zip(positions, values):
+        m.setdefault(key_of(p), set()).add(tuple(round(c, <span class="n">6</span>) <span class="k">for</span> c <span class="k">in</span> v))
+    <span class="k">return</span> m
+
+
+<span class="k">def</span> candidates(m, p):
+    <span class="s">&quot;&quot;&quot;Union of the set at p&#x27;s key and its 26 neighbor keys.
+
+    Values that differ by less than the key grid can straddle a rounding
+    boundary; probing the neighboring cells makes the lookup straddle-safe.
+    &quot;&quot;&quot;</span>
+    step = <span class="n">10</span> ** -KEY_DIGITS
+    k0 = key_of(p)
+    out = set()
+    <span class="k">for</span> dx <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+        <span class="k">for</span> dy <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+            <span class="k">for</span> dz <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+                out |= m.get((k0[<span class="n">0</span>] + dx, k0[<span class="n">1</span>] + dy, k0[<span class="n">2</span>] + dz), set())
+    <span class="k">return</span> out
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># glTF JSON + buffer reading (GLTF_SEPARATE layout).</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="k">def</span> read_gltf(path):
+    g = json.load(open(path))
+    blob = open(os.path.join(os.path.dirname(path),
+                             g[<span class="s">&quot;buffers&quot;</span>][<span class="n">0</span>][<span class="s">&quot;uri&quot;</span>]), <span class="s">&quot;rb&quot;</span>).read()
+
+    <span class="k">def</span> accessor_floats(idx, ncomp):
+        acc = g[<span class="s">&quot;accessors&quot;</span>][idx]
+        bv = g[<span class="s">&quot;bufferViews&quot;</span>][acc[<span class="s">&quot;bufferView&quot;</span>]]
+        off = bv.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>) + acc.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>)
+        stride = bv.get(<span class="s">&quot;byteStride&quot;</span>, <span class="n">4</span> * ncomp)
+        <span class="k">return</span> [struct.unpack_from(<span class="s">f&quot;</span><span class="s">&lt;</span>{ncomp}<span class="s">f</span><span class="s">&quot;</span>, blob, off + stride * i)
+                <span class="k">for</span> i <span class="k">in</span> range(acc[<span class="s">&quot;count&quot;</span>])]
+
+    <span class="k">return</span> g, accessor_floats
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># The check. Distinct exit codes per contract; measured maxima printed on success.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="k">def</span> check(crate):
+    <span class="c"># contract 0 (version guard): every kwarg we rely on still exists.</span>
+    exp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.export_scene.gltf.get_rna_type().properties}
+    imp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.import_scene.gltf.get_rna_type().properties}
+    missing = [k <span class="k">for</span> k <span class="k">in</span> EXPORT_KWARGS <span class="k">if</span> k <span class="k">not</span> <span class="k">in</span> exp_props]
+    <span class="k">if</span> missing <span class="k">or</span> <span class="s">&quot;filepath&quot;</span> <span class="k">not</span> <span class="k">in</span> exp_props <span class="k">or</span> <span class="s">&quot;filepath&quot;</span> <span class="k">not</span> <span class="k">in</span> imp_props:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: exporter/importer RNA drifted, missing kwargs </span>{missing}<span class="s"> — </span><span class="s">&quot;</span>
+              <span class="s">&quot;the API contract this example pins has changed&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+
+    me = crate.data
+    <span class="c"># base cage is exactly the authored closed form: 35 boxes x 8 corners</span>
+    expect = sorted(key_of(c) <span class="k">for</span> _n, ce, s, _m <span class="k">in</span> PARTS <span class="k">for</span> c <span class="k">in</span> box_corners(ce, s))
+    got = sorted(key_of(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">if</span> got != expect:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: base cage drifted from its closed form </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(</span>{len(got)}<span class="s"> verts vs </span>{len(expect)}<span class="s"> expected)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># authored UVs are the box-map closed form of position + face normal</span>
+    uv0 = me.uv_layers[<span class="s">&quot;UVMap&quot;</span>].data
+    uv_err = max((uv0[li].uv - mathutils.Vector(boxmap_uv(
+        me.vertices[me.loops[li].vertex_index].co, p.normal))).length
+        <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">for</span> li <span class="k">in</span> p.loop_indices)
+    <span class="k">if</span> uv_err &gt; <span class="n">1e-6</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: authored UV drift </span>{uv_err:<span class="s">.3e</span>}<span class="s"> from box-map closed form</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    snap = capture_evaluated(crate)
+    <span class="k">if</span> <span class="k">not</span> (len(snap[<span class="s">&quot;verts&quot;</span>]) &gt; len(me.vertices) <span class="k">and</span> len(snap[<span class="s">&quot;loops&quot;</span>]) &gt; len(me.loops)):
+        print(<span class="s">&quot;ERROR: bevel modifier produced no evaluated geometry&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="c"># the export/import cycle below wipes the file — read_factory_settings</span>
+    <span class="c"># frees this Mesh; capture the count now (touching a freed RNA raises</span>
+    <span class="c"># ReferenceError, the classic dangling-reference hazard)</span>
+    base_verts = len(me.vertices)
+
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;gltf_roundtrip_&quot;</span>)
+    <span class="k">try</span>:
+        path = os.path.join(tmp, <span class="s">&quot;crate.gltf&quot;</span>).replace(<span class="s">&quot;\\&quot;</span>, <span class="s">&quot;/&quot;</span>)
+        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+
+        <span class="c"># contract 1 (on disk): +Y-up is baked into vertex data, no node transform</span>
+        g, acc_floats = read_gltf(path)
+        prims = g[<span class="s">&quot;meshes&quot;</span>][<span class="n">0</span>][<span class="s">&quot;primitives&quot;</span>]
+        node = g[<span class="s">&quot;nodes&quot;</span>][<span class="n">0</span>]
+        <span class="k">if</span> len(g[<span class="s">&quot;nodes&quot;</span>]) != <span class="n">1</span> <span class="k">or</span> len(g[<span class="s">&quot;meshes&quot;</span>]) != <span class="n">1</span>:
+            print(<span class="s">&quot;ERROR: expected exactly one node and one mesh on disk&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+        <span class="k">if</span> <span class="s">&quot;Khronos&quot;</span> <span class="k">not</span> <span class="k">in</span> g[<span class="s">&quot;asset&quot;</span>].get(<span class="s">&quot;generator&quot;</span>, <span class="s">&quot;&quot;</span>):
+            print(<span class="s">&quot;ERROR: unexpected exporter generator string&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+        <span class="k">if</span> node.get(<span class="s">&quot;rotation&quot;</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">or</span> node.get(<span class="s">&quot;scale&quot;</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: yup conversion leaked into the node transform: </span>{node}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+        <span class="k">if</span> len(prims) != <span class="n">3</span> <span class="k">or</span> {p.get(<span class="s">&quot;material&quot;</span>) <span class="k">for</span> p <span class="k">in</span> prims} != {<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>}:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: expected 3 primitives bound to materials 0..2, got </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{[p.get(<span class="s">&#x27;material&#x27;</span>) <span class="k">for</span> p <span class="k">in</span> prims]}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+        <span class="c"># contract 2 (on disk): the file carries the evaluated mesh, not the</span>
+        <span class="c"># base cage — flat shading + UV seams split exactly one vertex per</span>
+        <span class="c"># evaluated loop, so the on-disk POSITION count is the loop count</span>
+        disk_verts = sum(g[<span class="s">&quot;accessors&quot;</span>][p[<span class="s">&quot;attributes&quot;</span>][<span class="s">&quot;POSITION&quot;</span>]][<span class="s">&quot;count&quot;</span>]
+                         <span class="k">for</span> p <span class="k">in</span> prims)
+        <span class="k">if</span> disk_verts != len(snap[<span class="s">&quot;loops&quot;</span>]):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: on-disk POSITION count </span>{disk_verts}<span class="s"> != evaluated loop </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">count </span>{len(snap[<span class="s">&#x27;loops&#x27;</span>])}<span class="s"> — the file&#x27;s vertex split drifted </span><span class="s">&quot;</span>
+                  <span class="s">&quot;from the evaluated mesh (export_apply / export_normals contract)&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">10</span>
+
+        xs = [v[<span class="n">0</span>] <span class="k">for</span> v <span class="k">in</span> snap[<span class="s">&quot;verts&quot;</span>]]
+        ys = [v[<span class="n">1</span>] <span class="k">for</span> v <span class="k">in</span> snap[<span class="s">&quot;verts&quot;</span>]]
+        zs = [v[<span class="n">2</span>] <span class="k">for</span> v <span class="k">in</span> snap[<span class="s">&quot;verts&quot;</span>]]
+        <span class="c"># Blender (x, y, z) -&gt; glTF (x, z, -y): the +Y-up conversion, in closed form</span>
+        want_min = (min(xs), min(zs), -max(ys))
+        want_max = (max(xs), max(zs), -min(ys))
+        got_min = [<span class="n">1e30</span>] * <span class="n">3</span>
+        got_max = [-<span class="n">1e30</span>] * <span class="n">3</span>
+        <span class="k">for</span> p <span class="k">in</span> prims:
+            a = g[<span class="s">&quot;accessors&quot;</span>][p[<span class="s">&quot;attributes&quot;</span>][<span class="s">&quot;POSITION&quot;</span>]]
+            got_min = [min(got_min[i], a[<span class="s">&quot;min&quot;</span>][i]) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)]
+            got_max = [max(got_max[i], a[<span class="s">&quot;max&quot;</span>][i]) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)]
+        bbox_err = max(abs(got_min[i] - want_min[i]) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>))
+        bbox_err = max(bbox_err, max(abs(got_max[i] - want_max[i]) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)))
+        <span class="k">if</span> bbox_err &gt; POS_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: on-disk POSITION bounds deviate </span>{bbox_err:<span class="s">.3e</span>}<span class="s"> from the </span><span class="s">&quot;</span>
+                  <span class="s">&quot;axis-converted evaluated bbox — the +Y-up convention drifted&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+
+        <span class="c"># contract 3a (on disk): TEXCOORD_0 is V-flipped vs Blender UV space</span>
+        prim0 = prims[<span class="n">0</span>][<span class="s">&quot;attributes&quot;</span>]
+        disk_pos = acc_floats(prim0[<span class="s">&quot;POSITION&quot;</span>], <span class="n">3</span>)
+        disk_uv = acc_floats(prim0[<span class="s">&quot;TEXCOORD_0&quot;</span>], <span class="n">2</span>)
+        uv_set = set_map(snap[<span class="s">&quot;loops&quot;</span>], snap[<span class="s">&quot;uvs&quot;</span>])
+        flip_err = <span class="n">0.0</span>
+        <span class="k">for</span> pd, (u, v) <span class="k">in</span> zip(disk_pos[:<span class="n">32</span>], disk_uv[:<span class="n">32</span>]):
+            pb = (pd[<span class="n">0</span>], -pd[<span class="n">2</span>], pd[<span class="n">1</span>])  <span class="c"># glTF (x, z, -y) -&gt; Blender (x, y, z)</span>
+            best = min((max(abs(u - e[<span class="n">0</span>]), abs((<span class="n">1.0</span> - v) - e[<span class="n">1</span>]))
+                        <span class="k">for</span> e <span class="k">in</span> candidates(uv_set, pb)), default=<span class="n">1e30</span>)
+            flip_err = max(flip_err, best)
+        <span class="k">if</span> flip_err &gt; UV_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: on-disk UVs deviate </span>{flip_err:<span class="s">.3e</span>}<span class="s"> from the V-flipped </span><span class="s">&quot;</span>
+                  <span class="s">&quot;authored layout (glTF texture origin is top-left)&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">11</span>
+
+        <span class="c"># wipe the file, then re-import: names must survive exactly</span>
+        bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+        bpy.ops.import_scene.gltf(filepath=path)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+
+    meshes = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span>]
+    <span class="k">if</span> len(meshes) != <span class="n">1</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: re-import produced </span>{len(meshes)}<span class="s"> mesh objects, expected 1</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    ri = meshes[<span class="n">0</span>]
+    ident_err = max(abs(ri.matrix_world[i][j] - (<span class="n">1.0</span> <span class="k">if</span> i == j <span class="k">else</span> <span class="n">0.0</span>))
+                    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>) <span class="k">for</span> j <span class="k">in</span> range(<span class="n">4</span>))
+    <span class="k">if</span> ident_err &gt; <span class="n">1e-6</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: re-imported object carries a transform (err </span>{ident_err:<span class="s">.3e</span>}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">13</span>
+    names = sorted(m.name <span class="k">for</span> m <span class="k">in</span> ri.data.materials)
+    <span class="k">if</span> names != [<span class="s">&quot;Glow&quot;</span>, <span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Trim&quot;</span>]:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: material names drifted on re-import: </span>{names}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">14</span>
+    <span class="k">if</span> len(ri.data.vertices) != len(snap[<span class="s">&quot;loops&quot;</span>]):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: re-import has </span>{len(ri.data.vertices)}<span class="s"> verts, expected </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{len(snap[<span class="s">&#x27;loops&#x27;</span>])}<span class="s"> (one per evaluated loop: flat normals + </span><span class="s">&quot;</span>
+              <span class="s">&quot;UV seams split every loop)&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">15</span>
+
+    <span class="c"># contract 3b: positions round-trip (sorted point sets; the importer</span>
+    <span class="c"># re-applies the inverse axis conversion)</span>
+    want = sorted(snap[<span class="s">&quot;loops&quot;</span>])
+    got = sorted(tuple(v.co) <span class="k">for</span> v <span class="k">in</span> ri.data.vertices)
+    pos_err = max(max(abs(a[k] - b[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+                  <span class="k">for</span> a, b <span class="k">in</span> zip(got, want))
+    <span class="k">if</span> pos_err &gt; POS_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: round-trip position drift </span>{pos_err:<span class="s">.3e</span>}<span class="s"> (tol </span>{POS_TOL}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">16</span>
+
+    <span class="c"># contract 3c: loop normals round-trip (unit length, member of the</span>
+    <span class="c"># evaluated normal set at the same position)</span>
+    normal_set = set_map(snap[<span class="s">&quot;loops&quot;</span>], snap[<span class="s">&quot;normals&quot;</span>])
+    rme = ri.data
+    unit_err = max(abs(l.normal.length - <span class="n">1.0</span>) <span class="k">for</span> l <span class="k">in</span> rme.loops)
+    nrm_err = <span class="n">0.0</span>
+    <span class="k">for</span> l <span class="k">in</span> rme.loops:
+        p = tuple(rme.vertices[l.vertex_index].co)
+        best = min((max(abs(l.normal[k] - e[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+                    <span class="k">for</span> e <span class="k">in</span> candidates(normal_set, p)), default=<span class="n">1e30</span>)
+        nrm_err = max(nrm_err, best)
+    <span class="k">if</span> unit_err &gt; UNIT_TOL <span class="k">or</span> nrm_err &gt; NRM_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: round-trip normal drift </span>{nrm_err:<span class="s">.3e</span>}<span class="s"> (tol </span>{NRM_TOL}<span class="s">), </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">unit err </span>{unit_err:<span class="s">.3e</span>}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">17</span>
+
+    <span class="c"># contract 3d: UVs round-trip (the double V-flip returns the authored values)</span>
+    ruv = rme.uv_layers.active.data
+    rt_uv_err = <span class="n">0.0</span>
+    <span class="k">for</span> l <span class="k">in</span> rme.loops:
+        p = tuple(rme.vertices[l.vertex_index].co)
+        best = min((max(abs(ruv[l.index].uv[k] - e[k]) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">2</span>))
+                    <span class="k">for</span> e <span class="k">in</span> candidates(uv_set, p)), default=<span class="n">1e30</span>)
+        rt_uv_err = max(rt_uv_err, best)
+    <span class="k">if</span> rt_uv_err &gt; UV_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: round-trip UV drift </span>{rt_uv_err:<span class="s">.3e</span>}<span class="s"> (tol </span>{UV_TOL}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">18</span>
+
+    <span class="c"># contract 3e: per-triangle material bindings round-trip (positions of the</span>
+    <span class="c"># triangle centers carry the binding; straddle-safe neighbor lookup)</span>
+    <span class="k">if</span> len(rme.polygons) != len(snap[<span class="s">&quot;tris&quot;</span>]):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: re-import has </span>{len(rme.polygons)}<span class="s"> triangles, expected </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{len(snap[<span class="s">&#x27;tris&#x27;</span>])}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">19</span>
+    tri_map = {}
+    <span class="k">for</span> mat, ctr <span class="k">in</span> snap[<span class="s">&quot;tris&quot;</span>]:
+        tri_map.setdefault(key_of(ctr), []).append((mat, ctr))
+    bind_err = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> rme.polygons:
+        best = <span class="n">1e30</span>
+        <span class="k">for</span> dx <span class="k">in</span> (-<span class="n">1e-4</span>, <span class="n">0.0</span>, <span class="n">1e-4</span>):
+            <span class="k">for</span> dy <span class="k">in</span> (-<span class="n">1e-4</span>, <span class="n">0.0</span>, <span class="n">1e-4</span>):
+                <span class="k">for</span> dz <span class="k">in</span> (-<span class="n">1e-4</span>, <span class="n">0.0</span>, <span class="n">1e-4</span>):
+                    k = (round(p.center.x + dx, KEY_DIGITS),
+                         round(p.center.y + dy, KEY_DIGITS),
+                         round(p.center.z + dz, KEY_DIGITS))
+                    <span class="k">for</span> mat, ctr <span class="k">in</span> tri_map.get(k, []):
+                        <span class="k">if</span> mat == p.material_index:
+                            best = min(best, max(abs(p.center[i] - ctr[i])
+                                                 <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)))
+        bind_err = max(bind_err, best)
+    <span class="k">if</span> bind_err &gt; <span class="n">4e-5</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: per-triangle material bindings drifted on round-trip </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(center err </span>{bind_err:<span class="s">.3e</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">20</span>
+
+    print(<span class="s">f&quot;</span><span class="s">verts=</span>{base_verts}<span class="s"> eval_verts=</span>{len(snap[<span class="s">&#x27;verts&#x27;</span>])}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">eval_loops=</span>{len(snap[<span class="s">&#x27;loops&#x27;</span>])}<span class="s"> disk_verts=</span>{disk_verts}<span class="s"> tris=</span>{len(snap[<span class="s">&#x27;tris&#x27;</span>])}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">uv_closed_form_err=</span>{uv_err:<span class="s">.2e</span>}<span class="s"> bbox_err=</span>{bbox_err:<span class="s">.2e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">flip_err=</span>{flip_err:<span class="s">.2e</span>}<span class="s"> ident_err=</span>{ident_err:<span class="s">.2e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bind_err=</span>{bind_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">roundtrip pos_err=</span>{pos_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{POS_TOL}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">nrm_err=</span>{nrm_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{NRM_TOL}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">uv_err=</span>{rt_uv_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{UV_TOL}<span class="s">) unit_err=</span>{unit_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(authored, roundtrip, path, engine):
+    scene = bpy.context.scene
+
+    <span class="c"># the authored twin keeps its materials; the re-imported twin renders with</span>
+    <span class="c"># whatever the file carried back — the same look through the format itself</span>
+    authored.location.x = -<span class="n">1.35</span>
+    roundtrip.location.x = <span class="n">1.35</span>
+
+    pm = bpy.data.materials.new(<span class="s">&quot;PlaqueMetal&quot;</span>)
+    pm.use_nodes = <span class="k">True</span>
+    pb = pm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.16</span>, <span class="n">0.17</span>, <span class="n">0.19</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.9</span>
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+
+    <span class="k">def</span> plaque(text, x):
+        cu = bpy.data.curves.new(<span class="s">&quot;Plaque&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+        cu.body = text
+        cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+        cu.size = <span class="n">0.24</span>
+        cu.extrude = <span class="n">0.008</span>
+        ob = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, cu)
+        ob.location = (x, -<span class="n">1.55</span>, <span class="n">0.01</span>)
+        ob.data.materials.append(pm)
+        scene.collection.objects.link(ob)
+
+    plaque(<span class="s">&quot;AUTHORED&quot;</span>, -<span class="n">1.35</span>)
+    plaque(<span class="s">&quot;ROUND-TRIP&quot;</span>, <span class="n">1.35</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">560.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">360.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">460.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">53.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.6</span>, <span class="n">2.7</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.75</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the olive drab and teal glow toward pastel</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    crate = build_crate()
+    <span class="k">for</span> m <span class="k">in</span> make_materials():
+        crate.data.materials.append(m)
+    code = check(crate)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="c"># the re-imported crate is still in the file (check wiped and</span>
+        <span class="c"># re-imported); build an authored twin beside it</span>
+        roundtrip = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span>][<span class="n">0</span>]
+        authored = build_crate()
+        <span class="k">for</span> m <span class="k">in</span> make_materials():
+            authored.data.materials.append(m)
+        <span class="k">if</span> <span class="k">not</span> render_still(authored, roundtrip, os.path.abspath(args.output),
+                            args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">21</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;gltf-export-roundtrip OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/gltf-export-roundtrip-hero.webp" alt="gltf-export-roundtrip render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

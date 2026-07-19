@@ -369,3 +369,16 @@ jobs:
           xvfb-run -a "$BLENDER" --background \
             --python examples/vse-cut-list/vse_cut_list.py -- \
             --check-pixels --engine cycles
+
+      - name: Shipped example - glTF export round-trip (+Y-up, applied modifiers, UVs)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 35-part supply crate exported GLTF_SEPARATE
+          # and re-imported; asserts the exporter/importer kwarg set still exists
+          # (RNA guard), the on-disk +Y-up conversion ((x,y,z)->(x,z,-y) baked
+          # into POSITION bounds, no node rotation), disk vertex count ==
+          # evaluated loop count (export_apply), V-flipped TEXCOORD_0, and the
+          # full round-trip of positions/normals/UVs/per-triangle material
+          # bindings within float tolerances. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gltf-export-roundtrip/gltf_export_roundtrip.py --
