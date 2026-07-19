@@ -131,23 +131,26 @@ def build_arm():
         tag(lathe_part(bm, [(0.10, 0.14), (0.30, 0.19), (0.45, 0.19),
                             (0.60, 0.23), (0.80, 0.24), (1.00, 0.23),
                             (1.15, 0.21)], ORANGE), "Shoulder")
-        # clevis cheeks the hinge pin rides in (rigid on Shoulder)
+        # clevis cheek plates flanking the joint (rigid on Shoulder)
         for sy in (-1, 1):
-            box_part(bm, (0.12, 0.05, 0.42), (0.0, sy * 0.165, 1.24),
+            box_part(bm, (0.10, 0.06, 0.50), (0.0, sy * 0.175, 1.30),
                      (0, 0, 0), ORANGE, part_of, "Shoulder")
-        # elbow flex bellows: the five-influence zone the limit prunes
-        tag(lathe_part(bm, [(1.15, 0.21), (1.20, 0.19), (1.26, 0.21),
-                            (1.33, 0.19), (1.40, 0.21), (1.47, 0.19),
-                            (1.55, 0.19)], RUBBER), "FLEX")
-        # the hinge pin through the cheeks, capped both ends (rides Elbow)
-        cone_part(bm, 0.15, 0.15, 0.46, (0.0, 0.0, 1.35), (90, 0, 0),
+        # elbow flex cuff behind the hinge: the five-influence zone the
+        # limit prunes (every ring inside the five-bump z window)
+        tag(lathe_part(bm, [(1.33, 0.17), (1.38, 0.19), (1.43, 0.17),
+                            (1.49, 0.19), (1.55, 0.18)], RUBBER), "FLEX")
+        # the hinge pin stays with the clevis (Shoulder): the forearm's
+        # knuckle barrel (Elbow) rotates around it — pin caps must not tilt
+        cone_part(bm, 0.13, 0.13, 0.44, (0.0, 0.0, 1.35), (90, 0, 0),
+                  GUNMETAL, part_of, "Shoulder")
+        cone_part(bm, 0.165, 0.165, 0.26, (0.0, 0.0, 1.35), (90, 0, 0),
                   GUNMETAL, part_of, "Elbow")
         for sy in (-1, 1):
-            cone_part(bm, 0.17, 0.17, 0.05, (0.0, sy * 0.215, 1.35),
-                      (90, 0, 0), GUNMETAL, part_of, "Elbow")
-        # bright seal ring on the bellows middle — the accent marking the
-        # primary pruned-weight zone
-        tag(lathe_part(bm, [(1.33, 0.215), (1.37, 0.215)], ACCENT), "Elbow")
+            cone_part(bm, 0.17, 0.17, 0.05, (0.0, sy * 0.225, 1.35),
+                      (90, 0, 0), GUNMETAL, part_of, "Shoulder")
+        # bright seal hoop on the cuff — the accent marking the primary
+        # pruned-weight zone
+        tag(lathe_part(bm, [(1.42, 0.20), (1.46, 0.20)], ACCENT), "Elbow")
         # long plated forearm with two ridges (rigid on Elbow)
         tag(lathe_part(bm, [(1.55, 0.19), (1.75, 0.21), (1.80, 0.23),
                             (1.86, 0.21), (2.05, 0.20), (2.18, 0.22),
@@ -167,8 +170,8 @@ def build_arm():
         # three two-segment fingers, splayed (rigid on Claw)
         for a_deg in (90.0, 210.0, 330.0):
             a = math.radians(a_deg)
-            for pos, tilt, size in (((0.08, 3.08), 12.0, (0.075, 0.11, 0.22)),
-                                    ((0.14, 3.26), 26.0, (0.06, 0.095, 0.18))):
+            for pos, tilt, size in (((0.08, 3.08), 12.0, (0.085, 0.13, 0.22)),
+                                    ((0.14, 3.26), 26.0, (0.07, 0.11, 0.18))):
                 off, z = pos
                 m = (mathutils.Matrix.Translation((0.0, 0.0, z))
                      @ mathutils.Matrix.Rotation(a, 4, 'Z')

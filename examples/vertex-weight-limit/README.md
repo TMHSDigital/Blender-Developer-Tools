@@ -1,9 +1,9 @@
 # Vertex Weight Limit
 
 A runnable example that rigs a mech arm — bolted pedestal and shoulder
-fairing, an upper arm ending in clevis cheeks, the elbow hinge pin capped
-through a ribbed flex bellows, a long plated forearm, wrist bellows and
-collar, and a three-finger gripper — with deliberately rich five-bone weight
+fairing, an upper arm ending in clevis cheeks, the elbow hinge pin and
+knuckle barrel capped through a ribbed flex cuff, a long plated forearm,
+wrist cuff and collar, and a three-finger gripper — with deliberately rich five-bone weight
 bumps in the bellows, then enforces the game-engine
 **maximum of four bone influences per vertex** through the data API, following
 [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md) and
@@ -37,9 +37,9 @@ The vertex-group API (`v.groups`, `VertexGroup.add`/`remove`) is stable between
 Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself
 the version witness (measured values match to the digit).
 
-The render shows the pruned arm mid-pose: the flex bellows carry the teal
+The render shows the pruned arm mid-pose: the flex cuffs carry the teal
 accent — the five-influence zones the limit prunes glow at the elbow hinge
-and wrist, sealed by the bright ring on the elbow bellows — proof that the
+and wrist, sealed by the bright hoop on the elbow cuff — proof that the
 limited weights still deform as authored.
 
 ## Run
