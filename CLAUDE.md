@@ -102,6 +102,15 @@ Renders must conform to the gallery look spec at `docs/VISUAL-STYLE.md`.
 - If `.scratch/` lacks a needed version, download an official release from download.blender.org into it. `.scratch` is gitignored.
 - In scripts, version-branch on the `bpy.app.version` tuple, never on `bpy.app.version_string` — it reads e.g. `"4.5.11 LTS"`, not bare semver.
 
+## Live MCP vs Headless Harness
+
+Two execution paths exist for Blender work. The headless harness (`.scratch/` or system binaries, check-only scripts, CI smoke) is the **only source of truth for correctness** — every witness, check, and CI gate runs headless. The official Blender Lab MCP server ([lab/blender_mcp](https://projects.blender.org/lab/blender_mcp)), when registered on the local machine, provides a live interactive session for exploration.
+
+- **Use the live MCP for:** interactively inspecting a scene while designing a render, querying data relations, diagnosing why staged geometry or lighting looks wrong, and prototyping API calls before committing them to a script.
+- **Never use the live MCP for:** anything a check depends on, anything reported as verification evidence, or anything CI must reproduce. A behavior observed in the live session must be re-proven in the headless script before it counts. Examples must never import from, depend on, or assume the MCP server.
+- **Safety:** the server executes generated code in the running Blender instance without guards. Only attach it to scratch scenes, never to files you cannot afford to mutate.
+- **Availability is machine-local and optional:** if the server is not registered, proceed headless without comment.
+
 ## Git Staging
 
 Stage with **explicit paths only** — never `git add -A` or `git add .`. Cursor agent sessions inject a local guidance block into the working-copy `CLAUDE.md`; a bulk add sweeps it into the commit. It manifests as a `CLAUDE.md` hunk in `git diff` that you did not author (the file can be dirty before you touch anything). Leave it unstaged, and never stage `CLAUDE.md` unless you deliberately edited it.
