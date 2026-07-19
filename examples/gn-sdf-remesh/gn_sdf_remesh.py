@@ -49,8 +49,8 @@ def build():
         p.use_smooth = True
     mat = bpy.data.materials.new("Ceramic"); mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
-    b.inputs['Base Color'].default_value = (0.42, 0.028, 0.045, 1)  # crimson ceramic
-    b.inputs['Roughness'].default_value = 0.22
+    b.inputs['Base Color'].default_value = (0.45, 0.025, 0.05, 1)  # crimson ceramic
+    b.inputs['Roughness'].default_value = 0.16  # glossy: the SDF facets read by their glints
     obj.data.materials.append(mat)
     return obj
 
@@ -72,12 +72,15 @@ def render_still(obj, path, engine):
     wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
-    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.55); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -6.5, 2.2)
+    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.5); bpy.context.collection.objects.link(aim)
+    # off-axis and low: the remesh facets are the API evidence, and they only
+    # read when a raking key skims them from the side
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (2.6, -5.2, 1.5)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
-    # shaped warm key, faint cool fill (docs/VISUAL-STYLE.md)
-    for nm, loc, en, sz, col in [("K", (-4, -5, 7), 650, 4.5, (1.0, 0.96, 0.9)),
+    # low raking warm key so every facet catches a distinct glint, faint cool
+    # fill (docs/VISUAL-STYLE.md)
+    for nm, loc, en, sz, col in [("K", (-5, -3.5, 2.8), 480, 3.0, (1.0, 0.96, 0.9)),
                                  ("F2", (5, -4, 2), 110, 7.0, (0.75, 0.85, 1.0))]:
         ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = sz; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)

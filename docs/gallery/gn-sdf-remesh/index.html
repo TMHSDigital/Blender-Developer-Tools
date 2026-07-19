@@ -252,8 +252,8 @@ both builds.
         p.use_smooth = <span class="k">True</span>
     mat = bpy.data.materials.new(<span class="s">&quot;Ceramic&quot;</span>); mat.use_nodes = <span class="k">True</span>
     b = mat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
-    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.028</span>, <span class="n">0.045</span>, <span class="n">1</span>)  <span class="c"># crimson ceramic</span>
-    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.22</span>
+    b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.45</span>, <span class="n">0.025</span>, <span class="n">0.05</span>, <span class="n">1</span>)  <span class="c"># crimson ceramic</span>
+    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.16</span>  <span class="c"># glossy: the SDF facets read by their glints</span>
     obj.data.materials.append(mat)
     <span class="k">return</span> obj
 
@@ -275,12 +275,15 @@ both builds.
     wall.rotation_euler = (<span class="n">1.5708</span>, <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
     w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>); sc.world = w
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.55</span>); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">6.5</span>, <span class="n">2.2</span>)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.5</span>); bpy.context.collection.objects.link(aim)
+    <span class="c"># off-axis and low: the remesh facets are the API evidence, and they only</span>
+    <span class="c"># read when a raking key skims them from the side</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">2.6</span>, -<span class="n">5.2</span>, <span class="n">1.5</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
-    <span class="c"># shaped warm key, faint cool fill (docs/VISUAL-STYLE.md)</span>
-    <span class="k">for</span> nm, loc, en, sz, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">650</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
+    <span class="c"># low raking warm key so every facet catches a distinct glint, faint cool</span>
+    <span class="c"># fill (docs/VISUAL-STYLE.md)</span>
+    <span class="k">for</span> nm, loc, en, sz, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">5</span>, -<span class="n">3.5</span>, <span class="n">2.8</span>), <span class="n">480</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
                                  (<span class="s">&quot;F2&quot;</span>, (<span class="n">5</span>, -<span class="n">4</span>, <span class="n">2</span>), <span class="n">110</span>, <span class="n">7.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))]:
         ld = bpy.data.lights.new(nm, <span class="s">&#x27;AREA&#x27;</span>); ld.energy = en; ld.size = sz; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
