@@ -480,6 +480,17 @@
           <a class="card-link" href="lod-decimate-chain/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="armature mesh">
+        <a class="card-media" href="vertex-weight-limit/" aria-label="vertex-weight-limit example detail page">
+          <img src="assets/vertex-weight-limit-hero.webp" alt="vertex-weight-limit — A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="vertex-weight-limit/">vertex-weight-limit</a></h2>
+          <p class="teaches">A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh&#x27;s own deform layer, not the authoring function.</p>
+          <a class="card-link" href="vertex-weight-limit/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

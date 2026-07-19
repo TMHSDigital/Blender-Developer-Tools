@@ -82,6 +82,7 @@
     "examples/text-version-stamp",
     "examples/turntable",
     "examples/uv-layer-grid",
+    "examples/vertex-weight-limit",
     "examples/vse-cut-list",
     "examples/wave-displace"
   ]

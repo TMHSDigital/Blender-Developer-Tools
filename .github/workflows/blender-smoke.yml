@@ -393,3 +393,14 @@ jobs:
           # (bbox) preservation within 1e-3. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/lod-decimate-chain/lod_decimate_chain.py --
+
+      - name: Shipped example - vertex weight limit (4-influence cap + LBS)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a five-bone mech arm with rich 5-influence
+          # boots, pruned to the 4-influence engine cap via the data API;
+          # asserts pre/post-limit influence counts, unit weight sums, pose
+          # preservation (pre vs post pruning), exact LBS from the mesh's own
+          # deform layer, and a pinned Root mount. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/vertex-weight-limit/vertex_weight_limit.py --

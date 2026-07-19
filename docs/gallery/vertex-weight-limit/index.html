@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vertex-weight-limit — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-weight-limit/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="vertex-weight-limit — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-weight-limit/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-weight-limit-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="vertex-weight-limit — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-weight-limit-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>vertex-weight-limit</h1>
+    <p>A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom vertex-weight-limit render">
+      <img src="../assets/vertex-weight-limit-hero.webp" alt="vertex-weight-limit render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh&#x27;s own deform layer, not the authoring function.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/vertex-weight-limit/vertex_weight_limit.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that rigs a mech arm — pedestal mount and pauldron, orange armor shells, ribbed flex boots, wrist, three claw prongs — with deliberately rich five-bone weight bumps in the boots, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
+<p><strong>What it witnesses:</strong> the skinning constraint every game engine enforces and AI-generated rigging code most often violates silently.</p>
+<p>1. <strong>The limit is a data-API operation, not a context operator.</strong> Instead of <code>bpy.ops.object.vertex_group_limit_total</code>, the example reads each vertex&#x27;s groups, keeps the top four by weight, <code>VertexGroup.remove</code>s the rest, and renormalizes the survivors. Dropping without renormalizing leaves sums at 0.986 — a mesh that shrinks toward the origin under load (the check&#x27;s measured failure, 1.438e-02 off unit sum). 2. <strong>The armature modifier is still exactly linear blend skinning</strong> after the limit: every depsgraph-evaluated vertex equals <code>Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest</code>, with the weights <strong>read back from the mesh&#x27;s own deform layer</strong> (<code>v.groups</code>) — the weights on the mesh are the contract, not the weights you meant to write. Measured <code>lbs_err = 3.0e-07</code>. 3. <strong>Pruning must not damage the pose.</strong> Evaluated positions before and after the limit are held within 0.05 (measured 3.0e-03), the pedestal mount stays exactly pinned (Root is unposed), and the pre-limit authoring really carries five influences in the boots — otherwise the witness would be vacuous.</p>
+<p>The vertex-group API (<code>v.groups</code>, <code>VertexGroup.add</code>/<code>remove</code>) is stable between Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself the version witness (measured values match to the digit).</p>
+<p>The render shows the pruned arm mid-pose: the elbow bellows and wrist boot flex through the bend, the teal accent ring rides the forearm — proof that the limited weights still deform as authored.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python vertex_weight_limit.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python vertex_weight_limit.py -- --output arm.png
+blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/vertex-weight-limit/vertex_weight_limit.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit/vertex_weight_limit.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A rigged mech arm pruned to the 4-influence game-engine limit — a runnable example.
+
+Witnesses the skinning constraint every game engine enforces and AI-generated
+rigging code most often violates silently: **no more than four bone influences
+per vertex, weights summing to one**.
+
+1. The limit is enforced through the data API, not the context-heavy
+   ``bpy.ops.object.vertex_group_limit_total`` path: read each vertex&#x27;s groups,
+   keep the top four by weight, ``VertexGroup.remove`` the rest, then
+   renormalize the survivors to sum 1. Dropping without renormalizing leaves
+   sums &lt; 1 and the mesh shrinks toward the origin under load.
+2. The armature modifier is still exactly linear blend skinning (the
+   armature-bend precedent — built on, not duplicated): after limiting, every
+   depsgraph-evaluated vertex equals sum_i w_i (pose.matrix @
+   rest_local.inverted()) @ rest with the weights **read back from the mesh&#x27;s
+   own deform layer** (``v.groups``), not from the authoring function. The
+   weights on the mesh are the contract, not the weights you meant to write.
+3. Pruning must not damage the pose: evaluated positions before and after the
+   limit are compared and held within tolerance. The root stays pinned — the
+   pedestal mount never moves.
+
+The vertex-group API (``v.groups``, ``VertexGroup.add``/``remove``) is stable
+between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
+is itself the version witness.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python vertex_weight_limit.py --                 # check only
+    blender --background --python vertex_weight_limit.py -- --output a.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">import</span> mathutils
+
+SIDES = <span class="n">32</span>
+MAX_INFLUENCES = <span class="n">4</span>              <span class="c"># the engine constraint being witnessed</span>
+BUMP_R = <span class="n">1.8</span>                    <span class="c"># flex-boot blend support; guarantees 5 pre-limit</span>
+LBS_TOL = <span class="n">5e-4</span>                  <span class="c"># float32 mesh coords vs double pose matrices</span>
+SUM_TOL = <span class="n">1e-5</span>                  <span class="c"># per-vertex weight sum after renormalize</span>
+POSE_TOL = <span class="n">0.05</span>                 <span class="c"># pruning must not move the pose beyond this</span>
+BONES = (<span class="s">&quot;Root&quot;</span>, <span class="s">&quot;Shoulder&quot;</span>, <span class="s">&quot;Elbow&quot;</span>, <span class="s">&quot;Wrist&quot;</span>, <span class="s">&quot;Claw&quot;</span>)
+BONE_SPANS = {<span class="s">&quot;Root&quot;</span>: (-<span class="n">0.35</span>, <span class="n">0.10</span>), <span class="s">&quot;Shoulder&quot;</span>: (<span class="n">0.10</span>, <span class="n">1.35</span>),
+              <span class="s">&quot;Elbow&quot;</span>: (<span class="n">1.35</span>, <span class="n">2.55</span>), <span class="s">&quot;Wrist&quot;</span>: (<span class="n">2.55</span>, <span class="n">2.90</span>), <span class="s">&quot;Claw&quot;</span>: (<span class="n">2.90</span>, <span class="n">3.35</span>)}
+BONE_CENTERS = {b: (s[<span class="n">0</span>] + s[<span class="n">1</span>]) / <span class="n">2</span> <span class="k">for</span> b, s <span class="k">in</span> BONE_SPANS.items()}
+POSE_DEG = {<span class="s">&quot;Shoulder&quot;</span>: -<span class="n">8.0</span>, <span class="s">&quot;Elbow&quot;</span>: -<span class="n">35.0</span>, <span class="s">&quot;Wrist&quot;</span>: -<span class="n">18.0</span>, <span class="s">&quot;Claw&quot;</span>: <span class="n">12.0</span>}
+
+<span class="c"># armor palette slots</span>
+GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
+
+
+<span class="k">def</span> bump(z, center, radius=BUMP_R):
+    <span class="s">&quot;&quot;&quot;Smooth, compactly-supported influence: (1 - (d/r)^2)^2 inside r, else 0.&quot;&quot;&quot;</span>
+    d = abs(z - center) / radius
+    <span class="k">return</span> (<span class="n">1.0</span> - d * d) ** <span class="n">2</span> <span class="k">if</span> d &lt; <span class="n">1.0</span> <span class="k">else</span> <span class="n">0.0</span>
+
+
+<span class="k">def</span> flex_weights(z):
+    <span class="s">&quot;&quot;&quot;Rich pre-limit weights over all five bones — boots blend broadly.&quot;&quot;&quot;</span>
+    w = [bump(z, BONE_CENTERS[b]) <span class="k">for</span> b <span class="k">in</span> BONES]
+    total = sum(w)
+    <span class="k">return</span> [x / total <span class="k">for</span> x <span class="k">in</span> w]
+
+
+<span class="k">def</span> lathe_part(bm, rings, mat):
+    <span class="s">&quot;&quot;&quot;Revolve (z, r) rings around Z; returns the ring vertex lists.&quot;&quot;&quot;</span>
+    out = []
+    <span class="k">for</span> z, r <span class="k">in</span> rings:
+        out.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
+                                  r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
+                    <span class="k">for</span> s <span class="k">in</span> range(SIDES)])
+    <span class="k">for</span> k <span class="k">in</span> range(len(out) - <span class="n">1</span>):
+        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+            f = bm.faces.new((out[k][s], out[k][(s + <span class="n">1</span>) % SIDES],
+                              out[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], out[k + <span class="n">1</span>][s]))
+            f.material_index = mat
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> build_arm():
+    <span class="s">&quot;&quot;&quot;The mech arm: mount + pauldron, upper arm, elbow boot + ball, forearm,
+    wrist boot + ball, hand plate, three claw prongs — every ring closed form.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;MechArm&quot;</span>)
+    part_of = []   <span class="c"># creation-order bone name (or &#x27;FLEX&#x27;) per mesh vertex</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">def</span> tag(rings_verts, bone):
+            <span class="k">for</span> ring <span class="k">in</span> rings_verts:
+                <span class="k">for</span> v <span class="k">in</span> ring:
+                    part_of.append(bone)
+
+        <span class="c"># pedestal mount + pauldron cap (rigid on Root)</span>
+        tag(lathe_part(bm, [(-<span class="n">0.35</span>, <span class="n">0.32</span>), (-<span class="n">0.05</span>, <span class="n">0.32</span>), (<span class="n">0.0</span>, <span class="n">0.48</span>),
+                            (<span class="n">0.10</span>, <span class="n">0.50</span>), (<span class="n">0.22</span>, <span class="n">0.34</span>), (<span class="n">0.28</span>, <span class="n">0.14</span>)],
+                       GUNMETAL), <span class="s">&quot;Root&quot;</span>)
+        <span class="c"># upper arm armor with two plate ridges (rigid on Shoulder)</span>
+        tag(lathe_part(bm, [(<span class="n">0.10</span>, <span class="n">0.26</span>), (<span class="n">0.30</span>, <span class="n">0.30</span>), (<span class="n">0.38</span>, <span class="n">0.33</span>),
+                            (<span class="n">0.46</span>, <span class="n">0.30</span>), (<span class="n">0.70</span>, <span class="n">0.29</span>), (<span class="n">0.78</span>, <span class="n">0.32</span>),
+                            (<span class="n">0.86</span>, <span class="n">0.29</span>), (<span class="n">1.10</span>, <span class="n">0.27</span>), (<span class="n">1.15</span>, <span class="n">0.26</span>)],
+                       ORANGE), <span class="s">&quot;Shoulder&quot;</span>)
+        <span class="c"># elbow flex boot (broad blend — the &gt;4-influence region)</span>
+        tag(lathe_part(bm, [(<span class="n">1.15</span>, <span class="n">0.25</span>), (<span class="n">1.22</span>, <span class="n">0.20</span>), (<span class="n">1.28</span>, <span class="n">0.24</span>),
+                            (<span class="n">1.35</span>, <span class="n">0.20</span>), (<span class="n">1.42</span>, <span class="n">0.24</span>), (<span class="n">1.48</span>, <span class="n">0.21</span>), (<span class="n">1.55</span>, <span class="n">0.24</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
+        n0 = len(bm.verts)
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">12</span>, radius=<span class="n">0.23</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts[n0:]:
+            v.co.z += <span class="n">1.35</span>
+            part_of.append(<span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># forearm armor with ridges + teal accent ring (rigid on Elbow)</span>
+        tag(lathe_part(bm, [(<span class="n">1.55</span>, <span class="n">0.24</span>), (<span class="n">1.70</span>, <span class="n">0.26</span>), (<span class="n">1.76</span>, <span class="n">0.28</span>),
+                            (<span class="n">1.82</span>, <span class="n">0.26</span>), (<span class="n">2.00</span>, <span class="n">0.24</span>), (<span class="n">2.10</span>, <span class="n">0.27</span>),
+                            (<span class="n">2.16</span>, <span class="n">0.27</span>), (<span class="n">2.22</span>, <span class="n">0.24</span>), (<span class="n">2.45</span>, <span class="n">0.22</span>)],
+                       ORANGE), <span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># teal accent ring inset on the forearm</span>
+        tag(lathe_part(bm, [(<span class="n">2.10</span>, <span class="n">0.275</span>), (<span class="n">2.16</span>, <span class="n">0.275</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># wrist flex boot + ball (second &gt;4-influence region)</span>
+        tag(lathe_part(bm, [(<span class="n">2.45</span>, <span class="n">0.21</span>), (<span class="n">2.52</span>, <span class="n">0.17</span>), (<span class="n">2.60</span>, <span class="n">0.20</span>),
+                            (<span class="n">2.68</span>, <span class="n">0.16</span>), (<span class="n">2.76</span>, <span class="n">0.19</span>), (<span class="n">2.84</span>, <span class="n">0.16</span>), (<span class="n">2.95</span>, <span class="n">0.15</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
+        n0 = len(bm.verts)
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">12</span>, radius=<span class="n">0.20</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts[n0:]:
+            v.co.z += <span class="n">2.72</span>
+            part_of.append(<span class="s">&quot;Wrist&quot;</span>)
+        <span class="c"># hand plate (rigid on Wrist)</span>
+        tag(lathe_part(bm, [(<span class="n">2.55</span>, <span class="n">0.16</span>), (<span class="n">2.90</span>, <span class="n">0.17</span>)], GUNMETAL), <span class="s">&quot;Wrist&quot;</span>)
+        <span class="c"># three claw prongs, splayed at 120 deg (rigid on Claw)</span>
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>):
+            a = <span class="n">2</span> * math.pi * k / <span class="n">3</span>
+            dx, dy = math.cos(a), math.sin(a)
+            rings = []
+            <span class="k">for</span> z, r, off <span class="k">in</span> ((<span class="n">2.90</span>, <span class="n">0.10</span>, <span class="n">0.13</span>), (<span class="n">3.12</span>, <span class="n">0.08</span>, <span class="n">0.19</span>),
+                              (<span class="n">3.40</span>, <span class="n">0.03</span>, <span class="n">0.28</span>)):
+                rings.append([bm.verts.new((off * dx + r * math.cos(<span class="n">2</span> * math.pi * s / <span class="n">12</span>),
+                                            off * dy + r * math.sin(<span class="n">2</span> * math.pi * s / <span class="n">12</span>), z))
+                              <span class="k">for</span> s <span class="k">in</span> range(<span class="n">12</span>)])
+            <span class="k">for</span> j <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+                <span class="k">for</span> s <span class="k">in</span> range(<span class="n">12</span>):
+                    f = bm.faces.new((rings[j][s], rings[j][(s + <span class="n">1</span>) % <span class="n">12</span>],
+                                      rings[j + <span class="n">1</span>][(s + <span class="n">1</span>) % <span class="n">12</span>], rings[j + <span class="n">1</span>][s]))
+                    f.material_index = GUNMETAL
+            <span class="k">for</span> ring <span class="k">in</span> rings:
+                <span class="k">for</span> v <span class="k">in</span> ring:
+                    part_of.append(<span class="s">&quot;Claw&quot;</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()  <span class="c"># the ownership contract, as always</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">False</span>
+    obj = bpy.data.objects.new(<span class="s">&quot;MechArm&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj, part_of
+
+
+<span class="k">def</span> assign_weights(obj, part_of):
+    <span class="s">&quot;&quot;&quot;Author the rich pre-limit weights: hard single-bone on armor, broad
+    five-bone bumps in the flex boots.&quot;&quot;&quot;</span>
+    groups = {b: obj.vertex_groups.new(name=b) <span class="k">for</span> b <span class="k">in</span> BONES}
+    <span class="k">if</span> len(part_of) != len(obj.data.vertices):
+        <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span><span class="s">part tag count </span>{len(part_of)}<span class="s"> != vert count </span><span class="s">&quot;</span>
+                           <span class="s">f&quot;</span>{len(obj.data.vertices)}<span class="s">&quot;</span>)
+    <span class="k">for</span> idx, v <span class="k">in</span> enumerate(obj.data.vertices):
+        bone = part_of[idx]
+        <span class="k">if</span> bone == <span class="s">&quot;FLEX&quot;</span>:
+            <span class="k">for</span> b, w <span class="k">in</span> zip(BONES, flex_weights(v.co.z)):
+                <span class="k">if</span> w &gt; <span class="n">0.0</span>:
+                    groups[b].add([idx], w, <span class="s">&#x27;REPLACE&#x27;</span>)
+        <span class="k">else</span>:
+            groups[bone].add([idx], <span class="n">1.0</span>, <span class="s">&#x27;REPLACE&#x27;</span>)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> build_rig(obj):
+    arm_data = bpy.data.armatures.new(<span class="s">&quot;ArmRig&quot;</span>)
+    arm = bpy.data.objects.new(<span class="s">&quot;ArmRig&quot;</span>, arm_data)
+    bpy.context.collection.objects.link(arm)
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode=<span class="s">&#x27;EDIT&#x27;</span>)
+    prev = <span class="k">None</span>
+    <span class="k">for</span> name <span class="k">in</span> BONES:
+        eb = arm_data.edit_bones.new(name)
+        z0, z1 = BONE_SPANS[name]
+        eb.head = (<span class="n">0.0</span>, <span class="n">0.0</span>, z0)
+        eb.tail = (<span class="n">0.0</span>, <span class="n">0.0</span>, z1)
+        <span class="k">if</span> prev <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            eb.parent = prev
+            eb.use_connect = <span class="k">True</span>
+        prev = eb
+    bpy.ops.object.mode_set(mode=<span class="s">&#x27;OBJECT&#x27;</span>)
+    mod = obj.modifiers.new(<span class="s">&quot;Armature&quot;</span>, <span class="s">&#x27;ARMATURE&#x27;</span>)
+    mod.object = arm
+    mod.use_vertex_groups = <span class="k">True</span>
+    mod.use_bone_envelopes = <span class="k">False</span>
+    <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
+        pb = arm.pose.bones[name]
+        pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
+        pb.rotation_euler.x = math.radians(deg)
+    <span class="k">return</span> arm
+
+
+<span class="k">def</span> eval_positions(obj):
+    <span class="s">&quot;&quot;&quot;Evaluated vertex positions via the depsgraph; reference released by contract.&quot;&quot;&quot;</span>
+    deps = bpy.context.evaluated_depsgraph_get()
+    ob_eval = obj.evaluated_get(deps)
+    me = ob_eval.to_mesh()
+    <span class="k">try</span>:
+        <span class="k">return</span> [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">finally</span>:
+        ob_eval.to_mesh_clear()
+
+
+<span class="k">def</span> check(obj, arm, groups, pose_before):
+    me = obj.data
+
+    <span class="c"># pre-limit witness: the flex boots really carry five influences</span>
+    pre_max = max(len(v.groups) <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">if</span> pre_max != <span class="n">5</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: pre-limit max influences </span>{pre_max}<span class="s"> != 5 — the rich </span><span class="s">&quot;</span>
+              <span class="s">&quot;authoring drifted; the witness is vacuous&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+
+    <span class="c"># the limit, through the data API: keep top-4, drop the rest, renormalize</span>
+    changed = <span class="n">0</span>
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        gs = sorted(v.groups, key=<span class="k">lambda</span> g: -g.weight)
+        <span class="k">if</span> len(gs) &gt; MAX_INFLUENCES:
+            changed += <span class="n">1</span>
+        <span class="k">for</span> g <span class="k">in</span> gs[MAX_INFLUENCES:]:
+            groups[BONES[g.group]].remove([v.index])
+        kept = [g <span class="k">for</span> g <span class="k">in</span> v.groups]
+        total = sum(g.weight <span class="k">for</span> g <span class="k">in</span> kept)
+        <span class="k">for</span> g <span class="k">in</span> kept:
+            groups[BONES[g.group]].add([v.index], g.weight / total, <span class="s">&#x27;REPLACE&#x27;</span>)
+
+    <span class="c"># contract 1: no vertex exceeds the engine limit</span>
+    post_max = max(len(v.groups) <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">if</span> post_max &gt; MAX_INFLUENCES:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: vertex carries </span>{post_max}<span class="s"> groups after the limit — </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">engines cap at </span>{MAX_INFLUENCES}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> changed == <span class="n">0</span>:
+        print(<span class="s">&quot;ERROR: the limit changed nothing — no vertex exceeded the cap, &quot;</span>
+              <span class="s">&quot;the witness is vacuous&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    <span class="c"># contract 2: every vertex&#x27;s weights sum to 1 (or the vertex is unskinned)</span>
+    sum_err = <span class="n">0.0</span>
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        <span class="k">if</span> v.groups:
+            sum_err = max(sum_err, abs(sum(g.weight <span class="k">for</span> g <span class="k">in</span> v.groups) - <span class="n">1.0</span>))
+    <span class="k">if</span> sum_err &gt; SUM_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: weight sums deviate </span>{sum_err:<span class="s">.3e</span>}<span class="s"> from 1.0 after </span><span class="s">&quot;</span>
+              <span class="s">&quot;renormalize (dropped groups were not re-balanced)&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+
+    bpy.context.view_layer.update()
+    pose_after = eval_positions(obj)
+
+    <span class="c"># contract 3: pruning did not damage the pose</span>
+    pose_dev = max((mathutils.Vector(a) - mathutils.Vector(b)).length
+                   <span class="k">for</span> a, b <span class="k">in</span> zip(pose_before, pose_after))
+    <span class="k">if</span> pose_dev &gt; POSE_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: limiting moved the pose by </span>{pose_dev:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{POSE_TOL}<span class="s">) — pruning damaged deformation</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+
+    <span class="c"># contract 4: the modifier is still exactly LBS, with the weights read</span>
+    <span class="c"># back from the mesh&#x27;s own deform layer (armature-bend&#x27;s math, built on)</span>
+    mats = {n: arm.pose.bones[n].matrix @ arm.data.bones[n].matrix_local.inverted()
+            <span class="k">for</span> n <span class="k">in</span> BONES}
+    lbs_err = <span class="n">0.0</span>
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        predicted = sum((g.weight * (mats[BONES[g.group]] @ v.co)
+                         <span class="k">for</span> g <span class="k">in</span> v.groups),
+                        start=mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)))
+        lbs_err = max(lbs_err, (mathutils.Vector(pose_after[v.index])
+                                - predicted).length)
+    <span class="k">if</span> lbs_err &gt; LBS_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated mesh deviates </span>{lbs_err:<span class="s">.6f</span>}<span class="s"> from LBS over the </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">limited weights (tol </span>{LBS_TOL}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+
+    <span class="c"># the pedestal mount is rigid on Root and must not move</span>
+    root_move = max((mathutils.Vector(pose_after[i]) - v.co).length
+                    <span class="k">for</span> i, v <span class="k">in</span> enumerate(me.vertices)
+                    <span class="k">if</span> len(v.groups) == <span class="n">1</span> <span class="k">and</span> v.groups[<span class="n">0</span>].weight &gt; <span class="n">0.99</span>
+                    <span class="k">and</span> BONES[v.groups[<span class="n">0</span>].group] == <span class="s">&quot;Root&quot;</span>)
+    <span class="k">if</span> root_move &gt; <span class="n">1e-5</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: Root-weighted mount moved </span>{root_move:<span class="s">.6f</span>}<span class="s"> (Root is unposed)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+
+    print(<span class="s">f&quot;</span><span class="s">verts=</span>{len(me.vertices)}<span class="s"> pre_max=</span>{pre_max}<span class="s"> post_max=</span>{post_max}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">limited_verts=</span>{changed}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">sum_err=</span>{sum_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{SUM_TOL}<span class="s">) pose_dev=</span>{pose_dev:<span class="s">.2e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">(tol </span>{POSE_TOL}<span class="s">) lbs_err=</span>{lbs_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{LBS_TOL}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">root_move=</span>{root_move:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> make_materials():
+    <span class="k">def</span> pbr(name, base, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">0.0</span>):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+        <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+            sock.default_value = (*emission, <span class="n">1.0</span>)
+            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+        <span class="k">return</span> mat
+    <span class="k">return</span> [
+        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
+        pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.30</span>, <span class="n">0.08</span>), <span class="n">0.10</span>, <span class="n">0.45</span>),
+        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
+        pbr(<span class="s">&quot;TealAccent&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.22</span>, <span class="n">0.26</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
+            emission=(<span class="n">0.10</span>, <span class="n">0.65</span>, <span class="n">0.72</span>), strength=<span class="n">2.2</span>),
+    ]
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">600.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">52.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">5.3</span>, -<span class="n">6.2</span>, <span class="n">2.1</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (-<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">1.5</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the hazard orange and teal accent toward pastel</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    obj, part_of = build_arm()
+    <span class="k">for</span> m <span class="k">in</span> make_materials():
+        obj.data.materials.append(m)
+    groups = assign_weights(obj, part_of)
+    arm = build_rig(obj)
+    bpy.context.view_layer.update()
+    pose_before = eval_positions(obj)
+    code = check(obj, arm, groups, pose_before)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">10</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;vertex-weight-limit OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/vertex-weight-limit-hero.webp" alt="vertex-weight-limit render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

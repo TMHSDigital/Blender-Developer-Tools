@@ -309,6 +309,18 @@
         "depsgraph",
         "mesh"
       ]
+    },
+    {
+      "name": "vertex-weight-limit",
+      "dir": "examples/vertex-weight-limit",
+      "teaches": "A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.",
+      "witnessesFix": "Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh's own deform layer, not the authoring function.",
+      "hero": "docs/gallery/assets/vertex-weight-limit-hero.webp",
+      "preview": "examples/vertex-weight-limit/preview.webp",
+      "tags": [
+        "armature",
+        "mesh"
+      ]
     }
   ]
 }
