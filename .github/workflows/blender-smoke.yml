@@ -350,3 +350,22 @@ jobs:
           # non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/png-exr-alpha/png_exr_alpha.py --
+
+      - name: Shipped example - vse cut list (sequencer 4.5 vs 5.x rename)
+        run: |
+          set -euo pipefail
+          # Check only (no render): asserts the accessor rename (.sequences
+          # gone on 5.x, bridged on 4.5), the new_effect end-kwarg rename
+          # (frame_end on 4.5, length on 5.x — the wrong kwarg TypeErrors),
+          # closed-form spans on each version's canonical accessors
+          # (frame_final_* vs left_handle/right_handle/duration with the
+          # deprecation bridge), GC wiring and clamping, scene-strip span,
+          # and a save/reload round-trip. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/vse-cut-list/vse_cut_list.py --
+          # Compositing witness on a tiny Cycles render: mosaic cells carry
+          # their strip colors, the cross cell is a true mid blend, and a
+          # consumed cross source never composites independently.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/vse-cut-list/vse_cut_list.py -- \
+            --check-pixels --engine cycles

@@ -80,6 +80,7 @@
     "examples/text-version-stamp",
     "examples/turntable",
     "examples/uv-layer-grid",
+    "examples/vse-cut-list",
     "examples/wave-displace"
   ]
 }

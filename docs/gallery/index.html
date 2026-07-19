@@ -198,6 +198,7 @@
     <button class="chip" data-tag="operators" type="button">operators</button>
     <button class="chip" data-tag="performance" type="button">performance</button>
     <button class="chip" data-tag="rendering" type="button">rendering</button>
+    <button class="chip" data-tag="sequencer" type="button">sequencer</button>
     <button class="chip" data-tag="shape-keys" type="button">shape-keys</button>
     <button class="chip" data-tag="transforms" type="button">transforms</button>
     <button class="chip" data-tag="uv" type="button">uv</button>
@@ -444,6 +445,17 @@
           <p class="teaches">The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.</p>
           <p class="witnesses"><span class="tag">witnesses</span> calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback.</p>
           <a class="card-link" href="uv-layer-grid/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="sequencer rendering">
+        <a class="card-media" href="vse-cut-list/" aria-label="vse-cut-list example detail page">
+          <img src="assets/vse-cut-list-hero.webp" alt="vse-cut-list — The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration…" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="vse-cut-list/">vse-cut-list</a></h2>
+          <p class="teaches">The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Each side hard-fails the other&#x27;s spelling: TypeError on the wrong end kwarg, AttributeError on .sequences. The cross clamps to the source overlap, effect strips consume their inputs only when stacked above them, and a same-scene scene strip renders transparent.</p>
+          <a class="card-link" href="vse-cut-list/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

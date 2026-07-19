@@ -273,6 +273,18 @@
         "uv",
         "materials"
       ]
+    },
+    {
+      "name": "vse-cut-list",
+      "dir": "examples/vse-cut-list",
+      "teaches": "The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload.",
+      "witnessesFix": "Each side hard-fails the other's spelling: TypeError on the wrong end kwarg, AttributeError on .sequences. The cross clamps to the source overlap, effect strips consume their inputs only when stacked above them, and a same-scene scene strip renders transparent.",
+      "hero": "docs/gallery/assets/vse-cut-list-hero.webp",
+      "preview": "examples/vse-cut-list/preview.webp",
+      "tags": [
+        "sequencer",
+        "rendering"
+      ]
     }
   ]
 }
