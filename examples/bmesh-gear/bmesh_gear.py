@@ -93,15 +93,31 @@ def render_still(obj, path, engine):
     scene = bpy.context.scene
     for poly in obj.data.polygons:
         poly.use_smooth = False  # crisp machined facets
-    mat = bpy.data.materials.new("Steel")
+    # machined brass: a flat metal face lit by area lights renders as one
+    # featureless gradient, so the finish carries the design — concentric
+    # turning marks (a RINGS wave driving roughness) break the face into
+    # rings that each catch the key at a different angle
+    mat = bpy.data.materials.new("MachinedBrass")
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.75, 0.77, 0.8, 1.0)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (0.72, 0.44, 0.16, 1.0)
     bsdf.inputs["Metallic"].default_value = 1.0
-    bsdf.inputs["Roughness"].default_value = 0.45
+    rings = nt.nodes.new("ShaderNodeTexWave")
+    rings.wave_type = 'RINGS'
+    rings.rings_direction = 'SPHERICAL'  # concentric from center, not X-axis bands
+    rings.inputs["Scale"].default_value = 16.0
+    rings.inputs["Distortion"].default_value = 0.5
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["From Min"].default_value = 0.0
+    rough.inputs["From Max"].default_value = 1.0
+    rough.inputs["To Min"].default_value = 0.14
+    rough.inputs["To Max"].default_value = 0.36
+    nt.links.new(rings.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
     obj.data.materials.append(mat)
     obj.location = (0.0, 0.0, 0.85)
-    obj.rotation_euler = (math.radians(38), 0.0, math.radians(22))
+    obj.rotation_euler = (math.radians(46), 0.0, math.radians(22))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -139,9 +155,11 @@ def render_still(obj, path, engine):
 
     # metals live on reflections: soft warm key, restrained cool fill, and the
     # warm wedge raking the back wall (docs/VISUAL-STYLE.md)
-    light("Key", (-3.5, -4.5, 5.5), 700.0, 6.0, (1.0, 0.96, 0.9), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 160.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    light("Key", (-3.5, -4.5, 5.5), 550.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
+    light("Fill", (5.0, -3.5, 2.5), 130.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
+    # a small hot glint: brass needs one crisp specular streak to read machined
+    light("Glint", (1.8, -5.2, 6.2), 900.0, 0.9, (1.0, 0.9, 0.7), (40, 0, 18))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0

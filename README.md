@@ -176,7 +176,7 @@ non-destructive path.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined steel 14-tooth gear at a three-quarter angle on a dark studio floor" /></a>
+<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined brass 14-tooth gear with concentric turning marks catching the light, tilted at a three-quarter angle on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 
@@ -251,7 +251,7 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a matte graphite base cube beside its glossy green subdivision-surface evaluated form on a dark studio floor" /></a>
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a teal base cube beside the smooth teal sphere of its subdivision-surface evaluated form - one shared material, two silhouettes - on a dark studio floor with a warm light pool behind" /></a>
 </td>
 <td valign="middle">
 
