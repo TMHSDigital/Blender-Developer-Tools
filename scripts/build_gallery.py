@@ -34,6 +34,60 @@ REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "examples" / "gallery.json"
 OUT_DIR = REPO / "docs" / "gallery"
 
+# Soft cap for gallery index card alt text (accessibility + layout).
+_ALT_CAP = 160
+
+
+def first_sentence(text: str) -> str:
+    """First sentence of *text*, splitting on period-followed-by-whitespace.
+
+    Do not use ``str.split(".")[0]``: bpy teaches strings are full of dotted
+    API paths (``bmesh.ops.create_grid``, ``bpy.context.temp_override``), and
+    that split truncates mid-identifier.
+    """
+    m = re.search(r"\.\s+", text)
+    if m:
+        return text[: m.start() + 1].strip()
+    return text.strip()
+
+
+def card_alt(name: str, teaches: str, *, cap: int = _ALT_CAP) -> str:
+    """Gallery card ``<img alt>``: ``{name} — {first sentence}``, length-capped."""
+    first = first_sentence(teaches)
+    if len(first) > cap:
+        cut = first[:cap].rsplit(" ", 1)[0].rstrip(".,;: —-")
+        first = (cut if cut else first[:cap].rstrip()) + "…"
+    return f"{name} — {first}"
+
+
+def assert_alts_survive_dotted_paths(examples: list) -> None:
+    """Fail the build if any card alt is still truncated at the first ``.``.
+
+    Catches regressions of the old ``teaches.split(".")[0]`` bug for every
+    example whose first sentence contains a dotted identifier.
+    """
+    for ex in examples:
+        teaches = ex["teaches"]
+        name = ex["name"]
+        alt = card_alt(name, teaches)
+        first_dot = teaches.find(".")
+        if first_dot < 0:
+            continue
+        # First "." is a real sentence end (EOS or whitespace after it).
+        if first_dot == len(teaches) - 1 or teaches[first_dot + 1].isspace():
+            continue
+        suffix = alt.split(" — ", 1)[-1]
+        if len(suffix) <= first_dot:
+            raise SystemExit(
+                f"gallery alt truncated at dotted API path for {name!r}: {alt!r}"
+            )
+        # Old bug would have produced exactly this string:
+        legacy = f"{name} — {teaches.split('.')[0]}"
+        if alt == legacy:
+            raise SystemExit(
+                f"gallery alt still matches legacy split('.')[0] for {name!r}: {alt!r}"
+            )
+
 # ---------------------------------------------------------------------------
 # Shared page shell. __ROOT__ is the relative prefix from the page to the
 # gallery root ("" for the index, "../" for detail pages); __SITEROOT__ is the
@@ -534,7 +588,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
     cards = []
     for ex in examples:
-        alt = f'{ex["name"]} — {ex["teaches"].split(".")[0]}'
+        alt = card_alt(ex["name"], ex["teaches"])
         cards.append(
             CARD
             .replace("__TAGS__", html.escape(" ".join(ex.get("tags", [])), quote=True))
@@ -589,6 +643,8 @@ def main() -> int:
         if find_script(REPO / ex["dir"]) is None:
             print(f"ERROR: no .py script in {ex['dir']}", file=sys.stderr)
             return 4
+
+    assert_alts_survive_dotted_paths(examples)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "index.html").write_text(
