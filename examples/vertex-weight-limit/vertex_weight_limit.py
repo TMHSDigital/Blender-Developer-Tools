@@ -374,7 +374,7 @@ def render_still(obj, path, engine):
     cam.location = (5.3, -6.2, 2.1)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (-0.15, 0.0, 1.5)
+    target.location = (0.55, 0.0, 1.45)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
