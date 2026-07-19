@@ -1,10 +1,10 @@
 # Vertex Weight Limit
 
 A runnable example that rigs a mech arm — bolted pedestal and shoulder
-fairing, a shoulder hub and clevis-ended upper arm, the elbow hinge pin inside
-a ribbed flex bellows, a long plated forearm, wrist bellows and collar, and a
-three-finger gripper — with deliberately rich five-bone weight bumps in the
-bellows, then enforces the game-engine
+fairing, an upper arm ending in clevis cheeks, the elbow hinge pin capped
+through a ribbed flex bellows, a long plated forearm, wrist bellows and
+collar, and a three-finger gripper — with deliberately rich five-bone weight
+bumps in the bellows, then enforces the game-engine
 **maximum of four bone influences per vertex** through the data API, following
 [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md) and
 building on the linear-blend-skinning precedent of

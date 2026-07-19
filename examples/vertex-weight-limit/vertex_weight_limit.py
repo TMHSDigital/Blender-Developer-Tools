@@ -42,7 +42,7 @@ BONES = ("Root", "Shoulder", "Elbow", "Wrist", "Claw")
 BONE_SPANS = {"Root": (-0.35, 0.10), "Shoulder": (0.10, 1.35),
               "Elbow": (1.35, 2.55), "Wrist": (2.55, 2.90), "Claw": (2.90, 3.35)}
 BONE_CENTERS = {b: (s[0] + s[1]) / 2 for b, s in BONE_SPANS.items()}
-POSE_DEG = {"Shoulder": -8.0, "Elbow": -35.0, "Wrist": -18.0, "Claw": 12.0}
+POSE_DEG = {"Shoulder": -8.0, "Elbow": -35.0, "Wrist": -14.0, "Claw": 6.0}
 
 # armor palette slots
 GUNMETAL, ORANGE, RUBBER, ACCENT = 0, 1, 2, 3
@@ -126,25 +126,24 @@ def build_arm():
             cone_part(bm, 0.05, 0.04, 0.06,
                       (0.36 * math.cos(a), 0.36 * math.sin(a), 0.03),
                       (0, 0, 0), GUNMETAL, part_of, "Root")
-        # shoulder hub poking through the fairing (rigid on Shoulder)
-        cone_part(bm, 0.19, 0.19, 0.56, (0.0, 0.0, 0.62), (90, 0, 0),
-                  GUNMETAL, part_of, "Shoulder")
-        # upper arm shell, slimmer than the old barrel (rigid on Shoulder)
-        tag(lathe_part(bm, [(0.45, 0.19), (0.60, 0.23), (0.80, 0.24),
-                            (1.00, 0.23), (1.15, 0.21)], ORANGE), "Shoulder")
+        # upper arm shell rooted deep inside the fairing — no gap at the
+        # shoulder when the joint articulates (rigid on Shoulder)
+        tag(lathe_part(bm, [(0.10, 0.14), (0.30, 0.19), (0.45, 0.19),
+                            (0.60, 0.23), (0.80, 0.24), (1.00, 0.23),
+                            (1.15, 0.21)], ORANGE), "Shoulder")
         # clevis cheeks the hinge pin rides in (rigid on Shoulder)
         for sy in (-1, 1):
             box_part(bm, (0.12, 0.05, 0.42), (0.0, sy * 0.165, 1.24),
                      (0, 0, 0), ORANGE, part_of, "Shoulder")
         # elbow flex bellows: the five-influence zone the limit prunes
-        tag(lathe_part(bm, [(1.15, 0.17), (1.20, 0.20), (1.26, 0.16),
-                            (1.33, 0.20), (1.40, 0.16), (1.47, 0.20),
-                            (1.55, 0.17)], RUBBER), "FLEX")
+        tag(lathe_part(bm, [(1.15, 0.21), (1.20, 0.19), (1.26, 0.21),
+                            (1.33, 0.19), (1.40, 0.21), (1.47, 0.19),
+                            (1.55, 0.19)], RUBBER), "FLEX")
         # the hinge pin through the cheeks, capped both ends (rides Elbow)
         cone_part(bm, 0.15, 0.15, 0.46, (0.0, 0.0, 1.35), (90, 0, 0),
                   GUNMETAL, part_of, "Elbow")
         for sy in (-1, 1):
-            cone_part(bm, 0.18, 0.18, 0.05, (0.0, sy * 0.225, 1.35),
+            cone_part(bm, 0.17, 0.17, 0.05, (0.0, sy * 0.215, 1.35),
                       (90, 0, 0), GUNMETAL, part_of, "Elbow")
         # bright seal ring on the bellows middle — the accent marking the
         # primary pruned-weight zone
@@ -157,19 +156,19 @@ def build_arm():
         box_part(bm, (0.10, 0.05, 0.60), (0.0, 0.235, 2.02),
                  (0, 0, 0), ORANGE, part_of, "Elbow")
         # wrist flex bellows (second blend zone) + collar
-        tag(lathe_part(bm, [(2.45, 0.16), (2.51, 0.19), (2.57, 0.15),
-                            (2.64, 0.18), (2.70, 0.15), (2.75, 0.16)],
+        tag(lathe_part(bm, [(2.45, 0.18), (2.51, 0.20), (2.57, 0.16),
+                            (2.64, 0.19), (2.70, 0.16), (2.75, 0.17)],
                        RUBBER), "FLEX")
         tag(lathe_part(bm, [(2.75, 0.16), (2.85, 0.175), (2.90, 0.16)],
                        GUNMETAL), "Wrist")
         # palm block (rigid on Wrist)
-        box_part(bm, (0.26, 0.20, 0.14), (0.0, 0.0, 2.99),
+        box_part(bm, (0.30, 0.22, 0.24), (0.0, 0.0, 2.98),
                  (0, 0, 0), GUNMETAL, part_of, "Wrist")
         # three two-segment fingers, splayed (rigid on Claw)
         for a_deg in (90.0, 210.0, 330.0):
             a = math.radians(a_deg)
-            for pos, tilt, size in (((0.09, 3.11), 12.0, (0.075, 0.11, 0.22)),
-                                    ((0.15, 3.28), 26.0, (0.06, 0.095, 0.18))):
+            for pos, tilt, size in (((0.08, 3.08), 12.0, (0.075, 0.11, 0.22)),
+                                    ((0.14, 3.26), 26.0, (0.06, 0.095, 0.18))):
                 off, z = pos
                 m = (mathutils.Matrix.Translation((0.0, 0.0, z))
                      @ mathutils.Matrix.Rotation(a, 4, 'Z')
