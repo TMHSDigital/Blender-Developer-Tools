@@ -315,8 +315,8 @@ TOOTH_DUTY = <span class="n">0.45</span>
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -328,7 +328,7 @@ TOOTH_DUTY = <span class="n">0.45</span>
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
     <span class="c"># metals reflect the environment: keep a faint cool ambient so flanks never go black</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.035</span>, <span class="n">0.04</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.022</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
     scene.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
@@ -339,10 +339,11 @@ TOOTH_DUTY = <span class="n">0.45</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    <span class="c"># metals live on reflections: big soft key, strong cool fill, warm rim kept low</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">1400.0</span>, <span class="n">7.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">600.0</span>, <span class="n">9.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">2.2</span>), <span class="n">700.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.7</span>, <span class="n">0.4</span>), (-<span class="n">82</span>, <span class="n">0</span>, <span class="n">165</span>))
+    <span class="c"># metals live on reflections: soft warm key, restrained cool fill, and the</span>
+    <span class="c"># warm wedge raking the back wall (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">700.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">160.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
@@ -364,6 +365,8 @@ TOOTH_DUTY = <span class="n">0.45</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX would flatten the steel toward chalk (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 
