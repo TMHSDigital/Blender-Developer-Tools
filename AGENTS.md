@@ -119,9 +119,9 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
 ## CI/CD workflows
 
 - `validate.yml` runs file structure checks plus a `validate-counts` job that
-  asserts the README aggregate counts (12 skills, 6 rules, 2 templates, 17
-  snippets) match filesystem reality. The counts language in `README.md` is
-  load-bearing: the job greps for it.
+  asserts the README aggregate counts (skills, rules, templates, snippets,
+  and examples) match filesystem reality. The counts language in `README.md`
+  is load-bearing: the job greps for it.
 - `validate.yml` also runs a `validate-manifest` job that checks
   `.cursor-plugin/plugin.json` against reality: every listed path must exist,
   every skill, rule, snippet, template, and example on disk must be listed,
