@@ -86,7 +86,7 @@ def render_still(obj, path, engine):
     base_obj = bpy.data.objects.new("Base", obj.data.copy())
     base_obj.location = (-1.7, 0.0, 1.0)
     base_obj.data.materials.append(
-        principled("Graphite", (0.16, 0.17, 0.19, 1.0), 0.0, 0.7))
+        principled("Graphite", (0.09, 0.10, 0.12, 1.0), 0.0, 0.55))
     bpy.context.collection.objects.link(base_obj)
 
     # right: the SUBSURF object — what the depsgraph evaluates and the OBJ ships.
@@ -140,10 +140,10 @@ def render_still(obj, path, engine):
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 42.0
+    cam_data.lens = 46.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -9.0, 3.1)
-    cam.rotation_euler = (math.radians(76), 0.0, 0.0)
+    cam.location = (0.0, -8.2, 2.7)
+    cam.rotation_euler = (math.radians(78), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
 

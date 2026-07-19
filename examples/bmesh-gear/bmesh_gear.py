@@ -113,8 +113,8 @@ def render_still(obj, path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.055, 0.06, 0.07, 1.0)
-    fb.inputs["Roughness"].default_value = 0.5
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -126,7 +126,7 @@ def render_still(obj, path, engine):
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
     # metals reflect the environment: keep a faint cool ambient so flanks never go black
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.035, 0.04, 0.05, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.022, 0.028, 1.0)
     scene.world = world
 
     def light(name, loc, energy, size, col, rot):
@@ -137,10 +137,11 @@ def render_still(obj, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    # metals live on reflections: big soft key, strong cool fill, warm rim kept low
-    light("Key", (-3.5, -4.5, 5.5), 1400.0, 7.0, (1.0, 0.98, 0.94), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 600.0, 9.0, (0.8, 0.87, 1.0), (65, 0, 50))
-    light("Rim", (1.5, 4.5, 2.2), 700.0, 4.0, (1.0, 0.7, 0.4), (-82, 0, 165))
+    # metals live on reflections: soft warm key, restrained cool fill, and the
+    # warm wedge raking the back wall (docs/VISUAL-STYLE.md)
+    light("Key", (-3.5, -4.5, 5.5), 700.0, 6.0, (1.0, 0.96, 0.9), (48, 0, -35))
+    light("Fill", (5.0, -3.5, 2.5), 160.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0
@@ -162,6 +163,8 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would flatten the steel toward chalk (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

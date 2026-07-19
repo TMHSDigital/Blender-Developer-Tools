@@ -33,8 +33,7 @@ def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.mesh.primitive_monkey_add(location=(0, 0, 1.0))
     obj = bpy.context.active_object
-    for p in obj.data.polygons:
-        p.use_smooth = True
+    obj.data.shade_smooth()
     mat = bpy.data.materials.new("M"); mat.use_nodes = True
     b = mat.node_tree.nodes.get('Principled BSDF')
     b.inputs['Base Color'].default_value = (0.85, 0.35, 0.10, 1)
@@ -107,7 +106,10 @@ def render_still(obj, path, engine):
     else:
         try: sc.eevee.taa_render_samples = 16
         except Exception: pass
-    sc.frame_set(FRAMES // 4)
+    # pin the still to a deliberate pose: frame 4 is ~31 degrees of turn, a
+    # three-quarter view where ears and brow read instantly as Suzanne. An
+    # arbitrary turntable frame can land face-away and read as broken geometry.
+    sc.frame_set(4)
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
     # AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)
