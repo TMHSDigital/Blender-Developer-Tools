@@ -244,6 +244,11 @@ jobs:
               f for f in os.listdir('snippets')
               if f.endswith('.py')
           ])
+          example_count = len([
+              d for d in os.listdir('examples')
+              if os.path.isdir(os.path.join('examples', d))
+              and os.path.exists(os.path.join('examples', d, 'README.md'))
+          ])
 
           readme = open('README.md').read()
           if f'{skill_count} skills' not in readme:
@@ -255,11 +260,13 @@ jobs:
               errors.append(f'README template count mismatch (expected "{template_count} {template_word}" substring)')
           if f'{snippet_count} snippets' not in readme:
               errors.append(f'README snippet count mismatch (expected "{snippet_count} snippets" substring)')
+          if f'{example_count} examples' not in readme:
+              errors.append(f'README example count mismatch (expected "{example_count} examples" substring)')
 
           if errors:
               for e in errors:
                   print(f'::error::{e}', file=sys.stderr)
               sys.exit(1)
 
-          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets')
+          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets, {example_count} examples')
           PYEOF
