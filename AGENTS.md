@@ -27,7 +27,7 @@ The content base (counts are CI-enforced against README.md and the manifest):
 - 2 templates: `extension-addon-template` for Extensions Platform add-ons,
   and `headless-batch-script-template` for unattended batch jobs.
 - 17 snippets covering canonical patterns.
-- 20 examples under `examples/<name>/`: runnable scripts that assert a real
+- 21 examples under `examples/<name>/`: runnable scripts that assert a real
   API contract with deterministic checks, exit non-zero on failure, and
   optionally render a still via `--output`. Each is executed headless on
   Blender 4.5 LTS and 5.1 by `blender-smoke.yml`; its render ships in the
@@ -42,7 +42,7 @@ Blender-Developer-Tools/
   rules/<rule-name>.mdc          # 6 rule files
   templates/<template-name>/     # 2 starter templates
   snippets/<snippet-name>.py     # 17 standalone Python snippets
-  examples/<name>/               # 20 runnable smoke-gated examples (+ gallery.json)
+  examples/<name>/               # 21 runnable smoke-gated examples (+ gallery.json)
   scripts/build_gallery.py       # generates docs/gallery/ (stdlib only)
   scripts/site/                  # vendored landing-page build (build_site.py + template)
   docs/gallery/                  # committed generated gallery pages + hero assets

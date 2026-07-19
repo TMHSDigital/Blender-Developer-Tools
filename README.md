@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>20 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>21 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 20 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 21 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -171,7 +171,7 @@ non-destructive path.
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 6 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 7 examples</summary>
 
 <table>
 <tr>
@@ -185,6 +185,20 @@ non-destructive path.
 A 14-tooth gear built entirely with bmesh — with `bm.free()` in a `try`/`finally`, as the
 ownership contract demands. Asserts the closed-form vert/edge/face counts and that the
 result is watertight (every edge borders exactly two faces).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/uv-layer-grid/"><img src="examples/uv-layer-grid/preview.webp" alt="UV layer grid: two easel panels on a dark studio floor — left a flat teal square from a missing UV layer sampling texel (0,0), right a magenta/cyan neon checker proving pre-create + calc_uvs" /></a>
+</td>
+<td valign="middle">
+
+### [uv-layer-grid](examples/uv-layer-grid/)
+
+`bmesh.ops.create_grid(..., calc_uvs=True)` is a silent no-op unless a UV layer already
+exists — without one an Image Texture samples texel (0, 0) everywhere. Asserts the hazard,
+the pre-create repair against closed-form grid UVs, and an explicit assignment fallback.
 
 </td>
 </tr>

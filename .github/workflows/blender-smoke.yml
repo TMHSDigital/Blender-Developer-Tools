@@ -326,3 +326,15 @@ jobs:
           # it. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/image-pixels-testcard/image_pixels_testcard.py --
+
+      - name: Shipped example - uv layer grid (calc_uvs silent no-op)
+        run: |
+          set -euo pipefail
+          # Check only (no render): create_grid(..., calc_uvs=True) without a
+          # pre-existing UV layer leaves 0 layers (silent no-op); pre-create +
+          # calc_uvs fills loops to the closed-form grid UVs
+          # ((x/size+1)/2, (y/size+1)/2) within 1e-6 including mesh persistence;
+          # explicit loop assignment is the calc_uvs-free fallback. Exits
+          # non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/uv-layer-grid/uv_layer_grid.py --

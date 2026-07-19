@@ -98,8 +98,9 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Bump `blender_version_min` in the templates if 5.2 APIs are used
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
 - Gallery coverage follow-ups from the GPv3 review: light-linking, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, `text-version-stamp`, and `image-pixels-testcard` shipped first)
-- UV-layer authoring witness: `bmesh.ops.create_grid(calc_uvs=True)` silently creates no UV layer unless one already exists, and an Image Texture without UVs samples texel (0,0) everywhere (found while authoring `image-pixels-testcard`)
+- ~~UV-layer authoring witness~~ **SHIPPED** as `examples/uv-layer-grid/` — `create_grid(..., calc_uvs=True)` silent no-op without a pre-existing UV layer; closed-form UV fill + explicit assignment fallback; dual-panel render (flat texel (0,0) vs neon checker)
 - Image save-format witness: float images saved to PNG with varying alpha suffer premultiply quantization (~0.98 worst-case round-trip error at 8-bit alpha extremes); EXR vs PNG storage contract
+- Attribute domain witness: writing a POINT-domain color attribute and reading it as if it were CORNER (or vice versa) silently shears colors across shared verts — companion to `color-attribute-wheel`
 
 ## Future (uncommitted)
 
