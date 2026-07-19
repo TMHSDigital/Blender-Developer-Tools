@@ -82,11 +82,18 @@ def render_still(obj, path, engine):
     """Base cube beside its evaluated form — the two counts the check compares."""
     scene = bpy.context.scene
 
+    # one hero material on BOTH objects: the two silhouettes share a color so
+    # the only visible difference is the thing the check measures — base-mesh
+    # geometry versus the depsgraph-evaluated subsurf
+    hero = principled("Teal", (0.012, 0.30, 0.34, 1.0), 0.0, 0.2)
+
     # left: the base mesh, modifier-free (a plain copy of the datablock)
     base_obj = bpy.data.objects.new("Base", obj.data.copy())
     base_obj.location = (-1.7, 0.0, 1.0)
-    base_obj.data.materials.append(
-        principled("Graphite", (0.09, 0.10, 0.12, 1.0), 0.0, 0.55))
+    # turned off camera-parallel so the key rakes the front face into a
+    # gradient instead of one flat tone
+    base_obj.rotation_euler = (0.0, 0.0, math.radians(32))
+    base_obj.data.materials.append(hero)
     bpy.context.collection.objects.link(base_obj)
 
     # right: the SUBSURF object — what the depsgraph evaluates and the OBJ ships.
@@ -97,8 +104,7 @@ def render_still(obj, path, engine):
     bottom = min(v.co.z for v in em.vertices)
     obj.evaluated_get(dg).to_mesh_clear()
     obj.location = (1.8, 0.0, -bottom)
-    obj.data.materials.append(
-        principled("EvalGreen", (0.03, 0.32, 0.10, 1.0), 0.0, 0.15))
+    obj.data.materials.append(hero)
     for poly in obj.data.polygons:
         poly.use_smooth = True
 
@@ -140,10 +146,10 @@ def render_still(obj, path, engine):
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 46.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.2, 2.7)
-    cam.rotation_euler = (math.radians(78), 0.0, 0.0)
+    cam.location = (0.0, -7.4, 3.0)
+    cam.rotation_euler = (math.radians(76), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
