@@ -6,6 +6,10 @@ evaluates it at LOD0/1/2 through the Decimate modifier via the depsgraph,
 following [`depsgraph-and-evaluated-data`](../../skills/depsgraph-and-evaluated-data/SKILL.md)
 and [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md).
 
+**Pipeline arc:** modeling/LOD here, weighting in
+[`vertex-weight-limit`](../vertex-weight-limit/), export in
+[`gltf-export-roundtrip`](../gltf-export-roundtrip/).
+
 **What it witnesses:** the modifier-based LOD contract that game asset pipelines
 rely on.
 
