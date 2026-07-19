@@ -191,7 +191,7 @@
 <p><strong>Hazards discovered while authoring</strong> (all witnessed by the checks above):</p>
 <ul><li>A GAMMA_CROSS asked to outlast its inputs&#x27; overlap is <strong>silently clamped</strong> to the overlap — request length 9 over a (25, 33) overlap, get (25, 33).</li><li>A scene strip pointing at its <strong>own</strong> scene is a feedback loop and renders transparent (alpha 0) — the &quot;stage&quot; is silently absent. Source a separate scene.</li><li>Effect strips <strong>consume</strong> their inputs: input strips never composite on their own channel, and the effect&#x27;s transform applies on top of the inputs&#x27; transforms. Consumption requires the effect on a channel <strong>above</strong> its inputs; below, they keep painting independently.</li><li>An empty <code>bpy_prop_collection</code> is falsy — <code>se.strips or se.sequences</code> silently falls through to the legacy accessor on an empty timeline. Always branch on <code>hasattr</code>.</li></ul>
 <p><strong>Version divergence:</strong> the whole example is the divergence — gated on the <code>bpy.app.version</code> tuple (<code>&gt;= (5, 0, 0)</code>), never on <code>version_string</code> (<code>&quot;4.5.11 LTS&quot;</code> is not bare semver). Each side asserts its own canonical contract plus the other side&#x27;s removal/bridge state. Measured values are identical on 4.5.11 and 5.1.1, including the pixel witness.</p>
-<p><strong>Render:</strong> the program wall *is* the sequencer output at frame 29 (mid cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend, over the Stage scene strip showing the dark studio. An off-by-one in end-exclusive span math drops its cell to the dark stage; the caption strip carries the closed form. Rendered locally with EEVEE (GPU host); the checks and <code>--check-pixels</code> need no GPU (Cycles CPU).</p>
+<p><strong>Render:</strong> the program wall *is* the sequencer output at frame 29 (mid cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend, over the Stage scene strip showing the dark studio. An off-by-one in end-exclusive span math drops its cell to the dark stage; the caption strip carries the closed form. The hero presents that authentic frame on a reference monitor in a dark-studio editing bay — the pixels on the screen are the genuine sequencer output (evidence); only the bay around them is staged (presentation). Rendered locally with EEVEE (GPU host); the checks and <code>--check-pixels</code> need no GPU (Cycles CPU).</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vse_cut_list.py --
@@ -245,16 +245,17 @@ Two further hazards surfaced while authoring and are witnessed here:
 The check builds a deterministic cut list, asserts every span against its
 closed form on each version&#x27;s canonical accessors, then proves the spans,
 wiring, colors, and transforms survive a save/reload round-trip. Pass
---output to render the program wall staged inside the studio — the mosaic
-IS the sequencer output sampled mid-cross — and --check-pixels to assert
-the compositing contract on a tiny render (cell colors and input
-consumption), the way CI does:
+--output to render the authentic program wall (the sequencer output
+sampled mid-cross) presented on a reference monitor in the dark-studio
+editing bay, and --check-pixels to assert the compositing contract on a
+tiny render (cell colors and input consumption), the way CI does:
 
     blender --background --python vse_cut_list.py --
     blender --background --python vse_cut_list.py -- --check-pixels
     blender --background --python vse_cut_list.py -- --output vse.png
 &quot;&quot;&quot;</span>
-<span class="k">import</span> bpy, sys, os, math, argparse, tempfile, warnings
+<span class="k">import</span> bpy, sys, os, math, argparse, tempfile, warnings, shutil
+<span class="k">import</span> mathutils
 
 IS_5X = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
 
@@ -629,11 +630,144 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 
 
+<span class="k">def</span> build_bay(sc, frame_path):
+    <span class="s">&quot;&quot;&quot;The editing-bay presentation: a reference monitor on a desk in the
+    dark studio, its screen showing the AUTHENTIC sequencer frame. The pixels
+    on the screen are the evidence (rendered by the VSE above); the bay is
+    only the designed presentation around them.&quot;&quot;&quot;</span>
+    <span class="k">import</span> bmesh
+
+    <span class="k">def</span> box(name, size, loc, mat):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                  matrix=mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        sc.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    <span class="k">def</span> pbr(name, base, metallic, roughness):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+        <span class="k">return</span> mat
+
+    gunmetal = pbr(<span class="s">&quot;BayMetal&quot;</span>, (<span class="n">0.08</span>, <span class="n">0.09</span>, <span class="n">0.10</span>), <span class="n">0.7</span>, <span class="n">0.40</span>)
+    deskmat = pbr(<span class="s">&quot;DeskTop&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.80</span>)
+
+    <span class="c"># desk slab, stand, and the monitor bezel (screen face toward -Y)</span>
+    box(<span class="s">&quot;Desk&quot;</span>, (<span class="n">2.80</span>, <span class="n">1.10</span>, <span class="n">0.72</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.36</span>), deskmat)
+    box(<span class="s">&quot;StandBase&quot;</span>, (<span class="n">0.70</span>, <span class="n">0.50</span>, <span class="n">0.06</span>), (<span class="n">0.0</span>, <span class="n">0.05</span>, <span class="n">0.75</span>), gunmetal)
+    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.12</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, <span class="n">0.05</span>, <span class="n">0.99</span>), gunmetal)
+    box(<span class="s">&quot;Bezel&quot;</span>, (<span class="n">2.06</span>, <span class="n">0.09</span>, <span class="n">1.30</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.89</span>), gunmetal)
+
+    <span class="c"># the screen: one unlit quad sampling the authentic frame end to end —</span>
+    <span class="c"># emission only, so the VSE pixels read exactly as the sequencer wrote them</span>
+    img = bpy.data.images.load(frame_path)
+    smat = bpy.data.materials.new(<span class="s">&quot;ProgramScreen&quot;</span>)
+    smat.use_nodes = <span class="k">True</span>
+    nt = smat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+    em = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+    tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    nt.links.new(tc.outputs[<span class="s">&quot;UV&quot;</span>], tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], em.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    sme = bpy.data.meshes.new(<span class="s">&quot;Screen&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        q = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> ((-<span class="n">0.96</span>, -<span class="n">0.048</span>, <span class="n">1.35</span>), (<span class="n">0.96</span>, -<span class="n">0.048</span>, <span class="n">1.35</span>),
+                                       (<span class="n">0.96</span>, -<span class="n">0.048</span>, <span class="n">2.43</span>), (-<span class="n">0.96</span>, -<span class="n">0.048</span>, <span class="n">2.43</span>))]
+        <span class="c"># explicit UVs, not Generated: the quad is flat in Y, so Generated&#x27;s</span>
+        <span class="c"># image-V is a constant and the screen samples one strip of the frame</span>
+        uv_layer = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+        f = bm.faces.new(q)
+        <span class="k">for</span> li, l <span class="k">in</span> enumerate(f.loops):
+            l[uv_layer].uv = ((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>))[li]
+        bm.to_mesh(sme)
+    <span class="k">finally</span>:
+        bm.free()
+    sme.materials.append(smat)
+    sob = bpy.data.objects.new(<span class="s">&quot;Screen&quot;</span>, sme)
+    sc.collection.objects.link(sob)
+
+    <span class="c"># a small desk-lip caption, the bay&#x27;s only typography</span>
+    cmat = pbr(<span class="s">&quot;CaptionGrey&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>), <span class="n">0.2</span>, <span class="n">0.6</span>)
+    cu = bpy.data.curves.new(<span class="s">&quot;BayCaption&quot;</span>, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = <span class="s">&quot;PROGRAM&quot;</span>
+    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+    cu.size = <span class="n">0.10</span>
+    cu.extrude = <span class="n">0.004</span>
+    cob = bpy.data.objects.new(<span class="s">&quot;BayCaption&quot;</span>, cu)
+    cob.location = (<span class="n">0.0</span>, -<span class="n">0.40</span>, <span class="n">0.73</span>)
+    cob.data.materials.append(cmat)
+    sc.collection.objects.link(cob)
+
+
+<span class="k">def</span> render_bay(sc, path, engine, w, h):
+    <span class="s">&quot;&quot;&quot;Render the editing bay. The camera moves to a three-quarter view of
+    the monitor; everything else reuses the house stage.&quot;&quot;&quot;</span>
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;BayCam&quot;</span>)
+    cam_data.lens = <span class="n">52.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;BayCam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.0</span>, -<span class="n">5.2</span>, <span class="n">1.72</span>)
+    sc.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;BayAim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.28</span>)
+    sc.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = target
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = w
+    sc.render.resolution_y = h
+    sc.render.resolution_percentage = <span class="n">100</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    <span class="c"># Standard keeps both the stage saturated and the on-screen frame true</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>, scene=sc.name)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
 <span class="k">def</span> render_still(path, engine):
+    <span class="s">&quot;&quot;&quot;Two passes: the authentic sequencer frame (evidence), then the
+    editing-bay presentation with that exact frame on the monitor screen.&quot;&quot;&quot;</span>
     sc = bpy.context.scene
     build_cut_list(sc)
     build_stage(bpy.data.scenes[<span class="s">&quot;Stage&quot;</span>])
-    <span class="k">return</span> render_frame(sc, path, engine, RENDER_W, RENDER_H)
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_frame_&quot;</span>)
+    <span class="k">try</span>:
+        frame_path = os.path.join(tmp, <span class="s">&quot;program.png&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> render_frame(sc, frame_path, engine, RENDER_W, RENDER_H):
+            <span class="k">return</span> <span class="k">False</span>
+        bay = bpy.data.scenes.new(<span class="s">&quot;Bay&quot;</span>)
+        build_stage(bay)          <span class="c"># the house dark studio, lights included</span>
+        build_bay(bay, frame_path)
+        <span class="k">return</span> render_bay(bay, path, engine, RENDER_W, RENDER_H)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)  <span class="c"># pixels live on in the blend</span>
 
 
 <span class="k">def</span> near(got, want, tol):
