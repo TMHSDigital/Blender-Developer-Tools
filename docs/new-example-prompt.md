@@ -74,8 +74,13 @@ candidate pool in sync: remove the shipped subject, and add any promising subjec
 you identified but did not build. Do not hand-edit release-owned version fields or
 generated pages; use the repository's generator.
 
-Run the new example's check-only path on both supported Blender versions, render and
-visually inspect its final image, regenerate the gallery, and run all relevant repository
+Run the new example's check-only path on both supported Blender versions. Locate local
+Blender binaries by checking `.scratch/` at the repo root first — prior runs download
+official releases there and some machines have no system install; download an official
+release into it if a needed version is missing (it is gitignored) — then system installs.
+Do not probe blindly; state the exact binary path and the version the binary itself
+reports for every run. Render and visually inspect the final image, regenerate the
+gallery, and run all relevant repository
 validation. If Blender 4.5 is unavailable locally, say so precisely and use the repository's
 4.5 CI job—do not substitute another version and report it as 4.5. If the render path
 requires an engine or device unavailable locally (Cycles on a GPU-less host), say so and
@@ -96,10 +101,12 @@ Contact-sheet gate (required before shipping the still): place the new hero besi
 the pinned calibration set — currently `armature-bend`, `damped-track-aim`,
 `bmesh-gear` — and compare stage darkness, wedge warmth, subject fill, saturation,
 and thumbnail legibility side by side. Do not ship until the new image holds up in
-that lineup—not merely "looks fine alone." Update this named set in this prompt
-whenever a new example outclasses one of them. One successful render command is not
-proof that the image is good, and neither is the second. Report that the
-contact-sheet comparison was done against those three references.
+that lineup—not merely "looks fine alone." Update this named set (here and in
+`CLAUDE.md`) whenever a new example outclasses one of them. One successful render
+command is not proof that the image is good, and neither is the second. Commit the
+composite under `docs/gallery/contact-sheets/`, link it in the PR body, and report
+per-criterion verdicts including mean luminance versus the calibration images — a
+claim without the committed composite is not acceptable evidence.
 
 After implementation and local verification:
 
@@ -111,16 +118,19 @@ After implementation and local verification:
    it once), visual notes, and an exact test plan. Label explicitly what was proven by
    live run versus established by inspection only.
 4. Watch every attached PR check, including validation, manifest/count checks, ecosystem
-   drift, security checks, and Blender 4.5/5.1 smoke jobs. Investigate and fix failures
-   within this change's scope, push fixes, and repeat until all checks pass.
+   drift, Socket Security checks, and Blender 4.5/5.1 smoke jobs. Investigate and fix
+   failures within this change's scope, push fixes, and repeat until all checks pass. A
+   pending or failing Socket check is unresolved — wait before merging.
 5. Review PR comments and requested changes. Apply valid feedback and re-run affected
    checks. Do not merge with unresolved failures or requested changes.
-6. Once the PR is mergeable and green, merge it using the repository's normal merge
-   strategy and delete the remote feature branch.
+6. Once the PR is mergeable and green, squash-merge it and delete the remote feature
+   branch.
 7. Wait for any automated release/version-sync commit triggered by the merge, then
    fast-forward local `main` to `origin/main`, and verify main HEAD is green including
-   all post-merge jobs (release, validate, drift, pages deploy). Do not hand-edit
-   release-owned version fields.
+   all post-merge jobs (Release, Validate, Ecosystem drift check, Deploy GitHub Pages).
+   The smoke jobs are pull_request-triggered and do not re-run on the merge SHA: the
+   post-merge evidence is that both smoke jobs passed on the PR head SHA that became
+   the sole squash-merged commit. Do not hand-edit release-owned version fields.
 8. Confirm the final working tree is clean and report the PR URL, merge commit, resulting
    version (if released), measured check values, and checks completed.
 

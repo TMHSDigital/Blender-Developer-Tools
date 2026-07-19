@@ -4,6 +4,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Division of labor:** this file carries repo-specific operational facts an agent needs at runtime — content inventory, Blender runtime discovery, git staging hazards, and the example-shipping quality gates. `AGENTS.md` carries fleet-standard governance and workflow rules — branching, commits, merge and CI-evidence policy, release automation, authoring standards. Read both; neither repeats the other.
+
 ## Project Overview
 
 The **Blender Developer Tools** repository is at **v0.19.1**. It packages skills, rules, snippets, starter templates, and runnable smoke-gated examples for Blender Python development with Cursor and Claude Code. Coverage targets **Blender 5.1** (current stable) with **Blender 4.5 LTS** fallback. There is no MCP server; content is consumed directly by the AI when working in Blender add-on or scripting projects.
@@ -92,6 +94,30 @@ wire all of: gallery.json entry, `.cursor-plugin/plugin.json` examples array (CI
 a `blender-smoke.yml` step, a README gallery row, hero webp (1280×720) in
 `docs/gallery/assets/` + preview webp (1200×675), then run `python scripts/build_gallery.py`.
 Renders must conform to the gallery look spec at `docs/VISUAL-STYLE.md`.
+
+## Blender Runtime Discovery
+
+- Local Blender binaries: check `.scratch/` at the repo root **first** — some machines have no system Blender install, and a prior agent run downloads official releases there (e.g. `.scratch/5.1/blender-5.1.x-.../blender[.exe]`). Then check system installs. Do not probe blindly; locate the binary, run it, and state the **exact binary path and the version the binary itself reports** in every report.
+- **5.1 is the local check version. 4.5 LTS is exercised by CI when unavailable locally.** 4.4 is not a substitute for 4.5 and must never be reported as 4.5.
+- If `.scratch/` lacks a needed version, download an official release from download.blender.org into it. `.scratch` is gitignored.
+- In scripts, version-branch on the `bpy.app.version` tuple, never on `bpy.app.version_string` — it reads e.g. `"4.5.11 LTS"`, not bare semver.
+
+## Git Staging
+
+Stage with **explicit paths only** — never `git add -A` or `git add .`. Cursor agent sessions inject a local guidance block into the working-copy `CLAUDE.md`; a bulk add sweeps it into the commit. It manifests as a `CLAUDE.md` hunk in `git diff` that you did not author (the file can be dirty before you touch anything). Leave it unstaged, and never stage `CLAUDE.md` unless you deliberately edited it.
+
+## Quality Gates for Example Runs
+
+- `docs/VISUAL-STYLE.md` is the **binding** render standard; deviations are defects.
+- **Contact-sheet gate:** composite the candidate hero beside the pinned calibration set — currently `armature-bend`, `damped-track-aim`, `bmesh-gear` — commit the composite under `docs/gallery/contact-sheets/`, link it in the PR body, and report per-criterion verdicts (stage darkness, wedge warmth, subject fill, saturation, thumbnail legibility) including mean luminance versus the calibration images. A claim without the committed composite is not acceptable evidence. The pinned set is updated (here and in `docs/new-example-prompt.md`) when a new example outclasses a member; the longer "calibration references" list in `docs/VISUAL-STYLE.md` is a style reference, not this contact-sheet set.
+- **Falsification:** every check must be proven to fail once — break the contract, observe the non-zero exit, restore — with the probe and the measured error reported in the PR body. An assertion that cannot fail witnesses nothing.
+- **After gallery regeneration** (`python scripts/build_gallery.py`), read the **generated HTML** character by character — the `<img alt>` text and witnesses callouts in `docs/gallery/index.html` and `docs/gallery/<name>/index.html` — not just `examples/gallery.json`. Precedent: the `teaches.split(".")[0]` bug truncated 14/21 card alts at dotted API paths like `bmesh.ops` while the source JSON looked fine (fixed in PR #68).
+
+## Example-Run Process
+
+- The canonical example-creation prompt lives at `docs/new-example-prompt.md`; keep it in agreement with this file and `AGENTS.md`.
+- The `ROADMAP.md` "Candidate pool" section is the subject source for example runs: remove a subject when it ships, and restock with subjects identified but not built.
+- PR bodies label what was proven by live run versus established by inspection only (see `AGENTS.md` § Merge policy and CI evidence for the merge and post-merge verification rules).
 
 ## Development Workflow
 
