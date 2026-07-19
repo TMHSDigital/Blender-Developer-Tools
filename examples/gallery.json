@@ -297,6 +297,18 @@
         "export",
         "uv"
       ]
+    },
+    {
+      "name": "lod-decimate-chain",
+      "dir": "examples/lod-decimate-chain",
+      "teaches": "A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.",
+      "witnessesFix": "Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); an aggressive ratio collapses the nose tip (caught).",
+      "hero": "docs/gallery/assets/lod-decimate-chain-hero.webp",
+      "preview": "examples/lod-decimate-chain/preview.webp",
+      "tags": [
+        "depsgraph",
+        "mesh"
+      ]
     }
   ]
 }

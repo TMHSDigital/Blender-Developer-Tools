@@ -72,6 +72,7 @@
     "examples/gn-sdf-remesh",
     "examples/grease-pencil-rosette",
     "examples/image-pixels-testcard",
+    "examples/lod-decimate-chain",
     "examples/parent-inverse-orrery",
     "examples/png-exr-alpha",
     "examples/shader-node-group",

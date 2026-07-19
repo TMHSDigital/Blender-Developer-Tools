@@ -469,6 +469,17 @@
           <a class="card-link" href="gltf-export-roundtrip/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="depsgraph mesh">
+        <a class="card-media" href="lod-decimate-chain/" aria-label="lod-decimate-chain example detail page">
+          <img src="assets/lod-decimate-chain-hero.webp" alt="lod-decimate-chain — A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="lod-decimate-chain/">lod-decimate-chain</a></h2>
+          <p class="teaches">A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); an aggressive ratio collapses the nose tip (caught).</p>
+          <a class="card-link" href="lod-decimate-chain/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

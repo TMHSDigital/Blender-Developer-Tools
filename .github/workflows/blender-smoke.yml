@@ -382,3 +382,14 @@ jobs:
           # bindings within float tolerances. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/gltf-export-roundtrip/gltf_export_roundtrip.py --
+
+      - name: Shipped example - LOD decimate chain (depsgraph + ratio bounds)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a lathed retro rocket evaluated at LOD0/1/2
+          # through the Decimate modifier; asserts closed-form base topology and
+          # bbox, evaluated-vs-original non-destructiveness (obj.data unchanged),
+          # evaluated triangle counts within 5% of ratio*base, and silhouette
+          # (bbox) preservation within 1e-3. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/lod-decimate-chain/lod_decimate_chain.py --

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lod-decimate-chain — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lod-decimate-chain/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="lod-decimate-chain — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lod-decimate-chain/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lod-decimate-chain-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="lod-decimate-chain — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lod-decimate-chain-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>lod-decimate-chain</h1>
+    <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom lod-decimate-chain render">
+      <img src="../assets/lod-decimate-chain-hero.webp" alt="lod-decimate-chain render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); an aggressive ratio collapses the nose tip (caught).</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/lod-decimate-chain/lod_decimate_chain.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a retro toy rocket — a lathed body with an ogive nose, three swept fin plates, a porthole, every dimension a closed form — and evaluates it at LOD0/1/2 through the Decimate modifier via the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p><strong>What it witnesses:</strong> the modifier-based LOD contract that game asset pipelines rely on.</p>
+<p>1. <strong>Decimate is non-destructive and lives in the depsgraph.</strong> The evaluated mesh carries the reduction; the original datablock is byte-identical before and after evaluation. The check proves both — evaluated counts drop while <code>obj.data</code> keeps the closed-form counts (1,147 verts / 2,260 tris) — and every evaluated reference is released with <code>to_mesh_clear()</code>. An LOD chain that bakes the reduction into <code>obj.data</code> destroys the asset&#x27;s LOD0. 2. <strong>The COLLAPSE ratio is a target, not a guarantee.</strong> Each LOD&#x27;s evaluated triangle count must land within 5% of <code>ratio x base_tris</code> — measured 0.00% at ratio 0.5 (1,130 tris) and 0.44% at ratio 0.18 (405 tris). A stacked second Decimate halves the effective ratio (50% excursion, caught); a dropped modifier leaves evaluated == original (caught). 3. <strong>LODs preserve silhouette-critical dimensions.</strong> Height (3.12) and fin span are the rocket&#x27;s readability; the evaluated bbox holds the base bbox within 1e-3 at every level (measured 7.7e-6). Decimate has no vertex pinning, so this is a real risk, not a formality: at an aggressive ratio 0.02 the nose tip collapses (bbox drift 0.0206, caught).</p>
+<p>The Decimate modifier API (<code>decimate_type=&#x27;COLLAPSE&#x27;</code>, <code>ratio</code>) is stable between Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself the version witness (measured values match to the digit).</p>
+<p>The render stages the three LODs in a row: LOD0&#x27;s smooth lathe, LOD1&#x27;s nearly free halving, LOD2&#x27;s visible crunch — the porthole degrades to a hexagon and the nose facets coarsen, exactly the geometry the triangle counts assert.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python lod_decimate_chain.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python lod_decimate_chain.py -- --output rocket.png
+blender --background --python lod_decimate_chain.py -- --output rocket.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (base-topology drift, no reduction, a mutated original datablock, a ratio-bounds excursion, or silhouette loss). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/lod-decimate-chain/lod_decimate_chain.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain/lod_decimate_chain.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A retro rocket at three LODs via the Decimate modifier — a runnable example.
+
+Witnesses the modifier-based LOD contract that game pipelines rely on and
+AI-generated code most often gets wrong:
+
+1. Decimate is non-destructive and lives in the depsgraph. The evaluated mesh
+   carries the reduction; the original datablock is byte-identical before and
+   after evaluation. The check proves both: evaluated counts drop while
+   ``obj.data`` keeps the closed-form counts — and ``to_mesh_clear()`` releases
+   every evaluated reference (the lifetime contract from
+   depsgraph-and-evaluated-data).
+2. The COLLAPSE ratio is a target, not a guarantee. Each LOD&#x27;s evaluated
+   triangle count must land near ``ratio x base_tris`` — bounded, not equal.
+   The check derives the bounds from the measured behavior of a known mesh and
+   fails on any excursion (a wrong ratio, a dropped modifier, or an exporter
+   that silently shipped the base mesh all trip it).
+3. LODs preserve silhouette-critical dimensions. A rocket&#x27;s height and fin
+   span are its readability; the evaluated bounding boxes must hold the base
+   bbox within tolerance at every level. Decimate offers no vertex pinning, so
+   this is a real, measurable risk — not a formality.
+
+The Decimate modifier API (``decimate_type=&#x27;COLLAPSE&#x27;``, ``ratio``) is stable
+between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
+is itself the version witness.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python lod_decimate_chain.py --                 # check only
+    blender --background --python lod_decimate_chain.py -- --output r.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">import</span> mathutils
+
+CREAM, RED, TRIM, GLASS = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
+SIDES = <span class="n">64</span>                      <span class="c"># lathe resolution of LOD0</span>
+FIN_ANGLES = (<span class="n">90.0</span>, <span class="n">210.0</span>, <span class="n">330.0</span>)  <span class="c"># back fin + two forward-splayed fins</span>
+LODS = (<span class="n">0.5</span>, <span class="n">0.18</span>)              <span class="c"># LOD1 / LOD2 collapse ratios (LOD0 is the base)</span>
+RATIO_BOUNDS = <span class="n">0.05</span>             <span class="c"># measured 0.44% worst-case; 10x margin, still fails a real drift</span>
+BBOX_TOL = <span class="n">1e-3</span>                 <span class="c"># measured 7.7e-6 worst-case; silhouette preservation, absolute units</span>
+
+<span class="c"># lathe profile: (z, radius, material) from nozzle exit to shoulder, plus the</span>
+<span class="c"># ogive nose rings and a single tip vertex — every ring a closed form</span>
+PROFILE = [
+    (<span class="n">0.00</span>, <span class="n">0.34</span>, TRIM),         <span class="c"># nozzle exit bell</span>
+    (<span class="n">0.06</span>, <span class="n">0.30</span>, TRIM),
+    (<span class="n">0.28</span>, <span class="n">0.22</span>, TRIM),         <span class="c"># throat</span>
+    (<span class="n">0.38</span>, <span class="n">0.26</span>, TRIM),         <span class="c"># nozzle-body joint</span>
+    (<span class="n">0.46</span>, <span class="n">0.42</span>, CREAM),        <span class="c"># body flare</span>
+    (<span class="n">0.70</span>, <span class="n">0.44</span>, CREAM),
+    (<span class="n">1.90</span>, <span class="n">0.44</span>, CREAM),
+    (<span class="n">2.05</span>, <span class="n">0.42</span>, CREAM),        <span class="c"># body top</span>
+    (<span class="n">2.16</span>, <span class="n">0.36</span>, RED),          <span class="c"># shoulder</span>
+    (<span class="n">2.26</span>, <span class="n">0.28</span>, RED),          <span class="c"># nose base</span>
+]
+NOSE_RINGS = <span class="n">7</span>                  <span class="c"># ogive sampled k/8 for k in 1..7</span>
+NOSE_LEN = <span class="n">0.86</span>
+TIP_Z = <span class="n">2.26</span> + NOSE_LEN         <span class="c"># 3.12 — silhouette-critical height</span>
+FIN_R_OUT = <span class="n">0.98</span>                <span class="c"># silhouette-critical fin span</span>
+<span class="c"># fin plate profile in the (radius, z) plane: long root chord, short tip chord</span>
+FIN_PROFILE = [(<span class="n">0.38</span>, <span class="n">0.40</span>), (<span class="n">0.98</span>, <span class="n">0.40</span>), (<span class="n">0.98</span>, <span class="n">0.55</span>), (<span class="n">0.42</span>, <span class="n">1.02</span>)]
+FIN_THICK = <span class="n">0.07</span>
+PORT_POS = (<span class="n">0.0</span>, -<span class="n">0.415</span>, <span class="n">1.55</span>)  <span class="c"># porthole on the camera-facing hull</span>
+PORT_R = <span class="n">0.16</span>
+PORT_DEPTH = <span class="n">0.09</span>
+
+
+<span class="k">def</span> lathe(bm, rings, mat_ranges=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Revolve (z, r, mat) rings around Z; returns (ring_verts, tip_vert).&quot;&quot;&quot;</span>
+    sides = []
+    <span class="k">for</span> z, r, _mat <span class="k">in</span> rings:
+        sides.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
+                                    r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
+                      <span class="k">for</span> s <span class="k">in</span> range(SIDES)])
+    <span class="k">for</span> k <span class="k">in</span> range(len(sides) - <span class="n">1</span>):
+        mat = rings[k][<span class="n">2</span>]
+        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+            f = bm.faces.new((sides[k][s], sides[k][(s + <span class="n">1</span>) % SIDES],
+                              sides[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], sides[k + <span class="n">1</span>][s]))
+            f.material_index = mat
+    <span class="k">return</span> sides
+
+
+<span class="k">def</span> nose_radius(t):
+    <span class="k">return</span> <span class="n">0.28</span> * math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - t * t))
+
+
+<span class="k">def</span> build_fin(bm, angle_deg):
+    <span class="s">&quot;&quot;&quot;One swept fin plate: FIN_PROFILE revolved into place, thickness FIN_THICK.&quot;&quot;&quot;</span>
+    a = math.radians(angle_deg)
+    u = mathutils.Vector((math.cos(a), math.sin(a), <span class="n">0.0</span>))       <span class="c"># radial out</span>
+    w = mathutils.Vector((-math.sin(a), math.cos(a), <span class="n">0.0</span>))      <span class="c"># thickness dir</span>
+    verts = []
+    <span class="k">for</span> half <span class="k">in</span> (-FIN_THICK / <span class="n">2</span>, FIN_THICK / <span class="n">2</span>):
+        <span class="k">for</span> r, z <span class="k">in</span> FIN_PROFILE:
+            p = u * r + w * half + mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, z))
+            verts.append(bm.verts.new(p))
+    n = len(FIN_PROFILE)
+    faces = [bm.faces.new((verts[<span class="n">0</span>], verts[<span class="n">1</span>], verts[<span class="n">2</span>], verts[<span class="n">3</span>])),
+             bm.faces.new((verts[<span class="n">4</span>], verts[<span class="n">7</span>], verts[<span class="n">6</span>], verts[<span class="n">5</span>]))]
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        j = (i + <span class="n">1</span>) % n
+        faces.append(bm.faces.new((verts[i], verts[i + n], verts[j + n], verts[j])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = RED
+
+
+<span class="k">def</span> build_rocket():
+    <span class="s">&quot;&quot;&quot;The LOD0 rocket: lathed body, 3 fin plates, one porthole — all closed form.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Rocket&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = list(PROFILE)
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, NOSE_RINGS + <span class="n">1</span>):
+            t = k / (NOSE_RINGS + <span class="n">1</span>)
+            rings.append((<span class="n">2.26</span> + NOSE_LEN * t, nose_radius(t), RED))
+        sides = lathe(bm, rings)
+        tip = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, TIP_Z))
+        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+            f = bm.faces.new((sides[-<span class="n">1</span>][s], sides[-<span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], tip))
+            f.material_index = RED
+        bottom = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+            f = bm.faces.new((sides[<span class="n">0</span>][(s + <span class="n">1</span>) % SIDES], sides[<span class="n">0</span>][s], bottom))
+            f.material_index = TRIM
+        <span class="k">for</span> ang <span class="k">in</span> FIN_ANGLES:
+            build_fin(bm, ang)
+        <span class="c"># porthole: rim tube + glass disc, axis along Y, interpenetrating the hull</span>
+        py = [PORT_POS[<span class="n">1</span>] - PORT_DEPTH / <span class="n">2</span>, PORT_POS[<span class="n">1</span>] + PORT_DEPTH / <span class="n">2</span>]
+        rim = [[bm.verts.new((PORT_R * math.cos(<span class="n">2</span> * math.pi * s / <span class="n">16</span>) + PORT_POS[<span class="n">0</span>],
+                              y, PORT_R * math.sin(<span class="n">2</span> * math.pi * s / <span class="n">16</span>) + PORT_POS[<span class="n">2</span>]))
+                <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>)] <span class="k">for</span> y <span class="k">in</span> py]
+        <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>):
+            f = bm.faces.new((rim[<span class="n">0</span>][s], rim[<span class="n">0</span>][(s + <span class="n">1</span>) % <span class="n">16</span>],
+                              rim[<span class="n">1</span>][(s + <span class="n">1</span>) % <span class="n">16</span>], rim[<span class="n">1</span>][s]))
+            f.material_index = TRIM
+        center = bm.verts.new((PORT_POS[<span class="n">0</span>], py[<span class="n">0</span>] - <span class="n">0.005</span>, PORT_POS[<span class="n">2</span>]))
+        <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>):
+            f = bm.faces.new((rim[<span class="n">0</span>][(s + <span class="n">1</span>) % <span class="n">16</span>], rim[<span class="n">0</span>][s], center))
+            f.material_index = GLASS
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()  <span class="c"># the ownership contract, as always</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">False</span>  <span class="c"># faceted toy-rocket finish; facets carry the LOD story</span>
+    obj = bpy.data.objects.new(<span class="s">&quot;Rocket&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> closed_form_counts():
+    <span class="s">&quot;&quot;&quot;Expected base-mesh counts, derived from the build constants.&quot;&quot;&quot;</span>
+    rings = len(PROFILE) + NOSE_RINGS
+    verts = rings * SIDES + <span class="n">2</span> + <span class="n">3</span> * <span class="n">8</span> + <span class="n">2</span> * <span class="n">16</span> + <span class="n">1</span>        <span class="c"># +tip +bottom +fins +rim +port center</span>
+    quads = (rings - <span class="n">1</span>) * SIDES + <span class="n">3</span> * <span class="n">6</span> + <span class="n">16</span>
+    tris = <span class="n">2</span> * SIDES + <span class="n">16</span>                                  <span class="c"># tip fan + bottom fan + port glass</span>
+    faces = quads + tris
+    total_tris = <span class="n">2</span> * quads + tris
+    <span class="k">return</span> verts, faces, total_tris
+
+
+<span class="k">def</span> closed_form_bbox():
+    <span class="s">&quot;&quot;&quot;Exact bbox from the build constants: 3 fins at 120° is not x/y-symmetric.&quot;&quot;&quot;</span>
+    pts = [(math.cos(a) * FIN_R_OUT - math.sin(a) * (FIN_THICK / <span class="n">2</span>) * s,
+            math.sin(a) * FIN_R_OUT + math.cos(a) * (FIN_THICK / <span class="n">2</span>) * s)
+           <span class="k">for</span> a <span class="k">in</span> (math.radians(d) <span class="k">for</span> d <span class="k">in</span> FIN_ANGLES) <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
+    pts += [(<span class="n">0.44</span>, <span class="n">0.44</span>), (-<span class="n">0.44</span>, -<span class="n">0.44</span>), (PORT_R, PORT_POS[<span class="n">1</span>]),
+            (-PORT_R, PORT_POS[<span class="n">1</span>])]
+    xs = [p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> pts]
+    ys = [p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> pts]
+    <span class="k">return</span> ((min(xs), min(ys), <span class="n">0.0</span>), (max(xs), max(ys), TIP_Z))
+
+
+<span class="k">def</span> eval_mesh(obj):
+    <span class="s">&quot;&quot;&quot;Snapshot an evaluated mesh, then release it (lifetime contract).&quot;&quot;&quot;</span>
+    deps = bpy.context.evaluated_depsgraph_get()
+    ob_eval = obj.evaluated_get(deps)
+    me = ob_eval.to_mesh()
+    <span class="k">try</span>:
+        me.calc_loop_triangles()
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        <span class="k">return</span> {<span class="s">&quot;verts&quot;</span>: len(me.vertices), <span class="s">&quot;tris&quot;</span>: len(me.loop_triangles),
+                <span class="s">&quot;bbox&quot;</span>: ((min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs)))}
+    <span class="k">finally</span>:
+        ob_eval.to_mesh_clear()
+
+
+<span class="k">def</span> add_decimate(obj, ratio):
+    mod = obj.modifiers.new(<span class="s">&quot;LOD&quot;</span>, <span class="s">&#x27;DECIMATE&#x27;</span>)
+    mod.decimate_type = <span class="s">&#x27;COLLAPSE&#x27;</span>
+    mod.ratio = ratio
+    <span class="k">return</span> mod
+
+
+<span class="k">def</span> check(rocket, lod1, lod2):
+    me = rocket.data
+    want_v, want_f, want_t = closed_form_counts()
+    got = (len(me.vertices), len(me.polygons))
+    <span class="k">if</span> got != (want_v, want_f):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: base topology </span>{got}<span class="s"> != closed form </span>{(want_v, want_f)}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    bb_min, bb_max = closed_form_bbox()
+    xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    base_bb = ((min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs)))
+    bb_err = max(abs(base_bb[i][k] - want[i][k])
+                 <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)
+                 <span class="k">for</span> want <span class="k">in</span> ((bb_min, bb_max),))
+    <span class="k">if</span> bb_err &gt; <span class="n">1e-6</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: base bbox deviates </span>{bb_err:<span class="s">.3e</span>}<span class="s"> from its closed form</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># LOD0 sanity: no modifier, evaluated == original counts</span>
+    snap0 = eval_mesh(rocket)
+    <span class="k">if</span> (snap0[<span class="s">&quot;verts&quot;</span>], snap0[<span class="s">&quot;tris&quot;</span>]) != (want_v, want_t):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: LOD0 evaluated counts </span>{(snap0[<span class="s">&#x27;verts&#x27;</span>], snap0[<span class="s">&#x27;tris&#x27;</span>])}<span class="s"> != </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">base </span>{(want_v, want_t)}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    measured = []
+    <span class="k">for</span> lod, ratio <span class="k">in</span> ((lod1, LODS[<span class="n">0</span>]), (lod2, LODS[<span class="n">1</span>])):
+        add_decimate(lod, ratio)
+        snap = eval_mesh(lod)
+        <span class="c"># contract 2: triangle count lands near ratio * base, within bounds</span>
+        target = ratio * want_t
+        dev = abs(snap[<span class="s">&quot;tris&quot;</span>] - target) / target
+        <span class="c"># contract 1: the reduction is real and the original is untouched</span>
+        <span class="k">if</span> snap[<span class="s">&quot;tris&quot;</span>] &gt;= want_t:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated tris </span>{snap[<span class="s">&#x27;tris&#x27;</span>]}<span class="s"> &gt;= base </span>{want_t}<span class="s"> — </span><span class="s">&quot;</span>
+                  <span class="s">&quot;the modifier did not reduce (evaluated == original)&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        <span class="k">if</span> (len(lod.data.vertices), len(lod.data.polygons)) != (want_v, want_f):
+            print(<span class="s">&quot;ERROR: original datablock changed after evaluation — &quot;</span>
+                  <span class="s">&quot;Decimate must be non-destructive&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+        <span class="k">if</span> dev &gt; RATIO_BOUNDS:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: LOD tris </span>{snap[<span class="s">&#x27;tris&#x27;</span>]}<span class="s"> deviates </span>{dev:<span class="s">.1%</span>}<span class="s"> from </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">ratio target </span>{target:<span class="s">.0f</span>}<span class="s"> (bounds </span>{RATIO_BOUNDS:<span class="s">.0%</span>}<span class="s">)</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+        <span class="c"># contract 3: silhouette-critical dimensions survive</span>
+        bbox_dev = max(abs(snap[<span class="s">&quot;bbox&quot;</span>][i][k] - base_bb[i][k])
+                       <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+        <span class="k">if</span> bbox_dev &gt; BBOX_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: LOD bbox deviates </span>{bbox_dev:<span class="s">.4f</span>}<span class="s"> from base </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(tol </span>{BBOX_TOL}<span class="s">) — silhouette-critical dims lost</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        measured.append((ratio, snap[<span class="s">&quot;tris&quot;</span>], target, dev, bbox_dev))
+
+    print(<span class="s">f&quot;</span><span class="s">sides=</span>{SIDES}<span class="s"> base_verts=</span>{want_v}<span class="s"> base_tris=</span>{want_t}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bbox_err=</span>{bb_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    <span class="k">for</span> ratio, tris, target, dev, bbox_dev <span class="k">in</span> measured:
+        print(<span class="s">f&quot;</span><span class="s">lod ratio=</span>{ratio}<span class="s"> tris=</span>{tris}<span class="s"> target=</span>{target:<span class="s">.0f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">dev=</span>{dev:<span class="s">.2%</span>}<span class="s"> (bounds </span>{RATIO_BOUNDS:<span class="s">.0%</span>}<span class="s">) </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">bbox_dev=</span>{bbox_dev:<span class="s">.2e</span>}<span class="s"> (tol </span>{BBOX_TOL}<span class="s">)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> make_materials():
+    <span class="k">def</span> pbr(name, base, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">0.0</span>):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+        <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+            sock.default_value = (*emission, <span class="n">1.0</span>)
+            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+        <span class="k">return</span> mat
+    <span class="k">return</span> [
+        pbr(<span class="s">&quot;Cream&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.80</span>, <span class="n">0.68</span>), <span class="n">0.05</span>, <span class="n">0.45</span>),
+        pbr(<span class="s">&quot;Red&quot;</span>, (<span class="n">0.72</span>, <span class="n">0.10</span>, <span class="n">0.08</span>), <span class="n">0.15</span>, <span class="n">0.40</span>),
+        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
+        pbr(<span class="s">&quot;Glass&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.30</span>, <span class="n">0.36</span>), <span class="n">0.0</span>, <span class="n">0.25</span>,
+            emission=(<span class="n">0.12</span>, <span class="n">0.60</span>, <span class="n">0.68</span>), strength=<span class="n">0.8</span>),
+    ]
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(rockets, path, engine):
+    scene = bpy.context.scene
+    xs = (-<span class="n">2.8</span>, <span class="n">0.0</span>, <span class="n">2.8</span>)
+    <span class="k">for</span> ob, x <span class="k">in</span> zip(rockets, xs):
+        ob.location.x = x
+
+    pm = bpy.data.materials.new(<span class="s">&quot;PlaqueMetal&quot;</span>)
+    pm.use_nodes = <span class="k">True</span>
+    pb = pm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    <span class="c"># diffuse light-grey, not metal: plaques must read against the dark floor</span>
+    <span class="c"># regardless of what the environment reflects</span>
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+
+    <span class="k">def</span> plaque(text, x):
+        cu = bpy.data.curves.new(<span class="s">&quot;Plaque&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+        cu.body = text
+        cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+        cu.size = <span class="n">0.30</span>
+        cu.extrude = <span class="n">0.008</span>
+        ob = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, cu)
+        ob.location = (x, -<span class="n">1.5</span>, <span class="n">0.01</span>)
+        ob.data.materials.append(pm)
+        scene.collection.objects.link(ob)
+
+    <span class="k">for</span> label, x <span class="k">in</span> zip((<span class="s">&quot;LOD0&quot;</span>, <span class="s">&quot;LOD1&quot;</span>, <span class="s">&quot;LOD2&quot;</span>), xs):
+        plaque(label, x)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">600.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">12.6</span>, <span class="n">2.5</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the cream body and red fins toward pastel</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    mats = make_materials()
+    rockets = []
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>):
+        r = build_rocket()
+        <span class="k">for</span> m <span class="k">in</span> mats:
+            r.data.materials.append(m)
+        rockets.append(r)
+    code = check(rockets[<span class="n">0</span>], rockets[<span class="n">1</span>], rockets[<span class="n">2</span>])
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(rockets, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">10</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;lod-decimate-chain OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/lod-decimate-chain-hero.webp" alt="lod-decimate-chain render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
