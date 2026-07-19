@@ -97,12 +97,14 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Refresh the `slotted-actions-animation` skill against any 5.2 changes
 - Bump `blender_version_min` in the templates if 5.2 APIs are used
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
-- Gallery coverage follow-ups from the GPv3 review: light-linking, VSE sequences-to-strips witness (`grease-pencil-rosette`, `armature-bend`, `text-version-stamp`, and `image-pixels-testcard` shipped first)
+- Gallery coverage follow-ups from the GPv3 review: light-linking (`grease-pencil-rosette`, `armature-bend`, `text-version-stamp`, `image-pixels-testcard`, and `vse-cut-list` shipped first)
 - ~~UV-layer authoring witness~~ **SHIPPED** as `examples/uv-layer-grid/` — `create_grid(..., calc_uvs=True)` silent no-op without a pre-existing UV layer; closed-form UV fill + explicit assignment fallback; dual-panel render (flat texel (0,0) vs neon checker)
 - ~~Image save-format witness~~ **SHIPPED** as `examples/png-exr-alpha/` — float→PNG is RGBA16 and false-unpremultiplies as if associated-alpha (closed-form err 0.98 at RGB 0.02 / a=1/255); OpenEXR preserves float RGBA; byte→PNG is straight RGBA8; `EXR color_mode='RGB'` drops alpha
 - Attribute domain witness: writing a POINT-domain color attribute and reading it as if it were CORNER (or vice versa) silently shears colors across shared verts — companion to `color-attribute-wheel`
 - Light-linking collection witness: object light linking / receiver collections so a key illuminates only the hero (common AI miss when staging multi-light studios)
-- VSE sequences-to-strips witness: building a short cut list from `sequences.new_effect` / movie strips and asserting frame ranges survive reload
+- ~~VSE sequences-to-strips witness~~ **SHIPPED** as `examples/vse-cut-list/` — `.sequences` removed on 5.x (4.5 bridges to `.strips`), `new_effect` end kwarg `frame_end=` (4.5) vs `length=` (5.x), `frame_final_*` deprecated in favor of `left_handle`/`right_handle`/`duration`, TRANSFORM effect type removed, GAMMA_CROSS clamps to the source overlap, effect strips consume inputs only when stacked above them, same-scene scene strips render transparent; save/reload round-trip + tiny-render pixel witness
+- GAMMA_CROSS blend-curve witness: the cross blend is not the naive linear mix (mid-cross measured (0.341, 0.349, 0.463) from crimson (0.85, 0.10, 0.22) and teal (0.06, 0.75, 0.80)) — derive and assert the gamma-space closed form per frame; follow-up to `vse-cut-list`
+- Falsy `bpy_prop_collection` trap snippet: an empty collection is falsy, so `editor.strips or editor.sequences` silently falls through to the legacy accessor on an empty timeline — always branch on `hasattr`; likely generalizes across the API (found authoring `vse-cut-list`)
 
 ## Future (uncommitted)
 

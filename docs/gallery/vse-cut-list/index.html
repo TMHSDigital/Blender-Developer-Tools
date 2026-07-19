@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vse-cut-list — Examples — Blender Developer Tools</title>
+  <meta name="description" content="The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vse-cut-list/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="vse-cut-list — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vse-cut-list/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-cut-list-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="vse-cut-list — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-cut-list-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>vse-cut-list</h1>
+    <p>The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom vse-cut-list render">
+      <img src="../assets/vse-cut-list-hero.webp" alt="vse-cut-list render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Each side hard-fails the other&#x27;s spelling: TypeError on the wrong end kwarg, AttributeError on .sequences. The cross clamps to the source overlap, effect strips consume their inputs only when stacked above them, and a same-scene scene strip renders transparent.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/vse-cut-list/vse_cut_list.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that witnesses the <strong>sequencer API rename between Blender 4.5 LTS and 5.x</strong> — the single most common way AI-generated VSE code dies on a modern Blender. Every tutorial-era snippet does <code>scene.sequence_editor.sequences.new_effect(..., frame_end=...)</code>; on 5.x that path is gone twice over (<code>sequences</code> removed, <code>frame_end</code> kwarg rejected), and on 4.5 the modern spelling (<code>strips</code>, <code>length=</code>) is already the only one the new collection accepts.</p>
+<p><strong>What it witnesses:</strong> a deterministic cut list — three color programs A/B/C, a GAMMA_CROSS fed by a dedicated source pair T1/T2, a scene strip, and a text strip — asserted against closed-form spans on each version&#x27;s canonical accessors, then re-asserted after a save/reload round-trip:</p>
+<p>1. <strong>Accessor rename</strong> — 5.x: <code>sequence_editor.sequences</code> raises AttributeError; only <code>.strips</code> exists. 4.5: both accessors exist and see the same strips (the transition bridge). 2. <strong>Creation signature</strong> — <code>strips.new_effect(...)</code> ends a strip with <code>frame_end=</code> on 4.5 but <code>length=</code> on 5.x; the wrong kwarg raises TypeError on each side (asserted, not assumed). 5.x also rejects the removed <code>TRANSFORM</code> effect type — per-strip <code>strip.transform</code> (StripTransform) places strips in the frame on both versions. 3. <strong>Frame-range closed form</strong> — every strip&#x27;s (start, end, duration) matches the authored end-exclusive span: <code>frame_final_*</code> on 4.5; <code>left_handle</code>/<code>right_handle</code>/<code>duration</code> on 5.x, where the <code>frame_final_*</code> names are deprecated aliases (removal announced for 6.0) that must still read equal — the bridge is asserted lossless, with the RNA <code>is_deprecated</code> flag checked on 5.x and its absence checked on 4.5. 4. <strong>Effect wiring</strong> — <code>input_1</code>/<code>input_2</code> (not <code>input1</code>) on both versions, in authored order, and the cross clamped to exactly the T1/T2 overlap. 5. <strong>Scene strip</strong> — 4-arg <code>new_scene(name, scene, channel, frame_start)</code> on both versions (no <code>length</code>/<code>frame_end</code> kwarg); default span is the source scene&#x27;s frame range; the strip sources a *separate* Stage scene. 6. <strong>Round-trip</strong> — spans, channels, colors, GC wiring, text, and mosaic transforms (pixel-unit offsets, tol 1e-3) all survive <code>save_as_mainfile</code> → <code>open_mainfile</code>. 7. <strong>Compositing (<code>--check-pixels</code>)</strong> — a 96×54 render asserts each mosaic cell center carries its strip color (tol 0.1), the cross cell is a true mid blend (strictly between the sources on every channel), and a margin point matches neither cross source — because a consumed input compositing independently would paint it full-frame.</p>
+<p><strong>What each check catches on failure:</strong></p>
+<ul><li>*Accessor* — <code>.sequences</code> returning on 5.x, or the 4.5 bridge seeing different contents (falsified: the legacy path on 5.1.1 raises <code>AttributeError: &#x27;SequenceEditor&#x27; object has no attribute &#x27;sequences&#x27;</code>).</li><li>*Creation* — Blender re-accepting a removed kwarg silently, or the TRANSFORM enum returning (falsified: calling <code>new_effect(frame_end=...)</code> on 5.1.1 raises <code>TypeError: ... expected (name, type, channel, frame_start, length, input1, input2)</code>).</li><li>*Spans* — end-inclusive vs end-exclusive off-by-one, retiming drift (falsified: expecting GC span (25, 34) exited 5 with measured <code>GC span (25, 33, 8) != closed form (25, 34, 9)</code> — note the cross was *clamped* to the 8-frame overlap, itself a witnessed behavior).</li><li>*Wiring* — swapped or dropped cross inputs (falsified: <code>input1=t2, input2=t1</code> exited 7 with measured <code>inputs=(T2, T1), expected T1 -&gt; T2</code>).</li><li>*Round-trip* — serialization dropping strip data (falsified: corrupting the text strip before save exited 10 via the reloaded re-assert).</li><li>*Pixels* — a broken span or cell transform dropping a cell, a frozen cross, or a consumed input leaking back into the composite (found by authoring: GC below T1/T2 let T2 paint the whole wall teal).</li></ul>
+<p><strong>Hazards discovered while authoring</strong> (all witnessed by the checks above):</p>
+<ul><li>A GAMMA_CROSS asked to outlast its inputs&#x27; overlap is <strong>silently clamped</strong> to the overlap — request length 9 over a (25, 33) overlap, get (25, 33).</li><li>A scene strip pointing at its <strong>own</strong> scene is a feedback loop and renders transparent (alpha 0) — the &quot;stage&quot; is silently absent. Source a separate scene.</li><li>Effect strips <strong>consume</strong> their inputs: input strips never composite on their own channel, and the effect&#x27;s transform applies on top of the inputs&#x27; transforms. Consumption requires the effect on a channel <strong>above</strong> its inputs; below, they keep painting independently.</li><li>An empty <code>bpy_prop_collection</code> is falsy — <code>se.strips or se.sequences</code> silently falls through to the legacy accessor on an empty timeline. Always branch on <code>hasattr</code>.</li></ul>
+<p><strong>Version divergence:</strong> the whole example is the divergence — gated on the <code>bpy.app.version</code> tuple (<code>&gt;= (5, 0, 0)</code>), never on <code>version_string</code> (<code>&quot;4.5.11 LTS&quot;</code> is not bare semver). Each side asserts its own canonical contract plus the other side&#x27;s removal/bridge state. Measured values are identical on 4.5.11 and 5.1.1, including the pixel witness.</p>
+<p><strong>Render:</strong> the program wall *is* the sequencer output at frame 29 (mid cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend, over the Stage scene strip showing the dark studio. An off-by-one in end-exclusive span math drops its cell to the dark stage; the caption strip carries the closed form. Rendered locally with EEVEE (GPU host); the checks and <code>--check-pixels</code> need no GPU (Cycles CPU).</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python vse_cut_list.py --
+
+# Compositing witness on a tiny render (Cycles CPU, CI-safe):
+blender --background --python vse_cut_list.py -- --check-pixels --engine cycles
+
+# Also render the still (EEVEE on a GPU host; --engine cycles on GPU-less):
+blender --background --python vse_cut_list.py -- --output vse.png</code></pre>
+<p>It exits non-zero on failure and prints every measured value and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check and the pixel witness on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/vse-cut-list/vse_cut_list.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list/vse_cut_list.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;VSE cut list — a runnable example.
+
+Witnesses the sequencer API rename between Blender 4.5 LTS and 5.x, the
+single most common way AI-generated VSE code dies on a modern Blender:
+
+- ``sequence_editor.sequences`` is gone on 5.x — only ``.strips`` remains
+  (4.5 keeps both accessors as a transition bridge).
+- ``strips.new_effect(...)`` ends a strip with ``frame_end=`` on 4.5 but
+  ``length=`` on 5.x; the wrong kwarg raises TypeError on each side.
+- Timeline bounds read ``frame_final_start/end/duration`` on 4.5. On 5.x
+  those names are deprecated (removal announced for 6.0) and the canonical
+  accessors are ``left_handle`` / ``right_handle`` / ``duration``.
+- The ``TRANSFORM`` effect-strip type is removed on 5.x; per-strip
+  ``strip.transform`` (StripTransform) is the cross-version way to place
+  strips in the frame. Effect inputs are ``input_1`` / ``input_2`` on both.
+
+Two further hazards surfaced while authoring and are witnessed here:
+
+- A GAMMA_CROSS asked to outlast its inputs&#x27; overlap is silently clamped to
+  the overlap — requesting length 9 over a (25, 33) overlap yields (25, 33).
+- A scene strip pointing at its OWN scene is a feedback loop: it renders
+  transparent (alpha 0), so the &quot;stage&quot; is silently absent from the frame.
+  Scene strips must source a separate scene.
+- Effect strips CONSUME their inputs: a strip feeding an effect never
+  composites on its own channel, and the effect&#x27;s own transform is applied
+  on top of the inputs&#x27; transforms. A first-draft program wall that fed
+  display strips A/B into the cross lost both cells — only the effect&#x27;s
+  output rendered. The consumption is also ordered: the effect must sit on
+  a channel ABOVE its inputs, or they keep compositing independently (the
+  second draft put GC below T1/T2 and T2 painted teal over the whole wall).
+  The timeline below therefore feeds the cross a dedicated source pair
+  (T1/T2) that owns no mosaic cell, on channels directly under GC.
+
+The check builds a deterministic cut list, asserts every span against its
+closed form on each version&#x27;s canonical accessors, then proves the spans,
+wiring, colors, and transforms survive a save/reload round-trip. Pass
+--output to render the program wall staged inside the studio — the mosaic
+IS the sequencer output sampled mid-cross — and --check-pixels to assert
+the compositing contract on a tiny render (cell colors and input
+consumption), the way CI does:
+
+    blender --background --python vse_cut_list.py --
+    blender --background --python vse_cut_list.py -- --check-pixels
+    blender --background --python vse_cut_list.py -- --output vse.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, sys, os, math, argparse, tempfile, warnings
+
+IS_5X = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
+
+<span class="c"># Closed-form cut list, end-exclusive [start, end) spans on the timeline.</span>
+<span class="c"># Channel order matters: an effect strip consumes its inputs only when it</span>
+<span class="c"># sits ABOVE them — below, the inputs composite independently (T2 painted</span>
+<span class="c"># teal over the whole wall in the first draft). GC must be top-most.</span>
+SC_CH, A_CH, B_CH, C_CH, TXT_CH, T1_CH, T2_CH, GC_CH = <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">8</span>
+A_SPAN = (<span class="n">1</span>, <span class="n">33</span>)     <span class="c"># crimson program, 32 frames</span>
+B_SPAN = (<span class="n">25</span>, <span class="n">57</span>)    <span class="c"># teal program, 32 frames, overlaps A on 25..32</span>
+C_SPAN = (<span class="n">1</span>, <span class="n">57</span>)     <span class="c"># amber long-runner, outlives both</span>
+T1_SPAN = (<span class="n">1</span>, <span class="n">33</span>)    <span class="c"># cross source 1 (crimson) — consumed by GC, no cell</span>
+T2_SPAN = (<span class="n">25</span>, <span class="n">57</span>)   <span class="c"># cross source 2 (teal) — consumed by GC, no cell</span>
+GC_SPAN = (<span class="n">25</span>, <span class="n">33</span>)   <span class="c"># 8-frame cross, exactly the T1/T2 overlap (clamped to it)</span>
+TXT_SPAN = (<span class="n">1</span>, <span class="n">57</span>)   <span class="c"># caption lives for the whole color timeline</span>
+SCENE_END = <span class="n">250</span>      <span class="c"># explicit scene frame_end -&gt; scene strip spans [1, 251)</span>
+TXT_BODY = <span class="s">&quot;CUT LIST  A 001-032  B 025-056  CROSS 025-032  @ F29&quot;</span>
+
+RENDER_W, RENDER_H = <span class="n">1280</span>, <span class="n">720</span>
+SAMPLE_FRAME = <span class="n">29</span>    <span class="c"># mid-cross: GC output is the 50/50 blend; all cells live</span>
+
+<span class="c"># Program-wall mosaic: per-strip transform, offsets in display pixels.</span>
+CELL_SCALE = <span class="n">0.36</span>
+CELL_OX = <span class="n">244.4</span>      <span class="c"># 28 px crosshair gap, ~165 px side margins at 1280x720</span>
+CELL_OY = <span class="n">143.6</span>      <span class="c"># 28 px gap, ~87 px top/bottom margins</span>
+XF_TOL = <span class="n">1e-3</span>        <span class="c"># float32 transform read-back tolerance</span>
+
+A_RGB = (<span class="n">0.85</span>, <span class="n">0.10</span>, <span class="n">0.22</span>)    <span class="c"># crimson</span>
+B_RGB = (<span class="n">0.06</span>, <span class="n">0.75</span>, <span class="n">0.80</span>)    <span class="c"># teal</span>
+C_RGB = (<span class="n">0.95</span>, <span class="n">0.62</span>, <span class="n">0.10</span>)    <span class="c"># amber</span>
+
+<span class="c"># --check-pixels geometry (96x54 mini render): fractional cell centers and a</span>
+<span class="c"># top-margin point that would be crimson if T1 composited independently.</span>
+PXW, PXH = <span class="n">96</span>, <span class="n">54</span>
+PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolerance on unlit strip colors</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> strips_coll(se):
+    <span class="s">&quot;&quot;&quot;The version-safe accessor: .strips everywhere, never .sequences.&quot;&quot;&quot;</span>
+    <span class="k">return</span> se.strips <span class="k">if</span> hasattr(se, <span class="s">&quot;strips&quot;</span>) <span class="k">else</span> se.sequences
+
+
+<span class="k">def</span> new_effect(coll, name, typ, ch, span, **kw):
+    <span class="s">&quot;&quot;&quot;Create an effect strip covering [span[0], span[1]) — end-exclusive —
+    using each version&#x27;s only accepted end kwarg.&quot;&quot;&quot;</span>
+    <span class="k">if</span> IS_5X:
+        <span class="k">return</span> coll.new_effect(
+            name=name, type=typ, channel=ch,
+            frame_start=span[<span class="n">0</span>], length=span[<span class="n">1</span>] - span[<span class="n">0</span>], **kw,
+        )
+    <span class="k">return</span> coll.new_effect(
+        name=name, type=typ, channel=ch,
+        frame_start=span[<span class="n">0</span>], frame_end=span[<span class="n">1</span>], **kw,
+    )
+
+
+<span class="k">def</span> strip_span(s):
+    <span class="s">&quot;&quot;&quot;Timeline bounds (start, end, duration) via the canonical accessors:
+    frame_final_* on 4.5; left_handle/right_handle/duration on 5.x, where the
+    frame_final_* names are deprecated aliases slated for removal in 6.0.&quot;&quot;&quot;</span>
+    <span class="k">if</span> IS_5X:
+        <span class="k">return</span> s.left_handle, s.right_handle, s.duration
+    <span class="k">return</span> s.frame_final_start, s.frame_final_end, s.frame_final_duration
+
+
+<span class="k">def</span> expect_raises_typeerror(fn, what):
+    <span class="k">try</span>:
+        fn()
+    <span class="k">except</span> TypeError:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> <span class="s">f&quot;</span>{what}<span class="s"> did not raise TypeError</span><span class="s">&quot;</span>
+
+
+<span class="k">def</span> build_cut_list(sc, pix=<span class="n">1.0</span>):
+    <span class="s">&quot;&quot;&quot;The deterministic cut list. pix scales the pixel-unit mosaic offsets
+    for renders smaller than 1280x720. Returns the strip collection.&quot;&quot;&quot;</span>
+    sc.frame_start = <span class="n">1</span>
+    sc.frame_end = SCENE_END
+    se = sc.sequence_editor <span class="k">or</span> sc.sequence_editor_create()
+    coll = strips_coll(se)
+
+    <span class="c"># The scene strip sources a SEPARATE stage scene: a scene strip pointing</span>
+    <span class="c"># at its own scene is a feedback loop and renders transparent (the first</span>
+    <span class="c"># draft&#x27;s &quot;studio&quot; was the viewer showing alpha=0 as grey).</span>
+    stage = bpy.data.scenes.new(<span class="s">&quot;Stage&quot;</span>)
+    stage.frame_start = <span class="n">1</span>
+    stage.frame_end = SCENE_END
+    coll.new_scene(name=<span class="s">&quot;SC&quot;</span>, scene=stage, channel=SC_CH, frame_start=<span class="n">1</span>)
+
+    a = new_effect(coll, <span class="s">&quot;A&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, A_CH, A_SPAN)
+    a.color = A_RGB
+    b = new_effect(coll, <span class="s">&quot;B&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, B_CH, B_SPAN)
+    b.color = B_RGB
+    c = new_effect(coll, <span class="s">&quot;C&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, C_CH, C_SPAN)
+    c.color = C_RGB
+    <span class="c"># Dedicated cross sources: strips feeding an effect are consumed by it</span>
+    <span class="c"># (they never composite on their own channel), so the display programs</span>
+    <span class="c"># A/B cannot double as the cross inputs without losing their cells.</span>
+    t1 = new_effect(coll, <span class="s">&quot;T1&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, T1_CH, T1_SPAN)
+    t1.color = A_RGB
+    t2 = new_effect(coll, <span class="s">&quot;T2&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, T2_CH, T2_SPAN)
+    t2.color = B_RGB
+    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, <span class="s">&quot;GAMMA_CROSS&quot;</span>, GC_CH, GC_SPAN,
+                    input1=t1, input2=t2)
+    txt = new_effect(coll, <span class="s">&quot;TXT&quot;</span>, <span class="s">&quot;TEXT&quot;</span>, TXT_CH, TXT_SPAN)
+    txt.text = TXT_BODY
+
+    <span class="c"># Program-wall mosaic via per-strip transform (the TRANSFORM effect type</span>
+    <span class="c"># is gone on 5.x; StripTransform exists on both versions).</span>
+    <span class="k">for</span> s, ox, oy <span class="k">in</span> ((a, -CELL_OX, CELL_OY), (b, CELL_OX, CELL_OY),
+                      (c, -CELL_OX, -CELL_OY), (gc, CELL_OX, -CELL_OY)):
+        s.transform.scale_x = CELL_SCALE
+        s.transform.scale_y = CELL_SCALE
+        s.transform.offset_x = ox * pix
+        s.transform.offset_y = oy * pix
+    <span class="k">return</span> coll
+
+
+<span class="k">def</span> check_span(coll, name, want):
+    s = coll.get(name)
+    <span class="k">if</span> s <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="s">f&quot;</span><span class="s">strip </span>{name!r}<span class="s"> missing</span><span class="s">&quot;</span>
+    got = strip_span(s)
+    <span class="k">if</span> got != (want[<span class="n">0</span>], want[<span class="n">1</span>], want[<span class="n">1</span>] - want[<span class="n">0</span>]):
+        <span class="k">return</span> (<span class="s">f&quot;</span>{name}<span class="s"> span </span>{got}<span class="s"> != closed form </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">(</span>{want[<span class="n">0</span>]}<span class="s">, </span>{want[<span class="n">1</span>]}<span class="s">, </span>{want[<span class="n">1</span>] - want[<span class="n">0</span>]}<span class="s">)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> check(coll_owner):
+    <span class="s">&quot;&quot;&quot;Assert the full contract against the editor of the given scene.
+    Returns 0 or an exit code; each stage witnesses one contract.&quot;&quot;&quot;</span>
+    se = coll_owner.sequence_editor
+
+    <span class="c"># 3. Accessor contract: .sequences removed on 5.x, bridged on 4.5.</span>
+    <span class="k">if</span> IS_5X:
+        <span class="k">if</span> hasattr(se, <span class="s">&quot;sequences&quot;</span>):
+            <span class="k">return</span> fail(<span class="s">&quot;5.x still exposes sequence_editor.sequences — the &quot;</span>
+                        <span class="s">&quot;rename contract drifted&quot;</span>, <span class="n">3</span>)
+    <span class="k">else</span>:
+        <span class="k">if</span> <span class="k">not</span> hasattr(se, <span class="s">&quot;sequences&quot;</span>):
+            <span class="k">return</span> fail(<span class="s">&quot;4.5 lost the legacy .sequences bridge&quot;</span>, <span class="n">3</span>)
+        <span class="k">if</span> len(se.sequences) != len(se.strips):
+            <span class="k">return</span> fail(
+                <span class="s">f&quot;</span><span class="s">4.5 bridge mismatch: .sequences sees </span>{len(se.sequences)}<span class="s"> </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">strips, .strips sees </span>{len(se.strips)}<span class="s">&quot;</span>, <span class="n">3</span>)
+    coll = strips_coll(se)
+
+    <span class="c"># 4. Creation signature: each side accepts exactly one end kwarg.</span>
+    msg = expect_raises_typeerror(
+        <span class="k">lambda</span>: coll.new_effect(
+            name=<span class="s">&quot;BAD&quot;</span>, type=<span class="s">&quot;COLOR&quot;</span>, channel=<span class="n">9</span>,
+            frame_start=<span class="n">1</span>, **({<span class="s">&quot;frame_end&quot;</span>: <span class="n">9</span>} <span class="k">if</span> IS_5X <span class="k">else</span> {<span class="s">&quot;length&quot;</span>: <span class="n">8</span>})),
+        <span class="s">&quot;legacy end kwarg on this version&quot;</span>)
+    <span class="k">if</span> msg:
+        <span class="k">return</span> fail(msg + <span class="s">&quot; — the porting trap no longer hard-fails&quot;</span>, <span class="n">4</span>)
+    <span class="k">if</span> IS_5X:
+        <span class="c"># The TRANSFORM effect-strip type is removed on 5.x.</span>
+        msg = expect_raises_typeerror(
+            <span class="k">lambda</span>: coll.new_effect(name=<span class="s">&quot;BAD2&quot;</span>, type=<span class="s">&quot;TRANSFORM&quot;</span>, channel=<span class="n">9</span>,
+                                    frame_start=<span class="n">1</span>, length=<span class="n">8</span>,
+                                    input1=coll.get(<span class="s">&quot;A&quot;</span>)),
+            <span class="s">&quot;TRANSFORM effect type on 5.x&quot;</span>)
+        <span class="k">if</span> msg:
+            <span class="k">return</span> fail(msg + <span class="s">&quot; — removed enum value came back&quot;</span>, <span class="n">4</span>)
+
+    <span class="c"># 5. Frame ranges against the closed form, on canonical accessors.</span>
+    <span class="k">for</span> name, span <span class="k">in</span> ((<span class="s">&quot;A&quot;</span>, A_SPAN), (<span class="s">&quot;B&quot;</span>, B_SPAN), (<span class="s">&quot;C&quot;</span>, C_SPAN),
+                       (<span class="s">&quot;T1&quot;</span>, T1_SPAN), (<span class="s">&quot;T2&quot;</span>, T2_SPAN), (<span class="s">&quot;GC&quot;</span>, GC_SPAN),
+                       (<span class="s">&quot;TXT&quot;</span>, TXT_SPAN)):
+        msg = check_span(coll, name, span)
+        <span class="k">if</span> msg:
+            <span class="k">return</span> fail(msg, <span class="n">5</span>)
+    <span class="k">for</span> name, ch <span class="k">in</span> ((<span class="s">&quot;A&quot;</span>, A_CH), (<span class="s">&quot;B&quot;</span>, B_CH), (<span class="s">&quot;C&quot;</span>, C_CH), (<span class="s">&quot;GC&quot;</span>, GC_CH),
+                     (<span class="s">&quot;TXT&quot;</span>, TXT_CH), (<span class="s">&quot;T1&quot;</span>, T1_CH), (<span class="s">&quot;T2&quot;</span>, T2_CH),
+                     (<span class="s">&quot;SC&quot;</span>, SC_CH)):
+        <span class="k">if</span> coll.get(name).channel != ch:
+            <span class="k">return</span> fail(<span class="s">f&quot;</span>{name}<span class="s"> landed on channel </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span>{coll.get(name).channel}<span class="s">, expected </span>{ch}<span class="s">&quot;</span>, <span class="n">5</span>)
+
+    <span class="c"># 6. Deprecation bridge: 5.x marks frame_final_* deprecated yet keeps the</span>
+    <span class="c"># values equal; 4.5 has no deprecation flags at all.</span>
+    a = coll.get(<span class="s">&quot;A&quot;</span>)
+    prop = a.bl_rna.properties.get(<span class="s">&quot;frame_final_start&quot;</span>)
+    flag = getattr(prop, <span class="s">&quot;is_deprecated&quot;</span>, <span class="k">None</span>)
+    <span class="k">if</span> IS_5X:
+        <span class="k">if</span> <span class="k">not</span> flag:
+            <span class="k">return</span> fail(<span class="s">&quot;5.x no longer flags frame_final_start deprecated&quot;</span>, <span class="n">6</span>)
+        <span class="k">with</span> warnings.catch_warnings():
+            warnings.simplefilter(<span class="s">&quot;ignore&quot;</span>, DeprecationWarning)
+            legacy = (a.frame_final_start, a.frame_final_end,
+                      a.frame_final_duration)
+        <span class="k">if</span> legacy != strip_span(a):
+            <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">5.x deprecated alias </span>{legacy}<span class="s"> != canonical </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span>{strip_span(a)}<span class="s"> — the bridge changed semantics</span><span class="s">&quot;</span>, <span class="n">6</span>)
+    <span class="k">else</span>:
+        <span class="k">if</span> flag:
+            <span class="k">return</span> fail(<span class="s">&quot;4.5 already deprecates frame_final_start&quot;</span>, <span class="n">6</span>)
+
+    <span class="c"># 7. Effect wiring: GAMMA_CROSS inputs are input_1/input_2 on both</span>
+    <span class="c"># versions (not input1), in authored order, and the cross is clamped to</span>
+    <span class="c"># exactly the source overlap (25..33).</span>
+    gc = coll.get(<span class="s">&quot;GC&quot;</span>)
+    <span class="k">if</span> gc.input_count != <span class="n">2</span> <span class="k">or</span> gc.input_1.name != <span class="s">&quot;T1&quot;</span> <span class="k">or</span> gc.input_2.name != <span class="s">&quot;T2&quot;</span>:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">GC wiring drifted: input_count=</span>{gc.input_count}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">inputs=(</span>{getattr(gc.input_1, <span class="s">&#x27;name&#x27;</span>, <span class="k">None</span>)}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{getattr(gc.input_2, <span class="s">&#x27;name&#x27;</span>, <span class="k">None</span>)}<span class="s">), expected T1 -&gt; T2</span><span class="s">&quot;</span>, <span class="n">7</span>)
+    <span class="k">if</span> gc.type != <span class="s">&quot;GAMMA_CROSS&quot;</span> <span class="k">or</span> coll.get(<span class="s">&quot;A&quot;</span>).type != <span class="s">&quot;COLOR&quot;</span>:
+        <span class="k">return</span> fail(<span class="s">&quot;strip .type enum drifted&quot;</span>, <span class="n">7</span>)
+
+    <span class="c"># 8. Scene strip: 4-arg signature, default span is the scene frame range,</span>
+    <span class="c"># and it sources the separate Stage scene (same-scene strips recurse).</span>
+    sc_s = coll.get(<span class="s">&quot;SC&quot;</span>)
+    <span class="k">if</span> strip_span(sc_s) != (<span class="n">1</span>, SCENE_END + <span class="n">1</span>, SCENE_END):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">scene strip span </span>{strip_span(sc_s)}<span class="s"> != </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(1, </span>{SCENE_END + <span class="n">1</span>}<span class="s">, </span>{SCENE_END}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">8</span>)
+    <span class="k">if</span> sc_s.scene <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> sc_s.scene.name != <span class="s">&quot;Stage&quot;</span>:
+        <span class="k">return</span> fail(<span class="s">&quot;scene strip does not source the Stage scene&quot;</span>, <span class="n">8</span>)
+
+    <span class="c"># 9. Mosaic transforms + compositing defaults persist on the strips.</span>
+    xf_err = <span class="n">0.0</span>
+    <span class="k">for</span> name, ox, oy <span class="k">in</span> ((<span class="s">&quot;A&quot;</span>, -CELL_OX, CELL_OY), (<span class="s">&quot;B&quot;</span>, CELL_OX, CELL_OY),
+                         (<span class="s">&quot;C&quot;</span>, -CELL_OX, -CELL_OY), (<span class="s">&quot;GC&quot;</span>, CELL_OX, -CELL_OY)):
+        t = coll.get(name).transform
+        xf_err = max(xf_err, abs(t.scale_x - CELL_SCALE),
+                     abs(t.scale_y - CELL_SCALE),
+                     abs(t.offset_x - ox), abs(t.offset_y - oy))
+    <span class="k">if</span> xf_err &gt; XF_TOL:
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">transform read-back error </span>{xf_err:<span class="s">.2e</span>}<span class="s"> &gt; </span>{XF_TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>,
+                    <span class="n">9</span>)
+    <span class="k">for</span> name <span class="k">in</span> (<span class="s">&quot;A&quot;</span>, <span class="s">&quot;B&quot;</span>, <span class="s">&quot;C&quot;</span>):
+        s = coll.get(name)
+        <span class="k">if</span> s.blend_type != <span class="s">&quot;ALPHA_OVER&quot;</span> <span class="k">or</span> s.alpha_mode != <span class="s">&quot;STRAIGHT&quot;</span>:
+            <span class="k">return</span> fail(<span class="s">f&quot;</span>{name}<span class="s"> compositing defaults drifted: </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span>{s.blend_type}<span class="s">/</span>{s.alpha_mode}<span class="s">&quot;</span>, <span class="n">9</span>)
+    <span class="k">if</span> coll.get(<span class="s">&quot;TXT&quot;</span>).text != TXT_BODY:
+        <span class="k">return</span> fail(<span class="s">&quot;text strip body drifted&quot;</span>, <span class="n">9</span>)
+    <span class="k">if</span> tuple(round(v, <span class="n">3</span>) <span class="k">for</span> v <span class="k">in</span> coll.get(<span class="s">&quot;A&quot;</span>).color) != A_RGB:
+        <span class="k">return</span> fail(<span class="s">&quot;strip color drifted&quot;</span>, <span class="n">9</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_roundtrip():
+    <span class="s">&quot;&quot;&quot;Save, reload, and re-assert: frame ranges, wiring, and transforms
+    must survive the .blend serialization round-trip.&quot;&quot;&quot;</span>
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_cut_list_&quot;</span>)
+    path = os.path.join(tmp, <span class="s">&quot;cutlist.blend&quot;</span>)
+    bpy.ops.wm.save_as_mainfile(filepath=path)
+    bpy.ops.wm.open_mainfile(filepath=path)
+    <span class="k">return</span> check(bpy.context.scene)
+
+
+<span class="k">def</span> run_checks():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+    build_cut_list(sc)
+    code = check(sc)
+    <span class="k">if</span> code != <span class="n">0</span>:
+        <span class="k">return</span> code
+    code = check_roundtrip()
+    <span class="k">if</span> code != <span class="n">0</span>:
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">round-trip re-assert failed (exit </span>{code}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">10</span>)
+    print(
+        <span class="s">f&quot;</span><span class="s">accessor: </span>{<span class="s">&#x27;strips only (.sequences removed)&#x27;</span> <span class="k">if</span> IS_5X <span class="k">else</span> <span class="s">&#x27;.sequences bridged to .strips&#x27;</span>}<span class="s">; </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">end kwarg: </span>{<span class="s">&#x27;length&#x27;</span> <span class="k">if</span> IS_5X <span class="k">else</span> <span class="s">&#x27;frame_end&#x27;</span>}<span class="s"> (wrong kwarg TypeErrors); </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">spans A</span>{A_SPAN}<span class="s"> B</span>{B_SPAN}<span class="s"> C</span>{C_SPAN}<span class="s"> GC</span>{GC_SPAN}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">SC(1, </span>{SCENE_END + <span class="n">1</span>}<span class="s">) on </span>{<span class="s">&#x27;left_handle/right_handle/duration&#x27;</span> <span class="k">if</span> IS_5X <span class="k">else</span> <span class="s">&#x27;frame_final_*&#x27;</span>}<span class="s">; </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">GC input_1=T1 input_2=T2 clamped to the overlap; </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">transforms tol </span>{XF_TOL:<span class="s">.0e</span>}<span class="s">; all survive save/reload</span><span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------- render ---</span>
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> IS_5X <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> build_stage(sc):
+    <span class="s">&quot;&quot;&quot;The dark studio the program wall floats in: floor, back wall, warm
+    key/fill/rim plus the signature wedge raking the backdrop.&quot;&quot;&quot;</span>
+    <span class="k">import</span> bmesh
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    <span class="k">if</span> world.node_tree <span class="k">is</span> <span class="k">None</span>:  <span class="c"># 5.x worlds ship with nodes; 4.x needs this</span>
+        world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">85.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">260.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    <span class="c"># Between the mosaic zone and the wall so it only rakes the backdrop.</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">560.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">45.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (-<span class="n">0.3</span>, -<span class="n">10.5</span>, <span class="n">2.4</span>)
+    cam.rotation_euler = (math.radians(<span class="n">87</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+
+
+<span class="k">def</span> render_frame(sc, path, engine, w, h):
+    <span class="s">&quot;&quot;&quot;Render the SEQUENCER output at SAMPLE_FRAME: the mosaic is VSE
+    compositing, not 3D geometry — a broken span drops its cell to stage.&quot;&quot;&quot;</span>
+    pix = w / RENDER_W
+    coll = strips_coll(sc.sequence_editor)
+    txt = coll.get(<span class="s">&quot;TXT&quot;</span>)
+    txt.font_size = <span class="n">40.0</span> * pix
+    txt.color = (<span class="n">0.92</span>, <span class="n">0.90</span>, <span class="n">0.86</span>, <span class="n">1.0</span>)
+    txt.location = (<span class="n">0.5</span>, <span class="n">0.035</span>)
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.samples = <span class="n">64</span> <span class="k">if</span> w &gt;= RENDER_W <span class="k">else</span> <span class="n">1</span>
+        sc.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = w
+    sc.render.resolution_y = h
+    sc.render.resolution_percentage = <span class="n">100</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    <span class="c"># AgX desaturates the program cells toward pastel — Standard keeps the</span>
+    <span class="c"># authored strip colors exact.</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    sc.frame_set(SAMPLE_FRAME)
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> render_still(path, engine):
+    sc = bpy.context.scene
+    build_cut_list(sc)
+    build_stage(bpy.data.scenes[<span class="s">&quot;Stage&quot;</span>])
+    <span class="k">return</span> render_frame(sc, path, engine, RENDER_W, RENDER_H)
+
+
+<span class="k">def</span> near(got, want, tol):
+    <span class="k">return</span> all(abs(g - w) &lt;= tol <span class="k">for</span> g, w <span class="k">in</span> zip(got, want))
+
+
+<span class="k">def</span> check_pixels(engine):
+    <span class="s">&quot;&quot;&quot;Compositing witness on a tiny render: cell centers carry their strip
+    colors, the cross cell is the blend (neither source), and a margin point
+    is stage-dark — if T1 composited independently it would be crimson.&quot;&quot;&quot;</span>
+    sc = bpy.context.scene
+    build_cut_list(sc, pix=PXW / RENDER_W)
+    build_stage(bpy.data.scenes[<span class="s">&quot;Stage&quot;</span>])
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_pixels_&quot;</span>)
+    path = os.path.join(tmp, <span class="s">&quot;px.png&quot;</span>)
+    <span class="k">if</span> <span class="k">not</span> render_frame(sc, path, engine, PXW, PXH):
+        <span class="k">return</span> fail(<span class="s">&quot;pixel-check render produced no file&quot;</span>, <span class="n">12</span>)
+    img = bpy.data.images.load(path)
+    <span class="k">if</span> (img.size[<span class="n">0</span>], img.size[<span class="n">1</span>]) != (PXW, PXH):
+        bpy.data.images.remove(img)
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">pixel-check size </span>{tuple(img.size)}<span class="s"> != </span>{(PXW, PXH)}<span class="s">&quot;</span>, <span class="n">12</span>)
+    px = img.pixels[:]
+    bpy.data.images.remove(img)
+
+    <span class="k">def</span> at(fx, fy):
+        x, y = int(fx * PXW), int(fy * PXH)
+        i = (y * PXW + x) * <span class="n">4</span>
+        <span class="k">return</span> tuple(px[i:i + <span class="n">3</span>])
+
+    tl, tr = at(<span class="n">0.25</span>, <span class="n">0.75</span>), at(<span class="n">0.75</span>, <span class="n">0.75</span>)
+    bl, br = at(<span class="n">0.25</span>, <span class="n">0.25</span>), at(<span class="n">0.75</span>, <span class="n">0.25</span>)
+    margin = at(<span class="n">0.5</span>, <span class="n">0.97</span>)
+    <span class="k">if</span> <span class="k">not</span> near(tl, A_RGB, PX_TOL):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">TL cell </span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> tl)}<span class="s"> != crimson </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{A_RGB}<span class="s"> — A&#x27;s span or cell broke</span><span class="s">&quot;</span>, <span class="n">12</span>)
+    <span class="k">if</span> <span class="k">not</span> near(tr, B_RGB, PX_TOL):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">TR cell </span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> tr)}<span class="s"> != teal </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{B_RGB}<span class="s">&quot;</span>, <span class="n">12</span>)
+    <span class="k">if</span> <span class="k">not</span> near(bl, C_RGB, PX_TOL):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">BL cell </span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> bl)}<span class="s"> != amber </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{C_RGB}<span class="s">&quot;</span>, <span class="n">12</span>)
+    <span class="c"># Mid-cross the blend must sit strictly between the two sources on every</span>
+    <span class="c"># channel (a mixed color, not a source, black, or a freeze), with teal&#x27;s</span>
+    <span class="c"># blue dominant and crimson still present in red.</span>
+    between = all(lo &lt; v &lt; hi <span class="k">for</span> v, lo, hi <span class="k">in</span> zip(
+        br, (B_RGB[<span class="n">0</span>], A_RGB[<span class="n">1</span>], A_RGB[<span class="n">2</span>]), (A_RGB[<span class="n">0</span>], B_RGB[<span class="n">1</span>], B_RGB[<span class="n">2</span>])))
+    <span class="k">if</span> <span class="k">not</span> (between <span class="k">and</span> br[<span class="n">2</span>] &gt; br[<span class="n">0</span>] <span class="k">and</span> br[<span class="n">2</span>] &gt; br[<span class="n">1</span>] <span class="k">and</span> br[<span class="n">0</span>] &gt; <span class="n">0.2</span>):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">BR cross cell </span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> br)}<span class="s"> is not </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">a mid crimson-teal blend</span><span class="s">&quot;</span>, <span class="n">12</span>)
+    <span class="c"># The margin shows the real stage through the scene strip; if a consumed</span>
+    <span class="c"># cross source still composited, the margin would carry its full-frame</span>
+    <span class="c"># color instead (T2 painted the whole wall teal in the first draft).</span>
+    <span class="k">if</span> near(margin, A_RGB, PX_TOL) <span class="k">or</span> near(margin, B_RGB, PX_TOL):
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">top margin </span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> margin)}<span class="s"> matches </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">a cross source — a consumed strip composited</span><span class="s">&quot;</span>, <span class="n">12</span>)
+    print(
+        <span class="s">f&quot;</span><span class="s">pixels: TL</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> tl)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">TR</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> tr)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">BL</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> bl)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">BR(blend)</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> br)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">margin</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> margin)}<span class="s"> (tol </span>{PX_TOL}<span class="s">)</span><span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(
+        <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+        help=<span class="s">&quot;render engine for --output/--check-pixels (cycles for GPU-less hosts)&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--check-pixels&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;also assert the compositing contract on a tiny render&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    code = run_checks()
+    <span class="k">if</span> code != <span class="n">0</span>:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.check_pixels:
+        bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+        code = check_pixels(args.engine)
+        <span class="k">if</span> code != <span class="n">0</span>:
+            <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        <span class="c"># The round-trip reloaded a .blend; start clean for the still.</span>
+        bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+        <span class="k">if</span> <span class="k">not</span> render_still(os.path.abspath(args.output), args.engine):
+            <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">render produced no file at </span>{args.output}<span class="s">&quot;</span>, <span class="n">11</span>)
+        print(<span class="s">f&quot;</span><span class="s">wrote </span>{args.output}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/vse-cut-list-hero.webp" alt="vse-cut-list render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

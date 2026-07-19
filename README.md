@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>22 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>23 examples</strong>
 </p>
 
 <p align="center">
@@ -284,6 +284,21 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
 `evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
 modifier-applied geometry (exported vertex count == evaluated > base).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/vse-cut-list/"><img src="examples/vse-cut-list/preview.webp" alt="VSE cut list: a two-by-two program wall in a dark studio — crimson, teal, and amber color strips plus the mid cross-blend cell, composited by the sequencer over a scene strip, with the span caption below" /></a>
+</td>
+<td valign="middle">
+
+### [vse-cut-list](examples/vse-cut-list/)
+
+The sequencer API rename from 4.5 LTS to 5.x — `strips` (never `.sequences`), `new_effect`
+ending in `length=` vs `frame_end=`, and `left_handle`/`right_handle`/`duration` replacing
+the deprecated `frame_final_*`. Asserts closed-form spans, GC wiring and clamping, the
+consumed-input compositing contract, and a save/reload round-trip.
 
 </td>
 </tr>
