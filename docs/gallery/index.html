@@ -174,6 +174,7 @@
   </header>
   <div class="chips" role="toolbar" aria-label="Filter examples by topic">
     <button class="chip active" data-tag="" type="button">All</button>
+    <button class="chip" data-tag="alpha" type="button">alpha</button>
     <button class="chip" data-tag="animation" type="button">animation</button>
     <button class="chip" data-tag="armature" type="button">armature</button>
     <button class="chip" data-tag="attributes" type="button">attributes</button>
@@ -421,6 +422,17 @@
           <p class="teaches">The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.</p>
           <p class="witnesses"><span class="tag">witnesses</span> pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly &gt; 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).</p>
           <a class="card-link" href="image-pixels-testcard/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="images rendering alpha">
+        <a class="card-media" href="png-exr-alpha/" aria-label="png-exr-alpha example detail page">
+          <img src="assets/png-exr-alpha-hero.webp" alt="png-exr-alpha — Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at…" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="png-exr-alpha/">png-exr-alpha</a></h2>
+          <p class="teaches">Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).</p>
+          <p class="witnesses"><span class="tag">witnesses</span> float→PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte→PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.</p>
+          <a class="card-link" href="png-exr-alpha/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card" data-tags="mesh bmesh uv materials">
