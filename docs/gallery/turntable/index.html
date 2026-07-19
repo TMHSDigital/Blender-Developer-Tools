@@ -235,8 +235,7 @@ FRAMES = <span class="n">36</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     bpy.ops.mesh.primitive_monkey_add(location=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>))
     obj = bpy.context.active_object
-    <span class="k">for</span> p <span class="k">in</span> obj.data.polygons:
-        p.use_smooth = <span class="k">True</span>
+    obj.data.shade_smooth()
     mat = bpy.data.materials.new(<span class="s">&quot;M&quot;</span>); mat.use_nodes = <span class="k">True</span>
     b = mat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
     b.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.85</span>, <span class="n">0.35</span>, <span class="n">0.10</span>, <span class="n">1</span>)
@@ -309,7 +308,10 @@ FRAMES = <span class="n">36</span>
     <span class="k">else</span>:
         <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">16</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
-    sc.frame_set(FRAMES // <span class="n">4</span>)
+    <span class="c"># pin the still to a deliberate pose: frame 4 is ~31 degrees of turn, a</span>
+    <span class="c"># three-quarter view where ears and brow read instantly as Suzanne. An</span>
+    <span class="c"># arbitrary turntable frame can land face-away and read as broken geometry.</span>
+    sc.frame_set(<span class="n">4</span>)
     sc.render.resolution_x = <span class="n">1280</span>; sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path
     <span class="c"># AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)</span>
