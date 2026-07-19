@@ -14,7 +14,7 @@ both builds.
     blender --background --python gn_sdf_remesh.py -- --output r.png   # also render the result
     blender --background --python gn_sdf_remesh.py -- --output r.png --engine cycles  # GPU-less
 """
-import bpy, sys, os, argparse
+import bpy, sys, os, math, argparse
 
 def get_eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
@@ -64,25 +64,28 @@ def render_still(obj, path, engine):
         bm.free()
     fmat = bpy.data.materials.new("Studio"); fmat.use_nodes = True
     fb = fmat.node_tree.nodes.get('Principled BSDF')
-    fb.inputs['Base Color'].default_value = (0.055, 0.06, 0.07, 1)  # dark graphite studio
-    fb.inputs['Roughness'].default_value = 0.55
+    fb.inputs['Base Color'].default_value = (0.03, 0.032, 0.037, 1)  # dark staged studio
+    fb.inputs['Roughness'].default_value = 0.7
     fme.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", fme); bpy.context.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", fme.copy()); wall.location = (0, 9.0, 0)
     wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
-    w.node_tree.nodes["Background"].inputs[0].default_value = (0.01, 0.011, 0.014, 1); sc.world = w
+    w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
     aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.55); bpy.context.collection.objects.link(aim)
     cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -6.5, 2.2)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
-    # key, cool fill, warm rim
-    for nm, loc, en, sz, col in [("K", (-4, -5, 7), 1100, 5.0, (1.0, 0.98, 0.95)),
-                                 ("F2", (5, -4, 2), 220, 7.0, (0.85, 0.9, 1.0)),
-                                 ("R", (2.5, 6, 4), 700, 3.0, (1.0, 0.72, 0.45))]:
+    # shaped warm key, faint cool fill (docs/VISUAL-STYLE.md)
+    for nm, loc, en, sz, col in [("K", (-4, -5, 7), 650, 4.5, (1.0, 0.96, 0.9)),
+                                 ("F2", (5, -4, 2), 110, 7.0, (0.75, 0.85, 1.0))]:
         ld = bpy.data.lights.new(nm, 'AREA'); ld.energy = en; ld.size = sz; ld.color = col
         lo = bpy.data.objects.new(nm, ld); lo.location = loc; bpy.context.collection.objects.link(lo)
         lc = lo.constraints.new('TRACK_TO'); lc.target = aim; lc.track_axis = 'TRACK_NEGATIVE_Z'; lc.up_axis = 'UP_Y'
+    # warm wedge raking the back wall, aimed past the torus at the wall
+    wd = bpy.data.lights.new("Wedge", 'AREA'); wd.energy = 380; wd.size = 6.0; wd.color = (1.0, 0.76, 0.5)
+    wo = bpy.data.objects.new("Wedge", wd); wo.location = (2.5, 5.5, 4.0)
+    wo.rotation_euler = (math.radians(-68), 0, math.radians(190)); bpy.context.collection.objects.link(wo)
     sc.render.engine = 'CYCLES' if engine == 'cycles' else get_eevee_engine_id()
     if sc.render.engine == 'CYCLES':
         try: sc.cycles.samples = 32
@@ -92,6 +95,8 @@ def render_still(obj, path, engine):
         except Exception: pass
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
+    # AgX would wash the crimson toward brick (docs/VISUAL-STYLE.md)
+    sc.view_settings.view_transform = 'Standard'
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 
