@@ -7,6 +7,9 @@ the whole round-trip against the depsgraph-evaluated mesh, following
 [`depsgraph-and-evaluated-data`](../../skills/depsgraph-and-evaluated-data/SKILL.md)
 and [`headless-batch-scripting`](../../skills/headless-batch-scripting/SKILL.md).
 
+**Pipeline arc:** modeling/LOD in [`lod-decimate-chain`](../lod-decimate-chain/),
+weighting in [`vertex-weight-limit`](../vertex-weight-limit/), export here.
+
 **What it witnesses:** the interchange contracts AI-generated export code most
 often gets silently wrong.
 

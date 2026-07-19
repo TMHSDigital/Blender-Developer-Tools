@@ -8,6 +8,9 @@ rich five-bone weight bumps in the boots, then enforces the game-engine
 building on the linear-blend-skinning precedent of
 [`armature-bend`](../armature-bend/).
 
+**Pipeline arc:** modeling/LOD in [`lod-decimate-chain`](../lod-decimate-chain/),
+weighting here, export in [`gltf-export-roundtrip`](../gltf-export-roundtrip/).
+
 **What it witnesses:** the skinning constraint every game engine enforces and
 AI-generated rigging code most often violates silently.
 
@@ -32,9 +35,10 @@ The vertex-group API (`v.groups`, `VertexGroup.add`/`remove`) is stable between
 Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself
 the version witness (measured values match to the digit).
 
-The render shows the pruned arm mid-pose: the elbow bellows and wrist boot flex
-through the bend, the teal accent ring rides the forearm — proof that the
-limited weights still deform as authored.
+The render shows the pruned arm mid-pose: the flex boots carry the teal
+accent — the five-influence zones the limit prunes glow at the elbow and
+wrist, sealed by the bright ring on the elbow boot — proof that the limited
+weights still deform as authored.
 
 ## Run
 

@@ -110,8 +110,9 @@ def build_arm():
                             (1.82, 0.26), (2.00, 0.24), (2.10, 0.27),
                             (2.16, 0.27), (2.22, 0.24), (2.45, 0.22)],
                        ORANGE), "Elbow")
-        # teal accent ring inset on the forearm
-        tag(lathe_part(bm, [(2.10, 0.275), (2.16, 0.275)], ACCENT), "Elbow")
+        # teal accent ring sealing the elbow boot — the primary
+        # five-influence zone the limit prunes
+        tag(lathe_part(bm, [(1.33, 0.245), (1.39, 0.245)], ACCENT), "Elbow")
         # wrist flex boot + ball (second >4-influence region)
         tag(lathe_part(bm, [(2.45, 0.21), (2.52, 0.17), (2.60, 0.20),
                             (2.68, 0.16), (2.76, 0.19), (2.84, 0.16), (2.95, 0.15)], RUBBER), "FLEX")
@@ -313,7 +314,8 @@ def make_materials():
     return [
         pbr("Gunmetal", (0.11, 0.12, 0.14), 0.9, 0.32),
         pbr("HazardOrange", (0.82, 0.30, 0.08), 0.10, 0.45),
-        pbr("FlexRubber", (0.05, 0.05, 0.06), 0.0, 0.85),
+        pbr("FlexRubber", (0.04, 0.13, 0.17), 0.0, 0.80,
+            emission=(0.06, 0.30, 0.34), strength=0.38),
         pbr("TealAccent", (0.03, 0.22, 0.26), 0.0, 0.35,
             emission=(0.10, 0.65, 0.72), strength=2.2),
     ]

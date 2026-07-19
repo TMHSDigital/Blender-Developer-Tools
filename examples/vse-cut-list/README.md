@@ -87,7 +87,10 @@ identical on 4.5.11 and 5.1.1, including the pixel witness.
 cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend,
 over the Stage scene strip showing the dark studio. An off-by-one in
 end-exclusive span math drops its cell to the dark stage; the caption strip
-carries the closed form. Rendered locally with EEVEE (GPU host); the checks
+carries the closed form. The hero presents that authentic frame on a
+reference monitor in a dark-studio editing bay — the pixels on the screen
+are the genuine sequencer output (evidence); only the bay around them is
+staged (presentation). Rendered locally with EEVEE (GPU host); the checks
 and `--check-pixels` need no GPU (Cycles CPU).
 
 ## Run

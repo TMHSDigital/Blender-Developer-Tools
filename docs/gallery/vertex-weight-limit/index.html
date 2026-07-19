@@ -184,10 +184,11 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that rigs a mech arm — pedestal mount and pauldron, orange armor shells, ribbed flex boots, wrist, three claw prongs — with deliberately rich five-bone weight bumps in the boots, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
+<p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting here, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>.</p>
 <p><strong>What it witnesses:</strong> the skinning constraint every game engine enforces and AI-generated rigging code most often violates silently.</p>
 <p>1. <strong>The limit is a data-API operation, not a context operator.</strong> Instead of <code>bpy.ops.object.vertex_group_limit_total</code>, the example reads each vertex&#x27;s groups, keeps the top four by weight, <code>VertexGroup.remove</code>s the rest, and renormalizes the survivors. Dropping without renormalizing leaves sums at 0.986 — a mesh that shrinks toward the origin under load (the check&#x27;s measured failure, 1.438e-02 off unit sum). 2. <strong>The armature modifier is still exactly linear blend skinning</strong> after the limit: every depsgraph-evaluated vertex equals <code>Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest</code>, with the weights <strong>read back from the mesh&#x27;s own deform layer</strong> (<code>v.groups</code>) — the weights on the mesh are the contract, not the weights you meant to write. Measured <code>lbs_err = 3.0e-07</code>. 3. <strong>Pruning must not damage the pose.</strong> Evaluated positions before and after the limit are held within 0.05 (measured 3.0e-03), the pedestal mount stays exactly pinned (Root is unposed), and the pre-limit authoring really carries five influences in the boots — otherwise the witness would be vacuous.</p>
 <p>The vertex-group API (<code>v.groups</code>, <code>VertexGroup.add</code>/<code>remove</code>) is stable between Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself the version witness (measured values match to the digit).</p>
-<p>The render shows the pruned arm mid-pose: the elbow bellows and wrist boot flex through the bend, the teal accent ring rides the forearm — proof that the limited weights still deform as authored.</p>
+<p>The render shows the pruned arm mid-pose: the flex boots carry the teal accent — the five-influence zones the limit prunes glow at the elbow and wrist, sealed by the bright ring on the elbow boot — proof that the limited weights still deform as authored.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vertex_weight_limit.py --
@@ -315,8 +316,9 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
                             (<span class="n">1.82</span>, <span class="n">0.26</span>), (<span class="n">2.00</span>, <span class="n">0.24</span>), (<span class="n">2.10</span>, <span class="n">0.27</span>),
                             (<span class="n">2.16</span>, <span class="n">0.27</span>), (<span class="n">2.22</span>, <span class="n">0.24</span>), (<span class="n">2.45</span>, <span class="n">0.22</span>)],
                        ORANGE), <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># teal accent ring inset on the forearm</span>
-        tag(lathe_part(bm, [(<span class="n">2.10</span>, <span class="n">0.275</span>), (<span class="n">2.16</span>, <span class="n">0.275</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># teal accent ring sealing the elbow boot — the primary</span>
+        <span class="c"># five-influence zone the limit prunes</span>
+        tag(lathe_part(bm, [(<span class="n">1.33</span>, <span class="n">0.245</span>), (<span class="n">1.39</span>, <span class="n">0.245</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
         <span class="c"># wrist flex boot + ball (second &gt;4-influence region)</span>
         tag(lathe_part(bm, [(<span class="n">2.45</span>, <span class="n">0.21</span>), (<span class="n">2.52</span>, <span class="n">0.17</span>), (<span class="n">2.60</span>, <span class="n">0.20</span>),
                             (<span class="n">2.68</span>, <span class="n">0.16</span>), (<span class="n">2.76</span>, <span class="n">0.19</span>), (<span class="n">2.84</span>, <span class="n">0.16</span>), (<span class="n">2.95</span>, <span class="n">0.15</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
@@ -518,7 +520,8 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     <span class="k">return</span> [
         pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
         pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.30</span>, <span class="n">0.08</span>), <span class="n">0.10</span>, <span class="n">0.45</span>),
-        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
+        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.13</span>, <span class="n">0.17</span>), <span class="n">0.0</span>, <span class="n">0.80</span>,
+            emission=(<span class="n">0.06</span>, <span class="n">0.30</span>, <span class="n">0.34</span>), strength=<span class="n">0.38</span>),
         pbr(<span class="s">&quot;TealAccent&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.22</span>, <span class="n">0.26</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
             emission=(<span class="n">0.10</span>, <span class="n">0.65</span>, <span class="n">0.72</span>), strength=<span class="n">2.2</span>),
     ]
