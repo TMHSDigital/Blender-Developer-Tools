@@ -179,6 +179,7 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
 - Blender 4.5 LTS Python API: https://docs.blender.org/api/4.5/
 - Extensions Platform reference: https://docs.blender.org/manual/en/latest/advanced/extensions/index.html
 - Release notes (`developer.blender.org`): https://developer.blender.org/
+- Live MCP session vs headless harness policy: `CLAUDE.md` § "Live MCP vs Headless Harness" — headless is the only source of truth for evidence.
 
 When information conflicts, prefer the docs over Stack Overflow or older
 add-on source. The 2.x to 4.x to 5.x churn around Actions, Extensions, and
