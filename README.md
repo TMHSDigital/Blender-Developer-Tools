@@ -53,7 +53,7 @@ that actually runs. Browse them in the
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/swatch-grid/"><img src="examples/swatch-grid/preview.webp" alt="Swatch grid: a row of six shaded spheres - gold and copper metals, red and blue plastics, an emissive orange, and a matte white - on a reflective studio floor, rendered with EEVEE" /></a>
+<a href="examples/swatch-grid/"><img src="examples/swatch-grid/preview.webp" alt="Swatch grid: a three-by-two grid of shaded spheres - polished gold and brushed copper metals, red and blue plastics, an emissive orange, and a matte white - against a dark studio backdrop, rendered with EEVEE" /></a>
 </td>
 <td valign="middle">
 
@@ -193,7 +193,7 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: a violet truncated pyramid on a dark studio floor, lifted and flared by a relative Tall shape key at value 0.5" /></a>
+<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: three violet blocks on a dark studio floor showing a relative Tall shape key at values 0, 0.25, and 0.5 - plain cube to lifted, flared truncated pyramid, left to right" /></a>
 </td>
 <td valign="middle">
 

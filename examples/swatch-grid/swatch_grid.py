@@ -79,24 +79,29 @@ def build_materials():
     """Return a list of (material, label) covering metal, dielectric, emissive, and the
     set_specular shim. The list order maps left-to-right, top-to-bottom across the grid."""
     mats, specular_socket = [], None
-    m, specular_socket = make_principled("Gold", (1.00, 0.77, 0.34, 1), 1.0, 0.15)
+    # polished vs brushed: the roughness gap is what separates the two metals
+    # on the dark stage -- their sampled patch means must stay > 0.10 apart
+    # for verify_png, and a mirror finish vs a broad soft highlight does it
+    m, specular_socket = make_principled("Gold", (1.00, 0.77, 0.34, 1), 1.0, 0.08)
     mats.append(m)
-    m, _ = make_principled("Copper", (0.95, 0.64, 0.54, 1), 1.0, 0.28)
+    m, _ = make_principled("Copper", (0.92, 0.47, 0.36, 1), 1.0, 0.55)
     mats.append(m)
     m, sr = make_principled("RedPlastic", (0.80, 0.05, 0.05, 1), 0.0, 0.40, specular=0.5)
     mats.append(m)
     specular_socket = specular_socket or sr
     m, _ = make_principled("BluePlastic", (0.05, 0.20, 0.80, 1), 0.0, 0.30, specular=0.5)
     mats.append(m)
-    mats.append(make_emissive("EmissiveOrange", (1.0, 0.35, 0.05, 1), 6.0))
+    # strength stays low enough that the Standard view transform keeps the
+    # hue: at 6.0 every channel clips and the swatch reads white-yellow
+    mats.append(make_emissive("EmissiveOrange", (1.0, 0.35, 0.05, 1), 1.4))
     m, _ = make_principled("WhiteRough", (0.90, 0.90, 0.92, 1), 0.0, 0.70, specular=0.3)
     mats.append(m)
     return mats, specular_socket
 
 
 def build_scene(mats):
-    xs = [-2.2, 0.0, 2.2]
-    zs = [1.1, -1.1]
+    xs = [-2.3, 0.0, 2.3]
+    zs = [1.15, -1.15]
     i = 0
     for r in range(GRID_ROWS):
         for c in range(GRID_COLS):
@@ -114,21 +119,47 @@ def build_scene(mats):
             bpy.context.collection.objects.link(ob)
             ob.data.materials.append(mats[i])
             i += 1
-    # ortho camera framed exactly on the grid cells
+    # ortho camera framed on the grid cells: verify_png() samples the image at
+    # each cell center, so every sphere must stay inside its third/half of the
+    # frame. ortho height = ortho_scale * 9/16 = 4.39 units for a grid that
+    # spans 4.14 -- nothing clips, nothing drifts out of its cell.
     cam_d = bpy.data.cameras.new("cam")
     cam_d.type = 'ORTHO'
-    cam_d.ortho_scale = 6.6
+    cam_d.ortho_scale = 7.8
     cam = bpy.data.objects.new("cam", cam_d)
     cam.location = (0.0, -10.0, 0.0)
     cam.rotation_euler = (math.radians(90), 0, 0)
     bpy.context.collection.objects.link(cam)
     bpy.context.scene.camera = cam
+
+    # dark staged backdrop behind the grid (docs/VISUAL-STYLE.md)
+    wall_me = bpy.data.meshes.new("Wall")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
+        bm.to_mesh(wall_me)
+    finally:
+        bm.free()
+    wmat, _ = make_principled("Studio", (0.03, 0.032, 0.037, 1), 0.0, 0.7)
+    wall_me.materials.append(wmat)
+    wall = bpy.data.objects.new("Wall", wall_me)
+    wall.location = (0.0, 2.5, 0.0)
+    wall.rotation_euler = (math.radians(90), 0.0, 0.0)
+    bpy.context.collection.objects.link(wall)
+
     aim = bpy.data.objects.new("Aim", None)
     bpy.context.collection.objects.link(aim)
-    for lname, loc, energy in [("KeyL", (-5, -6, 4), 1500), ("FillL", (5, -6, -2), 700)]:
+    # warm shaped key, faint cool fill, and a warm wedge pooling on the
+    # backdrop -- the gallery's staged look
+    for lname, loc, energy, size, col in [
+        ("KeyL", (-5, -6, 4), 900, 5.0, (1.0, 0.96, 0.9)),
+        ("FillL", (5, -6, -2), 220, 6.0, (0.75, 0.85, 1.0)),
+        ("WedgeL", (2.6, 1.3, 4.4), 260, 5.0, (1.0, 0.76, 0.5)),
+    ]:
         ld = bpy.data.lights.new(lname, 'AREA')
         ld.energy = energy
-        ld.size = 5.0
+        ld.size = size
+        ld.color = col
         lo = bpy.data.objects.new(lname, ld)
         lo.location = loc
         bpy.context.collection.objects.link(lo)
@@ -136,9 +167,12 @@ def build_scene(mats):
         con.target = aim
         con.track_axis = 'TRACK_NEGATIVE_Z'
         con.up_axis = 'UP_Y'
+    # the wedge aims past the spheres at the wall, not at the grid
+    bpy.data.objects["WedgeL"].constraints.clear()
+    bpy.data.objects["WedgeL"].rotation_euler = (math.radians(-56), 0.0, math.radians(190))
     world = bpy.data.worlds.new("W")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs[0].default_value = (0.03, 0.03, 0.035, 1)
+    world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1)
     bpy.context.scene.world = world
 
 
@@ -208,6 +242,9 @@ def main():
     sc.render.resolution_y = int(args.width * 9 / 16)
     sc.render.image_settings.file_format = 'PNG'
     sc.render.filepath = args.output
+    # AgX would desaturate the swatches toward pastel -- exactly the material
+    # colors this example exists to show (docs/VISUAL-STYLE.md)
+    sc.view_settings.view_transform = 'Standard'
     os.makedirs(os.path.dirname(os.path.abspath(args.output)) or ".", exist_ok=True)
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(args.output) and os.path.getsize(args.output) > 0):
