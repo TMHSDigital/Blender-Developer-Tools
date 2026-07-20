@@ -80,6 +80,7 @@
     "examples/swatch-grid",
     "examples/temp-override-join",
     "examples/text-version-stamp",
+    "examples/triangulate-tangents",
     "examples/turntable",
     "examples/uv-layer-grid",
     "examples/vertex-weight-limit",

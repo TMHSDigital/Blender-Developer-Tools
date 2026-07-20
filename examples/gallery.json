@@ -1,15 +1,15 @@
 {
   "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview, tags?}; hero/preview/dir are repo-root-relative; tags is an optional additive list driving the gallery filter chips. build_gallery.py also emits a detail page per example at docs/gallery/<name>/.",
   "title": "Examples Gallery",
-  "description": "Runnable, smoke-gated Blender Python examples \u2014 each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
+  "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
   "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
   "examples": [
     {
       "name": "swatch-grid",
       "dir": "examples/swatch-grid",
-      "teaches": "Procedural Principled materials \u2014 metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
-      "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2\u20134.5.",
+      "teaches": "Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
+      "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.",
       "hero": "docs/gallery/assets/swatch-grid-hero.webp",
       "preview": "examples/swatch-grid/preview.webp",
       "tags": [
@@ -31,7 +31,7 @@
     {
       "name": "gn-sdf-remesh",
       "dir": "examples/gn-sdf-remesh",
-      "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid \u2192 GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
+      "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
       "witnessesFix": "An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.",
       "hero": "docs/gallery/assets/gn-sdf-remesh-hero.webp",
       "preview": "examples/gn-sdf-remesh/preview.webp",
@@ -43,7 +43,7 @@
     {
       "name": "depsgraph-export",
       "dir": "examples/depsgraph-export",
-      "teaches": "The depsgraph lifetime contract \u2014 evaluated_get().to_mesh() paired with to_mesh_clear() \u2014 measured against an OBJ export of the same object.",
+      "teaches": "The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.",
       "witnessesFix": "Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.",
       "hero": "docs/gallery/assets/depsgraph-export-hero.webp",
       "preview": "examples/depsgraph-export/preview.webp",
@@ -55,7 +55,7 @@
     {
       "name": "wave-displace",
       "dir": "examples/wave-displace",
-      "teaches": "Bulk vertex IO at real scale \u2014 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
+      "teaches": "Bulk vertex IO at real scale — 9,409 vertices displaced into a standing wave with one foreach_get and one foreach_set, no per-vertex access.",
       "witnessesFix": "The bulk path is correct, not just fast: the Z span matches the wave amplitude and every vertex matches the closed-form wave, so a stride bug in the flat buffer cannot hide.",
       "hero": "docs/gallery/assets/wave-displace-hero.webp",
       "preview": "examples/wave-displace/preview.webp",
@@ -67,7 +67,7 @@
     {
       "name": "driver-wave",
       "dir": "examples/driver-wave",
-      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers \u2014 the sine skyline is entirely driver-evaluated.",
+      "teaches": "A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.",
       "witnessesFix": "Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.",
       "hero": "docs/gallery/assets/driver-wave-hero.webp",
       "preview": "examples/driver-wave/preview.webp",
@@ -79,7 +79,7 @@
     {
       "name": "bmesh-gear",
       "dir": "examples/bmesh-gear",
-      "teaches": "A 14-tooth gear built entirely with bmesh \u2014 profile ring, face, extrude \u2014 with bm.free() in a try/finally, exactly as the ownership contract demands.",
+      "teaches": "A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.",
       "witnessesFix": "Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).",
       "hero": "docs/gallery/assets/bmesh-gear-hero.webp",
       "preview": "examples/bmesh-gear/preview.webp",
@@ -91,7 +91,7 @@
     {
       "name": "shader-node-group",
       "dir": "examples/shader-node-group",
-      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values \u2014 two spheres, one group, two colors.",
+      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.",
       "witnessesFix": "Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.",
       "hero": "docs/gallery/assets/shader-node-group-hero.webp",
       "preview": "examples/shader-node-group/preview.webp",
@@ -103,8 +103,8 @@
     {
       "name": "temp-override-join",
       "dir": "examples/temp-override-join",
-      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override \u2014 the supported replacement for the removed context.copy() dict-pass form.",
-      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 \u00d7 steps, and local Z spans all three steps.",
+      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
+      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.",
       "hero": "docs/gallery/assets/temp-override-join-hero.webp",
       "preview": "examples/temp-override-join/preview.webp",
       "tags": [
@@ -115,7 +115,7 @@
     {
       "name": "gn-instance-grid",
       "dir": "examples/gn-instance-grid",
-      "teaches": "A generative Geometry Nodes tree \u2014 Mesh Grid \u2192 Instance on Points \u2192 Realize Instances \u2192 Set Shade Smooth \u2014 attached as a NODES modifier with no Group Input geometry.",
+      "teaches": "A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.",
       "witnessesFix": "Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.",
       "hero": "docs/gallery/assets/gn-instance-grid-hero.webp",
       "preview": "examples/gn-instance-grid/preview.webp",
@@ -127,8 +127,8 @@
     {
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
-      "teaches": "A relative Tall shape key that lifts and flares the top face \u2014 authored via shape_key_add / key_blocks / .value \u2014 read back from the depsgraph-evaluated mesh.",
-      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value \u00d7 (key \u2212 basis), including the flared top half-extent.",
+      "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
+      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",
       "tags": [
@@ -139,7 +139,7 @@
     {
       "name": "curve-bevel-arc",
       "dir": "examples/curve-bevel-arc",
-      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve \u2014 splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps \u2014 so the curve renders as a solid tube without a prior mesh conversion.",
+      "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
       "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.",
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
@@ -151,7 +151,7 @@
     {
       "name": "compositor-glare",
       "dir": "examples/compositor-glare",
-      "teaches": "Bloom where it actually lives \u2014 a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node's legacy properties vs 5.x menu sockets.",
+      "teaches": "Bloom where it actually lives — a compositor Glare (Fog Glow) node fed by Render Layers, wired via scene.compositing_node_group on 5.x and scene.node_tree on 4.x, with the Glare node's legacy properties vs 5.x menu sockets.",
       "witnessesFix": "scene.node_tree is gone in 5.x and EEVEE has no use_bloom on either side: the halo beyond the ring silhouette falls off strictly with the compositor on and is exactly zero with it off.",
       "hero": "docs/gallery/assets/compositor-glare-hero.webp",
       "preview": "examples/compositor-glare/preview.webp",
@@ -163,8 +163,8 @@
     {
       "name": "damped-track-aim",
       "dir": "examples/damped-track-aim",
-      "teaches": "Aim constraints via the data API \u2014 Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.",
-      "witnessesFix": "Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot \u2265 0.998). TRACK_TO stand-ins and flipped axes fail.",
+      "teaches": "Aim constraints via the data API — Object.constraints.new('DAMPED_TRACK') with target and TRACK_Z, not bpy.ops.object.constraint_add in a headless loop. Gallery still: brass spike cage around an ember core.",
+      "witnessesFix": "Every needle has one unmuted DAMPED_TRACK on the core; evaluated local +Z aligns toward the core (dot ≥ 0.998). TRACK_TO stand-ins and flipped axes fail.",
       "hero": "docs/gallery/assets/damped-track-aim-hero.webp",
       "preview": "examples/damped-track-aim/preview.webp",
       "tags": [
@@ -175,7 +175,7 @@
     {
       "name": "color-attribute-wheel",
       "dir": "examples/color-attribute-wheel",
-      "teaches": "The modern color-attributes API \u2014 mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.",
+      "teaches": "The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.",
       "witnessesFix": "CORNER-domain attributes are sized to loop count, not vertex count; the check asserts the sizing, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.",
       "hero": "docs/gallery/assets/color-attribute-wheel-hero.webp",
       "preview": "examples/color-attribute-wheel/preview.webp",
@@ -188,7 +188,7 @@
     {
       "name": "parent-inverse-orrery",
       "dir": "examples/parent-inverse-orrery",
-      "teaches": "Data-API parenting for a brass orrery \u2014 the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.",
+      "teaches": "Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.",
       "witnessesFix": "Bare `.parent =` really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.",
       "hero": "docs/gallery/assets/parent-inverse-orrery-hero.webp",
       "preview": "examples/parent-inverse-orrery/preview.webp",
@@ -200,7 +200,7 @@
     {
       "name": "grease-pencil-rosette",
       "dir": "examples/grease-pencil-rosette",
-      "teaches": "Grease Pencil v3's attribute-based API \u2014 layer \u2192 frames.new(1).drawing \u2192 add_strokes \u2192 per-point position/radius/opacity/vertex_color \u2014 drawing five nested neon rose curves.",
+      "teaches": "Grease Pencil v3's attribute-based API — layer → frames.new(1).drawing → add_strokes → per-point position/radius/opacity/vertex_color — drawing five nested neon rose curves.",
       "witnessesFix": "The GPv3 address break: 4.5 keeps GPv3 at grease_pencils_v3 while grease_pencils is still legacy GPencil (frame.strokes, no .drawing); 5.x deletes legacy and GPv3 takes over the grease_pencils name. Point writes lazily materialize attribute layers, and every position round-trips through the raw POINT buffer.",
       "hero": "docs/gallery/assets/grease-pencil-rosette-hero.webp",
       "preview": "examples/grease-pencil-rosette/preview.webp",
@@ -212,8 +212,8 @@
     {
       "name": "armature-bend",
       "dir": "examples/armature-bend",
-      "teaches": "Rigging end to end in the data API \u2014 edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation \u2014 bending a tapered tube through rest, half, and full curl.",
-      "witnessesFix": "edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal \u03a3 w\u1d62\u00b7(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected \u2014 a straight tube fails.",
+      "teaches": "Rigging end to end in the data API — edit_bones chain construction, name-bound vertex groups with smoothstep blend zones, posing, and depsgraph evaluation — bending a tapered tube through rest, half, and full curl.",
+      "witnessesFix": "edit_bones exists only in edit mode (empty in object mode), vertex groups bind to bones strictly by name, and the armature modifier is exactly linear blend skinning: every evaluated vertex must equal Σ wᵢ·(pose_bone.matrix @ bone.matrix_local.inverted()) @ rest, root ring pinned, tip deflected — a straight tube fails.",
       "hero": "docs/gallery/assets/armature-bend-hero.webp",
       "preview": "examples/armature-bend/preview.webp",
       "tags": [
@@ -224,8 +224,8 @@
     {
       "name": "text-version-stamp",
       "dir": "examples/text-version-stamp",
-      "teaches": "The TextCurve data API \u2014 curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion \u2014 so every render self-documents which Blender produced it.",
-      "witnessesFix": "TextCurve solids are exactly predictable: evaluated z-extent = 2 \u00d7 (extrude + bevel_depth), bevel widens the outline by 2 \u00d7 bevel_depth, editing body regenerates geometry \u2014 and version_string is not bare semver on LTS (\"4.5.11 LTS\"), so parse bpy.app.version instead.",
+      "teaches": "The TextCurve data API — curves.new(type='FONT'), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it.",
+      "witnessesFix": "TextCurve solids are exactly predictable: evaluated z-extent = 2 × (extrude + bevel_depth), bevel widens the outline by 2 × bevel_depth, editing body regenerates geometry — and version_string is not bare semver on LTS (\"4.5.11 LTS\"), so parse bpy.app.version instead.",
       "hero": "docs/gallery/assets/text-version-stamp-hero.webp",
       "preview": "examples/text-version-stamp/preview.webp",
       "tags": [
@@ -237,8 +237,8 @@
     {
       "name": "image-pixels-testcard",
       "dir": "examples/image-pixels-testcard",
-      "teaches": "The Image pixel-buffer contract \u2014 a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.",
-      "witnessesFix": "pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly \u2264 0.5/255 and strictly > 0, stale-size bulk reads raise after scale() \u2014 and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).",
+      "teaches": "The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.",
+      "witnessesFix": "pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly > 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).",
       "hero": "docs/gallery/assets/image-pixels-testcard-hero.webp",
       "preview": "examples/image-pixels-testcard/preview.webp",
       "tags": [
@@ -250,8 +250,8 @@
     {
       "name": "png-exr-alpha",
       "dir": "examples/png-exr-alpha",
-      "teaches": "Float-image PNG save trap \u2014 float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).",
-      "witnessesFix": "float\u2192PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte\u2192PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.",
+      "teaches": "Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).",
+      "witnessesFix": "float→PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte→PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.",
       "hero": "docs/gallery/assets/png-exr-alpha-hero.webp",
       "preview": "examples/png-exr-alpha/preview.webp",
       "tags": [
@@ -263,7 +263,7 @@
     {
       "name": "uv-layer-grid",
       "dir": "examples/uv-layer-grid",
-      "teaches": "The UV-layer authoring hazard \u2014 bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",
+      "teaches": "The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",
       "witnessesFix": "calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback. The still is self-witnessing: the script re-reads its render and exits non-zero unless the hazard panel is one flat teal and the repaired panel a high-contrast checker.",
       "hero": "docs/gallery/assets/uv-layer-grid-hero.webp",
       "preview": "examples/uv-layer-grid/preview.webp",
@@ -320,6 +320,18 @@
       "tags": [
         "armature",
         "mesh"
+      ]
+    },
+    {
+      "name": "triangulate-tangents",
+      "dir": "examples/triangulate-tangents",
+      "teaches": "A machined buckler verifying the tangent-space contract a game engine's normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance.",
+      "witnessesFix": "calc_tangents aborts on any ngon; planar UVs on a cylindrical wall collapse tangents onto normals; a MeshUVLoopLayer handle held across calc_tangents dangles on 4.5 (471 phantom flips, silent exit 0) while the mikktspace math is byte-identical on both versions.",
+      "hero": "docs/gallery/assets/triangulate-tangents-hero.webp",
+      "preview": "examples/triangulate-tangents/preview.webp",
+      "tags": [
+        "mesh",
+        "uv"
       ]
     }
   ]

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>26 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>27 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 26 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 27 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -472,7 +472,7 @@ round-trips through the raw `POINT` buffer.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 3 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 4 examples</summary>
 
 <table>
 <tr>
@@ -524,6 +524,23 @@ API (`v.groups` + `VertexGroup.remove` + renormalize) rather than the
 boots really carry five influences, no vertex ends over the cap, weights still
 sum to one, the pose survives pruning, and the modifier is still exact linear
 blend skinning read back from the mesh's own deform layer.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/triangulate-tangents/"><img src="examples/triangulate-tangents/preview.webp" alt="Triangulate and tangents: a machined steel buckler on a dark cradle - brushed grooves circulating the boss with an anisotropic sweep - proving the mikktspace tangent field a normal map depends on" /></a>
+</td>
+<td valign="middle">
+
+### [triangulate-tangents](examples/triangulate-tangents/)
+
+The normal-mapping tangent-space contract: deterministic triangulation
+(`calc_tangents` aborts on any ngon), unit orthogonal tangent frames,
+`bitangent == sign * (n x t)`, and mikktspace matching the independent
+edge/UV-delta formula on smooth fields. Documents the planar-on-cylinder UV
+degeneracy (tangent collapses onto the normal) and the stale layer-handle
+hazard that silently corrupts measurements on 4.5.
 
 </td>
 </tr>
