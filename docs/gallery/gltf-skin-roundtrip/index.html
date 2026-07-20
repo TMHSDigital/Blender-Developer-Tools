@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gltf-skin-roundtrip — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gltf-skin-roundtrip/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="gltf-skin-roundtrip — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gltf-skin-roundtrip/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-skin-roundtrip-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="gltf-skin-roundtrip — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-skin-roundtrip-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>gltf-skin-roundtrip</h1>
+    <p>A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gltf-skin-roundtrip render">
+      <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="gltf-skin-roundtrip render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> skins[0].joints names every bone; JOINTS_0/WEIGHTS_0 per primitive with unit sums; weights bit-exact on re-import; deformation matches within 4.8e-07. The mesh must be parented to the armature or the exporter binds by name.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that rigs a mech scorpion — seven-bone chain from pedestal root to stinger, blend rings at every joint seam — exports it with <code>bpy.ops.export_scene.gltf</code> (<code>export_skins=True</code>), parses the file, re-imports it, and verifies the whole skinning contract against the authored rig, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
+<p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — this is the skinning counterpart to the crate&#x27;s geometry round-trip. Tangent frames for the normal maps are in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>.</p>
+<p><strong>What it witnesses:</strong> the skinned-mesh export contract the geometry round-trip left uncovered.</p>
+<p>1. <strong>The skeleton survives.</strong> <code>skins[0].joints</code> names every bone; the re-imported armature carries the same 7 bones, the same parent chain, and rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes exactly as it does to meshes (their translations convert, no rotation is written). 2. <strong>The weights survive.</strong> Every primitive carries JOINTS_0/WEIGHTS_0; per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex groups match the authored groups <strong>bit-exactly</strong> (w_err 0.0), compared as straddle-safe position keys, the same protocol as the crate example. 3. <strong>The deformation survives.</strong> Posed identically, the re-imported rig&#x27;s evaluated mesh matches the original&#x27;s within 4.8e-07 — linear blend skinning through the file format. The comparison is by rest-position key, never sorted multisets: the exporter welds duplicate loops (32 here), so cardinalities differ and a naive sorted zip mispairs vertices (a phantom 2.29 &quot;deviation&quot; measured and fixed during authoring). 4. <strong>The mesh must be parented to the armature.</strong> The exporter warns &quot;Armature must be the parent of skinned mesh&quot; and picks an armature by name otherwise — with two rigs in the file it can bind the wrong one.</p>
+<p><strong>What each check catches on failure:</strong> exporting with <code>export_skins=False</code> (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex groups), and posing the re-imported rig differently (exit 19 — deformation deviates 0.90).</p>
+<p><strong>Version witness:</strong> the skins pipeline is stable between Blender 4.5 LTS and 5.1 — the exporter/importer RNA is byte-identical (probed with <code>gltf-export-roundtrip</code>), and every measured value matches to the digit on 4.5.11 and 5.1.2.</p>
+<p>The render stages the authored scorpion beside the actual re-imported one — same curl, same glowing stinger — proof the skin rode the format through.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python gltf_skin_roundtrip.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python gltf_skin_roundtrip.py -- --output scorp.png
+blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (missing skin, joint drift, weight-sum drift, skeleton drift, weight excursion, or deformation excursion). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A rigged mech scorpion round-tripped through glTF skins — a runnable example.
+
+Witnesses the skinned-mesh export contract that gltf-export-roundtrip left
+uncovered: bones, hierarchy, weights, and deformation must all survive the
+format. (Pipeline arc: modeling/LOD in lod-decimate-chain, weighting in
+vertex-weight-limit, export in gltf-export-roundtrip; the tangent frames
+those maps need are in triangulate-tangents.)
+
+1. The skeleton round-trips. ``skins[0].joints`` names every bone in order,
+   and the re-imported armature carries the same bones, parent chain, and
+   rest matrices within tolerance — the +Y-up conversion applies to bone
+   nodes the same way it applies to meshes.
+2. The weights round-trip. JOINTS_0/WEIGHTS_0 exist per primitive, per-vertex
+   weights on disk sum to 1, and the re-imported vertex groups match the
+   authored groups weight-for-weight within float tolerances (compared as
+   sorted point sets, the same protocol as gltf-export-roundtrip).
+3. The deformation round-trips. Posed identically, the re-imported rig&#x27;s
+   evaluated mesh matches the original&#x27;s — linear blend skinning through
+   the file format.
+4. The mesh must be parented to the armature. The exporter warns &quot;Armature
+   must be the parent of skinned mesh&quot; and picks an armature by name
+   otherwise — with more than one rig in the file it can bind the wrong one.
+
+The skins pipeline is stable between Blender 4.5 LTS and 5.1 (exporter RNA
+is byte-identical, verified on both) — the example runs identically on both.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python gltf_skin_roundtrip.py --                 # check only
+    blender --background --python gltf_skin_roundtrip.py -- --output s.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
+<span class="k">import</span> mathutils
+
+GUNMETAL, ORANGE, RUBBER, GLOW = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
+BONES = (<span class="s">&quot;Root&quot;</span>, <span class="s">&quot;Thorax&quot;</span>, <span class="s">&quot;Abdomen&quot;</span>, <span class="s">&quot;Tail_1&quot;</span>, <span class="s">&quot;Tail_2&quot;</span>, <span class="s">&quot;Tail_3&quot;</span>, <span class="s">&quot;Stinger&quot;</span>)
+SPANS = {<span class="s">&quot;Root&quot;</span>: (<span class="n">0.0</span>, <span class="n">0.35</span>), <span class="s">&quot;Thorax&quot;</span>: (<span class="n">0.35</span>, <span class="n">0.85</span>), <span class="s">&quot;Abdomen&quot;</span>: (<span class="n">0.85</span>, <span class="n">1.25</span>),
+         <span class="s">&quot;Tail_1&quot;</span>: (<span class="n">1.25</span>, <span class="n">1.60</span>), <span class="s">&quot;Tail_2&quot;</span>: (<span class="n">1.60</span>, <span class="n">1.90</span>), <span class="s">&quot;Tail_3&quot;</span>: (<span class="n">1.90</span>, <span class="n">2.15</span>),
+         <span class="s">&quot;Stinger&quot;</span>: (<span class="n">2.15</span>, <span class="n">2.30</span>)}
+<span class="c"># tail curl: progressive pitch per joint; the pose is the deformation witness</span>
+POSE_DEG = {<span class="s">&quot;Tail_1&quot;</span>: -<span class="n">28.0</span>, <span class="s">&quot;Tail_2&quot;</span>: -<span class="n">34.0</span>, <span class="s">&quot;Tail_3&quot;</span>: -<span class="n">40.0</span>, <span class="s">&quot;Stinger&quot;</span>: <span class="n">25.0</span>}
+BLEND = <span class="n">0.06</span>                    <span class="c"># joint blend half-width (two bones per seam)</span>
+POS_TOL = <span class="n">2e-5</span>                  <span class="c"># float32 on disk vs float32 in Blender</span>
+NRM_TOL = <span class="n">2e-4</span>
+W_TOL = <span class="n">3e-4</span>                    <span class="c"># weight round-trip tolerance</span>
+SUM_TOL = <span class="n">3e-4</span>                  <span class="c"># disk weight-sum tolerance</span>
+REST_TOL = <span class="n">1e-5</span>                 <span class="c"># rest-matrix round-trip tolerance</span>
+LBS_TOL = <span class="n">5e-4</span>
+KEY_DIGITS = <span class="n">4</span>
+
+EXPORT_KWARGS = dict(
+    export_format=<span class="s">&#x27;GLTF_SEPARATE&#x27;</span>,
+    export_skins=<span class="k">True</span>,
+    export_yup=<span class="k">True</span>,
+    export_animations=<span class="k">False</span>,
+    export_image_format=<span class="s">&#x27;NONE&#x27;</span>,
+)
+
+
+<span class="k">def</span> box_part(bm, size, loc, rot, mat, part_of, bone):
+    <span class="s">&quot;&quot;&quot;One box shell (rot in degrees XYZ); tags `bone` for its verts.&quot;&quot;&quot;</span>
+    n0f, n0v = len(bm.faces), len(bm.verts)
+    m = (mathutils.Matrix.Translation(loc)
+         @ mathutils.Euler(tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)).to_matrix().to_4x4()
+         @ mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
+    bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
+    <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
+        f.material_index = mat
+    part_of.extend([bone] * (len(bm.verts) - n0v))
+
+
+<span class="k">def</span> lathe_part(bm, rings, mat, part_of, bone, sides=<span class="n">16</span>):
+    <span class="s">&quot;&quot;&quot;Revolve (z, r) rings; tags `bone` for its verts.&quot;&quot;&quot;</span>
+    n0f, n0v = len(bm.faces), len(bm.verts)
+    out = []
+    <span class="k">for</span> z, r <span class="k">in</span> rings:
+        out.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / sides),
+                                  r * math.sin(<span class="n">2</span> * math.pi * s / sides), z))
+                    <span class="k">for</span> s <span class="k">in</span> range(sides)])
+    <span class="k">for</span> k <span class="k">in</span> range(len(out) - <span class="n">1</span>):
+        <span class="k">for</span> s <span class="k">in</span> range(sides):
+            f = bm.faces.new((out[k][s], out[k][(s + <span class="n">1</span>) % sides],
+                              out[k + <span class="n">1</span>][(s + <span class="n">1</span>) % sides], out[k + <span class="n">1</span>][s]))
+            f.material_index = mat
+    part_of.extend([bone] * (len(bm.verts) - n0v))
+
+
+<span class="k">def</span> build_scorpion():
+    <span class="s">&quot;&quot;&quot;The mech scorpion: base plate, six rigid legs, thorax with claws,
+    abdomen, three tail segments, and a stinger — every part closed form,
+    every vertex tagged to its bone (or a two-bone blend ring at a seam).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Scorpion&quot;</span>)
+    part_of = []
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="c"># base plate (Root)</span>
+        box_part(bm, (<span class="n">0.9</span>, <span class="n">0.7</span>, <span class="n">0.10</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.05</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                 GUNMETAL, part_of, <span class="s">&quot;Root&quot;</span>)
+        <span class="c"># thorax shell + head with eyes (Thorax)</span>
+        box_part(bm, (<span class="n">0.70</span>, <span class="n">0.55</span>, <span class="n">0.42</span>), (<span class="n">0.0</span>, -<span class="n">0.05</span>, <span class="n">0.60</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                 ORANGE, part_of, <span class="s">&quot;Thorax&quot;</span>)
+        box_part(bm, (<span class="n">0.40</span>, <span class="n">0.30</span>, <span class="n">0.22</span>), (<span class="n">0.0</span>, -<span class="n">0.38</span>, <span class="n">0.66</span>), (<span class="n">8</span>, <span class="n">0</span>, <span class="n">0</span>),
+                 ORANGE, part_of, <span class="s">&quot;Thorax&quot;</span>)
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):  <span class="c"># glowing eyes</span>
+            box_part(bm, (<span class="n">0.06</span>, <span class="n">0.03</span>, <span class="n">0.06</span>), (sx * <span class="n">0.10</span>, -<span class="n">0.545</span>, <span class="n">0.70</span>),
+                     (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GLOW, part_of, <span class="s">&quot;Thorax&quot;</span>)
+        <span class="c"># six legs in two rows, angled down (rigid to Thorax)</span>
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+            <span class="k">for</span> k, z <span class="k">in</span> ((<span class="n">0</span>, <span class="n">0.72</span>), (<span class="n">1</span>, <span class="n">0.60</span>), (<span class="n">2</span>, <span class="n">0.48</span>)):
+                box_part(bm, (<span class="n">0.34</span>, <span class="n">0.09</span>, <span class="n">0.07</span>), (sx * <span class="n">0.50</span>, -<span class="n">0.02</span> + k * <span class="n">0.16</span>, z),
+                         (<span class="n">0</span>, <span class="n">0</span>, sx * <span class="n">18</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
+                box_part(bm, (<span class="n">0.30</span>, <span class="n">0.06</span>, <span class="n">0.05</span>), (sx * <span class="n">0.76</span>, -<span class="n">0.02</span> + k * <span class="n">0.16</span>, z - <span class="n">0.13</span>),
+                         (<span class="n">0</span>, <span class="n">0</span>, sx * <span class="n">40</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
+        <span class="c"># claws: shoulder + forearm + pincer pair (rigid to Thorax)</span>
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+            box_part(bm, (<span class="n">0.18</span>, <span class="n">0.40</span>, <span class="n">0.18</span>), (sx * <span class="n">0.26</span>, -<span class="n">0.58</span>, <span class="n">0.60</span>),
+                     (-<span class="n">15</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
+            box_part(bm, (<span class="n">0.16</span>, <span class="n">0.34</span>, <span class="n">0.16</span>), (sx * <span class="n">0.26</span>, -<span class="n">0.85</span>, <span class="n">0.52</span>),
+                     (<span class="n">20</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
+            <span class="k">for</span> dy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+                box_part(bm, (<span class="n">0.07</span>, <span class="n">0.22</span>, <span class="n">0.12</span>),
+                         (sx * <span class="n">0.26</span>, -<span class="n">1.02</span>, <span class="n">0.52</span> + dy * <span class="n">0.08</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                         GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
+        <span class="c"># abdomen: two tapering plates (Abdomen)</span>
+        box_part(bm, (<span class="n">0.56</span>, <span class="n">0.46</span>, <span class="n">0.30</span>), (<span class="n">0.0</span>, <span class="n">0.12</span>, <span class="n">1.00</span>), (<span class="n">4</span>, <span class="n">0</span>, <span class="n">0</span>),
+                 ORANGE, part_of, <span class="s">&quot;Abdomen&quot;</span>)
+        box_part(bm, (<span class="n">0.44</span>, <span class="n">0.36</span>, <span class="n">0.26</span>), (<span class="n">0.0</span>, <span class="n">0.16</span>, <span class="n">1.24</span>), (<span class="n">6</span>, <span class="n">0</span>, <span class="n">0</span>),
+                 ORANGE, part_of, <span class="s">&quot;Abdomen&quot;</span>)
+        <span class="c"># tail segments, lathed and tapering (their own bones)</span>
+        lathe_part(bm, [(<span class="n">1.25</span>, <span class="n">0.16</span>), (<span class="n">1.42</span>, <span class="n">0.15</span>), (<span class="n">1.60</span>, <span class="n">0.13</span>)],
+                   GUNMETAL, part_of, <span class="s">&quot;Tail_1&quot;</span>)
+        lathe_part(bm, [(<span class="n">1.60</span>, <span class="n">0.13</span>), (<span class="n">1.75</span>, <span class="n">0.115</span>), (<span class="n">1.90</span>, <span class="n">0.10</span>)],
+                   GUNMETAL, part_of, <span class="s">&quot;Tail_2&quot;</span>)
+        lathe_part(bm, [(<span class="n">1.90</span>, <span class="n">0.10</span>), (<span class="n">2.02</span>, <span class="n">0.085</span>), (<span class="n">2.15</span>, <span class="n">0.07</span>)],
+                   GUNMETAL, part_of, <span class="s">&quot;Tail_3&quot;</span>)
+        <span class="c"># stinger: cone + barb with the glow tip (Stinger)</span>
+        lathe_part(bm, [(<span class="n">2.15</span>, <span class="n">0.07</span>), (<span class="n">2.26</span>, <span class="n">0.045</span>), (<span class="n">2.34</span>, <span class="n">0.012</span>)],
+                   GUNMETAL, part_of, <span class="s">&quot;Stinger&quot;</span>)
+        lathe_part(bm, [(<span class="n">2.30</span>, <span class="n">0.030</span>), (<span class="n">2.36</span>, <span class="n">0.030</span>)], GLOW, part_of, <span class="s">&quot;Stinger&quot;</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()  <span class="c"># the ownership contract, as always</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">False</span>  <span class="c"># flat facets: one disk vertex per loop</span>
+    obj = bpy.data.objects.new(<span class="s">&quot;Scorpion&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj, part_of
+
+
+<span class="k">def</span> bone_of(z, bone):
+    <span class="s">&quot;&quot;&quot;Two-bone smooth blend across each joint seam; hard weight elsewhere.&quot;&quot;&quot;</span>
+    order = list(SPANS)
+    i = order.index(bone)
+    <span class="k">if</span> i == <span class="n">0</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    prev = order[i - <span class="n">1</span>]
+    seam = SPANS[bone][<span class="n">0</span>]
+    <span class="k">if</span> abs(z - seam) &lt;= BLEND:
+        <span class="k">return</span> prev
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> assign_weights(obj, part_of):
+    <span class="s">&quot;&quot;&quot;Hard weights per part plus 50/50 blend rings at each bone seam.&quot;&quot;&quot;</span>
+    groups = {b: obj.vertex_groups.new(name=b) <span class="k">for</span> b <span class="k">in</span> BONES}
+    <span class="k">for</span> idx, v <span class="k">in</span> enumerate(obj.data.vertices):
+        bone = part_of[idx]
+        prev = bone_of(v.co.z, bone)
+        <span class="k">if</span> prev <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            t = (v.co.z - (SPANS[bone][<span class="n">0</span>] - BLEND)) / (<span class="n">2</span> * BLEND)
+            groups[prev].add([idx], <span class="n">1.0</span> - t, <span class="s">&#x27;REPLACE&#x27;</span>)
+            groups[bone].add([idx], t, <span class="s">&#x27;REPLACE&#x27;</span>)
+        <span class="k">else</span>:
+            groups[bone].add([idx], <span class="n">1.0</span>, <span class="s">&#x27;REPLACE&#x27;</span>)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> build_rig(obj):
+    arm_data = bpy.data.armatures.new(<span class="s">&quot;ScorpRig&quot;</span>)
+    arm = bpy.data.objects.new(<span class="s">&quot;ScorpRig&quot;</span>, arm_data)
+    bpy.context.collection.objects.link(arm)
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode=<span class="s">&#x27;EDIT&#x27;</span>)
+    prev = <span class="k">None</span>
+    <span class="k">for</span> name <span class="k">in</span> BONES:
+        eb = arm_data.edit_bones.new(name)
+        z0, z1 = SPANS[name]
+        eb.head = (<span class="n">0.0</span>, <span class="n">0.0</span>, z0)
+        eb.tail = (<span class="n">0.0</span>, <span class="n">0.0</span>, z1)
+        <span class="k">if</span> prev <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            eb.parent = prev
+            eb.use_connect = <span class="k">True</span>
+        prev = eb
+    bpy.ops.object.mode_set(mode=<span class="s">&#x27;OBJECT&#x27;</span>)
+    <span class="c"># the exporter warns and picks by name otherwise — with two rigs in the</span>
+    <span class="c"># file it can bind the WRONG one; parent explicitly</span>
+    obj.parent = arm
+    mod = obj.modifiers.new(<span class="s">&quot;Armature&quot;</span>, <span class="s">&#x27;ARMATURE&#x27;</span>)
+    mod.object = arm
+    mod.use_vertex_groups = <span class="k">True</span>
+    mod.use_bone_envelopes = <span class="k">False</span>
+    <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
+        pb = arm.pose.bones[name]
+        pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
+        pb.rotation_euler.x = math.radians(deg)
+    <span class="k">return</span> arm
+
+
+<span class="k">def</span> eval_positions(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ob_eval = obj.evaluated_get(deps)
+    me = ob_eval.to_mesh()
+    <span class="k">try</span>:
+        <span class="k">return</span> [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">finally</span>:
+        ob_eval.to_mesh_clear()
+
+
+<span class="k">def</span> key_of(p):
+    <span class="k">return</span> tuple(round(c, KEY_DIGITS) <span class="k">for</span> c <span class="k">in</span> p)
+
+
+<span class="k">def</span> read_gltf(path):
+    g = json.load(open(path))
+    blob = open(os.path.join(os.path.dirname(path),
+                             g[<span class="s">&quot;buffers&quot;</span>][<span class="n">0</span>][<span class="s">&quot;uri&quot;</span>]), <span class="s">&quot;rb&quot;</span>).read()
+
+    <span class="k">def</span> accessor_floats(idx, ncomp):
+        acc = g[<span class="s">&quot;accessors&quot;</span>][idx]
+        bv = g[<span class="s">&quot;bufferViews&quot;</span>][acc[<span class="s">&quot;bufferView&quot;</span>]]
+        off = bv.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>) + acc.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>)
+        stride = bv.get(<span class="s">&quot;byteStride&quot;</span>, <span class="n">4</span> * ncomp)
+        <span class="k">return</span> [struct.unpack_from(<span class="s">f&quot;</span><span class="s">&lt;</span>{ncomp}<span class="s">f</span><span class="s">&quot;</span>, blob, off + stride * i)
+                <span class="k">for</span> i <span class="k">in</span> range(acc[<span class="s">&quot;count&quot;</span>])]
+
+    <span class="k">def</span> accessor_uints(idx, ncomp, ctype):
+        acc = g[<span class="s">&quot;accessors&quot;</span>][idx]
+        bv = g[<span class="s">&quot;bufferViews&quot;</span>][acc[<span class="s">&quot;bufferView&quot;</span>]]
+        off = bv.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>) + acc.get(<span class="s">&quot;byteOffset&quot;</span>, <span class="n">0</span>)
+        stride = bv.get(<span class="s">&quot;byteStride&quot;</span>, {<span class="n">5121</span>: <span class="n">1</span>, <span class="n">5123</span>: <span class="n">2</span>, <span class="n">5125</span>: <span class="n">4</span>}[ctype] * ncomp)
+        fmt = {<span class="n">5121</span>: <span class="s">&quot;B&quot;</span>, <span class="n">5123</span>: <span class="s">&quot;H&quot;</span>, <span class="n">5125</span>: <span class="s">&quot;I&quot;</span>}[ctype]
+        <span class="k">return</span> [struct.unpack_from(<span class="s">f&quot;</span><span class="s">&lt;</span>{ncomp}{fmt}<span class="s">&quot;</span>, blob, off + stride * i)
+                <span class="k">for</span> i <span class="k">in</span> range(acc[<span class="s">&quot;count&quot;</span>])]
+
+    <span class="k">return</span> g, accessor_floats, accessor_uints
+
+
+<span class="k">def</span> check(obj, arm, part_of):
+    me = obj.data
+    exp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.export_scene.gltf.get_rna_type().properties}
+    missing = [k <span class="k">for</span> k <span class="k">in</span> EXPORT_KWARGS <span class="k">if</span> k <span class="k">not</span> <span class="k">in</span> exp_props]
+    <span class="k">if</span> missing:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: exporter RNA drifted, missing </span>{missing}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+
+    base_verts = len(me.vertices)
+    ngroups = len(obj.vertex_groups)
+    <span class="k">if</span> ngroups != len(BONES):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{ngroups}<span class="s"> vertex groups != </span>{len(BONES)}<span class="s"> bones</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    deps = bpy.context.evaluated_depsgraph_get()
+    ob_eval = obj.evaluated_get(deps)
+    me_eval = ob_eval.to_mesh()
+    <span class="k">try</span>:
+        eval_loops = len(me_eval.loops)
+        pose_orig = [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me_eval.vertices]
+    <span class="k">finally</span>:
+        ob_eval.to_mesh_clear()
+
+    rest_orig = [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="c"># snapshot everything the export/import wipe would free: the original</span>
+    <span class="c"># datablocks DIE at read_factory_settings (the crate&#x27;s freed-mesh hazard)</span>
+    bone_info = {name: (arm.data.bones[name].parent.name
+                        <span class="k">if</span> arm.data.bones[name].parent <span class="k">else</span> <span class="k">None</span>,
+                        tuple(tuple(arm.data.bones[name].matrix_local[r][c]
+                                    <span class="k">for</span> c <span class="k">in</span> range(<span class="n">4</span>)) <span class="k">for</span> r <span class="k">in</span> range(<span class="n">4</span>)))
+                 <span class="k">for</span> name <span class="k">in</span> BONES}
+
+    <span class="k">def</span> weight_map(o):
+        names = [g.name <span class="k">for</span> g <span class="k">in</span> o.vertex_groups]
+        <span class="k">return</span> {key_of(v.co): tuple(sorted(
+            (names[g.group], round(g.weight, <span class="n">5</span>)) <span class="k">for</span> g <span class="k">in</span> v.groups))
+            <span class="k">for</span> v <span class="k">in</span> o.data.vertices}
+
+    want_w = weight_map(obj)
+
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;gltf_skin_&quot;</span>)
+    <span class="k">try</span>:
+        path = os.path.join(tmp, <span class="s">&quot;scorp.gltf&quot;</span>).replace(<span class="s">&quot;\\&quot;</span>, <span class="s">&quot;/&quot;</span>)
+        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+
+        <span class="c"># contract 1 (on disk): the skin carries every bone, joints named</span>
+        g, acc_f, acc_u = read_gltf(path)
+        skins = g.get(<span class="s">&quot;skins&quot;</span>, [])
+        <span class="k">if</span> len(skins) != <span class="n">1</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(skins)}<span class="s"> skins on disk, expected 1</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        joints = skins[<span class="n">0</span>][<span class="s">&quot;joints&quot;</span>]
+        node_names = [g[<span class="s">&quot;nodes&quot;</span>][j].get(<span class="s">&quot;name&quot;</span>, <span class="s">&quot;&quot;</span>) <span class="k">for</span> j <span class="k">in</span> joints]
+        <span class="k">if</span> len(joints) != len(BONES) <span class="k">or</span> sorted(node_names) != sorted(BONES):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: skin joints </span>{node_names}<span class="s"> != bones </span>{sorted(BONES)}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        prim = g[<span class="s">&quot;meshes&quot;</span>][<span class="n">0</span>][<span class="s">&quot;primitives&quot;</span>]
+        <span class="k">if</span> <span class="k">not</span> all(<span class="s">&quot;JOINTS_0&quot;</span> <span class="k">in</span> p[<span class="s">&quot;attributes&quot;</span>] <span class="k">and</span> <span class="s">&quot;WEIGHTS_0&quot;</span> <span class="k">in</span> p[<span class="s">&quot;attributes&quot;</span>]
+                   <span class="k">for</span> p <span class="k">in</span> prim):
+            print(<span class="s">&quot;ERROR: primitives lack JOINTS_0/WEIGHTS_0&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+        <span class="c"># contract 2a (on disk): per-vertex weights sum to 1</span>
+        disk_verts = <span class="n">0</span>
+        sum_err = <span class="n">0.0</span>
+        <span class="k">for</span> p <span class="k">in</span> prim:
+            a = p[<span class="s">&quot;attributes&quot;</span>]
+            w = acc_f(a[<span class="s">&quot;WEIGHTS_0&quot;</span>], <span class="n">4</span>)
+            j = acc_u(a[<span class="s">&quot;JOINTS_0&quot;</span>], <span class="n">4</span>, g[<span class="s">&quot;accessors&quot;</span>][a[<span class="s">&quot;JOINTS_0&quot;</span>]][<span class="s">&quot;componentType&quot;</span>])
+            disk_verts += len(w)
+            <span class="k">for</span> ws, js <span class="k">in</span> zip(w, j):
+                total = sum(x <span class="k">for</span> x, ji <span class="k">in</span> zip(ws, js) <span class="k">if</span> ji &lt; len(BONES))
+                sum_err = max(sum_err, abs(total - <span class="n">1.0</span>) <span class="k">if</span> total &gt; <span class="n">1e-9</span> <span class="k">else</span> <span class="n">0.0</span>)
+        <span class="k">if</span> sum_err &gt; SUM_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: disk weight sums deviate </span>{sum_err:<span class="s">.3e</span>}<span class="s"> from 1.0</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+        <span class="k">if</span> disk_verts &gt; eval_loops:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: disk verts </span>{disk_verts}<span class="s"> exceed evaluated loops </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{eval_loops}<span class="s"> — the exporter invented vertices</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+
+        bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+        bpy.ops.import_scene.gltf(filepath=path)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+
+    <span class="c"># contract 1b: the skeleton round-trips</span>
+    arms = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;ARMATURE&#x27;</span>]
+    <span class="k">if</span> len(arms) != <span class="n">1</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(arms)}<span class="s"> armatures after import, expected 1</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
+    ri_arm = arms[<span class="n">0</span>]
+    <span class="k">if</span> len(ri_arm.data.bones) != len(BONES):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(ri_arm.data.bones)}<span class="s"> bones != </span>{len(BONES)}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">11</span>
+    rest_err = <span class="n">0.0</span>
+    <span class="k">for</span> name <span class="k">in</span> BONES:
+        b1 = ri_arm.data.bones.get(name)
+        <span class="k">if</span> b1 <span class="k">is</span> <span class="k">None</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: bone </span>{name}<span class="s"> lost in round-trip</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">12</span>
+        p0, m0 = bone_info[name]
+        p1 = b1.parent.name <span class="k">if</span> b1.parent <span class="k">else</span> <span class="k">None</span>
+        <span class="k">if</span> p0 != p1:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{name}<span class="s"> parent </span>{p1}<span class="s"> != </span>{p0}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">13</span>
+        rest_err = max(rest_err,
+                       max(abs(m0[r][c] - b1.matrix_local[r][c])
+                           <span class="k">for</span> r <span class="k">in</span> range(<span class="n">4</span>) <span class="k">for</span> c <span class="k">in</span> range(<span class="n">4</span>)))
+    <span class="k">if</span> rest_err &gt; REST_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: rest matrices deviate </span>{rest_err:<span class="s">.3e</span>}<span class="s"> on round-trip</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">14</span>
+
+    <span class="c"># contract 2b: the weights round-trip (sorted point sets, crate protocol)</span>
+    ri = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects
+          <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span> <span class="k">and</span> o.vertex_groups <span class="k">and</span> o.find_armature()]
+    <span class="k">if</span> len(ri) != <span class="n">1</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(ri)}<span class="s"> skinned meshes after import, expected 1</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">15</span>
+    ri = ri[<span class="n">0</span>]
+    rme = ri.data
+    <span class="k">if</span> len(rme.vertices) != disk_verts:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: re-import has </span>{len(rme.vertices)}<span class="s"> verts, expected the </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{disk_verts}<span class="s"> on disk (the import must be 1:1 with the file)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">16</span>
+    <span class="k">if</span> sorted(g.name <span class="k">for</span> g <span class="k">in</span> ri.vertex_groups) != sorted(BONES):
+        print(<span class="s">&quot;ERROR: vertex group names drifted&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">17</span>
+
+    <span class="c"># per-vertex weight vectors, compared at sorted positions</span>
+    names_ri = [g.name <span class="k">for</span> g <span class="k">in</span> ri.vertex_groups]
+    got_w = {key_of(v.co): tuple(sorted(
+        (names_ri[g.group], round(g.weight, <span class="n">5</span>)) <span class="k">for</span> g <span class="k">in</span> v.groups))
+        <span class="k">for</span> v <span class="k">in</span> rme.vertices}
+    w_err = <span class="n">0.0</span>
+    step = <span class="n">10</span> ** -KEY_DIGITS
+    <span class="k">for</span> p, want <span class="k">in</span> want_w.items():
+        got = <span class="k">None</span>
+        <span class="k">for</span> dx <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+            <span class="k">for</span> dy <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+                <span class="k">for</span> dz <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+                    k = (p[<span class="n">0</span>] + dx, p[<span class="n">1</span>] + dy, p[<span class="n">2</span>] + dz)
+                    <span class="k">if</span> k <span class="k">in</span> got_w:
+                        got = got_w[k]
+                        <span class="k">break</span>
+        <span class="k">if</span> got != want:
+            w_err = max(w_err, <span class="n">1.0</span> <span class="k">if</span> got <span class="k">is</span> <span class="k">None</span> <span class="k">else</span>
+                        max(abs(dict(want).get(n, <span class="n">0.0</span>) - dict(got).get(n, <span class="n">0.0</span>))
+                            <span class="k">for</span> n <span class="k">in</span> set(dict(want)) | set(dict(got))))
+    <span class="k">if</span> w_err &gt; W_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: weight round-trip deviates </span>{w_err:<span class="s">.3e</span>}<span class="s"> (tol </span>{W_TOL}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">18</span>
+
+    <span class="c"># contract 3: the deformation round-trips (pose the re-imported rig the</span>
+    <span class="c"># same way, compare posed positions BY REST-KEY — sorted multisets</span>
+    <span class="c"># misalign because the exporter welds duplicate loops)</span>
+    <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
+        pb = ri_arm.pose.bones[name]
+        pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
+        pb.rotation_euler.x = math.radians(deg)
+    bpy.context.view_layer.update()
+    pose_ri = eval_positions(ri)
+    orig_map = {}
+    <span class="k">for</span> r, p <span class="k">in</span> zip(rest_orig, pose_orig):
+        orig_map.setdefault(key_of(r), []).append(p)
+    step = <span class="n">10</span> ** -KEY_DIGITS
+    pos_err = <span class="n">0.0</span>
+    <span class="k">for</span> j, rv <span class="k">in</span> enumerate(rme.vertices):
+        k0 = key_of(rv.co)
+        cands = []
+        <span class="k">for</span> dx <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+            <span class="k">for</span> dy <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+                <span class="k">for</span> dz <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
+                    cands += orig_map.get((k0[<span class="n">0</span>] + dx, k0[<span class="n">1</span>] + dy, k0[<span class="n">2</span>] + dz), [])
+        best = min((max(abs(pose_ri[j][c] - p[c]) <span class="k">for</span> c <span class="k">in</span> range(<span class="n">3</span>))
+                    <span class="k">for</span> p <span class="k">in</span> cands), default=<span class="n">1e30</span>)
+        pos_err = max(pos_err, best)
+    <span class="k">if</span> pos_err &gt; POS_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: deformation round-trip deviates </span>{pos_err:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{POS_TOL}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">19</span>
+
+    print(<span class="s">f&quot;</span><span class="s">bones=</span>{len(BONES)}<span class="s"> verts=</span>{base_verts}<span class="s"> eval_loops=</span>{eval_loops}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">disk_verts=</span>{disk_verts}<span class="s"> (welded </span>{eval_loops - disk_verts}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">sum_err=</span>{sum_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">rest_err=</span>{rest_err:<span class="s">.2e</span>}<span class="s"> w_err=</span>{w_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{W_TOL}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">pos_err=</span>{pos_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{POS_TOL}<span class="s">)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> make_materials():
+    <span class="k">def</span> pbr(name, base, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">0.0</span>):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+        <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+            sock.default_value = (*emission, <span class="n">1.0</span>)
+            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+        <span class="k">return</span> mat
+    <span class="k">return</span> [
+        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
+        pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.07</span>), <span class="n">0.10</span>, <span class="n">0.45</span>),
+        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
+        pbr(<span class="s">&quot;TealGlow&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.22</span>, <span class="n">0.26</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
+            emission=(<span class="n">0.10</span>, <span class="n">0.70</span>, <span class="n">0.78</span>), strength=<span class="n">2.5</span>),
+    ]
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">560.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">340.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">460.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">52.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.5</span>, -<span class="n">6.6</span>, <span class="n">2.7</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.8</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the hazard orange and teal glow (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    obj, part_of = build_scorpion()
+    <span class="k">for</span> m <span class="k">in</span> make_materials():
+        obj.data.materials.append(m)
+    assign_weights(obj, part_of)
+    arm = build_rig(obj)
+    bpy.context.view_layer.update()
+    code = check(obj, arm, part_of)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="c"># the re-imported rig is still in the file after the check; rebuild</span>
+        <span class="c"># the authored pair beside it for the still</span>
+        roundtrip_mesh = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects
+                          <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span> <span class="k">and</span> o.vertex_groups][<span class="n">0</span>]
+        roundtrip_arm = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;ARMATURE&#x27;</span>][<span class="n">0</span>]
+        authored, part_of2 = build_scorpion()
+        <span class="k">for</span> m <span class="k">in</span> make_materials():
+            authored.data.materials.append(m)
+        assign_weights(authored, part_of2)
+        authored_arm = build_rig(authored)
+        <span class="c"># move the ARMATURES; the skinned meshes follow as children</span>
+        authored_arm.location.x = -<span class="n">1.1</span>
+        roundtrip_arm.location.x = <span class="n">1.1</span>
+        <span class="k">if</span> <span class="k">not</span> render_still(authored, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">20</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;gltf-skin-roundtrip OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="gltf-skin-roundtrip render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

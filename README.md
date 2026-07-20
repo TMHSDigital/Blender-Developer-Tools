@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>27 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>28 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 27 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 28 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -472,7 +472,7 @@ round-trips through the raw `POINT` buffer.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 4 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 5 examples</summary>
 
 <table>
 <tr>
@@ -541,6 +541,23 @@ The normal-mapping tangent-space contract: deterministic triangulation
 edge/UV-delta formula on smooth fields. Documents the planar-on-cylinder UV
 degeneracy (tangent collapses onto the normal) and the stale layer-handle
 hazard that silently corrupts measurements on 4.5.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gltf-skin-roundtrip/"><img src="examples/gltf-skin-roundtrip/preview.webp" alt="glTF skin round-trip: two identical mech scorpions on a dark studio floor - orange armor, black segmented tails curled over their backs with glowing stinger tips, teal eyes - proving skeleton, weights, and deformation survive the export" /></a>
+</td>
+<td valign="middle">
+
+### [gltf-skin-roundtrip](examples/gltf-skin-roundtrip/)
+
+The skinning counterpart to `gltf-export-roundtrip`: a seven-bone rigged
+scorpion exported with `export_skins` and re-imported, asserting the joint
+list, JOINTS_0/WEIGHTS_0 unit sums, bone/parent/rest-matrix round-trip,
+bit-exact weights, and identical deformation of the re-imported rig — plus
+the parenting hazard: unparented skinned meshes let the exporter bind an
+armature by name.
 
 </td>
 </tr>

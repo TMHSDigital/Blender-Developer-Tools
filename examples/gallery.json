@@ -333,6 +333,18 @@
         "mesh",
         "uv"
       ]
+    },
+    {
+      "name": "gltf-skin-roundtrip",
+      "dir": "examples/gltf-skin-roundtrip",
+      "teaches": "A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format.",
+      "witnessesFix": "skins[0].joints names every bone; JOINTS_0/WEIGHTS_0 per primitive with unit sums; weights bit-exact on re-import; deformation matches within 4.8e-07. The mesh must be parented to the armature or the exporter binds by name.",
+      "hero": "docs/gallery/assets/gltf-skin-roundtrip-hero.webp",
+      "preview": "examples/gltf-skin-roundtrip/preview.webp",
+      "tags": [
+        "export",
+        "armature"
+      ]
     }
   ]
 }
