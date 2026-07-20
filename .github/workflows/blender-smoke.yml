@@ -404,3 +404,15 @@ jobs:
           # deform layer, and a pinned Root mount. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/vertex-weight-limit/vertex_weight_limit.py --
+
+      - name: Shipped example - triangulate + tangents (mikktspace contract)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a lathed buckler with polar/strip/planar
+          # UV charts; asserts closed-form loop-triangle count, unit and
+          # orthogonal tangent frames, bitangent == sign*(n x t), tangents
+          # matching the independent edge/UV-delta formula on smooth-field
+          # triangles, zero flips off seams, and the re-fetched UV layer
+          # surviving calc_tangents. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/triangulate-tangents/triangulate_tangents.py --
