@@ -35,6 +35,12 @@ lifted into its own smoke-gated witness so the contract cannot quietly drift.
   error `0.1`).
 - *Mesh persistence* — UV layer or loop data lost across `to_mesh`.
 - *Explicit path* — loop assignment or the closed form itself regressing.
+- *Pixel witness* (with `--output`) — the saved PNG is read back and probed
+  at each panel's projected center: the hazard panel must be one flat teal
+  (per-channel spread ≤ 0.02, ordering b>g>r), the repaired panel a
+  high-contrast checker (spread ≥ 0.25). Falsified twice: secretly giving the
+  hazard panel UVs exited 11 with measured spread `0.7333`; repainting texel
+  (0,0) magenta exited 12 with measured rgb `(0.927, 0.118, 0.536)`.
 
 **Version divergence:** none probed — the silent no-op and closed-form UV
 fill assert identically on Blender 4.5 LTS and 5.1. The only gate in the file
@@ -44,7 +50,10 @@ is the EEVEE engine id for the optional render (`BLENDER_EEVEE_NEXT` on 4.x,
 **Render:** two easel panels sharing one neon checker image. Left is the
 hazard (no UV layer) — flat teal of texel (0, 0). Right is the repair
 (pre-create + `calc_uvs`) — full magenta/cyan checker. If the UV contract
-failed, both panels would read the same.
+failed, both panels would read the same — and the still is not just an
+illustration: the script re-reads its own render and exits non-zero unless
+the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread
+`0.0078`, repair spread `0.7294`).
 
 ## Run
 

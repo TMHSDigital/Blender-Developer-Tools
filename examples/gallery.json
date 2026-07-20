@@ -264,7 +264,7 @@
       "name": "uv-layer-grid",
       "dir": "examples/uv-layer-grid",
       "teaches": "The UV-layer authoring hazard \u2014 bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.",
-      "witnessesFix": "calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback.",
+      "witnessesFix": "calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback. The still is self-witnessing: the script re-reads its render and exits non-zero unless the hazard panel is one flat teal and the repaired panel a high-contrast checker.",
       "hero": "docs/gallery/assets/uv-layer-grid-hero.webp",
       "preview": "examples/uv-layer-grid/preview.webp",
       "tags": [

@@ -443,7 +443,7 @@
         <div class="card-body">
           <h2><a href="uv-layer-grid/">uv-layer-grid</a></h2>
           <p class="teaches">The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback. The still is self-witnessing: the script re-reads its render and exits non-zero unless the hazard panel is one flat teal and the repaired panel a high-contrast checker.</p>
           <a class="card-link" href="uv-layer-grid/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
