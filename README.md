@@ -183,6 +183,11 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </tr>
 </table>
 
+</details>
+
+<details>
+<summary><strong>Mesh, curves &amp; text</strong> — 8 examples</summary>
+
 <table>
 <tr>
 <td width="46%" valign="middle">
