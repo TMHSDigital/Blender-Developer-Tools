@@ -1,10 +1,11 @@
 # Vertex Weight Limit
 
-A runnable example that rigs a mech arm — bolted pedestal and shoulder
-fairing, an upper arm ending in clevis cheeks, the elbow hinge pin and
-knuckle barrel capped through a ribbed flex cuff, a long plated forearm,
-wrist cuff and collar, and a three-finger gripper — with deliberately rich five-bone weight
-bumps in the bellows, then enforces the game-engine
+A runnable example that rigs a mech arm — flanged bolted pedestal and
+shoulder fairing, a panel-seamed upper arm ending in clevis cheeks, the
+elbow hinge pin and knuckle barrel capped with hex bolts through a ribbed
+flex cuff, a long seam-grooved forearm, wrist cuff and collar, and a
+three-finger gripper — with deliberately rich five-bone weight bumps in
+the cuffs, then enforces the game-engine
 **maximum of four bone influences per vertex** through the data API, following
 [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md) and
 building on the linear-blend-skinning precedent of
