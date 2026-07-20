@@ -183,7 +183,7 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that rigs a mech arm — bolted pedestal and shoulder fairing, an upper arm ending in clevis cheeks, the elbow hinge pin and knuckle barrel capped through a ribbed flex cuff, a long plated forearm, wrist cuff and collar, and a three-finger gripper — with deliberately rich five-bone weight bumps in the bellows, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
+<p>A runnable example that rigs a mech arm — flanged bolted pedestal and shoulder fairing, a panel-seamed upper arm ending in clevis cheeks, the elbow hinge pin and knuckle barrel capped with hex bolts through a ribbed flex cuff, a long seam-grooved forearm, wrist cuff and collar, and a three-finger gripper — with deliberately rich five-bone weight bumps in the cuffs, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
 <p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting here, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>.</p>
 <p><strong>What it witnesses:</strong> the skinning constraint every game engine enforces and AI-generated rigging code most often violates silently.</p>
 <p>1. <strong>The limit is a data-API operation, not a context operator.</strong> Instead of <code>bpy.ops.object.vertex_group_limit_total</code>, the example reads each vertex&#x27;s groups, keeps the top four by weight, <code>VertexGroup.remove</code>s the rest, and renormalizes the survivors. Dropping without renormalizing leaves sums at 0.986 — a mesh that shrinks toward the origin under load (the check&#x27;s measured failure, 1.438e-02 off unit sum). 2. <strong>The armature modifier is still exactly linear blend skinning</strong> after the limit: every depsgraph-evaluated vertex equals <code>Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest</code>, with the weights <strong>read back from the mesh&#x27;s own deform layer</strong> (<code>v.groups</code>) — the weights on the mesh are the contract, not the weights you meant to write. Measured <code>lbs_err = 3.0e-07</code>. 3. <strong>Pruning must not damage the pose.</strong> Evaluated positions before and after the limit are held within 0.05 (measured 3.0e-03), the pedestal mount stays exactly pinned (Root is unposed), and the pre-limit authoring really carries five influences in the boots — otherwise the witness would be vacuous.</p>
@@ -294,12 +294,12 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     part_of.extend([bone] * (len(bm.verts) - n0v))
 
 
-<span class="k">def</span> cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone):
+<span class="k">def</span> cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone, segments=<span class="n">24</span>):
     <span class="s">&quot;&quot;&quot;One cylinder/cone shell along a rotated axis; tags `bone` for its verts.&quot;&quot;&quot;</span>
     n0f, n0v = len(bm.faces), len(bm.verts)
     m = (mathutils.Matrix.Translation(loc)
          @ mathutils.Euler(tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)).to_matrix().to_4x4())
-    bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=<span class="n">24</span>,
+    bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=segments,
                           radius1=r1, radius2=r2, depth=depth, matrix=m)
     <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
         f.material_index = mat
@@ -322,62 +322,68 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
                 <span class="k">for</span> v <span class="k">in</span> ring:
                     part_of.append(bone)
 
-        <span class="c"># bolted pedestal + shoulder fairing (rigid on Root)</span>
-        tag(lathe_part(bm, [(-<span class="n">0.35</span>, <span class="n">0.34</span>), (-<span class="n">0.05</span>, <span class="n">0.34</span>), (<span class="n">0.0</span>, <span class="n">0.40</span>),
-                            (<span class="n">0.06</span>, <span class="n">0.42</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">0.02</span>, <span class="n">0.40</span>), (<span class="n">0.10</span>, <span class="n">0.44</span>), (<span class="n">0.22</span>, <span class="n">0.33</span>),
-                            (<span class="n">0.30</span>, <span class="n">0.17</span>), (<span class="n">0.34</span>, <span class="n">0.07</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
-        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>):  <span class="c"># the fairing&#x27;s bolt ring</span>
-            a = <span class="n">2</span> * math.pi * k / <span class="n">6</span>
-            cone_part(bm, <span class="n">0.05</span>, <span class="n">0.04</span>, <span class="n">0.06</span>,
-                      (<span class="n">0.36</span> * math.cos(a), <span class="n">0.36</span> * math.sin(a), <span class="n">0.03</span>),
-                      (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Root&quot;</span>)
+        <span class="c"># bolted pedestal + shoulder fairing on a wide flange (rigid on Root)</span>
+        tag(lathe_part(bm, [(-<span class="n">0.35</span>, <span class="n">0.38</span>), (-<span class="n">0.05</span>, <span class="n">0.38</span>), (<span class="n">0.0</span>, <span class="n">0.44</span>),
+                            (<span class="n">0.06</span>, <span class="n">0.46</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">0.02</span>, <span class="n">0.44</span>), (<span class="n">0.10</span>, <span class="n">0.48</span>), (<span class="n">0.22</span>, <span class="n">0.37</span>),
+                            (<span class="n">0.30</span>, <span class="n">0.19</span>), (<span class="n">0.34</span>, <span class="n">0.08</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
+        tag(lathe_part(bm, [(-<span class="n">0.02</span>, <span class="n">0.50</span>), (<span class="n">0.05</span>, <span class="n">0.50</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>):  <span class="c"># hex bolts around the flange rim</span>
+            a = <span class="n">2</span> * math.pi * k / <span class="n">8</span>
+            cone_part(bm, <span class="n">0.055</span>, <span class="n">0.055</span>, <span class="n">0.07</span>,
+                      (<span class="n">0.43</span> * math.cos(a), <span class="n">0.43</span> * math.sin(a), <span class="n">0.06</span>),
+                      (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Root&quot;</span>, segments=<span class="n">6</span>)
         <span class="c"># upper arm shell rooted deep inside the fairing — no gap at the</span>
         <span class="c"># shoulder when the joint articulates (rigid on Shoulder)</span>
-        tag(lathe_part(bm, [(<span class="n">0.10</span>, <span class="n">0.14</span>), (<span class="n">0.30</span>, <span class="n">0.19</span>), (<span class="n">0.45</span>, <span class="n">0.19</span>),
-                            (<span class="n">0.60</span>, <span class="n">0.23</span>), (<span class="n">0.80</span>, <span class="n">0.24</span>), (<span class="n">1.00</span>, <span class="n">0.23</span>),
-                            (<span class="n">1.15</span>, <span class="n">0.21</span>)], ORANGE), <span class="s">&quot;Shoulder&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">0.10</span>, <span class="n">0.16</span>), (<span class="n">0.30</span>, <span class="n">0.22</span>), (<span class="n">0.45</span>, <span class="n">0.22</span>),
+                            (<span class="n">0.60</span>, <span class="n">0.26</span>), (<span class="n">0.80</span>, <span class="n">0.26</span>), (<span class="n">1.00</span>, <span class="n">0.25</span>),
+                            (<span class="n">1.20</span>, <span class="n">0.24</span>)], ORANGE), <span class="s">&quot;Shoulder&quot;</span>)
+        <span class="c"># panel-seam groove on the upper arm (plate separation line)</span>
+        tag(lathe_part(bm, [(<span class="n">0.90</span>, <span class="n">0.262</span>), (<span class="n">0.94</span>, <span class="n">0.262</span>)], GUNMETAL), <span class="s">&quot;Shoulder&quot;</span>)
         <span class="c"># clevis cheek plates flanking the joint (rigid on Shoulder)</span>
         <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            box_part(bm, (<span class="n">0.10</span>, <span class="n">0.06</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, sy * <span class="n">0.175</span>, <span class="n">1.30</span>),
+            box_part(bm, (<span class="n">0.12</span>, <span class="n">0.07</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, sy * <span class="n">0.19</span>, <span class="n">1.30</span>),
                      (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), ORANGE, part_of, <span class="s">&quot;Shoulder&quot;</span>)
         <span class="c"># elbow flex cuff behind the hinge: the five-influence zone the</span>
         <span class="c"># limit prunes (every ring inside the five-bump z window)</span>
-        tag(lathe_part(bm, [(<span class="n">1.33</span>, <span class="n">0.17</span>), (<span class="n">1.38</span>, <span class="n">0.19</span>), (<span class="n">1.43</span>, <span class="n">0.17</span>),
-                            (<span class="n">1.49</span>, <span class="n">0.19</span>), (<span class="n">1.55</span>, <span class="n">0.18</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">1.33</span>, <span class="n">0.19</span>), (<span class="n">1.38</span>, <span class="n">0.21</span>), (<span class="n">1.43</span>, <span class="n">0.19</span>),
+                            (<span class="n">1.49</span>, <span class="n">0.21</span>), (<span class="n">1.55</span>, <span class="n">0.20</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
         <span class="c"># the hinge pin stays with the clevis (Shoulder): the forearm&#x27;s</span>
         <span class="c"># knuckle barrel (Elbow) rotates around it — pin caps must not tilt</span>
-        cone_part(bm, <span class="n">0.13</span>, <span class="n">0.13</span>, <span class="n">0.44</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
+        cone_part(bm, <span class="n">0.15</span>, <span class="n">0.15</span>, <span class="n">0.50</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
                   GUNMETAL, part_of, <span class="s">&quot;Shoulder&quot;</span>)
-        cone_part(bm, <span class="n">0.165</span>, <span class="n">0.165</span>, <span class="n">0.26</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
+        cone_part(bm, <span class="n">0.185</span>, <span class="n">0.185</span>, <span class="n">0.28</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
                   GUNMETAL, part_of, <span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># hex bolt heads flush on the cheeks — fasteners, not buttons</span>
         <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            cone_part(bm, <span class="n">0.17</span>, <span class="n">0.17</span>, <span class="n">0.05</span>, (<span class="n">0.0</span>, sy * <span class="n">0.225</span>, <span class="n">1.35</span>),
-                      (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Shoulder&quot;</span>)
+            cone_part(bm, <span class="n">0.15</span>, <span class="n">0.15</span>, <span class="n">0.06</span>, (<span class="n">0.0</span>, sy * <span class="n">0.255</span>, <span class="n">1.35</span>),
+                      (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Shoulder&quot;</span>, segments=<span class="n">6</span>)
         <span class="c"># bright seal hoop on the cuff — the accent marking the primary</span>
         <span class="c"># pruned-weight zone</span>
-        tag(lathe_part(bm, [(<span class="n">1.42</span>, <span class="n">0.20</span>), (<span class="n">1.46</span>, <span class="n">0.20</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># long plated forearm with two ridges (rigid on Elbow)</span>
-        tag(lathe_part(bm, [(<span class="n">1.55</span>, <span class="n">0.19</span>), (<span class="n">1.75</span>, <span class="n">0.21</span>), (<span class="n">1.80</span>, <span class="n">0.23</span>),
-                            (<span class="n">1.86</span>, <span class="n">0.21</span>), (<span class="n">2.05</span>, <span class="n">0.20</span>), (<span class="n">2.18</span>, <span class="n">0.22</span>),
-                            (<span class="n">2.24</span>, <span class="n">0.20</span>), (<span class="n">2.45</span>, <span class="n">0.18</span>)], ORANGE), <span class="s">&quot;Elbow&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">1.42</span>, <span class="n">0.22</span>), (<span class="n">1.46</span>, <span class="n">0.22</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
+        <span class="c"># long plated forearm with panel-seam grooves (rigid on Elbow)</span>
+        tag(lathe_part(bm, [(<span class="n">1.55</span>, <span class="n">0.22</span>), (<span class="n">1.75</span>, <span class="n">0.24</span>), (<span class="n">1.86</span>, <span class="n">0.25</span>),
+                            (<span class="n">2.05</span>, <span class="n">0.23</span>), (<span class="n">2.24</span>, <span class="n">0.23</span>), (<span class="n">2.45</span>, <span class="n">0.21</span>)],
+                       ORANGE), <span class="s">&quot;Elbow&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">1.88</span>, <span class="n">0.262</span>), (<span class="n">1.92</span>, <span class="n">0.262</span>)], GUNMETAL), <span class="s">&quot;Elbow&quot;</span>)
+        tag(lathe_part(bm, [(<span class="n">2.26</span>, <span class="n">0.242</span>), (<span class="n">2.30</span>, <span class="n">0.242</span>)], GUNMETAL), <span class="s">&quot;Elbow&quot;</span>)
         <span class="c"># armor blade along the forearm&#x27;s back (rigid on Elbow)</span>
-        box_part(bm, (<span class="n">0.10</span>, <span class="n">0.05</span>, <span class="n">0.60</span>), (<span class="n">0.0</span>, <span class="n">0.235</span>, <span class="n">2.02</span>),
+        box_part(bm, (<span class="n">0.12</span>, <span class="n">0.06</span>, <span class="n">0.60</span>), (<span class="n">0.0</span>, <span class="n">0.26</span>, <span class="n">2.02</span>),
                  (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), ORANGE, part_of, <span class="s">&quot;Elbow&quot;</span>)
         <span class="c"># wrist flex bellows (second blend zone) + collar</span>
-        tag(lathe_part(bm, [(<span class="n">2.45</span>, <span class="n">0.18</span>), (<span class="n">2.51</span>, <span class="n">0.20</span>), (<span class="n">2.57</span>, <span class="n">0.16</span>),
-                            (<span class="n">2.64</span>, <span class="n">0.19</span>), (<span class="n">2.70</span>, <span class="n">0.16</span>), (<span class="n">2.75</span>, <span class="n">0.17</span>)],
+        tag(lathe_part(bm, [(<span class="n">2.45</span>, <span class="n">0.20</span>), (<span class="n">2.51</span>, <span class="n">0.22</span>), (<span class="n">2.57</span>, <span class="n">0.18</span>),
+                            (<span class="n">2.64</span>, <span class="n">0.21</span>), (<span class="n">2.70</span>, <span class="n">0.18</span>), (<span class="n">2.75</span>, <span class="n">0.19</span>)],
                        RUBBER), <span class="s">&quot;FLEX&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">2.75</span>, <span class="n">0.16</span>), (<span class="n">2.85</span>, <span class="n">0.175</span>), (<span class="n">2.90</span>, <span class="n">0.16</span>)],
+        tag(lathe_part(bm, [(<span class="n">2.75</span>, <span class="n">0.18</span>), (<span class="n">2.85</span>, <span class="n">0.195</span>), (<span class="n">2.90</span>, <span class="n">0.18</span>)],
                        GUNMETAL), <span class="s">&quot;Wrist&quot;</span>)
         <span class="c"># palm block (rigid on Wrist)</span>
-        box_part(bm, (<span class="n">0.30</span>, <span class="n">0.22</span>, <span class="n">0.24</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.98</span>),
+        box_part(bm, (<span class="n">0.34</span>, <span class="n">0.25</span>, <span class="n">0.26</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.98</span>),
                  (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Wrist&quot;</span>)
         <span class="c"># three two-segment fingers, splayed (rigid on Claw)</span>
         <span class="k">for</span> a_deg <span class="k">in</span> (<span class="n">90.0</span>, <span class="n">210.0</span>, <span class="n">330.0</span>):
             a = math.radians(a_deg)
-            <span class="k">for</span> pos, tilt, size <span class="k">in</span> (((<span class="n">0.08</span>, <span class="n">3.08</span>), <span class="n">12.0</span>, (<span class="n">0.085</span>, <span class="n">0.13</span>, <span class="n">0.22</span>)),
-                                    ((<span class="n">0.14</span>, <span class="n">3.26</span>), <span class="n">26.0</span>, (<span class="n">0.07</span>, <span class="n">0.11</span>, <span class="n">0.18</span>))):
+            <span class="k">for</span> pos, tilt, size <span class="k">in</span> (((<span class="n">0.09</span>, <span class="n">3.08</span>), <span class="n">12.0</span>, (<span class="n">0.095</span>, <span class="n">0.14</span>, <span class="n">0.22</span>)),
+                                    ((<span class="n">0.16</span>, <span class="n">3.26</span>), <span class="n">26.0</span>, (<span class="n">0.08</span>, <span class="n">0.12</span>, <span class="n">0.18</span>))):
                 off, z = pos
                 m = (mathutils.Matrix.Translation((<span class="n">0.0</span>, <span class="n">0.0</span>, z))
                      @ mathutils.Matrix.Rotation(a, <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>)

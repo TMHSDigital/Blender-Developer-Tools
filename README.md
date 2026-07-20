@@ -506,7 +506,7 @@ as the caught failure mode.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vertex-weight-limit/"><img src="examples/vertex-weight-limit/preview.webp" alt="Vertex weight limit: a posed mech arm on a dark studio floor - orange armor shells, a glowing teal elbow bellows around the hinge pin, long plated forearm, three-finger gripper - deformed by weights pruned to the four-influence engine cap" /></a>
+<a href="examples/vertex-weight-limit/"><img src="examples/vertex-weight-limit/preview.webp" alt="Vertex weight limit: a posed mech arm on a dark studio floor - orange armor shells, a glowing teal flex cuff around the hex-bolted elbow hinge, long plated forearm, three-finger gripper - deformed by weights pruned to the four-influence engine cap" /></a>
 </td>
 <td valign="middle">
 

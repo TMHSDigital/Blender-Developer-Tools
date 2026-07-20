@@ -88,12 +88,12 @@ def box_part(bm, size, loc, rot, mat, part_of, bone):
     part_of.extend([bone] * (len(bm.verts) - n0v))
 
 
-def cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone):
+def cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone, segments=24):
     """One cylinder/cone shell along a rotated axis; tags `bone` for its verts."""
     n0f, n0v = len(bm.faces), len(bm.verts)
     m = (mathutils.Matrix.Translation(loc)
          @ mathutils.Euler(tuple(math.radians(a) for a in rot)).to_matrix().to_4x4())
-    bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=24,
+    bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=segments,
                           radius1=r1, radius2=r2, depth=depth, matrix=m)
     for f in bm.faces[n0f:]:
         f.material_index = mat
@@ -116,62 +116,68 @@ def build_arm():
                 for v in ring:
                     part_of.append(bone)
 
-        # bolted pedestal + shoulder fairing (rigid on Root)
-        tag(lathe_part(bm, [(-0.35, 0.34), (-0.05, 0.34), (0.0, 0.40),
-                            (0.06, 0.42)], GUNMETAL), "Root")
-        tag(lathe_part(bm, [(0.02, 0.40), (0.10, 0.44), (0.22, 0.33),
-                            (0.30, 0.17), (0.34, 0.07)], GUNMETAL), "Root")
-        for k in range(6):  # the fairing's bolt ring
-            a = 2 * math.pi * k / 6
-            cone_part(bm, 0.05, 0.04, 0.06,
-                      (0.36 * math.cos(a), 0.36 * math.sin(a), 0.03),
-                      (0, 0, 0), GUNMETAL, part_of, "Root")
+        # bolted pedestal + shoulder fairing on a wide flange (rigid on Root)
+        tag(lathe_part(bm, [(-0.35, 0.38), (-0.05, 0.38), (0.0, 0.44),
+                            (0.06, 0.46)], GUNMETAL), "Root")
+        tag(lathe_part(bm, [(0.02, 0.44), (0.10, 0.48), (0.22, 0.37),
+                            (0.30, 0.19), (0.34, 0.08)], GUNMETAL), "Root")
+        tag(lathe_part(bm, [(-0.02, 0.50), (0.05, 0.50)], GUNMETAL), "Root")
+        for k in range(8):  # hex bolts around the flange rim
+            a = 2 * math.pi * k / 8
+            cone_part(bm, 0.055, 0.055, 0.07,
+                      (0.43 * math.cos(a), 0.43 * math.sin(a), 0.06),
+                      (0, 0, 0), GUNMETAL, part_of, "Root", segments=6)
         # upper arm shell rooted deep inside the fairing — no gap at the
         # shoulder when the joint articulates (rigid on Shoulder)
-        tag(lathe_part(bm, [(0.10, 0.14), (0.30, 0.19), (0.45, 0.19),
-                            (0.60, 0.23), (0.80, 0.24), (1.00, 0.23),
-                            (1.15, 0.21)], ORANGE), "Shoulder")
+        tag(lathe_part(bm, [(0.10, 0.16), (0.30, 0.22), (0.45, 0.22),
+                            (0.60, 0.26), (0.80, 0.26), (1.00, 0.25),
+                            (1.20, 0.24)], ORANGE), "Shoulder")
+        # panel-seam groove on the upper arm (plate separation line)
+        tag(lathe_part(bm, [(0.90, 0.262), (0.94, 0.262)], GUNMETAL), "Shoulder")
         # clevis cheek plates flanking the joint (rigid on Shoulder)
         for sy in (-1, 1):
-            box_part(bm, (0.10, 0.06, 0.50), (0.0, sy * 0.175, 1.30),
+            box_part(bm, (0.12, 0.07, 0.50), (0.0, sy * 0.19, 1.30),
                      (0, 0, 0), ORANGE, part_of, "Shoulder")
         # elbow flex cuff behind the hinge: the five-influence zone the
         # limit prunes (every ring inside the five-bump z window)
-        tag(lathe_part(bm, [(1.33, 0.17), (1.38, 0.19), (1.43, 0.17),
-                            (1.49, 0.19), (1.55, 0.18)], RUBBER), "FLEX")
+        tag(lathe_part(bm, [(1.33, 0.19), (1.38, 0.21), (1.43, 0.19),
+                            (1.49, 0.21), (1.55, 0.20)], RUBBER), "FLEX")
         # the hinge pin stays with the clevis (Shoulder): the forearm's
         # knuckle barrel (Elbow) rotates around it — pin caps must not tilt
-        cone_part(bm, 0.13, 0.13, 0.44, (0.0, 0.0, 1.35), (90, 0, 0),
+        cone_part(bm, 0.15, 0.15, 0.50, (0.0, 0.0, 1.35), (90, 0, 0),
                   GUNMETAL, part_of, "Shoulder")
-        cone_part(bm, 0.165, 0.165, 0.26, (0.0, 0.0, 1.35), (90, 0, 0),
+        cone_part(bm, 0.185, 0.185, 0.28, (0.0, 0.0, 1.35), (90, 0, 0),
                   GUNMETAL, part_of, "Elbow")
+        # hex bolt heads flush on the cheeks — fasteners, not buttons
         for sy in (-1, 1):
-            cone_part(bm, 0.17, 0.17, 0.05, (0.0, sy * 0.225, 1.35),
-                      (90, 0, 0), GUNMETAL, part_of, "Shoulder")
+            cone_part(bm, 0.15, 0.15, 0.06, (0.0, sy * 0.255, 1.35),
+                      (90, 0, 0), GUNMETAL, part_of, "Shoulder", segments=6)
         # bright seal hoop on the cuff — the accent marking the primary
         # pruned-weight zone
-        tag(lathe_part(bm, [(1.42, 0.20), (1.46, 0.20)], ACCENT), "Elbow")
-        # long plated forearm with two ridges (rigid on Elbow)
-        tag(lathe_part(bm, [(1.55, 0.19), (1.75, 0.21), (1.80, 0.23),
-                            (1.86, 0.21), (2.05, 0.20), (2.18, 0.22),
-                            (2.24, 0.20), (2.45, 0.18)], ORANGE), "Elbow")
+        tag(lathe_part(bm, [(1.42, 0.22), (1.46, 0.22)], ACCENT), "Elbow")
+        # long plated forearm with panel-seam grooves (rigid on Elbow)
+        tag(lathe_part(bm, [(1.55, 0.22), (1.75, 0.24), (1.86, 0.25),
+                            (2.05, 0.23), (2.24, 0.23), (2.45, 0.21)],
+                       ORANGE), "Elbow")
+        tag(lathe_part(bm, [(1.88, 0.262), (1.92, 0.262)], GUNMETAL), "Elbow")
+        tag(lathe_part(bm, [(2.26, 0.242), (2.30, 0.242)], GUNMETAL), "Elbow")
         # armor blade along the forearm's back (rigid on Elbow)
-        box_part(bm, (0.10, 0.05, 0.60), (0.0, 0.235, 2.02),
+        box_part(bm, (0.12, 0.06, 0.60), (0.0, 0.26, 2.02),
                  (0, 0, 0), ORANGE, part_of, "Elbow")
         # wrist flex bellows (second blend zone) + collar
-        tag(lathe_part(bm, [(2.45, 0.18), (2.51, 0.20), (2.57, 0.16),
-                            (2.64, 0.19), (2.70, 0.16), (2.75, 0.17)],
+        tag(lathe_part(bm, [(2.45, 0.20), (2.51, 0.22), (2.57, 0.18),
+                            (2.64, 0.21), (2.70, 0.18), (2.75, 0.19)],
                        RUBBER), "FLEX")
-        tag(lathe_part(bm, [(2.75, 0.16), (2.85, 0.175), (2.90, 0.16)],
+        tag(lathe_part(bm, [(2.75, 0.18), (2.85, 0.195), (2.90, 0.18)],
                        GUNMETAL), "Wrist")
         # palm block (rigid on Wrist)
-        box_part(bm, (0.30, 0.22, 0.24), (0.0, 0.0, 2.98),
+        box_part(bm, (0.34, 0.25, 0.26), (0.0, 0.0, 2.98),
                  (0, 0, 0), GUNMETAL, part_of, "Wrist")
         # three two-segment fingers, splayed (rigid on Claw)
         for a_deg in (90.0, 210.0, 330.0):
             a = math.radians(a_deg)
-            for pos, tilt, size in (((0.08, 3.08), 12.0, (0.085, 0.13, 0.22)),
-                                    ((0.14, 3.26), 26.0, (0.07, 0.11, 0.18))):
+            for pos, tilt, size in (((0.09, 3.08), 12.0, (0.095, 0.14, 0.22)),
+                                    ((0.16, 3.26), 26.0, (0.08, 0.12, 0.18))):
                 off, z = pos
                 m = (mathutils.Matrix.Translation((0.0, 0.0, z))
                      @ mathutils.Matrix.Rotation(a, 4, 'Z')
