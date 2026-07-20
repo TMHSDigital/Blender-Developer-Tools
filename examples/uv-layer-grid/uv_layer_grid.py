@@ -10,7 +10,10 @@ The check proves the silent no-op, then the pre-create + `calc_uvs=True`
 repair path against a closed-form UV grid, and an explicit loop-assignment
 fallback that does not depend on `calc_uvs` at all. Pass --output to also
 render a still that stages the broken (flat) panel beside the repaired
-(checker) panel so the failure mode is visible at a glance:
+(checker) panel — and then *witnesses the render itself*: the saved PNG is
+read back and probed at each panel's projected center, asserting the broken
+panel is one flat teal (texel (0,0)) while the repaired panel carries both
+checker colors. If the UV contract failed, the pixels would say so:
 
     blender --background --python uv_layer_grid.py --
     blender --background --python uv_layer_grid.py -- --output uv.png
@@ -166,7 +169,7 @@ def eevee_engine_id():
 
 
 def make_uv_testcard(name, w=256, h=256):
-    """Neon checker + corner marker. Texel (0,0) is a flat teal so a missing UV
+    """Neon checker whose single texel (0,0) is a flat teal, so a missing UV
     layer reads as one solid color instead of a bright false-positive checker."""
     img = bpy.data.images.new(name, w, h, alpha=False)
     px = [0.0] * (w * h * 4)
@@ -243,15 +246,13 @@ def render_still(path, engine):
 
     # Left: the hazard — calc_uvs alone, no UV layer → flat teal of texel (0,0).
     broken = textured_plane("Broken", card, with_uvs=False)
-    broken.location = (-1.22, 0.0, 1.18)
-    broken.rotation_euler = (math.radians(62), 0.0, math.radians(10))
-    broken.scale = (1.15, 1.15, 1.15)
+    broken.location = (-1.18, 0.0, 0.94)
+    broken.rotation_euler = (math.radians(62), 0.0, math.radians(8))
 
     # Right: the repair — pre-create UV layer, then calc_uvs fills it.
     fixed = textured_plane("Fixed", card, with_uvs=True)
-    fixed.location = (1.22, 0.0, 1.18)
-    fixed.rotation_euler = (math.radians(62), 0.0, math.radians(-10))
-    fixed.scale = (1.15, 1.15, 1.15)
+    fixed.location = (1.18, 0.0, 0.94)
+    fixed.rotation_euler = (math.radians(62), 0.0, math.radians(-8))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -290,20 +291,21 @@ def render_still(path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.8, -4.8, 5.8), 360.0, 4.5, (1.0, 0.96, 0.9), (52, 0, -32))
-    light("Fill", (4.8, -2.8, 1.6), 70.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
-    light("Rim", (0.2, 4.0, 2.8), 220.0, 3.2, (0.6, 0.78, 1.0), (-62, 0, 178))
-    # Between the panels and the wall so it only rakes the backdrop.
-    light("Wedge", (0.5, 5.2, 2.8), 520.0, 7.0, (1.0, 0.72, 0.42), (-78, 0, 180))
+    light("Key", (-3.8, -4.8, 5.8), 300.0, 4.5, (1.0, 0.96, 0.9), (52, 0, -32))
+    light("Fill", (4.8, -2.8, 1.6), 55.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
+    light("Rim", (0.2, 4.0, 2.8), 90.0, 3.2, (0.6, 0.78, 1.0), (-62, 0, 178))
+    # Between the panels and the wall so it only rakes the backdrop: a
+    # contained warm pool, corners falling off to dark.
+    light("Wedge", (0.3, 5.4, 1.9), 380.0, 3.6, (1.0, 0.68, 0.38), (-72, 0, 180))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.1)
+    aim.location = (0.0, 0.0, 0.95)
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 45.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -5.4, 2.2)
+    cam.location = (0.0, -6.6, 2.1)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
     con.track_axis = "TRACK_NEGATIVE_Z"
@@ -329,6 +331,77 @@ def render_still(path, engine):
     return os.path.exists(path) and os.path.getsize(path) > 0
 
 
+def patch_stats(px, w, h, cx, cy, half):
+    """Mean RGB and per-channel min/max spread of a (2*half)^2 pixel patch."""
+    sums = [0.0, 0.0, 0.0]
+    lo = [1.0, 1.0, 1.0]
+    hi = [0.0, 0.0, 0.0]
+    n = 0
+    for y in range(max(0, cy - half), min(h, cy + half)):
+        for x in range(max(0, cx - half), min(w, cx + half)):
+            i = (y * w + x) * 4
+            for c in range(3):
+                v = px[i + c]
+                sums[c] += v
+                lo[c] = min(lo[c], v)
+                hi[c] = max(hi[c], v)
+            n += 1
+    mean = [s / n for s in sums]
+    spread = max(hi[c] - lo[c] for c in range(3))
+    return mean, spread
+
+
+def verify_still(path):
+    """Witness the render itself: the broken panel must be one flat teal, the
+    repaired panel a high-contrast checker. Probes the saved PNG at each
+    panel's projected center, so a failed UV contract cannot ship a still."""
+    from bpy_extras.object_utils import world_to_camera_view
+
+    scene = bpy.context.scene
+    bpy.context.view_layer.update()
+    img = bpy.data.images.load(path)
+    try:
+        w, h = img.size
+        px = [0.0] * (w * h * 4)
+        img.pixels.foreach_get(px)
+    finally:
+        bpy.data.images.remove(img)
+
+    half = max(8, int(w * 0.055))  # ~70 px at 1280: spans >1 checker cell
+    stats = {}
+    for name in ("Broken", "Fixed"):
+        obj = bpy.data.objects[name]
+        ndc = world_to_camera_view(scene, scene.camera, obj.matrix_world.translation)
+        cx, cy = int(ndc.x * w), int(ndc.y * h)
+        stats[name] = patch_stats(px, w, h, cx, cy, half)
+
+    (b_mean, b_spread), (f_mean, f_spread) = stats["Broken"], stats["Fixed"]
+    print(
+        f"pixel witness: broken mean rgb=({b_mean[0]:.3f},{b_mean[1]:.3f},"
+        f"{b_mean[2]:.3f}) spread={b_spread:.4f}; fixed spread={f_spread:.4f}"
+    )
+    if b_spread > 0.02:
+        return fail(
+            f"broken panel is not flat (spread {b_spread:.4f} > 0.02) — "
+            f"the hazard did not render as one color",
+            11,
+        )
+    if not (b_mean[2] > b_mean[1] > b_mean[0]):
+        return fail(
+            f"broken panel is not the teal of texel (0,0) "
+            f"(expected b>g>r, got rgb=({b_mean[0]:.3f},{b_mean[1]:.3f},{b_mean[2]:.3f}))",
+            12,
+        )
+    if f_spread < 0.25:
+        return fail(
+            f"repaired panel is not a checker (spread {f_spread:.4f} < 0.25)",
+            13,
+        )
+    if abs(f_mean[0] - b_mean[0]) < 0.1 and f_spread - b_spread < 0.2:
+        return fail("broken and repaired panels render identically", 14)
+    return 0
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
@@ -344,9 +417,13 @@ def main():
         return code
     if args.output:
         # check() already emptied the scene; rebuild for the still.
-        if not render_still(os.path.abspath(args.output), args.engine):
+        out = os.path.abspath(args.output)
+        if not render_still(out, args.engine):
             return fail(f"render produced no file at {args.output}", 10)
-        print(f"wrote {args.output}")
+        code = verify_still(out)
+        if code != 0:
+            return code
+        print(f"wrote {args.output} (pixel witness passed)")
     return 0
 
 

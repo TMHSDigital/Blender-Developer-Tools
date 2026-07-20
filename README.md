@@ -213,7 +213,8 @@ result is watertight (every edge borders exactly two faces).
 
 `bmesh.ops.create_grid(..., calc_uvs=True)` is a silent no-op unless a UV layer already
 exists — without one an Image Texture samples texel (0, 0) everywhere. Asserts the hazard,
-the pre-create repair against closed-form grid UVs, and an explicit assignment fallback.
+the pre-create repair against closed-form grid UVs, and an explicit assignment fallback —
+then re-reads its own render and fails unless the pixels prove the flat-vs-checker split.
 
 </td>
 </tr>
