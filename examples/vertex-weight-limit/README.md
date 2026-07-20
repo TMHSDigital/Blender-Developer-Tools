@@ -21,18 +21,18 @@ AI-generated rigging code most often violates silently.
    `bpy.ops.object.vertex_group_limit_total`, the example reads each vertex's
    groups, keeps the top four by weight, `VertexGroup.remove`s the rest, and
    renormalizes the survivors. Dropping without renormalizing leaves sums at
-   0.986 — a mesh that shrinks toward the origin under load (the check's
-   measured failure, 1.438e-02 off unit sum).
+   0.984 — a mesh that shrinks toward the origin under load (the check's
+   measured failure, 1.616e-02 off unit sum).
 2. **The armature modifier is still exactly linear blend skinning** after the
    limit: every depsgraph-evaluated vertex equals
    `Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest`, with the
    weights **read back from the mesh's own deform layer** (`v.groups`) — the
    weights on the mesh are the contract, not the weights you meant to write.
-   Measured `lbs_err = 3.0e-07`.
+   Measured `lbs_err = 2.7e-07`.
 3. **Pruning must not damage the pose.** Evaluated positions before and after
-   the limit are held within 0.05 (measured 3.0e-03), the pedestal mount stays
+   the limit are held within 0.05 (measured 2.8e-03), the pedestal mount stays
    exactly pinned (Root is unposed), and the pre-limit authoring really carries
-   five influences in the boots — otherwise the witness would be vacuous.
+   five influences in the cuffs — otherwise the witness would be vacuous.
 
 The vertex-group API (`v.groups`, `VertexGroup.add`/`remove`) is stable between
 Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself

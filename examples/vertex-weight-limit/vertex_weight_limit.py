@@ -34,7 +34,7 @@ import mathutils
 
 SIDES = 32
 MAX_INFLUENCES = 4              # the engine constraint being witnessed
-BUMP_R = 1.8                    # flex-boot blend support; guarantees 5 pre-limit
+BUMP_R = 1.8                    # flex-cuff blend support; guarantees 5 pre-limit
 LBS_TOL = 5e-4                  # float32 mesh coords vs double pose matrices
 SUM_TOL = 1e-5                  # per-vertex weight sum after renormalize
 POSE_TOL = 0.05                 # pruning must not move the pose beyond this
@@ -55,7 +55,7 @@ def bump(z, center, radius=BUMP_R):
 
 
 def flex_weights(z):
-    """Rich pre-limit weights over all five bones — boots blend broadly."""
+    """Rich pre-limit weights over all five bones — cuffs blend broadly."""
     w = [bump(z, BONE_CENTERS[b]) for b in BONES]
     total = sum(w)
     return [x / total for x in w]
@@ -202,7 +202,7 @@ def build_arm():
 
 def assign_weights(obj, part_of):
     """Author the rich pre-limit weights: hard single-bone on armor, broad
-    five-bone bumps in the flex boots."""
+    five-bone bumps in the flex cuffs."""
     groups = {b: obj.vertex_groups.new(name=b) for b in BONES}
     if len(part_of) != len(obj.data.vertices):
         raise RuntimeError(f"part tag count {len(part_of)} != vert count "
@@ -260,7 +260,7 @@ def eval_positions(obj):
 def check(obj, arm, groups, pose_before):
     me = obj.data
 
-    # pre-limit witness: the flex boots really carry five influences
+    # pre-limit witness: the flex cuffs really carry five influences
     pre_max = max(len(v.groups) for v in me.vertices)
     if pre_max != 5:
         print(f"ERROR: pre-limit max influences {pre_max} != 5 — the rich "
