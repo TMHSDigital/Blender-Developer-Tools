@@ -502,6 +502,17 @@
           <a class="card-link" href="triangulate-tangents/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="export armature">
+        <a class="card-media" href="gltf-skin-roundtrip/" aria-label="gltf-skin-roundtrip example detail page">
+          <img src="assets/gltf-skin-roundtrip-hero.webp" alt="gltf-skin-roundtrip — A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gltf-skin-roundtrip/">gltf-skin-roundtrip</a></h2>
+          <p class="teaches">A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> skins[0].joints names every bone; JOINTS_0/WEIGHTS_0 per primitive with unit sums; weights bit-exact on re-import; deformation matches within 4.8e-07. The mesh must be parented to the armature or the exporter binds by name.</p>
+          <a class="card-link" href="gltf-skin-roundtrip/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

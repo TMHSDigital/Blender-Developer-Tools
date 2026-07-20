@@ -416,3 +416,14 @@ jobs:
           # surviving calc_tangents. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/triangulate-tangents/triangulate_tangents.py --
+
+      - name: Shipped example - glTF skin round-trip (skins, weights, deform)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 7-bone mech scorpion exported with
+          # export_skins and re-imported; asserts skins[0] joints, JOINTS_0/
+          # WEIGHTS_0 unit sums, bone/parent/rest-matrix round-trip, bit-exact
+          # weights via position-key lookup, and identical deformation of the
+          # re-imported rig. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --
