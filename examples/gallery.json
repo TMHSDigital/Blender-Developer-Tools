@@ -357,6 +357,17 @@
         "sequencer",
         "rendering"
       ]
+    },
+    {
+      "name": "light-link-studio",
+      "dir": "examples/light-link-studio",
+      "teaches": "One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 4.0x luminance ratio; unlinked in the same check: the decoy rises 244% while the hero holds at 0.0% drift.",
+      "witnessesFix": "The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere's projected center; EEVEE Next honors linking too (5.5x on 4.5, 5.9x on 5.1), Cycles pinned for deterministic samples.",
+      "hero": "docs/gallery/assets/light-link-studio-hero.webp",
+      "preview": "examples/light-link-studio/preview.webp",
+      "tags": [
+        "rendering"
+      ]
     }
   ]
 }

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>29 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>30 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 29 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 30 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -186,7 +186,7 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 9 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 10 examples</summary>
 
 <table>
 <tr>
@@ -305,6 +305,22 @@ The sequencer API rename from 4.5 LTS to 5.x — `strips` (never `.sequences`), 
 ending in `length=` vs `frame_end=`, and `left_handle`/`right_handle`/`duration` replacing
 the deprecated `frame_final_*`. Asserts closed-form spans, GC wiring and clamping, the
 consumed-input compositing contract, and a save/reload round-trip.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/light-link-studio/"><img src="examples/light-link-studio/preview.webp" alt="Light link studio: a blazing orange hero sphere over a LINKED plaque beside a dim steel decoy over UNLINKED on a dark studio floor - one key light restricted to the hero collection" /></a>
+</td>
+<td valign="middle">
+
+### [light-link-studio](examples/light-link-studio/)
+
+Object light linking proven in pixels: a key linked to the hero's collection
+lights only the hero (4.0x luminance ratio at projected centers), and
+unlinking in the same check raises the decoy 244% with 0.0% hero drift. The
+API is `obj.light_linking` — the Light datablock has none — and EEVEE Next
+honors linking too (measured), with Cycles pinned for deterministic samples.
 
 </td>
 </tr>
