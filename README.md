@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>28 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>29 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 28 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 29 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -186,7 +186,7 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 8 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 9 examples</summary>
 
 <table>
 <tr>
@@ -305,6 +305,22 @@ The sequencer API rename from 4.5 LTS to 5.x — `strips` (never `.sequences`), 
 ending in `length=` vs `frame_end=`, and `left_handle`/`right_handle`/`duration` replacing
 the deprecated `frame_final_*`. Asserts closed-form spans, GC wiring and clamping, the
 consumed-input compositing contract, and a save/reload round-trip.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/vse-gamma-cross/"><img src="examples/vse-gamma-cross/preview.webp" alt="VSE gamma cross: a mixing bench in a dark studio - eight emissive panels fading crimson to teal across the cross, with the brighter naive-lerp midpoint framed in hazard orange on the console below" /></a>
+</td>
+<td valign="middle">
+
+### [vse-gamma-cross](examples/vse-gamma-cross/)
+
+The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5
+space, `((1-t)·√A + t·√B)²` with `t = (frame − start) / duration` — never 1
+inside the effect. Per-frame sample renders assert the closed form (mid dips
+0.115 below the sRGB lerp), and the AgX-default sampling trap is documented
+(`view_transform = 'Standard'` is mandatory for any pixel witness).
 
 </td>
 </tr>

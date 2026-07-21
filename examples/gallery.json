@@ -345,6 +345,18 @@
         "export",
         "armature"
       ]
+    },
+    {
+      "name": "vse-gamma-cross",
+      "dir": "examples/vse-gamma-cross",
+      "teaches": "The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.",
+      "witnessesFix": "out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.115; AgX-default sampling poisons the fit (Standard is mandatory).",
+      "hero": "docs/gallery/assets/vse-gamma-cross-hero.webp",
+      "preview": "examples/vse-gamma-cross/preview.webp",
+      "tags": [
+        "sequencer",
+        "rendering"
+      ]
     }
   ]
 }

@@ -513,6 +513,17 @@
           <a class="card-link" href="gltf-skin-roundtrip/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="sequencer rendering">
+        <a class="card-media" href="vse-gamma-cross/" aria-label="vse-gamma-cross example detail page">
+          <img src="assets/vse-gamma-cross-hero.webp" alt="vse-gamma-cross — The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="vse-gamma-cross/">vse-gamma-cross</a></h2>
+          <p class="teaches">The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.115; AgX-default sampling poisons the fit (Standard is mandatory).</p>
+          <a class="card-link" href="vse-gamma-cross/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>
