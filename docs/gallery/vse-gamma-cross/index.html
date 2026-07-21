@@ -408,7 +408,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         <span class="k">try</span>:
             bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
                                   matrix=__import__(<span class="s">&quot;mathutils&quot;</span>).Matrix.Diagonal(
-                                      (<span class="n">0.52</span>, <span class="n">0.10</span>, <span class="n">0.62</span>, <span class="n">1.0</span>)))
+                                      (<span class="n">0.56</span>, <span class="n">0.10</span>, <span class="n">0.66</span>, <span class="n">1.0</span>)))
             bm.to_mesh(me)
         <span class="k">finally</span>:
             bm.free()
@@ -438,7 +438,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
 
     <span class="c"># two rows: the authentic fade across the top, the naive mid below it,</span>
     <span class="c"># framed — the gamma dip is the visible contrast</span>
-    xs = [(-<span class="n">2.50</span> + <span class="n">0.72</span> * i) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>)]
+    xs = [(-<span class="n">2.17</span> + <span class="n">0.62</span> * i) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>)]
     <span class="k">for</span> (f, _t), x <span class="k">in</span> zip(SAMPLES, xs):
         panel(<span class="s">f&quot;</span><span class="s">t</span>{_t}<span class="s">&quot;</span>, got[f], x, z=<span class="n">1.85</span>)
     lerp_rgb = tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
@@ -451,6 +451,9 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     cb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
     cb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
     cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    sock = cb.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> cb.inputs[<span class="s">&quot;Emission&quot;</span>]
+    sock.default_value = (<span class="n">0.35</span>, <span class="n">0.37</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)
+    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.6</span>
 
     <span class="k">def</span> caption(text, x, z):
         cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
@@ -548,7 +551,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.2</span>, -<span class="n">8.2</span>, <span class="n">2.4</span>)
+    cam.location = (<span class="n">0.3</span>, -<span class="n">9.2</span>, <span class="n">2.5</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     target.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
