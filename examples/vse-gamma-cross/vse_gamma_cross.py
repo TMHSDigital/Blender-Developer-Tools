@@ -202,7 +202,7 @@ def build_bench(sc, got):
         try:
             bmesh.ops.create_cube(bm, size=1.0,
                                   matrix=__import__("mathutils").Matrix.Diagonal(
-                                      (0.52, 0.10, 0.62, 1.0)))
+                                      (0.56, 0.10, 0.66, 1.0)))
             bm.to_mesh(me)
         finally:
             bm.free()
@@ -232,7 +232,7 @@ def build_bench(sc, got):
 
     # two rows: the authentic fade across the top, the naive mid below it,
     # framed — the gamma dip is the visible contrast
-    xs = [(-2.50 + 0.72 * i) for i in range(8)]
+    xs = [(-2.17 + 0.62 * i) for i in range(8)]
     for (f, _t), x in zip(SAMPLES, xs):
         panel(f"t{_t}", got[f], x, z=1.85)
     lerp_rgb = tuple(naive(0.5, k) for k in range(3))
@@ -245,6 +245,9 @@ def build_bench(sc, got):
     cb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
     cb.inputs["Metallic"].default_value = 0.2
     cb.inputs["Roughness"].default_value = 0.6
+    sock = cb.inputs.get("Emission Color") or cb.inputs["Emission"]
+    sock.default_value = (0.35, 0.37, 0.42, 1.0)
+    cb.inputs["Emission Strength"].default_value = 0.6
 
     def caption(text, x, z):
         cu = bpy.data.curves.new("Caption", 'FONT')
@@ -342,7 +345,7 @@ def render_still(sc, got, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.2, -8.2, 2.4)
+    cam.location = (0.3, -9.2, 2.5)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
     target.location = (0.15, 0.0, 1.35)
