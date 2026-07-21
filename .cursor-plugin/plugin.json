@@ -86,6 +86,7 @@
     "examples/uv-layer-grid",
     "examples/vertex-weight-limit",
     "examples/vse-cut-list",
+    "examples/vse-gamma-cross",
     "examples/wave-displace"
   ]
 }

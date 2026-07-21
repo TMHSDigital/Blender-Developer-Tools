@@ -427,3 +427,13 @@ jobs:
           # re-imported rig. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --
+
+      - name: Shipped example - VSE gamma cross (blend-curve closed form)
+        run: |
+          set -euo pipefail
+          # Check only: renders tiny frames across a GAMMA_CROSS and asserts
+          # every sample against the gamma-0.5 closed form ((1-t)*sqrt(A) +
+          # t*sqrt(B))^2 with t = (frame-start)/duration, plus the material
+          # lerp deviation at mid. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/vse-gamma-cross/vse_gamma_cross.py --

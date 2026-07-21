@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vse-gamma-cross — Examples — Blender Developer Tools</title>
+  <meta name="description" content="The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vse-gamma-cross/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="vse-gamma-cross — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vse-gamma-cross/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-gamma-cross-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="vse-gamma-cross — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-gamma-cross-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>vse-gamma-cross</h1>
+    <p>The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom vse-gamma-cross render">
+      <img src="../assets/vse-gamma-cross-hero.webp" alt="vse-gamma-cross render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.115; AgX-default sampling poisons the fit (Standard is mandatory).</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable follow-up to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list"><code>vse-cut-list</code></a>: the check renders tiny frames across a GAMMA_CROSS between crimson and teal strips and asserts every sample against the fade&#x27;s actual math — because AI-generated sequencer code assumes the cross is the naive linear mix, and it is not.</p>
+<p><strong>What it witnesses:</strong> the fade math and the frame convention behind it.</p>
+<p>1. <strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. From crimson <code>(0.85, 0.10, 0.22)</code> and teal <code>(0.06, 0.75, 0.80)</code> the midpoint is <code>(0.341, 0.349, 0.463)</code>: <strong>0.115 darker</strong> on red than the lerp <code>(0.455, 0.425, 0.510)</code>. The check asserts every sample within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that the mid lerp deviation is material (≥0.05). 2. <strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125). 3. <strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</p>
+<p><strong>What each check catches on failure:</strong> asserting the naive lerp as the expectation (exit 6, deviation 0.1138 at mid), the endpoint-inclusive t convention (exit 5), and swapped cross inputs (exit 4, <code>input1=T2</code>).</p>
+<p><strong>Version witness:</strong> the blend math is identical on Blender 4.5 LTS and 5.1 — every sample matches to the quantization step. The creation contract from <code>vse-cut-list</code> still gates the timeline: <code>strips</code> (never <code>.sequences</code>), and <code>new_effect</code> ending in <code>length=</code> on 5.x vs <code>frame_end=</code> on 4.5.</p>
+<p>The render is a mixing bench: the eight authentic cross samples as emissive panels fading crimson to teal, with the naive lerp midpoint framed in hazard orange below — visibly brighter than the true mid, the gamma dip made visible.</p>
+<h2>Run</h2>
+<pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
+blender --background --python vse_gamma_cross.py --
+
+# Also render the mixing bench still (EEVEE on a GPU host; cycles on GPU-less):
+blender --background --python vse_gamma_cross.py -- --output bench.png
+blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (span drift, wrong inputs, t-convention drift, a sample off the closed form, or a missing gamma dip). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/vse-gamma-cross/vse_gamma_cross.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-gamma-cross/vse_gamma_cross.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;The GAMMA_CROSS blend curve, asserted per frame — a runnable example.
+
+Witnesses the fade math AI-generated sequencer code most often assumes
+wrong: a GAMMA_CROSS between two strips is NOT the naive linear mix
+``(1-t)*A + t*B``. It blends in a gamma-0.5 space:
+
+    out = ((1-t)*sqrt(A) + t*sqrt(B))^2,   t = (frame - start) / duration
+
+so the mid-cross dips below the sRGB lerp — from crimson (0.85, 0.10, 0.22)
+and teal (0.06, 0.75, 0.80) the midpoint is (0.341, 0.349, 0.463), a full
+0.114 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
+check renders tiny frames across the cross and asserts every sample against
+the closed form, plus that the lerp deviation at mid is material.
+
+Also witnessed: ``t`` never reaches 1 inside the effect — the last frame of
+the span blends at (duration-1)/duration; B arrives only when the effect
+ends. And the version-gated creation contract from vse-cut-list holds the
+whole thing up: ``strips`` (never ``.sequences``), and ``new_effect`` ends
+with ``length=`` on 5.x, ``frame_end=`` on 4.5.
+
+The blend math is identical on Blender 4.5 LTS and 5.1 (every sample matches
+to the quantization step).
+
+By default it runs only the correctness check (no gallery render) — the CI
+smoke check. Pass --output to also render a still:
+
+    blender --background --python vse_gamma_cross.py --                 # check only
+    blender --background --python vse_gamma_cross.py -- --output g.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, sys, os, math, argparse, tempfile, shutil
+
+IS_5X = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
+
+A_RGB = (<span class="n">0.85</span>, <span class="n">0.10</span>, <span class="n">0.22</span>)    <span class="c"># crimson</span>
+B_RGB = (<span class="n">0.06</span>, <span class="n">0.75</span>, <span class="n">0.80</span>)    <span class="c"># teal</span>
+SPAN = (<span class="n">1</span>, <span class="n">33</span>)                <span class="c"># 32 frames of cross</span>
+PXW, PXH = <span class="n">64</span>, <span class="n">36</span>             <span class="c"># tiny per-sample renders, CI-safe like vse-cut-list</span>
+Q_TOL = <span class="n">5e-3</span>                  <span class="c"># 2x the 8-bit quantization step + gamma-fit residual (measured 2.93e-3)</span>
+LERP_MID_MIN = <span class="n">0.05</span>           <span class="c"># the gamma dip must be material at t=0.5</span>
+
+<span class="c"># sample frames 1,5,9,...,29 -&gt; t = 0, 1/8, ..., 7/8 exactly</span>
+SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span class="n">8</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>)]
+
+
+<span class="k">def</span> strips_coll(se):
+    <span class="s">&quot;&quot;&quot;The version-safe accessor: .strips everywhere, never .sequences.&quot;&quot;&quot;</span>
+    <span class="k">return</span> se.strips <span class="k">if</span> hasattr(se, <span class="s">&quot;strips&quot;</span>) <span class="k">else</span> se.sequences
+
+
+<span class="k">def</span> new_effect(coll, name, typ, ch, span, **kw):
+    <span class="s">&quot;&quot;&quot;Each version&#x27;s only accepted end kwarg (vse-cut-list&#x27;s contract).&quot;&quot;&quot;</span>
+    <span class="k">if</span> IS_5X:
+        <span class="k">return</span> coll.new_effect(
+            name=name, type=typ, channel=ch,
+            frame_start=span[<span class="n">0</span>], length=span[<span class="n">1</span>] - span[<span class="n">0</span>], **kw,
+        )
+    <span class="k">return</span> coll.new_effect(
+        name=name, type=typ, channel=ch,
+        frame_start=span[<span class="n">0</span>], frame_end=span[<span class="n">1</span>], **kw,
+    )
+
+
+<span class="k">def</span> strip_span(s):
+    <span class="k">if</span> IS_5X:
+        <span class="k">return</span> s.left_handle, s.right_handle, s.duration
+    <span class="k">return</span> s.frame_final_start, s.frame_final_end, s.frame_final_duration
+
+
+<span class="k">def</span> build_cross(sc):
+    <span class="s">&quot;&quot;&quot;The two-strip cross: T1/T2 consumed by the GAMMA_CROSS above them
+    (effect strips consume inputs only from below — vse-cut-list&#x27;s wiring).&quot;&quot;&quot;</span>
+    sc.frame_start = SPAN[<span class="n">0</span>]
+    sc.frame_end = SPAN[<span class="n">1</span>]
+    se = sc.sequence_editor <span class="k">or</span> sc.sequence_editor_create()
+    coll = strips_coll(se)
+    t1 = new_effect(coll, <span class="s">&quot;T1&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, <span class="n">1</span>, SPAN)
+    t1.color = A_RGB
+    t2 = new_effect(coll, <span class="s">&quot;T2&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, <span class="n">2</span>, SPAN)
+    t2.color = B_RGB
+    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, <span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">3</span>, SPAN, input1=t1, input2=t2)
+    <span class="k">return</span> gc
+
+
+<span class="k">def</span> closed_form(t, k):
+    <span class="s">&quot;&quot;&quot;The gamma-0.5 crossfade: mix in sqrt space, square back.&quot;&quot;&quot;</span>
+    <span class="k">return</span> ((<span class="n">1</span> - t) * math.sqrt(A_RGB[k]) + t * math.sqrt(B_RGB[k])) ** <span class="n">2</span>
+
+
+<span class="k">def</span> naive(t, k):
+    <span class="k">return</span> (<span class="n">1</span> - t) * A_RGB[k] + t * B_RGB[k]
+
+
+<span class="k">def</span> setup_render(sc, w, h):
+    sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span>
+    sc.cycles.samples = <span class="n">1</span>
+    sc.cycles.use_denoising = <span class="k">False</span>
+    sc.render.resolution_x = w
+    sc.render.resolution_y = h
+    sc.render.resolution_percentage = <span class="n">100</span>
+    sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    <span class="c"># Standard keeps the strip colors exact (AgX would skew the fit)</span>
+    sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+
+
+<span class="k">def</span> sample_colors(sc, frames, tmp):
+    <span class="s">&quot;&quot;&quot;Render the cross at each frame and read the center pixel.&quot;&quot;&quot;</span>
+    out = {}
+    <span class="k">for</span> f <span class="k">in</span> frames:
+        path = os.path.join(tmp, <span class="s">f&quot;</span><span class="s">f</span>{f:<span class="s">03d</span>}<span class="s">.png</span><span class="s">&quot;</span>)
+        sc.render.filepath = path
+        sc.frame_set(f)
+        bpy.ops.render.render(write_still=<span class="k">True</span>)
+        img = bpy.data.images.load(path)
+        i = ((PXH // <span class="n">2</span>) * PXW + PXW // <span class="n">2</span>) * <span class="n">4</span>
+        out[f] = tuple(img.pixels[i:i + <span class="n">3</span>])
+        bpy.data.images.remove(img)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> check(sc, gc):
+    start, end, duration = strip_span(gc)
+    <span class="k">if</span> (start, end, duration) != (SPAN[<span class="n">0</span>], SPAN[<span class="n">1</span>], SPAN[<span class="n">1</span>] - SPAN[<span class="n">0</span>]):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: GC span </span>{(start, end, duration)}<span class="s"> != closed form </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{(SPAN[<span class="n">0</span>], SPAN[<span class="n">1</span>], SPAN[<span class="n">1</span>] - SPAN[<span class="n">0</span>])}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> gc.input_1.name != <span class="s">&quot;T1&quot;</span> <span class="k">or</span> gc.input_2.name != <span class="s">&quot;T2&quot;</span>:
+        print(<span class="s">&quot;ERROR: GC inputs are not T1 -&gt; T2&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># the factory default is AgX — tone-mapped samples poison the fit</span>
+    <span class="c"># (measured 0.146 on the red channel during authoring); Standard is</span>
+    <span class="c"># mandatory for any pixel witness</span>
+    setup_render(sc, PXW, PXH)
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_gamma_&quot;</span>)
+    <span class="k">try</span>:
+        frames = [f <span class="k">for</span> f, _t <span class="k">in</span> SAMPLES]
+        got = sample_colors(sc, frames, tmp)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+
+    q_err = <span class="n">0.0</span>
+    lerp_mid = <span class="n">0.0</span>
+    worst = <span class="k">None</span>
+    <span class="k">for</span> f, t <span class="k">in</span> SAMPLES:
+        <span class="c"># t = (frame - start) / duration: never 1 inside the effect</span>
+        t_actual = (f - start) / duration
+        <span class="k">if</span> abs(t_actual - t) &gt; <span class="n">1e-12</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: sample t </span>{t_actual}<span class="s"> != </span>{t}<span class="s"> — t convention drifted</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>):
+            e = abs(got[f][k] - closed_form(t_actual, k))
+            <span class="k">if</span> e &gt; q_err:
+                q_err = e
+                worst = (f, k)
+            <span class="k">if</span> abs(t_actual - <span class="n">0.5</span>) &lt; <span class="n">1e-12</span>:
+                lerp_mid = max(lerp_mid,
+                               abs(naive(t_actual, k) - closed_form(t_actual, k)))
+    <span class="k">if</span> q_err &gt; Q_TOL:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: cross sample deviates </span>{q_err:<span class="s">.4f</span>}<span class="s"> from the gamma-0.5 </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">closed form at </span>{worst}<span class="s"> (tol </span>{Q_TOL}<span class="s"> — quantization-aware)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">if</span> lerp_mid &lt; LERP_MID_MIN:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: mid-cross lerp deviation only </span>{lerp_mid:<span class="s">.4f</span>}<span class="s"> — the </span><span class="s">&quot;</span>
+              <span class="s">&quot;gamma dip is missing; the cross reads as a naive mix&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+
+    print(<span class="s">f&quot;</span><span class="s">samples=</span>{len(SAMPLES)}<span class="s"> q_err=</span>{q_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{Q_TOL}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lerp_mid_dev=</span>{lerp_mid:<span class="s">.3f</span>}<span class="s"> (min </span>{LERP_MID_MIN}<span class="s">)</span><span class="s">&quot;</span>)
+    mid = tuple(round(closed_form(<span class="n">0.5</span>, k), <span class="n">4</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+    print(<span class="s">f&quot;</span><span class="s">mid(t=0.5) closed form </span>{mid}<span class="s"> vs lerp </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span>{tuple(round(naive(<span class="n">0.5</span>, k), <span class="n">4</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ------------------------------------------------------------- gallery ---</span>
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> build_bench(sc, got):
+    <span class="s">&quot;&quot;&quot;The mixing bench: the 8 authentic cross samples as emissive panels,
+    plus the naive lerp midpoint framed in hazard orange for contrast.&quot;&quot;&quot;</span>
+    <span class="k">import</span> bmesh
+    <span class="k">import</span> math <span class="k">as</span> m
+
+    <span class="k">def</span> panel(name, rgb, x, z, hot=<span class="k">False</span>):
+        mat = bpy.data.materials.new(<span class="s">f&quot;</span><span class="s">Swatch</span>{name}<span class="s">&quot;</span>)
+        mat.use_nodes = <span class="k">True</span>
+        nt = mat.node_tree
+        nt.nodes.clear()
+        out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+        em = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+        em.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+        em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+        nt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                  matrix=__import__(<span class="s">&quot;mathutils&quot;</span>).Matrix.Diagonal(
+                                      (<span class="n">0.52</span>, <span class="n">0.10</span>, <span class="n">0.62</span>, <span class="n">1.0</span>)))
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = (x, <span class="n">0.0</span>, z)
+        sc.collection.objects.link(ob)
+        <span class="k">if</span> hot:
+            frame_mat = bpy.data.materials.new(<span class="s">&quot;HotFrame&quot;</span>)
+            frame_mat.use_nodes = <span class="k">True</span>
+            fb = frame_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+            fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
+            fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+            fm = bpy.data.meshes.new(<span class="s">&quot;Frame&quot;</span>)
+            bm = bmesh.new()
+            <span class="k">try</span>:
+                bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                      matrix=__import__(<span class="s">&quot;mathutils&quot;</span>).Matrix.Diagonal(
+                                          (<span class="n">0.62</span>, <span class="n">0.06</span>, <span class="n">0.72</span>, <span class="n">1.0</span>)))
+                bm.to_mesh(fm)
+            <span class="k">finally</span>:
+                bm.free()
+            fm.materials.append(frame_mat)
+            fob = bpy.data.objects.new(<span class="s">&quot;Frame&quot;</span>, fm)
+            fob.location = (x, <span class="n">0.07</span>, z)
+            sc.collection.objects.link(fob)
+
+    <span class="c"># two rows: the authentic fade across the top, the naive mid below it,</span>
+    <span class="c"># framed — the gamma dip is the visible contrast</span>
+    xs = [(-<span class="n">2.50</span> + <span class="n">0.72</span> * i) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>)]
+    <span class="k">for</span> (f, _t), x <span class="k">in</span> zip(SAMPLES, xs):
+        panel(<span class="s">f&quot;</span><span class="s">t</span>{_t}<span class="s">&quot;</span>, got[f], x, z=<span class="n">1.85</span>)
+    lerp_rgb = tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+    panel(<span class="s">&quot;lerp_mid&quot;</span>, lerp_rgb, <span class="n">0.45</span>, z=<span class="n">0.90</span>, hot=<span class="k">True</span>)
+
+    <span class="c"># captions</span>
+    cu_mat = bpy.data.materials.new(<span class="s">&quot;CaptionGrey&quot;</span>)
+    cu_mat.use_nodes = <span class="k">True</span>
+    cb = cu_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    cb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
+    cb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
+    cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+
+    <span class="k">def</span> caption(text, x, z):
+        cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+        cu.body = text
+        cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+        cu.size = <span class="n">0.14</span>
+        cu.extrude = <span class="n">0.004</span>
+        ob = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cu)
+        ob.location = (x, -<span class="n">0.09</span>, z)
+        ob.rotation_euler = (m.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+        ob.data.materials.append(cu_mat)
+        sc.collection.objects.link(ob)
+
+    caption(<span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">0.0</span>, <span class="n">2.45</span>)
+    caption(<span class="s">&quot;t=0&quot;</span>, -<span class="n">2.50</span>, <span class="n">1.40</span>)
+    caption(<span class="s">&quot;t=1/2&quot;</span>, <span class="n">0.02</span>, <span class="n">1.40</span>)
+    caption(<span class="s">&quot;t=7/8&quot;</span>, <span class="n">2.54</span>, <span class="n">1.40</span>)
+    <span class="c"># on the floor in front of the console, facing up like the arc plaques</span>
+    cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+    cu.body = <span class="s">&quot;NAIVE LERP t=1/2&quot;</span>
+    cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
+    cu.size = <span class="n">0.14</span>
+    cu.extrude = <span class="n">0.004</span>
+    ob = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cu)
+    ob.location = (<span class="n">0.45</span>, -<span class="n">0.75</span>, <span class="n">0.01</span>)
+    ob.data.materials.append(cu_mat)
+    sc.collection.objects.link(ob)
+
+
+<span class="k">def</span> render_still(sc, got, path, engine):
+    scene = sc
+    build_bench(scene, got)
+
+    <span class="k">import</span> mathutils, bmesh
+    console_me = bpy.data.meshes.new(<span class="s">&quot;Console&quot;</span>)
+    bm2 = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm2, size=<span class="n">1.0</span>,
+                              matrix=mathutils.Matrix.Diagonal((<span class="n">5.6</span>, <span class="n">0.9</span>, <span class="n">0.5</span>, <span class="n">1.0</span>)))
+        bm2.to_mesh(console_me)
+    <span class="k">finally</span>:
+        bm2.free()
+    cmat = bpy.data.materials.new(<span class="s">&quot;ConsoleMetal&quot;</span>)
+    cmat.use_nodes = <span class="k">True</span>
+    cc = cmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    cc.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.07</span>, <span class="n">0.08</span>, <span class="n">0.09</span>, <span class="n">1.0</span>)
+    cc.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.7</span>
+    cc.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    console_me.materials.append(cmat)
+    console = bpy.data.objects.new(<span class="s">&quot;Console&quot;</span>, console_me)
+    console.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.25</span>)
+    scene.collection.objects.link(console)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    <span class="k">import</span> bmesh
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">460.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.2</span>, -<span class="n">8.2</span>, <span class="n">2.4</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.resolution_percentage = <span class="n">100</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># Standard keeps the swatch colors true (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+    gc = build_cross(sc)
+    code = check(sc, gc)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="c"># re-sample the authentic cross colors for the bench panels</span>
+        setup_render(sc, PXW, PXH)
+        tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_gamma_still_&quot;</span>)
+        <span class="k">try</span>:
+            got = sample_colors(sc, [f <span class="k">for</span> f, _t <span class="k">in</span> SAMPLES], tmp)
+        <span class="k">finally</span>:
+            shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+        <span class="c"># the bench is a 3D scene: clear the timeline or the sequencer</span>
+        <span class="c"># composites the last cross frame over everything (a full-teal</span>
+        <span class="c"># still). Effects first: deleting inputs orphans-and-deletes the</span>
+        <span class="c"># effect (&quot;Strip &#x27;GC&#x27; not in scene&quot; otherwise)</span>
+        coll = strips_coll(sc.sequence_editor)
+        <span class="k">for</span> s <span class="k">in</span> reversed(list(coll)):
+            coll.remove(s)
+        <span class="k">if</span> <span class="k">not</span> render_still(sc, got, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;vse-gamma-cross OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/vse-gamma-cross-hero.webp" alt="vse-gamma-cross render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
