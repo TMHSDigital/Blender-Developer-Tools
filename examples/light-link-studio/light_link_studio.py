@@ -119,7 +119,7 @@ def build_studio(sc):
     cam = bpy.data.cameras.new("Cam")
     cam.lens = 55.0
     cam_ob = bpy.data.objects.new("Cam", cam)
-    cam_ob.location = (0.0, -6.4, 1.35)
+    cam_ob.location = (0.0, -5.9, 1.32)
     cam_ob.rotation_euler = (math.radians(86), 0.0, 0.0)
     sc.collection.objects.link(cam_ob)
     sc.camera = cam_ob
@@ -239,13 +239,17 @@ def plaque(sc, text, x):
     pb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
     pb.inputs["Metallic"].default_value = 0.2
     pb.inputs["Roughness"].default_value = 0.6
+    # faint self-glow: the LINKED plaque must read even in the decoy's dark
+    sock = pb.inputs.get("Emission Color") or pb.inputs["Emission"]
+    sock.default_value = (0.35, 0.37, 0.42, 1.0)
+    pb.inputs["Emission Strength"].default_value = 0.6
     cu = bpy.data.curves.new("Plaque", 'FONT')
     cu.body = text
     cu.align_x = 'CENTER'
     cu.size = 0.20
     cu.extrude = 0.006
     ob = bpy.data.objects.new("Plaque", cu)
-    ob.location = (x, -1.05, 0.01)
+    ob.location = (x, -0.68, 0.01)
     ob.data.materials.append(pm)
     sc.collection.objects.link(ob)
 

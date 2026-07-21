@@ -324,7 +324,7 @@ HERO_DRIFT_MAX = <span class="n">0.05</span>             <span class="c"># hero 
     cam = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam.lens = <span class="n">55.0</span>
     cam_ob = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam)
-    cam_ob.location = (<span class="n">0.0</span>, -<span class="n">6.4</span>, <span class="n">1.35</span>)
+    cam_ob.location = (<span class="n">0.0</span>, -<span class="n">5.9</span>, <span class="n">1.32</span>)
     cam_ob.rotation_euler = (math.radians(<span class="n">86</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     sc.collection.objects.link(cam_ob)
     sc.camera = cam_ob
@@ -444,13 +444,17 @@ HERO_DRIFT_MAX = <span class="n">0.05</span>             <span class="c"># hero 
     pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
     pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
     pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    <span class="c"># faint self-glow: the LINKED plaque must read even in the decoy&#x27;s dark</span>
+    sock = pb.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> pb.inputs[<span class="s">&quot;Emission&quot;</span>]
+    sock.default_value = (<span class="n">0.35</span>, <span class="n">0.37</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.6</span>
     cu = bpy.data.curves.new(<span class="s">&quot;Plaque&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
     cu.body = text
     cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
     cu.size = <span class="n">0.20</span>
     cu.extrude = <span class="n">0.006</span>
     ob = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, cu)
-    ob.location = (x, -<span class="n">1.05</span>, <span class="n">0.01</span>)
+    ob.location = (x, -<span class="n">0.68</span>, <span class="n">0.01</span>)
     ob.data.materials.append(pm)
     sc.collection.objects.link(ob)
 
