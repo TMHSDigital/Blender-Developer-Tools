@@ -437,3 +437,14 @@ jobs:
           # lerp deviation at mid. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/vse-gamma-cross/vse_gamma_cross.py --
+
+      - name: Shipped example - light link studio (receiver collections in pixels)
+        run: |
+          set -euo pipefail
+          # Check only (two tiny Cycles renders): a key linked to the hero
+          # collection must light only the hero (luminance ratio >= 3x at
+          # projected centers), and unlinking must raise the decoy >= 50%
+          # with hero drift <= 5%. Also guards the Object-level API path
+          # (ld.light_linking is an AttributeError). Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/light-link-studio/light_link_studio.py --
