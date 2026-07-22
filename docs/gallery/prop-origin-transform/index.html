@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>prop-origin-transform — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/prop-origin-transform/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="prop-origin-transform — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/prop-origin-transform/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="prop-origin-transform — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>prop-origin-transform</h1>
+    <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom prop-origin-transform render">
+      <img src="../assets/prop-origin-transform-hero.webp" alt="prop-origin-transform render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> AI code parents with child.parent = parent alone (accessory teleports), skips view_layer.update() before matrix_world, or leaves non-uniform scale / centered origin for engine ingest. Skipping apply, origin bake, or MPI each fails a closed-form gate.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/prop-origin-transform/prop_origin_transform.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a street utility pedestal with a bolted conduit accessory and proves the <strong>origin / scale-apply / MPI</strong> contract a prop pipeline relies on before engine ingest — following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> and the data-API parenting idiom from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery"><code>parent-inverse-orrery</code></a>.</p>
+<p><strong>Pipeline arc neighbors:</strong> MPI + stale <code>matrix_world</code> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/parent-inverse-orrery"><code>parent-inverse-orrery</code></a>, export origin sensitivity in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, collision bounds in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>, and mesh hygiene in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>. Origin at the base center with applied scale is what placement and physics ingest assume.</p>
+<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (post-bake scale exactly <code>(1,1,1)</code>, local bbox <code>min.z == 0</code>, world bbox unchanged, MPI so a parented accessory does not teleport). It is not an engine exporter — it proves the transform properties such an asset must have.</p>
+<p><strong>What it witnesses:</strong></p>
+<ul><li><strong>Stale <code>matrix_world</code>.</strong> After a location edit, <code>matrix_world</code> is unchanged until <code>view_layer.update()</code> (same half of the orrery contract).</li><li><strong>Scale apply via data API.</strong> Non-uniform scale baked into verts; <code>obj.scale == (1,1,1)</code> exactly afterward.</li><li><strong>Origin at base center.</strong> Local bbox <code>min.z == 0</code>, XY centered; world AABB delta across the bake is <strong>0</strong> (gate <code>1e-5</code>).</li><li><strong>Bare-parent trap.</strong> Parenting the accessory without MPI jumps it (~0.43 m measured); setting <code>matrix_parent_inverse</code> restores world location (err ~3e-8).</li></ul>
+<p><strong>What each check catches on failure:</strong> skipping scale apply leaves non-identity scale; skipping origin bake leaves <code>min.z ≈ -0.756</code>; skipping MPI leaves the accessory teleported.</p>
+<p><strong>Version witness:</strong> byte-identical numbers on Blender 4.5.11 LTS and 5.1.2.</p>
+<p>The render is a dual panel: left <strong>TRAP</strong> (bare parent — accessory teleports, hazard material) vs right <strong>MPI KEEP</strong> (accessory stays put), with emissive origin markers at each pedestal&#x27;s base.</p>
+<h2>Run</h2>
+<pre><code>blender --background --python prop_origin_transform.py --
+blender --background --python prop_origin_transform.py -- --output origin.png
+blender --background --python prop_origin_transform.py -- --output origin.png --engine cycles</code></pre>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/prop-origin-transform/prop_origin_transform.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform/prop_origin_transform.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Prop origin transform — base-center origin + scale apply + MPI accessory.
+
+Witnesses the object-level contract a prop pipeline relies on before engine
+ingest: origin at the local base center, scale applied through the data API
+to exactly (1,1,1), world bbox unchanged across the bake, and
+`matrix_parent_inverse` so a parented accessory does not teleport. Extends
+`parent-inverse-orrery` (MPI idiom + stale `matrix_world`) without retreading
+orbits — subject is a street utility pedestal with a bolted conduit accessory.
+
+By default it runs only the correctness check (no render). Pass --output
+to also render a still:
+
+    blender --background --python prop_origin_transform.py --
+    blender --background --python prop_origin_transform.py -- --output o.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+
+BBOX_EPS = <span class="n">1e-6</span>
+WORLD_EPS = <span class="n">1e-5</span>
+MPI_EPS = <span class="n">1e-6</span>
+STALE_EPS = <span class="n">1e-9</span>
+JUMP_MIN = <span class="n">0.05</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.35</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> local_bbox(me):
+    xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">return</span> (
+        Vector((min(xs), min(ys), min(zs))),
+        Vector((max(xs), max(ys), max(zs))),
+    )
+
+
+<span class="k">def</span> world_bbox(obj):
+    <span class="s">&quot;&quot;&quot;Axis-aligned world bbox from object bound_box (needs fresh depsgraph).&quot;&quot;&quot;</span>
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
+    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
+    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (
+        Vector((min(xs), min(ys), min(zs))),
+        Vector((max(xs), max(ys), max(zs))),
+    )
+
+
+<span class="k">def</span> bbox_delta(a, b):
+    (amin, amax), (bmin, bmax) = a, b
+    <span class="k">return</span> max(
+        (amin - bmin).length,
+        (amax - bmax).length,
+        abs(amin.x - bmin.x), abs(amin.y - bmin.y), abs(amin.z - bmin.z),
+        abs(amax.x - bmax.x), abs(amax.y - bmax.y), abs(amax.z - bmax.z),
+    )
+
+
+<span class="k">def</span> build_pedestal_mesh():
+    <span class="s">&quot;&quot;&quot;Stepped street pedestal mesh in local space (origin roughly at center).&quot;&quot;&quot;</span>
+    rings = [
+        (<span class="n">0.55</span>, <span class="n">0.45</span>, -<span class="n">0.70</span>),
+        (<span class="n">0.55</span>, <span class="n">0.45</span>, -<span class="n">0.52</span>),
+        (<span class="n">0.42</span>, <span class="n">0.34</span>, -<span class="n">0.52</span>),
+        (<span class="n">0.42</span>, <span class="n">0.34</span>, <span class="n">0.55</span>),
+        (<span class="n">0.48</span>, <span class="n">0.38</span>, <span class="n">0.55</span>),
+        (<span class="n">0.48</span>, <span class="n">0.38</span>, <span class="n">0.70</span>),
+    ]
+    me = bpy.data.meshes.new(<span class="s">&quot;Pedestal&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        ring_verts = []
+        <span class="k">for</span> hx, hy, z <span class="k">in</span> rings:
+            ring_verts.append([
+                bm.verts.new((-hx, -hy, z)),
+                bm.verts.new((hx, -hy, z)),
+                bm.verts.new((hx, hy, z)),
+                bm.verts.new((-hx, hy, z)),
+            ])
+        <span class="k">for</span> i <span class="k">in</span> range(len(ring_verts) - <span class="n">1</span>):
+            a, b = ring_verts[i], ring_verts[i + <span class="n">1</span>]
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+                n = (k + <span class="n">1</span>) % <span class="n">4</span>
+                bm.faces.new((a[k], a[n], b[n], b[k]))
+        bot, top = ring_verts[<span class="n">0</span>], ring_verts[-<span class="n">1</span>]
+        bm.faces.new((bot[<span class="n">0</span>], bot[<span class="n">3</span>], bot[<span class="n">2</span>], bot[<span class="n">1</span>]))
+        bm.faces.new((top[<span class="n">0</span>], top[<span class="n">1</span>], top[<span class="n">2</span>], top[<span class="n">3</span>]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> build_accessory_mesh():
+    <span class="s">&quot;&quot;&quot;Small conduit elbow — bolted accessory for the MPI trap.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Conduit&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">12</span>, radius1=<span class="n">0.07</span>, radius2=<span class="n">0.07</span>, depth=<span class="n">0.35</span>,
+        )
+        bmesh.ops.rotate(
+            bm, verts=bm.verts, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+            matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>),
+        )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> apply_scale_data_api(obj):
+    <span class="s">&quot;&quot;&quot;Bake non-uniform scale into mesh verts; leave obj.scale == (1,1,1).&quot;&quot;&quot;</span>
+    sx, sy, sz = obj.scale
+    <span class="k">for</span> v <span class="k">in</span> obj.data.vertices:
+        v.co.x *= sx
+        v.co.y *= sy
+        v.co.z *= sz
+    obj.scale = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    obj.data.update()
+
+
+<span class="k">def</span> origin_to_base_center(obj):
+    <span class="s">&quot;&quot;&quot;Shift mesh so local min Z == 0 and XY centered; keep world geometry.&quot;&quot;&quot;</span>
+    mn, mx = local_bbox(obj.data)
+    ox = <span class="n">0.5</span> * (mn.x + mx.x)
+    oy = <span class="n">0.5</span> * (mn.y + mx.y)
+    oz = mn.z
+    offset = Vector((ox, oy, oz))
+    <span class="k">for</span> v <span class="k">in</span> obj.data.vertices:
+        v.co -= offset
+    obj.data.update()
+    <span class="c"># World translation that compensates the mesh shift under current transform</span>
+    bpy.context.view_layer.update()
+    offset_world = obj.matrix_world.to_3x3() @ offset
+    obj.location = obj.location + offset_world
+
+
+<span class="k">def</span> parent_keep_world(child, parent):
+    child.parent = parent
+    child.matrix_parent_inverse = parent.matrix_world.inverted()
+
+
+<span class="k">def</span> build_scene():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+
+    body_m = make_material(<span class="s">&quot;Body&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.38</span>, <span class="n">0.34</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.55</span>)
+    acc_m = make_material(<span class="s">&quot;Conduit&quot;</span>, (<span class="n">0.45</span>, <span class="n">0.42</span>, <span class="n">0.28</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.7</span>)
+
+    me = build_pedestal_mesh()
+    me.materials.append(body_m)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">False</span>
+    prop = bpy.data.objects.new(<span class="s">&quot;StreetPedestal&quot;</span>, me)
+    <span class="c"># Intentionally wrong for ingest: non-uniform scale, origin at geometry center</span>
+    prop.scale = (<span class="n">1.15</span>, <span class="n">0.92</span>, <span class="n">1.08</span>)
+    prop.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(prop)
+
+    ame = build_accessory_mesh()
+    ame.materials.append(acc_m)
+    acc = bpy.data.objects.new(<span class="s">&quot;Accessory&quot;</span>, ame)
+    <span class="c"># World pose before parenting — bolted to the front face mid-height</span>
+    acc.location = (<span class="n">0.0</span>, -<span class="n">0.55</span>, <span class="n">0.15</span>)
+    acc.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(acc)
+
+    bpy.context.view_layer.update()
+    <span class="k">return</span> sc, prop, acc
+
+
+<span class="k">def</span> bake_prop(prop):
+    <span class="s">&quot;&quot;&quot;Apply scale then origin-to-base-center; return world bbox before/after.&quot;&quot;&quot;</span>
+    bpy.context.view_layer.update()
+    before = world_bbox(prop)
+    apply_scale_data_api(prop)
+    bpy.context.view_layer.update()
+    origin_to_base_center(prop)
+    bpy.context.view_layer.update()
+    after = world_bbox(prop)
+    <span class="k">return</span> before, after
+
+
+<span class="k">def</span> check(prop, acc):
+    <span class="s">&quot;&quot;&quot;Assert origin/scale bake + MPI accessory contract. Exit 3–8 on failure.&quot;&quot;&quot;</span>
+    view_layer = bpy.context.view_layer
+
+    <span class="c"># --- 0. Stale matrix_world without update (orrery half of the contract) ---</span>
+    <span class="c"># Nudge location; matrix_world must stay stale until update().</span>
+    view_layer.update()
+    before = prop.matrix_world.translation.copy()
+    prop.location.x += <span class="n">0.25</span>
+    stale = (prop.matrix_world.translation - before).length
+    <span class="k">if</span> stale &gt; STALE_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: matrix_world updated without view_layer.update() </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(delta=</span>{stale:<span class="s">.3e</span>}<span class="s">) — cannot witness the stale-matrix trap</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+    view_layer.update()
+    fresh = (prop.matrix_world.translation - before).length
+    <span class="k">if</span> abs(fresh - <span class="n">0.25</span>) &gt; WORLD_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: after update, location delta </span>{fresh:<span class="s">.6f</span>}<span class="s"> != 0.25</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+    prop.location.x -= <span class="n">0.25</span>
+    view_layer.update()
+    print(<span class="s">f&quot;</span><span class="s">stale_matrix_ok stale=</span>{stale:<span class="s">.3e</span>}<span class="s"> fresh=</span>{fresh:<span class="s">.6f</span>}<span class="s">&quot;</span>)
+
+    <span class="c"># --- 1. Bake scale + origin; world bbox must hold ---</span>
+    before_bb, after_bb = bake_prop(prop)
+    delta = bbox_delta(before_bb, after_bb)
+    print(
+        <span class="s">f&quot;</span><span class="s">world_bbox_delta=</span>{delta:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">before_min=</span>{tuple(round(c, <span class="n">6</span>) <span class="k">for</span> c <span class="k">in</span> before_bb[<span class="n">0</span>])}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">after_min=</span>{tuple(round(c, <span class="n">6</span>) <span class="k">for</span> c <span class="k">in</span> after_bb[<span class="n">0</span>])}<span class="s">&quot;</span>
+    )
+    <span class="k">if</span> delta &gt; WORLD_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: world bbox moved across bake (delta=</span>{delta:<span class="s">.3e</span>}<span class="s"> &gt; </span>{WORLD_EPS}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">4</span>
+
+    sx, sy, sz = prop.scale
+    <span class="k">if</span> abs(sx - <span class="n">1.0</span>) &gt; <span class="n">0</span> <span class="k">or</span> abs(sy - <span class="n">1.0</span>) &gt; <span class="n">0</span> <span class="k">or</span> abs(sz - <span class="n">1.0</span>) &gt; <span class="n">0</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: scale after bake is </span>{(sx, sy, sz)}<span class="s">, want (1,1,1)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+    print(<span class="s">f&quot;</span><span class="s">scale_ok scale=</span>{(sx, sy, sz)}<span class="s">&quot;</span>)
+
+    mn, mx = local_bbox(prop.data)
+    print(<span class="s">f&quot;</span><span class="s">local_bbox min=</span>{tuple(round(c, <span class="n">6</span>) <span class="k">for</span> c <span class="k">in</span> mn)}<span class="s"> max=</span>{tuple(round(c, <span class="n">6</span>) <span class="k">for</span> c <span class="k">in</span> mx)}<span class="s">&quot;</span>)
+    <span class="k">if</span> abs(mn.z) &gt; BBOX_EPS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: local min.z=</span>{mn.z:<span class="s">.6f</span>}<span class="s"> != 0 (origin not at base)</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">if</span> abs(<span class="n">0.5</span> * (mn.x + mx.x)) &gt; BBOX_EPS <span class="k">or</span> abs(<span class="n">0.5</span> * (mn.y + mx.y)) &gt; BBOX_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: local XY center not at origin </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(cx=</span>{<span class="n">0.5</span>*(mn.x+mx.x):<span class="s">.6f</span>}<span class="s"> cy=</span>{<span class="n">0.5</span>*(mn.y+mx.y):<span class="s">.6f</span>}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">6</span>
+    print(<span class="s">f&quot;</span><span class="s">origin_base_ok min_z=</span>{mn.z:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+
+    <span class="c"># --- 2. Bare-parent trap on the accessory, then MPI fix ---</span>
+    view_layer.update()
+    w0 = acc.matrix_world.translation.copy()
+    <span class="c"># Move parent so bare parenting has something to fight against</span>
+    prop.location.z += <span class="n">0.4</span>
+    prop.rotation_euler.z = math.radians(<span class="n">25</span>)
+    view_layer.update()
+
+    acc.parent = prop  <span class="c"># bare — must jump</span>
+    view_layer.update()
+    jumped = (acc.matrix_world.translation - w0).length
+    print(<span class="s">f&quot;</span><span class="s">bare_parent_jump=</span>{jumped:<span class="s">.6f</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> jumped &lt; JUMP_MIN:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: bare parenting moved accessory only </span>{jumped:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(expected jump &gt;= </span>{JUMP_MIN}<span class="s">) — trap not witnessed</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+
+    acc.matrix_parent_inverse = prop.matrix_world.inverted()
+    view_layer.update()
+    err = (acc.matrix_world.translation - w0).length
+    print(<span class="s">f&quot;</span><span class="s">mpi_restore_err=</span>{err:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> err &gt; MPI_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: matrix_parent_inverse failed to restore world location </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(err=</span>{err:<span class="s">.3e</span>}<span class="s"> &gt; </span>{MPI_EPS}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">8</span>
+
+    print(
+        <span class="s">f&quot;</span><span class="s">prop-origin-transform OK scale=(1,1,1) min_z=</span>{mn.z:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">world_bbox_delta=</span>{delta:<span class="s">.3e</span>}<span class="s"> bare_jump=</span>{jumped:<span class="s">.6f</span>}<span class="s"> mpi_err=</span>{err:<span class="s">.3e</span>}<span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> origin_marker(sc, loc):
+    <span class="s">&quot;&quot;&quot;Small emissive triad at the object origin — scene evidence, not a light.&quot;&quot;&quot;</span>
+    mat = make_material(
+        <span class="s">&quot;OriginMark&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.1</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.0</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.6</span>, <span class="n">0.1</span>), estr=<span class="n">2.2</span>,
+    )
+    me = bpy.data.meshes.new(<span class="s">&quot;OriginBead&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">10</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.09</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;OriginBead&quot;</span>, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    <span class="c"># Axis stubs</span>
+    <span class="k">for</span> axis, rgb, rot <span class="k">in</span> (
+        (<span class="s">&quot;X&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.2</span>, <span class="n">0.15</span>), (<span class="n">0</span>, math.radians(<span class="n">90</span>), <span class="n">0</span>)),
+        (<span class="s">&quot;Y&quot;</span>, (<span class="n">0.2</span>, <span class="n">1.0</span>, <span class="n">0.25</span>), (math.radians(-<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>)),
+        (<span class="s">&quot;Z&quot;</span>, (<span class="n">0.25</span>, <span class="n">0.45</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>)),
+    ):
+        ame = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Axis</span>{axis}<span class="s">&quot;</span>)
+        abm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cone(
+                abm, cap_ends=<span class="k">True</span>, segments=<span class="n">8</span>, radius1=<span class="n">0.015</span>, radius2=<span class="n">0.015</span>, depth=<span class="n">0.28</span>,
+            )
+            bmesh.ops.translate(abm, vec=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.14</span>), verts=abm.verts)
+            abm.to_mesh(ame)
+        <span class="k">finally</span>:
+            abm.free()
+        am = make_material(
+            <span class="s">f&quot;</span><span class="s">Axis</span>{axis}<span class="s">&quot;</span>, rgb, rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>, emit=rgb, estr=<span class="n">1.5</span>,
+        )
+        ame.materials.append(am)
+        aob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Axis</span>{axis}<span class="s">&quot;</span>, ame)
+        aob.location = loc
+        aob.rotation_euler = rot
+        sc.collection.objects.link(aob)
+
+
+<span class="k">def</span> placard(sc, text, loc, size=<span class="n">0.18</span>):
+    cu = bpy.data.curves.new(text, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = text
+    cu.size = size
+    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+    ob = bpy.data.objects.new(text, cu)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    mat = make_material(<span class="s">&quot;Label&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.92</span>, <span class="n">0.94</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>)
+    ob.data.materials.append(mat)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> build_studio(sc):
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+
+
+<span class="k">def</span> render_still(path, engine):
+    <span class="s">&quot;&quot;&quot;Dual panel: bare-parent TRAP (left) vs MPI KEEP (right) + origin at base.&quot;&quot;&quot;</span>
+    <span class="c"># Fresh scene for the still so check mutations don&#x27;t poison framing</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+
+    body_m = make_material(<span class="s">&quot;BodyR&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.42</span>, <span class="n">0.38</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.55</span>)
+    acc_m = make_material(<span class="s">&quot;AccR&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.45</span>, <span class="n">0.22</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.8</span>)
+    trap_m = make_material(
+        <span class="s">&quot;TrapAcc&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.2</span>, <span class="n">0.1</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.3</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.25</span>, <span class="n">0.05</span>), estr=<span class="n">1.0</span>,
+    )
+
+    <span class="k">def</span> make_prop(name, loc, rot_z=<span class="n">0.0</span>):
+        me = build_pedestal_mesh()
+        me.materials.append(body_m)
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.use_smooth = <span class="k">False</span>
+        ob = bpy.data.objects.new(name, me)
+        ob.scale = (<span class="n">1.15</span>, <span class="n">0.92</span>, <span class="n">1.08</span>)
+        ob.location = loc
+        sc.collection.objects.link(ob)
+        bpy.context.view_layer.update()
+        apply_scale_data_api(ob)
+        bpy.context.view_layer.update()
+        origin_to_base_center(ob)
+        bpy.context.view_layer.update()
+        <span class="c"># Sit on floor after bake</span>
+        bpy.context.view_layer.update()
+        wb = world_bbox(ob)
+        ob.location.z -= wb[<span class="n">0</span>].z
+        ob.rotation_euler.z = rot_z
+        bpy.context.view_layer.update()
+        <span class="k">return</span> ob
+
+    <span class="k">def</span> make_acc(name, world_loc, mat):
+        me = build_accessory_mesh()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = world_loc
+        sc.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    left = make_prop(<span class="s">&quot;TrapProp&quot;</span>, (-<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(<span class="n">12</span>))
+    right = make_prop(<span class="s">&quot;KeepProp&quot;</span>, (<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(-<span class="n">8</span>))
+
+    <span class="c"># Accessory intended world pose (front of each pedestal mid-height)</span>
+    bpy.context.view_layer.update()
+    left_front = left.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.48</span>, <span class="n">0.85</span>))
+    right_front = right.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.48</span>, <span class="n">0.85</span>))
+
+    trap_acc = make_acc(<span class="s">&quot;TrapAcc&quot;</span>, left_front, trap_m)
+    keep_acc = make_acc(<span class="s">&quot;KeepAcc&quot;</span>, right_front, acc_m)
+    trap_acc.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
+    keep_acc.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
+    bpy.context.view_layer.update()
+
+    <span class="c"># Ghost at the intended pose on the TRAP side — the &quot;where it should stay&quot;</span>
+    ghost_m = make_material(
+        <span class="s">&quot;Ghost&quot;</span>, (<span class="n">0.7</span>, <span class="n">0.75</span>, <span class="n">0.8</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>,
+        emit=(<span class="n">0.5</span>, <span class="n">0.55</span>, <span class="n">0.6</span>), estr=<span class="n">0.35</span>,
+    )
+    ghost = make_acc(<span class="s">&quot;ExpectedGhost&quot;</span>, left_front, ghost_m)
+    ghost.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
+    <span class="c"># slight transparency via alpha isn&#x27;t reliable in EEVEE without setup;</span>
+    <span class="c"># keep emissive pale so it reads as &quot;expected seat&quot;</span>
+
+    <span class="c"># Left: bare parent after translating+yawing parent → accessory teleports</span>
+    left.location += Vector((<span class="n">0.55</span>, <span class="n">0.35</span>, <span class="n">0.0</span>))
+    left.rotation_euler.z += math.radians(<span class="n">55</span>)
+    bpy.context.view_layer.update()
+    w_before = trap_acc.matrix_world.translation.copy()
+    trap_acc.parent = left
+    bpy.context.view_layer.update()
+    jumped = (trap_acc.matrix_world.translation - w_before).length
+    print(<span class="s">f&quot;</span><span class="s">render_trap_jump=</span>{jumped:<span class="s">.4f</span>}<span class="s"> acc_at=</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> trap_acc.matrix_world.translation)}<span class="s">&quot;</span>)
+
+    <span class="c"># Right: MPI keep-world (accessory stays on the front face)</span>
+    parent_keep_world(keep_acc, right)
+    bpy.context.view_layer.update()
+
+    <span class="c"># Origin markers at each prop&#x27;s object origin (base center after bake)</span>
+    origin_marker(sc, Vector(left.matrix_world.translation))
+    origin_marker(sc, Vector(right.matrix_world.translation))
+
+    placard(sc, <span class="s">&quot;TRAP&quot;</span>, (-<span class="n">1.2</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.22</span>)
+    placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">1.55</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.22</span>)
+
+    build_studio(sc)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">38.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.15</span>, -<span class="n">7.2</span>, <span class="n">2.15</span>)
+    sc.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">0.9</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    sc, prop, acc = build_scene()
+    code = check(prop, acc)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;prop-origin-transform OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/prop-origin-transform-hero.webp" alt="prop-origin-transform render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

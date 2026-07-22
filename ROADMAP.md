@@ -119,9 +119,10 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Camera DOF + focus_distance witness: `cam.dof.use_dof`, focus plane vs defocus variance on high-freq cards (Stage deviation — depth needs background content)
 - Volumetric scatter optical-depth witness: Volume Scatter density → Beer–Lambert transmittance along a known path (Cycles; Stage deviation)
 - Freestyle SVG / line-set witness: Freestyle line set on a silhouette (full render pass; prefer Line Art first)
-- prop-origin-transform witness — origin to base center, `transform_apply` through the data API, delta transforms, `matrix_parent_inverse` so parented children do not teleport; closed forms: post-apply scale exactly (1,1,1), local bbox min Z == 0, world bbox unchanged (builds on `parent-inverse-orrery`, does not duplicate it)
+- ~~prop-origin-transform witness~~ **SHIPPED** as `examples/prop-origin-transform/` — origin to base center + data-API scale apply + `matrix_parent_inverse` for a bolted accessory; scale `(1,1,1)`, local `min.z==0`, world AABB delta 0, bare jump ~0.43 m, MPI err ~3e-8; stale `matrix_world` until `view_layer.update()`; byte-identical on 4.5.11 and 5.1.2
 - ~~mesh-hygiene-audit witness~~ **SHIPPED** as `examples/mesh-hygiene-audit/` — engine-ingest topology checklist on a stepped street electrical pedestal: no ngons, no loose verts, manifold edges (exactly 2 faces), no zero-area faces (`min_area` printed), positive signed volume, Euler `V−E+F==2` (24/44/22, volume 0.989248); byte-identical on 4.5.11 and 5.1.2; dual-panel dirty vs clean still
 - UV atlas pack witness — lightmap/unique UV island packing with non-overlap + utilization closed forms (deferred behind hygiene/origin; overlaps `uv-layer-grid` / `triangulate-tangents` / `gltf-export-roundtrip` UV arc)
+- Attribute domain witness: writing a POINT-domain color attribute and reading it as if it were CORNER (or vice versa) silently shears colors across shared verts — companion to `color-attribute-wheel`
 
 ## Future (uncommitted)
 
