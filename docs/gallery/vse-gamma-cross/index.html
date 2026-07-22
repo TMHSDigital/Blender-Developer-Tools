@@ -185,10 +185,10 @@
     <section class="detail-section md">
 <p>A runnable follow-up to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list"><code>vse-cut-list</code></a>: the check renders tiny frames across a GAMMA_CROSS between crimson and teal strips and asserts every sample against the fade&#x27;s actual math — because AI-generated sequencer code assumes the cross is the naive linear mix, and it is not.</p>
 <p><strong>What it witnesses:</strong> the fade math and the frame convention behind it.</p>
-<p>1. <strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. From crimson <code>(0.85, 0.10, 0.22)</code> and teal <code>(0.06, 0.75, 0.80)</code> the midpoint is <code>(0.341, 0.349, 0.463)</code>: <strong>0.115 darker</strong> on red than the lerp <code>(0.455, 0.425, 0.510)</code>. The check asserts every sample within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that the mid lerp deviation is material (≥0.05). 2. <strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125). 3. <strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</p>
+<ul><li><strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. From crimson <code>(0.85, 0.10, 0.22)</code> and teal <code>(0.06, 0.75, 0.80)</code> the midpoint is <code>(0.341, 0.349, 0.463)</code>: <strong>0.115 darker</strong> on red than the lerp <code>(0.455, 0.425, 0.510)</code>. The check renders and asserts nine samples (t = 0, 1/8, …, 7/8, 31/32) within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that the mid lerp deviation is material (≥0.05).</li><li><strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. That final frame (frame 32, t = 31/32) is one of the nine asserted samples, so the convention is pixel-backed end to end. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125).</li><li><strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</li></ul>
 <p><strong>What each check catches on failure:</strong> asserting the naive lerp as the expectation (exit 6, deviation 0.1138 at mid), the endpoint-inclusive t convention (exit 5), and swapped cross inputs (exit 4, <code>input1=T2</code>).</p>
 <p><strong>Version witness:</strong> the blend math is identical on Blender 4.5 LTS and 5.1 — every sample matches to the quantization step. The creation contract from <code>vse-cut-list</code> still gates the timeline: <code>strips</code> (never <code>.sequences</code>), and <code>new_effect</code> ending in <code>length=</code> on 5.x vs <code>frame_end=</code> on 4.5.</p>
-<p>The render is a mixing bench: the eight authentic cross samples as emissive panels fading crimson to teal, with the naive lerp midpoint framed in hazard orange below — visibly brighter than the true mid, the gamma dip made visible.</p>
+<p>The render is the bench: the authentic fade as four large emissive panels (t = 0, 1/4, 1/2, 3/4) above the contrast pair at frame center — the true mid swatch directly beside the naive lerp mid, the impostor framed in hazard orange. The gamma dip reads as an adjacency contrast even at card scale: a naive-lerp cross would make the pair identical, so the still visibly breaks with the contract.</p>
 <h2>Run</h2>
 <pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
@@ -214,7 +214,7 @@ wrong: a GAMMA_CROSS between two strips is NOT the naive linear mix
 
 so the mid-cross dips below the sRGB lerp — from crimson (0.85, 0.10, 0.22)
 and teal (0.06, 0.75, 0.80) the midpoint is (0.341, 0.349, 0.463), a full
-0.114 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
+0.115 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
 check renders tiny frames across the cross and asserts every sample against
 the closed form, plus that the lerp deviation at mid is material.
 
@@ -244,13 +244,16 @@ PXW, PXH = <span class="n">64</span>, <span class="n">36</span>             <spa
 Q_TOL = <span class="n">5e-3</span>                  <span class="c"># 2x the 8-bit quantization step + gamma-fit residual (measured 2.93e-3)</span>
 LERP_MID_MIN = <span class="n">0.05</span>           <span class="c"># the gamma dip must be material at t=0.5</span>
 
-<span class="c"># sample frames 1,5,9,...,29 -&gt; t = 0, 1/8, ..., 7/8 exactly</span>
-SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span class="n">8</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>)]
+<span class="c"># sample frames 1,5,9,...,29 -&gt; t = 0, 1/8, ..., 7/8 exactly, plus the final</span>
+<span class="c"># frame of the span: t = (duration-1)/duration — B never arrives inside the</span>
+<span class="c"># effect, and that endpoint frame is rendered and asserted like the rest</span>
+SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span class="n">8</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>)] + [(<span class="n">32</span>, <span class="n">31</span> / <span class="n">32</span>)]
 
 
 <span class="k">def</span> strips_coll(se):
-    <span class="s">&quot;&quot;&quot;The version-safe accessor: .strips everywhere, never .sequences.&quot;&quot;&quot;</span>
-    <span class="k">return</span> se.strips <span class="k">if</span> hasattr(se, <span class="s">&quot;strips&quot;</span>) <span class="k">else</span> se.sequences
+    <span class="s">&quot;&quot;&quot;The only accessor on both supported versions: .strips, never
+    .sequences — that rename is part of what this example witnesses.&quot;&quot;&quot;</span>
+    <span class="k">return</span> se.strips
 
 
 <span class="k">def</span> new_effect(coll, name, typ, ch, span, **kw):
@@ -388,12 +391,17 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
 
 
 <span class="k">def</span> build_bench(sc, got):
-    <span class="s">&quot;&quot;&quot;The mixing bench: the 8 authentic cross samples as emissive panels,
-    plus the naive lerp midpoint framed in hazard orange for contrast.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;The mixing bench: the authentic fade as four large emissive panels
+    (t = 0, 1/4, 1/2, 3/4) above the contrast pair — the true mid swatch
+    directly beside the naive lerp mid at frame center, so the gamma dip
+    reads as an adjacency contrast even at card scale. A naive-lerp cross
+    would make the pair identical: the render visibly breaks with the
+    contract.&quot;&quot;&quot;</span>
     <span class="k">import</span> bmesh
+    <span class="k">import</span> mathutils
     <span class="k">import</span> math <span class="k">as</span> m
 
-    <span class="k">def</span> panel(name, rgb, x, z, hot=<span class="k">False</span>):
+    <span class="k">def</span> panel(name, rgb, x, z, y=<span class="n">0.0</span>, hot=<span class="k">False</span>):
         mat = bpy.data.materials.new(<span class="s">f&quot;</span><span class="s">Swatch</span>{name}<span class="s">&quot;</span>)
         mat.use_nodes = <span class="k">True</span>
         nt = mat.node_tree
@@ -407,16 +415,18 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         bm = bmesh.new()
         <span class="k">try</span>:
             bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                                  matrix=__import__(<span class="s">&quot;mathutils&quot;</span>).Matrix.Diagonal(
-                                      (<span class="n">0.56</span>, <span class="n">0.10</span>, <span class="n">0.66</span>, <span class="n">1.0</span>)))
+                                  matrix=mathutils.Matrix.Diagonal(
+                                      (<span class="n">1.5</span>, <span class="n">0.12</span>, <span class="n">1.65</span>, <span class="n">1.0</span>)))
             bm.to_mesh(me)
         <span class="k">finally</span>:
             bm.free()
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
-        ob.location = (x, <span class="n">0.0</span>, z)
+        ob.location = (x, y, z)
         sc.collection.objects.link(ob)
         <span class="k">if</span> hot:
+            <span class="c"># hazard-orange backplate on the impostor: a broken (naive)</span>
+            <span class="c"># cross would make the framed swatch match its neighbor</span>
             frame_mat = bpy.data.materials.new(<span class="s">&quot;HotFrame&quot;</span>)
             frame_mat.use_nodes = <span class="k">True</span>
             fb = frame_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
@@ -426,25 +436,29 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
             bm = bmesh.new()
             <span class="k">try</span>:
                 bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                                      matrix=__import__(<span class="s">&quot;mathutils&quot;</span>).Matrix.Diagonal(
-                                          (<span class="n">0.62</span>, <span class="n">0.06</span>, <span class="n">0.72</span>, <span class="n">1.0</span>)))
+                                      matrix=mathutils.Matrix.Diagonal(
+                                          (<span class="n">1.64</span>, <span class="n">0.06</span>, <span class="n">1.79</span>, <span class="n">1.0</span>)))
                 bm.to_mesh(fm)
             <span class="k">finally</span>:
                 bm.free()
             fm.materials.append(frame_mat)
             fob = bpy.data.objects.new(<span class="s">&quot;Frame&quot;</span>, fm)
-            fob.location = (x, <span class="n">0.07</span>, z)
+            fob.location = (x, y + <span class="n">0.075</span>, z)
             sc.collection.objects.link(fob)
 
-    <span class="c"># two rows: the authentic fade across the top, the naive mid below it,</span>
-    <span class="c"># framed — the gamma dip is the visible contrast</span>
-    xs = [(-<span class="n">2.17</span> + <span class="n">0.62</span> * i) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>)]
-    <span class="k">for</span> (f, _t), x <span class="k">in</span> zip(SAMPLES, xs):
-        panel(<span class="s">f&quot;</span><span class="s">t</span>{_t}<span class="s">&quot;</span>, got[f], x, z=<span class="n">1.85</span>)
-    lerp_rgb = tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
-    panel(<span class="s">&quot;lerp_mid&quot;</span>, lerp_rgb, <span class="n">0.45</span>, z=<span class="n">0.90</span>, hot=<span class="k">True</span>)
+    by_t = {t: f <span class="k">for</span> f, t <span class="k">in</span> SAMPLES}
+    <span class="c"># the authentic fade across the top, left to right</span>
+    top = [(<span class="n">0.0</span>, <span class="s">&quot;t=0&quot;</span>), (<span class="n">0.25</span>, <span class="s">&quot;t=1/4&quot;</span>), (<span class="n">0.5</span>, <span class="s">&quot;t=1/2&quot;</span>), (<span class="n">0.75</span>, <span class="s">&quot;t=3/4&quot;</span>)]
+    top_xs = [-<span class="n">2.775</span> + <span class="n">1.85</span> * i <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
+    <span class="k">for</span> (t, _label), x <span class="k">in</span> zip(top, top_xs):
+        panel(<span class="s">f&quot;</span><span class="s">t</span>{t}<span class="s">&quot;</span>, got[by_t[t]], x, z=<span class="n">3.25</span>)
+    <span class="c"># the contrast pair at frame center: true mid beside the naive mid</span>
+    panel(<span class="s">&quot;true_mid&quot;</span>, got[by_t[<span class="n">0.5</span>]], -<span class="n">0.80</span>, z=<span class="n">1.40</span>, y=-<span class="n">0.30</span>)
+    panel(<span class="s">&quot;naive_mid&quot;</span>, tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)),
+          <span class="n">0.80</span>, z=<span class="n">1.40</span>, y=-<span class="n">0.30</span>, hot=<span class="k">True</span>)
 
-    <span class="c"># captions</span>
+    <span class="c"># captions: t-labels crown the fade row; the pair is named on the</span>
+    <span class="c"># plinth face, facing the camera (a floor caption foreshortens away)</span>
     cu_mat = bpy.data.materials.new(<span class="s">&quot;CaptionGrey&quot;</span>)
     cu_mat.use_nodes = <span class="k">True</span>
     cb = cu_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
@@ -452,35 +466,25 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     cb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
     cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
     sock = cb.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> cb.inputs[<span class="s">&quot;Emission&quot;</span>]
-    sock.default_value = (<span class="n">0.35</span>, <span class="n">0.37</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)
-    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.6</span>
+    sock.default_value = (<span class="n">0.38</span>, <span class="n">0.40</span>, <span class="n">0.45</span>, <span class="n">1.0</span>)
+    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.45</span>
 
-    <span class="k">def</span> caption(text, x, z):
+    <span class="k">def</span> caption(text, x, z, y=-<span class="n">0.09</span>, size=<span class="n">0.16</span>):
         cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
         cu.body = text
         cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
-        cu.size = <span class="n">0.14</span>
+        cu.size = size
         cu.extrude = <span class="n">0.004</span>
         ob = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cu)
-        ob.location = (x, -<span class="n">0.09</span>, z)
+        ob.location = (x, y, z)
         ob.rotation_euler = (m.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
         ob.data.materials.append(cu_mat)
         sc.collection.objects.link(ob)
 
-    caption(<span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">0.0</span>, <span class="n">2.45</span>)
-    caption(<span class="s">&quot;t=0&quot;</span>, -<span class="n">2.50</span>, <span class="n">1.40</span>)
-    caption(<span class="s">&quot;t=1/2&quot;</span>, <span class="n">0.02</span>, <span class="n">1.40</span>)
-    caption(<span class="s">&quot;t=7/8&quot;</span>, <span class="n">2.54</span>, <span class="n">1.40</span>)
-    <span class="c"># on the floor in front of the console, facing up like the arc plaques</span>
-    cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
-    cu.body = <span class="s">&quot;NAIVE LERP t=1/2&quot;</span>
-    cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
-    cu.size = <span class="n">0.14</span>
-    cu.extrude = <span class="n">0.004</span>
-    ob = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cu)
-    ob.location = (<span class="n">0.45</span>, -<span class="n">0.75</span>, <span class="n">0.01</span>)
-    ob.data.materials.append(cu_mat)
-    sc.collection.objects.link(ob)
+    <span class="k">for</span> (_t, label), x <span class="k">in</span> zip(top, top_xs):
+        caption(label, x, <span class="n">4.22</span>)
+    caption(<span class="s">&quot;GAMMA_CROSS t=1/2&quot;</span>, -<span class="n">0.80</span>, <span class="n">0.23</span>, y=-<span class="n">0.46</span>, size=<span class="n">0.15</span>)
+    caption(<span class="s">&quot;NAIVE LERP t=1/2&quot;</span>, <span class="n">0.80</span>, <span class="n">0.23</span>, y=-<span class="n">0.46</span>, size=<span class="n">0.15</span>)
 
 
 <span class="k">def</span> render_still(sc, got, path, engine):
@@ -488,12 +492,13 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     build_bench(scene, got)
 
     <span class="k">import</span> mathutils, bmesh
-    console_me = bpy.data.meshes.new(<span class="s">&quot;Console&quot;</span>)
+    <span class="c"># a low plinth shelf grounds the bench without eating the frame</span>
+    plinth_me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
     bm2 = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_cube(bm2, size=<span class="n">1.0</span>,
-                              matrix=mathutils.Matrix.Diagonal((<span class="n">5.6</span>, <span class="n">0.9</span>, <span class="n">0.5</span>, <span class="n">1.0</span>)))
-        bm2.to_mesh(console_me)
+                              matrix=mathutils.Matrix.Diagonal((<span class="n">6.9</span>, <span class="n">1.3</span>, <span class="n">0.45</span>, <span class="n">1.0</span>)))
+        bm2.to_mesh(plinth_me)
     <span class="k">finally</span>:
         bm2.free()
     cmat = bpy.data.materials.new(<span class="s">&quot;ConsoleMetal&quot;</span>)
@@ -502,13 +507,12 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     cc.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.07</span>, <span class="n">0.08</span>, <span class="n">0.09</span>, <span class="n">1.0</span>)
     cc.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.7</span>
     cc.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
-    console_me.materials.append(cmat)
-    console = bpy.data.objects.new(<span class="s">&quot;Console&quot;</span>, console_me)
-    console.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.25</span>)
-    scene.collection.objects.link(console)
+    plinth_me.materials.append(cmat)
+    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, plinth_me)
+    plinth.location = (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">0.225</span>)
+    scene.collection.objects.link(plinth)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
-    <span class="k">import</span> bmesh
     bm = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
@@ -533,28 +537,30 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, target):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        d = mathutils.Vector(target) - ob.location
+        ob.rotation_euler = d.to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
         scene.collection.objects.link(ob)
 
-    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
-    <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">460.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    <span class="c"># shaped warm key, faint cool fill, cool rim, and the signature warm</span>
+    <span class="c"># wedge between bench and wall raking a pool onto the backdrop — the</span>
+    <span class="c"># wall itself stays near-black outside the pool (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.0</span>, <span class="n">6.5</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.8</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">80.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">1.6</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.0</span>, <span class="n">6.0</span>), <span class="n">260.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.6</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.2</span>, <span class="n">5.0</span>, <span class="n">4.5</span>), <span class="n">340.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">0.2</span>, <span class="n">9.0</span>, <span class="n">1.2</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.3</span>, -<span class="n">9.2</span>, <span class="n">2.5</span>)
+    cam.location = (<span class="n">0.7</span>, -<span class="n">13.0</span>, <span class="n">3.4</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.15</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target

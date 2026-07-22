@@ -7,36 +7,43 @@ most often misses or misaddresses.
 
 **What it witnesses:** the light-linking contract and the traps around it.
 
-1. **The API is on the light OBJECT, not the Light datablock.**
-   `ld.light_linking` is an AttributeError on both versions (verified); the
-   path is `obj.light_linking.receiver_collection` (ObjectLightLinking, with
-   `blocker_collection` alongside). Assignment reads back through the API.
-2. **Linked, the key lights only the receiver collection.** Render one:
-   hero well-lit, decoy at the fill floor — hero/decoy luminance ratio
-   **4.0x** (gate ≥ 3x), measured at each sphere's *projected* center so
-   framing can't move the sample off the subject.
-3. **Unlinked (same check), the restriction vanishes surgically.** Render
-   two: the decoy rises **244–251%** while the hero drifts **0.0%** — the
-   link restricts without dimming anything else. The shipped check therefore
-   demonstrates both states, not just one.
-4. **The engine note, verified rather than assumed.** Light linking also
-   works on EEVEE Next — measured 5.5x linked ratio on 4.5.11 EEVEE Next and
-   5.9x on 5.1.2 EEVEE, matching Cycles within sampling noise. The check
-   still pins Cycles for deterministic tiny-sample CPU renders; luminance
-   gates need `view_transform = 'Standard'` (AgX compresses the ratios).
+- **The API is on the light OBJECT, not the Light datablock.**
+  `ld.light_linking` is an AttributeError on both versions (verified); the
+  path is `obj.light_linking.receiver_collection` (ObjectLightLinking, with
+  `blocker_collection` alongside). Assignment reads back through the API.
+- **Linked, the key lights only the receiver collection.** Render one:
+  hero well-lit, decoy at the fill floor — hero/decoy luminance ratio
+  **3.6x** (gate ≥ 3x), measured at each sphere's **projected** center so
+  framing can't move the sample off the subject.
+- **Unlinked (same check), the restriction vanishes surgically.** Render
+  two: the decoy rises **206–213%** while the hero drifts **0.0%** — the
+  link restricts without dimming anything else. The shipped check therefore
+  demonstrates both states, not just one. The rise figure is noisy by
+  construction: the decoy's unlit base sits near the fill floor, so small
+  absolute shifts in that base swing the relative rise between versions and
+  runs — the gate is a conservative ≥ 50%.
+- **The engine note, verified rather than assumed.** Light linking also
+  works on EEVEE — measured with an EEVEE luminance probe (the shipped
+  scene with `render.engine` swapped: `BLENDER_EEVEE` on 5.x,
+  `BLENDER_EEVEE_NEXT` on 4.x) at **3.7x** linked ratio on both 4.5.11
+  EEVEE Next and 5.1.2 EEVEE, matching Cycles within sampling noise. The
+  shipped check still pins Cycles for deterministic tiny-sample CPU
+  renders; luminance gates need `view_transform = 'Standard'` (AgX
+  compresses the ratios).
 
 **What each check catches on failure:** inverting the link to the decoy
-collection (exit 6 — hero drops to 0.179, ratio collapses to 0.22x), an
+collection (exit 6 — hero/decoy ratio collapses to 0.39x), an
 RNA move of the API onto the Light datablock (exit 3, guarded), a lost
 assignment read-back (exit 5), a link that doesn't restrict (exit 7, rise
 below 50%), and a non-surgical restriction (exit 8, hero drift above 5%).
 
 **Version witness:** ObjectLightLinking API and the measured ratios match on
-Blender 4.5 LTS and 5.1 (4.0x linked both; rise 244% vs 251% within sampling
-noise).
+Blender 4.5 LTS and 5.1 (3.4x vs 3.6x linked; rise 213% vs 206% — inside the
+rise noise described above).
 
 The render is the contract at a glance: the blazing orange hero over the
-LINKED plaque, the cold steel decoy over UNLINKED — one key, one hero.
+LINKED plaque, the cold steel decoy over UNLINKED, a warm pool raking the
+wall behind them — one key, one hero.
 
 ## Run
 
