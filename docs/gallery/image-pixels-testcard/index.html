@@ -197,7 +197,7 @@ blender --background --python image_pixels_testcard.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python image_pixels_testcard.py -- --output card.png
 blender --background --python image_pixels_testcard.py -- --output card.png --engine cycles</code></pre>
-<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. In the render, <code>Closest</code> interpolation keeps the pixel grid honest — the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives.</p>
+<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. In the render, <code>Closest</code> interpolation keeps the pixel grid honest — the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The monitor is staged as a designed object — beveled dark-polymer case, machined metal stand, teal power LED — on the dark studio stage from <code>docs/VISUAL-STYLE.md</code> (Standard view transform; warm key, cool fill and rim; a warm pool raking the back wall). The screen stays emissive and matte — specular off, emission strength 1.0 — so the card&#x27;s values read exactly.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -405,14 +405,56 @@ BARS = [
 
 <span class="k">def</span> render_still(path, engine):
     <span class="k">import</span> bmesh
+    <span class="k">from</span> mathutils <span class="k">import</span> Vector
     scene = bpy.context.scene
+    <span class="c"># Standard view transform, always: AgX lifts the stage toward grey and</span>
+    <span class="c"># washes the bars pastel (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
 
     <span class="c"># the card itself: a byte sRGB image, written with the one bulk call</span>
     card = bpy.data.images.new(<span class="s">&quot;TestCard&quot;</span>, W, H, alpha=<span class="k">False</span>)
     card.pixels.foreach_set(flat_pattern())
 
-    <span class="c"># screen: emissive plane textured with the card (16:9, 3.2 wide)</span>
+    <span class="k">def</span> principled(name, base, rough, metallic=<span class="n">0.0</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = <span class="k">True</span>
+        b = m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (*emit, <span class="n">1.0</span>)
+            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+        <span class="k">return</span> m
+
+    <span class="k">def</span> box(name, dims, mat, loc, bevel=<span class="n">0.0</span>):
+        <span class="s">&quot;&quot;&quot;A world-dimensioned box; a small bevel catches a machined edge line.&quot;&quot;&quot;</span>
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            bmesh.ops.scale(bm, vec=Vector(dims), verts=bm.verts)
+            <span class="k">for</span> f <span class="k">in</span> bm.faces:
+                f.smooth = bevel &gt; <span class="n">0.0</span>
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        scene.collection.objects.link(ob)
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            mod = ob.modifiers.new(<span class="s">&quot;EdgeBevel&quot;</span>, <span class="s">&#x27;BEVEL&#x27;</span>)
+            mod.width = bevel
+            mod.segments = <span class="n">3</span>
+            mod.limit_method = <span class="s">&#x27;ANGLE&#x27;</span>
+        <span class="k">return</span> ob
+
+    <span class="c"># -- the monitor: designed object, not a black slab ----------------------</span>
+    <span class="c"># screen: emissive plane textured with the card (16:9, 3.2 wide), centered</span>
+    <span class="c"># at standing height on its stand</span>
     sw, sh = <span class="n">3.2</span>, <span class="n">1.8</span>
+    scr_z = <span class="n">1.61</span>
     screen_me = bpy.data.meshes.new(<span class="s">&quot;Screen&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -435,46 +477,31 @@ BARS = [
     bsdf = nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.4</span>
+    <span class="c"># matte: specular off so the wall/floor horizon never reflects as a line</span>
+    <span class="c"># across the witness data; emission 1.0 so the card reads exactly</span>
+    bsdf.inputs[<span class="s">&quot;Specular IOR Level&quot;</span>].default_value = <span class="n">0.0</span>
     links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>])
-    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.35</span>  <span class="c"># hotter washes the bars pastel</span>
+    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.0</span>
     screen_me.materials.append(smat)
     screen = bpy.data.objects.new(<span class="s">&quot;Screen&quot;</span>, screen_me)
     screen.scale = (sw, sh, <span class="n">1.0</span>)
-    screen.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, math.radians(-<span class="n">16</span>))
-    screen.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, sh / <span class="n">2</span> + <span class="n">0.14</span>)
+    screen.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    screen.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, scr_z)
     scene.collection.objects.link(screen)
 
-    <span class="c"># bezel: a slightly larger dark slab just behind the screen</span>
-    bezel_me = bpy.data.meshes.new(<span class="s">&quot;Bezel&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-        bm.to_mesh(bezel_me)
-    <span class="k">finally</span>:
-        bm.free()
-    bmat = bpy.data.materials.new(<span class="s">&quot;Bezel&quot;</span>)
-    bmat.use_nodes = <span class="k">True</span>
-    bb = bmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.022</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
-    bb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.28</span>
-    bb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.6</span>
-    bezel_me.materials.append(bmat)
-    bezel = bpy.data.objects.new(<span class="s">&quot;Bezel&quot;</span>, bezel_me)
-    bezel.scale = (sw + <span class="n">0.14</span>, <span class="n">0.09</span>, sh + <span class="n">0.14</span>)
-    bezel.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">16</span>))
-    <span class="c"># offset along the yawed screen normal so the slab stays behind the plane</span>
-    bezel.location = (<span class="n">0.052</span> * math.sin(math.radians(<span class="n">16</span>)),
-                      <span class="n">0.052</span> * math.cos(math.radians(<span class="n">16</span>)), sh / <span class="n">2</span> + <span class="n">0.14</span>)
-    scene.collection.objects.link(bezel)
+    <span class="c"># case: dark polymer shell with a beveled edge the rim light can draw</span>
+    case_mat = principled(<span class="s">&quot;CasePolymer&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.034</span>, <span class="n">0.042</span>), <span class="n">0.38</span>)
+    metal_mat = principled(<span class="s">&quot;StandMetal&quot;</span>, (<span class="n">0.055</span>, <span class="n">0.060</span>, <span class="n">0.070</span>), <span class="n">0.36</span>, metallic=<span class="n">0.7</span>)
+    box(<span class="s">&quot;Case&quot;</span>, (sw + <span class="n">0.18</span>, <span class="n">0.11</span>, sh + <span class="n">0.18</span>), case_mat, (<span class="n">0.0</span>, <span class="n">0.057</span>, scr_z), bevel=<span class="n">0.03</span>)
+    <span class="c"># machined stand: neck + base plate</span>
+    box(<span class="s">&quot;Neck&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.14</span>, <span class="n">0.64</span>), metal_mat, (<span class="n">0.0</span>, <span class="n">0.10</span>, <span class="n">0.37</span>), bevel=<span class="n">0.025</span>)
+    box(<span class="s">&quot;Base&quot;</span>, (<span class="n">1.45</span>, <span class="n">0.85</span>, <span class="n">0.07</span>), metal_mat, (<span class="n">0.0</span>, <span class="n">0.12</span>, <span class="n">0.035</span>), bevel=<span class="n">0.03</span>)
+    <span class="c"># power LED on the bottom bezel, a small designed detail</span>
+    glow_mat = principled(<span class="s">&quot;Glow&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.5</span>, emit=(<span class="n">0.10</span>, <span class="n">0.85</span>, <span class="n">0.75</span>), estr=<span class="n">6.0</span>)
+    box(<span class="s">&quot;LED&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.02</span>, <span class="n">0.02</span>), glow_mat, (<span class="n">1.30</span>, -<span class="n">0.006</span>, scr_z - sh / <span class="n">2</span> - <span class="n">0.045</span>))
 
-    <span class="c"># plinth foot under the monitor</span>
-    foot = bpy.data.objects.new(<span class="s">&quot;Foot&quot;</span>, bezel_me.copy())
-    foot.data.materials.clear(); foot.data.materials.append(bmat)
-    foot.scale = (<span class="n">1.1</span>, <span class="n">0.5</span>, <span class="n">0.14</span>)
-    foot.location = (<span class="n">0.0</span>, <span class="n">0.05</span>, <span class="n">0.07</span>)
-    scene.collection.objects.link(foot)
-
-    <span class="c"># glossy dark floor + back wall</span>
+    <span class="c"># -- stage: near-black floor + back wall, matte --------------------------</span>
+    stage_mat = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.7</span>)
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -482,54 +509,49 @@ BARS = [
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
-    fmat.use_nodes = <span class="k">True</span>
-    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.18</span>
-    floor_me.materials.append(fmat)
+    floor_me.materials.append(stage_mat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.025</span>, <span class="n">0.03</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="c"># -- lighting: shaped warm key, cool fill/rim, warm pool on the wall -----</span>
+    <span class="k">def</span> light(name, loc, target, energy, size, col):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
-        ld.energy = energy; ld.size = size; ld.color = col
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        <span class="c"># aim exactly at the target — a guessed euler is how stray bands happen</span>
+        d = Vector(target) - Vector(loc)
+        ob.rotation_euler = d.to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
         scene.collection.objects.link(ob)
 
-    <span class="c"># teal underglow bar tucked beneath the monitor, spilling onto the floor</span>
-    strip = bpy.data.objects.new(<span class="s">&quot;GlowStrip&quot;</span>, bezel_me.copy())
-    gmat = bpy.data.materials.new(<span class="s">&quot;Glow&quot;</span>)
-    gmat.use_nodes = <span class="k">True</span>
-    gb = gmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    gb.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.1</span>, <span class="n">0.9</span>, <span class="n">0.8</span>, <span class="n">1.0</span>)
-    gb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">12.0</span>
-    strip.data.materials.clear(); strip.data.materials.append(gmat)
-    strip.scale = (<span class="n">2.7</span>, <span class="n">0.045</span>, <span class="n">0.015</span>)
-    strip.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">16</span>))
-    strip.location = (<span class="n">0.0</span>, -<span class="n">0.10</span>, <span class="n">0.015</span>)
-    scene.collection.objects.link(strip)
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.3</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.2</span>, -<span class="n">1.8</span>, <span class="n">2.4</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.5</span>), <span class="n">55.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">3.4</span>, <span class="n">2.8</span>, <span class="n">3.4</span>), (<span class="n">0.3</span>, <span class="n">0.0</span>, <span class="n">1.6</span>), <span class="n">320.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
+    <span class="c"># the signature: a warm pool raking the back wall behind the subject;</span>
+    <span class="c"># aimed at the wall well above the floor seam so the seam stays in shadow</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">3.2</span>, <span class="n">5.2</span>, <span class="n">6.2</span>), (<span class="n">2.4</span>, <span class="n">8.5</span>, <span class="n">4.2</span>), <span class="n">500.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>))
 
-    <span class="c"># the card is its own key light; cool fill and a warm rim shape the bezel</span>
-    light(<span class="s">&quot;Fill&quot;</span>, (-<span class="n">5.2</span>, -<span class="n">3.0</span>, <span class="n">3.6</span>), <span class="n">80.0</span>, <span class="n">7.0</span>, (<span class="n">0.7</span>, <span class="n">0.8</span>, <span class="n">1.0</span>), (<span class="n">58</span>, <span class="n">0</span>, -<span class="n">60</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">4.2</span>, <span class="n">2.8</span>, <span class="n">2.2</span>), <span class="n">260.0</span>, <span class="n">2.5</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.45</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">125</span>))
-
+    <span class="c"># camera: 50 mm, slightly above the subject, tracking an empty on it</span>
+    target = bpy.data.objects.new(<span class="s">&quot;AimTarget&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.42</span>)
+    scene.collection.objects.link(target)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">44.0</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (-<span class="n">2.45</span>, -<span class="n">5.7</span>, <span class="n">1.62</span>)
-    cam.rotation_euler = (math.radians(<span class="n">84.5</span>), <span class="n">0.0</span>, math.radians(-<span class="n">23.0</span>))
+    cam.location = (-<span class="n">4.2</span>, -<span class="n">7.7</span>, <span class="n">2.85</span>)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
     scene.collection.objects.link(cam)
     scene.camera = cam
 

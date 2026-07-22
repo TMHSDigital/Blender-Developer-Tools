@@ -13,22 +13,22 @@ and [`mesh-editing-and-bmesh`](../../skills/mesh-editing-and-bmesh/SKILL.md).
 **What it witnesses:** the modifier-based LOD contract that game asset pipelines
 rely on.
 
-1. **Decimate is non-destructive and lives in the depsgraph.** The evaluated
-   mesh carries the reduction; the original datablock is byte-identical before
-   and after evaluation. The check proves both — evaluated counts drop while
-   `obj.data` keeps the closed-form counts (1,147 verts / 2,260 tris) — and
-   every evaluated reference is released with `to_mesh_clear()`. An LOD chain
-   that bakes the reduction into `obj.data` destroys the asset's LOD0.
-2. **The COLLAPSE ratio is a target, not a guarantee.** Each LOD's evaluated
-   triangle count must land within 5% of `ratio x base_tris` — measured 0.00%
-   at ratio 0.5 (1,130 tris) and 0.44% at ratio 0.18 (405 tris). A stacked
-   second Decimate halves the effective ratio (50% excursion, caught); a
-   dropped modifier leaves evaluated == original (caught).
-3. **LODs preserve silhouette-critical dimensions.** Height (3.12) and fin
-   span are the rocket's readability; the evaluated bbox holds the base bbox
-   within 1e-3 at every level (measured 7.7e-6). Decimate has no vertex
-   pinning, so this is a real risk, not a formality: at an aggressive ratio
-   0.02 the nose tip collapses (bbox drift 0.0206, caught).
+- **Decimate is non-destructive and lives in the depsgraph.** The evaluated
+  mesh carries the reduction; the original datablock is byte-identical before
+  and after evaluation. The check proves both — evaluated counts drop while
+  `obj.data` keeps the closed-form counts (1,147 verts / 2,260 tris) — and
+  every evaluated reference is released with `to_mesh_clear()`. An LOD chain
+  that bakes the reduction into `obj.data` destroys the asset's LOD0.
+- **The COLLAPSE ratio is a target, not a guarantee.** Each LOD's evaluated
+  triangle count must land within 5% of `ratio x base_tris` — measured 0.00%
+  at ratio 0.5 (1,130 tris) and 0.44% at ratio 0.18 (405 tris). A stacked
+  second Decimate halves the effective ratio (50% excursion, caught); a
+  dropped modifier leaves evaluated == original (caught).
+- **LODs preserve silhouette-critical dimensions.** Height (3.12) and fin
+  span are the rocket's readability; the evaluated bbox holds the base bbox
+  within 1e-3 at every level (measured 7.7e-6). Decimate has no vertex
+  pinning, so this is a real risk, not a formality: at an aggressive ratio
+  0.02 the nose tip collapses (bbox drift 0.0206, caught).
 
 The Decimate modifier API (`decimate_type='COLLAPSE'`, `ratio`) is stable
 between Blender 4.5 LTS and 5.1 — the example runs identically on both, which

@@ -17,18 +17,18 @@ buffer. Documented here so the contract cannot quietly drift.
 
 **What it witnesses:**
 
-1. **Float → PNG false unpremul** — `Image.save()` on a Non-Color float image
-   writes RGBA16 (`IHDR` bit_depth=16, color_type=6). Reloaded pixels match
-   the closed form `q16(min(1, c / q16(a)))` within `2/65535`. Max RGB error
-   vs authored on the probe palette is `>= 0.90` (measured **0.98**).
-2. **Float → OpenEXR fidelity** — same authored buffer round-trips within
-   `1e-5` (measured ~`3e-8`).
-3. **Byte → PNG straight alpha** — `float_buffer=False` writes RGBA8; pixels
-   match independent per-channel `q8` within `0.5/255`. The stress cell at
-   `(0.02, a=1/255)` stays near 0.02, not clamped white.
-4. **EXR `color_mode='RGB'` drops alpha** — `save_render` with
-   `color_mode='RGB'` reloads opaque alpha (`≈ 1.0`) even when authored
-   alpha was `1/255`.
+- **Float → PNG false unpremul** — `Image.save()` on a Non-Color float image
+  writes RGBA16 (`IHDR` bit_depth=16, color_type=6). Reloaded pixels match
+  the closed form `q16(min(1, c / q16(a)))` within `2/65535`. Max RGB error
+  vs authored on the probe palette is `>= 0.90` (measured **0.98**).
+- **Float → OpenEXR fidelity** — same authored buffer round-trips within
+  `1e-5` (measured ~`3e-8`).
+- **Byte → PNG straight alpha** — `float_buffer=False` writes RGBA8; pixels
+  match independent per-channel `q8` within `0.5/255`. The stress cell at
+  `(0.02, a=1/255)` stays near 0.02, not clamped white.
+- **EXR `color_mode='RGB'` drops alpha** — `save_render` with
+  `color_mode='RGB'` reloads opaque alpha (`≈ 1.0`) even when authored
+  alpha was `1/255`.
 
 **What each check catches on failure:**
 
@@ -51,9 +51,11 @@ treat a 4.4 run as a 4.5 substitute). The only version gate in the file is
 the EEVEE engine id for the optional render (`BLENDER_EEVEE_NEXT` on 4.x,
 `BLENDER_EEVEE` on 5.x).
 
-**Render:** two easel panels. Left bakes the closed-form PNG mangling (dark
-rows flash to white at low-alpha columns). Right shows the authored straight
-buffer (EXR-clean). If the contract failed, both panels would read the same.
+**Render:** two framed verification displays on a shared plinth — the
+left face bakes the closed-form PNG mangling (dark rows flash to white at
+low-alpha columns), the right face shows the authored straight buffer
+(EXR-clean); nameplates read `FLOAT → PNG` and `FLOAT → EXR`. If the
+contract failed, both panels would read the same.
 
 ## Run
 

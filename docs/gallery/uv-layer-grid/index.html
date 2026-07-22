@@ -186,11 +186,11 @@
 <p>A runnable example that witnesses the UV-layer authoring hazard behind <code>bmesh.ops.create_grid(..., calc_uvs=True)</code>: the flag is a <strong>silent no-op</strong> unless a UV layer already exists on the BMesh. AI-generated Blender code commonly trusts <code>calc_uvs=True</code>, wires an Image Texture, and ships a mesh that renders as one flat color — every fragment samples texel (0, 0).</p>
 <p>Found while authoring <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard"><code>image-pixels-testcard</code></a>; lifted into its own smoke-gated witness so the contract cannot quietly drift.</p>
 <p><strong>What it witnesses:</strong> three related contracts on the same grid topology (<code>SEG×SEG</code> faces, <code>(SEG+1)²</code> verts, size <code>1.0</code> → coords in <code>[-1, 1]</code>):</p>
-<p>1. <strong>Silent no-op</strong> — <code>create_grid(..., calc_uvs=True)</code> with no prior <code>bm.loops.layers.uv.new(...)</code> leaves <code>len(bm.loops.layers.uv) == 0</code> and <code>mesh.uv_layers</code> empty after <code>to_mesh</code>. 2. <strong>Pre-create repair</strong> — create the UV layer first, then <code>calc_uvs=True</code> fills every loop. UVs must match the closed form <code>u = (x/size + 1)/2</code>, <code>v = (y/size + 1)/2</code> within <code>1e-6</code>, both on the BMesh and after persisting to <code>mesh.uv_layers.active.data</code>. 3. <strong>Explicit assignment fallback</strong> — <code>calc_uvs=False</code>, then <code>uv.new(&quot;UVMap&quot;)</code> and a loop write of the same closed form. Does not depend on <code>calc_uvs</code> at all; same tolerance.</p>
+<ul><li><strong>Silent no-op</strong> — <code>create_grid(..., calc_uvs=True)</code> with no prior <code>bm.loops.layers.uv.new(...)</code> leaves <code>len(bm.loops.layers.uv) == 0</code> and <code>mesh.uv_layers</code> empty after <code>to_mesh</code>.</li><li><strong>Pre-create repair</strong> — create the UV layer first, then <code>calc_uvs=True</code> fills every loop. UVs must match the closed form <code>u = (x/size + 1)/2</code>, <code>v = (y/size + 1)/2</code> within <code>1e-6</code>, both on the BMesh and after persisting to <code>mesh.uv_layers.active.data</code>.</li><li><strong>Explicit assignment fallback</strong> — <code>calc_uvs=False</code>, then <code>uv.new(&quot;UVMap&quot;)</code> and a loop write of the same closed form. Does not depend on <code>calc_uvs</code> at all; same tolerance.</li></ul>
 <p><strong>What each check catches on failure:</strong></p>
 <ul><li>*Silent no-op* — <code>calc_uvs=True</code> starts creating a layer on its own (falsified: expecting <code>n_layers == 0</code> fails if a layer appears; temporarily pre-creating a layer before the hazard probe exits 3).</li><li>*Topology* — <code>create_grid</code> segment/size contract drift (wrong face/vert counts).</li><li>*Closed-form UVs* — <code>calc_uvs</code> filling a different parameterization, or a one-texel shift (falsified: adding <code>0.1</code> to every U exited 6 with measured error <code>0.1</code>).</li><li>*Mesh persistence* — UV layer or loop data lost across <code>to_mesh</code>.</li><li>*Explicit path* — loop assignment or the closed form itself regressing.</li><li>*Pixel witness* (with <code>--output</code>) — the saved PNG is read back and probed at each panel&#x27;s projected center: the hazard panel must be one flat teal (per-channel spread ≤ 0.02, ordering b&gt;g&gt;r), the repaired panel a high-contrast checker (spread ≥ 0.25). Falsified twice: secretly giving the hazard panel UVs exited 11 with measured spread <code>0.7333</code>; repainting texel (0,0) magenta exited 12 with measured rgb <code>(0.927, 0.118, 0.536)</code>.</li></ul>
 <p><strong>Version divergence:</strong> none probed — the silent no-op and closed-form UV fill assert identically on Blender 4.5 LTS and 5.1. The only gate in the file is the EEVEE engine id for the optional render (<code>BLENDER_EEVEE_NEXT</code> on 4.x, <code>BLENDER_EEVEE</code> on 5.x).</p>
-<p><strong>Render:</strong> two easel panels sharing one neon checker image. Left is the hazard (no UV layer) — flat teal of texel (0, 0). Right is the repair (pre-create + <code>calc_uvs</code>) — full magenta/cyan checker. If the UV contract failed, both panels would read the same — and the still is not just an illustration: the script re-reads its own render and exits non-zero unless the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread <code>0.0078</code>, repair spread <code>0.7294</code>).</p>
+<p><strong>Render:</strong> two framed lightbox displays on floor trays (rear kick legs, status LED) sharing one neon checker image, shot at a slight 3/4. Left is the hazard (no UV layer) — flat teal of texel (0, 0). Right is the repair (pre-create + <code>calc_uvs</code>) — full magenta/cyan checker. If the UV contract failed, both panels would read the same — and the still is not just an illustration: the script re-reads its own render and exits non-zero unless the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread <code>0.0078</code>, repair spread <code>0.7412</code>; identical on 4.5.11).</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python uv_layer_grid.py --
@@ -227,6 +227,7 @@ checker colors. If the UV contract failed, the pixels would say so:
     blender --background --python uv_layer_grid.py -- --output uv.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 SEG = <span class="n">8</span>
 SIZE = <span class="n">1.0</span>
@@ -452,15 +453,108 @@ UV_TOL = <span class="n">1e-6</span>
     scene = bpy.context.scene
     card = make_uv_testcard(<span class="s">&quot;UVCard&quot;</span>)
 
-    <span class="c"># Left: the hazard — calc_uvs alone, no UV layer → flat teal of texel (0,0).</span>
-    broken = textured_plane(<span class="s">&quot;Broken&quot;</span>, card, with_uvs=<span class="k">False</span>)
-    broken.location = (-<span class="n">1.18</span>, <span class="n">0.0</span>, <span class="n">0.94</span>)
-    broken.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, math.radians(<span class="n">8</span>))
+    <span class="c"># --- Staging materials: quiet and dark, the panel faces carry the color --</span>
+    <span class="k">def</span> pbr(name, base, rough, metal=<span class="n">0.0</span>):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = <span class="k">True</span>
+        b = m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+        <span class="k">return</span> m
 
-    <span class="c"># Right: the repair — pre-create UV layer, then calc_uvs fills it.</span>
-    fixed = textured_plane(<span class="s">&quot;Fixed&quot;</span>, card, with_uvs=<span class="k">True</span>)
-    fixed.location = (<span class="n">1.18</span>, <span class="n">0.0</span>, <span class="n">0.94</span>)
-    fixed.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, math.radians(-<span class="n">8</span>))
+    frame_mat = pbr(<span class="s">&quot;Frame&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.053</span>, <span class="n">0.06</span>), <span class="n">0.32</span>, <span class="n">0.65</span>)
+    stand_mat = pbr(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.032</span>, <span class="n">0.035</span>, <span class="n">0.042</span>), <span class="n">0.45</span>, <span class="n">0.4</span>)
+    led_mat = pbr(<span class="s">&quot;Led&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.6</span>)
+    led_b = led_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    led_b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)
+    led_b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">4.0</span>
+
+    <span class="k">def</span> box(name, dims, loc, rot, mat, bevel=<span class="n">0.0</span>):
+        dx, dy, dz = (d * <span class="n">0.5</span> <span class="k">for</span> d <span class="k">in</span> dims)
+        verts = [
+            (-dx, -dy, -dz), (dx, -dy, -dz), (dx, dy, -dz), (-dx, dy, -dz),
+            (-dx, -dy, dz), (dx, -dy, dz), (dx, dy, dz), (-dx, dy, dz),
+        ]
+        faces = [
+            (<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>), (<span class="n">4</span>, <span class="n">7</span>, <span class="n">6</span>, <span class="n">5</span>), (<span class="n">0</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">1</span>),
+            (<span class="n">1</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">2</span>), (<span class="n">2</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">3</span>), (<span class="n">4</span>, <span class="n">0</span>, <span class="n">3</span>, <span class="n">7</span>),
+        ]
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(verts, [], faces)
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            mod = ob.modifiers.new(<span class="s">&quot;Edge&quot;</span>, <span class="s">&quot;BEVEL&quot;</span>)
+            mod.width = bevel
+            mod.segments = <span class="n">2</span>
+        <span class="k">return</span> ob
+
+    <span class="k">def</span> bar_between(name, p1, p2, width, mat):
+        a, b = Vector(p1), Vector(p2)
+        d = b - a
+        ob = box(name, (width, width, d.length), (a + b) * <span class="n">0.5</span>, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), mat, <span class="n">0.01</span>)
+        ob.rotation_mode = <span class="s">&quot;QUATERNION&quot;</span>
+        ob.rotation_quaternion = d.to_track_quat(<span class="s">&quot;Z&quot;</span>, <span class="s">&quot;Y&quot;</span>)
+        <span class="k">return</span> ob
+
+    <span class="c"># --- Two framed lightbox displays, each on a floor tray with a rear</span>
+    <span class="c"># kick leg. The face planes keep their origins at the face centers (the</span>
+    <span class="c"># pixel witness probes the projected centers), with a ~0.2-unit bezel</span>
+    <span class="c"># between the face edge and the frame so the probed patch stays on data.</span>
+    LEAN = math.radians(<span class="n">75.0</span>)  <span class="c"># 15° back off vertical, easel-like</span>
+
+    <span class="k">def</span> display(name, with_uvs, cx, cy, yaw_deg):
+        yaw = math.radians(yaw_deg)
+        asm = bpy.data.objects.new(name + <span class="s">&quot;Asm&quot;</span>, <span class="k">None</span>)
+        asm.rotation_euler = (LEAN, <span class="n">0.0</span>, yaw)
+        rot = asm.rotation_euler.to_matrix()
+        <span class="c"># Face-center height such that the frame&#x27;s bottom edge rests in tray.</span>
+        contact = rot @ Vector((<span class="n">0.0</span>, -<span class="n">1.17</span>, <span class="n">0.02</span>))
+        asm.location = (cx, cy, <span class="n">0.07</span> - contact.z)
+        scene.collection.objects.link(asm)
+
+        <span class="c"># Left: the hazard — calc_uvs alone, no UV layer → flat teal of</span>
+        <span class="c"># texel (0,0). Right: the repair — pre-create, then calc_uvs fills.</span>
+        face = textured_plane(name, card, with_uvs)
+        face.parent = asm
+        face.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.075</span>)
+
+        plate = box(name + <span class="s">&quot;Back&quot;</span>, (<span class="n">2.34</span>, <span class="n">2.34</span>, <span class="n">0.14</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                    frame_mat, <span class="n">0.02</span>)
+        plate.parent = asm
+        bezels = (
+            ((<span class="n">2.34</span>, <span class="n">0.17</span>, <span class="n">0.20</span>), (<span class="n">0.0</span>, <span class="n">1.085</span>, <span class="n">0.02</span>)),
+            ((<span class="n">2.34</span>, <span class="n">0.17</span>, <span class="n">0.20</span>), (<span class="n">0.0</span>, -<span class="n">1.085</span>, <span class="n">0.02</span>)),
+            ((<span class="n">0.17</span>, <span class="n">2.0</span>, <span class="n">0.20</span>), (<span class="n">1.085</span>, <span class="n">0.0</span>, <span class="n">0.02</span>)),
+            ((<span class="n">0.17</span>, <span class="n">2.0</span>, <span class="n">0.20</span>), (-<span class="n">1.085</span>, <span class="n">0.0</span>, <span class="n">0.02</span>)),
+        )
+        <span class="k">for</span> i, (dims, loc) <span class="k">in</span> enumerate(bezels):
+            bez = box(<span class="s">f&quot;</span>{name}<span class="s">Bez</span>{i}<span class="s">&quot;</span>, dims, loc, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), frame_mat, <span class="n">0.02</span>)
+            bez.parent = asm
+        led = box(name + <span class="s">&quot;Led&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), (<span class="n">0.92</span>, -<span class="n">1.085</span>, <span class="n">0.128</span>),
+                  (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), led_mat, <span class="n">0.008</span>)
+        led.parent = asm
+
+        base = asm.location
+        box(name + <span class="s">&quot;Tray&quot;</span>, (<span class="n">2.0</span>, <span class="n">0.32</span>, <span class="n">0.10</span>),
+            (base.x + contact.x, base.y + contact.y, <span class="n">0.05</span>),
+            (<span class="n">0</span>, <span class="n">0</span>, yaw), stand_mat, <span class="n">0.02</span>)
+        back = rot @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">1.0</span>))
+        back.z = <span class="n">0.0</span>
+        back.normalize()
+        <span class="k">for</span> side <span class="k">in</span> (-<span class="n">0.75</span>, <span class="n">0.75</span>):
+            attach = base + rot @ Vector((side, <span class="n">0.55</span>, -<span class="n">0.12</span>))
+            foot = (base.x + contact.x + side * math.cos(yaw) + back.x * <span class="n">0.85</span>,
+                    base.y + contact.y - side * math.sin(yaw) + back.y * <span class="n">0.85</span>,
+                    <span class="n">0.02</span>)
+            bar_between(<span class="s">f&quot;</span>{name}<span class="s">Leg</span>{side:<span class="s">+.2f</span>}<span class="s">&quot;</span>, attach, foot, <span class="n">0.06</span>, stand_mat)
+
+    display(<span class="s">&quot;Broken&quot;</span>, <span class="k">False</span>, -<span class="n">1.38</span>, <span class="n">0.30</span>, <span class="n">6.0</span>)
+    display(<span class="s">&quot;Fixed&quot;</span>, <span class="k">True</span>, <span class="n">1.45</span>, -<span class="n">0.10</span>, <span class="n">9.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -499,21 +593,23 @@ UV_TOL = <span class="n">1e-6</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.8</span>, -<span class="n">4.8</span>, <span class="n">5.8</span>), <span class="n">300.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">52</span>, <span class="n">0</span>, -<span class="n">32</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">2.8</span>, <span class="n">1.6</span>), <span class="n">55.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">72</span>, <span class="n">0</span>, <span class="n">52</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.2</span>, <span class="n">4.0</span>, <span class="n">2.8</span>), <span class="n">90.0</span>, <span class="n">3.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">62</span>, <span class="n">0</span>, <span class="n">178</span>))
-    <span class="c"># Between the panels and the wall so it only rakes the backdrop: a</span>
-    <span class="c"># contained warm pool, corners falling off to dark.</span>
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.3</span>, <span class="n">5.4</span>, <span class="n">1.9</span>), <span class="n">380.0</span>, <span class="n">3.6</span>, (<span class="n">1.0</span>, <span class="n">0.68</span>, <span class="n">0.38</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">180</span>))
+    <span class="c"># Aimed steeply down so its spill dies on the floor, not on the wall.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.4</span>, -<span class="n">4.2</span>, <span class="n">6.4</span>), <span class="n">340.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">60</span>, <span class="n">0</span>, -<span class="n">32</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">2.8</span>, <span class="n">1.6</span>), <span class="n">80.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">72</span>, <span class="n">0</span>, <span class="n">52</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.2</span>, <span class="n">4.6</span>, <span class="n">3.0</span>), <span class="n">250.0</span>, <span class="n">3.5</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">42</span>, <span class="n">0</span>, <span class="n">178</span>))
+    <span class="c"># Uplight between the displays and the wall, raking UP the backdrop: the</span>
+    <span class="c"># visible wall band above the panel tops only spans z≈2.8–3.4, so the</span>
+    <span class="c"># warm pool is aimed to live there instead of hiding behind the panels.</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (-<span class="n">2.2</span>, <span class="n">5.6</span>, <span class="n">2.3</span>), <span class="n">480.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">117</span>, <span class="n">0</span>, <span class="n">180</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.95</span>)
+    aim.location = (<span class="n">0.1</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">45.0</span>
+    cam_data.lens = <span class="n">48.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">6.6</span>, <span class="n">2.1</span>)
+    cam.location = (<span class="n">3.1</span>, -<span class="n">8.35</span>, <span class="n">2.2</span>)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
     con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>

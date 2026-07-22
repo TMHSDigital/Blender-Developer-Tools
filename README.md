@@ -149,7 +149,7 @@ shader `Attribute` node is actually linked to Base Color.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — over a teal underglow on a dark studio floor" /></a>
+<a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" alt="Image pixels testcard: a studio monitor on a machined metal stand showing a procedural broadcast test card — seven neon color bars behind the classic dark circle, a luminance ramp, and a PLUGE row with a white bottom-left origin marker — in a dark studio with a warm pool raking the back wall" /></a>
 </td>
 <td valign="middle">
 
@@ -168,7 +168,7 @@ non-destructive path.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/png-exr-alpha/"><img src="examples/png-exr-alpha/preview.webp" alt="PNG vs EXR alpha: two easel panels on a dark studio floor — left float→PNG false-unpremul clamps dark mid-tones to white at low alpha, right the EXR-clean authored straight buffer with surviving red and green primaries" /></a>
+<a href="examples/png-exr-alpha/"><img src="examples/png-exr-alpha/preview.webp" alt="PNG vs EXR alpha: two framed verification displays on a shared plinth in a dark studio — left the float→PNG false-unpremul mangling clamps dark rows to white, right the EXR-clean straight buffer, nameplates reading FLOAT → PNG and FLOAT → EXR under a warm wall pool" /></a>
 </td>
 <td valign="middle">
 
@@ -205,7 +205,7 @@ result is watertight (every edge borders exactly two faces).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/uv-layer-grid/"><img src="examples/uv-layer-grid/preview.webp" alt="UV layer grid: two easel panels on a dark studio floor — left a flat teal square from a missing UV layer sampling texel (0,0), right a magenta/cyan neon checker proving pre-create + calc_uvs" /></a>
+<a href="examples/uv-layer-grid/"><img src="examples/uv-layer-grid/preview.webp" alt="UV layer grid: two framed lightbox displays on floor trays against a dark studio wall — left one flat teal face (the calc_uvs silent no-op hazard), right a saturated magenta-cyan checker (the pre-create repair), under a warm wall pool" /></a>
 </td>
 <td valign="middle">
 

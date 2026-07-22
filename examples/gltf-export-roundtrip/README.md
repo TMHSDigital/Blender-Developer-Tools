@@ -13,23 +13,23 @@ weighting in [`vertex-weight-limit`](../vertex-weight-limit/), export here.
 **What it witnesses:** the interchange contracts AI-generated export code most
 often gets silently wrong.
 
-1. **The +Y-up convention is baked into vertex data.** glTF is +Y-up, Blender is
-   +Z-up, and `export_yup=True` (the default) writes `(x, y, z) -> (x, z, -y)`
-   directly into the POSITION buffer — the node carries **no** rotation or scale.
-   The check parses the `.gltf` JSON and asserts the accessor bounds equal the
-   axis-converted evaluated bounding box, and that the node transform is absent.
-   Exporting with `export_yup=False` ships raw Z-up data every engine displays
-   lying on its back.
-2. **`export_apply=True` ships the evaluated mesh, not the base cage.** The
-   crate's bevel modifier lives only in the depsgraph; with flat shading and UV
-   seams the exporter splits exactly one vertex per evaluated loop (7,560), so
-   the on-disk POSITION count is an exact witness. `export_apply=False` silently
-   writes the 624-vertex cage.
-3. **The round-trip is faithful.** Re-imported positions (bit-exact here), loop
-   normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings
-   all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin
-   is top-left) and flipped back on import — both flips are proven by reading
-   the `.bin` buffer directly.
+- **The +Y-up convention is baked into vertex data.** glTF is +Y-up, Blender is
+  +Z-up, and `export_yup=True` (the default) writes `(x, y, z) -> (x, z, -y)`
+  directly into the POSITION buffer — the node carries **no** rotation or scale.
+  The check parses the `.gltf` JSON and asserts the accessor bounds equal the
+  axis-converted evaluated bounding box, and that the node transform is absent.
+  Exporting with `export_yup=False` ships raw Z-up data every engine displays
+  lying on its back.
+- **`export_apply=True` ships the evaluated mesh, not the base cage.** The
+  crate's bevel modifier lives only in the depsgraph; with flat shading and UV
+  seams the exporter splits exactly one vertex per evaluated loop (7,560), so
+  the on-disk POSITION count is an exact witness. `export_apply=False` silently
+  writes the 624-vertex cage.
+- **The round-trip is faithful.** Re-imported positions (bit-exact here), loop
+  normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings
+  all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin
+  is top-left) and flipped back on import — both flips are proven by reading
+  the `.bin` buffer directly.
 
 **Version witness (probed on Blender 4.5.11 LTS and 5.1.2):** the operator
 signatures are byte-identical — 109 exporter properties, 20 importer properties,
