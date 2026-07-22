@@ -61,6 +61,17 @@ the default stage.
   markers — and must clear all four edges by ≥ 2 % of the frame dimension.
   Default strategy is the silhouette alpha matte; projection is the cheap
   bbox alternative for boxy subjects (tradeoff in the helper's docstring).
+- **Framing deviations.** The band and the margin floor are the presumption.
+  A composition may deviate when the bleed or the scale is the design:
+  radiating subjects that read as extending past the frame, edge-to-edge
+  fields where the fill is the point, and subjects whose contract is the
+  world or the atmosphere rather than an object on a stage. A deviation
+  requires one line in the example README under a `Framing deviation`
+  heading — what the composition requires and why, exactly as stage
+  deviations do. An undocumented deviation is a defect. Under a documented
+  deviation the helper reports rather than enforces: call
+  `check_framing(..., deviation="reason")`, which prints the numbers with
+  the reason; an empty reason raises, so no deviation is taken silently.
 - Camera: a chosen angle, not the default — typically a 45–55 mm lens,
   slightly above subject height, aimed with a `TRACK_TO` constraint at an
   empty on the subject. Flat subjects present toward the camera (lean or
