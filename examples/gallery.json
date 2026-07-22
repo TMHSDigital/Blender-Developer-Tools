@@ -419,6 +419,19 @@
         "line-art",
         "modifiers"
       ]
+    },
+    {
+      "name": "mesh-hygiene-audit",
+      "dir": "examples/mesh-hygiene-audit",
+      "teaches": "Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects.",
+      "witnessesFix": "AI pipelines that skip topology gates ship ngons, loose verts, open boundaries, inverted winding, or non-sphere Euler into engine ingest. Injecting one defect class at a time exits non-zero (ngon=3, loose=4, boundary=5, zero-area=6, flip=7); the clean solid recovers hygiene_ok on both 4.5.11 and 5.1.2.",
+      "hero": "docs/gallery/assets/mesh-hygiene-audit-hero.webp",
+      "preview": "examples/mesh-hygiene-audit/preview.webp",
+      "tags": [
+        "bmesh",
+        "mesh",
+        "game-pipeline"
+      ]
     }
   ]
 }

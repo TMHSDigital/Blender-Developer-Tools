@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mesh-hygiene-audit — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/mesh-hygiene-audit/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="mesh-hygiene-audit — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/mesh-hygiene-audit/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/mesh-hygiene-audit-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="mesh-hygiene-audit — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/mesh-hygiene-audit-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>mesh-hygiene-audit</h1>
+    <p>Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom mesh-hygiene-audit render">
+      <img src="../assets/mesh-hygiene-audit-hero.webp" alt="mesh-hygiene-audit render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> AI pipelines that skip topology gates ship ngons, loose verts, open boundaries, inverted winding, or non-sphere Euler into engine ingest. Injecting one defect class at a time exits non-zero (ngon=3, loose=4, boundary=5, zero-area=6, flip=7); the clean solid recovers hygiene_ok on both 4.5.11 and 5.1.2.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a fabricated street electrical pedestal — stepped plinth, cabinet waist, drip-cap overhang — and runs the <strong>engine-ingest mesh hygiene checklist</strong> as executable topology checks, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p><strong>Pipeline arc neighbors:</strong> watertight / Euler on collision *hulls* in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>, parametric closed solids in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a>, LOD face budgets in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, and join context in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join"><code>temp-override-join</code></a>. Hygiene is the gate a prop pipeline runs on the *render* mesh before hull / LOD / export.</p>
+<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (tris+quads, no loose verts, manifold edges, no zero-area faces, outward winding, Euler 2 for a closed solid). It is not an engine exporter and does not produce a shippable engine asset — it proves the topology properties such an asset must have.</p>
+<p><strong>What it witnesses:</strong> every gate is derived from mesh combinatorics or the divergence-theorem volume — never from a prior-run capture:</p>
+<ul><li><strong>No ngons.</strong> <code>len(poly.vertices) &lt;= 4</code> for every face.</li><li><strong>No loose vertices.</strong> Every vert has degree ≥ 1.</li><li><strong>Manifold edges.</strong> Every edge borders exactly 2 faces (closed solid).</li><li><strong>No zero-area faces.</strong> Face area &gt; 1e-10; prints measured <code>min_area</code>.</li><li><strong>Outward winding.</strong> Positive signed volume (divergence theorem).</li><li><strong>Euler sphere.</strong> <code>V − E + F == 2</code> for the clean closed manifold (measured: verts=24 edges=44 faces=22, volume≈0.989248).</li></ul>
+<p><strong>What each check catches on failure:</strong> loose vert injected (exit 4); face deleted → boundary edges (exit 5); edge dissolved → ngon (exit 3); all faces flipped → signed volume negated (exit 7); face collapsed → zero-area (exit 6).</p>
+<p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same volume, same <code>min_area</code>. The bmesh edge/face incidence and polygon vertex-count APIs are stable across the pair.</p>
+<p>The render is a dual panel: left <strong>DIRTY</strong> (boundary hole + loose-vert bead, emissive hazard + wireframe) vs right <strong>CLEAN</strong> manifold. Failure = identical panels or missing defect cues.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python mesh_hygiene_audit.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python mesh_hygiene_audit.py -- --output hygiene.png
+blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (ngons, loose verts, non-manifold edges, zero-area faces, inverted winding, or Euler ≠ 2). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/mesh-hygiene-audit/mesh_hygiene_audit.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit/mesh_hygiene_audit.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Mesh hygiene audit — engine-ingest topology as a runnable contract.
+
+Witnesses the mesh-cleanliness checklist a prop pipeline relies on before
+engine ingest: no ngons, no loose vertices, no non-manifold edges, no
+zero-area faces, consistent outward winding, and Euler characteristic 2 for
+a closed manifold solid. Every gate is derived from mesh combinatorics or
+the divergence-theorem volume — never from a prior-run capture.
+
+Companion to collision-hull-proxy (watertight / Euler on *hulls*) and
+bmesh-gear (watertight parametric solid): this example audits an authored
+utility-pedestal prop and stages a dirty-vs-clean dual panel so a broken
+path reads in the thumbnail.
+
+By default it runs only the correctness check (no render). Pass --output
+to also render a still:
+
+    blender --background --python mesh_hygiene_audit.py --
+    blender --background --python mesh_hygiene_audit.py -- --output h.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+
+AREA_EPS = <span class="n">1e-10</span>
+VOL_EPS = <span class="n">1e-8</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> signed_volume(me):
+    <span class="s">&quot;&quot;&quot;Divergence-theorem volume; positive when face winding points outward.&quot;&quot;&quot;</span>
+    vol = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> p.vertices]
+        v0 = vs[<span class="n">0</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+            vol += v0.dot(vs[i].cross(vs[i + <span class="n">1</span>])) / <span class="n">6.0</span>
+    <span class="k">return</span> vol
+
+
+<span class="k">def</span> face_area(me, poly):
+    vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> poly.vertices]
+    <span class="k">if</span> len(vs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = vs[<span class="n">0</span>]
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+        area += (vs[i] - v0).cross(vs[i + <span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.35</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_utility_pedestal():
+    <span class="s">&quot;&quot;&quot;Single closed manifold: street electrical pedestal (fabricated panels).
+
+    Explicit quad ring-stack — flared plinth, cabinet waist, drip-cap flare —
+    so the solid stays quads-only with every edge bordering exactly two faces
+    and Euler V-E+F == 2. Not a beveled cube: the silhouette steps are the
+    authored panels a prop pipeline would audit before ingest.
+    &quot;&quot;&quot;</span>
+    <span class="c"># (half_x, half_y, z) rings bottom → top</span>
+    rings = [
+        (<span class="n">0.58</span>, <span class="n">0.48</span>, <span class="n">0.00</span>),  <span class="c"># plinth base</span>
+        (<span class="n">0.58</span>, <span class="n">0.48</span>, <span class="n">0.18</span>),  <span class="c"># plinth top</span>
+        (<span class="n">0.45</span>, <span class="n">0.35</span>, <span class="n">0.18</span>),  <span class="c"># cabinet base (inset step)</span>
+        (<span class="n">0.45</span>, <span class="n">0.35</span>, <span class="n">1.30</span>),  <span class="c"># cabinet top</span>
+        (<span class="n">0.52</span>, <span class="n">0.40</span>, <span class="n">1.30</span>),  <span class="c"># drip-cap overhang</span>
+        (<span class="n">0.52</span>, <span class="n">0.40</span>, <span class="n">1.40</span>),  <span class="c"># drip-cap top</span>
+    ]
+
+    me = bpy.data.meshes.new(<span class="s">&quot;UtilityPedestal&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        ring_verts = []
+        <span class="k">for</span> hx, hy, z <span class="k">in</span> rings:
+            ring_verts.append([
+                bm.verts.new((-hx, -hy, z)),
+                bm.verts.new((hx, -hy, z)),
+                bm.verts.new((hx, hy, z)),
+                bm.verts.new((-hx, hy, z)),
+            ])
+        <span class="k">for</span> i <span class="k">in</span> range(len(ring_verts) - <span class="n">1</span>):
+            a, b = ring_verts[i], ring_verts[i + <span class="n">1</span>]
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+                n = (k + <span class="n">1</span>) % <span class="n">4</span>
+                bm.faces.new((a[k], a[n], b[n], b[k]))
+        bot = ring_verts[<span class="n">0</span>]
+        bm.faces.new((bot[<span class="n">0</span>], bot[<span class="n">3</span>], bot[<span class="n">2</span>], bot[<span class="n">1</span>]))
+        top = ring_verts[-<span class="n">1</span>]
+        bm.faces.new((top[<span class="n">0</span>], top[<span class="n">1</span>], top[<span class="n">2</span>], top[<span class="n">3</span>]))
+
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        tmp = bpy.data.meshes.new(<span class="s">&quot;_tmp_vol&quot;</span>)
+        bm.to_mesh(tmp)
+        <span class="k">if</span> signed_volume(tmp) &lt; <span class="n">0.0</span>:
+            <span class="k">for</span> f <span class="k">in</span> bm.faces:
+                f.normal_flip()
+        bpy.data.meshes.remove(tmp)
+
+        bm.verts.ensure_lookup_table()
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
+        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        bmesh.ops.translate(bm, vec=(-cx, -cy, <span class="n">0.0</span>), verts=bm.verts)
+
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+
+    mat = make_material(<span class="s">&quot;PedestalSteel&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.42</span>, <span class="n">0.38</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.55</span>)
+    me.materials.append(mat)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">False</span>
+    ob = bpy.data.objects.new(<span class="s">&quot;UtilityPedestal&quot;</span>, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> audit(me):
+    <span class="s">&quot;&quot;&quot;Return a dict of hygiene metrics for the mesh datablock.&quot;&quot;&quot;</span>
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    areas = [face_area(me, p) <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    min_area = min(areas) <span class="k">if</span> areas <span class="k">else</span> <span class="n">0.0</span>
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> a <span class="k">in</span> areas <span class="k">if</span> a &lt;= AREA_EPS)
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
+        boundary = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">1</span>)
+    <span class="k">finally</span>:
+        bm.free()
+
+    vol = signed_volume(me)
+    euler = nv - ne + nf
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf,
+        <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose&quot;</span>: loose,
+        <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;boundary&quot;</span>: boundary,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;min_area&quot;</span>: min_area,
+        <span class="s">&quot;volume&quot;</span>: vol,
+        <span class="s">&quot;euler&quot;</span>: euler,
+    }
+
+
+<span class="k">def</span> check(me):
+    <span class="s">&quot;&quot;&quot;Assert the clean-prop hygiene contract. Exit codes 3–8 on failure.&quot;&quot;&quot;</span>
+    m = audit(me)
+    print(
+        <span class="s">f&quot;</span><span class="s">topology verts=</span>{m[<span class="s">&#x27;nv&#x27;</span>]}<span class="s"> edges=</span>{m[<span class="s">&#x27;ne&#x27;</span>]}<span class="s"> faces=</span>{m[<span class="s">&#x27;nf&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">euler=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> volume=</span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s">&quot;</span>
+    )
+
+    <span class="k">if</span> m[<span class="s">&quot;ngons&quot;</span>]:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> ngon(s) — engine ingest wants tris/quads only</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> m[<span class="s">&quot;loose&quot;</span>]:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;loose&#x27;</span>]}<span class="s"> loose vertex(es) — degree 0 verts</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> m[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> m[<span class="s">&quot;boundary&quot;</span>]:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: non-manifold topology — nonman_edges=</span>{m[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">boundary_edges=</span>{m[<span class="s">&#x27;boundary&#x27;</span>]}<span class="s"> (closed solid needs every edge </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">bordering exactly 2 faces)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">5</span>
+    <span class="k">if</span> m[<span class="s">&quot;zero_area&quot;</span>]:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> zero-area face(s) </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s"> &lt;= </span>{AREA_EPS}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">if</span> m[<span class="s">&quot;volume&quot;</span>] &lt;= VOL_EPS:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: signed volume </span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> &lt;= </span>{VOL_EPS}<span class="s"> — </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">winding inverted or open shell</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+    <span class="k">if</span> m[<span class="s">&quot;euler&quot;</span>] != <span class="n">2</span>:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: Euler characteristic V-E+F=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> != 2 — </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">not a closed manifold sphere topology</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">8</span>
+
+    print(
+        <span class="s">f&quot;</span><span class="s">hygiene_ok ngons=0 loose=0 nonman=0 boundary=0 zero_area=0 </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">euler=2 volume=</span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> inject_defect(me, kind):
+    <span class="s">&quot;&quot;&quot;Mutate a mesh copy for falsification / dirty-panel staging.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.faces.ensure_lookup_table()
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        <span class="k">if</span> kind == <span class="s">&quot;loose&quot;</span>:
+            <span class="c"># Local space beside the front face so the dirty-panel bead reads</span>
+            <span class="c"># next to the subject (not halfway to the clean panel).</span>
+            bm.verts.new((<span class="n">0.0</span>, -<span class="n">0.55</span>, <span class="n">0.85</span>))
+        <span class="k">elif</span> kind == <span class="s">&quot;boundary&quot;</span>:
+            <span class="c"># Prefer a large side face so the hole reads in the dual-panel still.</span>
+            faces = sorted(bm.faces, key=<span class="k">lambda</span> f: -f.calc_area())
+            target = <span class="k">None</span>
+            <span class="k">for</span> f <span class="k">in</span> faces:
+                n = f.normal
+                <span class="k">if</span> abs(n.x) &gt; <span class="n">0.7</span>:  <span class="c"># side panel</span>
+                    target = f
+                    <span class="k">break</span>
+            <span class="k">if</span> target <span class="k">is</span> <span class="k">None</span> <span class="k">and</span> faces:
+                target = faces[<span class="n">0</span>]
+            <span class="k">if</span> target <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                bmesh.ops.delete(bm, geom=[target], context=<span class="s">&quot;FACES_ONLY&quot;</span>)
+        <span class="k">elif</span> kind == <span class="s">&quot;ngon&quot;</span>:
+            <span class="k">for</span> e <span class="k">in</span> list(bm.edges):
+                <span class="k">if</span> len(e.link_faces) == <span class="n">2</span>:
+                    bmesh.ops.dissolve_edges(bm, edges=[e])
+                    <span class="k">break</span>
+        <span class="k">elif</span> kind == <span class="s">&quot;flip&quot;</span>:
+            <span class="k">for</span> f <span class="k">in</span> bm.faces:
+                f.normal_flip()
+        <span class="k">elif</span> kind == <span class="s">&quot;zero_area&quot;</span>:
+            <span class="k">if</span> bm.faces:
+                f = bm.faces[<span class="n">0</span>]
+                verts = list(f.verts)
+                <span class="k">if</span> len(verts) &gt;= <span class="n">3</span>:
+                    target = verts[<span class="n">0</span>].co.copy()
+                    <span class="k">for</span> v <span class="k">in</span> verts[<span class="n">1</span>:<span class="n">3</span>]:
+                        v.co = target
+        <span class="k">else</span>:
+            <span class="k">raise</span> ValueError(kind)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> build_studio(sc):
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Glint&quot;</span>, (-<span class="n">2.0</span>, -<span class="n">4.0</span>, <span class="n">3.2</span>), <span class="n">220.0</span>, <span class="n">2.0</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">55</span>, <span class="n">0</span>, -<span class="n">20</span>))
+
+
+<span class="k">def</span> _duplicate_mesh_obj(sc, src, name, loc):
+    me = src.data.copy()
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> mark_defects(ob):
+    <span class="s">&quot;&quot;&quot;Emissive hazard material + wireframe so defects read in-frame.&quot;&quot;&quot;</span>
+    mat = make_material(
+        <span class="s">&quot;Hazard&quot;</span>, (<span class="n">0.75</span>, <span class="n">0.18</span>, <span class="n">0.08</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.25</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.05</span>), estr=<span class="n">0.85</span>,
+    )
+    wire_mat = make_material(
+        <span class="s">&quot;HazardWire&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.05</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.0</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.4</span>, <span class="n">0.05</span>), estr=<span class="n">2.0</span>,
+    )
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+    ob.data.materials.append(wire_mat)
+    wire = bpy.data.objects.new(ob.name + <span class="s">&quot;Wire&quot;</span>, ob.data)
+    mod = wire.modifiers.new(<span class="s">&quot;Wire&quot;</span>, <span class="s">&quot;WIREFRAME&quot;</span>)
+    mod.thickness = <span class="n">0.012</span>
+    mod.material_offset = <span class="n">1</span>
+    bpy.context.scene.collection.objects.link(wire)
+    wire.location = ob.location
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(ob.data)
+        coords = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>]
+    <span class="k">finally</span>:
+        bm.free()
+    bead_mat = make_material(
+        <span class="s">&quot;LooseBead&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.2</span>), rough=<span class="n">0.3</span>, metallic=<span class="n">0.0</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.1</span>), estr=<span class="n">2.5</span>,
+    )
+    sc = bpy.context.scene
+    <span class="k">for</span> i, co <span class="k">in</span> enumerate(coords):
+        sme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Bead</span>{i}<span class="s">&quot;</span>)
+        sbm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_uvsphere(sbm, u_segments=<span class="n">8</span>, v_segments=<span class="n">6</span>, radius=<span class="n">0.07</span>)
+            sbm.to_mesh(sme)
+        <span class="k">finally</span>:
+            sbm.free()
+        sme.materials.append(bead_mat)
+        sob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Bead</span>{i}<span class="s">&quot;</span>, sme)
+        sob.location = Vector(ob.location) + co
+        sc.collection.objects.link(sob)
+
+
+<span class="k">def</span> add_door_dressing(sc, parent_loc, suffix):
+    <span class="s">&quot;&quot;&quot;Non-audited door plaque + bolts — silhouette only, not in the check mesh.&quot;&quot;&quot;</span>
+    door_m = make_material(<span class="s">f&quot;</span><span class="s">Door</span>{suffix}<span class="s">&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.20</span>, <span class="n">0.18</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.65</span>)
+    bolt_m = make_material(<span class="s">f&quot;</span><span class="s">Bolt</span>{suffix}<span class="s">&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.45</span>, <span class="n">0.22</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.85</span>)
+    <span class="c"># door plaque</span>
+    me = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Door</span>{suffix}<span class="s">&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        bmesh.ops.transform(
+            bm, matrix=Matrix.Diagonal((<span class="n">0.55</span>, <span class="n">0.03</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)), verts=bm.verts,
+        )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(door_m)
+    door = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Door</span>{suffix}<span class="s">&quot;</span>, me)
+    door.location = (parent_loc[<span class="n">0</span>], parent_loc[<span class="n">1</span>] - <span class="n">0.365</span>, parent_loc[<span class="n">2</span>] + <span class="n">0.75</span>)
+    sc.collection.objects.link(door)
+    <span class="k">for</span> x, z <span class="k">in</span> ((-<span class="n">0.18</span>, <span class="n">0.45</span>), (<span class="n">0.18</span>, <span class="n">0.45</span>), (-<span class="n">0.18</span>, <span class="n">1.05</span>), (<span class="n">0.18</span>, <span class="n">1.05</span>)):
+        bme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Bolt</span>{suffix}<span class="s">_</span>{x}<span class="s">_</span>{z}<span class="s">&quot;</span>)
+        bbm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cone(
+                bbm, cap_ends=<span class="k">True</span>, segments=<span class="n">10</span>, radius1=<span class="n">0.03</span>, radius2=<span class="n">0.03</span>, depth=<span class="n">0.04</span>,
+            )
+            bbm.to_mesh(bme)
+        <span class="k">finally</span>:
+            bbm.free()
+        bme.materials.append(bolt_m)
+        bob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Bolt</span>{suffix}<span class="s">_</span>{x}<span class="s">_</span>{z}<span class="s">&quot;</span>, bme)
+        bob.location = (parent_loc[<span class="n">0</span>] + x, parent_loc[<span class="n">1</span>] - <span class="n">0.39</span>, parent_loc[<span class="n">2</span>] + z)
+        sc.collection.objects.link(bob)
+
+
+<span class="k">def</span> placard(sc, text, loc):
+    cu = bpy.data.curves.new(text, <span class="s">&quot;FONT&quot;</span>)
+    cu.body = text
+    cu.size = <span class="n">0.22</span>
+    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+    ob = bpy.data.objects.new(text, cu)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    mat = make_material(<span class="s">&quot;Label&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.9</span>, <span class="n">0.92</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>)
+    ob.data.materials.append(mat)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(clean_ob, path, engine):
+    <span class="s">&quot;&quot;&quot;Dual-panel dirty (left) vs clean (right) — contract at a glance.&quot;&quot;&quot;</span>
+    sc = bpy.context.scene
+    clean_ob.hide_render = <span class="k">True</span>
+    clean_ob.hide_viewport = <span class="k">True</span>
+
+    left = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Dirty&quot;</span>, (-<span class="n">1.35</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    inject_defect(left.data, <span class="s">&quot;boundary&quot;</span>)
+    inject_defect(left.data, <span class="s">&quot;loose&quot;</span>)
+    mark_defects(left)
+    add_door_dressing(sc, (-<span class="n">1.35</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="s">&quot;Dirty&quot;</span>)
+
+    right = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Clean&quot;</span>, (<span class="n">1.35</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    right.data.materials.clear()
+    right.data.materials.append(
+        make_material(<span class="s">&quot;CleanSteel&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.42</span>, <span class="n">0.38</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.55</span>)
+    )
+    add_door_dressing(sc, (<span class="n">1.35</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="s">&quot;Clean&quot;</span>)
+
+    placard(sc, <span class="s">&quot;DIRTY&quot;</span>, (-<span class="n">1.35</span>, -<span class="n">0.85</span>, <span class="n">0.02</span>))
+    placard(sc, <span class="s">&quot;CLEAN&quot;</span>, (<span class="n">1.35</span>, -<span class="n">0.85</span>, <span class="n">0.02</span>))
+
+    build_studio(sc)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">48.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.55</span>, -<span class="n">5.0</span>, <span class="n">1.55</span>)
+    sc.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.70</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> build_scene():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    <span class="k">return</span> bpy.context.scene, build_utility_pedestal()
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(
+        <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+        help=<span class="s">&quot;render engine for --output&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    sc, ob = build_scene()
+    code = check(ob.data)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(ob, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;mesh-hygiene-audit OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/mesh-hygiene-audit-hero.webp" alt="mesh-hygiene-audit render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

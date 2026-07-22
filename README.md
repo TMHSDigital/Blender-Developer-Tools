@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>34 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>35 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 34 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 35 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -537,7 +537,7 @@ portable path is `radius`.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 7 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 8 examples</summary>
 
 <table>
 <tr>
@@ -663,6 +663,24 @@ custom split normals survive depsgraph evaluation within their int16
 quantization (1.407e-04, not float-exact). Documents the legacy
 `shade_auto_smooth` operator trap: CANCELLED headless on 4.5, FINISHED
 with the Smooth-by-Angle modifier on 5.1.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: dual-panel dirty vs clean street electrical pedestal — left orange emissive wireframe with loose-vert bead and DIRTY placard, right teal CLEAN manifold — proving the engine-ingest topology checklist" /></a>
+</td>
+<td valign="middle">
+
+### [mesh-hygiene-audit](examples/mesh-hygiene-audit/)
+
+The mesh-cleanliness contract a prop pipeline relies on before engine ingest:
+no ngons, no loose vertices, every edge bordering exactly two faces, no
+zero-area faces, positive signed volume, and Euler `V − E + F == 2` for a
+closed solid (measured 24/44/22, volume 0.989248). Companion to
+[`collision-hull-proxy`](examples/collision-hull-proxy/) (hull watertightness)
+and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Dual-panel
+still: DIRTY (injected boundary + loose vert) vs CLEAN.
 
 </td>
 </tr>

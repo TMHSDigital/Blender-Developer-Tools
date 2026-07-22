@@ -120,7 +120,8 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - Volumetric scatter optical-depth witness: Volume Scatter density → Beer–Lambert transmittance along a known path (Cycles; Stage deviation)
 - Freestyle SVG / line-set witness: Freestyle line set on a silhouette (full render pass; prefer Line Art first)
 - prop-origin-transform witness — origin to base center, `transform_apply` through the data API, delta transforms, `matrix_parent_inverse` so parented children do not teleport; closed forms: post-apply scale exactly (1,1,1), local bbox min Z == 0, world bbox unchanged (builds on `parent-inverse-orrery`, does not duplicate it)
-- mesh-hygiene-audit witness — the engine-ingest checklist as executable contract: no ngons, no loose vertices, no non-manifold edges, no zero-area faces, consistent outward winding; closed forms via Euler characteristic and exact edge-face incidence counts
+- ~~mesh-hygiene-audit witness~~ **SHIPPED** as `examples/mesh-hygiene-audit/` — engine-ingest topology checklist on a stepped street electrical pedestal: no ngons, no loose verts, manifold edges (exactly 2 faces), no zero-area faces (`min_area` printed), positive signed volume, Euler `V−E+F==2` (24/44/22, volume 0.989248); byte-identical on 4.5.11 and 5.1.2; dual-panel dirty vs clean still
+- UV atlas pack witness — lightmap/unique UV island packing with non-overlap + utilization closed forms (deferred behind hygiene/origin; overlaps `uv-layer-grid` / `triangulate-tangents` / `gltf-export-roundtrip` UV arc)
 
 ## Future (uncommitted)
 
