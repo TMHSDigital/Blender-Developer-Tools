@@ -190,6 +190,8 @@
 <p><strong>Version witness:</strong> <code>sky_type</code> and the dust/aerosol rename are the divergence; <code>sun_elevation</code> itself is stable. Zenith rise differs by model (Nishita vs multiple scattering) but clears the same gate on both binaries.</p>
 <h2>Stage deviation</h2>
 <p>World carries a Nishita / multiple-scattering Sky Texture instead of the default near-black Background — the contract *is* the sky. Gallery still is a dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at thumbnail scale. Layer 1 still holds: <code>view_transform=&#x27;Standard&#x27;</code>, designed terracotta materials, chosen camera, no helpers in frame.</p>
+<h2>Framing deviation</h2>
+<p>The hero is the sky itself — a world contract, not an object on the stage. The silhouette matte can only measure the cone reference props (0.369x / 0.489y), so the out-of-band number is a measurement artifact, not the composition; if ever wired to <code>examples/gallery_framing.py</code>, this example reports with <code>deviation=&quot;world-contract subject; matte sees only the cone props&quot;</code> rather than enforcing.</p>
 <h2>Run</h2>
 <pre><code># Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
 blender --background --python sky_texture_sun_elevation.py --

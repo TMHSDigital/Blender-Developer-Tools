@@ -53,6 +53,25 @@ path is the gallery-artifact path, so a defective composition fails the
 render exactly like a failed contract check fails the witness. The gate
 runs only on the opt-in render path; check-only semantics (non-zero ==
 API-contract drift) are unchanged.
+
+Deviations: VISUAL-STYLE Layer 1 allows a documented framing deviation
+when the bleed or the scale is the design — radiating subjects that read
+as extending past the frame, edge-to-edge fields where the fill is the
+point, subjects whose contract is the world or the atmosphere. The
+deviation must be visible in the example's source and render log: pass
+``deviation="reason"`` to `check_framing`, which switches enforcement to
+reporting and prints the reason with the numbers. An empty or whitespace
+reason raises ValueError — a deviation cannot be taken silently. The
+README must carry the same one-line note, exactly as stage deviations do.
+
+Scope: the helper measures the (scene, camera) pair it is handed — pass
+the scene the still actually renders from. Multi-scene examples (e.g.
+vse-cut-list, whose gallery still renders from a dedicated ``Bay`` scene
+while ``bpy.context.scene`` is the cut-list scene) must pass that scene
+and its camera explicitly. Examples whose subject IS the world or the
+atmosphere (sky-texture-sun-elevation) have no renderable hero for the
+matte to isolate — the number mismeasures a reference prop, so they take
+a documented deviation and report rather than enforce.
 """
 import os
 import sys
@@ -325,13 +344,32 @@ def measure_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_ST
     return res
 
 
-def check_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_STRATEGY):
+def check_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_STRATEGY,
+                  deviation=None):
     """Measure, print the numbers, and gate: 0 pass, EXIT_FRAMING (10) on violation.
 
     Render path only — never call this from an example's check-only path.
+
+    deviation — None (default) enforces the band. A non-empty reason string
+    documents a legitimate framing deviation (VISUAL-STYLE Layer 1): the
+    numbers are still measured and printed with the reason, but the gate
+    reports instead of enforcing and always returns 0. An empty or
+    whitespace-only reason raises ValueError — no silent opt-outs.
     """
+    if deviation is not None and not str(deviation).strip():
+        raise ValueError(
+            "check_framing deviation requires a non-empty reason string; "
+            "a framing deviation cannot be taken silently"
+        )
     res = measure_framing(scene, camera, hero, elements, stage=stage, strategy=strategy)
     print(res.report())
+    if deviation is not None:
+        print(
+            f'framing_deviation reason="{str(deviation).strip()}" '
+            f"enforcement=report fill_ok={res.fill_ok} "
+            f"margins_ok={res.margins_ok} (numbers printed, gate not enforced)"
+        )
+        return 0
     if not res.ok:
         print(
             "ERROR: framing violation — Layer 1 requires fill "

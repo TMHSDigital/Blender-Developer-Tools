@@ -39,6 +39,15 @@ dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at
 thumbnail scale. Layer 1 still holds: `view_transform='Standard'`, designed
 terracotta materials, chosen camera, no helpers in frame.
 
+## Framing deviation
+
+The hero is the sky itself — a world contract, not an object on the stage.
+The silhouette matte can only measure the cone reference props (0.369x /
+0.489y), so the out-of-band number is a measurement artifact, not the
+composition; if ever wired to `examples/gallery_framing.py`, this example
+reports with `deviation="world-contract subject; matte sees only the cone
+props"` rather than enforcing.
+
 ## Run
 
 ```bash

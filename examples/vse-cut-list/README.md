@@ -93,6 +93,13 @@ are the genuine sequencer output (evidence); only the bay around them is
 staged (presentation). Rendered locally with EEVEE (GPU host); the checks
 and `--check-pixels` need no GPU (Cycles CPU).
 
+## Framing measurement
+
+The gallery still renders from the dedicated `Bay` scene (camera `BayCam`),
+not `bpy.context.scene` — a framing measurement with
+`examples/gallery_framing.py` must be handed that (scene, camera) pair
+explicitly.
+
 ## Run
 
 ```bash
