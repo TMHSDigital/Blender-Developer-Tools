@@ -16,6 +16,11 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, argparse
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 COUNT = 16
 SPACING = 0.72
 BASE = 0.28
@@ -144,7 +149,7 @@ def render_still(objs, path, engine):
     # the frame with a small margin -- the skyline must not clip
     cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 42.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -13.5, 2.0)
+    cam.location = (0.0, -15.0, 2.0)
     cam.rotation_euler = (math.radians(86), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -163,8 +168,21 @@ def render_still(objs, path, engine):
     scene.render.filepath = path
     # AgX would wash the orange columns toward tan (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=list(objs),
+        elements=list(objs),
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 6
+    return 0
 
 
 def main():
@@ -181,9 +199,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(objs, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(objs, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("driver-wave OK")

@@ -28,3 +28,5 @@ blender --background --python driver_wave.py -- --output driver.png --engine cyc
 
 It exits non-zero on failure (driven value wrong, or the flush-back disagreed). The
 `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

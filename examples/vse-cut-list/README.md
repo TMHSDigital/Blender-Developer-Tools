@@ -116,3 +116,5 @@ blender --background --python vse_cut_list.py -- --output vse.png
 It exits non-zero on failure and prints every measured value and tolerance on
 success, so CI logs carry the numbers. The `blender-smoke` workflow runs the
 check and the pixel witness on Blender 4.5 LTS and 5.1.
+
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

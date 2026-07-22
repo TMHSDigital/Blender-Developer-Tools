@@ -16,6 +16,11 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, argparse
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 TINTS = {
     "SphereA": (0.012, 0.32, 0.30, 1.0),   # teal
     "SphereB": (0.42, 0.02, 0.20, 1.0),    # magenta
@@ -154,7 +159,7 @@ def render_still(objs, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 58.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.8, 2.6)
+    cam.location = (0.0, -8.7, 2.6)
     cam.rotation_euler = (math.radians(78), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -171,8 +176,21 @@ def render_still(objs, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=list(objs),
+        elements=list(objs),
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 7
+    return 0
 
 
 def main():
@@ -189,9 +207,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(objs, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 7
+        rcode = render_still(objs, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("shader-node-group OK")

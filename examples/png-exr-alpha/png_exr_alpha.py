@@ -23,6 +23,11 @@ import sys
 import os
 import math
 import argparse
+
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
 import tempfile
 import struct
 
@@ -584,11 +589,13 @@ def render_still(path, engine):
           (0.0, 9.0, 2.6))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (-0.10, 0.2, 1.65)
+    aim.location = (-0.10, 0.2, 1.38)
     scene.collection.objects.link(aim)
 
     # Gentle 3/4 from the right: both faces stay fully readable while the
-    # bezels, struts, and plinth show their thickness.
+    # bezels, struts, and plinth show their thickness. Aim dropped 0.23 from
+    # the original 1.65 so the plinth clears the bottom edge (framing gate)
+    # without changing the distance or the composition.
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
@@ -614,8 +621,26 @@ def render_still(path, engine):
     scene.render.filepath = path
     # AgX desaturates the card toward pastel — Standard keeps the clamp visible.
     scene.view_settings.view_transform = "Standard"
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    hero = [
+        o for o in scene.objects
+        if o.name.startswith(("PngDisplay", "ExrDisplay")) and o.type in {"MESH", "FONT"}
+    ]
+    plinth = scene.objects.get("Plinth")
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=hero,
+        elements=hero + ([plinth] if plinth else []),
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 13
+    return 0
 
 
 def main():
@@ -633,8 +658,11 @@ def main():
         return code
     if args.output:
         bpy.ops.wm.read_factory_settings(use_empty=True)
-        if not render_still(os.path.abspath(args.output), args.engine):
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        if rcode == 13:
             return fail(f"render produced no file at {args.output}", 13)
+        if rcode:
+            return rcode
         print(f"wrote {args.output}")
     return 0
 

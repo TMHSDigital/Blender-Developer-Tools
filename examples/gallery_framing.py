@@ -223,7 +223,9 @@ def _matte_render(scene, camera, path, width, height):
         scene.camera = camera
         if saved["samples"] is not None:
             scene.eevee.taa_render_samples = 8
-        bpy.ops.render.render(write_still=True)
+        # Render the passed scene, not whatever happens to be active —
+        # examples may still from a non-context scene (vse-cut-list's Bay).
+        bpy.ops.render.render(write_still=True, scene=scene.name)
     finally:
         rd.engine = saved["engine"]
         rd.resolution_x, rd.resolution_y, rd.resolution_percentage = saved["res"]

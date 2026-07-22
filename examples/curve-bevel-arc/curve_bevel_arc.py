@@ -17,6 +17,11 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, argparse
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 N_POINTS = 8
 RADIUS = 1.5
 BEVEL = 0.15
@@ -181,7 +186,7 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.4, -3.4, 1.7)
+    cam.location = (2.55, -3.62, 1.78)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -203,8 +208,21 @@ def render_still(obj, path, engine):
     scene.render.filepath = path
     # AgX would wash the rose tube toward salmon (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj],
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 11
+    return 0
 
 
 def main():
@@ -221,9 +239,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 11
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("curve-bevel-arc OK")

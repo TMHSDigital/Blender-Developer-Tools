@@ -20,6 +20,12 @@ number of distinct swatch regions.
 """
 import bpy
 import bmesh
+
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), _os.pardir))
+_sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
 import sys
 import os
 import math
@@ -121,11 +127,12 @@ def build_scene(mats):
             i += 1
     # ortho camera framed on the grid cells: verify_png() samples the image at
     # each cell center, so every sphere must stay inside its third/half of the
-    # frame. ortho height = ortho_scale * 9/16 = 4.39 units for a grid that
-    # spans 4.14 -- nothing clips, nothing drifts out of its cell.
+    # frame. ortho height = ortho_scale * 9/16 = 4.73 units for a grid that
+    # spans 4.14 -- nothing clips, nothing drifts out of its cell, and the
+    # grid fills 0.876 of the frame height (inside the Layer 1 band).
     cam_d = bpy.data.cameras.new("cam")
     cam_d.type = 'ORTHO'
-    cam_d.ortho_scale = 7.8
+    cam_d.ortho_scale = 8.4
     cam = bpy.data.objects.new("cam", cam_d)
     cam.location = (0.0, -10.0, 0.0)
     cam.rotation_euler = (math.radians(90), 0, 0)
@@ -245,6 +252,18 @@ def main():
     # AgX would desaturate the swatches toward pastel -- exactly the material
     # colors this example exists to show (docs/VISUAL-STYLE.md)
     sc.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    spheres = [o for o in sc.objects if o.type == "MESH" and o.name.startswith("S")]
+    stage = [o for o in sc.objects if o.name == "Wall"]
+    fcode = gallery_framing.check_framing(
+        sc, sc.camera,
+        hero=spheres,
+        elements=spheres,
+        stage=stage,
+    )
+    if fcode:
+        return fcode
     os.makedirs(os.path.dirname(os.path.abspath(args.output)) or ".", exist_ok=True)
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(args.output) and os.path.getsize(args.output) > 0):

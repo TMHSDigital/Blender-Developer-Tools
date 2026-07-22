@@ -40,3 +40,4 @@ smoke gate runs on both Blender 4.5 LTS and 5.1.
 
 Runs headless on **Blender 4.5.10 LTS** and **5.1.1**; exercised on both by the
 `blender-smoke` workflow on every PR and weekly schedule.
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
