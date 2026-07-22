@@ -190,7 +190,7 @@
 <ul><li><strong>Stale <code>matrix_world</code>.</strong> After a location edit, <code>matrix_world</code> is unchanged until <code>view_layer.update()</code> (same half of the orrery contract).</li><li><strong>Scale apply via data API.</strong> Non-uniform scale baked into verts; <code>obj.scale == (1,1,1)</code> exactly afterward.</li><li><strong>Origin at base center.</strong> Local bbox <code>min.z == 0</code>, XY centered; world AABB delta across the bake is <strong>0</strong> (gate <code>1e-5</code>).</li><li><strong>Bare-parent trap.</strong> Parenting the accessory without MPI jumps it (~0.43 m measured); setting <code>matrix_parent_inverse</code> restores world location (err ~3e-8).</li></ul>
 <p><strong>What each check catches on failure:</strong> skipping scale apply leaves non-identity scale; skipping origin bake leaves <code>min.z ≈ -0.756</code>; skipping MPI leaves the accessory teleported.</p>
 <p><strong>Version witness:</strong> byte-identical numbers on Blender 4.5.11 LTS and 5.1.2.</p>
-<p>The render is a dual panel: left <strong>TRAP</strong> (bare parent — accessory teleports, hazard material) vs right <strong>MPI KEEP</strong> (accessory stays put), with emissive origin markers at each pedestal&#x27;s base.</p>
+<p>The render is a dual panel: left <strong>TRAP</strong> (bare parent — flanged conduit teleports off an empty mount socket, hazard material) vs right <strong>MPI KEEP</strong> (flange seated in the socket), with emissive origin markers at each pedestal&#x27;s base. Check closed forms are unchanged; the flange/socket are render form only.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python prop_origin_transform.py --
 blender --background --python prop_origin_transform.py -- --output origin.png

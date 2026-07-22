@@ -516,3 +516,16 @@ jobs:
           # on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/prop-origin-transform/prop_origin_transform.py --
+
+      - name: Shipped example - soccer ball Goldberg (polyhedron invariants + panel binding)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a bmesh icosphere truncated at 1/3 per edge
+          # into the Goldberg polyhedron; asserts closed-form counts (60/90/32,
+          # Euler 2), 12-pentagon/20-hexagon census, uniform degree 3,
+          # watertightness, edge-length uniformity, face planarity vs an
+          # independent Newell normal, centroid-at-origin circumsphere, and
+          # panel materials bound by face vertex count. Exits non-zero on
+          # failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py --
