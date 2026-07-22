@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>collision-hull-proxy — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <meta name="description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/collision-hull-proxy/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="collision-hull-proxy — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <meta property="og:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/collision-hull-proxy/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/collision-hull-proxy-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="collision-hull-proxy — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <meta name="twitter:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/collision-hull-proxy-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,14 +170,14 @@
   </div>
   <header class="hero">
     <h1>collision-hull-proxy</h1>
-    <p>A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
+    <p>A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom collision-hull-proxy render">
       <img src="../assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> A hull of the dense render mesh measures 368 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 5.9e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</div>
+    <div class="callout"><span class="tag">witnesses</span> A hull of the dense render mesh measures 380 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 4.4e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/collision-hull-proxy/collision_hull_proxy.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -187,8 +187,8 @@
 <p><strong>Pipeline arc neighbor:</strong> LODs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, tangent space in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — collision bounds are the piece an engine&#x27;s physics ingest checks first, and the piece whose failure rejects the whole prop.</p>
 <p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (watertight convex pieces that enclose the render mesh within budget). It is not an engine exporter and does not produce a shippable FiveM/engine asset — it proves the geometry properties such an asset must have.</p>
 <p><strong>What it witnesses:</strong> engines (GTA/FiveM-style prop workflows included) ingest collision as a *compound of convex pieces*, each piece under a per-piece face limit (255 is the common cap). The example builds that structure and derives every property from closed forms, per piece:</p>
-<ul><li><strong>Containment.</strong> Every render-mesh vertex lies on the inner side of every face plane of its piece&#x27;s hull — max excursion <strong>5.9e-08</strong> (tol 2e-4). This holds by construction, not luck: the cage is a coarse lathe whose rings are inflated by <code>sec(π/n)</code>, so each n-gon cage ring *circumscribes* its render ring exactly. Proud details (a rim, a nut) must be paid for in cage rows; concave details (the grooves) are free — the hull bridges over them. That trade-off is the collision-authoring lesson.</li><li><strong>Convexity.</strong> The same plane test restricted to the hull&#x27;s own vertices (5.0e-08) — what a convex solver assumes when it uploads the piece.</li><li><strong>Watertight + manifold.</strong> Every hull edge borders exactly two faces, and V − E + F = 2: a convex hull is a topological sphere.</li><li><strong>Outward winding.</strong> Positive signed volume by the divergence theorem (body piece 0.968858) — inverted collision is a physics no-op.</li><li><strong>Budget.</strong> Every piece ≤ 255 faces: body 70, pumper 60, side caps 60+60; the compound totals 250. The naive approach fails this — a hull of the *dense render mesh* measures <strong>368 faces</strong>, over budget, which is why real pipelines hull a cage, never the render mesh.</li></ul>
-<p><strong>What each check catches on failure:</strong> an artist editing the render mesh after the hull was generated (probe: pumper lug stretched 2×, exit 3, measured escape 0.730000); inverted hull winding (probe: polygons flipped, exit 5, signed volume −0.968858, the exact negation); a non-watertight piece (probe: one face deleted, exit 4, three border edges).</p>
+<ul><li><strong>Containment.</strong> Every render-mesh vertex lies on the inner side of every face plane of its piece&#x27;s hull — max excursion <strong>4.4e-08</strong> (tol 2e-4). This holds by construction, not luck: the cage is a coarse lathe whose rings are inflated by <code>sec(π/n)</code>, so each n-gon cage ring *circumscribes* its render ring exactly. Proud details (a rim, a nut) must be paid for in cage rows; concave details (the grooves) are free — the hull bridges over them. That trade-off is the collision-authoring lesson.</li><li><strong>Convexity.</strong> The same plane test restricted to the hull&#x27;s own vertices (4.8e-08) — what a convex solver assumes when it uploads the piece.</li><li><strong>Watertight + manifold.</strong> Every hull edge borders exactly two faces, and V − E + F = 2: a convex hull is a topological sphere.</li><li><strong>Outward winding.</strong> Positive signed volume by the divergence theorem (body piece 1.022381) — inverted collision is a physics no-op.</li><li><strong>Budget.</strong> Every piece ≤ 255 faces: body 70, pumper 60, side caps 60+60; the compound totals 250. The naive approach fails this — a hull of the *dense render mesh* measures <strong>380 faces</strong>, over budget, which is why real pipelines hull a cage, never the render mesh.</li></ul>
+<p><strong>What each check catches on failure:</strong> an artist editing the render mesh after the hull was generated (probe: pumper lug stretched 2×, exit 3, measured escape 0.730000); inverted hull winding (probe: polygons flipped, exit 5, signed volume −1.022381, the exact negation); a non-watertight piece (probe: one face deleted, exit 4, three border edges).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same piece counts, same volumes, same excursions. <code>bmesh.ops.convex_hull</code> and <code>foreach_get</code> are stable across the pair.</p>
 <p>The render shows the prop inside its four faceted translucent hull pieces: if any piece failed to enclose its geometry, painted metal would poke through the shell in frame.</p>
 <h2>Run</h2>
@@ -270,8 +270,8 @@ BODY_PROFILE = [
     (<span class="n">0.37</span>, <span class="n">0.205</span>),   <span class="c"># neck</span>
     (<span class="n">0.35</span>, <span class="n">0.320</span>),   <span class="c"># barrel</span>
     (<span class="n">0.346</span>, <span class="n">0.545</span>),
-    (<span class="n">0.334</span>, <span class="n">0.555</span>),  <span class="c"># barrel groove (concave)</span>
-    (<span class="n">0.334</span>, <span class="n">0.575</span>),
+    (<span class="n">0.328</span>, <span class="n">0.555</span>),  <span class="c"># barrel groove (concave)</span>
+    (<span class="n">0.328</span>, <span class="n">0.575</span>),
     (<span class="n">0.346</span>, <span class="n">0.590</span>),
     (<span class="n">0.345</span>, <span class="n">0.880</span>),  <span class="c"># barrel top</span>
     (<span class="n">0.348</span>, <span class="n">0.930</span>),
@@ -279,6 +279,8 @@ BODY_PROFILE = [
     (<span class="n">0.336</span>, <span class="n">1.000</span>),
     (<span class="n">0.348</span>, <span class="n">1.030</span>),
     (<span class="n">0.36</span>, <span class="n">1.090</span>),   <span class="c"># shoulder under bonnet</span>
+    (<span class="n">0.388</span>, <span class="n">1.110</span>),  <span class="c"># bonnet brim (proud — paid for with a cage row)</span>
+    (<span class="n">0.362</span>, <span class="n">1.132</span>),  <span class="c"># under-brim tuck (concave)</span>
     (<span class="n">0.35</span>, <span class="n">1.150</span>),   <span class="c"># bonnet dome (concave curve — cage keeps every row)</span>
     (<span class="n">0.30</span>, <span class="n">1.220</span>),
     (<span class="n">0.21</span>, <span class="n">1.280</span>),
@@ -295,6 +297,7 @@ CAGE_BODY_PROFILE = [
     (<span class="n">0.37</span>, <span class="n">0.205</span>),
     (<span class="n">0.345</span>, <span class="n">0.880</span>),
     (<span class="n">0.36</span>, <span class="n">1.090</span>),
+    (<span class="n">0.388</span>, <span class="n">1.110</span>),  <span class="c"># the brim is proud: it must appear in the cage</span>
     (<span class="n">0.35</span>, <span class="n">1.150</span>),
     (<span class="n">0.30</span>, <span class="n">1.220</span>),
     (<span class="n">0.21</span>, <span class="n">1.280</span>),
@@ -302,7 +305,7 @@ CAGE_BODY_PROFILE = [
     (<span class="n">0.00</span>, <span class="n">1.325</span>),
 ]
 
-NUT_PROFILE = [(<span class="n">0.09</span>, <span class="n">1.325</span>), (<span class="n">0.072</span>, <span class="n">1.40</span>), (<span class="n">0.0</span>, <span class="n">1.40</span>)]
+NUT_PROFILE = [(<span class="n">0.115</span>, <span class="n">1.325</span>), (<span class="n">0.095</span>, <span class="n">1.44</span>), (<span class="n">0.0</span>, <span class="n">1.44</span>)]
 
 <span class="c"># Side caps at z=0.76, pumper (bigger) at z=0.66. A cap&#x27;s outlet direction</span>
 <span class="c"># equals its azimuth (degrees from +X); the camera sits near azimuth 292, so</span>
@@ -406,6 +409,7 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
     red = make_material(<span class="s">&quot;EnamelRed&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.035</span>, <span class="n">0.022</span>), <span class="n">0.15</span>, <span class="n">0.30</span>)
     yellow = make_material(<span class="s">&quot;EnamelYellow&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.53</span>, <span class="n">0.05</span>), <span class="n">0.15</span>, <span class="n">0.32</span>)
     iron = make_material(<span class="s">&quot;CastIron&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.052</span>, <span class="n">0.06</span>), <span class="n">0.9</span>, <span class="n">0.48</span>)
+    iron_light = make_material(<span class="s">&quot;CastIronLight&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.145</span>, <span class="n">0.16</span>), <span class="n">0.85</span>, <span class="n">0.42</span>)
 
     inflate_body = <span class="n">1.0</span> / math.cos(math.pi / CAGE_SEG_BODY)
     inflate_cap = <span class="n">1.0</span> / math.cos(math.pi / CAGE_SEG_CAP)
@@ -419,7 +423,7 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
         <span class="k">if</span> p.center.z &gt; <span class="n">1.09</span>:
             p.material_index = <span class="n">1</span>
     nut = lathe_object(<span class="s">&quot;Nut&quot;</span>, NUT_PROFILE, <span class="n">5</span>)
-    nut.data.materials.append(iron)
+    nut.data.materials.append(iron_light)
     body_cage = lathe_object(<span class="s">&quot;BodyCage&quot;</span>, CAGE_BODY_PROFILE, CAGE_SEG_BODY, inflate_body)
     nut_cage = lathe_object(<span class="s">&quot;NutCage&quot;</span>, NUT_PROFILE, CAGE_SEG_NUT, inflate_nut)
     groups = [{<span class="s">&quot;name&quot;</span>: <span class="s">&quot;body&quot;</span>, <span class="s">&quot;render&quot;</span>: [body, nut], <span class="s">&quot;cage&quot;</span>: [body_cage, nut_cage]}]
@@ -647,7 +651,7 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
 
     <span class="c"># key/fill/rim/wedge per docs/VISUAL-STYLE.md</span>
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">130.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">300.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
     <span class="c"># small warm glint off the camera-left shoulder: lifts the pumper cap face</span>
@@ -667,7 +671,7 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>

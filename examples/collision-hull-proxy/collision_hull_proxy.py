@@ -62,8 +62,8 @@ BODY_PROFILE = [
     (0.37, 0.205),   # neck
     (0.35, 0.320),   # barrel
     (0.346, 0.545),
-    (0.334, 0.555),  # barrel groove (concave)
-    (0.334, 0.575),
+    (0.328, 0.555),  # barrel groove (concave)
+    (0.328, 0.575),
     (0.346, 0.590),
     (0.345, 0.880),  # barrel top
     (0.348, 0.930),
@@ -71,6 +71,8 @@ BODY_PROFILE = [
     (0.336, 1.000),
     (0.348, 1.030),
     (0.36, 1.090),   # shoulder under bonnet
+    (0.388, 1.110),  # bonnet brim (proud — paid for with a cage row)
+    (0.362, 1.132),  # under-brim tuck (concave)
     (0.35, 1.150),   # bonnet dome (concave curve — cage keeps every row)
     (0.30, 1.220),
     (0.21, 1.280),
@@ -87,6 +89,7 @@ CAGE_BODY_PROFILE = [
     (0.37, 0.205),
     (0.345, 0.880),
     (0.36, 1.090),
+    (0.388, 1.110),  # the brim is proud: it must appear in the cage
     (0.35, 1.150),
     (0.30, 1.220),
     (0.21, 1.280),
@@ -94,7 +97,7 @@ CAGE_BODY_PROFILE = [
     (0.00, 1.325),
 ]
 
-NUT_PROFILE = [(0.09, 1.325), (0.072, 1.40), (0.0, 1.40)]
+NUT_PROFILE = [(0.115, 1.325), (0.095, 1.44), (0.0, 1.44)]
 
 # Side caps at z=0.76, pumper (bigger) at z=0.66. A cap's outlet direction
 # equals its azimuth (degrees from +X); the camera sits near azimuth 292, so
@@ -198,6 +201,7 @@ def build_hydrant():
     red = make_material("EnamelRed", (0.48, 0.035, 0.022), 0.15, 0.30)
     yellow = make_material("EnamelYellow", (0.82, 0.53, 0.05), 0.15, 0.32)
     iron = make_material("CastIron", (0.05, 0.052, 0.06), 0.9, 0.48)
+    iron_light = make_material("CastIronLight", (0.14, 0.145, 0.16), 0.85, 0.42)
 
     inflate_body = 1.0 / math.cos(math.pi / CAGE_SEG_BODY)
     inflate_cap = 1.0 / math.cos(math.pi / CAGE_SEG_CAP)
@@ -211,7 +215,7 @@ def build_hydrant():
         if p.center.z > 1.09:
             p.material_index = 1
     nut = lathe_object("Nut", NUT_PROFILE, 5)
-    nut.data.materials.append(iron)
+    nut.data.materials.append(iron_light)
     body_cage = lathe_object("BodyCage", CAGE_BODY_PROFILE, CAGE_SEG_BODY, inflate_body)
     nut_cage = lathe_object("NutCage", NUT_PROFILE, CAGE_SEG_NUT, inflate_nut)
     groups = [{"name": "body", "render": [body, nut], "cage": [body_cage, nut_cage]}]
@@ -439,7 +443,7 @@ def render_still(groups, pieces, path, engine):
 
     # key/fill/rim/wedge per docs/VISUAL-STYLE.md
     light("Key", (-3.5, -4.5, 5.5), 500.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 110.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    light("Fill", (5.0, -3.5, 2.5), 130.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
     light("Rim", (1.5, 4.5, 3.5), 300.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
     # small warm glint off the camera-left shoulder: lifts the pumper cap face
@@ -459,7 +463,7 @@ def render_still(groups, pieces, path, engine):
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
     else:
         try:
             scene.eevee.taa_render_samples = 64

@@ -605,8 +605,8 @@ The compound-collision contract prop pipelines (engines generally,
 FiveM/GTA-style prop workflows specifically) ingest: one convex hull piece
 per part group, built with `bmesh.ops.convex_hull` from a coarse
 `sec(π/n)`-inflated cage — never the dense render mesh, whose hull measures
-368 faces, over the 255-face per-piece engine budget. Closed-form plane
-tests prove containment (5.9e-08), convexity, watertightness, outward
+380 faces, over the 255-face per-piece engine budget. Closed-form plane
+tests prove containment (4.4e-08), convexity, watertightness, outward
 winding, and Euler characteristic 2 per piece. Proud details cost cage rows;
 concave grooves are free.
 

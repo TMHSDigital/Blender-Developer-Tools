@@ -451,7 +451,7 @@ def render_still(can, path, engine):
     # semi-gloss painted steel: rough enough to read as paint, glossy enough
     # that a highlight exposes every normal discontinuity — matte would hide
     # the very shading differences this render exists to show
-    steel = make_material("OliveDrab", (0.31, 0.35, 0.15), 0.8, 0.26)
+    steel = make_material("OliveDrab", (0.30, 0.345, 0.13), 0.8, 0.26)
     accent = make_material("FuelMarker", (0.55, 0.06, 0.03), 0.3, 0.30)
 
     # the checked base can IS the by-angle variant; the two failure modes are
@@ -504,16 +504,16 @@ def render_still(can, path, engine):
 
     # key/fill/rim/wedge per docs/VISUAL-STYLE.md
     light("Key", (-4.0, -5.0, 6.0), 520.0, 4.5, (1.0, 0.96, 0.9), (50, 0, -38))
-    light("Fill", (5.5, -3.5, 2.5), 120.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 55))
+    light("Fill", (5.5, -3.5, 2.5), 150.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 55))
     light("Rim", (1.5, 4.5, 4.0), 340.0, 3.0, (0.6, 0.78, 1.0), (-58, 0, 170))
     light("Wedge", (2.5, 5.5, 4.0), 400.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
     # the shading audit light: a tall strip whose reflection runs down each
     # can face — it stair-steps on flat shading, warps at the rim on
     # smooth-everything, and stays straight with crisp edges on by-angle
     ld = bpy.data.lights.new("Strip", 'AREA')
-    ld.energy = 460.0
+    ld.energy = 400.0
     ld.shape = 'RECTANGLE'
-    ld.size = 1.0
+    ld.size = 1.35
     ld.size_y = 8.0
     ld.color = (0.9, 0.95, 1.0)
     strip = bpy.data.objects.new("Strip", ld)
@@ -535,7 +535,7 @@ def render_still(can, path, engine):
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
-        scene.cycles.samples = 48
+        scene.cycles.samples = 64
     else:
         try:
             scene.eevee.taa_render_samples = 64
