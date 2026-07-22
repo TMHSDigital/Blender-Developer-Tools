@@ -198,7 +198,7 @@ blender --background --python swatch_grid.py -- --output swatch.png
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
 <p>The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no network). It <strong>exits non-zero</strong> on any failure, including a render that comes out uniformly black or without the expected six distinct swatch regions — the same honest check the CI smoke gate runs on both Blender 4.5 LTS and 5.1.</p>
 <h2>Verified</h2>
-<p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule.</p>
+<p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -228,6 +228,12 @@ number of distinct swatch regions.
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy
 <span class="k">import</span> bmesh
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+<span class="k">import</span> os <span class="k">as</span> _os, sys <span class="k">as</span> _sys
+_sys.path.insert(<span class="n">0</span>, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), _os.pardir))
+_sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 <span class="k">import</span> sys
 <span class="k">import</span> os
 <span class="k">import</span> math
@@ -329,11 +335,12 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
             i += <span class="n">1</span>
     <span class="c"># ortho camera framed on the grid cells: verify_png() samples the image at</span>
     <span class="c"># each cell center, so every sphere must stay inside its third/half of the</span>
-    <span class="c"># frame. ortho height = ortho_scale * 9/16 = 4.39 units for a grid that</span>
-    <span class="c"># spans 4.14 -- nothing clips, nothing drifts out of its cell.</span>
+    <span class="c"># frame. ortho height = ortho_scale * 9/16 = 4.73 units for a grid that</span>
+    <span class="c"># spans 4.14 -- nothing clips, nothing drifts out of its cell, and the</span>
+    <span class="c"># grid fills 0.876 of the frame height (inside the Layer 1 band).</span>
     cam_d = bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)
     cam_d.type = <span class="s">&#x27;ORTHO&#x27;</span>
-    cam_d.ortho_scale = <span class="n">7.8</span>
+    cam_d.ortho_scale = <span class="n">8.4</span>
     cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, cam_d)
     cam.location = (<span class="n">0.0</span>, -<span class="n">10.0</span>, <span class="n">0.0</span>)
     cam.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>)
@@ -453,6 +460,18 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     <span class="c"># AgX would desaturate the swatches toward pastel -- exactly the material</span>
     <span class="c"># colors this example exists to show (docs/VISUAL-STYLE.md)</span>
     sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    spheres = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> o.name.startswith(<span class="s">&quot;S&quot;</span>)]
+    stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name == <span class="s">&quot;Wall&quot;</span>]
+    fcode = gallery_framing.check_framing(
+        sc, sc.camera,
+        hero=spheres,
+        elements=spheres,
+        stage=stage,
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     os.makedirs(os.path.dirname(os.path.abspath(args.output)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(args.output) <span class="k">and</span> os.path.getsize(args.output) &gt; <span class="n">0</span>):
