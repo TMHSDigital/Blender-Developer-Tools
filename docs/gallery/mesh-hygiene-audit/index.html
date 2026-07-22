@@ -190,7 +190,7 @@
 <ul><li><strong>No ngons.</strong> <code>len(poly.vertices) &lt;= 4</code> for every face.</li><li><strong>No loose vertices.</strong> Every vert has degree ≥ 1.</li><li><strong>Manifold edges.</strong> Every edge borders exactly 2 faces (closed solid).</li><li><strong>No zero-area faces.</strong> Face area &gt; 1e-10; prints measured <code>min_area</code>.</li><li><strong>Outward winding.</strong> Positive signed volume (divergence theorem).</li><li><strong>Euler sphere.</strong> <code>V − E + F == 2</code> for the clean closed manifold (measured: verts=66 edges=136 faces=72, volume≈0.652001, min_area≈1.146e-02).</li></ul>
 <p><strong>What each check catches on failure:</strong> loose vert injected (exit 4); face deleted → boundary edges (exit 5); edge dissolved → ngon (exit 3); all faces flipped → signed volume negated (exit 7); face collapsed → zero-area (exit 6).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same volume, same <code>min_area</code>.</p>
-<p><strong>Render as proof:</strong> dual panel, same brass on both. DIRTY stages a camera-facing through-hole (boundary edges) plus a loose vert; emissive beads/edge tubes are built from the live mesh incidence the check uses — not decorative paint. CLEAN is the intact manifold. A warm card behind the hole makes the void readable against the backdrop.</p>
+<p><strong>Render as proof:</strong> dual panel, same brass on both. DIRTY stages a camera-facing through-hole (boundary edges) plus a loose vert; emissive beads/edge tubes are built from the live mesh incidence the check uses — not decorative paint. CLEAN is the intact manifold. An out-of-frame AREA light rakes through the hole from behind so the aperture reads warm without a visible light panel in frame.</p>
 <p><strong>Not depicted in the still (check-proven only):</strong> ngon dissolve, zero-area collapse, and full-mesh winding invert — they do not read as geometry at thumbnail scale without faking annotation.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python mesh_hygiene_audit.py --
@@ -605,8 +605,8 @@ VOL_EPS = <span class="n">1e-8</span>
     ob.data.materials.append(brass)
 
     bead_mat = make_material(
-        <span class="s">&quot;LooseBead&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.15</span>), rough=<span class="n">0.3</span>, metallic=<span class="n">0.0</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.2</span>), estr=<span class="n">3.0</span>,
+        <span class="s">&quot;LooseBead&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.75</span>, <span class="n">0.2</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.1</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.25</span>), estr=<span class="n">0.85</span>,
     )
     <span class="k">for</span> i, co <span class="k">in</span> enumerate(loose):
         sme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">LooseBead</span>{i}<span class="s">&quot;</span>)
@@ -622,8 +622,8 @@ VOL_EPS = <span class="n">1e-8</span>
         sc.collection.objects.link(sob)
 
     edge_mat = make_material(
-        <span class="s">&quot;BoundaryEdge&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.25</span>, <span class="n">0.05</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.0</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.05</span>), estr=<span class="n">2.8</span>,
+        <span class="s">&quot;BoundaryEdge&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.35</span>, <span class="n">0.1</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.15</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.4</span>, <span class="n">0.1</span>), estr=<span class="n">0.7</span>,
     )
     <span class="k">for</span> i, (a, b) <span class="k">in</span> enumerate(boundary):
         mid = (a + b) * <span class="n">0.5</span>
@@ -678,15 +678,15 @@ VOL_EPS = <span class="n">1e-8</span>
     clean_ob.hide_render = <span class="k">True</span>
     clean_ob.hide_viewport = <span class="k">True</span>
 
-    left = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Dirty&quot;</span>, (-<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-    left.rotation_euler.z = math.radians(<span class="n">22.5</span>)
+    left = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Dirty&quot;</span>, (-<span class="n">0.88</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    left.rotation_euler.z = math.radians(<span class="n">20</span>)
     bpy.context.view_layer.update()
     _inject_through_hole(left.data)
     inject_defect(left.data, <span class="s">&quot;loose&quot;</span>)
     mark_defects_from_audit(left)
 
-    right = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Clean&quot;</span>, (<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-    right.rotation_euler.z = math.radians(-<span class="n">12</span>)
+    right = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Clean&quot;</span>, (<span class="n">0.88</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    right.rotation_euler.z = math.radians(-<span class="n">10</span>)
     right.data.materials.clear()
     right.data.materials.append(
         make_material(<span class="s">&quot;CleanBrass&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.14</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.85</span>)
@@ -694,39 +694,36 @@ VOL_EPS = <span class="n">1e-8</span>
     <span class="k">for</span> p <span class="k">in</span> right.data.polygons:
         p.use_smooth = abs(p.normal.z) &lt; <span class="n">0.85</span>
 
-    placard(sc, <span class="s">&quot;DIRTY&quot;</span>, (-<span class="n">1.15</span>, -<span class="n">1.0</span>, <span class="n">0.02</span>), size=<span class="n">0.15</span>)
-    placard(sc, <span class="s">&quot;CLEAN&quot;</span>, (<span class="n">1.15</span>, -<span class="n">1.0</span>, <span class="n">0.02</span>), size=<span class="n">0.15</span>)
+    placard(sc, <span class="s">&quot;DIRTY&quot;</span>, (-<span class="n">0.88</span>, -<span class="n">1.15</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
+    placard(sc, <span class="s">&quot;CLEAN&quot;</span>, (<span class="n">0.88</span>, -<span class="n">1.15</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
 
     build_studio(sc)
-    <span class="c"># Lit card behind DIRTY so the through-hole voids read against warm light</span>
-    card_me = bpy.data.meshes.new(<span class="s">&quot;HoleCard&quot;</span>)
-    cbm = bmesh.new()
+    <span class="c"># Out-of-frame POINT behind DIRTY — aperture glow without a rectangular AREA</span>
+    <span class="c"># footprint on the floor (Layer 1: no visible light shapes).</span>
+    hole_ld = bpy.data.lights.new(<span class="s">&quot;HoleBack&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
+    hole_ld.energy = <span class="n">95.0</span>
+    hole_ld.color = (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>)
     <span class="k">try</span>:
-        bmesh.ops.create_grid(cbm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">1.2</span>)
-        cbm.to_mesh(card_me)
-    <span class="k">finally</span>:
-        cbm.free()
-    card_mat = make_material(
-        <span class="s">&quot;HoleCard&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.25</span>), rough=<span class="n">0.9</span>, metallic=<span class="n">0.0</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.2</span>), estr=<span class="n">1.8</span>,
-    )
-    card_me.materials.append(card_mat)
-    card = bpy.data.objects.new(<span class="s">&quot;HoleCard&quot;</span>, card_me)
-    card.location = (-<span class="n">1.15</span>, <span class="n">1.4</span>, <span class="n">0.65</span>)
-    card.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    sc.collection.objects.link(card)
+        hole_ld.shadow_soft_size = <span class="n">1.6</span>
+    <span class="k">except</span> AttributeError:
+        <span class="k">pass</span>
+    hole_back = bpy.data.objects.new(<span class="s">&quot;HoleBack&quot;</span>, hole_ld)
+    hole_back.location = (-<span class="n">0.88</span>, <span class="n">4.6</span>, <span class="n">0.75</span>)
+    sc.collection.objects.link(hole_back)
+    <span class="c"># Pull key slightly so brass highlights don&#x27;t clip with the hole glow</span>
     <span class="k">for</span> ob <span class="k">in</span> sc.objects:
-        <span class="k">if</span> ob.type == <span class="s">&quot;LIGHT&quot;</span> <span class="k">and</span> ob.name == <span class="s">&quot;Wedge&quot;</span>:
-            ob.data.energy = <span class="n">580.0</span>
-            ob.location = (<span class="n">0.0</span>, <span class="n">6.5</span>, <span class="n">3.5</span>)
+        <span class="k">if</span> ob.type == <span class="s">&quot;LIGHT&quot;</span> <span class="k">and</span> ob.name == <span class="s">&quot;Key&quot;</span>:
+            ob.data.energy = <span class="n">380.0</span>
+        <span class="k">if</span> ob.type == <span class="s">&quot;LIGHT&quot;</span> <span class="k">and</span> ob.name == <span class="s">&quot;Glint&quot;</span>:
+            ob.data.energy = <span class="n">140.0</span>
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
+    cam_data.lens = <span class="n">38.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.1</span>, -<span class="n">5.6</span>, <span class="n">1.5</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.8</span>, <span class="n">1.9</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.62</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.48</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim

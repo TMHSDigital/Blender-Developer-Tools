@@ -37,8 +37,9 @@ zero-area (exit 6).
 **Render as proof:** dual panel, same brass on both. DIRTY stages a
 camera-facing through-hole (boundary edges) plus a loose vert; emissive
 beads/edge tubes are built from the live mesh incidence the check uses —
-not decorative paint. CLEAN is the intact manifold. A warm card behind the
-hole makes the void readable against the backdrop.
+not decorative paint. CLEAN is the intact manifold. An out-of-frame AREA
+light rakes through the hole from behind so the aperture reads warm without
+a visible light panel in frame.
 
 **Not depicted in the still (check-proven only):** ngon dissolve, zero-area
 collapse, and full-mesh winding invert — they do not read as geometry at

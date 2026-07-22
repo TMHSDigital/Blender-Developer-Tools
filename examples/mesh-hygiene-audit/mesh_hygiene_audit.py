@@ -399,8 +399,8 @@ def mark_defects_from_audit(ob):
     ob.data.materials.append(brass)
 
     bead_mat = make_material(
-        "LooseBead", (1.0, 0.85, 0.15), rough=0.3, metallic=0.0,
-        emit=(1.0, 0.9, 0.2), estr=3.0,
+        "LooseBead", (0.95, 0.75, 0.2), rough=0.35, metallic=0.1,
+        emit=(1.0, 0.85, 0.25), estr=0.85,
     )
     for i, co in enumerate(loose):
         sme = bpy.data.meshes.new(f"LooseBead{i}")
@@ -416,8 +416,8 @@ def mark_defects_from_audit(ob):
         sc.collection.objects.link(sob)
 
     edge_mat = make_material(
-        "BoundaryEdge", (1.0, 0.25, 0.05), rough=0.35, metallic=0.0,
-        emit=(1.0, 0.35, 0.05), estr=2.8,
+        "BoundaryEdge", (0.95, 0.35, 0.1), rough=0.4, metallic=0.15,
+        emit=(1.0, 0.4, 0.1), estr=0.7,
     )
     for i, (a, b) in enumerate(boundary):
         mid = (a + b) * 0.5
@@ -472,15 +472,15 @@ def render_still(clean_ob, path, engine):
     clean_ob.hide_render = True
     clean_ob.hide_viewport = True
 
-    left = _duplicate_mesh_obj(sc, clean_ob, "Dirty", (-1.15, 0.0, 0.0))
-    left.rotation_euler.z = math.radians(22.5)
+    left = _duplicate_mesh_obj(sc, clean_ob, "Dirty", (-0.88, 0.0, 0.0))
+    left.rotation_euler.z = math.radians(20)
     bpy.context.view_layer.update()
     _inject_through_hole(left.data)
     inject_defect(left.data, "loose")
     mark_defects_from_audit(left)
 
-    right = _duplicate_mesh_obj(sc, clean_ob, "Clean", (1.15, 0.0, 0.0))
-    right.rotation_euler.z = math.radians(-12)
+    right = _duplicate_mesh_obj(sc, clean_ob, "Clean", (0.88, 0.0, 0.0))
+    right.rotation_euler.z = math.radians(-10)
     right.data.materials.clear()
     right.data.materials.append(
         make_material("CleanBrass", (0.55, 0.38, 0.14), rough=0.38, metallic=0.85)
@@ -488,39 +488,36 @@ def render_still(clean_ob, path, engine):
     for p in right.data.polygons:
         p.use_smooth = abs(p.normal.z) < 0.85
 
-    placard(sc, "DIRTY", (-1.15, -1.0, 0.02), size=0.15)
-    placard(sc, "CLEAN", (1.15, -1.0, 0.02), size=0.15)
+    placard(sc, "DIRTY", (-0.88, -1.15, 0.02), size=0.11)
+    placard(sc, "CLEAN", (0.88, -1.15, 0.02), size=0.11)
 
     build_studio(sc)
-    # Lit card behind DIRTY so the through-hole voids read against warm light
-    card_me = bpy.data.meshes.new("HoleCard")
-    cbm = bmesh.new()
+    # Out-of-frame POINT behind DIRTY — aperture glow without a rectangular AREA
+    # footprint on the floor (Layer 1: no visible light shapes).
+    hole_ld = bpy.data.lights.new("HoleBack", "POINT")
+    hole_ld.energy = 95.0
+    hole_ld.color = (1.0, 0.70, 0.40)
     try:
-        bmesh.ops.create_grid(cbm, x_segments=1, y_segments=1, size=1.2)
-        cbm.to_mesh(card_me)
-    finally:
-        cbm.free()
-    card_mat = make_material(
-        "HoleCard", (1.0, 0.55, 0.25), rough=0.9, metallic=0.0,
-        emit=(1.0, 0.55, 0.2), estr=1.8,
-    )
-    card_me.materials.append(card_mat)
-    card = bpy.data.objects.new("HoleCard", card_me)
-    card.location = (-1.15, 1.4, 0.65)
-    card.rotation_euler = (math.radians(90), 0.0, 0.0)
-    sc.collection.objects.link(card)
+        hole_ld.shadow_soft_size = 1.6
+    except AttributeError:
+        pass
+    hole_back = bpy.data.objects.new("HoleBack", hole_ld)
+    hole_back.location = (-0.88, 4.6, 0.75)
+    sc.collection.objects.link(hole_back)
+    # Pull key slightly so brass highlights don't clip with the hole glow
     for ob in sc.objects:
-        if ob.type == "LIGHT" and ob.name == "Wedge":
-            ob.data.energy = 580.0
-            ob.location = (0.0, 6.5, 3.5)
+        if ob.type == "LIGHT" and ob.name == "Key":
+            ob.data.energy = 380.0
+        if ob.type == "LIGHT" and ob.name == "Glint":
+            ob.data.energy = 140.0
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 38.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.1, -5.6, 1.5)
+    cam.location = (0.0, -7.8, 1.9)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.62)
+    aim.location = (0.0, 0.0, 0.48)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
