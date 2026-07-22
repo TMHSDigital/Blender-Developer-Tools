@@ -65,43 +65,54 @@ def make_material(name, rgb, rough=0.45, metallic=0.35, emit=None, estr=0.0):
 
 
 def build_utility_pedestal():
-    """Single closed manifold: street electrical pedestal (fabricated panels).
+    """Backward-compat alias — subject is now a street valve body."""
+    return build_street_valve()
 
-    Explicit quad ring-stack — flared plinth, cabinet waist, drip-cap flare —
-    so the solid stays quads-only with every edge bordering exactly two faces
-    and Euler V-E+F == 2. Not a beveled cube: the silhouette steps are the
-    authored panels a prop pipeline would audit before ingest.
+
+def build_street_valve():
+    """Single closed manifold: octagonal street valve body (not a box pedestal).
+
+    Explicit quad ring-stack with 8-sided flanges + stem so the solid stays
+    quads-only, every edge borders exactly two faces, and Euler V-E+F == 2.
+    Differentiated from prop-origin-transform's rectangular pedestal silhouette.
     """
-    # (half_x, half_y, z) rings bottom → top
+    # (radius, z) rings bottom → top; each ring is a regular octagon
+    n = 8
     rings = [
-        (0.58, 0.48, 0.00),  # plinth base
-        (0.58, 0.48, 0.18),  # plinth top
-        (0.45, 0.35, 0.18),  # cabinet base (inset step)
-        (0.45, 0.35, 1.30),  # cabinet top
-        (0.52, 0.40, 1.30),  # drip-cap overhang
-        (0.52, 0.40, 1.40),  # drip-cap top
+        (0.62, 0.00),  # base flange
+        (0.62, 0.14),
+        (0.40, 0.14),  # body inset
+        (0.40, 0.95),
+        (0.55, 0.95),  # top flange
+        (0.55, 1.08),
+        (0.18, 1.08),  # stem
+        (0.18, 1.32),
     ]
 
-    me = bpy.data.meshes.new("UtilityPedestal")
+    me = bpy.data.meshes.new("StreetValve")
     bm = bmesh.new()
     try:
         ring_verts = []
-        for hx, hy, z in rings:
-            ring_verts.append([
-                bm.verts.new((-hx, -hy, z)),
-                bm.verts.new((hx, -hy, z)),
-                bm.verts.new((hx, hy, z)),
-                bm.verts.new((-hx, hy, z)),
-            ])
+        for r, z in rings:
+            ring = []
+            for i in range(n):
+                a = 2.0 * math.pi * i / n + math.pi / n  # flat-to-camera bias
+                ring.append(bm.verts.new((r * math.cos(a), r * math.sin(a), z)))
+            ring_verts.append(ring)
         for i in range(len(ring_verts) - 1):
             a, b = ring_verts[i], ring_verts[i + 1]
-            for k in range(4):
-                n = (k + 1) % 4
-                bm.faces.new((a[k], a[n], b[n], b[k]))
-        bot = ring_verts[0]
-        bm.faces.new((bot[0], bot[3], bot[2], bot[1]))
-        top = ring_verts[-1]
-        bm.faces.new((top[0], top[1], top[2], top[3]))
+            for k in range(n):
+                kn = (k + 1) % n
+                bm.faces.new((a[k], a[kn], b[kn], b[k]))
+        bot, top = ring_verts[0], ring_verts[-1]
+        # fan caps as quads via center verts would add poles; use triangle fan
+        # from a center → tris only on caps (still <=4). Prefer center poles.
+        bot_c = bm.verts.new((0.0, 0.0, rings[0][1]))
+        top_c = bm.verts.new((0.0, 0.0, rings[-1][1]))
+        for k in range(n):
+            kn = (k + 1) % n
+            bm.faces.new((bot_c, bot[kn], bot[k]))  # outward -Z
+            bm.faces.new((top_c, top[k], top[kn]))  # outward +Z
 
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         tmp = bpy.data.meshes.new("_tmp_vol")
@@ -122,11 +133,12 @@ def build_utility_pedestal():
     finally:
         bm.free()
 
-    mat = make_material("PedestalSteel", (0.18, 0.42, 0.38), rough=0.42, metallic=0.55)
+    # Brass / copper — distinct from prop-origin teal pedestal
+    mat = make_material("ValveBrass", (0.55, 0.38, 0.14), rough=0.38, metallic=0.85)
     me.materials.append(mat)
     for p in me.polygons:
-        p.use_smooth = False
-    ob = bpy.data.objects.new("UtilityPedestal", me)
+        p.use_smooth = abs(p.normal.z) < 0.85
+    ob = bpy.data.objects.new("StreetValve", me)
     bpy.context.collection.objects.link(ob)
     return ob
 
@@ -232,14 +244,20 @@ def inject_defect(me, kind):
             # next to the subject (not halfway to the clean panel).
             bm.verts.new((0.0, -0.55, 0.85))
         elif kind == "boundary":
-            # Prefer a large side face so the hole reads in the dual-panel still.
+            # Prefer a large camera-facing (-Y) face so the hole reads through
+            # to the lit backdrop in the dual-panel still.
             faces = sorted(bm.faces, key=lambda f: -f.calc_area())
             target = None
             for f in faces:
                 n = f.normal
-                if abs(n.x) > 0.7:  # side panel
+                if n.y < -0.55:
                     target = f
                     break
+            if target is None:
+                for f in faces:
+                    if abs(f.normal.x) > 0.7:
+                        target = f
+                        break
             if target is None and faces:
                 target = faces[0]
             if target is not None:
@@ -317,90 +335,121 @@ def _duplicate_mesh_obj(sc, src, name, loc):
     return ob
 
 
-def mark_defects(ob):
-    """Emissive hazard material + wireframe so defects read in-frame."""
-    mat = make_material(
-        "Hazard", (0.75, 0.18, 0.08), rough=0.5, metallic=0.25,
-        emit=(1.0, 0.3, 0.05), estr=0.85,
-    )
-    wire_mat = make_material(
-        "HazardWire", (1.0, 0.35, 0.05), rough=0.4, metallic=0.0,
-        emit=(1.0, 0.4, 0.05), estr=2.0,
-    )
-    ob.data.materials.clear()
-    ob.data.materials.append(mat)
-    ob.data.materials.append(wire_mat)
-    wire = bpy.data.objects.new(ob.name + "Wire", ob.data)
-    mod = wire.modifiers.new("Wire", "WIREFRAME")
-    mod.thickness = 0.012
-    mod.material_offset = 1
-    bpy.context.scene.collection.objects.link(wire)
-    wire.location = ob.location
+def _inject_through_hole(me):
+    """Render staging: delete a front/back body-face pair so the void reads.
 
+    Produces boundary edges (same gate class as inject_defect('boundary')).
+    Does not change the check path — only the dual-panel still.
+    """
     bm = bmesh.new()
     try:
-        bm.from_mesh(ob.data)
-        coords = [v.co.copy() for v in bm.verts if len(v.link_edges) == 0]
+        bm.from_mesh(me)
+        bm.faces.ensure_lookup_table()
+        # Prefer mid-height body faces (not flanges/caps)
+        body = [
+            f for f in bm.faces
+            if abs(f.normal.z) < 0.35 and 0.2 < f.calc_center_median().z < 0.9
+        ]
+        if not body:
+            body = list(bm.faces)
+        front = max(body, key=lambda f: -f.normal.y * f.calc_area())
+        back = max(body, key=lambda f: f.normal.y * f.calc_area())
+        doomed = [front] if front is back else [front, back]
+        bmesh.ops.delete(bm, geom=doomed, context="FACES_ONLY")
+        bm.to_mesh(me)
+        me.update()
     finally:
         bm.free()
-    bead_mat = make_material(
-        "LooseBead", (1.0, 0.9, 0.2), rough=0.3, metallic=0.0,
-        emit=(1.0, 0.85, 0.1), estr=2.5,
-    )
+
+
+def _defect_geometry(me):
+    """Loose-vert coords and boundary edge pairs — same incidence as audit()."""
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose = [v.co.copy() for v in bm.verts if len(v.link_edges) == 0]
+        boundary = [
+            (e.verts[0].co.copy(), e.verts[1].co.copy())
+            for e in bm.edges if len(e.link_faces) == 1
+        ]
+    finally:
+        bm.free()
+    return loose, boundary
+
+
+def mark_defects_from_audit(ob):
+    """Overlay markers from live mesh defects — not decorative paint.
+
+    Loose verts → emissive beads at measured local coords.
+    Boundary edges → emissive tubes along those edge endpoints.
+    Body keeps the same brass as CLEAN so the difference is topological.
+    """
     sc = bpy.context.scene
-    for i, co in enumerate(coords):
-        sme = bpy.data.meshes.new(f"Bead{i}")
+    loose, boundary = _defect_geometry(ob.data)
+    metrics = audit(ob.data)
+    print(
+        f"render_defects loose={metrics['loose']} boundary_edges={metrics['boundary']} "
+        f"ngons={metrics['ngons']} zero_area={metrics['zero_area']}"
+    )
+
+    brass = make_material("DirtyBrass", (0.55, 0.38, 0.14), rough=0.38, metallic=0.85)
+    ob.data.materials.clear()
+    ob.data.materials.append(brass)
+
+    bead_mat = make_material(
+        "LooseBead", (1.0, 0.85, 0.15), rough=0.3, metallic=0.0,
+        emit=(1.0, 0.9, 0.2), estr=3.0,
+    )
+    for i, co in enumerate(loose):
+        sme = bpy.data.meshes.new(f"LooseBead{i}")
         sbm = bmesh.new()
         try:
-            bmesh.ops.create_uvsphere(sbm, u_segments=8, v_segments=6, radius=0.07)
+            bmesh.ops.create_uvsphere(sbm, u_segments=10, v_segments=8, radius=0.055)
             sbm.to_mesh(sme)
         finally:
             sbm.free()
         sme.materials.append(bead_mat)
-        sob = bpy.data.objects.new(f"Bead{i}", sme)
+        sob = bpy.data.objects.new(f"LooseBead{i}", sme)
         sob.location = Vector(ob.location) + co
         sc.collection.objects.link(sob)
 
-
-def add_door_dressing(sc, parent_loc, suffix):
-    """Non-audited door plaque + bolts — silhouette only, not in the check mesh."""
-    door_m = make_material(f"Door{suffix}", (0.16, 0.20, 0.18), rough=0.4, metallic=0.65)
-    bolt_m = make_material(f"Bolt{suffix}", (0.55, 0.45, 0.22), rough=0.35, metallic=0.85)
-    # door plaque
-    me = bpy.data.meshes.new(f"Door{suffix}")
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0)
-        bmesh.ops.transform(
-            bm, matrix=Matrix.Diagonal((0.55, 0.03, 0.85, 1.0)), verts=bm.verts,
-        )
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    me.materials.append(door_m)
-    door = bpy.data.objects.new(f"Door{suffix}", me)
-    door.location = (parent_loc[0], parent_loc[1] - 0.365, parent_loc[2] + 0.75)
-    sc.collection.objects.link(door)
-    for x, z in ((-0.18, 0.45), (0.18, 0.45), (-0.18, 1.05), (0.18, 1.05)):
-        bme = bpy.data.meshes.new(f"Bolt{suffix}_{x}_{z}")
-        bbm = bmesh.new()
+    edge_mat = make_material(
+        "BoundaryEdge", (1.0, 0.25, 0.05), rough=0.35, metallic=0.0,
+        emit=(1.0, 0.35, 0.05), estr=2.8,
+    )
+    for i, (a, b) in enumerate(boundary):
+        mid = (a + b) * 0.5
+        direction = b - a
+        length = direction.length
+        if length < 1e-8:
+            continue
+        eme = bpy.data.meshes.new(f"Bnd{i}")
+        ebm = bmesh.new()
         try:
             bmesh.ops.create_cone(
-                bbm, cap_ends=True, segments=10, radius1=0.03, radius2=0.03, depth=0.04,
+                ebm, cap_ends=True, segments=6,
+                radius1=0.018, radius2=0.018, depth=length,
             )
-            bbm.to_mesh(bme)
+            ebm.to_mesh(eme)
         finally:
-            bbm.free()
-        bme.materials.append(bolt_m)
-        bob = bpy.data.objects.new(f"Bolt{suffix}_{x}_{z}", bme)
-        bob.location = (parent_loc[0] + x, parent_loc[1] - 0.39, parent_loc[2] + z)
-        sc.collection.objects.link(bob)
+            ebm.free()
+        eme.materials.append(edge_mat)
+        eob = bpy.data.objects.new(f"Bnd{i}", eme)
+        eob.location = Vector(ob.location) + mid
+        quat = direction.normalized().to_track_quat("Z", "Y")
+        eob.rotation_mode = "QUATERNION"
+        eob.rotation_quaternion = quat
+        sc.collection.objects.link(eob)
+
+    return metrics
 
 
-def placard(sc, text, loc):
+def placard(sc, text, loc, size=0.18):
     cu = bpy.data.curves.new(text, "FONT")
     cu.body = text
-    cu.size = 0.22
+    cu.size = size
     cu.align_x = "CENTER"
     ob = bpy.data.objects.new(text, cu)
     ob.location = loc
@@ -411,36 +460,67 @@ def placard(sc, text, loc):
 
 
 def render_still(clean_ob, path, engine):
-    """Dual-panel dirty (left) vs clean (right) — contract at a glance."""
+    """Dual-panel dirty vs clean — topology defects visible in the pixels.
+
+    DIRTY: camera-facing boundary hole + loose vert; overlays from audit data.
+    CLEAN: intact manifold. Same brass on both so color alone cannot carry proof.
+
+    Ngons / zero-area / full winding invert are check-proven but not staged
+    (see README) — they do not read as geometry at thumbnail scale without faking.
+    """
     sc = bpy.context.scene
     clean_ob.hide_render = True
     clean_ob.hide_viewport = True
 
-    left = _duplicate_mesh_obj(sc, clean_ob, "Dirty", (-1.35, 0.0, 0.0))
-    inject_defect(left.data, "boundary")
+    left = _duplicate_mesh_obj(sc, clean_ob, "Dirty", (-1.15, 0.0, 0.0))
+    left.rotation_euler.z = math.radians(22.5)
+    bpy.context.view_layer.update()
+    _inject_through_hole(left.data)
     inject_defect(left.data, "loose")
-    mark_defects(left)
-    add_door_dressing(sc, (-1.35, 0.0, 0.0), "Dirty")
+    mark_defects_from_audit(left)
 
-    right = _duplicate_mesh_obj(sc, clean_ob, "Clean", (1.35, 0.0, 0.0))
+    right = _duplicate_mesh_obj(sc, clean_ob, "Clean", (1.15, 0.0, 0.0))
+    right.rotation_euler.z = math.radians(-12)
     right.data.materials.clear()
     right.data.materials.append(
-        make_material("CleanSteel", (0.18, 0.42, 0.38), rough=0.42, metallic=0.55)
+        make_material("CleanBrass", (0.55, 0.38, 0.14), rough=0.38, metallic=0.85)
     )
-    add_door_dressing(sc, (1.35, 0.0, 0.0), "Clean")
+    for p in right.data.polygons:
+        p.use_smooth = abs(p.normal.z) < 0.85
 
-    placard(sc, "DIRTY", (-1.35, -0.85, 0.02))
-    placard(sc, "CLEAN", (1.35, -0.85, 0.02))
+    placard(sc, "DIRTY", (-1.15, -1.0, 0.02), size=0.15)
+    placard(sc, "CLEAN", (1.15, -1.0, 0.02), size=0.15)
 
     build_studio(sc)
+    # Lit card behind DIRTY so the through-hole voids read against warm light
+    card_me = bpy.data.meshes.new("HoleCard")
+    cbm = bmesh.new()
+    try:
+        bmesh.ops.create_grid(cbm, x_segments=1, y_segments=1, size=1.2)
+        cbm.to_mesh(card_me)
+    finally:
+        cbm.free()
+    card_mat = make_material(
+        "HoleCard", (1.0, 0.55, 0.25), rough=0.9, metallic=0.0,
+        emit=(1.0, 0.55, 0.2), estr=1.8,
+    )
+    card_me.materials.append(card_mat)
+    card = bpy.data.objects.new("HoleCard", card_me)
+    card.location = (-1.15, 1.4, 0.65)
+    card.rotation_euler = (math.radians(90), 0.0, 0.0)
+    sc.collection.objects.link(card)
+    for ob in sc.objects:
+        if ob.type == "LIGHT" and ob.name == "Wedge":
+            ob.data.energy = 580.0
+            ob.location = (0.0, 6.5, 3.5)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 48.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.55, -5.0, 1.55)
+    cam.location = (0.1, -5.6, 1.5)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.70)
+    aim.location = (0.0, 0.0, 0.62)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -469,7 +549,7 @@ def render_still(clean_ob, path, engine):
 
 def build_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    return bpy.context.scene, build_utility_pedestal()
+    return bpy.context.scene, build_street_valve()
 
 
 def main():
