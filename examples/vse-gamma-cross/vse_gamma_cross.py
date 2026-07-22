@@ -8,7 +8,7 @@ wrong: a GAMMA_CROSS between two strips is NOT the naive linear mix
 
 so the mid-cross dips below the sRGB lerp — from crimson (0.85, 0.10, 0.22)
 and teal (0.06, 0.75, 0.80) the midpoint is (0.341, 0.349, 0.463), a full
-0.114 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
+0.115 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
 check renders tiny frames across the cross and asserts every sample against
 the closed form, plus that the lerp deviation at mid is material.
 
@@ -38,13 +38,16 @@ PXW, PXH = 64, 36             # tiny per-sample renders, CI-safe like vse-cut-li
 Q_TOL = 5e-3                  # 2x the 8-bit quantization step + gamma-fit residual (measured 2.93e-3)
 LERP_MID_MIN = 0.05           # the gamma dip must be material at t=0.5
 
-# sample frames 1,5,9,...,29 -> t = 0, 1/8, ..., 7/8 exactly
-SAMPLES = [(1 + 4 * k, k / 8) for k in range(8)]
+# sample frames 1,5,9,...,29 -> t = 0, 1/8, ..., 7/8 exactly, plus the final
+# frame of the span: t = (duration-1)/duration — B never arrives inside the
+# effect, and that endpoint frame is rendered and asserted like the rest
+SAMPLES = [(1 + 4 * k, k / 8) for k in range(8)] + [(32, 31 / 32)]
 
 
 def strips_coll(se):
-    """The version-safe accessor: .strips everywhere, never .sequences."""
-    return se.strips if hasattr(se, "strips") else se.sequences
+    """The only accessor on both supported versions: .strips, never
+    .sequences — that rename is part of what this example witnesses."""
+    return se.strips
 
 
 def new_effect(coll, name, typ, ch, span, **kw):
@@ -182,12 +185,17 @@ def eevee_engine_id():
 
 
 def build_bench(sc, got):
-    """The mixing bench: the 8 authentic cross samples as emissive panels,
-    plus the naive lerp midpoint framed in hazard orange for contrast."""
+    """The mixing bench: the authentic fade as four large emissive panels
+    (t = 0, 1/4, 1/2, 3/4) above the contrast pair — the true mid swatch
+    directly beside the naive lerp mid at frame center, so the gamma dip
+    reads as an adjacency contrast even at card scale. A naive-lerp cross
+    would make the pair identical: the render visibly breaks with the
+    contract."""
     import bmesh
+    import mathutils
     import math as m
 
-    def panel(name, rgb, x, z, hot=False):
+    def panel(name, rgb, x, z, y=0.0, hot=False):
         mat = bpy.data.materials.new(f"Swatch{name}")
         mat.use_nodes = True
         nt = mat.node_tree
@@ -201,16 +209,18 @@ def build_bench(sc, got):
         bm = bmesh.new()
         try:
             bmesh.ops.create_cube(bm, size=1.0,
-                                  matrix=__import__("mathutils").Matrix.Diagonal(
-                                      (0.56, 0.10, 0.66, 1.0)))
+                                  matrix=mathutils.Matrix.Diagonal(
+                                      (1.5, 0.12, 1.65, 1.0)))
             bm.to_mesh(me)
         finally:
             bm.free()
         me.materials.append(mat)
         ob = bpy.data.objects.new(name, me)
-        ob.location = (x, 0.0, z)
+        ob.location = (x, y, z)
         sc.collection.objects.link(ob)
         if hot:
+            # hazard-orange backplate on the impostor: a broken (naive)
+            # cross would make the framed swatch match its neighbor
             frame_mat = bpy.data.materials.new("HotFrame")
             frame_mat.use_nodes = True
             fb = frame_mat.node_tree.nodes["Principled BSDF"]
@@ -220,25 +230,29 @@ def build_bench(sc, got):
             bm = bmesh.new()
             try:
                 bmesh.ops.create_cube(bm, size=1.0,
-                                      matrix=__import__("mathutils").Matrix.Diagonal(
-                                          (0.62, 0.06, 0.72, 1.0)))
+                                      matrix=mathutils.Matrix.Diagonal(
+                                          (1.64, 0.06, 1.79, 1.0)))
                 bm.to_mesh(fm)
             finally:
                 bm.free()
             fm.materials.append(frame_mat)
             fob = bpy.data.objects.new("Frame", fm)
-            fob.location = (x, 0.07, z)
+            fob.location = (x, y + 0.075, z)
             sc.collection.objects.link(fob)
 
-    # two rows: the authentic fade across the top, the naive mid below it,
-    # framed — the gamma dip is the visible contrast
-    xs = [(-2.17 + 0.62 * i) for i in range(8)]
-    for (f, _t), x in zip(SAMPLES, xs):
-        panel(f"t{_t}", got[f], x, z=1.85)
-    lerp_rgb = tuple(naive(0.5, k) for k in range(3))
-    panel("lerp_mid", lerp_rgb, 0.45, z=0.90, hot=True)
+    by_t = {t: f for f, t in SAMPLES}
+    # the authentic fade across the top, left to right
+    top = [(0.0, "t=0"), (0.25, "t=1/4"), (0.5, "t=1/2"), (0.75, "t=3/4")]
+    top_xs = [-2.775 + 1.85 * i for i in range(4)]
+    for (t, _label), x in zip(top, top_xs):
+        panel(f"t{t}", got[by_t[t]], x, z=3.25)
+    # the contrast pair at frame center: true mid beside the naive mid
+    panel("true_mid", got[by_t[0.5]], -0.80, z=1.40, y=-0.30)
+    panel("naive_mid", tuple(naive(0.5, k) for k in range(3)),
+          0.80, z=1.40, y=-0.30, hot=True)
 
-    # captions
+    # captions: t-labels crown the fade row; the pair is named on the
+    # plinth face, facing the camera (a floor caption foreshortens away)
     cu_mat = bpy.data.materials.new("CaptionGrey")
     cu_mat.use_nodes = True
     cb = cu_mat.node_tree.nodes["Principled BSDF"]
@@ -246,35 +260,25 @@ def build_bench(sc, got):
     cb.inputs["Metallic"].default_value = 0.2
     cb.inputs["Roughness"].default_value = 0.6
     sock = cb.inputs.get("Emission Color") or cb.inputs["Emission"]
-    sock.default_value = (0.35, 0.37, 0.42, 1.0)
-    cb.inputs["Emission Strength"].default_value = 0.6
+    sock.default_value = (0.38, 0.40, 0.45, 1.0)
+    cb.inputs["Emission Strength"].default_value = 0.45
 
-    def caption(text, x, z):
+    def caption(text, x, z, y=-0.09, size=0.16):
         cu = bpy.data.curves.new("Caption", 'FONT')
         cu.body = text
         cu.align_x = 'CENTER'
-        cu.size = 0.14
+        cu.size = size
         cu.extrude = 0.004
         ob = bpy.data.objects.new("Caption", cu)
-        ob.location = (x, -0.09, z)
+        ob.location = (x, y, z)
         ob.rotation_euler = (m.radians(90), 0.0, 0.0)
         ob.data.materials.append(cu_mat)
         sc.collection.objects.link(ob)
 
-    caption("GAMMA_CROSS", 0.0, 2.45)
-    caption("t=0", -2.50, 1.40)
-    caption("t=1/2", 0.02, 1.40)
-    caption("t=7/8", 2.54, 1.40)
-    # on the floor in front of the console, facing up like the arc plaques
-    cu = bpy.data.curves.new("Caption", 'FONT')
-    cu.body = "NAIVE LERP t=1/2"
-    cu.align_x = 'CENTER'
-    cu.size = 0.14
-    cu.extrude = 0.004
-    ob = bpy.data.objects.new("Caption", cu)
-    ob.location = (0.45, -0.75, 0.01)
-    ob.data.materials.append(cu_mat)
-    sc.collection.objects.link(ob)
+    for (_t, label), x in zip(top, top_xs):
+        caption(label, x, 4.22)
+    caption("GAMMA_CROSS t=1/2", -0.80, 0.23, y=-0.46, size=0.15)
+    caption("NAIVE LERP t=1/2", 0.80, 0.23, y=-0.46, size=0.15)
 
 
 def render_still(sc, got, path, engine):
@@ -282,12 +286,13 @@ def render_still(sc, got, path, engine):
     build_bench(scene, got)
 
     import mathutils, bmesh
-    console_me = bpy.data.meshes.new("Console")
+    # a low plinth shelf grounds the bench without eating the frame
+    plinth_me = bpy.data.meshes.new("Plinth")
     bm2 = bmesh.new()
     try:
         bmesh.ops.create_cube(bm2, size=1.0,
-                              matrix=mathutils.Matrix.Diagonal((5.6, 0.9, 0.5, 1.0)))
-        bm2.to_mesh(console_me)
+                              matrix=mathutils.Matrix.Diagonal((6.9, 1.3, 0.45, 1.0)))
+        bm2.to_mesh(plinth_me)
     finally:
         bm2.free()
     cmat = bpy.data.materials.new("ConsoleMetal")
@@ -296,13 +301,12 @@ def render_still(sc, got, path, engine):
     cc.inputs["Base Color"].default_value = (0.07, 0.08, 0.09, 1.0)
     cc.inputs["Metallic"].default_value = 0.7
     cc.inputs["Roughness"].default_value = 0.5
-    console_me.materials.append(cmat)
-    console = bpy.data.objects.new("Console", console_me)
-    console.location = (0.0, 0.15, 0.25)
-    scene.collection.objects.link(console)
+    plinth_me.materials.append(cmat)
+    plinth = bpy.data.objects.new("Plinth", plinth_me)
+    plinth.location = (0.0, 0.2, 0.225)
+    scene.collection.objects.link(plinth)
 
     floor_me = bpy.data.meshes.new("Floor")
-    import bmesh
     bm = bmesh.new()
     try:
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
@@ -327,28 +331,30 @@ def render_still(sc, got, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, target):
         ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        d = mathutils.Vector(target) - ob.location
+        ob.rotation_euler = d.to_track_quat('-Z', 'Y').to_euler()
         scene.collection.objects.link(ob)
 
-    # shaped warm key, faint cool fill, cool rim, warm wedge on the back wall
-    # (docs/VISUAL-STYLE.md)
-    light("Key", (-4.0, -5.0, 6.0), 500.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
-    light("Fill", (5.0, -4.0, 3.0), 90.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
-    light("Rim", (0.5, 4.5, 5.0), 300.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
-    light("Wedge", (2.5, 3.5, 4.2), 460.0, 6.0, (1.0, 0.76, 0.5), (-72, 0, 195))
+    # shaped warm key, faint cool fill, cool rim, and the signature warm
+    # wedge between bench and wall raking a pool onto the backdrop — the
+    # wall itself stays near-black outside the pool (docs/VISUAL-STYLE.md)
+    light("Key", (-4.0, -4.0, 6.5), 420.0, 4.0, (1.0, 0.96, 0.9), (0.0, 0.0, 1.8))
+    light("Fill", (5.0, -3.5, 2.5), 80.0, 9.0, (0.75, 0.85, 1.0), (0.5, 0.0, 1.6))
+    light("Rim", (0.5, 4.0, 6.0), 260.0, 4.0, (0.6, 0.78, 1.0), (0.0, 0.0, 2.6))
+    light("Wedge", (1.2, 5.0, 4.5), 340.0, 5.0, (1.0, 0.76, 0.5), (-0.2, 9.0, 1.2))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.3, -9.2, 2.5)
+    cam.location = (0.7, -13.0, 3.4)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.15, 0.0, 1.35)
+    target.location = (0.0, 0.0, 2.15)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
