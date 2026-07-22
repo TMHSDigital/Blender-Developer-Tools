@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>soccer-ball-goldberg — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/soccer-ball-goldberg/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="soccer-ball-goldberg — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/soccer-ball-goldberg/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/soccer-ball-goldberg-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="soccer-ball-goldberg — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/soccer-ball-goldberg-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>soccer-ball-goldberg</h1>
+    <p>A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom soccer-ball-goldberg render">
+      <img src="../assets/soccer-ball-goldberg-hero.webp" alt="soccer-ball-goldberg render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Goldberg invariants are closed forms — counts, degree 3, uniform edges, planar faces, one circumsphere — and panels bind by vertex count, never enumeration order.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a soccer ball as a <strong>Goldberg polyhedron</strong>: a bmesh icosphere truncated at exactly 1/3 of every edge, yielding the truncated icosahedron — 12 pentagons, 20 hexagons — with every face ordered by walking the source mesh&#x27;s own link topology (fan walk per vertex, loop order per triangle). Nothing is hand-listed, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/always-free-bmesh.mdc"><code>always-free-bmesh</code></a> rule.</p>
+<p><strong>Sibling, not twin:</strong> <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a> witnesses parametric extrusion ownership (counts from construction parameters, watertightness). This witnesses polyhedral topology invariants — the truncated icosahedron is an Archimedean solid, so its counts, vertex degree, edge uniformity, face planarity, and circumsphere are all closed forms — plus <strong>per-face-class material binding</strong> driven by face vertex count, never by enumeration order.</p>
+<p><strong>What it witnesses:</strong> truncation at 1/3 makes every new edge the same length (<code>a/3</code>), which is what puts all 60 vertices on one sphere. The check asserts, with tolerances printed on success:</p>
+<ul><li><strong>Counts and characteristic.</strong> V=60, E=90, F=32, Euler <code>V−E+F==2</code> — the sphere topology. Catches a leaked or dropped face/edge/vertex (probe: one face deleted → exit 3, topology <code>(60, 90, 31)</code>).</li><li><strong>Face census.</strong> Exactly 12 five-sided and 20 six-sided faces (exit 5).</li><li><strong>Uniform degree 3.</strong> Every vertex touches exactly three edges, and every edge borders exactly two faces — the Goldberg dual property, watertight (exit 6/7).</li><li><strong>Edge uniformity.</strong> Max deviation from the mean length, measured <strong>6.471e-06</strong> against tol 3.0e-05 (exit 8). Catches a vertex dragged off the lattice (probe: one vertex shifted 0.05 → exit 8, deviation <strong>4.726e-02</strong>, three orders of magnitude over tolerance).</li><li><strong>Face planarity.</strong> Worst vertex-to-plane distance <strong>1.888e-06</strong> against the same tolerance, measured against an independent Newell normal — not Blender&#x27;s polygon normal (exit 9).</li><li><strong>Circumsphere.</strong> Centroid on the origin (<code>0.000e+00</code>, tol 1e-6) and every vertex equidistant from it: max deviation <strong>8.956e-06</strong> (exit 10/11).</li><li><strong>Panel binding by class.</strong> Exactly two materials; every 5-gon carries slot 1 (black), every 6-gon slot 0 (white). The builder assigns by <code>len(poly.vertices)</code>, and the check re-derives the expectation the same way — so an enumeration-order shortcut fails (probe: last-12-faces-black → exit 13, <strong>24 misbound faces</strong>; inverted classes → exit 13, <strong>32 misbound</strong>). Enumeration order coinciding with class order is a construction artifact, not a contract — the check exists for the cases where it doesn&#x27;t.</li></ul>
+<p><strong>Tolerance basis:</strong> mesh coordinates are float32 and <code>create_icosphere</code>&#x27;s own trig lands the invariants at a deterministic ~9e-6 noise floor (measured values are byte-identical on 4.5.11 and 5.1.2). The 3e-5 gates sit ~3x above that floor; any genuine contract break is orders of magnitude larger.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same deviations. One authoring hazard surfaced and is noted in the code: <code>Object.to_mesh_clear()</code> takes <strong>no argument</strong> on current Blender (passing the mesh raises TypeError) — see <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
+<p>The render is the proof: the faceted Goldberg cage is smoothed by an <strong>unapplied</strong> Subsurf modifier (panel materials carry through Catmull-Clark per face class), and the ball is grounded by its depsgraph-evaluated lowest vertex — center-at-circumradius floats the ball, because the smoothed surface sinks toward the face inradii. Invert the panel binding and the still inverts with it: white pentagons on a black ball, wrong on sight.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python soccer_ball_goldberg.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python soccer_ball_goldberg.py -- --output ball.png
+blender --background --python soccer_ball_goldberg.py -- --output ball.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (topology, census, degree, edge uniformity, planarity, circumsphere, or panel binding). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/soccer-ball-goldberg/soccer_ball_goldberg.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/soccer-ball-goldberg/soccer_ball_goldberg.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A soccer ball built as a Goldberg polyhedron with bmesh — a runnable example.
+
+A truncated icosahedron (12 pentagons, 20 hexagons) derived by cutting every
+edge of a bmesh icosphere at exactly 1/3, with the pentagon/hexagon faces
+ordered by walking the source mesh&#x27;s own link topology — nothing is
+hand-listed. Distinct from bmesh-gear (which witnesses parametric extrusion
+ownership): this witnesses *polyhedral topology invariants* — the closed-form
+counts, Euler characteristic, uniform degree, uniform edge length, face
+planarity, and a common circumsphere — plus per-face-class material binding
+driven by face vertex count, never by enumeration order.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python soccer_ball_goldberg.py --                 # check only
+    blender --background --python soccer_ball_goldberg.py -- --output b.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+<span class="c"># truncation parameter: cutting each icosahedron edge at 1/3 makes every new</span>
+<span class="c"># edge the same length (a/3), which is what makes the result an Archimedean</span>
+<span class="c"># solid with a circumsphere at all</span>
+TRUNC_T = <span class="n">1.0</span> / <span class="n">3.0</span>
+BALL_RADIUS = <span class="n">1.15</span>          <span class="c"># normalized circumradius after truncation</span>
+<span class="c"># Tolerances: mesh coordinates are float32, and create_icosphere&#x27;s own trig</span>
+<span class="c"># lands the Goldberg invariants at a deterministic noise floor (~9e-6 here,</span>
+<span class="c"># byte-identical on 4.5.11 and 5.1.2). The 3e-5 gates sit ~3x above that</span>
+<span class="c"># floor; a genuine contract break (wrong cut, shifted vertex, bad binding)</span>
+<span class="c"># produces errors of 1e-2 or larger, so the margin costs no sensitivity.</span>
+TOL_LEN = <span class="n">3.0e-5</span>            <span class="c"># edge-length uniformity</span>
+TOL_PLANAR = <span class="n">3.0e-5</span>         <span class="c"># face planarity (max vertex-to-plane distance)</span>
+TOL_RADIUS = <span class="n">3.0e-5</span>         <span class="c"># circumsphere uniformity</span>
+TOL_CENTER = <span class="n">1.0e-6</span>         <span class="c"># centroid at origin</span>
+
+<span class="c"># closed forms for a truncated icosahedron (Goldberg polyhedron GP(1,1))</span>
+EXPECT_V, EXPECT_E, EXPECT_F = <span class="n">60</span>, <span class="n">90</span>, <span class="n">32</span>
+EXPECT_PENTS, EXPECT_HEXES = <span class="n">12</span>, <span class="n">20</span>
+EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every vertex touches exactly three faces</span>
+
+
+<span class="k">def</span> _fan_edges(bv):
+    <span class="s">&quot;&quot;&quot;Link edges of an icosphere vertex ordered circularly around it.
+
+    BMVert.link_edges is unordered, so walk the manifold fan: each step
+    crosses the link face that shares the current edge, to the face&#x27;s other
+    edge touching bv. A non-manifold vertex breaks the walk — which is
+    itself a signal the source topology is not the icosphere we require.
+    &quot;&quot;&quot;</span>
+    first = list(bv.link_edges)[<span class="n">0</span>]
+    ordered = [first]
+    prev_face, current = <span class="k">None</span>, first
+    <span class="k">while</span> <span class="k">True</span>:
+        <span class="c"># first step: either link face starts the walk; after that, cross to</span>
+        <span class="c"># the face that is not the one we came from</span>
+        shared = ([current.link_faces[<span class="n">0</span>]] <span class="k">if</span> prev_face <span class="k">is</span> <span class="k">None</span>
+                  <span class="k">else</span> [f <span class="k">for</span> f <span class="k">in</span> current.link_faces <span class="k">if</span> f <span class="k">is</span> <span class="k">not</span> prev_face])
+        <span class="k">if</span> len(shared) != <span class="n">1</span>:
+            <span class="k">raise</span> RuntimeError(<span class="s">&quot;fan walk hit a non-manifold edge&quot;</span>)
+        face = shared[<span class="n">0</span>]
+        cand = [e <span class="k">for</span> e <span class="k">in</span> face.edges <span class="k">if</span> e <span class="k">is</span> <span class="k">not</span> current <span class="k">and</span> bv <span class="k">in</span> e.verts]
+        <span class="k">if</span> len(cand) != <span class="n">1</span>:
+            <span class="k">raise</span> RuntimeError(<span class="s">&quot;fan walk found no continuation edge&quot;</span>)
+        nxt = cand[<span class="n">0</span>]
+        <span class="k">if</span> nxt <span class="k">is</span> first:
+            <span class="k">return</span> ordered
+        ordered.append(nxt)
+        prev_face, current = face, nxt
+
+
+<span class="k">def</span> build_ball():
+    <span class="s">&quot;&quot;&quot;Truncate a bmesh icosphere at 1/3 per edge into the Goldberg ball.
+
+    The icosphere is the topology source: cut points are computed per edge,
+    pentagons are ordered by the fan walk around each source vertex, and
+    hexagons by each source face&#x27;s loop order. Face winding is normalized
+    once at the end with recalc_face_normals on the closed solid.
+    &quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+
+    src = bmesh.new()
+    ball = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_icosphere(src, subdivisions=<span class="n">1</span>, radius=<span class="n">1.0</span>)
+        src.verts.ensure_lookup_table()
+        src.edges.ensure_lookup_table()
+
+        <span class="c"># two cut points per source edge, keyed so the &quot;near&quot; point for</span>
+        <span class="c"># either endpoint is retrievable without edge-orientation guessing</span>
+        cut = {}
+        <span class="k">for</span> e <span class="k">in</span> src.edges:
+            a, b = e.verts
+            i, j = sorted((a.index, b.index))
+            pa = a.co + (b.co - a.co) * TRUNC_T        <span class="c"># near a</span>
+            pb = a.co + (b.co - a.co) * (<span class="n">2.0</span> * TRUNC_T)  <span class="c"># near b</span>
+            cut[(i, j)] = (pa, pb) <span class="k">if</span> a.index == i <span class="k">else</span> (pb, pa)
+
+        <span class="c"># each cut point is shared by exactly one pentagon and one hexagon,</span>
+        <span class="c"># so verts are created once and reused — duplicating them per face</span>
+        <span class="c"># would leave 180 loose vertices instead of the 60-vertex closed solid</span>
+        bvert = {}
+
+        <span class="k">def</span> near(i, j):
+            <span class="s">&quot;&quot;&quot;Ball vertex on edge (i,j) at the cut nearest source vertex i.&quot;&quot;&quot;</span>
+            key = (min(i, j), max(i, j), i)
+            <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> bvert:
+                pa, pb = cut[(key[<span class="n">0</span>], key[<span class="n">1</span>])]
+                bvert[key] = ball.verts.new(pa <span class="k">if</span> i &lt; j <span class="k">else</span> pb)
+            <span class="k">return</span> bvert[key]
+
+        <span class="c"># 12 pentagons: one per source vertex, from the fan-walked link edges</span>
+        <span class="k">for</span> v <span class="k">in</span> src.verts:
+            ring = [near(v.index, e.other_vert(v).index) <span class="k">for</span> e <span class="k">in</span> _fan_edges(v)]
+            ball.faces.new(ring)
+
+        <span class="c"># 20 hexagons: one per source triangle, in loop order</span>
+        <span class="k">for</span> f <span class="k">in</span> src.faces:
+            i0, i1, i2 = (v.index <span class="k">for</span> v <span class="k">in</span> f.verts)
+            ring = [
+                near(i0, i1), near(i1, i0),
+                near(i1, i2), near(i2, i1),
+                near(i2, i0), near(i0, i2),
+            ]
+            ball.faces.new(ring)
+
+        bmesh.ops.recalc_face_normals(ball, faces=ball.faces)
+
+        <span class="c"># normalize scale: the solid is centered at the origin by symmetry,</span>
+        <span class="c"># so scale the mean circumradius to the target ball radius</span>
+        ball.verts.ensure_lookup_table()
+        r_mean = sum(v.co.length <span class="k">for</span> v <span class="k">in</span> ball.verts) / len(ball.verts)
+        bmesh.ops.scale(ball, vec=(BALL_RADIUS / r_mean,) * <span class="n">3</span>, verts=ball.verts)
+
+        me = bpy.data.meshes.new(<span class="s">&quot;SoccerBall&quot;</span>)
+        ball.to_mesh(me)
+    <span class="k">finally</span>:
+        src.free()
+        ball.free()  <span class="c"># the ownership contract from always-free-bmesh</span>
+
+    obj = bpy.data.objects.new(<span class="s">&quot;SoccerBall&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+
+    <span class="c"># the two panel materials exist in both modes — the binding is part of</span>
+    <span class="c"># the contract the check reads, not a render-only decoration</span>
+    white = bpy.data.materials.new(<span class="s">&quot;PanelWhite&quot;</span>)
+    black = bpy.data.materials.new(<span class="s">&quot;PanelBlack&quot;</span>)
+    me.materials.append(white)   <span class="c"># slot 0: hexagons</span>
+    me.materials.append(black)   <span class="c"># slot 1: pentagons</span>
+
+    <span class="c"># bound by face CLASS (vertex count), never by enumeration order: a</span>
+    <span class="c"># builder that assigns &quot;first 12 faces black&quot; passes only by luck of</span>
+    <span class="c"># bmesh face ordering, and the check below must catch it</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.material_index = <span class="n">1</span> <span class="k">if</span> len(poly.vertices) == <span class="n">5</span> <span class="k">else</span> <span class="n">0</span>
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> _newell(points):
+    <span class="s">&quot;&quot;&quot;Independent Newell normal for a polygon ring (no Blender normal used).&quot;&quot;&quot;</span>
+    nx = ny = nz = <span class="n">0.0</span>
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(points):
+        q = points[(i + <span class="n">1</span>) % len(points)]
+        nx += (p.y - q.y) * (p.z + q.z)
+        ny += (p.z - q.z) * (p.x + q.x)
+        nz += (p.x - q.x) * (p.y + q.y)
+    n = math.sqrt(nx * nx + ny * ny + nz * nz)
+    <span class="k">return</span> (nx / n, ny / n, nz / n)
+
+
+<span class="k">def</span> check(obj):
+    me = obj.data
+
+    got = (len(me.vertices), len(me.edges), len(me.polygons))
+    <span class="k">if</span> got != (EXPECT_V, EXPECT_E, EXPECT_F):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: topology </span>{got}<span class="s"> != expected </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{(EXPECT_V, EXPECT_E, EXPECT_F)}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    euler = got[<span class="n">0</span>] - got[<span class="n">1</span>] + got[<span class="n">2</span>]
+    <span class="k">if</span> euler != <span class="n">2</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: Euler characteristic </span>{euler}<span class="s"> != 2 — not a sphere topology</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    census = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        census[len(p.vertices)] = census.get(len(p.vertices), <span class="n">0</span>) + <span class="n">1</span>
+    <span class="k">if</span> census != {<span class="n">5</span>: EXPECT_PENTS, <span class="n">6</span>: EXPECT_HEXES}:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: face census </span>{census}<span class="s"> != {</span>{<span class="s">5: </span>{EXPECT_PENTS}<span class="s">, 6: </span>{EXPECT_HEXES}<span class="s">}</span>}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">5</span>
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        degrees = [len(v.link_edges) <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        deg_min, deg_max = min(degrees), max(degrees)
+        <span class="k">if</span> deg_min != EXPECT_DEGREE <span class="k">or</span> deg_max != EXPECT_DEGREE:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: vertex degree spans </span>{deg_min}<span class="s">..</span>{deg_max}<span class="s">, </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">expected uniform </span>{EXPECT_DEGREE}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        bad_edges = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
+        <span class="k">if</span> bad_edges:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{bad_edges}<span class="s"> edge(s) do not border exactly 2 faces</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+    <span class="k">finally</span>:
+        bm.free()
+
+    lengths = [(me.vertices[e.vertices[<span class="n">0</span>]].co - me.vertices[e.vertices[<span class="n">1</span>]].co).length
+               <span class="k">for</span> e <span class="k">in</span> me.edges]
+    l_mean = sum(lengths) / len(lengths)
+    l_dev = max(abs(l - l_mean) <span class="k">for</span> l <span class="k">in</span> lengths)
+    <span class="k">if</span> l_dev &gt; TOL_LEN:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: edge lengths deviate </span>{l_dev:<span class="s">.3e</span>}<span class="s"> from mean </span>{l_mean:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_LEN:<span class="s">.1e</span>}<span class="s">) — not a uniform truncation</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+
+    worst_planar = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> p.vertices]
+        n = _newell(pts)
+        cx = sum(v.x <span class="k">for</span> v <span class="k">in</span> pts) / len(pts)
+        cy = sum(v.y <span class="k">for</span> v <span class="k">in</span> pts) / len(pts)
+        cz = sum(v.z <span class="k">for</span> v <span class="k">in</span> pts) / len(pts)
+        d = max(abs((v.x - cx) * n[<span class="n">0</span>] + (v.y - cy) * n[<span class="n">1</span>] + (v.z - cz) * n[<span class="n">2</span>])
+                <span class="k">for</span> v <span class="k">in</span> pts)
+        worst_planar = max(worst_planar, d)
+    <span class="k">if</span> worst_planar &gt; TOL_PLANAR:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: face planarity worst </span>{worst_planar:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_PLANAR:<span class="s">.1e</span>}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+
+    cx = sum(v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices) / EXPECT_V
+    cy = sum(v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices) / EXPECT_V
+    cz = sum(v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices) / EXPECT_V
+    center_off = math.sqrt(cx * cx + cy * cy + cz * cz)
+    <span class="k">if</span> center_off &gt; TOL_CENTER:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: centroid off origin by </span>{center_off:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_CENTER:<span class="s">.1e</span>}<span class="s">)</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
+    radii = [math.sqrt((v.co.x - cx) ** <span class="n">2</span> + (v.co.y - cy) ** <span class="n">2</span> + (v.co.z - cz) ** <span class="n">2</span>)
+             <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    r_mean = sum(radii) / len(radii)
+    r_dev = max(abs(r - r_mean) <span class="k">for</span> r <span class="k">in</span> radii)
+    <span class="k">if</span> r_dev &gt; TOL_RADIUS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: circumradius deviates </span>{r_dev:<span class="s">.3e</span>}<span class="s"> from </span>{r_mean:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_RADIUS:<span class="s">.1e</span>}<span class="s">) — vertices not on one sphere</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">11</span>
+
+    <span class="k">if</span> len(me.materials) != <span class="n">2</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: expected 2 panel materials, found </span>{len(me.materials)}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    misbound = [p.index <span class="k">for</span> p <span class="k">in</span> me.polygons
+                <span class="k">if</span> p.material_index != (<span class="n">1</span> <span class="k">if</span> len(p.vertices) == <span class="n">5</span> <span class="k">else</span> <span class="n">0</span>)]
+    <span class="k">if</span> misbound:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(misbound)}<span class="s"> face(s) carry the wrong panel material for </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">their class (first: </span>{misbound[<span class="n">0</span>]}<span class="s">) — binding must follow vertex </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">count, not enumeration order</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">13</span>
+
+    print(<span class="s">f&quot;</span><span class="s">V=</span>{got[<span class="n">0</span>]}<span class="s"> E=</span>{got[<span class="n">1</span>]}<span class="s"> F=</span>{got[<span class="n">2</span>]}<span class="s"> euler=2 census=12x5+20x6 </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">degree=</span>{deg_min}<span class="s">..</span>{deg_max}<span class="s"> watertight=True</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">edge_len mean=</span>{l_mean:<span class="s">.6f</span>}<span class="s"> max_dev=</span>{l_dev:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_LEN:<span class="s">.1e</span>}<span class="s">) | </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">planarity max=</span>{worst_planar:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_PLANAR:<span class="s">.1e</span>}<span class="s">)</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">circumradius mean=</span>{r_mean:<span class="s">.6f</span>}<span class="s"> max_dev=</span>{r_dev:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_RADIUS:<span class="s">.1e</span>}<span class="s">) | </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">centroid_off=</span>{center_off:<span class="s">.3e</span>}<span class="s"> | panels bound by vertex count (12 black </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">pentagons, 20 white hexagons)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> _panel_materials(obj):
+    <span class="s">&quot;&quot;&quot;Leather finishes for the two panel classes (render path only).&quot;&quot;&quot;</span>
+    white, black = obj.data.materials
+    white.use_nodes = <span class="k">True</span>
+    wb = white.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    wb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.82</span>, <span class="n">0.82</span>, <span class="n">0.84</span>, <span class="n">1.0</span>)
+    wb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.52</span>
+    black.use_nodes = <span class="k">True</span>
+    bb = black.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.018</span>, <span class="n">0.02</span>, <span class="n">0.024</span>, <span class="n">1.0</span>)
+    bb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.48</span>
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    me = obj.data
+    _panel_materials(obj)
+
+    <span class="c"># the check reads the base mesh; the still adds an UNAPPLIED Subsurf so</span>
+    <span class="c"># the faceted Goldberg cage reads as an inflated ball. Panel materials</span>
+    <span class="c"># carry through Catmull-Clark per face class, so a misbound panel would</span>
+    <span class="c"># still show in the image.</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    sub = obj.modifiers.new(<span class="s">&quot;Inflate&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>)
+    sub.subdivision_type = <span class="s">&#x27;CATMULL_CLARK&#x27;</span>
+    sub.levels = <span class="n">2</span>
+    sub.render_levels = <span class="n">2</span>
+
+    <span class="c"># a pentagon sits on the icosphere +Z pole; tip it toward the camera and</span>
+    <span class="c"># spin for an asymmetric, match-worn panel layout</span>
+    obj.rotation_euler = (math.radians(<span class="n">58.0</span>), math.radians(<span class="n">8.0</span>), math.radians(<span class="n">31.0</span>))
+
+    <span class="c"># rest the ball on the floor by its EVALUATED lowest point, not the</span>
+    <span class="c"># cage circumradius: the subsurf surface sinks toward the face inradii,</span>
+    <span class="c"># so center-at-RADIUS floats the ball visibly above the floor</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, BALL_RADIUS)
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    ev_me = ev.to_mesh()
+    <span class="k">try</span>:
+        min_z = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> ev_me.vertices)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()  <span class="c"># no argument: clears this object&#x27;s evaluated mesh</span>
+    obj.location.z -= min_z - <span class="n">0.002</span>  <span class="c"># 2 mm contact: grounded, not intersecting</span>
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># default-stage rig per docs/VISUAL-STYLE.md; the white leather caps the</span>
+    <span class="c"># key energy so the pentagons&#x27; white neighbors never clip</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">500.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">3.0</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">155</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">55.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.2</span>, <span class="n">3.8</span>)
+    cam.rotation_euler = (math.radians(<span class="n">68</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would wash the white leather toward grey and lift the stage</span>
+    <span class="c"># (docs/VISUAL-STYLE.md); Standard is the house transform</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    obj = build_ball()
+    code = check(obj)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;soccer-ball-goldberg OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/soccer-ball-goldberg-hero.webp" alt="soccer-ball-goldberg render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

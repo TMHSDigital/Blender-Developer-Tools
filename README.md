@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>36 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>37 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 36 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 37 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -699,6 +699,26 @@ engine ingest: data-API scale bake to exactly `(1,1,1)`, local bbox
 Extends [`parent-inverse-orrery`](examples/parent-inverse-orrery/) without
 retreading orbits. Dual-panel still: TRAP (bare parent — empty socket +
 teleported flange) vs MPI KEEP.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/soccer-ball-goldberg/"><img src="examples/soccer-ball-goldberg/preview.webp" alt="Soccer ball Goldberg: a white soccer ball with black pentagon panels on a dark studio floor — a bmesh icosphere truncated at one-third per edge into the Goldberg polyhedron, proving closed-form counts, uniform degree, equal edges, planar faces, one circumsphere, and panels bound by face vertex count" /></a>
+</td>
+<td valign="middle">
+
+### [soccer-ball-goldberg](examples/soccer-ball-goldberg/)
+
+The truncated icosahedron as a bmesh contract: every icosphere edge cut at
+exactly `1/3`, faces ordered by link-topology walks (nothing hand-listed),
+and every invariant asserted as a closed form — `60/90/32`, Euler 2, uniform
+degree 3, edge lengths within 3e-5, planar faces against an independent
+Newell normal, one circumsphere, and the black pentagons / white hexagons
+bound by face vertex count, never enumeration order. Sibling to
+[`bmesh-gear`](examples/bmesh-gear/) (parametric extrusion): this one
+witnesses polyhedral invariants plus per-face-class material binding. The
+smoothed render inverts on sight if the panel binding does.
 
 </td>
 </tr>

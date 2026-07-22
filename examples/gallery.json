@@ -445,6 +445,18 @@
         "parenting",
         "game-pipeline"
       ]
+    },
+    {
+      "name": "soccer-ball-goldberg",
+      "dir": "examples/soccer-ball-goldberg",
+      "teaches": "A soccer ball as a Goldberg polyhedron: a bmesh icosphere truncated at 1/3 per edge, faces ordered by link-topology walks, panels bound by face vertex count.",
+      "witnessesFix": "Goldberg invariants are closed forms — counts, degree 3, uniform edges, planar faces, one circumsphere — and panels bind by vertex count, never enumeration order.",
+      "hero": "docs/gallery/assets/soccer-ball-goldberg-hero.webp",
+      "preview": "examples/soccer-ball-goldberg/preview.webp",
+      "tags": [
+        "bmesh",
+        "mesh"
+      ]
     }
   ]
 }
