@@ -191,8 +191,10 @@
     <button class="chip" data-tag="grease-pencil" type="button">grease-pencil</button>
     <button class="chip" data-tag="images" type="button">images</button>
     <button class="chip" data-tag="instancing" type="button">instancing</button>
+    <button class="chip" data-tag="line-art" type="button">line-art</button>
     <button class="chip" data-tag="materials" type="button">materials</button>
     <button class="chip" data-tag="mesh" type="button">mesh</button>
+    <button class="chip" data-tag="modifiers" type="button">modifiers</button>
     <button class="chip" data-tag="node-groups" type="button">node-groups</button>
     <button class="chip" data-tag="objects" type="button">objects</button>
     <button class="chip" data-tag="operators" type="button">operators</button>
@@ -569,6 +571,17 @@
           <p class="teaches">World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25).</p>
           <p class="witnesses"><span class="tag">witnesses</span> AI code still assigns sky_type=&#x27;NISHITA&#x27; and dust_density on 5.1 — both are wrong (NISHITA removed; dust_density is AttributeError; use MULTIPLE_SCATTERING + aerosol_density). A near-black Background Strength alone is not a sky: Sky must link into Background Color. Elevation that does not brighten zenith fails the rise gate.</p>
           <a class="card-link" href="sky-texture-sun-elevation/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="grease-pencil line-art modifiers">
+        <a class="card-media" href="gp-lineart-contour/" aria-label="gp-lineart-contour example detail page">
+          <img src="assets/gp-lineart-contour-hero.webp" alt="gp-lineart-contour — Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gp-lineart-contour/">gp-lineart-contour</a></h2>
+          <p class="teaches">Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</p>
+          <a class="card-link" href="gp-lineart-contour/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

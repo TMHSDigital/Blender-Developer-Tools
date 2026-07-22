@@ -287,6 +287,17 @@ jobs:
           xvfb-run -a "$BLENDER" --background \
             --python examples/grease-pencil-rosette/grease_pencil_rosette.py --
 
+      - name: Shipped example - gp line art contour (LINEART modifier + thickness trap)
+        run: |
+          set -euo pipefail
+          # Check only (no render): GPv3 object + LINEART modifier; asserts
+          # source_object is load-bearing (clear → 0 strokes), contour+crease
+          # off → 0, restore recovers silhouette strokes, and thickness is
+          # 4.5-only (AttributeError on 5.1; portable path is radius).
+          # Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gp-lineart-contour/gp_lineart_contour.py --
+
       - name: Shipped example - armature bend (edit_bones + LBS closed form)
         run: |
           set -euo pipefail
