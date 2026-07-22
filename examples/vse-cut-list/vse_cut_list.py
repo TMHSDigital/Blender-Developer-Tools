@@ -46,6 +46,11 @@ tiny render (cell colors and input consumption), the way CI does:
 import bpy, sys, os, math, argparse, tempfile, warnings, shutil
 import mathutils
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 IS_5X = bpy.app.version >= (5, 0, 0)
 
 # Closed-form cut list, end-exclusive [start, end) spans on the timeline.
@@ -511,10 +516,12 @@ def render_bay(sc, path, engine, w, h):
     cam_data = bpy.data.cameras.new("BayCam")
     cam_data.lens = 52.0
     cam = bpy.data.objects.new("BayCam", cam_data)
-    cam.location = (2.0, -5.2, 1.72)
+    # Pulled back from (2.0, -5.2, 1.72) so the bezel top and desk base
+    # clear the frame edges (framing gate on the Bay scene).
+    cam.location = (3.05, -7.9, 2.0)
     sc.collection.objects.link(cam)
     target = bpy.data.objects.new("BayAim", None)
-    target.location = (0.0, 0.0, 1.28)
+    target.location = (0.0, 0.0, 1.20)
     sc.collection.objects.link(target)
     con = cam.constraints.new("TRACK_TO")
     con.target = target
@@ -536,8 +543,27 @@ def render_bay(sc, path, engine, w, h):
     sc.render.filepath = path
     # Standard keeps both the stage saturated and the on-screen frame true
     sc.view_settings.view_transform = "Standard"
+    # Layer 1 framing gate (silhouette matte) on the BAY scene — exit 10 on
+    # violation, before the beauty render. Renderables here are the desk,
+    # stand, and monitor assembly; floor/wall are the stage.
+    stage = [o for o in sc.objects if any(k in o.name.lower() for k in ("floor", "wall"))]
+    hero = [
+        o for o in sc.objects
+        if o.type in gallery_framing._RENDER_TYPES and not o.hide_render and o not in stage
+    ]
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=hero,
+        elements=hero,
+        stage=stage,
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True, scene=sc.name)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 11
+    return 0
 
 
 def render_still(path, engine):
@@ -550,7 +576,7 @@ def render_still(path, engine):
     try:
         frame_path = os.path.join(tmp, "program.png")
         if not render_frame(sc, frame_path, engine, RENDER_W, RENDER_H):
-            return False
+            return 11
         bay = bpy.data.scenes.new("Bay")
         build_stage(bay)          # the house dark studio, lights included
         build_bay(bay, frame_path)
@@ -647,8 +673,11 @@ def main():
     if args.output:
         # The round-trip reloaded a .blend; start clean for the still.
         bpy.ops.wm.read_factory_settings(use_empty=True)
-        if not render_still(os.path.abspath(args.output), args.engine):
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        if rcode == 11:
             return fail(f"render produced no file at {args.output}", 11)
+        if rcode:
+            return rcode
         print(f"wrote {args.output}")
     return 0
 

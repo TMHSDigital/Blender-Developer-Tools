@@ -204,6 +204,7 @@ blender --background --python vse_cut_list.py -- --check-pixels --engine cycles
 # Also render the still (EEVEE on a GPU host; --engine cycles on GPU-less):
 blender --background --python vse_cut_list.py -- --output vse.png</code></pre>
 <p>It exits non-zero on failure and prints every measured value and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check and the pixel witness on Blender 4.5 LTS and 5.1.</p>
+<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -258,6 +259,11 @@ tiny render (cell colors and input consumption), the way CI does:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, tempfile, warnings, shutil
 <span class="k">import</span> mathutils
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 IS_5X = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
 
@@ -724,10 +730,12 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     cam_data = bpy.data.cameras.new(<span class="s">&quot;BayCam&quot;</span>)
     cam_data.lens = <span class="n">52.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;BayCam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.0</span>, -<span class="n">5.2</span>, <span class="n">1.72</span>)
+    <span class="c"># Pulled back from (2.0, -5.2, 1.72) so the bezel top and desk base</span>
+    <span class="c"># clear the frame edges (framing gate on the Bay scene).</span>
+    cam.location = (<span class="n">3.05</span>, -<span class="n">7.9</span>, <span class="n">2.0</span>)
     sc.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;BayAim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.28</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.20</span>)
     sc.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = target
@@ -749,8 +757,27 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     sc.render.filepath = path
     <span class="c"># Standard keeps both the stage saturated and the on-screen frame true</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) on the BAY scene — exit 10 on</span>
+    <span class="c"># violation, before the beauty render. Renderables here are the desk,</span>
+    <span class="c"># stand, and monitor assembly; floor/wall are the stage.</span>
+    stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> any(k <span class="k">in</span> o.name.lower() <span class="k">for</span> k <span class="k">in</span> (<span class="s">&quot;floor&quot;</span>, <span class="s">&quot;wall&quot;</span>))]
+    hero = [
+        o <span class="k">for</span> o <span class="k">in</span> sc.objects
+        <span class="k">if</span> o.type <span class="k">in</span> gallery_framing._RENDER_TYPES <span class="k">and</span> <span class="k">not</span> o.hide_render <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage
+    ]
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=hero,
+        elements=hero,
+        stage=stage,
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>, scene=sc.name)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">11</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> render_still(path, engine):
@@ -763,7 +790,7 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     <span class="k">try</span>:
         frame_path = os.path.join(tmp, <span class="s">&quot;program.png&quot;</span>)
         <span class="k">if</span> <span class="k">not</span> render_frame(sc, frame_path, engine, RENDER_W, RENDER_H):
-            <span class="k">return</span> <span class="k">False</span>
+            <span class="k">return</span> <span class="n">11</span>
         bay = bpy.data.scenes.new(<span class="s">&quot;Bay&quot;</span>)
         build_stage(bay)          <span class="c"># the house dark studio, lights included</span>
         build_bay(bay, frame_path)
@@ -860,8 +887,11 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     <span class="k">if</span> args.output:
         <span class="c"># The round-trip reloaded a .blend; start clean for the still.</span>
         bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-        <span class="k">if</span> <span class="k">not</span> render_still(os.path.abspath(args.output), args.engine):
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode == <span class="n">11</span>:
             <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">render produced no file at </span>{args.output}<span class="s">&quot;</span>, <span class="n">11</span>)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">wrote </span>{args.output}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
