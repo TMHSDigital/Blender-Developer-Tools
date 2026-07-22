@@ -37,12 +37,14 @@ every sample matches to the quantization step. The creation contract from
 `vse-cut-list` still gates the timeline: `strips` (never `.sequences`), and
 `new_effect` ending in `length=` on 5.x vs `frame_end=` on 4.5.
 
-The render is the bench: the authentic fade as four large emissive panels
-(t = 0, 1/4, 1/2, 3/4) above the contrast pair at frame center — the true mid
-swatch directly beside the naive lerp mid, the impostor framed in hazard
-orange. The gamma dip reads as an adjacency contrast even at card scale: a
-naive-lerp cross would make the pair identical, so the still visibly breaks
-with the contract.
+The render is a calibration lightbox: the authentic fade as four backlit
+chips (t = 0, 1/4, 1/2, 3/4) set into bezels on a bolted steel swatch board
+— cap rails, panel seam, corner bolts, rear struts down to a plinth — shot
+at a 3/4 angle so it reads as a staged object. Below the fade row sits the
+contrast pair: the true mid chip directly beside the naive lerp mid, the
+impostor framed in hazard orange. The gamma dip reads as an adjacency
+contrast even at card scale: a naive-lerp cross would make the pair
+identical, so the still visibly breaks with the contract.
 
 ## Run
 
@@ -50,7 +52,7 @@ with the contract.
 # Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
 
-# Also render the mixing bench still (EEVEE on a GPU host; cycles on GPU-less):
+# Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles
 ```

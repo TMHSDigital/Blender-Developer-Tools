@@ -188,12 +188,12 @@
 <ul><li><strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. From crimson <code>(0.85, 0.10, 0.22)</code> and teal <code>(0.06, 0.75, 0.80)</code> the midpoint is <code>(0.341, 0.349, 0.463)</code>: <strong>0.115 darker</strong> on red than the lerp <code>(0.455, 0.425, 0.510)</code>. The check renders and asserts nine samples (t = 0, 1/8, …, 7/8, 31/32) within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that the mid lerp deviation is material (≥0.05).</li><li><strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. That final frame (frame 32, t = 31/32) is one of the nine asserted samples, so the convention is pixel-backed end to end. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125).</li><li><strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</li></ul>
 <p><strong>What each check catches on failure:</strong> asserting the naive lerp as the expectation (exit 6, deviation 0.1138 at mid), the endpoint-inclusive t convention (exit 5), and swapped cross inputs (exit 4, <code>input1=T2</code>).</p>
 <p><strong>Version witness:</strong> the blend math is identical on Blender 4.5 LTS and 5.1 — every sample matches to the quantization step. The creation contract from <code>vse-cut-list</code> still gates the timeline: <code>strips</code> (never <code>.sequences</code>), and <code>new_effect</code> ending in <code>length=</code> on 5.x vs <code>frame_end=</code> on 4.5.</p>
-<p>The render is the bench: the authentic fade as four large emissive panels (t = 0, 1/4, 1/2, 3/4) above the contrast pair at frame center — the true mid swatch directly beside the naive lerp mid, the impostor framed in hazard orange. The gamma dip reads as an adjacency contrast even at card scale: a naive-lerp cross would make the pair identical, so the still visibly breaks with the contract.</p>
+<p>The render is a calibration lightbox: the authentic fade as four backlit chips (t = 0, 1/4, 1/2, 3/4) set into bezels on a bolted steel swatch board — cap rails, panel seam, corner bolts, rear struts down to a plinth — shot at a 3/4 angle so it reads as a staged object. Below the fade row sits the contrast pair: the true mid chip directly beside the naive lerp mid, the impostor framed in hazard orange. The gamma dip reads as an adjacency contrast even at card scale: a naive-lerp cross would make the pair identical, so the still visibly breaks with the contract.</p>
 <h2>Run</h2>
 <pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
 
-# Also render the mixing bench still (EEVEE on a GPU host; cycles on GPU-less):
+# Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles</code></pre>
 <p>It exits non-zero on failure (span drift, wrong inputs, t-convention drift, a sample off the closed form, or a missing gamma dip). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
@@ -391,17 +391,72 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
 
 
 <span class="k">def</span> build_bench(sc, got):
-    <span class="s">&quot;&quot;&quot;The mixing bench: the authentic fade as four large emissive panels
-    (t = 0, 1/4, 1/2, 3/4) above the contrast pair — the true mid swatch
-    directly beside the naive lerp mid at frame center, so the gamma dip
-    reads as an adjacency contrast even at card scale. A naive-lerp cross
-    would make the pair identical: the render visibly breaks with the
-    contract.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;The calibration lightbox: a swatch-booth fixture — glowing chips
+    seated in bezels on a bolted steel board, held by rear struts over a
+    plinth — shot at a 3/4 angle so it reads as a staged object, not a
+    flat test chart. The authentic fade runs as four backlit chips across
+    the top (t = 0, 1/4, 1/2, 3/4); the contrast pair is the centerpiece
+    below: the true mid directly beside the naive lerp mid in its
+    hazard-orange bezel, so the gamma dip reads as an adjacency contrast
+    even at card scale. A naive-lerp cross would make the pair identical:
+    the render visibly breaks with the contract.&quot;&quot;&quot;</span>
     <span class="k">import</span> bmesh
     <span class="k">import</span> mathutils
     <span class="k">import</span> math <span class="k">as</span> m
 
-    <span class="k">def</span> panel(name, rgb, x, z, y=<span class="n">0.0</span>, hot=<span class="k">False</span>):
+    <span class="k">def</span> mat_principled(name, color, metallic, rough):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = <span class="k">True</span>
+        bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+        bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        <span class="k">return</span> mat
+
+    <span class="c"># designed non-data surfaces: painted steel board, darker rail/frame</span>
+    <span class="c"># steel, dark polymer bezels, machined bolt heads — no Principled</span>
+    <span class="c"># defaults</span>
+    fixture = mat_principled(<span class="s">&quot;FixtureSteel&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.25</span>, <span class="n">0.55</span>)
+    rail_mat = mat_principled(<span class="s">&quot;RailSteel&quot;</span>, (<span class="n">0.075</span>, <span class="n">0.08</span>, <span class="n">0.09</span>), <span class="n">0.6</span>, <span class="n">0.45</span>)
+    bezel_mat = mat_principled(<span class="s">&quot;BezelPolymer&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.048</span>, <span class="n">0.055</span>), <span class="n">0.0</span>, <span class="n">0.5</span>)
+    hot_mat = mat_principled(<span class="s">&quot;HotFrame&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.06</span>), <span class="n">0.1</span>, <span class="n">0.5</span>)
+    bolt_mat = mat_principled(<span class="s">&quot;BoltSteel&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.23</span>, <span class="n">0.26</span>), <span class="n">0.9</span>, <span class="n">0.5</span>)
+    plinth_mat = mat_principled(<span class="s">&quot;PlinthSteel&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">0.12</span>), <span class="n">0.6</span>, <span class="n">0.5</span>)
+
+    <span class="k">def</span> box(name, dims, loc, mat, rot_x=<span class="n">0.0</span>):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                  matrix=mathutils.Matrix.Diagonal((*dims, <span class="n">1.0</span>)))
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = (rot_x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        sc.collection.objects.link(ob)
+
+    <span class="k">def</span> bolt(x, z):
+        me = bpy.data.meshes.new(<span class="s">&quot;Bolt&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>,
+                                  segments=<span class="n">6</span>, radius1=<span class="n">0.085</span>, radius2=<span class="n">0.085</span>,
+                                  depth=<span class="n">0.07</span>)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(bolt_mat)
+        ob = bpy.data.objects.new(<span class="s">&quot;Bolt&quot;</span>, me)
+        ob.location = (x, -<span class="n">0.035</span>, z)
+        ob.rotation_euler = (m.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+        sc.collection.objects.link(ob)
+
+    <span class="k">def</span> swatch(name, rgb):
+        <span class="c"># the data faces stay pure emission: exact values, no specular,</span>
+        <span class="c"># no texture — the image is a data display</span>
         mat = bpy.data.materials.new(<span class="s">f&quot;</span><span class="s">Swatch</span>{name}<span class="s">&quot;</span>)
         mat.use_nodes = <span class="k">True</span>
         nt = mat.node_tree
@@ -411,54 +466,44 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         em.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
         em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
         nt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
-        me = bpy.data.meshes.new(name)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                                  matrix=mathutils.Matrix.Diagonal(
-                                      (<span class="n">1.5</span>, <span class="n">0.12</span>, <span class="n">1.65</span>, <span class="n">1.0</span>)))
-            bm.to_mesh(me)
-        <span class="k">finally</span>:
-            bm.free()
-        me.materials.append(mat)
-        ob = bpy.data.objects.new(name, me)
-        ob.location = (x, y, z)
-        sc.collection.objects.link(ob)
-        <span class="k">if</span> hot:
-            <span class="c"># hazard-orange backplate on the impostor: a broken (naive)</span>
-            <span class="c"># cross would make the framed swatch match its neighbor</span>
-            frame_mat = bpy.data.materials.new(<span class="s">&quot;HotFrame&quot;</span>)
-            frame_mat.use_nodes = <span class="k">True</span>
-            fb = frame_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-            fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
-            fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
-            fm = bpy.data.meshes.new(<span class="s">&quot;Frame&quot;</span>)
-            bm = bmesh.new()
-            <span class="k">try</span>:
-                bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                                      matrix=mathutils.Matrix.Diagonal(
-                                          (<span class="n">1.64</span>, <span class="n">0.06</span>, <span class="n">1.79</span>, <span class="n">1.0</span>)))
-                bm.to_mesh(fm)
-            <span class="k">finally</span>:
-                bm.free()
-            fm.materials.append(frame_mat)
-            fob = bpy.data.objects.new(<span class="s">&quot;Frame&quot;</span>, fm)
-            fob.location = (x, y + <span class="n">0.075</span>, z)
-            sc.collection.objects.link(fob)
+        <span class="k">return</span> mat
+
+    <span class="k">def</span> chip(name, rgb, x, z, size, hot=<span class="k">False</span>):
+        <span class="c"># glowing chip seated proud of its bezel; the naive impostor keeps</span>
+        <span class="c"># the hazard-orange frame — a broken (naive) cross would make the</span>
+        <span class="c"># framed chip match its neighbor</span>
+        box(<span class="s">f&quot;</span><span class="s">Bezel</span>{name}<span class="s">&quot;</span>, (size + <span class="n">0.20</span>, <span class="n">0.16</span>, size + <span class="n">0.20</span>),
+            (x, -<span class="n">0.08</span>, z), hot_mat <span class="k">if</span> hot <span class="k">else</span> bezel_mat)
+        box(<span class="s">f&quot;</span><span class="s">Chip</span>{name}<span class="s">&quot;</span>, (size, <span class="n">0.12</span>, size), (x, -<span class="n">0.13</span>, z),
+            swatch(name, rgb))
+
+    <span class="c"># the booth: bolted board with cap rails, rear struts down to the plinth</span>
+    box(<span class="s">&quot;Board&quot;</span>, (<span class="n">7.20</span>, <span class="n">0.34</span>, <span class="n">5.00</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">3.50</span>), fixture)
+    box(<span class="s">&quot;RailTop&quot;</span>, (<span class="n">7.34</span>, <span class="n">0.42</span>, <span class="n">0.16</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">6.06</span>), rail_mat)
+    box(<span class="s">&quot;RailBottom&quot;</span>, (<span class="n">7.34</span>, <span class="n">0.42</span>, <span class="n">0.20</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">0.94</span>), rail_mat)
+    <span class="c"># panel seam between the fade row and the contrast pair</span>
+    box(<span class="s">&quot;Seam&quot;</span>, (<span class="n">7.00</span>, <span class="n">0.02</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, -<span class="n">0.005</span>, <span class="n">3.70</span>), rail_mat)
+    <span class="k">for</span> bx <span class="k">in</span> (-<span class="n">3.36</span>, <span class="n">3.36</span>):
+        <span class="k">for</span> bz <span class="k">in</span> (<span class="n">1.30</span>, <span class="n">5.70</span>):
+            bolt(bx, bz)
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">2.30</span>, <span class="n">2.30</span>):
+        box(<span class="s">&quot;Strut&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">2.32</span>), (sx, <span class="n">0.70</span>, <span class="n">1.60</span>), rail_mat,
+            rot_x=m.radians(<span class="n">18</span>))
+        box(<span class="s">&quot;Foot&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.64</span>, <span class="n">0.10</span>), (sx, <span class="n">1.02</span>, <span class="n">0.55</span>), rail_mat)
+    box(<span class="s">&quot;Plinth&quot;</span>, (<span class="n">6.60</span>, <span class="n">2.00</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, <span class="n">0.35</span>, <span class="n">0.25</span>), plinth_mat)
 
     by_t = {t: f <span class="k">for</span> f, t <span class="k">in</span> SAMPLES}
     <span class="c"># the authentic fade across the top, left to right</span>
     top = [(<span class="n">0.0</span>, <span class="s">&quot;t=0&quot;</span>), (<span class="n">0.25</span>, <span class="s">&quot;t=1/4&quot;</span>), (<span class="n">0.5</span>, <span class="s">&quot;t=1/2&quot;</span>), (<span class="n">0.75</span>, <span class="s">&quot;t=3/4&quot;</span>)]
-    top_xs = [-<span class="n">2.775</span> + <span class="n">1.85</span> * i <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
+    top_xs = [-<span class="n">2.625</span> + <span class="n">1.75</span> * i <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
     <span class="k">for</span> (t, _label), x <span class="k">in</span> zip(top, top_xs):
-        panel(<span class="s">f&quot;</span><span class="s">t</span>{t}<span class="s">&quot;</span>, got[by_t[t]], x, z=<span class="n">3.25</span>)
-    <span class="c"># the contrast pair at frame center: true mid beside the naive mid</span>
-    panel(<span class="s">&quot;true_mid&quot;</span>, got[by_t[<span class="n">0.5</span>]], -<span class="n">0.80</span>, z=<span class="n">1.40</span>, y=-<span class="n">0.30</span>)
-    panel(<span class="s">&quot;naive_mid&quot;</span>, tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)),
-          <span class="n">0.80</span>, z=<span class="n">1.40</span>, y=-<span class="n">0.30</span>, hot=<span class="k">True</span>)
+        chip(<span class="s">f&quot;</span><span class="s">t</span>{t}<span class="s">&quot;</span>, got[by_t[t]], x, z=<span class="n">4.72</span>, size=<span class="n">1.32</span>)
+    <span class="c"># the contrast pair at center: true mid beside the naive mid</span>
+    chip(<span class="s">&quot;true_mid&quot;</span>, got[by_t[<span class="n">0.5</span>]], -<span class="n">1.05</span>, z=<span class="n">2.55</span>, size=<span class="n">1.55</span>)
+    chip(<span class="s">&quot;naive_mid&quot;</span>, tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)),
+         <span class="n">1.05</span>, z=<span class="n">2.55</span>, size=<span class="n">1.55</span>, hot=<span class="k">True</span>)
 
-    <span class="c"># captions: t-labels crown the fade row; the pair is named on the</span>
-    <span class="c"># plinth face, facing the camera (a floor caption foreshortens away)</span>
+    <span class="c"># captions: t-labels crown the fade chips; the pair is named beneath it</span>
     cu_mat = bpy.data.materials.new(<span class="s">&quot;CaptionGrey&quot;</span>)
     cu_mat.use_nodes = <span class="k">True</span>
     cb = cu_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
@@ -467,9 +512,9 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
     sock = cb.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> cb.inputs[<span class="s">&quot;Emission&quot;</span>]
     sock.default_value = (<span class="n">0.38</span>, <span class="n">0.40</span>, <span class="n">0.45</span>, <span class="n">1.0</span>)
-    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.45</span>
+    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.5</span>
 
-    <span class="k">def</span> caption(text, x, z, y=-<span class="n">0.09</span>, size=<span class="n">0.16</span>):
+    <span class="k">def</span> caption(text, x, z, size, y=-<span class="n">0.03</span>):
         cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
         cu.body = text
         cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
@@ -482,9 +527,9 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         sc.collection.objects.link(ob)
 
     <span class="k">for</span> (_t, label), x <span class="k">in</span> zip(top, top_xs):
-        caption(label, x, <span class="n">4.22</span>)
-    caption(<span class="s">&quot;GAMMA_CROSS t=1/2&quot;</span>, -<span class="n">0.80</span>, <span class="n">0.23</span>, y=-<span class="n">0.46</span>, size=<span class="n">0.15</span>)
-    caption(<span class="s">&quot;NAIVE LERP t=1/2&quot;</span>, <span class="n">0.80</span>, <span class="n">0.23</span>, y=-<span class="n">0.46</span>, size=<span class="n">0.15</span>)
+        caption(label, x, <span class="n">5.62</span>, <span class="n">0.20</span>)
+    caption(<span class="s">&quot;GAMMA_CROSS t=1/2&quot;</span>, -<span class="n">1.05</span>, <span class="n">1.42</span>, <span class="n">0.20</span>)
+    caption(<span class="s">&quot;NAIVE LERP t=1/2&quot;</span>, <span class="n">1.05</span>, <span class="n">1.42</span>, <span class="n">0.20</span>)
 
 
 <span class="k">def</span> render_still(sc, got, path, engine):
@@ -492,26 +537,6 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     build_bench(scene, got)
 
     <span class="k">import</span> mathutils, bmesh
-    <span class="c"># a low plinth shelf grounds the bench without eating the frame</span>
-    plinth_me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
-    bm2 = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cube(bm2, size=<span class="n">1.0</span>,
-                              matrix=mathutils.Matrix.Diagonal((<span class="n">6.9</span>, <span class="n">1.3</span>, <span class="n">0.45</span>, <span class="n">1.0</span>)))
-        bm2.to_mesh(plinth_me)
-    <span class="k">finally</span>:
-        bm2.free()
-    cmat = bpy.data.materials.new(<span class="s">&quot;ConsoleMetal&quot;</span>)
-    cmat.use_nodes = <span class="k">True</span>
-    cc = cmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    cc.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.07</span>, <span class="n">0.08</span>, <span class="n">0.09</span>, <span class="n">1.0</span>)
-    cc.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.7</span>
-    cc.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
-    plinth_me.materials.append(cmat)
-    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, plinth_me)
-    plinth.location = (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">0.225</span>)
-    scene.collection.objects.link(plinth)
-
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -547,20 +572,21 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         scene.collection.objects.link(ob)
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, and the signature warm</span>
-    <span class="c"># wedge between bench and wall raking a pool onto the backdrop — the</span>
+    <span class="c"># wedge between booth and wall raking a pool onto the backdrop — the</span>
     <span class="c"># wall itself stays near-black outside the pool (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.0</span>, <span class="n">6.5</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.8</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">80.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">1.6</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.0</span>, <span class="n">6.0</span>), <span class="n">260.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.6</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.2</span>, <span class="n">5.0</span>, <span class="n">4.5</span>), <span class="n">340.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">0.2</span>, <span class="n">9.0</span>, <span class="n">1.2</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.5</span>, <span class="n">7.0</span>), <span class="n">460.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">3.0</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">6.0</span>, -<span class="n">3.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">2.8</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">7.0</span>), <span class="n">320.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.3</span>, <span class="n">4.2</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.5</span>, <span class="n">5.5</span>, <span class="n">6.0</span>), <span class="n">420.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">0.5</span>, <span class="n">9.0</span>, <span class="n">4.2</span>))
 
+    <span class="c"># 3/4 angle from the right: the booth shows face, side, and cast shadow</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.7</span>, -<span class="n">13.0</span>, <span class="n">3.4</span>)
+    cam.location = (<span class="n">9.7</span>, -<span class="n">17.5</span>, <span class="n">5.7</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.15</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">3.2</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target

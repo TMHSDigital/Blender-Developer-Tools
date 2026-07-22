@@ -310,7 +310,7 @@ consumed-input compositing contract, and a save/reload round-trip.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/light-link-studio/"><img src="examples/light-link-studio/preview.webp" alt="Light link studio: a blazing orange hero sphere beside a dim steel decoy on a dark studio floor, upright LINKED and UNLINKED plaques below each, a warm light pool raking the wall behind - one key light restricted to the hero collection" /></a>
+<a href="examples/light-link-studio/"><img src="examples/light-link-studio/preview.webp" alt="Light link studio: a blazing orange hero sphere and a dim steel decoy staged as specimens on turned-metal pedestals, LINKED and UNLINKED placards on each plinth, a warm floor inlay glowing under the hero only, a warm light pool raking the wall behind - one key light restricted to the hero collection" /></a>
 </td>
 <td valign="middle">
 
@@ -326,7 +326,7 @@ honors linking too (measured), with Cycles pinned for deterministic samples.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vse-gamma-cross/"><img src="examples/vse-gamma-cross/preview.webp" alt="VSE gamma cross: a mixing bench in a dark studio - four large emissive panels fading crimson to teal across the cross, with the true midpoint swatch beside the brighter naive-lerp midpoint framed in hazard orange at frame center" /></a>
+<a href="examples/vse-gamma-cross/"><img src="examples/vse-gamma-cross/preview.webp" alt="VSE gamma cross: a calibration lightbox in a dark studio - four backlit chips fading crimson to teal set into bezels on a bolted steel swatch board, with the true midpoint chip beside the brighter naive-lerp midpoint framed in hazard orange, shot at a three-quarter angle" /></a>
 </td>
 <td valign="middle">
 

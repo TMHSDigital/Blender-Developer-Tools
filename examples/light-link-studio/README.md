@@ -16,7 +16,7 @@ most often misses or misaddresses.
   **3.6x** (gate ≥ 3x), measured at each sphere's **projected** center so
   framing can't move the sample off the subject.
 - **Unlinked (same check), the restriction vanishes surgically.** Render
-  two: the decoy rises **206–213%** while the hero drifts **0.0%** — the
+  two: the decoy rises **233–238%** while the hero drifts **0.1–0.3%** — the
   link restricts without dimming anything else. The shipped check therefore
   demonstrates both states, not just one. The rise figure is noisy by
   construction: the decoy's unlit base sits near the fill floor, so small
@@ -25,7 +25,7 @@ most often misses or misaddresses.
 - **The engine note, verified rather than assumed.** Light linking also
   works on EEVEE — measured with an EEVEE luminance probe (the shipped
   scene with `render.engine` swapped: `BLENDER_EEVEE` on 5.x,
-  `BLENDER_EEVEE_NEXT` on 4.x) at **3.7x** linked ratio on both 4.5.11
+  `BLENDER_EEVEE_NEXT` on 4.x) at **3.8x** linked ratio on both 4.5.11
   EEVEE Next and 5.1.2 EEVEE, matching Cycles within sampling noise. The
   shipped check still pins Cycles for deterministic tiny-sample CPU
   renders; luminance gates need `view_transform = 'Standard'` (AgX
@@ -38,12 +38,14 @@ assignment read-back (exit 5), a link that doesn't restrict (exit 7, rise
 below 50%), and a non-surgical restriction (exit 8, hero drift above 5%).
 
 **Version witness:** ObjectLightLinking API and the measured ratios match on
-Blender 4.5 LTS and 5.1 (3.4x vs 3.6x linked; rise 213% vs 206% — inside the
+Blender 4.5 LTS and 5.1 (3.7x vs 3.6x linked; rise 238% vs 233% — inside the
 rise noise described above).
 
-The render is the contract at a glance: the blazing orange hero over the
-LINKED plaque, the cold steel decoy over UNLINKED, a warm pool raking the
-wall behind them — one key, one hero.
+The render is the contract at a glance: the spheres staged as studio
+specimens on matching turned-metal pedestals — the blazing orange hero over
+its LINKED placard with the warm floor inlay marking the linked light's
+footprint, the cold steel decoy over UNLINKED with its inlay dark, a warm
+pool raking the wall behind them — one key, one hero.
 
 ## Run
 

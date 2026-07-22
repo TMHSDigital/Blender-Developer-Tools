@@ -361,8 +361,8 @@
     {
       "name": "light-link-studio",
       "dir": "examples/light-link-studio",
-      "teaches": "One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 206% while the hero holds at 0.0% drift.",
-      "witnessesFix": "The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere's projected center; EEVEE honors linking too (probe-measured 3.7x on 4.5.11 EEVEE Next and 5.1.2 EEVEE), Cycles pinned for deterministic samples.",
+      "teaches": "One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 233% while the hero holds at 0.3% drift.",
+      "witnessesFix": "The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere's projected center; EEVEE honors linking too (probe-measured 3.8x on 4.5.11 EEVEE Next and 5.1.2 EEVEE), Cycles pinned for deterministic samples.",
       "hero": "docs/gallery/assets/light-link-studio-hero.webp",
       "preview": "examples/light-link-studio/preview.webp",
       "tags": [
