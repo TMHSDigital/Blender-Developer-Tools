@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sky-texture-sun-elevation — Examples — Blender Developer Tools</title>
+  <meta name="description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/sky-texture-sun-elevation/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="sky-texture-sun-elevation — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/sky-texture-sun-elevation/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="sky-texture-sun-elevation — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>sky-texture-sun-elevation</h1>
+    <p>World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25).</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom sky-texture-sun-elevation render">
+      <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="sky-texture-sun-elevation render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> AI code still assigns sky_type=&#x27;NISHITA&#x27; and dust_density on 5.1 — both are wrong (NISHITA removed; dust_density is AttributeError; use MULTIPLE_SCATTERING + aerosol_density). A near-black Background Strength alone is not a sky: Sky must link into Background Color. Elevation that does not brighten zenith fails the rise gate.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a World whose Background Color is driven by <code>ShaderNodeTexSky</code>, then proves <code>sun_elevation</code> is load-bearing with two tiny Cycles EXR zenith probes — and stages a dual-elevation gallery diptych so the contract is visible at thumbnail scale.</p>
+<p><strong>What it witnesses:</strong> the Sky Texture contract AI-generated lighting code most often gets wrong across the 4.5 LTS → 5.1 window.</p>
+<ul><li><strong>Sky must drive Background Color.</strong> A near-black Background Strength alone is not a sky — the check asserts the Sky → Background → World Output links.</li><li><strong><code>sky_type</code> renamed.</strong> 4.5 LTS uses <code>NISHITA</code>; 5.1 replaced it with <code>MULTIPLE_SCATTERING</code> (Nishita&#x27;s successor). Assigning <code>NISHITA</code> on 5.1 fails; the enum no longer lists it.</li><li><strong><code>dust_density</code> → <code>aerosol_density</code>.</strong> 4.5 exposes <code>dust_density</code>; 5.1 raises <code>AttributeError</code> and ships <code>aerosol_density</code> instead. AI code still emits <code>dust_density</code>.</li><li><strong><code>sun_elevation</code> brightens zenith.</strong> Two CPU Cycles OPEN_EXR probes with a straight-up camera, Background Strength 0.05 (unclipped), compare zenith luminance at 8° vs 55°. Measured rise <strong>2.25x</strong> on 5.1.2 and <strong>1.50x</strong> on 4.5.11 LTS (gate ≥ 1.25).</li></ul>
+<p><strong>What each check catches on failure:</strong> broken Sky→Background link (exit 6), wrong <code>sky_type</code> for the running version (exit 3), lost <code>sun_elevation</code> round-trip (exit 4), <code>dust_density</code> / <code>NISHITA</code> present on the wrong side of 5.0 (exit 5), a non-working sky (zenith floor, exit 7), and an elevation that does not brighten zenith (exit 8 — rise below 1.25).</p>
+<p><strong>Version witness:</strong> <code>sky_type</code> and the dust/aerosol rename are the divergence; <code>sun_elevation</code> itself is stable. Zenith rise differs by model (Nishita vs multiple scattering) but clears the same gate on both binaries.</p>
+<h2>Stage deviation</h2>
+<p>World carries a Nishita / multiple-scattering Sky Texture instead of the default near-black Background — the contract *is* the sky. Gallery still is a dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at thumbnail scale. Layer 1 still holds: <code>view_transform=&#x27;Standard&#x27;</code>, designed terracotta materials, chosen camera, no helpers in frame.</p>
+<h2>Run</h2>
+<pre><code># Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
+blender --background --python sky_texture_sun_elevation.py --
+
+# Also render the gallery diptych (Cycles):
+blender --background --python sky_texture_sun_elevation.py -- --output sky.png</code></pre>
+<p>It exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Nishita / multiple-scattering sky + sun_elevation — a runnable example.
+
+Witnesses the world Sky Texture contract AI-generated lighting code most often
+gets wrong across the 4.5 LTS → 5.1 window:
+
+1. ``ShaderNodeTexSky`` must drive the World Background Color. A near-black
+   Background Strength alone is not a sky.
+2. ``sky_type`` renamed: ``NISHITA`` on 4.5 LTS, ``MULTIPLE_SCATTERING``
+   (Nishita&#x27;s successor) on 5.1 — assigning the legacy identifier on 5.1 fails.
+3. ``dust_density`` exists only on 4.5; 5.1 raises AttributeError and exposes
+   ``aerosol_density`` instead (AI still emits ``dust_density``).
+4. ``sun_elevation`` is load-bearing: raising it brightens zenith luminance
+   — proven with two tiny Cycles EXR probes (straight-up camera) in one check.
+
+By default it runs the correctness check (tiny Cycles CPU renders, no gallery
+still). Pass --output to also render a still:
+
+    blender --background --python sky_texture_sun_elevation.py --
+    blender --background --python sky_texture_sun_elevation.py -- --output s.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile, shutil
+
+<span class="c"># Radians: low sun vs high sun for the A/B zenith luminance probe</span>
+ELEV_LOW = math.radians(<span class="n">8.0</span>)
+ELEV_HIGH = math.radians(<span class="n">55.0</span>)
+<span class="c"># Tiny probe resolution / samples — deterministic CPU Cycles</span>
+PXW, PXH = <span class="n">48</span>, <span class="n">48</span>
+CYCLES_SAMPLES = <span class="n">24</span>
+<span class="c"># Background Strength kept low so the probe stays unclipped under Standard</span>
+PROBE_STRENGTH = <span class="n">0.05</span>
+<span class="c"># Zenith luminance (EXR, straight-up camera) must rise with sun_elevation</span>
+ZENITH_RISE_MIN = <span class="n">1.25</span>
+<span class="c"># Absolute floor so a black / unlinked world cannot sneak through</span>
+HIGH_ZENITH_MIN = <span class="n">0.05</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> sky_type_for_version():
+    <span class="s">&quot;&quot;&quot;4.5: NISHITA. 5.1: MULTIPLE_SCATTERING (Nishita successor; NISHITA gone).&quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">return</span> <span class="s">&quot;MULTIPLE_SCATTERING&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;NISHITA&quot;</span>
+
+
+<span class="k">def</span> build_sky_world(elevation):
+    <span class="s">&quot;&quot;&quot;Create a World whose Background Color is driven by ShaderNodeTexSky.&quot;&quot;&quot;</span>
+    world = bpy.data.worlds.new(<span class="s">&quot;SkyWorld&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    nt = world.node_tree
+    <span class="k">for</span> n <span class="k">in</span> list(nt.nodes):
+        nt.nodes.remove(n)
+
+    sky = nt.nodes.new(<span class="s">&quot;ShaderNodeTexSky&quot;</span>)
+    sky.name = <span class="s">&quot;Sky&quot;</span>
+    sky.location = (-<span class="n">300</span>, <span class="n">0</span>)
+    sky.sky_type = sky_type_for_version()
+    sky.sun_elevation = elevation
+    sky.sun_rotation = math.radians(-<span class="n">35.0</span>)
+    sky.sun_disc = <span class="k">True</span>
+    sky.sun_intensity = <span class="n">1.0</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        sky.aerosol_density = <span class="n">1.0</span>
+    <span class="k">else</span>:
+        sky.dust_density = <span class="n">1.0</span>
+    sky.air_density = <span class="n">1.0</span>
+    sky.ozone_density = <span class="n">1.0</span>
+
+    bg = nt.nodes.new(<span class="s">&quot;ShaderNodeBackground&quot;</span>)
+    bg.name = <span class="s">&quot;Background&quot;</span>
+    bg.location = (<span class="n">0</span>, <span class="n">0</span>)
+    <span class="c"># Gallery still restores Strength=1.0 in render_still; probe uses PROBE_STRENGTH</span>
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputWorld&quot;</span>)
+    out.name = <span class="s">&quot;World Output&quot;</span>
+    out.location = (<span class="n">250</span>, <span class="n">0</span>)
+
+    nt.links.new(sky.outputs[<span class="s">&quot;Color&quot;</span>], bg.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(bg.outputs[<span class="s">&quot;Background&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> world, sky, bg
+
+
+<span class="k">def</span> _principled(name, rgb, rough, metallic=<span class="n">0.0</span>, specular=<span class="n">0.5</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="c"># Specular IOR Level renamed across versions — set if present</span>
+    spec = b.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>) <span class="k">or</span> b.inputs.get(<span class="s">&quot;Specular&quot;</span>)
+    <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> hasattr(spec, <span class="s">&quot;default_value&quot;</span>):
+        <span class="k">try</span>:
+            spec.default_value = specular
+        <span class="k">except</span> TypeError:
+            <span class="k">pass</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> _mesh_obj(sc, name, build_bm, loc, mat, smooth=<span class="k">True</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        build_bm(bm)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">if</span> smooth:
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.use_smooth = <span class="k">True</span>
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> build_ceramic(sc):
+    <span class="s">&quot;&quot;&quot;A turned terracotta jar — saturated clay + pale glaze lid.&quot;&quot;&quot;</span>
+    clay = _principled(<span class="s">&quot;Clay&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.22</span>, <span class="n">0.08</span>), rough=<span class="n">0.52</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.2</span>)
+    glaze = _principled(<span class="s">&quot;Glaze&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.18</span>, <span class="n">0.06</span>), rough=<span class="n">0.28</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.4</span>)
+
+    <span class="k">def</span> body(bm):
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>,
+            segments=<span class="n">64</span>, radius1=<span class="n">0.62</span>, radius2=<span class="n">0.42</span>, depth=<span class="n">1.35</span>,
+        )
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.68</span>))
+
+    vessel = _mesh_obj(sc, <span class="s">&quot;Vessel&quot;</span>, body, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), clay)
+    bev = vessel.modifiers.new(<span class="s">&quot;Bev&quot;</span>, <span class="s">&quot;BEVEL&quot;</span>)
+    bev.width = <span class="n">0.025</span>
+    bev.segments = <span class="n">3</span>
+    bev.limit_method = <span class="s">&quot;ANGLE&quot;</span>
+
+    <span class="k">def</span> lid(bm):
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>,
+            segments=<span class="n">48</span>, radius1=<span class="n">0.40</span>, radius2=<span class="n">0.10</span>, depth=<span class="n">0.32</span>,
+        )
+
+    knob = _mesh_obj(sc, <span class="s">&quot;Lid&quot;</span>, lid, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.48</span>), glaze)
+    <span class="k">return</span> vessel, knob
+
+
+<span class="k">def</span> build_floor(sc):
+    mat = _principled(<span class="s">&quot;Floor&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.026</span>, <span class="n">0.030</span>), rough=<span class="n">0.85</span>, specular=<span class="n">0.05</span>)
+
+    <span class="k">def</span> grid(bm):
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+
+    <span class="k">return</span> _mesh_obj(sc, <span class="s">&quot;Floor&quot;</span>, grid, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), mat, smooth=<span class="k">False</span>)
+
+
+<span class="k">def</span> setup_probe_camera(sc):
+    <span class="s">&quot;&quot;&quot;Camera looking straight up (+Z) so the frame is pure zenith sky.&quot;&quot;&quot;</span>
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;ProbeCam&quot;</span>)
+    cam_data.lens = <span class="n">24.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;ProbeCam&quot;</span>, cam_data)
+    cam.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="c"># Local -Z → world +Z</span>
+    cam.rotation_euler = (math.radians(-<span class="n">90.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+    <span class="k">return</span> cam
+
+
+<span class="k">def</span> setup_probe_render(sc, w, h, samples):
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    sc.cycles.samples = samples
+    sc.cycles.use_denoising = <span class="k">False</span>
+    sc.render.resolution_x = w
+    sc.render.resolution_y = h
+    sc.render.resolution_percentage = <span class="n">100</span>
+    <span class="c"># EXR keeps linear values; PNG+Standard clips bright sky toward 1.0</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;OPEN_EXR&quot;</span>
+    sc.render.image_settings.color_depth = <span class="s">&quot;32&quot;</span>
+    sc.render.film_transparent = <span class="k">False</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+
+<span class="k">def</span> mean_center_luma(img, half=<span class="n">2</span>):
+    w, h = img.size
+    px = img.pixels
+    acc = <span class="n">0.0</span>
+    n = <span class="n">0</span>
+    <span class="k">for</span> y <span class="k">in</span> range(h // <span class="n">2</span> - half, h // <span class="n">2</span> + half + <span class="n">1</span>):
+        <span class="k">for</span> x <span class="k">in</span> range(w // <span class="n">2</span> - half, w // <span class="n">2</span> + half + <span class="n">1</span>):
+            i = (y * w + x) * <span class="n">4</span>
+            acc += <span class="n">0.299</span> * px[i] + <span class="n">0.587</span> * px[i + <span class="n">1</span>] + <span class="n">0.114</span> * px[i + <span class="n">2</span>]
+            n += <span class="n">1</span>
+    <span class="k">return</span> acc / max(n, <span class="n">1</span>)
+
+
+<span class="k">def</span> render_zenith_luma(sc, world, sky, elevation, tmp, name):
+    sky.sun_elevation = elevation
+    sky.sun_disc = <span class="k">False</span>  <span class="c"># disc would dominate the center sample</span>
+    sc.world = world
+    path = os.path.join(tmp, name)
+    sc.render.filepath = path
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    img = bpy.data.images.load(path)
+    luma = mean_center_luma(img)
+    bpy.data.images.remove(img)
+    <span class="k">return</span> luma
+
+
+<span class="k">def</span> check_api(sky):
+    <span class="s">&quot;&quot;&quot;RNA surface + version traps.&quot;&quot;&quot;</span>
+    expected = sky_type_for_version()
+    <span class="k">if</span> sky.sky_type != expected:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: sky_type </span>{sky.sky_type!r}<span class="s"> != expected </span>{expected!r}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+
+    sky.sun_elevation = ELEV_HIGH
+    <span class="k">if</span> abs(sky.sun_elevation - ELEV_HIGH) &gt; <span class="n">1e-5</span>:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: sun_elevation round-trip </span>{sky.sun_elevation}<span class="s"> != </span>{ELEV_HIGH}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">if</span> hasattr(sky, <span class="s">&quot;dust_density&quot;</span>):
+            print(
+                <span class="s">&quot;ERROR: dust_density still present on 5.x — expected AttributeError trap&quot;</span>,
+                file=sys.stderr,
+            )
+            <span class="k">return</span> <span class="n">5</span>
+        <span class="k">try</span>:
+            _ = sky.dust_density
+            print(<span class="s">&quot;ERROR: dust_density read did not raise on 5.x&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="k">not</span> hasattr(sky, <span class="s">&quot;aerosol_density&quot;</span>):
+            print(<span class="s">&quot;ERROR: aerosol_density missing on 5.x&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        ids = [i.identifier <span class="k">for</span> i <span class="k">in</span> sky.bl_rna.properties[<span class="s">&quot;sky_type&quot;</span>].enum_items]
+        <span class="k">if</span> <span class="s">&quot;NISHITA&quot;</span> <span class="k">in</span> ids:
+            print(<span class="s">&quot;ERROR: legacy NISHITA still in 5.x sky_type enum&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        <span class="k">if</span> <span class="s">&quot;MULTIPLE_SCATTERING&quot;</span> <span class="k">not</span> <span class="k">in</span> ids:
+            print(
+                <span class="s">f&quot;</span><span class="s">ERROR: MULTIPLE_SCATTERING missing from 5.x enum </span>{ids}<span class="s">&quot;</span>,
+                file=sys.stderr,
+            )
+            <span class="k">return</span> <span class="n">5</span>
+        print(
+            <span class="s">f&quot;</span><span class="s">5.x contract: sky_type=</span>{sky.sky_type}<span class="s"> aerosol_density=</span>{sky.aerosol_density}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">dust_density=AttributeError NISHITA=gone</span><span class="s">&quot;</span>
+        )
+    <span class="k">else</span>:
+        <span class="k">if</span> <span class="k">not</span> hasattr(sky, <span class="s">&quot;dust_density&quot;</span>):
+            print(<span class="s">&quot;ERROR: dust_density missing on 4.5&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        ids = [i.identifier <span class="k">for</span> i <span class="k">in</span> sky.bl_rna.properties[<span class="s">&quot;sky_type&quot;</span>].enum_items]
+        <span class="k">if</span> <span class="s">&quot;NISHITA&quot;</span> <span class="k">not</span> <span class="k">in</span> ids:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: NISHITA missing from 4.5 sky_type enum </span>{ids}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        <span class="k">if</span> <span class="s">&quot;MULTIPLE_SCATTERING&quot;</span> <span class="k">in</span> ids:
+            print(
+                <span class="s">&quot;ERROR: MULTIPLE_SCATTERING unexpectedly present on 4.5&quot;</span>,
+                file=sys.stderr,
+            )
+            <span class="k">return</span> <span class="n">5</span>
+        print(
+            <span class="s">f&quot;</span><span class="s">4.5 contract: sky_type=</span>{sky.sky_type}<span class="s"> dust_density=</span>{sky.dust_density}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">aerosol_density=</span>{hasattr(sky, <span class="s">&#x27;aerosol_density&#x27;</span>)}<span class="s">&quot;</span>
+        )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_links(world):
+    nt = world.node_tree
+    sky = nt.nodes.get(<span class="s">&quot;Sky&quot;</span>)
+    bg = nt.nodes.get(<span class="s">&quot;Background&quot;</span>)
+    out = nt.nodes.get(<span class="s">&quot;World Output&quot;</span>)
+    <span class="k">if</span> sky <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> bg <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> out <span class="k">is</span> <span class="k">None</span>:
+        print(<span class="s">&quot;ERROR: Sky / Background / World Output nodes missing&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    ok_sky = any(
+        l.from_node == sky <span class="k">and</span> l.from_socket.name == <span class="s">&quot;Color&quot;</span>
+        <span class="k">and</span> l.to_node == bg <span class="k">and</span> l.to_socket.name == <span class="s">&quot;Color&quot;</span>
+        <span class="k">for</span> l <span class="k">in</span> nt.links
+    )
+    ok_bg = any(
+        l.from_node == bg <span class="k">and</span> l.to_node == out <span class="k">and</span> l.to_socket.name == <span class="s">&quot;Surface&quot;</span>
+        <span class="k">for</span> l <span class="k">in</span> nt.links
+    )
+    <span class="k">if</span> <span class="k">not</span> ok_sky <span class="k">or</span> <span class="k">not</span> ok_bg:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: world links broken (sky→bg=</span>{ok_sky}<span class="s">, bg→out=</span>{ok_bg}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check(sc, world, sky, bg):
+    code = check_links(world)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    code = check_api(sky)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">for</span> ob <span class="k">in</span> sc.objects:
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span>:
+            ob.hide_render = <span class="k">True</span>
+
+    setup_probe_camera(sc)
+    setup_probe_render(sc, PXW, PXH, CYCLES_SAMPLES)
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = PROBE_STRENGTH
+
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;sky_elev_&quot;</span>)
+    <span class="k">try</span>:
+        z_lo = render_zenith_luma(sc, world, sky, ELEV_LOW, tmp, <span class="s">&quot;low.exr&quot;</span>)
+        z_hi = render_zenith_luma(sc, world, sky, ELEV_HIGH, tmp, <span class="s">&quot;high.exr&quot;</span>)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+
+    <span class="k">for</span> ob <span class="k">in</span> sc.objects:
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span>:
+            ob.hide_render = <span class="k">False</span>
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    sky.sun_disc = <span class="k">True</span>
+
+    <span class="k">if</span> z_hi &lt; HIGH_ZENITH_MIN:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: high-elevation zenith luma </span>{z_hi:<span class="s">.4f</span>}<span class="s"> &lt; </span>{HIGH_ZENITH_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(world is not a working sky)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+
+    rise = z_hi / max(z_lo, <span class="n">1e-6</span>)
+    <span class="k">if</span> rise &lt; ZENITH_RISE_MIN:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: zenith luma did not rise with elevation: </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">low=</span>{z_lo:<span class="s">.4f</span>}<span class="s"> high=</span>{z_hi:<span class="s">.4f</span>}<span class="s"> rise=</span>{rise:<span class="s">.4f</span>}<span class="s"> &lt; </span>{ZENITH_RISE_MIN}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">8</span>
+
+    print(
+        <span class="s">f&quot;</span><span class="s">sun_elevation low=</span>{math.degrees(ELEV_LOW):<span class="s">.1f</span>}<span class="s">deg zenith_L=</span>{z_lo:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">sun_elevation high=</span>{math.degrees(ELEV_HIGH):<span class="s">.1f</span>}<span class="s">deg zenith_L=</span>{z_hi:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">zenith_rise=</span>{rise:<span class="s">.4f</span>}<span class="s"> (gate&gt;=</span>{ZENITH_RISE_MIN}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">probe_strength=</span>{PROBE_STRENGTH}<span class="s"> samples=</span>{CYCLES_SAMPLES}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">sky_type=</span>{sky.sky_type}<span class="s"> fmt=OPEN_EXR</span><span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> _stage_for_still(sc, world, sky, elevation):
+    <span class="s">&quot;&quot;&quot;Shared beauty staging; elevation is the variable under test.&quot;&quot;&quot;</span>
+    sky.sun_elevation = elevation
+    sky.sun_rotation = math.radians(-<span class="n">45.0</span>)
+    sky.sun_intensity = <span class="n">1.0</span>
+    sky.sun_disc = <span class="k">False</span>
+    sky.ozone_density = <span class="n">5.0</span>
+    sky.air_density = <span class="n">1.0</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        sky.aerosol_density = <span class="n">0.45</span>
+    <span class="k">else</span>:
+        sky.dust_density = <span class="n">0.45</span>
+    bg = world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>]
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.08</span>
+    sc.world = world
+
+    <span class="c"># Remove prior still lights / cams from earlier calls</span>
+    <span class="k">for</span> ob <span class="k">in</span> list(sc.objects):
+        <span class="k">if</span> ob.name.startswith((<span class="s">&quot;Key&quot;</span>, <span class="s">&quot;Fill&quot;</span>, <span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;Cam&quot;</span>, <span class="s">&quot;Aim&quot;</span>, <span class="s">&quot;ProbeCam&quot;</span>, <span class="s">&quot;Label&quot;</span>)):
+            bpy.data.objects.remove(ob, do_unlink=<span class="k">True</span>)
+    <span class="k">for</span> cam <span class="k">in</span> list(bpy.data.cameras):
+        <span class="k">if</span> cam.users == <span class="n">0</span>:
+            bpy.data.cameras.remove(cam)
+    <span class="k">for</span> ld <span class="k">in</span> list(bpy.data.lights):
+        <span class="k">if</span> ld.users == <span class="n">0</span>:
+            bpy.data.lights.remove(ld)
+
+    <span class="k">def</span> area(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    area(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.0</span>, -<span class="n">3.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">32</span>))
+    area(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.5</span>, -<span class="n">2.2</span>, <span class="n">1.8</span>), <span class="n">55.0</span>, <span class="n">8.0</span>, (<span class="n">0.7</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">42</span>))
+    area(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.5</span>, <span class="n">3.8</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">3.5</span>, (<span class="n">0.55</span>, <span class="n">0.72</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">185</span>))
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.8</span>)
+    sc.collection.objects.link(aim)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">40.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.15</span>, -<span class="n">3.55</span>, <span class="n">1.2</span>)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+
+
+<span class="k">def</span> _render_panel(sc, path, engine, samples=<span class="n">64</span>):
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = samples
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">640</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+
+
+<span class="k">def</span> _diptych(left_path, right_path, out_path):
+    <span class="s">&quot;&quot;&quot;Pack two 640x720 panels into a 1280x720 gallery still.&quot;&quot;&quot;</span>
+    left = bpy.data.images.load(left_path)
+    right = bpy.data.images.load(right_path)
+    w, h = <span class="n">1280</span>, <span class="n">720</span>
+    canvas = bpy.data.images.new(<span class="s">&quot;Diptych&quot;</span>, width=w, height=h, alpha=<span class="k">False</span>)
+    lp = list(left.pixels)
+    rp = list(right.pixels)
+    out = [<span class="n">0.0</span>] * (w * h * <span class="n">4</span>)
+    pw = <span class="n">640</span>
+    <span class="k">for</span> y <span class="k">in</span> range(h):
+        <span class="k">for</span> x <span class="k">in</span> range(pw):
+            si = (y * pw + x) * <span class="n">4</span>
+            di_l = (y * w + x) * <span class="n">4</span>
+            di_r = (y * w + (x + pw)) * <span class="n">4</span>
+            out[di_l:di_l + <span class="n">4</span>] = lp[si:si + <span class="n">4</span>]
+            out[di_r:di_r + <span class="n">4</span>] = rp[si:si + <span class="n">4</span>]
+    canvas.pixels = out
+    canvas.filepath_raw = out_path
+    canvas.file_format = <span class="s">&quot;PNG&quot;</span>
+    canvas.save()
+    bpy.data.images.remove(left)
+    bpy.data.images.remove(right)
+    bpy.data.images.remove(canvas)
+
+
+<span class="k">def</span> render_still(sc, world, sky, path, engine):
+    <span class="s">&quot;&quot;&quot;Gallery still: low vs high sun_elevation diptych — the contract at a glance.&quot;&quot;&quot;</span>
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;sky_still_&quot;</span>)
+    <span class="k">try</span>:
+        left = os.path.join(tmp, <span class="s">&quot;low.png&quot;</span>)
+        right = os.path.join(tmp, <span class="s">&quot;high.png&quot;</span>)
+        _stage_for_still(sc, world, sky, ELEV_LOW)
+        _render_panel(sc, left, engine, samples=<span class="n">72</span>)
+        _stage_for_still(sc, world, sky, ELEV_HIGH)
+        _render_panel(sc, right, engine, samples=<span class="n">72</span>)
+        _diptych(left, right, path)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> build_scene():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+    world, sky, bg = build_sky_world(ELEV_LOW)
+    sc.world = world
+    build_floor(sc)
+    build_ceramic(sc)
+    <span class="k">return</span> sc, world, sky, bg
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(
+        <span class="s">&quot;--engine&quot;</span>,
+        default=<span class="s">&quot;cycles&quot;</span>,
+        choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+        help=<span class="s">&quot;render engine for --output (cycles default: sky is a Cycles strength)&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    sc, world, sky, bg = build_scene()
+    code = check(sc, world, sky, bg)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(sc, world, sky, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;sky-texture-sun-elevation OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="sky-texture-sun-elevation render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

@@ -393,6 +393,19 @@
         "mesh",
         "attributes"
       ]
+    },
+    {
+      "name": "sky-texture-sun-elevation",
+      "dir": "examples/sky-texture-sun-elevation",
+      "teaches": "World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate >= 1.25).",
+      "witnessesFix": "AI code still assigns sky_type='NISHITA' and dust_density on 5.1 — both are wrong (NISHITA removed; dust_density is AttributeError; use MULTIPLE_SCATTERING + aerosol_density). A near-black Background Strength alone is not a sky: Sky must link into Background Color. Elevation that does not brighten zenith fails the rise gate.",
+      "hero": "docs/gallery/assets/sky-texture-sun-elevation-hero.webp",
+      "preview": "examples/sky-texture-sun-elevation/preview.webp",
+      "tags": [
+        "world",
+        "sky",
+        "render"
+      ]
     }
   ]
 }

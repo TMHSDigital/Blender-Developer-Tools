@@ -474,3 +474,14 @@ jobs:
           # Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/custom-normals-shade/custom_normals_shade.py --
+
+      - name: Shipped example - sky texture sun elevation (Nishita / MS + zenith rise)
+        run: |
+          set -euo pipefail
+          # Check only (no gallery still): World ShaderNodeTexSky drives
+          # Background Color; sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING
+          # on 5.1 (NISHITA gone); dust_density is 4.5-only (aerosol_density on
+          # 5.1). Two tiny Cycles OPEN_EXR zenith probes assert sun_elevation
+          # 8→55 deg brightens zenith (rise gate ≥ 1.25). Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py --

@@ -81,6 +81,7 @@
     "examples/png-exr-alpha",
     "examples/shader-node-group",
     "examples/shape-key-blend",
+    "examples/sky-texture-sun-elevation",
     "examples/swatch-grid",
     "examples/temp-override-join",
     "examples/text-version-stamp",

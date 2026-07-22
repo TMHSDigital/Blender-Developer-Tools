@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>32 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>33 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 32 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 33 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -85,7 +85,7 @@ or expand a category below.
 </p>
 
 <details>
-<summary><strong>Materials, shading &amp; compositing</strong> — 6 examples</summary>
+<summary><strong>Materials, shading &amp; compositing</strong> — 7 examples</summary>
 
 <table>
 <tr>
@@ -178,6 +178,23 @@ non-destructive path.
 as if associated-alpha — straight-authored dark values at low alpha clamp to white
 (closed-form error **0.98** at `(0.02, a=1/255)`). OpenEXR preserves float RGBA;
 byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping alpha.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: terracotta jar diptych on a dark floor — left panel low sun at 8 degrees with a deep blue zenith and warm horizon limb, right panel high sun at 55 degrees with a brighter cyan sky, proving ShaderNodeTexSky sun_elevation" /></a>
+</td>
+<td valign="middle">
+
+### [sky-texture-sun-elevation](examples/sky-texture-sun-elevation/)
+
+World `ShaderNodeTexSky` driving Background Color — the sky contract AI lighting
+code misses across 4.5 → 5.1. `sky_type` is `NISHITA` on 4.5 LTS and
+`MULTIPLE_SCATTERING` on 5.1 (`NISHITA` gone); `dust_density` exists only on 4.5
+(`aerosol_density` on 5.1). Two tiny Cycles EXR zenith probes assert
+`sun_elevation` 8° → 55° brightens zenith (rise **2.25x** / **1.50x**, gate ≥ 1.25).
+Gallery still is a dual-elevation diptych so the contract reads at thumbnail scale.
 
 </td>
 </tr>
