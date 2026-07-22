@@ -19,6 +19,7 @@ checker colors. If the UV contract failed, the pixels would say so:
     blender --background --python uv_layer_grid.py -- --output uv.png
 """
 import bpy, bmesh, sys, os, math, argparse
+from mathutils import Vector
 
 SEG = 8
 SIZE = 1.0
@@ -244,15 +245,108 @@ def render_still(path, engine):
     scene = bpy.context.scene
     card = make_uv_testcard("UVCard")
 
-    # Left: the hazard — calc_uvs alone, no UV layer → flat teal of texel (0,0).
-    broken = textured_plane("Broken", card, with_uvs=False)
-    broken.location = (-1.18, 0.0, 0.94)
-    broken.rotation_euler = (math.radians(62), 0.0, math.radians(8))
+    # --- Staging materials: quiet and dark, the panel faces carry the color --
+    def pbr(name, base, rough, metal=0.0):
+        m = bpy.data.materials.new(name)
+        m.use_nodes = True
+        b = m.node_tree.nodes["Principled BSDF"]
+        b.inputs["Base Color"].default_value = (*base, 1.0)
+        b.inputs["Roughness"].default_value = rough
+        b.inputs["Metallic"].default_value = metal
+        return m
 
-    # Right: the repair — pre-create UV layer, then calc_uvs fills it.
-    fixed = textured_plane("Fixed", card, with_uvs=True)
-    fixed.location = (1.18, 0.0, 0.94)
-    fixed.rotation_euler = (math.radians(62), 0.0, math.radians(-8))
+    frame_mat = pbr("Frame", (0.05, 0.053, 0.06), 0.32, 0.65)
+    stand_mat = pbr("Stand", (0.032, 0.035, 0.042), 0.45, 0.4)
+    led_mat = pbr("Led", (0.0, 0.0, 0.0), 0.6)
+    led_b = led_mat.node_tree.nodes["Principled BSDF"]
+    led_b.inputs["Emission Color"].default_value = (1.0, 0.45, 0.12, 1.0)
+    led_b.inputs["Emission Strength"].default_value = 4.0
+
+    def box(name, dims, loc, rot, mat, bevel=0.0):
+        dx, dy, dz = (d * 0.5 for d in dims)
+        verts = [
+            (-dx, -dy, -dz), (dx, -dy, -dz), (dx, dy, -dz), (-dx, dy, -dz),
+            (-dx, -dy, dz), (dx, -dy, dz), (dx, dy, dz), (-dx, dy, dz),
+        ]
+        faces = [
+            (0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1),
+            (1, 5, 6, 2), (2, 6, 7, 3), (4, 0, 3, 7),
+        ]
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(verts, [], faces)
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        if bevel > 0.0:
+            mod = ob.modifiers.new("Edge", "BEVEL")
+            mod.width = bevel
+            mod.segments = 2
+        return ob
+
+    def bar_between(name, p1, p2, width, mat):
+        a, b = Vector(p1), Vector(p2)
+        d = b - a
+        ob = box(name, (width, width, d.length), (a + b) * 0.5, (0, 0, 0), mat, 0.01)
+        ob.rotation_mode = "QUATERNION"
+        ob.rotation_quaternion = d.to_track_quat("Z", "Y")
+        return ob
+
+    # --- Two framed lightbox displays, each on a floor tray with a rear
+    # kick leg. The face planes keep their origins at the face centers (the
+    # pixel witness probes the projected centers), with a ~0.2-unit bezel
+    # between the face edge and the frame so the probed patch stays on data.
+    LEAN = math.radians(75.0)  # 15° back off vertical, easel-like
+
+    def display(name, with_uvs, cx, cy, yaw_deg):
+        yaw = math.radians(yaw_deg)
+        asm = bpy.data.objects.new(name + "Asm", None)
+        asm.rotation_euler = (LEAN, 0.0, yaw)
+        rot = asm.rotation_euler.to_matrix()
+        # Face-center height such that the frame's bottom edge rests in tray.
+        contact = rot @ Vector((0.0, -1.17, 0.02))
+        asm.location = (cx, cy, 0.07 - contact.z)
+        scene.collection.objects.link(asm)
+
+        # Left: the hazard — calc_uvs alone, no UV layer → flat teal of
+        # texel (0,0). Right: the repair — pre-create, then calc_uvs fills.
+        face = textured_plane(name, card, with_uvs)
+        face.parent = asm
+        face.location = (0.0, 0.0, 0.075)
+
+        plate = box(name + "Back", (2.34, 2.34, 0.14), (0, 0, 0), (0, 0, 0),
+                    frame_mat, 0.02)
+        plate.parent = asm
+        bezels = (
+            ((2.34, 0.17, 0.20), (0.0, 1.085, 0.02)),
+            ((2.34, 0.17, 0.20), (0.0, -1.085, 0.02)),
+            ((0.17, 2.0, 0.20), (1.085, 0.0, 0.02)),
+            ((0.17, 2.0, 0.20), (-1.085, 0.0, 0.02)),
+        )
+        for i, (dims, loc) in enumerate(bezels):
+            bez = box(f"{name}Bez{i}", dims, loc, (0, 0, 0), frame_mat, 0.02)
+            bez.parent = asm
+        led = box(name + "Led", (0.06, 0.03, 0.035), (0.92, -1.085, 0.128),
+                  (0, 0, 0), led_mat, 0.008)
+        led.parent = asm
+
+        base = asm.location
+        box(name + "Tray", (2.0, 0.32, 0.10),
+            (base.x + contact.x, base.y + contact.y, 0.05),
+            (0, 0, yaw), stand_mat, 0.02)
+        back = rot @ Vector((0.0, 0.0, -1.0))
+        back.z = 0.0
+        back.normalize()
+        for side in (-0.75, 0.75):
+            attach = base + rot @ Vector((side, 0.55, -0.12))
+            foot = (base.x + contact.x + side * math.cos(yaw) + back.x * 0.85,
+                    base.y + contact.y - side * math.sin(yaw) + back.y * 0.85,
+                    0.02)
+            bar_between(f"{name}Leg{side:+.2f}", attach, foot, 0.06, stand_mat)
+
+    display("Broken", False, -1.38, 0.30, 6.0)
+    display("Fixed", True, 1.45, -0.10, 9.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -291,21 +385,23 @@ def render_still(path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.8, -4.8, 5.8), 300.0, 4.5, (1.0, 0.96, 0.9), (52, 0, -32))
-    light("Fill", (4.8, -2.8, 1.6), 55.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
-    light("Rim", (0.2, 4.0, 2.8), 90.0, 3.2, (0.6, 0.78, 1.0), (-62, 0, 178))
-    # Between the panels and the wall so it only rakes the backdrop: a
-    # contained warm pool, corners falling off to dark.
-    light("Wedge", (0.3, 5.4, 1.9), 380.0, 3.6, (1.0, 0.68, 0.38), (-72, 0, 180))
+    # Aimed steeply down so its spill dies on the floor, not on the wall.
+    light("Key", (-4.4, -4.2, 6.4), 340.0, 5.0, (1.0, 0.96, 0.9), (60, 0, -32))
+    light("Fill", (4.8, -2.8, 1.6), 80.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
+    light("Rim", (0.2, 4.6, 3.0), 250.0, 3.5, (0.6, 0.78, 1.0), (-42, 0, 178))
+    # Uplight between the displays and the wall, raking UP the backdrop: the
+    # visible wall band above the panel tops only spans z≈2.8–3.4, so the
+    # warm pool is aimed to live there instead of hiding behind the panels.
+    light("Wedge", (-2.2, 5.6, 2.3), 480.0, 3.0, (1.0, 0.76, 0.5), (-117, 0, 180))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.95)
+    aim.location = (0.1, 0.05, 1.0)
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 45.0
+    cam_data.lens = 48.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -6.6, 2.1)
+    cam.location = (3.1, -8.35, 2.2)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
     con.track_axis = "TRACK_NEGATIVE_Z"

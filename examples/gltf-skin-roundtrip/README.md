@@ -15,24 +15,24 @@ maps are in [`triangulate-tangents`](../triangulate-tangents/).
 **What it witnesses:** the skinned-mesh export contract the geometry
 round-trip left uncovered.
 
-1. **The skeleton survives.** `skins[0].joints` names every bone; the
-   re-imported armature carries the same 7 bones, the same parent chain, and
-   rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes
-   exactly as it does to meshes (their translations convert, no rotation is
-   written).
-2. **The weights survive.** Every primitive carries JOINTS_0/WEIGHTS_0;
-   per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex
-   groups match the authored groups **bit-exactly** (w_err 0.0), compared as
-   straddle-safe position keys, the same protocol as the crate example.
-3. **The deformation survives.** Posed identically, the re-imported rig's
-   evaluated mesh matches the original's within 4.8e-07 — linear blend
-   skinning through the file format. The comparison is by rest-position key,
-   never sorted multisets: the exporter welds duplicate loops (32 here), so
-   cardinalities differ and a naive sorted zip mispairs vertices (a phantom
-   2.29 "deviation" measured and fixed during authoring).
-4. **The mesh must be parented to the armature.** The exporter warns
-   "Armature must be the parent of skinned mesh" and picks an armature by
-   name otherwise — with two rigs in the file it can bind the wrong one.
+- **The skeleton survives.** `skins[0].joints` names every bone; the
+  re-imported armature carries the same 7 bones, the same parent chain, and
+  rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes
+  exactly as it does to meshes (their translations convert, no rotation is
+  written).
+- **The weights survive.** Every primitive carries JOINTS_0/WEIGHTS_0;
+  per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex
+  groups match the authored groups **bit-exactly** (w_err 0.0), compared as
+  straddle-safe position keys, the same protocol as the crate example.
+- **The deformation survives.** Posed identically, the re-imported rig's
+  evaluated mesh matches the original's within 4.8e-07 — linear blend
+  skinning through the file format. The comparison is by rest-position key,
+  never sorted multisets: the exporter welds duplicate loops (32 here), so
+  cardinalities differ and a naive sorted zip mispairs vertices (a phantom
+  2.29 "deviation" measured and fixed during authoring).
+- **The mesh must be parented to the armature.** The exporter warns
+  "Armature must be the parent of skinned mesh" and picks an armature by
+  name otherwise — with two rigs in the file it can bind the wrong one.
 
 **What each check catches on failure:** exporting with `export_skins=False`
 (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex

@@ -66,4 +66,9 @@ It exits non-zero on failure and prints every measured error and tolerance on su
 so CI logs carry the numbers. The `blender-smoke` workflow runs the check on Blender
 4.5 LTS and 5.1. In the render, `Closest` interpolation keeps the pixel grid honest —
 the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the
-PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives.
+PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The
+monitor is staged as a designed object — beveled dark-polymer case, machined metal
+stand, teal power LED — on the dark studio stage from `docs/VISUAL-STYLE.md`
+(Standard view transform; warm key, cool fill and rim; a warm pool raking the back
+wall). The screen stays emissive and matte — specular off, emission strength 1.0 —
+so the card's values read exactly.

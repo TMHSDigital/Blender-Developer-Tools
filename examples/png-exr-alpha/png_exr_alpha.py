@@ -11,8 +11,8 @@ with straight alpha and only pays ordinary quantization.
 
 AI-generated Blender code commonly trusts `Image.save()` to PNG for float
 RGBA scratch buffers (masks, ID mattes, AOVs). Pass --output to also render
-a dual-easel still: left is the PNG-mangled reload, right is the EXR-clean
-reload.
+a staged still of two framed verification displays: left is the PNG-mangled
+reload, right is the EXR-clean reload.
 
     blender --background --python png_exr_alpha.py --
     blender --background --python png_exr_alpha.py -- --output alpha.png
@@ -331,22 +331,16 @@ def eevee_engine_id():
     return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
 
 
-def specular_off(bsdf):
-    if "Specular IOR Level" in bsdf.inputs:
-        bsdf.inputs["Specular IOR Level"].default_value = 0.0
-    elif "Specular" in bsdf.inputs:
-        bsdf.inputs["Specular"].default_value = 0.0
-
-
 def make_gallery_card(name, mangled):
-    """Visual card of the false-unpremul contract for the dual-easel still.
+    """Visual card of the false-unpremul contract for the staged still.
 
     Columns = rising alpha; top rows = dark mid-tones that PNG clamps to
     white; lower rows = primaries that survive. Left panel bakes the
     closed-form mangling; right panel shows authored straight RGBA.
 
-    A dark bezel is painted into the texture so panel edges read as framed
-    objects in the studio still (render-only — checks use fill_pattern).
+    A dark trim is painted into the texture edge so the emissive face reads
+    as a recessed screen inside its physical bezel (render-only — checks
+    use fill_pattern).
     """
     gw, gh = 256, 192
     border = 10
@@ -387,8 +381,46 @@ def make_gallery_card(name, mangled):
     return img
 
 
-def easel_plane(name, image, loc, rot_z_deg):
-    """Single-plane easel + short stand — no dual-surface z-fight."""
+def fixture_mats():
+    """Designed non-data surfaces: dark polymer bezels, rail-steel struts,
+    machined nameplates, plinth — no Principled defaults."""
+    def mat_principled(name, color, metallic, rough):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes["Principled BSDF"]
+        bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+        bsdf.inputs["Metallic"].default_value = metallic
+        bsdf.inputs["Roughness"].default_value = rough
+        return mat
+
+    return {
+        "bezel": mat_principled("BezelPolymer", (0.045, 0.048, 0.055), 0.1, 0.5),
+        "rail": mat_principled("RailSteel", (0.075, 0.08, 0.09), 0.6, 0.45),
+        "plinth": mat_principled("PlinthSteel", (0.10, 0.11, 0.12), 0.6, 0.5),
+        "plate": mat_principled("PlateSteel", (0.14, 0.15, 0.17), 0.7, 0.4),
+    }
+
+
+def box_obj(name, dims, loc, mat, rot_x=0.0):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.scale = dims
+    ob.location = loc
+    ob.rotation_euler = (rot_x, 0.0, 0.0)
+    bpy.context.collection.objects.link(ob)
+    return ob
+
+
+def face_mesh(name):
+    """UV-mapped unit plane (create_grid lies in XY facing +Z; the display
+    unit rotates it vertical)."""
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -404,84 +436,101 @@ def easel_plane(name, image, loc, rot_z_deg):
         bm.to_mesh(me)
     finally:
         bm.free()
+    return me
 
-    mat = bpy.data.materials.new(name + "Mat")
+
+def face_mat(name, image):
+    """Data faces stay pure emission: exact card values, no specular, no
+    shading — the panel is a backlit data display."""
+    mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
-    nodes, links = nt.nodes, nt.links
-    bsdf = nodes["Principled BSDF"]
-    tex = nodes.new("ShaderNodeTexImage")
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    tex = nt.nodes.new("ShaderNodeTexImage")
     tex.image = image
     tex.interpolation = "Closest"
-    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
-    bsdf.inputs["Roughness"].default_value = 1.0
-    specular_off(bsdf)
-    # Faint emission so clamps read under a dim stage without washing the wall.
-    bsdf.inputs["Emission Strength"].default_value = 0.22
-    me.materials.append(mat)
+    nt.links.new(tex.outputs["Color"], em.inputs["Color"])
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    em.inputs["Strength"].default_value = 1.0
+    return mat
 
+
+def caption_mat():
+    mat = bpy.data.materials.new("CaptionGrey")
+    mat.use_nodes = True
+    cb = mat.node_tree.nodes["Principled BSDF"]
+    cb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
+    cb.inputs["Metallic"].default_value = 0.2
+    cb.inputs["Roughness"].default_value = 0.6
+    sock = cb.inputs.get("Emission Color") or cb.inputs["Emission"]
+    sock.default_value = (0.38, 0.40, 0.45, 1.0)
+    cb.inputs["Emission Strength"].default_value = 0.5
+    return mat
+
+
+def display_unit(name, image, caption, x, mats, capmat):
+    """One verification display: the emissive data face seated proud of a
+    thick dark bezel, carried by a rear strut and foot, with a machined
+    nameplate under the bezel — a physical instrument standing on the
+    shared plinth, not a floating texture."""
     root = bpy.data.objects.new(name, None)
-    root.location = loc
-    root.rotation_euler = (math.radians(62), 0.0, math.radians(rot_z_deg))
-    root.scale = (0.88, 0.88, 0.88)
+    root.location = (x, 0.0, 0.0)
     bpy.context.collection.objects.link(root)
 
-    face = bpy.data.objects.new(name + "Face", me)
-    bpy.context.collection.objects.link(face)
-    face.parent = root
+    def adopt(ob):
+        ob.parent = root
+        return ob
 
-    stand_me = bpy.data.meshes.new(name + "Stand")
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0)
-        bm.to_mesh(stand_me)
-    finally:
-        bm.free()
-    smat = bpy.data.materials.new(name + "StandMat")
-    smat.use_nodes = True
-    sb = smat.node_tree.nodes["Principled BSDF"]
-    sb.inputs["Base Color"].default_value = (0.045, 0.048, 0.055, 1.0)
-    sb.inputs["Roughness"].default_value = 0.45
-    if "Metallic" in sb.inputs:
-        sb.inputs["Metallic"].default_value = 0.3
-    stand_me.materials.append(smat)
-    stand = bpy.data.objects.new(name + "Stand", stand_me)
-    # Fully below the card face — never intersects the evidence plane.
-    stand.scale = (0.06, 0.06, 0.28)
-    stand.location = (0.0, 0.04, -0.88)
-    bpy.context.collection.objects.link(stand)
-    stand.parent = root
+    # bezel with real thickness; the face sits proud of its front surface
+    adopt(box_obj(name + "Bezel", (2.64, 0.16, 2.04), (0.0, 0.0, 1.80),
+                  mats["bezel"]))
+    face = bpy.data.objects.new(name + "Face", face_mesh(name + "Face"))
+    bpy.context.collection.objects.link(face)
+    face.data.materials.append(face_mat(name + "FaceMat", image))
+    face.location = (0.0, -0.085, 1.80)
+    face.rotation_euler = (math.radians(90), 0.0, 0.0)
+    face.scale = (1.20, 0.90, 1.0)
+    adopt(face)
+    # rear strut leaning onto the bezel back, foot on the plinth top
+    adopt(box_obj(name + "Strut", (0.26, 0.30, 1.30), (0.0, 0.42, 1.10),
+                  mats["rail"], rot_x=math.radians(18)))
+    adopt(box_obj(name + "Foot", (0.60, 0.80, 0.10), (0.0, 0.72, 0.50),
+                  mats["rail"]))
+    # nameplate bridging bezel bottom and plinth top
+    adopt(box_obj(name + "Plate", (1.60, 0.06, 0.26), (0.0, -0.03, 0.63),
+                  mats["plate"]))
+    cu = bpy.data.curves.new(name + "Caption", "FONT")
+    cu.body = caption
+    cu.align_x = "CENTER"
+    cu.align_y = "CENTER"
+    cu.size = 0.15
+    cu.extrude = 0.004
+    cu.materials.append(capmat)
+    cap = bpy.data.objects.new(name + "Caption", cu)
+    cap.location = (0.0, -0.065, 0.63)
+    cap.rotation_euler = (math.radians(90), 0.0, 0.0)
+    bpy.context.collection.objects.link(cap)
+    adopt(cap)
     return root
 
 
 def render_still(path, engine):
+    import mathutils
+
     scene = bpy.context.scene
 
     png_card = make_gallery_card("PngMangled", mangled=True)
     exr_card = make_gallery_card("ExrClean", mangled=False)
 
-    # Mounted easels on a shared dark table — continuous base, no V-tear shadow.
-    easel_plane("PngPanel", png_card, (-1.15, 0.1, 1.28), 5)
-    easel_plane("ExrPanel", exr_card, (1.15, 0.1, 1.28), -5)
-
-    table_me = bpy.data.meshes.new("Table")
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0)
-        bm.to_mesh(table_me)
-    finally:
-        bm.free()
-    tmat = bpy.data.materials.new("TableMat")
-    tmat.use_nodes = True
-    tb = tmat.node_tree.nodes["Principled BSDF"]
-    tb.inputs["Base Color"].default_value = (0.022, 0.024, 0.028, 1.0)
-    tb.inputs["Roughness"].default_value = 0.6
-    table_me.materials.append(tmat)
-    table = bpy.data.objects.new("Table", table_me)
-    table.scale = (1.5, 0.55, 0.08)
-    table.location = (0.0, 0.25, 0.28)
-    scene.collection.objects.link(table)
+    # The verification station: two framed displays on a shared plinth —
+    # left bakes the closed-form PNG mangling, right is EXR-clean.
+    mats = fixture_mats()
+    capmat = caption_mat()
+    display_unit("PngDisplay", png_card, "FLOAT → PNG", -1.45, mats, capmat)
+    display_unit("ExrDisplay", exr_card, "FLOAT → EXR", 1.45, mats, capmat)
+    box_obj("Plinth", (6.10, 1.80, 0.45), (0.0, 0.35, 0.225), mats["plinth"])
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -493,46 +542,57 @@ def render_still(path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.02, 0.021, 0.025, 1.0)
-    fb.inputs["Roughness"].default_value = 0.8
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 8.8, 0.0)
+    wall.location = (0.0, 9.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (
-        0.012, 0.013, 0.015, 1.0,
+        0.02, 0.021, 0.025, 1.0,
     )
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, target):
         ld = bpy.data.lights.new(name, "AREA")
         ld.energy = energy
         ld.size = size
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        d = mathutils.Vector(target) - ob.location
+        ob.rotation_euler = d.to_track_quat("-Z", "Y").to_euler()
         scene.collection.objects.link(ob)
 
-    light("Key", (-3.8, -4.8, 5.8), 220.0, 4.5, (1.0, 0.96, 0.9), (52, 0, -32))
-    light("Fill", (4.8, -2.8, 1.6), 40.0, 9.0, (0.75, 0.85, 1.0), (72, 0, 52))
-    light("Rim", (0.2, 4.8, 2.8), 120.0, 3.2, (0.6, 0.78, 1.0), (-62, 0, 178))
-    light("Wedge", (0.5, 6.5, 2.5), 450.0, 7.0, (1.0, 0.72, 0.42), (-78, 0, 180))
+    # Shaped warm key, faint cool fill, cool rim, and the signature warm
+    # wedge between station and wall aimed at the wall point behind the
+    # subject — every light has an explicit target so nothing grazes a
+    # flat surface (grazing area lights draw stray bands).
+    light("Key", (-4.0, -4.5, 7.0), 460.0, 4.5, (1.0, 0.96, 0.9),
+          (0.0, 0.2, 1.8))
+    light("Fill", (6.0, -3.0, 3.0), 90.0, 9.0, (0.75, 0.85, 1.0),
+          (0.5, 0.0, 1.8))
+    light("Rim", (0.5, 4.5, 7.0), 320.0, 4.0, (0.6, 0.78, 1.0),
+          (0.0, 0.3, 2.0))
+    light("Wedge", (-0.5, 5.5, 6.0), 520.0, 4.5, (1.0, 0.76, 0.5),
+          (0.0, 9.0, 2.6))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.1, 1.15)
+    aim.location = (-0.10, 0.2, 1.65)
     scene.collection.objects.link(aim)
 
+    # Gentle 3/4 from the right: both faces stay fully readable while the
+    # bezels, struts, and plinth show their thickness.
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -6.0, 2.15)
+    cam.location = (3.9, -9.3, 3.05)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
     con.track_axis = "TRACK_NEGATIVE_Z"

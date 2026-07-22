@@ -12,16 +12,16 @@ lifted into its own smoke-gated witness so the contract cannot quietly drift.
 **What it witnesses:** three related contracts on the same grid topology
 (`SEG×SEG` faces, `(SEG+1)²` verts, size `1.0` → coords in `[-1, 1]`):
 
-1. **Silent no-op** — `create_grid(..., calc_uvs=True)` with no prior
-   `bm.loops.layers.uv.new(...)` leaves `len(bm.loops.layers.uv) == 0` and
-   `mesh.uv_layers` empty after `to_mesh`.
-2. **Pre-create repair** — create the UV layer first, then `calc_uvs=True`
-   fills every loop. UVs must match the closed form
-   `u = (x/size + 1)/2`, `v = (y/size + 1)/2` within `1e-6`, both on the
-   BMesh and after persisting to `mesh.uv_layers.active.data`.
-3. **Explicit assignment fallback** — `calc_uvs=False`, then
-   `uv.new("UVMap")` and a loop write of the same closed form. Does not
-   depend on `calc_uvs` at all; same tolerance.
+- **Silent no-op** — `create_grid(..., calc_uvs=True)` with no prior
+  `bm.loops.layers.uv.new(...)` leaves `len(bm.loops.layers.uv) == 0` and
+  `mesh.uv_layers` empty after `to_mesh`.
+- **Pre-create repair** — create the UV layer first, then `calc_uvs=True`
+  fills every loop. UVs must match the closed form
+  `u = (x/size + 1)/2`, `v = (y/size + 1)/2` within `1e-6`, both on the
+  BMesh and after persisting to `mesh.uv_layers.active.data`.
+- **Explicit assignment fallback** — `calc_uvs=False`, then
+  `uv.new("UVMap")` and a loop write of the same closed form. Does not
+  depend on `calc_uvs` at all; same tolerance.
 
 **What each check catches on failure:**
 
@@ -47,13 +47,14 @@ fill assert identically on Blender 4.5 LTS and 5.1. The only gate in the file
 is the EEVEE engine id for the optional render (`BLENDER_EEVEE_NEXT` on 4.x,
 `BLENDER_EEVEE` on 5.x).
 
-**Render:** two easel panels sharing one neon checker image. Left is the
+**Render:** two framed lightbox displays on floor trays (rear kick legs,
+status LED) sharing one neon checker image, shot at a slight 3/4. Left is the
 hazard (no UV layer) — flat teal of texel (0, 0). Right is the repair
 (pre-create + `calc_uvs`) — full magenta/cyan checker. If the UV contract
 failed, both panels would read the same — and the still is not just an
 illustration: the script re-reads its own render and exits non-zero unless
 the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread
-`0.0078`, repair spread `0.7294`).
+`0.0078`, repair spread `0.7412`; identical on 4.5.11).
 
 ## Run
 

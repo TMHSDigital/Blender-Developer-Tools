@@ -13,33 +13,33 @@ a GAMMA_CROSS fed by a dedicated source pair T1/T2, a scene strip, and a text
 strip — asserted against closed-form spans on each version's canonical
 accessors, then re-asserted after a save/reload round-trip:
 
-1. **Accessor rename** — 5.x: `sequence_editor.sequences` raises
-   AttributeError; only `.strips` exists. 4.5: both accessors exist and see
-   the same strips (the transition bridge).
-2. **Creation signature** — `strips.new_effect(...)` ends a strip with
-   `frame_end=` on 4.5 but `length=` on 5.x; the wrong kwarg raises TypeError
-   on each side (asserted, not assumed). 5.x also rejects the removed
-   `TRANSFORM` effect type — per-strip `strip.transform` (StripTransform)
-   places strips in the frame on both versions.
-3. **Frame-range closed form** — every strip's (start, end, duration) matches
-   the authored end-exclusive span: `frame_final_*` on 4.5;
-   `left_handle`/`right_handle`/`duration` on 5.x, where the `frame_final_*`
-   names are deprecated aliases (removal announced for 6.0) that must still
-   read equal — the bridge is asserted lossless, with the RNA
-   `is_deprecated` flag checked on 5.x and its absence checked on 4.5.
-4. **Effect wiring** — `input_1`/`input_2` (not `input1`) on both versions,
-   in authored order, and the cross clamped to exactly the T1/T2 overlap.
-5. **Scene strip** — 4-arg `new_scene(name, scene, channel, frame_start)` on
-   both versions (no `length`/`frame_end` kwarg); default span is the source
-   scene's frame range; the strip sources a *separate* Stage scene.
-6. **Round-trip** — spans, channels, colors, GC wiring, text, and mosaic
-   transforms (pixel-unit offsets, tol 1e-3) all survive
-   `save_as_mainfile` → `open_mainfile`.
-7. **Compositing (`--check-pixels`)** — a 96×54 render asserts each mosaic
-   cell center carries its strip color (tol 0.1), the cross cell is a true
-   mid blend (strictly between the sources on every channel), and a margin
-   point matches neither cross source — because a consumed input compositing
-   independently would paint it full-frame.
+- **Accessor rename** — 5.x: `sequence_editor.sequences` raises
+  AttributeError; only `.strips` exists. 4.5: both accessors exist and see
+  the same strips (the transition bridge).
+- **Creation signature** — `strips.new_effect(...)` ends a strip with
+  `frame_end=` on 4.5 but `length=` on 5.x; the wrong kwarg raises TypeError
+  on each side (asserted, not assumed). 5.x also rejects the removed
+  `TRANSFORM` effect type — per-strip `strip.transform` (StripTransform)
+  places strips in the frame on both versions.
+- **Frame-range closed form** — every strip's (start, end, duration) matches
+  the authored end-exclusive span: `frame_final_*` on 4.5;
+  `left_handle`/`right_handle`/`duration` on 5.x, where the `frame_final_*`
+  names are deprecated aliases (removal announced for 6.0) that must still
+  read equal — the bridge is asserted lossless, with the RNA
+  `is_deprecated` flag checked on 5.x and its absence checked on 4.5.
+- **Effect wiring** — `input_1`/`input_2` (not `input1`) on both versions,
+  in authored order, and the cross clamped to exactly the T1/T2 overlap.
+- **Scene strip** — 4-arg `new_scene(name, scene, channel, frame_start)` on
+  both versions (no `length`/`frame_end` kwarg); default span is the source
+  scene's frame range; the strip sources a *separate* Stage scene.
+- **Round-trip** — spans, channels, colors, GC wiring, text, and mosaic
+  transforms (pixel-unit offsets, tol 1e-3) all survive
+  `save_as_mainfile` → `open_mainfile`.
+- **Compositing (`--check-pixels`)** — a 96×54 render asserts each mosaic
+  cell center carries its strip color (tol 0.1), the cross cell is a true
+  mid blend (strictly between the sources on every channel), and a margin
+  point matches neither cross source — because a consumed input compositing
+  independently would paint it full-frame.
 
 **What each check catches on failure:**
 
