@@ -546,6 +546,17 @@
           <a class="card-link" href="collision-hull-proxy/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh attributes">
+        <a class="card-media" href="custom-normals-shade/" aria-label="custom-normals-shade example detail page">
+          <img src="assets/custom-normals-shade-hero.webp" alt="custom-normals-shade — A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="custom-normals-shade/">custom-normals-shade</a></h2>
+          <p class="teaches">A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact).</p>
+          <p class="witnesses"><span class="tag">witnesses</span> use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (188 of 388 edges over 3 meshes).</p>
+          <a class="card-link" href="custom-normals-shade/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

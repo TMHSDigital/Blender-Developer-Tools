@@ -460,3 +460,17 @@ jobs:
           # the 255-face per-piece engine budget. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/collision-hull-proxy/collision_hull_proxy.py --
+
+      - name: Shipped example - custom normals + shade by angle (post-4.1 shading contract)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a jerry can prop; asserts the legacy
+          # shading API stays removed (use_auto_smooth/use_custom_normals/
+          # calc_normals), set_sharp_from_angle sharp sets matching an
+          # independent dihedral recompute exactly, evaluated normal welds/
+          # splits, custom split normals surviving depsgraph evaluation
+          # within int16 quantization, and the version-gated shade_auto_smooth
+          # operator divergence (CANCELLED headless on 4.5, FINISHED on 5.1).
+          # Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/custom-normals-shade/custom_normals_shade.py --

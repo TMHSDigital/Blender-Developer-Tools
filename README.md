@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>31 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>32 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 31 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 32 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -504,7 +504,7 @@ round-trips through the raw `POINT` buffer.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 6 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 7 examples</summary>
 
 <table>
 <tr>
@@ -609,6 +609,27 @@ per part group, built with `bmesh.ops.convex_hull` from a coarse
 tests prove containment (5.9e-08), convexity, watertightness, outward
 winding, and Euler characteristic 2 per piece. Proud details cost cage rows;
 concave grooves are free.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry can props with pressed X ribs and red spout rings on a dark studio floor - one faceted flat, one smeared by smooth-everything, one crisp with correct hard edges - proving the post-4.1 shading contract" /></a>
+</td>
+<td valign="middle">
+
+### [custom-normals-shade](examples/custom-normals-shade/)
+
+The shading contract a prop's silhouette depends on: since Blender 4.1,
+hard edges are mesh data (face smooth flags + `sharp_edge` attribute), and
+`use_auto_smooth` / `use_custom_normals` / `calc_normals` are AttributeError
+on **both** 4.5 LTS and 5.1. `set_sharp_from_angle` marks sharp exactly the
+edges an independent dihedral recompute predicts; evaluated loop normals
+weld across smooth edges and split by the dihedral across sharp ones;
+custom split normals survive depsgraph evaluation within their int16
+quantization (1.407e-04, not float-exact). Documents the legacy
+`shade_auto_smooth` operator trap: CANCELLED headless on 4.5, FINISHED
+with the Smooth-by-Angle modifier on 5.1.
 
 </td>
 </tr>

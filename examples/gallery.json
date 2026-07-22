@@ -381,6 +381,18 @@
         "bmesh",
         "mesh"
       ]
+    },
+    {
+      "name": "custom-normals-shade",
+      "dir": "examples/custom-normals-shade",
+      "teaches": "A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact).",
+      "witnessesFix": "use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (188 of 388 edges over 3 meshes).",
+      "hero": "docs/gallery/assets/custom-normals-shade-hero.webp",
+      "preview": "examples/custom-normals-shade/preview.webp",
+      "tags": [
+        "mesh",
+        "attributes"
+      ]
     }
   ]
 }

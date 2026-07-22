@@ -65,6 +65,7 @@
     "examples/collision-hull-proxy",
     "examples/compositor-glare",
     "examples/curve-bevel-arc",
+    "examples/custom-normals-shade",
     "examples/damped-track-aim",
     "examples/depsgraph-export",
     "examples/driver-wave",
