@@ -496,3 +496,12 @@ jobs:
           # 8→55 deg brightens zenith (rise gate ≥ 1.25). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py --
+
+      - name: Shipped example - mesh hygiene audit (topology ingest checklist)
+        run: |
+          set -euo pipefail
+          # Check only (no render): stepped utility pedestal; asserts no ngons,
+          # no loose verts, manifold edges (exactly 2 faces), no zero-area faces,
+          # positive signed volume, Euler V-E+F == 2. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --

@@ -187,6 +187,7 @@
     <button class="chip" data-tag="depsgraph" type="button">depsgraph</button>
     <button class="chip" data-tag="drivers" type="button">drivers</button>
     <button class="chip" data-tag="export" type="button">export</button>
+    <button class="chip" data-tag="game-pipeline" type="button">game-pipeline</button>
     <button class="chip" data-tag="geometry-nodes" type="button">geometry-nodes</button>
     <button class="chip" data-tag="grease-pencil" type="button">grease-pencil</button>
     <button class="chip" data-tag="images" type="button">images</button>
@@ -582,6 +583,17 @@
           <p class="teaches">Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
           <p class="witnesses"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</p>
           <a class="card-link" href="gp-lineart-contour/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="bmesh mesh game-pipeline">
+        <a class="card-media" href="mesh-hygiene-audit/" aria-label="mesh-hygiene-audit example detail page">
+          <img src="assets/mesh-hygiene-audit-hero.webp" alt="mesh-hygiene-audit — Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap)." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="mesh-hygiene-audit/">mesh-hygiene-audit</a></h2>
+          <p class="teaches">Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> AI pipelines that skip topology gates ship ngons, loose verts, open boundaries, inverted winding, or non-sphere Euler into engine ingest. Injecting one defect class at a time exits non-zero (ngon=3, loose=4, boundary=5, zero-area=6, flip=7); the clean solid recovers hygiene_ok on both 4.5.11 and 5.1.2.</p>
+          <a class="card-link" href="mesh-hygiene-audit/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

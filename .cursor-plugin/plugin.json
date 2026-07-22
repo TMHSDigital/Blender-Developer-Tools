@@ -78,6 +78,7 @@
     "examples/image-pixels-testcard",
     "examples/light-link-studio",
     "examples/lod-decimate-chain",
+    "examples/mesh-hygiene-audit",
     "examples/parent-inverse-orrery",
     "examples/png-exr-alpha",
     "examples/shader-node-group",
