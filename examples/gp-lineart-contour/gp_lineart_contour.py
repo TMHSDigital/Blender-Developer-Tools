@@ -23,6 +23,11 @@ By default it runs the correctness check only. Pass --output to render:
     blender --background --python gp_lineart_contour.py -- --output l.png
 """
 import bpy, bmesh, sys, os, math, argparse
+
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
 from mathutils import Matrix
 
 # Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail
@@ -149,7 +154,7 @@ def setup_camera(sc):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.4, -4.2, 2.4)
+    cam.location = (3.95, -4.9, 2.62)
     sc.collection.objects.link(cam)
     sc.camera = cam
     aim = bpy.data.objects.new("Aim", None)
@@ -367,8 +372,27 @@ def render_still(sc, path, engine):
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = path
     sc.view_settings.view_transform = "Standard"
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact. The two
+    # renderable subjects are the crystal source mesh and the GP stroke object.
+    stage = [o for o in sc.objects if o.name in {"Floor", "Wall"}]
+    hero = [
+        o for o in sc.objects
+        if o.type in {"MESH", "GREASEPENCIL"} and o not in stage
+    ]
+    fcode = gallery_framing.check_framing(
+        sc, sc.camera,
+        hero=hero,
+        elements=hero,
+        stage=stage,
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 8
+    return 0
 
 
 def build_scene():
@@ -400,9 +424,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(sc, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 8
+        rcode = render_still(sc, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("gp-lineart-contour OK")

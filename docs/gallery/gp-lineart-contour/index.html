@@ -195,6 +195,7 @@ blender --background --python gp_lineart_contour.py --
 # Also render the gallery still:
 blender --background --python gp_lineart_contour.py -- --output lineart.png</code></pre>
 <p>It exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -227,6 +228,11 @@ By default it runs the correctness check only. Pass --output to render:
     blender --background --python gp_lineart_contour.py -- --output l.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 <span class="k">from</span> mathutils <span class="k">import</span> Matrix
 
 <span class="c"># Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail</span>
@@ -353,7 +359,7 @@ RADIUS = <span class="n">0.028</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.4</span>, -<span class="n">4.2</span>, <span class="n">2.4</span>)
+    cam.location = (<span class="n">3.95</span>, -<span class="n">4.9</span>, <span class="n">2.62</span>)
     sc.collection.objects.link(cam)
     sc.camera = cam
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
@@ -571,8 +577,27 @@ RADIUS = <span class="n">0.028</span>
     sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     sc.render.filepath = path
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact. The two</span>
+    <span class="c"># renderable subjects are the crystal source mesh and the GP stroke object.</span>
+    stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name <span class="k">in</span> {<span class="s">&quot;Floor&quot;</span>, <span class="s">&quot;Wall&quot;</span>}]
+    hero = [
+        o <span class="k">for</span> o <span class="k">in</span> sc.objects
+        <span class="k">if</span> o.type <span class="k">in</span> {<span class="s">&quot;MESH&quot;</span>, <span class="s">&quot;GREASEPENCIL&quot;</span>} <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage
+    ]
+    fcode = gallery_framing.check_framing(
+        sc, sc.camera,
+        hero=hero,
+        elements=hero,
+        stage=stage,
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> build_scene():
@@ -604,9 +629,9 @@ RADIUS = <span class="n">0.028</span>
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(sc, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+        rcode = render_still(sc, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;gp-lineart-contour OK&quot;</span>)
