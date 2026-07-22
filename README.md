@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>33 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>34 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 33 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 34 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -482,7 +482,7 @@ and every orbit lands on its closed form.
 </details>
 
 <details>
-<summary><strong>Context &amp; Grease Pencil</strong> — 2 examples</summary>
+<summary><strong>Context &amp; Grease Pencil</strong> — 3 examples</summary>
 
 <table>
 <tr>
@@ -513,6 +513,22 @@ vertex color. Asserts the GPv3 address break: on 4.5 GPv3 is `grease_pencils_v3`
 while `grease_pencils` is still legacy; on 5.x legacy is gone and GPv3 owns the
 name. Point writes lazily materialize attribute layers, and every position
 round-trips through the raw `POINT` buffer.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gp-lineart-contour/"><img src="examples/gp-lineart-contour/preview.webp" alt="GP Line Art contour: a faceted teal crystal on a dark studio floor outlined in neon cyan Grease Pencil Line Art strokes, proving modifiers.new LINEART with source_object silhouette evaluation" /></a>
+</td>
+<td valign="middle">
+
+### [gp-lineart-contour](examples/gp-lineart-contour/)
+
+Grease Pencil `LINEART` modifier contours via the depsgraph — not Freestyle and
+not hand-drawn strokes. `source_object` is load-bearing (clear → 0 strokes);
+contour+crease off → 0; restore recovers **10** strokes / **34** points on both
+binaries. Stroke width: `thickness` exists on 4.5, `AttributeError` on 5.1 —
+portable path is `radius`.
 
 </td>
 </tr>

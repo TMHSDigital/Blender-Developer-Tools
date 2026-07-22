@@ -73,6 +73,7 @@
     "examples/gltf-skin-roundtrip",
     "examples/gn-instance-grid",
     "examples/gn-sdf-remesh",
+    "examples/gp-lineart-contour",
     "examples/grease-pencil-rosette",
     "examples/image-pixels-testcard",
     "examples/light-link-studio",

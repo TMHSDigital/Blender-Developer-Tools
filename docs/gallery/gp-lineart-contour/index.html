@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gp-lineart-contour — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>gp-lineart-contour</h1>
+    <p>Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gp-lineart-contour render">
+      <img src="../assets/gp-lineart-contour-hero.webp" alt="gp-lineart-contour render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/gp-lineart-contour/gp_lineart_contour.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a faceted crystal, attaches a Grease Pencil <code>LINEART</code> modifier with <code>source_type=&#x27;OBJECT&#x27;</code>, and proves the contour contract through the depsgraph — including the 4.5 → 5.1 stroke-width trap.</p>
+<p><strong>What it witnesses:</strong> the Line Art modifier contract AI-generated NPR code most often gets wrong.</p>
+<ul><li><strong>Contours are a modifier, not Freestyle and not hand-authored strokes.</strong> <code>modifiers.new(..., &#x27;LINEART&#x27;)</code> on a GPv3 object, with <code>target_layer</code> / <code>target_material</code> set, evaluates silhouette edges into drawing strokes.</li><li><strong><code>source_object</code> is load-bearing.</strong> Clearing it yields <strong>0</strong> evaluated strokes (proven in the same check pass). Restoring it recovers the contour.</li><li><strong>Edge-type flags matter.</strong> A freshly added LINEART with <code>use_contour</code> and <code>use_crease</code> both off emits <strong>0</strong> strokes; turning contour (+ crease) back on recovers the silhouette (<strong>10</strong> strokes / <strong>34</strong> points on both binaries for this crystal + camera).</li><li><strong>Stroke width renamed.</strong> 4.5 exposes both <code>thickness</code> (legacy px, set to 45 here) and <code>radius</code>; 5.1 removes <code>thickness</code> (<code>AttributeError</code>) and keeps <code>radius</code> only (portable path: <code>mod.radius = 0.028</code>).</li><li><strong>GPv3 address</strong> matches <code>grease-pencil-rosette</code>: <code>grease_pencils_v3</code> on 4.5, <code>grease_pencils</code> on 5.x.</li></ul>
+<p><strong>What each check catches on failure:</strong> wrong GPv3 collection (exit 2), <code>thickness</code> present/absent on the wrong side of 5.0 (exit 3), lost <code>source_object</code> assignment (exit 4), contour too thin (exit 5), source clear not zeroing strokes (exit 6), flags-off or restore failure (exit 7).</p>
+<p><strong>Version witness:</strong> stroke counts match on 4.5.11 LTS and 5.1.2 (10 strokes / 34 points). The divergence is <code>thickness</code> vs <code>radius</code>.</p>
+<h2>Run</h2>
+<pre><code># Depsgraph contour check — the CI check:
+blender --background --python gp_lineart_contour.py --
+
+# Also render the gallery still:
+blender --background --python gp_lineart_contour.py -- --output lineart.png</code></pre>
+<p>It exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/gp-lineart-contour/gp_lineart_contour.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gp-lineart-contour/gp_lineart_contour.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Grease Pencil Line Art contours — a runnable example.
+
+Witnesses the Line Art modifier contract AI-generated NPR code most often
+gets wrong across the 4.5 LTS → 5.1 window:
+
+1. Contours come from ``modifiers.new(..., &#x27;LINEART&#x27;)`` on a GPv3 object,
+   not from freestyle or hand-drawn strokes.
+2. ``source_type=&#x27;OBJECT&#x27;`` + ``source_object`` is load-bearing — clearing
+   the source yields zero evaluated strokes.
+3. ``use_contour`` must be on for silhouette edges; with contour and crease
+   both off the evaluator emits nothing.
+4. Stroke width: 4.5 exposes both ``thickness`` (legacy px) and ``radius``;
+   5.1 removes ``thickness`` (AttributeError) and keeps ``radius`` only.
+5. GPv3 datablock address matches grease-pencil-rosette: ``grease_pencils_v3``
+   on 4.5, ``grease_pencils`` on 5.x.
+
+The check evaluates the modifier through the depsgraph (no bake required)
+and asserts stroke/point lower bounds against the known failure modes above.
+
+By default it runs the correctness check only. Pass --output to render:
+
+    blender --background --python gp_lineart_contour.py --
+    blender --background --python gp_lineart_contour.py -- --output l.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix
+
+<span class="c"># Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail</span>
+CRYSTAL_SCALE = <span class="n">1.15</span>
+STROKE_MIN = <span class="n">1</span>
+POINT_MIN = <span class="n">4</span>
+RADIUS = <span class="n">0.028</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> gp_data_new(name):
+    <span class="s">&quot;&quot;&quot;Version-gated GPv3 datablock creation (same bridge as grease-pencil-rosette).&quot;&quot;&quot;</span>
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">return</span> bpy.data.grease_pencils.new(name)
+    <span class="k">return</span> bpy.data.grease_pencils_v3.new(name)
+
+
+<span class="k">def</span> check_gp_version_gate():
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">if</span> <span class="k">not</span> hasattr(bpy.data, <span class="s">&quot;grease_pencils&quot;</span>):
+            print(<span class="s">&quot;ERROR: grease_pencils missing on 5.x&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">2</span>
+        <span class="k">if</span> hasattr(bpy.data, <span class="s">&quot;grease_pencils_v3&quot;</span>):
+            print(<span class="s">&quot;ERROR: grease_pencils_v3 should be gone on 5.x&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">2</span>
+        print(<span class="s">&quot;5.x contract: grease_pencils is GPv3; _v3 alias gone&quot;</span>)
+    <span class="k">else</span>:
+        <span class="k">if</span> <span class="k">not</span> hasattr(bpy.data, <span class="s">&quot;grease_pencils_v3&quot;</span>):
+            print(<span class="s">&quot;ERROR: grease_pencils_v3 missing on 4.5&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">2</span>
+        legacy = bpy.data.grease_pencils.new(<span class="s">&quot;LegacyProbe&quot;</span>)
+        lframe = legacy.layers.new(<span class="s">&quot;L&quot;</span>).frames.new(<span class="n">1</span>)
+        <span class="k">if</span> hasattr(lframe, <span class="s">&quot;drawing&quot;</span>) <span class="k">or</span> <span class="k">not</span> hasattr(lframe, <span class="s">&quot;strokes&quot;</span>):
+            print(<span class="s">&quot;ERROR: 4.5 grease_pencils is not legacy GPencil&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">2</span>
+        bpy.data.grease_pencils.remove(legacy)
+        print(<span class="s">&quot;4.5 contract: grease_pencils is legacy; GPv3 lives at _v3&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> build_crystal(sc):
+    <span class="s">&quot;&quot;&quot;A designed faceted crystal — not a raw cube.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Crystal&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="c"># Dual cone = octahedron-like crystal</span>
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">False</span>, cap_tris=<span class="k">True</span>,
+            segments=<span class="n">6</span>, radius1=<span class="n">0.85</span>, radius2=<span class="n">0.0</span>, depth=<span class="n">1.4</span>,
+        )
+        <span class="c"># second tip downward</span>
+        geom = bmesh.ops.duplicate(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces))
+        verts = [e <span class="k">for</span> e <span class="k">in</span> geom[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(e, bmesh.types.BMVert)]
+        bmesh.ops.rotate(
+            bm, verts=verts, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+            matrix=Matrix.Rotation(math.pi, <span class="n">3</span>, <span class="s">&quot;X&quot;</span>),
+        )
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=<span class="n">1e-4</span>)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bmesh.ops.scale(bm, vec=(CRYSTAL_SCALE,) * <span class="n">3</span>, verts=bm.verts)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">False</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;CrystalMat&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.12</span>, <span class="n">0.38</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
+    emit = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs.get(<span class="s">&quot;Emission&quot;</span>)
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        emit.default_value = (<span class="n">0.05</span>, <span class="n">0.2</span>, <span class="n">0.28</span>, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.15</span>
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;Crystal&quot;</span>, me)
+    ob.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    ob.rotation_euler = (math.radians(<span class="n">8</span>), math.radians(<span class="n">12</span>), math.radians(<span class="n">22</span>))
+    sc.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> build_lineart(sc, source):
+    gp = gp_data_new(<span class="s">&quot;LineArtGP&quot;</span>)
+    ob = bpy.data.objects.new(<span class="s">&quot;LineArt&quot;</span>, gp)
+    sc.collection.objects.link(ob)
+
+    layer = gp.layers.new(<span class="s">&quot;Contours&quot;</span>)
+    layer.frames.new(<span class="n">1</span>)
+
+    mat = bpy.data.materials.new(<span class="s">&quot;NeonContour&quot;</span>)
+    bpy.data.materials.create_gpencil_data(mat)
+    <span class="c"># Neon cyan ink</span>
+    gp_set = mat.grease_pencil
+    <span class="k">if</span> hasattr(gp_set, <span class="s">&quot;color&quot;</span>):
+        gp_set.color = (<span class="n">0.05</span>, <span class="n">0.95</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    gp.materials.append(mat)
+
+    mod = ob.modifiers.new(<span class="s">&quot;LineArt&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
+    mod.source_type = <span class="s">&quot;OBJECT&quot;</span>
+    mod.source_object = source
+    mod.use_contour = <span class="k">True</span>
+    mod.use_crease = <span class="k">True</span>
+    <span class="k">if</span> hasattr(mod, <span class="s">&quot;use_material&quot;</span>):
+        mod.use_material = <span class="k">False</span>
+    mod.target_layer = <span class="s">&quot;Contours&quot;</span>
+    mod.target_material = mat
+    <span class="c"># Width: radius is portable; thickness is 4.5-only</span>
+    <span class="k">if</span> hasattr(mod, <span class="s">&quot;thickness&quot;</span>):
+        mod.thickness = <span class="n">45</span>
+    mod.radius = RADIUS
+
+    <span class="c"># Disable lights on the GP layer so neon stays vivid</span>
+    <span class="k">if</span> hasattr(layer, <span class="s">&quot;use_lights&quot;</span>):
+        layer.use_lights = <span class="k">False</span>
+    <span class="k">return</span> ob, mod, gp
+
+
+<span class="k">def</span> setup_camera(sc):
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">3.4</span>, -<span class="n">4.2</span>, <span class="n">2.4</span>)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    <span class="k">return</span> cam
+
+
+<span class="k">def</span> eval_stroke_counts(ob):
+    dg = bpy.context.evaluated_depsgraph_get()
+    dg.update()
+    eob = ob.evaluated_get(dg)
+    layer = eob.data.layers[<span class="n">0</span>]
+    frame = layer.frames[<span class="n">0</span>]
+    drawing = frame.drawing
+    strokes = list(drawing.strokes)
+    n_strokes = len(strokes)
+    n_points = sum(len(s.points) <span class="k">for</span> s <span class="k">in</span> strokes)
+    <span class="k">return</span> n_strokes, n_points
+
+
+<span class="k">def</span> check_thickness_trap(mod):
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        <span class="k">if</span> hasattr(mod, <span class="s">&quot;thickness&quot;</span>):
+            print(<span class="s">&quot;ERROR: thickness still present on 5.x LINEART&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        <span class="k">try</span>:
+            _ = mod.thickness
+            print(<span class="s">&quot;ERROR: thickness read did not raise on 5.x&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="k">not</span> hasattr(mod, <span class="s">&quot;radius&quot;</span>):
+            print(<span class="s">&quot;ERROR: radius missing on 5.x LINEART&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        print(<span class="s">f&quot;</span><span class="s">5.x contract: LINEART.radius=</span>{mod.radius}<span class="s"> thickness=AttributeError</span><span class="s">&quot;</span>)
+    <span class="k">else</span>:
+        <span class="k">if</span> <span class="k">not</span> hasattr(mod, <span class="s">&quot;thickness&quot;</span>):
+            print(<span class="s">&quot;ERROR: thickness missing on 4.5 LINEART&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        <span class="k">if</span> <span class="k">not</span> hasattr(mod, <span class="s">&quot;radius&quot;</span>):
+            print(<span class="s">&quot;ERROR: radius missing on 4.5 LINEART&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+        print(
+            <span class="s">f&quot;</span><span class="s">4.5 contract: LINEART.thickness=</span>{mod.thickness}<span class="s"> radius=</span>{mod.radius}<span class="s">&quot;</span>
+        )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check(sc, source, la_ob, mod):
+    code = check_gp_version_gate()
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    code = check_thickness_trap(mod)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> mod.type != <span class="s">&quot;LINEART&quot;</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: modifier type </span>{mod.type!r}<span class="s"> != &#x27;LINEART&#x27;</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> mod.source_type != <span class="s">&quot;OBJECT&quot;</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: source_type </span>{mod.source_type!r}<span class="s"> != &#x27;OBJECT&#x27;</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> mod.source_object != source:
+        print(<span class="s">&quot;ERROR: source_object round-trip failed&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">if</span> <span class="k">not</span> mod.use_contour:
+        print(<span class="s">&quot;ERROR: use_contour should be True&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="c"># Happy path: contours present</span>
+    n_s, n_p = eval_stroke_counts(la_ob)
+    <span class="k">if</span> n_s &lt; STROKE_MIN <span class="k">or</span> n_p &lt; POINT_MIN:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: evaluated Line Art too thin: strokes=</span>{n_s}<span class="s"> points=</span>{n_p}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(need &gt;= </span>{STROKE_MIN}<span class="s"> strokes, &gt;= </span>{POINT_MIN}<span class="s"> points)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">5</span>
+    print(<span class="s">f&quot;</span><span class="s">contour_ok strokes=</span>{n_s}<span class="s"> points=</span>{n_p}<span class="s"> (gates&gt;=</span>{STROKE_MIN}<span class="s">,&gt;=</span>{POINT_MIN}<span class="s">)</span><span class="s">&quot;</span>)
+
+    <span class="c"># Failure mode A: clear source_object → zero strokes</span>
+    saved = mod.source_object
+    mod.source_object = <span class="k">None</span>
+    z_s, z_p = eval_stroke_counts(la_ob)
+    mod.source_object = saved
+    <span class="k">if</span> z_s != <span class="n">0</span> <span class="k">or</span> z_p != <span class="n">0</span>:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: cleared source_object still produced strokes=</span>{z_s}<span class="s"> points=</span>{z_p}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">6</span>
+    print(<span class="s">&quot;nosource_ok strokes=0 points=0&quot;</span>)
+
+    <span class="c"># Failure mode B: rebuild modifier with contour+crease off → zero strokes</span>
+    <span class="k">while</span> la_ob.modifiers:
+        la_ob.modifiers.remove(la_ob.modifiers[<span class="n">0</span>])
+    mod_off = la_ob.modifiers.new(<span class="s">&quot;LineArtOff&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
+    mod_off.source_type = <span class="s">&quot;OBJECT&quot;</span>
+    mod_off.source_object = source
+    mod_off.use_contour = <span class="k">False</span>
+    mod_off.use_crease = <span class="k">False</span>
+    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_loose&quot;</span>):
+        mod_off.use_loose = <span class="k">False</span>
+    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_intersection&quot;</span>):
+        mod_off.use_intersection = <span class="k">False</span>
+    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_material&quot;</span>):
+        mod_off.use_material = <span class="k">False</span>
+    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_edge_mark&quot;</span>):
+        mod_off.use_edge_mark = <span class="k">False</span>
+    mod_off.target_layer = <span class="s">&quot;Contours&quot;</span>
+    gp_mat = la_ob.data.materials[<span class="n">0</span>]
+    mod_off.target_material = gp_mat
+    mod_off.radius = RADIUS
+    z_s, z_p = eval_stroke_counts(la_ob)
+    <span class="k">if</span> z_s != <span class="n">0</span> <span class="k">or</span> z_p != <span class="n">0</span>:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: contour+crease off still produced strokes=</span>{z_s}<span class="s"> points=</span>{z_p}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+    print(<span class="s">&quot;noflags_ok strokes=0 points=0&quot;</span>)
+
+    <span class="c"># Restore working Line Art modifier for optional still</span>
+    <span class="k">while</span> la_ob.modifiers:
+        la_ob.modifiers.remove(la_ob.modifiers[<span class="n">0</span>])
+    mod_on = la_ob.modifiers.new(<span class="s">&quot;LineArt&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
+    mod_on.source_type = <span class="s">&quot;OBJECT&quot;</span>
+    mod_on.source_object = source
+    mod_on.use_contour = <span class="k">True</span>
+    mod_on.use_crease = <span class="k">True</span>
+    mod_on.target_layer = <span class="s">&quot;Contours&quot;</span>
+    mod_on.target_material = gp_mat
+    <span class="k">if</span> hasattr(mod_on, <span class="s">&quot;thickness&quot;</span>):
+        mod_on.thickness = <span class="n">45</span>
+    mod_on.radius = RADIUS
+    n_s2, n_p2 = eval_stroke_counts(la_ob)
+    <span class="k">if</span> n_s2 &lt; STROKE_MIN <span class="k">or</span> n_p2 &lt; POINT_MIN:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: contours did not recover after restore: </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+    print(
+        <span class="s">f&quot;</span><span class="s">restored_ok strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s"> radius=</span>{mod_on.radius}<span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> build_studio(sc):
+    <span class="c"># Default-stage-ish dark floor + wall — Line Art neon is the proof</span>
+    <span class="k">def</span> plane(name, size, loc, rot):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=size)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        mat = bpy.data.materials.new(name + <span class="s">&quot;M&quot;</span>)
+        mat.use_nodes = <span class="k">True</span>
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        sc.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    plane(<span class="s">&quot;Floor&quot;</span>, <span class="n">30.0</span>, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))
+    plane(<span class="s">&quot;Wall&quot;</span>, <span class="n">30.0</span>, (<span class="n">0</span>, <span class="n">9</span>, <span class="n">0</span>), (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>))
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">6</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">280.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+
+
+<span class="k">def</span> render_still(sc, path, engine):
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> build_scene():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+    build_studio(sc)
+    crystal = build_crystal(sc)
+    la_ob, mod, gp = build_lineart(sc, crystal)
+    setup_camera(sc)
+    <span class="k">return</span> sc, crystal, la_ob, mod
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(
+        <span class="s">&quot;--engine&quot;</span>,
+        default=<span class="s">&quot;eevee&quot;</span>,
+        choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+        help=<span class="s">&quot;render engine for --output&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    sc, crystal, la_ob, mod = build_scene()
+    code = check(sc, crystal, la_ob, mod)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(sc, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;gp-lineart-contour OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/gp-lineart-contour-hero.webp" alt="gp-lineart-contour render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

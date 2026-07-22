@@ -406,6 +406,19 @@
         "sky",
         "render"
       ]
+    },
+    {
+      "name": "gp-lineart-contour",
+      "dir": "examples/gp-lineart-contour",
+      "teaches": "Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.",
+      "witnessesFix": "AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., 'LINEART'). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.",
+      "hero": "docs/gallery/assets/gp-lineart-contour-hero.webp",
+      "preview": "examples/gp-lineart-contour/preview.webp",
+      "tags": [
+        "grease-pencil",
+        "line-art",
+        "modifiers"
+      ]
     }
   ]
 }
