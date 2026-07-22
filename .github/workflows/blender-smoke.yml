@@ -529,3 +529,16 @@ jobs:
           # failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py --
+
+      - name: Shipped example - car mirror symmetry (Mirror modifier + depsgraph)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a hatchback lofted as one half and
+          # completed by the Mirror modifier; asserts the datablock keeps the
+          # half (126/231/106, 28 centerline verts), the evaluated mesh is
+          # exactly 2n-c (224/434/212), watertight with Euler 2, every
+          # evaluated vertex has an exact negated-X partner, and wheels/lamps
+          # mirror about object origins parked on the symmetry plane. Exits
+          # non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/car-mirror-symmetry/car_mirror_symmetry.py --

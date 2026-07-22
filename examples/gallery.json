@@ -457,6 +457,18 @@
         "bmesh",
         "mesh"
       ]
+    },
+    {
+      "name": "car-mirror-symmetry",
+      "dir": "examples/car-mirror-symmetry",
+      "teaches": "A generic hatchback lofted as one half (14 stations, 9-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels and lamps mirror about object origins parked on the symmetry plane.",
+      "witnessesFix": "Mirror is a modifier, not applied data: the original keeps the authored half while the evaluated mesh is the welded, watertight, exactly symmetric whole.",
+      "hero": "docs/gallery/assets/car-mirror-symmetry-hero.webp",
+      "preview": "examples/car-mirror-symmetry/preview.webp",
+      "tags": [
+        "modifiers",
+        "depsgraph"
+      ]
     }
   ]
 }
