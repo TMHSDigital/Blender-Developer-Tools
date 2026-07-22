@@ -36,6 +36,7 @@ Blender-Developer-Tools/
   templates/<template-name>/     # 2 starter templates
   snippets/<snippet-name>.py     # 17 standalone Python snippets
   examples/<name>/               # 23 runnable smoke-gated examples (+ gallery.json)
+  examples/gallery_framing.py    # shared Layer 1 framing measurement (render path only)
   scripts/build_gallery.py       # generates docs/gallery/ (stdlib only)
   scripts/site/                  # vendored landing-page build (build_site.py + template)
   docs/gallery/                  # committed generated gallery pages + hero assets
