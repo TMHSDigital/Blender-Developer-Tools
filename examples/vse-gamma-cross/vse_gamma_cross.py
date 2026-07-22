@@ -185,17 +185,72 @@ def eevee_engine_id():
 
 
 def build_bench(sc, got):
-    """The mixing bench: the authentic fade as four large emissive panels
-    (t = 0, 1/4, 1/2, 3/4) above the contrast pair — the true mid swatch
-    directly beside the naive lerp mid at frame center, so the gamma dip
-    reads as an adjacency contrast even at card scale. A naive-lerp cross
-    would make the pair identical: the render visibly breaks with the
-    contract."""
+    """The calibration lightbox: a swatch-booth fixture — glowing chips
+    seated in bezels on a bolted steel board, held by rear struts over a
+    plinth — shot at a 3/4 angle so it reads as a staged object, not a
+    flat test chart. The authentic fade runs as four backlit chips across
+    the top (t = 0, 1/4, 1/2, 3/4); the contrast pair is the centerpiece
+    below: the true mid directly beside the naive lerp mid in its
+    hazard-orange bezel, so the gamma dip reads as an adjacency contrast
+    even at card scale. A naive-lerp cross would make the pair identical:
+    the render visibly breaks with the contract."""
     import bmesh
     import mathutils
     import math as m
 
-    def panel(name, rgb, x, z, y=0.0, hot=False):
+    def mat_principled(name, color, metallic, rough):
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes["Principled BSDF"]
+        bsdf.inputs["Base Color"].default_value = (*color, 1.0)
+        bsdf.inputs["Metallic"].default_value = metallic
+        bsdf.inputs["Roughness"].default_value = rough
+        return mat
+
+    # designed non-data surfaces: painted steel board, darker rail/frame
+    # steel, dark polymer bezels, machined bolt heads — no Principled
+    # defaults
+    fixture = mat_principled("FixtureSteel", (0.11, 0.12, 0.14), 0.25, 0.55)
+    rail_mat = mat_principled("RailSteel", (0.075, 0.08, 0.09), 0.6, 0.45)
+    bezel_mat = mat_principled("BezelPolymer", (0.045, 0.048, 0.055), 0.0, 0.5)
+    hot_mat = mat_principled("HotFrame", (0.80, 0.28, 0.06), 0.1, 0.5)
+    bolt_mat = mat_principled("BoltSteel", (0.22, 0.23, 0.26), 0.9, 0.5)
+    plinth_mat = mat_principled("PlinthSteel", (0.10, 0.11, 0.12), 0.6, 0.5)
+
+    def box(name, dims, loc, mat, rot_x=0.0):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cube(bm, size=1.0,
+                                  matrix=mathutils.Matrix.Diagonal((*dims, 1.0)))
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = (rot_x, 0.0, 0.0)
+        sc.collection.objects.link(ob)
+
+    def bolt(x, z):
+        me = bpy.data.meshes.new("Bolt")
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False,
+                                  segments=6, radius1=0.085, radius2=0.085,
+                                  depth=0.07)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(bolt_mat)
+        ob = bpy.data.objects.new("Bolt", me)
+        ob.location = (x, -0.035, z)
+        ob.rotation_euler = (m.radians(90), 0.0, 0.0)
+        sc.collection.objects.link(ob)
+
+    def swatch(name, rgb):
+        # the data faces stay pure emission: exact values, no specular,
+        # no texture — the image is a data display
         mat = bpy.data.materials.new(f"Swatch{name}")
         mat.use_nodes = True
         nt = mat.node_tree
@@ -205,54 +260,44 @@ def build_bench(sc, got):
         em.inputs["Color"].default_value = (*rgb, 1.0)
         em.inputs["Strength"].default_value = 1.0
         nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
-        me = bpy.data.meshes.new(name)
-        bm = bmesh.new()
-        try:
-            bmesh.ops.create_cube(bm, size=1.0,
-                                  matrix=mathutils.Matrix.Diagonal(
-                                      (1.5, 0.12, 1.65, 1.0)))
-            bm.to_mesh(me)
-        finally:
-            bm.free()
-        me.materials.append(mat)
-        ob = bpy.data.objects.new(name, me)
-        ob.location = (x, y, z)
-        sc.collection.objects.link(ob)
-        if hot:
-            # hazard-orange backplate on the impostor: a broken (naive)
-            # cross would make the framed swatch match its neighbor
-            frame_mat = bpy.data.materials.new("HotFrame")
-            frame_mat.use_nodes = True
-            fb = frame_mat.node_tree.nodes["Principled BSDF"]
-            fb.inputs["Base Color"].default_value = (0.80, 0.28, 0.06, 1.0)
-            fb.inputs["Roughness"].default_value = 0.5
-            fm = bpy.data.meshes.new("Frame")
-            bm = bmesh.new()
-            try:
-                bmesh.ops.create_cube(bm, size=1.0,
-                                      matrix=mathutils.Matrix.Diagonal(
-                                          (1.64, 0.06, 1.79, 1.0)))
-                bm.to_mesh(fm)
-            finally:
-                bm.free()
-            fm.materials.append(frame_mat)
-            fob = bpy.data.objects.new("Frame", fm)
-            fob.location = (x, y + 0.075, z)
-            sc.collection.objects.link(fob)
+        return mat
+
+    def chip(name, rgb, x, z, size, hot=False):
+        # glowing chip seated proud of its bezel; the naive impostor keeps
+        # the hazard-orange frame — a broken (naive) cross would make the
+        # framed chip match its neighbor
+        box(f"Bezel{name}", (size + 0.20, 0.16, size + 0.20),
+            (x, -0.08, z), hot_mat if hot else bezel_mat)
+        box(f"Chip{name}", (size, 0.12, size), (x, -0.13, z),
+            swatch(name, rgb))
+
+    # the booth: bolted board with cap rails, rear struts down to the plinth
+    box("Board", (7.20, 0.34, 5.00), (0.0, 0.17, 3.50), fixture)
+    box("RailTop", (7.34, 0.42, 0.16), (0.0, 0.17, 6.06), rail_mat)
+    box("RailBottom", (7.34, 0.42, 0.20), (0.0, 0.17, 0.94), rail_mat)
+    # panel seam between the fade row and the contrast pair
+    box("Seam", (7.00, 0.02, 0.035), (0.0, -0.005, 3.70), rail_mat)
+    for bx in (-3.36, 3.36):
+        for bz in (1.30, 5.70):
+            bolt(bx, bz)
+    for sx in (-2.30, 2.30):
+        box("Strut", (0.30, 0.34, 2.32), (sx, 0.70, 1.60), rail_mat,
+            rot_x=m.radians(18))
+        box("Foot", (0.50, 0.64, 0.10), (sx, 1.02, 0.55), rail_mat)
+    box("Plinth", (6.60, 2.00, 0.50), (0.0, 0.35, 0.25), plinth_mat)
 
     by_t = {t: f for f, t in SAMPLES}
     # the authentic fade across the top, left to right
     top = [(0.0, "t=0"), (0.25, "t=1/4"), (0.5, "t=1/2"), (0.75, "t=3/4")]
-    top_xs = [-2.775 + 1.85 * i for i in range(4)]
+    top_xs = [-2.625 + 1.75 * i for i in range(4)]
     for (t, _label), x in zip(top, top_xs):
-        panel(f"t{t}", got[by_t[t]], x, z=3.25)
-    # the contrast pair at frame center: true mid beside the naive mid
-    panel("true_mid", got[by_t[0.5]], -0.80, z=1.40, y=-0.30)
-    panel("naive_mid", tuple(naive(0.5, k) for k in range(3)),
-          0.80, z=1.40, y=-0.30, hot=True)
+        chip(f"t{t}", got[by_t[t]], x, z=4.72, size=1.32)
+    # the contrast pair at center: true mid beside the naive mid
+    chip("true_mid", got[by_t[0.5]], -1.05, z=2.55, size=1.55)
+    chip("naive_mid", tuple(naive(0.5, k) for k in range(3)),
+         1.05, z=2.55, size=1.55, hot=True)
 
-    # captions: t-labels crown the fade row; the pair is named on the
-    # plinth face, facing the camera (a floor caption foreshortens away)
+    # captions: t-labels crown the fade chips; the pair is named beneath it
     cu_mat = bpy.data.materials.new("CaptionGrey")
     cu_mat.use_nodes = True
     cb = cu_mat.node_tree.nodes["Principled BSDF"]
@@ -261,9 +306,9 @@ def build_bench(sc, got):
     cb.inputs["Roughness"].default_value = 0.6
     sock = cb.inputs.get("Emission Color") or cb.inputs["Emission"]
     sock.default_value = (0.38, 0.40, 0.45, 1.0)
-    cb.inputs["Emission Strength"].default_value = 0.45
+    cb.inputs["Emission Strength"].default_value = 0.5
 
-    def caption(text, x, z, y=-0.09, size=0.16):
+    def caption(text, x, z, size, y=-0.03):
         cu = bpy.data.curves.new("Caption", 'FONT')
         cu.body = text
         cu.align_x = 'CENTER'
@@ -276,9 +321,9 @@ def build_bench(sc, got):
         sc.collection.objects.link(ob)
 
     for (_t, label), x in zip(top, top_xs):
-        caption(label, x, 4.22)
-    caption("GAMMA_CROSS t=1/2", -0.80, 0.23, y=-0.46, size=0.15)
-    caption("NAIVE LERP t=1/2", 0.80, 0.23, y=-0.46, size=0.15)
+        caption(label, x, 5.62, 0.20)
+    caption("GAMMA_CROSS t=1/2", -1.05, 1.42, 0.20)
+    caption("NAIVE LERP t=1/2", 1.05, 1.42, 0.20)
 
 
 def render_still(sc, got, path, engine):
@@ -286,26 +331,6 @@ def render_still(sc, got, path, engine):
     build_bench(scene, got)
 
     import mathutils, bmesh
-    # a low plinth shelf grounds the bench without eating the frame
-    plinth_me = bpy.data.meshes.new("Plinth")
-    bm2 = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm2, size=1.0,
-                              matrix=mathutils.Matrix.Diagonal((6.9, 1.3, 0.45, 1.0)))
-        bm2.to_mesh(plinth_me)
-    finally:
-        bm2.free()
-    cmat = bpy.data.materials.new("ConsoleMetal")
-    cmat.use_nodes = True
-    cc = cmat.node_tree.nodes["Principled BSDF"]
-    cc.inputs["Base Color"].default_value = (0.07, 0.08, 0.09, 1.0)
-    cc.inputs["Metallic"].default_value = 0.7
-    cc.inputs["Roughness"].default_value = 0.5
-    plinth_me.materials.append(cmat)
-    plinth = bpy.data.objects.new("Plinth", plinth_me)
-    plinth.location = (0.0, 0.2, 0.225)
-    scene.collection.objects.link(plinth)
-
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
@@ -341,20 +366,21 @@ def render_still(sc, got, path, engine):
         scene.collection.objects.link(ob)
 
     # shaped warm key, faint cool fill, cool rim, and the signature warm
-    # wedge between bench and wall raking a pool onto the backdrop — the
+    # wedge between booth and wall raking a pool onto the backdrop — the
     # wall itself stays near-black outside the pool (docs/VISUAL-STYLE.md)
-    light("Key", (-4.0, -4.0, 6.5), 420.0, 4.0, (1.0, 0.96, 0.9), (0.0, 0.0, 1.8))
-    light("Fill", (5.0, -3.5, 2.5), 80.0, 9.0, (0.75, 0.85, 1.0), (0.5, 0.0, 1.6))
-    light("Rim", (0.5, 4.0, 6.0), 260.0, 4.0, (0.6, 0.78, 1.0), (0.0, 0.0, 2.6))
-    light("Wedge", (1.2, 5.0, 4.5), 340.0, 5.0, (1.0, 0.76, 0.5), (-0.2, 9.0, 1.2))
+    light("Key", (-4.0, -4.5, 7.0), 460.0, 4.5, (1.0, 0.96, 0.9), (0.0, 0.2, 3.0))
+    light("Fill", (6.0, -3.0, 3.0), 90.0, 9.0, (0.75, 0.85, 1.0), (0.5, 0.0, 2.8))
+    light("Rim", (0.5, 4.5, 7.0), 320.0, 4.0, (0.6, 0.78, 1.0), (0.0, 0.3, 4.2))
+    light("Wedge", (0.5, 5.5, 6.0), 420.0, 5.5, (1.0, 0.76, 0.5), (0.5, 9.0, 4.2))
 
+    # 3/4 angle from the right: the booth shows face, side, and cast shadow
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.7, -13.0, 3.4)
+    cam.location = (9.7, -17.5, 5.7)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.0, 0.0, 2.15)
+    target.location = (0.0, 0.2, 3.2)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target

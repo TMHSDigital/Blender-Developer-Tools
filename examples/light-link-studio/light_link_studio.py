@@ -14,7 +14,7 @@ studio twice in one pass and asserts the whole story in pixels:
 The engine note, verified rather than assumed: light linking also works on
 EEVEE — measured with an EEVEE luminance probe (this scene, only
 ``render.engine`` swapped: ``BLENDER_EEVEE`` on 5.x, ``BLENDER_EEVEE_NEXT``
-on 4.x) at 3.7x linked ratio on both 4.5.11 EEVEE Next and 5.1.2 EEVEE,
+on 4.x) at 3.8x linked ratio on both 4.5.11 EEVEE Next and 5.1.2 EEVEE,
 matching Cycles within sampling noise. The shipped check pins Cycles for
 deterministic tiny-sample CPU renders. The API is stable between Blender
 4.5 LTS and 5.1 (ObjectLightLinking with
@@ -27,11 +27,13 @@ CI smoke check. Pass --output to also render a still:
     blender --background --python light_link_studio.py -- --output l.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile, shutil
+from mathutils import Matrix
 
 HERO_RGB = (0.85, 0.30, 0.08)     # hazard orange
 DECOY_RGB = (0.30, 0.34, 0.40)    # cold steel
 KEY_ENERGY = 560.0
 FILL_ENERGY = 26.0
+SPHERE_Z = 1.18                   # center: sphere rests on the pedestal cap
 PXW, PXH = 64, 36
 RATIO_MIN = 3.0                   # hero/decoy luminance ratio, linked
 HERO_LUMA_MIN = 0.25              # hero must be well-lit, linked
@@ -56,9 +58,88 @@ def sphere(name, rgb, x, coll):
     b.inputs["Roughness"].default_value = 0.55
     me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
-    ob.location = (x, 0.0, 0.55)
+    ob.location = (x, 0.0, SPHERE_Z)
     coll.objects.link(ob)
     return ob
+
+
+def _principled(name, rgb, rough, metallic=0.0, emit=None, estr=0.0):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    b = mat.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*rgb, 1.0)
+    b.inputs["Roughness"].default_value = rough
+    b.inputs["Metallic"].default_value = metallic
+    if emit is not None:
+        sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
+        sock.default_value = (*emit, 1.0)
+        b.inputs["Emission Strength"].default_value = estr
+    return mat
+
+
+def _bevel(ob, width, segments=2):
+    mod = ob.modifiers.new("Bev", 'BEVEL')
+    mod.width = width
+    mod.segments = segments
+    mod.limit_method = 'ANGLE'
+
+
+def _cyl(sc, name, r1, r2, depth, loc, mat, bevel=0.0):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False,
+                              segments=48, radius1=r1, radius2=r2, depth=depth)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.update()
+    for p in me.polygons:       # smooth the wall, keep the caps flat
+        p.use_smooth = abs(p.normal.z) < 0.5
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    if bevel:
+        _bevel(ob, bevel)
+    return ob
+
+
+def _box(sc, name, dims, loc, mat, bevel=0.0, parent=None):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        bmesh.ops.transform(bm, matrix=Matrix.Diagonal((*dims, 1.0)),
+                            verts=bm.verts)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    if parent is not None:
+        ob.parent = parent
+    sc.collection.objects.link(ob)
+    if bevel:
+        _bevel(ob, bevel, segments=3)
+    return ob
+
+
+def pedestal(sc, x, dark, metal):
+    """A designed specimen plinth: turned foot, dark polymer body with a
+    flat front for the placard, machined collar band, round cap."""
+    _cyl(sc, "PedFoot", 0.58, 0.54, 0.09, (x, 0.0, 0.045), metal, 0.02)
+    _box(sc, "PedBody", (0.74, 0.54, 0.50), (x, 0.0, 0.34), dark, 0.05)
+    _box(sc, "PedCollar", (0.80, 0.60, 0.05), (x, 0.0, 0.615), metal, 0.015)
+    _cyl(sc, "PedCap", 0.42, 0.42, 0.06, (x, 0.0, 0.67), metal, 0.02)
+
+
+def floor_inlay(sc, x, mat):
+    """Thin disc flush with the floor: the linked light's footprint. The
+    hero's is emissive warm; the decoy's is dark metal — a footprint that
+    never lights, and therefore cannot pollute the decoy's fill floor."""
+    _cyl(sc, "Inlay", 0.74, 0.74, 0.014, (x, 0.0, 0.007), mat)
 
 
 def add_light(sc, name, energy, loc, color, size, aim=None, rot=None):
@@ -80,13 +161,26 @@ def add_light(sc, name, energy, loc, color, size, aim=None, rot=None):
 
 
 def build_studio(sc):
-    """Hero and decoy on one stage, plus a low fill that lights both."""
+    """Hero and decoy as specimens on plinths, plus a low fill that lights
+    both. The plinths and inlays are dressing only: the witness is still two
+    identical spheres where one key reaches only the hero."""
     hero_c = bpy.data.collections.new("HeroColl")
     decoy_c = bpy.data.collections.new("DecoyColl")
     hero = sphere("Hero", HERO_RGB, -1.2, hero_c)
     decoy = sphere("Decoy", DECOY_RGB, 1.2, decoy_c)
     sc.collection.children.link(hero_c)
     sc.collection.children.link(decoy_c)
+
+    ped_dark = _principled("PedDark", (0.05, 0.052, 0.06), 0.5, metallic=0.15)
+    ped_metal = _principled("PedMetal", (0.16, 0.17, 0.20), 0.3, metallic=0.9)
+    pedestal(sc, -1.2, ped_dark, ped_metal)
+    pedestal(sc, 1.2, ped_dark, ped_metal)
+    inlay_warm = _principled("InlayWarm", (0.02, 0.018, 0.016), 0.6,
+                             emit=(0.85, 0.36, 0.09), estr=1.1)
+    inlay_dark = _principled("InlayDark", (0.07, 0.075, 0.085), 0.35,
+                             metallic=0.85)
+    floor_inlay(sc, -1.2, inlay_warm)
+    floor_inlay(sc, 1.2, inlay_dark)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -133,9 +227,16 @@ def build_studio(sc):
     cam = bpy.data.cameras.new("Cam")
     cam.lens = 50.0
     cam_ob = bpy.data.objects.new("Cam", cam)
-    cam_ob.location = (0.0, -6.2, 2.0)
+    cam_ob.location = (0.0, -6.2, 2.3)
+    # the camera frames the raised specimens, the lights keep their own aim —
+    # re-aiming the lights would move the measured luminance. The steeper
+    # down-angle also keeps the decoy's fill-floor luminance at its measured
+    # baseline — a flatter camera samples a brighter point on the decoy.
+    cam_aim = bpy.data.objects.new("CamAim", None)
+    cam_aim.location = (0.0, 0.0, 0.8)
+    sc.collection.objects.link(cam_aim)
     con = cam_ob.constraints.new('TRACK_TO')
-    con.target = aim
+    con.target = cam_aim
     con.track_axis = 'TRACK_NEGATIVE_Z'
     con.up_axis = 'UP_Y'
     sc.collection.objects.link(cam_ob)
@@ -245,33 +346,39 @@ def check(sc, key, hero_c, hero, decoy):
     return 0
 
 
-def plaque(sc, text, x):
-    pm = bpy.data.materials.new("PlaqueMetal")
-    pm.use_nodes = True
-    pb = pm.node_tree.nodes["Principled BSDF"]
-    pb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
-    pb.inputs["Metallic"].default_value = 0.2
-    pb.inputs["Roughness"].default_value = 0.6
-    # faint self-glow: the UNLINKED plaque must read even in the decoy's dark
-    sock = pb.inputs.get("Emission Color") or pb.inputs["Emission"]
-    sock.default_value = (0.35, 0.37, 0.42, 1.0)
-    pb.inputs["Emission Strength"].default_value = 0.6
-    cu = bpy.data.curves.new("Plaque", 'FONT')
+def placard(sc, text, x, plate_m, stand_m, text_m):
+    """Museum nameplate: a beveled plate on two standoffs bolted to the
+    plinth front, tilted back to face the raised camera, text on its face."""
+    root = bpy.data.objects.new("Placard", None)
+    root.location = (x, -0.325, 0.34)
+    root.rotation_euler = (math.radians(71), 0.0, 0.0)
+    sc.collection.objects.link(root)
+    _box(sc, "Plate", (0.92, 0.22, 0.024), (0.0, 0.0, 0.0), plate_m,
+         0.012, parent=root)
+    for sx in (-0.30, 0.30):
+        _cyl(sc, "Standoff", 0.016, 0.016, 0.055, (sx, 0.0, -0.038),
+             stand_m).parent = root
+    cu = bpy.data.curves.new("PlacardText", 'FONT')
     cu.body = text
     cu.align_x = 'CENTER'
-    cu.size = 0.22
-    cu.extrude = 0.006
-    ob = bpy.data.objects.new("Plaque", cu)
-    # standing upright on the floor, tilted back to face the raised camera
-    ob.location = (x, -1.3, 0.17)
-    ob.rotation_euler = (math.radians(76), 0.0, 0.0)
-    ob.data.materials.append(pm)
+    cu.align_y = 'CENTER'
+    cu.size = 0.15
+    cu.extrude = 0.004
+    ob = bpy.data.objects.new("PlacardText", cu)
+    ob.location = (0.0, 0.0, 0.0165)
+    ob.parent = root
+    cu.materials.append(text_m)
     sc.collection.objects.link(ob)
 
 
 def render_still(sc, path):
-    plaque(sc, "LINKED", -1.2)
-    plaque(sc, "UNLINKED", 1.2)
+    plate_m = _principled("PlateBlack", (0.03, 0.032, 0.038), 0.6)
+    stand_m = _principled("StandMetal", (0.16, 0.17, 0.20), 0.3, metallic=0.9)
+    # faint self-glow: the UNLINKED placard must read even in the decoy's dark
+    text_m = _principled("PlacardText", (0.42, 0.44, 0.48), 0.6, metallic=0.2,
+                         emit=(0.35, 0.37, 0.42), estr=0.6)
+    placard(sc, "LINKED", -1.2, plate_m, stand_m, text_m)
+    placard(sc, "UNLINKED", 1.2, plate_m, stand_m, text_m)
     # the gallery still is the linked state, on Cycles for the same
     # deterministic sampling as the check
     sc.render.engine = 'CYCLES'
