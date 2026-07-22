@@ -81,6 +81,7 @@
     "examples/mesh-hygiene-audit",
     "examples/parent-inverse-orrery",
     "examples/png-exr-alpha",
+    "examples/prop-origin-transform",
     "examples/shader-node-group",
     "examples/shape-key-blend",
     "examples/sky-texture-sun-elevation",

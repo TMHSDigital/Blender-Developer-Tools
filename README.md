@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>35 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>36 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 35 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 36 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -537,7 +537,7 @@ portable path is `radius`.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 8 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 9 examples</summary>
 
 <table>
 <tr>
@@ -681,6 +681,23 @@ closed solid (measured 24/44/22, volume 0.989248). Companion to
 [`collision-hull-proxy`](examples/collision-hull-proxy/) (hull watertightness)
 and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Dual-panel
 still: DIRTY (injected boundary + loose vert) vs CLEAN.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals — left bare-parent accessory teleports with expected-seat ghost, right accessory stays put, emissive origin markers at base — proving scale apply, base origin, and matrix_parent_inverse" /></a>
+</td>
+<td valign="middle">
+
+### [prop-origin-transform](examples/prop-origin-transform/)
+
+The origin / scale-apply / MPI contract a prop pipeline relies on before
+engine ingest: data-API scale bake to exactly `(1,1,1)`, local bbox
+`min.z == 0` (origin at base), world AABB unchanged across the bake, and
+`matrix_parent_inverse` so a bolted accessory does not teleport. Extends
+[`parent-inverse-orrery`](examples/parent-inverse-orrery/) without retreading
+orbits. Dual-panel still: TRAP (bare parent) vs MPI KEEP.
 
 </td>
 </tr>

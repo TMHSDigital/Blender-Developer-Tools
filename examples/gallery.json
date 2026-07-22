@@ -432,6 +432,19 @@
         "mesh",
         "game-pipeline"
       ]
+    },
+    {
+      "name": "prop-origin-transform",
+      "dir": "examples/prop-origin-transform",
+      "teaches": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world.",
+      "witnessesFix": "AI code parents with child.parent = parent alone (accessory teleports), skips view_layer.update() before matrix_world, or leaves non-uniform scale / centered origin for engine ingest. Skipping apply, origin bake, or MPI each fails a closed-form gate.",
+      "hero": "docs/gallery/assets/prop-origin-transform-hero.webp",
+      "preview": "examples/prop-origin-transform/preview.webp",
+      "tags": [
+        "transform",
+        "parenting",
+        "game-pipeline"
+      ]
     }
   ]
 }

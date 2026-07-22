@@ -505,3 +505,14 @@ jobs:
           # positive signed volume, Euler V-E+F == 2. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --
+
+      - name: Shipped example - prop origin transform (base origin + scale + MPI)
+        run: |
+          set -euo pipefail
+          # Check only (no render): street pedestal; asserts scale (1,1,1) after
+          # data-API apply, local bbox min.z == 0, world AABB unchanged, bare
+          # parent jumps accessory, matrix_parent_inverse restores world location,
+          # and matrix_world stays stale until view_layer.update(). Exits non-zero
+          # on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/prop-origin-transform/prop_origin_transform.py --
