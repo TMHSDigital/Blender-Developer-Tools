@@ -373,8 +373,8 @@
     {
       "name": "collision-hull-proxy",
       "dir": "examples/collision-hull-proxy",
-      "teaches": "A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.",
-      "witnessesFix": "A hull of the dense render mesh measures 368 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 5.9e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.",
+      "teaches": "A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.",
+      "witnessesFix": "A hull of the dense render mesh measures 380 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 4.4e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.",
       "hero": "docs/gallery/assets/collision-hull-proxy-hero.webp",
       "preview": "examples/collision-hull-proxy/preview.webp",
       "tags": [

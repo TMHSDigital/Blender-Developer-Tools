@@ -24,27 +24,27 @@ per-piece face limit (255 is the common cap). The example builds that
 structure and derives every property from closed forms, per piece:
 
 - **Containment.** Every render-mesh vertex lies on the inner side of every
-  face plane of its piece's hull — max excursion **5.9e-08** (tol 2e-4). This
+  face plane of its piece's hull — max excursion **4.4e-08** (tol 2e-4). This
   holds by construction, not luck: the cage is a coarse lathe whose rings are
   inflated by `sec(π/n)`, so each n-gon cage ring *circumscribes* its render
   ring exactly. Proud details (a rim, a nut) must be paid for in cage rows;
   concave details (the grooves) are free — the hull bridges over them. That
   trade-off is the collision-authoring lesson.
 - **Convexity.** The same plane test restricted to the hull's own vertices
-  (5.0e-08) — what a convex solver assumes when it uploads the piece.
+  (4.8e-08) — what a convex solver assumes when it uploads the piece.
 - **Watertight + manifold.** Every hull edge borders exactly two faces, and
   V − E + F = 2: a convex hull is a topological sphere.
 - **Outward winding.** Positive signed volume by the divergence theorem
-  (body piece 0.968858) — inverted collision is a physics no-op.
+  (body piece 1.022381) — inverted collision is a physics no-op.
 - **Budget.** Every piece ≤ 255 faces: body 70, pumper 60, side caps 60+60;
   the compound totals 250. The naive approach fails this — a hull of the
-  *dense render mesh* measures **368 faces**, over budget, which is why real
+  *dense render mesh* measures **380 faces**, over budget, which is why real
   pipelines hull a cage, never the render mesh.
 
 **What each check catches on failure:** an artist editing the render mesh
 after the hull was generated (probe: pumper lug stretched 2×, exit 3,
 measured escape 0.730000); inverted hull winding (probe: polygons flipped,
-exit 5, signed volume −0.968858, the exact negation); a non-watertight piece
+exit 5, signed volume −1.022381, the exact negation); a non-watertight piece
 (probe: one face deleted, exit 4, three border edges).
 
 **Version witness:** output is byte-identical on Blender 4.5.11 LTS and

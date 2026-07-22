@@ -659,7 +659,7 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     <span class="c"># semi-gloss painted steel: rough enough to read as paint, glossy enough</span>
     <span class="c"># that a highlight exposes every normal discontinuity — matte would hide</span>
     <span class="c"># the very shading differences this render exists to show</span>
-    steel = make_material(<span class="s">&quot;OliveDrab&quot;</span>, (<span class="n">0.31</span>, <span class="n">0.35</span>, <span class="n">0.15</span>), <span class="n">0.8</span>, <span class="n">0.26</span>)
+    steel = make_material(<span class="s">&quot;OliveDrab&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.345</span>, <span class="n">0.13</span>), <span class="n">0.8</span>, <span class="n">0.26</span>)
     accent = make_material(<span class="s">&quot;FuelMarker&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.06</span>, <span class="n">0.03</span>), <span class="n">0.3</span>, <span class="n">0.30</span>)
 
     <span class="c"># the checked base can IS the by-angle variant; the two failure modes are</span>
@@ -712,16 +712,16 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
 
     <span class="c"># key/fill/rim/wedge per docs/VISUAL-STYLE.md</span>
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">150.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">340.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">58</span>, <span class="n">0</span>, <span class="n">170</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
     <span class="c"># the shading audit light: a tall strip whose reflection runs down each</span>
     <span class="c"># can face — it stair-steps on flat shading, warps at the rim on</span>
     <span class="c"># smooth-everything, and stays straight with crisp edges on by-angle</span>
     ld = bpy.data.lights.new(<span class="s">&quot;Strip&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
-    ld.energy = <span class="n">460.0</span>
+    ld.energy = <span class="n">400.0</span>
     ld.shape = <span class="s">&#x27;RECTANGLE&#x27;</span>
-    ld.size = <span class="n">1.0</span>
+    ld.size = <span class="n">1.35</span>
     ld.size_y = <span class="n">8.0</span>
     ld.color = (<span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)
     strip = bpy.data.objects.new(<span class="s">&quot;Strip&quot;</span>, ld)
@@ -743,7 +743,7 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">48</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
