@@ -36,9 +36,10 @@ MPI leaves the accessory teleported.
 
 **Version witness:** byte-identical numbers on Blender 4.5.11 LTS and 5.1.2.
 
-The render is a dual panel: left **TRAP** (bare parent — accessory teleports,
-hazard material) vs right **MPI KEEP** (accessory stays put), with emissive
-origin markers at each pedestal's base.
+The render is a dual panel: left **TRAP** (bare parent — flanged conduit
+teleports off an empty mount socket, hazard material) vs right **MPI KEEP**
+(flange seated in the socket), with emissive origin markers at each pedestal's
+base. Check closed forms are unchanged; the flange/socket are render form only.
 
 ## Run
 

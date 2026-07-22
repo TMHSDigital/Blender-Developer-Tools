@@ -423,8 +423,8 @@
     {
       "name": "mesh-hygiene-audit",
       "dir": "examples/mesh-hygiene-audit",
-      "teaches": "Engine-ingest mesh hygiene as executable topology checks on a stepped street electrical pedestal (plinth, cabinet, drip cap). Gates: no ngons, no loose verts, every edge borders exactly 2 faces, no zero-area faces (min_area printed), positive signed volume, Euler V-E+F==2 (24/44/22, volume 0.989248). Dual-panel dirty vs clean still marks defects.",
-      "witnessesFix": "AI pipelines that skip topology gates ship ngons, loose verts, open boundaries, inverted winding, or non-sphere Euler into engine ingest. Injecting one defect class at a time exits non-zero (ngon=3, loose=4, boundary=5, zero-area=6, flip=7); the clean solid recovers hygiene_ok on both 4.5.11 and 5.1.2.",
+      "teaches": "Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof.",
+      "witnessesFix": "Pipelines that skip topology gates ship open boundaries, loose verts, or non-sphere Euler into engine ingest. The still makes the boundary hole and loose vert readable; ngon / zero-area / full winding invert remain check-only.",
       "hero": "docs/gallery/assets/mesh-hygiene-audit-hero.webp",
       "preview": "examples/mesh-hygiene-audit/preview.webp",
       "tags": [
@@ -436,8 +436,8 @@
     {
       "name": "prop-origin-transform",
       "dir": "examples/prop-origin-transform",
-      "teaches": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world.",
-      "witnessesFix": "AI code parents with child.parent = parent alone (accessory teleports), skips view_layer.update() before matrix_world, or leaves non-uniform scale / centered origin for engine ingest. Skipping apply, origin bake, or MPI each fails a closed-form gate.",
+      "teaches": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated.",
+      "witnessesFix": "Bare child.parent = parent teleports accessories off their mounts; skipping view_layer.update() before matrix_world, or leaving non-uniform scale / centered origin, breaks engine ingest placement.",
       "hero": "docs/gallery/assets/prop-origin-transform-hero.webp",
       "preview": "examples/prop-origin-transform/preview.webp",
       "tags": [

@@ -677,10 +677,10 @@ with the Smooth-by-Angle modifier on 5.1.
 The mesh-cleanliness contract a prop pipeline relies on before engine ingest:
 no ngons, no loose vertices, every edge bordering exactly two faces, no
 zero-area faces, positive signed volume, and Euler `V − E + F == 2` for a
-closed solid (measured 24/44/22, volume 0.989248). Companion to
+closed solid (measured 66/136/72, volume 0.652001). Companion to
 [`collision-hull-proxy`](examples/collision-hull-proxy/) (hull watertightness)
 and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Dual-panel
-still: DIRTY (injected boundary + loose vert) vs CLEAN.
+still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 
 </td>
 </tr>
@@ -695,9 +695,10 @@ still: DIRTY (injected boundary + loose vert) vs CLEAN.
 The origin / scale-apply / MPI contract a prop pipeline relies on before
 engine ingest: data-API scale bake to exactly `(1,1,1)`, local bbox
 `min.z == 0` (origin at base), world AABB unchanged across the bake, and
-`matrix_parent_inverse` so a bolted accessory does not teleport. Extends
-[`parent-inverse-orrery`](examples/parent-inverse-orrery/) without retreading
-orbits. Dual-panel still: TRAP (bare parent) vs MPI KEEP.
+`matrix_parent_inverse` so a flanged conduit stays on its mount socket.
+Extends [`parent-inverse-orrery`](examples/parent-inverse-orrery/) without
+retreading orbits. Dual-panel still: TRAP (bare parent — empty socket +
+teleported flange) vs MPI KEEP.
 
 </td>
 </tr>

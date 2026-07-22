@@ -110,13 +110,60 @@ def build_pedestal_mesh():
 
 
 def build_accessory_mesh():
-    """Small conduit elbow — bolted accessory for the MPI trap."""
+    """Flanged conduit stub — reads as a bolted part, not a stray cylinder."""
     me = bpy.data.meshes.new("Conduit")
     bm = bmesh.new()
     try:
+        # Barrel along +Y (away from prop face when mounted)
         bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=12, radius1=0.07, radius2=0.07, depth=0.35,
+            bm, cap_ends=True, segments=14, radius1=0.08, radius2=0.08, depth=0.42,
         )
+        bmesh.ops.rotate(
+            bm, verts=bm.verts, cent=(0, 0, 0),
+            matrix=Matrix.Rotation(math.radians(90), 4, "X"),
+        )
+        bmesh.ops.translate(bm, vec=(0.0, -0.21, 0.0), verts=bm.verts)
+        # Mounting flange at the prop-facing end
+        ret = bmesh.ops.create_cone(
+            bm, cap_ends=True, segments=16, radius1=0.16, radius2=0.16, depth=0.04,
+        )
+        bmesh.ops.rotate(
+            bm, verts=ret["verts"], cent=(0, 0, 0),
+            matrix=Matrix.Rotation(math.radians(90), 4, "X"),
+        )
+        bmesh.ops.translate(bm, vec=(0.0, 0.02, 0.0), verts=ret["verts"])
+        # Four bolt heads on the flange
+        for ang in (45, 135, 225, 315):
+            rad = math.radians(ang)
+            bx, bz = 0.11 * math.cos(rad), 0.11 * math.sin(rad)
+            br = bmesh.ops.create_cone(
+                bm, cap_ends=True, segments=8, radius1=0.025, radius2=0.025, depth=0.03,
+            )
+            bmesh.ops.rotate(
+                bm, verts=br["verts"], cent=(0, 0, 0),
+                matrix=Matrix.Rotation(math.radians(90), 4, "X"),
+            )
+            bmesh.ops.translate(bm, vec=(bx, 0.05, bz), verts=br["verts"])
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def build_socket_mesh():
+    """Empty mount collar left on the prop — the seat the accessory departed."""
+    me = bpy.data.meshes.new("Socket")
+    bm = bmesh.new()
+    try:
+        # Outer ring
+        bmesh.ops.create_cone(
+            bm, cap_ends=True, segments=20, radius1=0.18, radius2=0.18, depth=0.05,
+        )
+        # Punch a visual recess by adding an inset darker disk slightly proud
+        inner = bmesh.ops.create_cone(
+            bm, cap_ends=True, segments=16, radius1=0.09, radius2=0.09, depth=0.02,
+        )
+        bmesh.ops.translate(bm, vec=(0.0, 0.0, 0.02), verts=inner["verts"])
         bmesh.ops.rotate(
             bm, verts=bm.verts, cent=(0, 0, 0),
             matrix=Matrix.Rotation(math.radians(90), 4, "X"),
@@ -401,15 +448,20 @@ def build_studio(sc):
 
 def render_still(path, engine):
     """Dual panel: bare-parent TRAP (left) vs MPI KEEP (right) + origin at base."""
-    # Fresh scene for the still so check mutations don't poison framing
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    body_m = make_material("BodyR", (0.18, 0.42, 0.38), rough=0.42, metallic=0.55)
-    acc_m = make_material("AccR", (0.55, 0.45, 0.22), rough=0.35, metallic=0.8)
+    # Teal pedestal — distinct from mesh-hygiene brass valve
+    body_m = make_material("BodyR", (0.14, 0.48, 0.42), rough=0.4, metallic=0.55)
+    acc_m = make_material("AccR", (0.62, 0.48, 0.18), rough=0.35, metallic=0.85)
     trap_m = make_material(
-        "TrapAcc", (0.9, 0.2, 0.1), rough=0.4, metallic=0.3,
-        emit=(1.0, 0.25, 0.05), estr=1.0,
+        "TrapAcc", (0.95, 0.28, 0.08), rough=0.4, metallic=0.35,
+        emit=(1.0, 0.3, 0.05), estr=1.1,
+    )
+    sock_m = make_material("Socket", (0.12, 0.14, 0.15), rough=0.55, metallic=0.4)
+    sock_empty_m = make_material(
+        "SocketEmpty", (0.35, 0.55, 0.75), rough=0.45, metallic=0.2,
+        emit=(0.3, 0.5, 0.75), estr=0.6,
     )
 
     def make_prop(name, loc, rot_z=0.0):
@@ -426,8 +478,6 @@ def render_still(path, engine):
         bpy.context.view_layer.update()
         origin_to_base_center(ob)
         bpy.context.view_layer.update()
-        # Sit on floor after bake
-        bpy.context.view_layer.update()
         wb = world_bbox(ob)
         ob.location.z -= wb[0].z
         ob.rotation_euler.z = rot_z
@@ -442,60 +492,67 @@ def render_still(path, engine):
         sc.collection.objects.link(ob)
         return ob
 
-    left = make_prop("TrapProp", (-1.55, 0.0, 0.0), rot_z=math.radians(12))
-    right = make_prop("KeepProp", (1.55, 0.0, 0.0), rot_z=math.radians(-8))
+    def make_socket(name, world_loc, mat, parent=None):
+        me = build_socket_mesh()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = world_loc
+        sc.collection.objects.link(ob)
+        bpy.context.view_layer.update()
+        if parent is not None:
+            parent_keep_world(ob, parent)
+            bpy.context.view_layer.update()
+        return ob
 
-    # Accessory intended world pose (front of each pedestal mid-height)
+    left = make_prop("TrapProp", (0.0, 0.0, 0.0), rot_z=math.radians(25))
+    right = make_prop("KeepProp", (2.0, 0.0, 0.0), rot_z=math.radians(-8))
+
     bpy.context.view_layer.update()
-    left_front = left.matrix_world @ Vector((0.0, -0.48, 0.85))
-    right_front = right.matrix_world @ Vector((0.0, -0.48, 0.85))
+    left_front = left.matrix_world @ Vector((0.0, -0.52, 0.78))
+    right_front = right.matrix_world @ Vector((0.0, -0.52, 0.78))
 
-    trap_acc = make_acc("TrapAcc", left_front, trap_m)
-    keep_acc = make_acc("KeepAcc", right_front, acc_m)
-    trap_acc.scale = (1.8, 1.8, 1.8)
-    keep_acc.scale = (1.8, 1.8, 1.8)
+    make_socket("TrapSocket", left_front, sock_empty_m, parent=left)
+    make_socket("KeepSocket", right_front, sock_m, parent=right)
+
+    trap_acc = make_acc("TrapAcc", left_front + Vector((0.0, -0.08, 0.0)), trap_m)
+    keep_acc = make_acc("KeepAcc", right_front + Vector((0.0, -0.08, 0.0)), acc_m)
+    trap_acc.scale = (1.35, 1.35, 1.35)
+    keep_acc.scale = (1.35, 1.35, 1.35)
     bpy.context.view_layer.update()
 
-    # Ghost at the intended pose on the TRAP side — the "where it should stay"
-    ghost_m = make_material(
-        "Ghost", (0.7, 0.75, 0.8), rough=0.6, metallic=0.0,
-        emit=(0.5, 0.55, 0.6), estr=0.35,
-    )
-    ghost = make_acc("ExpectedGhost", left_front, ghost_m)
-    ghost.scale = (1.8, 1.8, 1.8)
-    # slight transparency via alpha isn't reliable in EEVEE without setup;
-    # keep emissive pale so it reads as "expected seat"
-
-    # Left: bare parent after translating+yawing parent → accessory teleports
-    left.location += Vector((0.55, 0.35, 0.0))
-    left.rotation_euler.z += math.radians(55)
-    bpy.context.view_layer.update()
     w_before = trap_acc.matrix_world.translation.copy()
     trap_acc.parent = left
     bpy.context.view_layer.update()
     jumped = (trap_acc.matrix_world.translation - w_before).length
-    print(f"render_trap_jump={jumped:.4f} acc_at={tuple(round(c,3) for c in trap_acc.matrix_world.translation)}")
+    jumped_world = trap_acc.matrix_world.copy()
+    trap_acc.parent = None
+    bpy.context.view_layer.update()
+    trap_acc.matrix_world = jumped_world
+    bpy.context.view_layer.update()
+    print(
+        f"render_trap_jump={jumped:.4f} "
+        f"acc_at={tuple(round(c, 3) for c in trap_acc.matrix_world.translation)}"
+    )
 
-    # Right: MPI keep-world (accessory stays on the front face)
     parent_keep_world(keep_acc, right)
     bpy.context.view_layer.update()
 
-    # Origin markers at each prop's object origin (base center after bake)
+    # Origin markers at base — small, so they don't compete with the accessory
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    placard(sc, "TRAP", (-1.2, -1.25, 0.02), size=0.22)
-    placard(sc, "MPI KEEP", (1.55, -1.25, 0.02), size=0.22)
+    placard(sc, "TRAP", (0.0, -1.05, 0.02), size=0.16)
+    placard(sc, "MPI KEEP", (2.0, -1.05, 0.02), size=0.16)
 
     build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 38.0
+    cam_data.lens = 42.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.15, -7.2, 2.15)
+    cam.location = (0.95, -5.6, 1.55)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.15, 0.0, 0.9)
+    aim.location = (0.95, 0.0, 0.72)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim

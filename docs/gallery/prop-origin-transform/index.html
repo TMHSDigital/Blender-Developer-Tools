@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>prop-origin-transform — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <meta name="description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/prop-origin-transform/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="prop-origin-transform — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <meta property="og:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/prop-origin-transform/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="prop-origin-transform — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world." />
+  <meta name="twitter:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -170,14 +170,14 @@
   </div>
   <header class="hero">
     <h1>prop-origin-transform</h1>
-    <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a bolted accessory. After bake: scale exactly (1,1,1), local min.z==0, world AABB delta 0. Bare parent jumps the accessory (~0.43 m); MPI restores world location (~3e-8). view_layer.update() before reading matrix_world.</p>
+    <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom prop-origin-transform render">
       <img src="../assets/prop-origin-transform-hero.webp" alt="prop-origin-transform render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> AI code parents with child.parent = parent alone (accessory teleports), skips view_layer.update() before matrix_world, or leaves non-uniform scale / centered origin for engine ingest. Skipping apply, origin bake, or MPI each fails a closed-form gate.</div>
+    <div class="callout"><span class="tag">witnesses</span> Bare child.parent = parent teleports accessories off their mounts; skipping view_layer.update() before matrix_world, or leaving non-uniform scale / centered origin, breaks engine ingest placement.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/prop-origin-transform/prop_origin_transform.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -315,13 +315,60 @@ JUMP_MIN = <span class="n">0.05</span>
 
 
 <span class="k">def</span> build_accessory_mesh():
-    <span class="s">&quot;&quot;&quot;Small conduit elbow — bolted accessory for the MPI trap.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Flanged conduit stub — reads as a bolted part, not a stray cylinder.&quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Conduit&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
+        <span class="c"># Barrel along +Y (away from prop face when mounted)</span>
         bmesh.ops.create_cone(
-            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">12</span>, radius1=<span class="n">0.07</span>, radius2=<span class="n">0.07</span>, depth=<span class="n">0.35</span>,
+            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">14</span>, radius1=<span class="n">0.08</span>, radius2=<span class="n">0.08</span>, depth=<span class="n">0.42</span>,
         )
+        bmesh.ops.rotate(
+            bm, verts=bm.verts, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+            matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>),
+        )
+        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, -<span class="n">0.21</span>, <span class="n">0.0</span>), verts=bm.verts)
+        <span class="c"># Mounting flange at the prop-facing end</span>
+        ret = bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">16</span>, radius1=<span class="n">0.16</span>, radius2=<span class="n">0.16</span>, depth=<span class="n">0.04</span>,
+        )
+        bmesh.ops.rotate(
+            bm, verts=ret[<span class="s">&quot;verts&quot;</span>], cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+            matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>),
+        )
+        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.02</span>, <span class="n">0.0</span>), verts=ret[<span class="s">&quot;verts&quot;</span>])
+        <span class="c"># Four bolt heads on the flange</span>
+        <span class="k">for</span> ang <span class="k">in</span> (<span class="n">45</span>, <span class="n">135</span>, <span class="n">225</span>, <span class="n">315</span>):
+            rad = math.radians(ang)
+            bx, bz = <span class="n">0.11</span> * math.cos(rad), <span class="n">0.11</span> * math.sin(rad)
+            br = bmesh.ops.create_cone(
+                bm, cap_ends=<span class="k">True</span>, segments=<span class="n">8</span>, radius1=<span class="n">0.025</span>, radius2=<span class="n">0.025</span>, depth=<span class="n">0.03</span>,
+            )
+            bmesh.ops.rotate(
+                bm, verts=br[<span class="s">&quot;verts&quot;</span>], cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>),
+            )
+            bmesh.ops.translate(bm, vec=(bx, <span class="n">0.05</span>, bz), verts=br[<span class="s">&quot;verts&quot;</span>])
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> build_socket_mesh():
+    <span class="s">&quot;&quot;&quot;Empty mount collar left on the prop — the seat the accessory departed.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;Socket&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="c"># Outer ring</span>
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">20</span>, radius1=<span class="n">0.18</span>, radius2=<span class="n">0.18</span>, depth=<span class="n">0.05</span>,
+        )
+        <span class="c"># Punch a visual recess by adding an inset darker disk slightly proud</span>
+        inner = bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, segments=<span class="n">16</span>, radius1=<span class="n">0.09</span>, radius2=<span class="n">0.09</span>, depth=<span class="n">0.02</span>,
+        )
+        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.02</span>), verts=inner[<span class="s">&quot;verts&quot;</span>])
         bmesh.ops.rotate(
             bm, verts=bm.verts, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
             matrix=Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>),
@@ -606,15 +653,20 @@ JUMP_MIN = <span class="n">0.05</span>
 
 <span class="k">def</span> render_still(path, engine):
     <span class="s">&quot;&quot;&quot;Dual panel: bare-parent TRAP (left) vs MPI KEEP (right) + origin at base.&quot;&quot;&quot;</span>
-    <span class="c"># Fresh scene for the still so check mutations don&#x27;t poison framing</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
 
-    body_m = make_material(<span class="s">&quot;BodyR&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.42</span>, <span class="n">0.38</span>), rough=<span class="n">0.42</span>, metallic=<span class="n">0.55</span>)
-    acc_m = make_material(<span class="s">&quot;AccR&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.45</span>, <span class="n">0.22</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.8</span>)
+    <span class="c"># Teal pedestal — distinct from mesh-hygiene brass valve</span>
+    body_m = make_material(<span class="s">&quot;BodyR&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.48</span>, <span class="n">0.42</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.55</span>)
+    acc_m = make_material(<span class="s">&quot;AccR&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.48</span>, <span class="n">0.18</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.85</span>)
     trap_m = make_material(
-        <span class="s">&quot;TrapAcc&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.2</span>, <span class="n">0.1</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.3</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.25</span>, <span class="n">0.05</span>), estr=<span class="n">1.0</span>,
+        <span class="s">&quot;TrapAcc&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.28</span>, <span class="n">0.08</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.35</span>,
+        emit=(<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.05</span>), estr=<span class="n">1.1</span>,
+    )
+    sock_m = make_material(<span class="s">&quot;Socket&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.14</span>, <span class="n">0.15</span>), rough=<span class="n">0.55</span>, metallic=<span class="n">0.4</span>)
+    sock_empty_m = make_material(
+        <span class="s">&quot;SocketEmpty&quot;</span>, (<span class="n">0.35</span>, <span class="n">0.55</span>, <span class="n">0.75</span>), rough=<span class="n">0.45</span>, metallic=<span class="n">0.2</span>,
+        emit=(<span class="n">0.3</span>, <span class="n">0.5</span>, <span class="n">0.75</span>), estr=<span class="n">0.6</span>,
     )
 
     <span class="k">def</span> make_prop(name, loc, rot_z=<span class="n">0.0</span>):
@@ -631,8 +683,6 @@ JUMP_MIN = <span class="n">0.05</span>
         bpy.context.view_layer.update()
         origin_to_base_center(ob)
         bpy.context.view_layer.update()
-        <span class="c"># Sit on floor after bake</span>
-        bpy.context.view_layer.update()
         wb = world_bbox(ob)
         ob.location.z -= wb[<span class="n">0</span>].z
         ob.rotation_euler.z = rot_z
@@ -647,60 +697,67 @@ JUMP_MIN = <span class="n">0.05</span>
         sc.collection.objects.link(ob)
         <span class="k">return</span> ob
 
-    left = make_prop(<span class="s">&quot;TrapProp&quot;</span>, (-<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(<span class="n">12</span>))
-    right = make_prop(<span class="s">&quot;KeepProp&quot;</span>, (<span class="n">1.55</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(-<span class="n">8</span>))
+    <span class="k">def</span> make_socket(name, world_loc, mat, parent=<span class="k">None</span>):
+        me = build_socket_mesh()
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = world_loc
+        sc.collection.objects.link(ob)
+        bpy.context.view_layer.update()
+        <span class="k">if</span> parent <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            parent_keep_world(ob, parent)
+            bpy.context.view_layer.update()
+        <span class="k">return</span> ob
 
-    <span class="c"># Accessory intended world pose (front of each pedestal mid-height)</span>
+    left = make_prop(<span class="s">&quot;TrapProp&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(<span class="n">25</span>))
+    right = make_prop(<span class="s">&quot;KeepProp&quot;</span>, (<span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), rot_z=math.radians(-<span class="n">8</span>))
+
     bpy.context.view_layer.update()
-    left_front = left.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.48</span>, <span class="n">0.85</span>))
-    right_front = right.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.48</span>, <span class="n">0.85</span>))
+    left_front = left.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.52</span>, <span class="n">0.78</span>))
+    right_front = right.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.52</span>, <span class="n">0.78</span>))
 
-    trap_acc = make_acc(<span class="s">&quot;TrapAcc&quot;</span>, left_front, trap_m)
-    keep_acc = make_acc(<span class="s">&quot;KeepAcc&quot;</span>, right_front, acc_m)
-    trap_acc.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
-    keep_acc.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
+    make_socket(<span class="s">&quot;TrapSocket&quot;</span>, left_front, sock_empty_m, parent=left)
+    make_socket(<span class="s">&quot;KeepSocket&quot;</span>, right_front, sock_m, parent=right)
+
+    trap_acc = make_acc(<span class="s">&quot;TrapAcc&quot;</span>, left_front + Vector((<span class="n">0.0</span>, -<span class="n">0.08</span>, <span class="n">0.0</span>)), trap_m)
+    keep_acc = make_acc(<span class="s">&quot;KeepAcc&quot;</span>, right_front + Vector((<span class="n">0.0</span>, -<span class="n">0.08</span>, <span class="n">0.0</span>)), acc_m)
+    trap_acc.scale = (<span class="n">1.35</span>, <span class="n">1.35</span>, <span class="n">1.35</span>)
+    keep_acc.scale = (<span class="n">1.35</span>, <span class="n">1.35</span>, <span class="n">1.35</span>)
     bpy.context.view_layer.update()
 
-    <span class="c"># Ghost at the intended pose on the TRAP side — the &quot;where it should stay&quot;</span>
-    ghost_m = make_material(
-        <span class="s">&quot;Ghost&quot;</span>, (<span class="n">0.7</span>, <span class="n">0.75</span>, <span class="n">0.8</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>,
-        emit=(<span class="n">0.5</span>, <span class="n">0.55</span>, <span class="n">0.6</span>), estr=<span class="n">0.35</span>,
-    )
-    ghost = make_acc(<span class="s">&quot;ExpectedGhost&quot;</span>, left_front, ghost_m)
-    ghost.scale = (<span class="n">1.8</span>, <span class="n">1.8</span>, <span class="n">1.8</span>)
-    <span class="c"># slight transparency via alpha isn&#x27;t reliable in EEVEE without setup;</span>
-    <span class="c"># keep emissive pale so it reads as &quot;expected seat&quot;</span>
-
-    <span class="c"># Left: bare parent after translating+yawing parent → accessory teleports</span>
-    left.location += Vector((<span class="n">0.55</span>, <span class="n">0.35</span>, <span class="n">0.0</span>))
-    left.rotation_euler.z += math.radians(<span class="n">55</span>)
-    bpy.context.view_layer.update()
     w_before = trap_acc.matrix_world.translation.copy()
     trap_acc.parent = left
     bpy.context.view_layer.update()
     jumped = (trap_acc.matrix_world.translation - w_before).length
-    print(<span class="s">f&quot;</span><span class="s">render_trap_jump=</span>{jumped:<span class="s">.4f</span>}<span class="s"> acc_at=</span>{tuple(round(c,<span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> trap_acc.matrix_world.translation)}<span class="s">&quot;</span>)
+    jumped_world = trap_acc.matrix_world.copy()
+    trap_acc.parent = <span class="k">None</span>
+    bpy.context.view_layer.update()
+    trap_acc.matrix_world = jumped_world
+    bpy.context.view_layer.update()
+    print(
+        <span class="s">f&quot;</span><span class="s">render_trap_jump=</span>{jumped:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">acc_at=</span>{tuple(round(c, <span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> trap_acc.matrix_world.translation)}<span class="s">&quot;</span>
+    )
 
-    <span class="c"># Right: MPI keep-world (accessory stays on the front face)</span>
     parent_keep_world(keep_acc, right)
     bpy.context.view_layer.update()
 
-    <span class="c"># Origin markers at each prop&#x27;s object origin (base center after bake)</span>
+    <span class="c"># Origin markers at base — small, so they don&#x27;t compete with the accessory</span>
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    placard(sc, <span class="s">&quot;TRAP&quot;</span>, (-<span class="n">1.2</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.22</span>)
-    placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">1.55</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.22</span>)
+    placard(sc, <span class="s">&quot;TRAP&quot;</span>, (<span class="n">0.0</span>, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.16</span>)
+    placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">2.0</span>, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.16</span>)
 
     build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">38.0</span>
+    cam_data.lens = <span class="n">42.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.15</span>, -<span class="n">7.2</span>, <span class="n">2.15</span>)
+    cam.location = (<span class="n">0.95</span>, -<span class="n">5.6</span>, <span class="n">1.55</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">0.9</span>)
+    aim.location = (<span class="n">0.95</span>, <span class="n">0.0</span>, <span class="n">0.72</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
