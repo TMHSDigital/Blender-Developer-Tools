@@ -54,4 +54,6 @@ blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --en
 ```
 
 Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1.
+Blender 4.5 LTS and 5.1. The `--output` render path additionally measures
+framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
+on violation) before writing the still.

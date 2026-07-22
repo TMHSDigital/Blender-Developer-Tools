@@ -20,6 +20,11 @@ to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Matrix, Vector
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 AREA_EPS = 1e-10
 VOL_EPS = 1e-8
 
@@ -325,6 +330,7 @@ def build_studio(sc):
     light("Rim", (1.5, 4.5, 3.5), 280.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
     light("Wedge", (2.5, 5.5, 4.0), 420.0, 6.0, (1.0, 0.72, 0.42), (-68, 0, 190))
     light("Glint", (-2.0, -4.0, 3.2), 220.0, 2.0, (1.0, 0.9, 0.75), (55, 0, -20))
+    return floor, wall
 
 
 def _duplicate_mesh_obj(sc, src, name, loc):
@@ -488,10 +494,10 @@ def render_still(clean_ob, path, engine):
     for p in right.data.polygons:
         p.use_smooth = abs(p.normal.z) < 0.85
 
-    placard(sc, "DIRTY", (-0.88, -1.15, 0.02), size=0.11)
-    placard(sc, "CLEAN", (0.88, -1.15, 0.02), size=0.11)
+    p_dirty = placard(sc, "DIRTY", (-0.88, -1.15, 0.02), size=0.11)
+    p_clean = placard(sc, "CLEAN", (0.88, -1.15, 0.02), size=0.11)
 
-    build_studio(sc)
+    floor, wall = build_studio(sc)
     # Out-of-frame POINT behind DIRTY — aperture glow without a rectangular AREA
     # footprint on the floor (Layer 1: no visible light shapes).
     hole_ld = bpy.data.lights.new("HoleBack", "POINT")
@@ -512,12 +518,12 @@ def render_still(clean_ob, path, engine):
             ob.data.energy = 140.0
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 38.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.8, 1.9)
+    cam.location = (0.0, -5.0, 1.5)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.48)
+    aim.location = (0.0, 0.0, 0.55)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -540,8 +546,22 @@ def render_still(clean_ob, path, engine):
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = path
     sc.view_settings.view_transform = "Standard"
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    overlays = [o for o in sc.objects if o.name.startswith(("LooseBead", "Bnd"))]
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=[left, right],
+        elements=[left, right, p_dirty, p_clean] + overlays,
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 9
+    return 0
 
 
 def build_scene():
@@ -566,9 +586,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(ob, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(ob, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("mesh-hygiene-audit OK")
