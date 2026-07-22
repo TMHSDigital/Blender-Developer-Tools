@@ -11,6 +11,14 @@ the flat grid gained the expected Z span (the write actually landed) and that **
 vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer
 cannot hide behind a lucky probe.
 
+## Framing deviation
+
+Edge-to-edge field — the displaced sheet fills the frame and crops at the left,
+right, and bottom edges so the wave reads as a surface, not an object on a
+stage (measured fill 1.000x/0.817y with edge touch on three sides). If wired
+to `examples/gallery_framing.py`, call it with
+`deviation="edge-to-edge wave field; the fill is the point"`.
+
 ## Run
 
 ```bash

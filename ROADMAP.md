@@ -129,6 +129,8 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - UV atlas pack witness — lightmap/unique UV island packing with non-overlap + utilization closed forms (deferred behind hygiene/origin; overlaps `uv-layer-grid` / `triangulate-tangents` / `gltf-export-roundtrip` UV arc)
 - Attribute domain witness: writing a POINT-domain color attribute and reading it as if it were CORNER (or vice versa) silently shears colors across shared verts — companion to `color-attribute-wheel`
 
+- Gallery framing defect worklist (from the #107 survey; restage + re-render into the 0.70–0.90 band with all margins ≥ 0.02, then wire `examples/gallery_framing.py`'s `check_framing`): **depsgraph-export** (fill 0.984x over; left cube clipped by left+bottom edges), **driver-wave** (0.969x over; side margins 0.016), **shader-node-group** (0.969x over; side margins 0.016), **swatch-grid** (0.944y over, marginal), **gp-lineart-contour** (0.978y over; glass base cropped at bottom edge), **png-exr-alpha** (display plinth touches bottom edge, minor), **vertex-weight-limit** (base cropped at bottom edge; x-fill 0.247 with dead space), **text-version-stamp** (max fill 0.663 under; dead lower third), **triangulate-tangents** (0.334x/0.661y under; dead space both sides), **curve-bevel-arc** (right cap margin 0.012 < 0.02, marginal). Triaged as documented deviations instead (README `Framing deviation` notes, no restage): damped-track-aim (radiating composition, calibration member) and wave-displace (edge-to-edge field); sky-texture-sun-elevation is a measurement artifact (world-contract subject — report-only if wired); vse-cut-list is in scope via its `Bay` scene/camera pair.
+
 ## Future (uncommitted)
 
 - Asset library and asset browser scripting skill

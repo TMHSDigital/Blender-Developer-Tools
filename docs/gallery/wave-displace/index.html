@@ -185,6 +185,8 @@
     <section class="detail-section md">
 <p>A runnable example that displaces a 96×96 grid (9,409 vertices) into a standing wave using <strong>one <code>foreach_get</code> and one <code>foreach_set</code></strong> — the bulk-IO pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/use-foreach-set-for-bulk-data.mdc"><code>use-foreach-set-for-bulk-data</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> skill — instead of 9,409 individual <code>mesh.vertices[i].co</code> accesses.</p>
 <p><strong>What it witnesses:</strong> the bulk path is not just faster, it is *correct* — the check asserts the flat grid gained the expected Z span (the write actually landed) and that <strong>every</strong> vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer cannot hide behind a lucky probe.</p>
+<h2>Framing deviation</h2>
+<p>Edge-to-edge field — the displaced sheet fills the frame and crops at the left, right, and bottom edges so the wave reads as a surface, not an object on a stage (measured fill 1.000x/0.817y with edge touch on three sides). If wired to <code>examples/gallery_framing.py</code>, call it with <code>deviation=&quot;edge-to-edge wave field; the fill is the point&quot;</code>.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python wave_displace.py --

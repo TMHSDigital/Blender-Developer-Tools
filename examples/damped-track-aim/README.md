@@ -12,6 +12,14 @@ bound to the core on `TRACK_Z`. After a depsgraph update, each evaluated local
 constraint, a muted one, a `TRACK_TO` stand-in, or a flipped axis fails the
 check.
 
+## Framing deviation
+
+Radiating composition — the twelve spikes read as converging on the core from
+beyond the frame, so their tails bleed past the left, right, and bottom edges
+by design (measured fill 1.000x/0.917y with edge touch on three sides). If
+wired to `examples/gallery_framing.py`, call it with
+`deviation="radiating composition; spikes read as extending past frame"`.
+
 ## Run
 
 ```bash

@@ -185,6 +185,8 @@
     <section class="detail-section md">
 <p>A runnable example that aims twelve brass spikes at an ember core with <code>Object.constraints.new(&#x27;DAMPED_TRACK&#x27;)</code> — the data-API path, not <code>bpy.ops.object.constraint_add</code> (which needs an active object and fails in headless loops). Damped Track is the twist-stable aim constraint: it points one local axis at a target without the roll fights Track To is known for.</p>
 <p><strong>What it witnesses:</strong> every spike carries exactly one unmuted <code>DAMPED_TRACK</code> bound to the core on <code>TRACK_Z</code>. After a depsgraph update, each evaluated local <code>+Z</code> aligns with the world vector toward the core (dot ≥ 0.998 ≈ 3.6°). A missing constraint, a muted one, a <code>TRACK_TO</code> stand-in, or a flipped axis fails the check.</p>
+<h2>Framing deviation</h2>
+<p>Radiating composition — the twelve spikes read as converging on the core from beyond the frame, so their tails bleed past the left, right, and bottom edges by design (measured fill 1.000x/0.917y with edge touch on three sides). If wired to <code>examples/gallery_framing.py</code>, call it with <code>deviation=&quot;radiating composition; spikes read as extending past frame&quot;</code>.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
