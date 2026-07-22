@@ -61,6 +61,7 @@
   "examples": [
     "examples/armature-bend",
     "examples/bmesh-gear",
+    "examples/car-mirror-symmetry",
     "examples/color-attribute-wheel",
     "examples/collision-hull-proxy",
     "examples/compositor-glare",

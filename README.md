@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>37 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>38 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 37 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 38 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -719,6 +719,25 @@ bound by face vertex count, never enumeration order. Sibling to
 [`bmesh-gear`](examples/bmesh-gear/) (parametric extrusion): this one
 witnesses polyhedral invariants plus per-face-class material binding. The
 smoothed render inverts on sight if the panel binding does.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/car-mirror-symmetry/"><img src="examples/car-mirror-symmetry/preview.webp" alt="Car mirror symmetry: a red low-poly hatchback on a dark studio floor, light windshield band and white headlamp pair — lofted as one half and completed by the Mirror modifier evaluated through the depsgraph, proving 2n-c counts, exact negated-X partners, a welded watertight centerline, and wheels mirrored about origins on the plane" /></a>
+</td>
+<td valign="middle">
+
+### [car-mirror-symmetry](examples/car-mirror-symmetry/)
+
+The Mirror + depsgraph contract: the datablock holds only the authored half
+(126/231/106, 28 centerline verts) while the evaluated mesh is the welded
+whole — exactly `2n − c` verts, watertight with Euler 2, every vertex paired
+at negated X (deviation 0.0). Wheels and lamps mirror about object origins
+parked **on** the symmetry plane — offset the data, never the object.
+Companion to [`depsgraph-export`](examples/depsgraph-export/) (evaluated-vs-
+original) and [`shape-key-blend`](examples/shape-key-blend/) (non-destructive
+evaluation). Break the mirror and the render is literally half a car.
 
 </td>
 </tr>
