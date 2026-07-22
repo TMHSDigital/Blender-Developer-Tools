@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>30 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>31 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 30 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 31 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -504,7 +504,7 @@ round-trips through the raw `POINT` buffer.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 5 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 6 examples</summary>
 
 <table>
 <tr>
@@ -590,6 +590,25 @@ list, JOINTS_0/WEIGHTS_0 unit sums, bone/parent/rest-matrix round-trip,
 bit-exact weights, and identical deformation of the re-imported rig — plus
 the parenting hazard: unparented skinned meshes let the exporter bind an
 armature by name.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/collision-hull-proxy/"><img src="examples/collision-hull-proxy/preview.webp" alt="Collision hull proxy: a red fire hydrant street prop with a yellow bonnet on a dark studio floor, enclosed in four faceted translucent cyan collision shells - the compound convex hull set a game engine ingests" /></a>
+</td>
+<td valign="middle">
+
+### [collision-hull-proxy](examples/collision-hull-proxy/)
+
+The compound-collision contract prop pipelines (engines generally,
+FiveM/GTA-style prop workflows specifically) ingest: one convex hull piece
+per part group, built with `bmesh.ops.convex_hull` from a coarse
+`sec(π/n)`-inflated cage — never the dense render mesh, whose hull measures
+368 faces, over the 255-face per-piece engine budget. Closed-form plane
+tests prove containment (5.9e-08), convexity, watertightness, outward
+winding, and Euler characteristic 2 per piece. Proud details cost cage rows;
+concave grooves are free.
 
 </td>
 </tr>

@@ -62,6 +62,7 @@
     "examples/armature-bend",
     "examples/bmesh-gear",
     "examples/color-attribute-wheel",
+    "examples/collision-hull-proxy",
     "examples/compositor-glare",
     "examples/curve-bevel-arc",
     "examples/damped-track-aim",

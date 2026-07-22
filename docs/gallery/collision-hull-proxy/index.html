@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>collision-hull-proxy — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/collision-hull-proxy/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="collision-hull-proxy — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/collision-hull-proxy/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/collision-hull-proxy-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="collision-hull-proxy — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/collision-hull-proxy-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>collision-hull-proxy</h1>
+    <p>A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom collision-hull-proxy render">
+      <img src="../assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> A hull of the dense render mesh measures 368 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 5.9e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/collision-hull-proxy/collision_hull_proxy.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a fire hydrant street prop — lathed barrel, bonnet dome, three outlet caps, operating nut — plus the collision a game prop pipeline ingests: a <strong>compound of four convex hull pieces</strong>, one per part group, each built with <code>bmesh.ops.convex_hull</code> from a coarse collision cage, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p><strong>Pipeline arc neighbor:</strong> LODs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, tangent space in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — collision bounds are the piece an engine&#x27;s physics ingest checks first, and the piece whose failure rejects the whole prop.</p>
+<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (watertight convex pieces that enclose the render mesh within budget). It is not an engine exporter and does not produce a shippable FiveM/engine asset — it proves the geometry properties such an asset must have.</p>
+<p><strong>What it witnesses:</strong> engines (GTA/FiveM-style prop workflows included) ingest collision as a *compound of convex pieces*, each piece under a per-piece face limit (255 is the common cap). The example builds that structure and derives every property from closed forms, per piece:</p>
+<ul><li><strong>Containment.</strong> Every render-mesh vertex lies on the inner side of every face plane of its piece&#x27;s hull — max excursion <strong>5.9e-08</strong> (tol 2e-4). This holds by construction, not luck: the cage is a coarse lathe whose rings are inflated by <code>sec(π/n)</code>, so each n-gon cage ring *circumscribes* its render ring exactly. Proud details (a rim, a nut) must be paid for in cage rows; concave details (the grooves) are free — the hull bridges over them. That trade-off is the collision-authoring lesson.</li><li><strong>Convexity.</strong> The same plane test restricted to the hull&#x27;s own vertices (5.0e-08) — what a convex solver assumes when it uploads the piece.</li><li><strong>Watertight + manifold.</strong> Every hull edge borders exactly two faces, and V − E + F = 2: a convex hull is a topological sphere.</li><li><strong>Outward winding.</strong> Positive signed volume by the divergence theorem (body piece 0.968858) — inverted collision is a physics no-op.</li><li><strong>Budget.</strong> Every piece ≤ 255 faces: body 70, pumper 60, side caps 60+60; the compound totals 250. The naive approach fails this — a hull of the *dense render mesh* measures <strong>368 faces</strong>, over budget, which is why real pipelines hull a cage, never the render mesh.</li></ul>
+<p><strong>What each check catches on failure:</strong> an artist editing the render mesh after the hull was generated (probe: pumper lug stretched 2×, exit 3, measured escape 0.730000); inverted hull winding (probe: polygons flipped, exit 5, signed volume −0.968858, the exact negation); a non-watertight piece (probe: one face deleted, exit 4, three border edges).</p>
+<p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same piece counts, same volumes, same excursions. <code>bmesh.ops.convex_hull</code> and <code>foreach_get</code> are stable across the pair.</p>
+<p>The render shows the prop inside its four faceted translucent hull pieces: if any piece failed to enclose its geometry, painted metal would poke through the shell in frame.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python collision_hull_proxy.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python collision_hull_proxy.py -- --output hydrant.png
+blender --background --python collision_hull_proxy.py -- --output hydrant.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (render geometry escaping a hull, inverted winding, a non-watertight or non-convex piece, Euler drift, or a piece over the 255-face budget). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/collision-hull-proxy/collision_hull_proxy.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy/collision_hull_proxy.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A fire hydrant prop plus its convex collision proxies — a runnable example.
+
+Witnesses the collision contract every game prop pipeline (engines generally,
+FiveM/GTA-style prop workflows specifically) depends on: a prop&#x27;s collision is
+a COMPOUND of convex pieces, each piece a watertight, outward-wound hull that
+fully encloses its render geometry and stays inside the engine&#x27;s per-piece
+face budget. Each piece is built with `bmesh.ops.convex_hull` from a coarse
+collision cage — never from the dense render mesh, whose hull would blow the
+budget — and the check derives every property from closed forms:
+
+  containment  — every render-mesh vertex on the inner side of every face
+                 plane of its piece&#x27;s hull (max excursion printed, tol 2e-4)
+  convexity    — the same plane test restricted to the hull&#x27;s own vertices
+  watertight   — every hull edge borders exactly two faces
+  winding      — positive signed volume (divergence theorem)
+  manifold     — Euler characteristic V - E + F == 2 (a convex hull is a
+                 topological sphere)
+  budget       — every piece &lt;= 255 faces (the common per-piece convex limit
+                 engines impose on collision meshes)
+
+The cage is a coarser lathe whose profile rings are inflated by sec(pi / n)
+so its n-gon rings circumscribe the render rings exactly — that is why
+containment holds with a measured margin of ~0 instead of by luck. Concave
+details (grooves) never touch the hull; proud details cost hull faces. That
+trade-off IS the collision-authoring lesson.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python collision_hull_proxy.py --                 # check only
+    blender --background --python collision_hull_proxy.py -- --output h.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+SEGMENTS = <span class="n">48</span>          <span class="c"># lathe resolution of the render mesh</span>
+CAGE_SEG_BODY = <span class="n">8</span>      <span class="c"># collision cage resolutions — the hull face budget</span>
+CAGE_SEG_CAP = <span class="n">8</span>       <span class="c">#   is spent through these, not through SEGMENTS</span>
+CAGE_SEG_NUT = <span class="n">5</span>
+HULL_BUDGET = <span class="n">255</span>      <span class="c"># engine per-piece convex face limit</span>
+TOL = <span class="n">2e-4</span>             <span class="c"># plane-test tolerance: cage circumscribes render exactly</span>
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Prop construction. The hydrant is lathed around Z; caps are lathed around Z</span>
+<span class="c"># too and tipped onto their sides by the object rotation. All dimensions are</span>
+<span class="c"># invented for this prop — no real-world design is referenced.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="c"># (radius, height) render profile of body + bonnet, bottom pole to top pole.</span>
+<span class="c"># Ribs are GROOVES: concave details are free under a convex hull, proud ones</span>
+<span class="c"># would have to be paid for in cage rows.</span>
+BODY_PROFILE = [
+    (<span class="n">0.00</span>, <span class="n">0.000</span>),
+    (<span class="n">0.60</span>, <span class="n">0.000</span>),   <span class="c"># base flange edge</span>
+    (<span class="n">0.60</span>, <span class="n">0.045</span>),
+    (<span class="n">0.575</span>, <span class="n">0.055</span>),  <span class="c"># flange groove (concave)</span>
+    (<span class="n">0.575</span>, <span class="n">0.070</span>),
+    (<span class="n">0.60</span>, <span class="n">0.080</span>),
+    (<span class="n">0.60</span>, <span class="n">0.095</span>),   <span class="c"># flange top edge</span>
+    (<span class="n">0.48</span>, <span class="n">0.115</span>),   <span class="c"># taper (convex curve, lies inside the cage chord)</span>
+    (<span class="n">0.40</span>, <span class="n">0.155</span>),
+    (<span class="n">0.37</span>, <span class="n">0.205</span>),   <span class="c"># neck</span>
+    (<span class="n">0.35</span>, <span class="n">0.320</span>),   <span class="c"># barrel</span>
+    (<span class="n">0.346</span>, <span class="n">0.545</span>),
+    (<span class="n">0.334</span>, <span class="n">0.555</span>),  <span class="c"># barrel groove (concave)</span>
+    (<span class="n">0.334</span>, <span class="n">0.575</span>),
+    (<span class="n">0.346</span>, <span class="n">0.590</span>),
+    (<span class="n">0.345</span>, <span class="n">0.880</span>),  <span class="c"># barrel top</span>
+    (<span class="n">0.348</span>, <span class="n">0.930</span>),
+    (<span class="n">0.336</span>, <span class="n">0.950</span>),  <span class="c"># upper groove (concave)</span>
+    (<span class="n">0.336</span>, <span class="n">1.000</span>),
+    (<span class="n">0.348</span>, <span class="n">1.030</span>),
+    (<span class="n">0.36</span>, <span class="n">1.090</span>),   <span class="c"># shoulder under bonnet</span>
+    (<span class="n">0.35</span>, <span class="n">1.150</span>),   <span class="c"># bonnet dome (concave curve — cage keeps every row)</span>
+    (<span class="n">0.30</span>, <span class="n">1.220</span>),
+    (<span class="n">0.21</span>, <span class="n">1.280</span>),
+    (<span class="n">0.10</span>, <span class="n">1.315</span>),
+    (<span class="n">0.00</span>, <span class="n">1.325</span>),
+]
+
+<span class="c"># Cage silhouette: every convex corner of the render profile, nothing else.</span>
+<span class="c"># sec(pi/8) inflation makes each 8-gon cage ring circumscribe its render ring.</span>
+CAGE_BODY_PROFILE = [
+    (<span class="n">0.00</span>, <span class="n">0.000</span>),
+    (<span class="n">0.60</span>, <span class="n">0.000</span>),
+    (<span class="n">0.60</span>, <span class="n">0.095</span>),
+    (<span class="n">0.37</span>, <span class="n">0.205</span>),
+    (<span class="n">0.345</span>, <span class="n">0.880</span>),
+    (<span class="n">0.36</span>, <span class="n">1.090</span>),
+    (<span class="n">0.35</span>, <span class="n">1.150</span>),
+    (<span class="n">0.30</span>, <span class="n">1.220</span>),
+    (<span class="n">0.21</span>, <span class="n">1.280</span>),
+    (<span class="n">0.10</span>, <span class="n">1.315</span>),
+    (<span class="n">0.00</span>, <span class="n">1.325</span>),
+]
+
+NUT_PROFILE = [(<span class="n">0.09</span>, <span class="n">1.325</span>), (<span class="n">0.072</span>, <span class="n">1.40</span>), (<span class="n">0.0</span>, <span class="n">1.40</span>)]
+
+<span class="c"># Side caps at z=0.76, pumper (bigger) at z=0.66. A cap&#x27;s outlet direction</span>
+<span class="c"># equals its azimuth (degrees from +X); the camera sits near azimuth 292, so</span>
+<span class="c"># the pumper faces it and the side caps read on the flanks.</span>
+SIDE_CAPS = [(<span class="n">0.66</span>, <span class="n">315.0</span>), (<span class="n">0.76</span>, <span class="n">45.0</span>), (<span class="n">0.76</span>, <span class="n">165.0</span>)]
+PUMPER = <span class="n">0</span>  <span class="c"># index of the large front outlet in SIDE_CAPS</span>
+
+
+<span class="k">def</span> cap_profiles(r_cap, reach):
+    <span class="s">&quot;&quot;&quot;Render and cage (r, z) profiles for one outlet cap. The rim flare is
+    1.10x the barrel radius so the dense rim rows lie inside the cage chord.&quot;&quot;&quot;</span>
+    render = [
+        (<span class="n">0.0</span>, <span class="n">0.0</span>),
+        (r_cap, <span class="n">0.0</span>),
+        (r_cap, reach - <span class="n">0.05</span>),
+        (r_cap * <span class="n">1.10</span>, reach - <span class="n">0.03</span>),   <span class="c"># rim</span>
+        (r_cap * <span class="n">1.10</span>, reach),
+        (r_cap * <span class="n">0.72</span>, reach + <span class="n">0.045</span>),  <span class="c"># cap dome</span>
+        (<span class="n">0.0</span>, reach + <span class="n">0.06</span>),
+    ]
+    cage = [
+        (<span class="n">0.0</span>, <span class="n">0.0</span>),
+        (r_cap, <span class="n">0.0</span>),
+        (r_cap * <span class="n">1.10</span>, reach - <span class="n">0.03</span>),
+        (r_cap * <span class="n">1.10</span>, reach),
+        (r_cap * <span class="n">0.72</span>, reach + <span class="n">0.045</span>),
+        (<span class="n">0.0</span>, reach + <span class="n">0.06</span>),
+    ]
+    <span class="k">return</span> render, cage
+
+
+<span class="k">def</span> signed_volume(me):
+    <span class="s">&quot;&quot;&quot;Divergence-theorem volume; positive when face winding points outward.&quot;&quot;&quot;</span>
+    vol = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> p.vertices]
+        v0 = vs[<span class="n">0</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+            vol += v0.dot(vs[i].cross(vs[i + <span class="n">1</span>])) / <span class="n">6.0</span>
+    <span class="k">return</span> vol
+
+
+<span class="k">def</span> lathe_object(name, profile, segments, inflate=<span class="n">1.0</span>):
+    <span class="s">&quot;&quot;&quot;Spin an (r, z) profile around Z. r == 0 ends become pole vertices, so
+    the mesh closes with fans instead of degenerate rings. `inflate` scales
+    radii only — the collision cage uses sec(pi / segments) so its polygon
+    rings circumscribe the render rings exactly.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bot = top = <span class="k">None</span>
+        <span class="k">if</span> profile[<span class="n">0</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+            bot = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[<span class="n">0</span>][<span class="n">1</span>]))
+            profile = profile[<span class="n">1</span>:]
+        <span class="k">if</span> profile[-<span class="n">1</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+            top = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[-<span class="n">1</span>][<span class="n">1</span>]))
+            profile = profile[:-<span class="n">1</span>]
+        rings = []
+        <span class="k">for</span> i <span class="k">in</span> range(segments):
+            a = <span class="n">2.0</span> * math.pi * i / segments
+            ca, sa = math.cos(a), math.sin(a)
+            rings.append([bm.verts.new((r * inflate * ca, r * inflate * sa, z))
+                          <span class="k">for</span> r, z <span class="k">in</span> profile])
+        <span class="k">for</span> i <span class="k">in</span> range(segments):
+            j = (i + <span class="n">1</span>) % segments
+            <span class="k">for</span> k <span class="k">in</span> range(len(profile) - <span class="n">1</span>):
+                bm.faces.new((rings[i][k], rings[j][k], rings[j][k + <span class="n">1</span>], rings[i][k + <span class="n">1</span>]))
+            <span class="k">if</span> bot <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                bm.faces.new((rings[j][<span class="n">0</span>], rings[i][<span class="n">0</span>], bot))
+            <span class="k">if</span> top <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                bm.faces.new((rings[i][-<span class="n">1</span>], rings[j][-<span class="n">1</span>], top))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        <span class="c"># recalc picks a consistent winding but not a direction; outward is</span>
+        <span class="c"># pinned below by the same signed-volume form the check uses.</span>
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">if</span> signed_volume(me) &lt; <span class="n">0.0</span>:
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.flip()
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> make_material(name, color, metallic, roughness):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_hydrant():
+    <span class="s">&quot;&quot;&quot;Builds the prop and its collision cages. Returns a list of collision
+    groups: {&quot;name&quot;, &quot;render&quot;: [objects], &quot;cage&quot;: [objects]} — one convex
+    hull piece per group, the compound-collision structure engines ingest.&quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    red = make_material(<span class="s">&quot;EnamelRed&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.035</span>, <span class="n">0.022</span>), <span class="n">0.15</span>, <span class="n">0.30</span>)
+    yellow = make_material(<span class="s">&quot;EnamelYellow&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.53</span>, <span class="n">0.05</span>), <span class="n">0.15</span>, <span class="n">0.32</span>)
+    iron = make_material(<span class="s">&quot;CastIron&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.052</span>, <span class="n">0.06</span>), <span class="n">0.9</span>, <span class="n">0.48</span>)
+
+    inflate_body = <span class="n">1.0</span> / math.cos(math.pi / CAGE_SEG_BODY)
+    inflate_cap = <span class="n">1.0</span> / math.cos(math.pi / CAGE_SEG_CAP)
+    inflate_nut = <span class="n">1.0</span> / math.cos(math.pi / CAGE_SEG_NUT)
+
+    <span class="c"># --- body group: body + bonnet + operating nut ---</span>
+    body = lathe_object(<span class="s">&quot;Body&quot;</span>, BODY_PROFILE, SEGMENTS)
+    body.data.materials.append(red)
+    body.data.materials.append(yellow)
+    <span class="k">for</span> p <span class="k">in</span> body.data.polygons:  <span class="c"># the bonnet dome is the yellow profile tail</span>
+        <span class="k">if</span> p.center.z &gt; <span class="n">1.09</span>:
+            p.material_index = <span class="n">1</span>
+    nut = lathe_object(<span class="s">&quot;Nut&quot;</span>, NUT_PROFILE, <span class="n">5</span>)
+    nut.data.materials.append(iron)
+    body_cage = lathe_object(<span class="s">&quot;BodyCage&quot;</span>, CAGE_BODY_PROFILE, CAGE_SEG_BODY, inflate_body)
+    nut_cage = lathe_object(<span class="s">&quot;NutCage&quot;</span>, NUT_PROFILE, CAGE_SEG_NUT, inflate_nut)
+    groups = [{<span class="s">&quot;name&quot;</span>: <span class="s">&quot;body&quot;</span>, <span class="s">&quot;render&quot;</span>: [body, nut], <span class="s">&quot;cage&quot;</span>: [body_cage, nut_cage]}]
+
+    <span class="c"># --- one group per outlet cap ---</span>
+    <span class="k">for</span> idx, (z, azim) <span class="k">in</span> enumerate(SIDE_CAPS):
+        big = idx == PUMPER
+        r_cap = <span class="n">0.19</span> <span class="k">if</span> big <span class="k">else</span> <span class="n">0.145</span>
+        reach = <span class="n">0.62</span> <span class="k">if</span> big <span class="k">else</span> <span class="n">0.56</span>
+        prof_r, prof_c = cap_profiles(r_cap, reach)
+        cap = lathe_object(<span class="s">&quot;PumperCap&quot;</span> <span class="k">if</span> big <span class="k">else</span> <span class="s">f&quot;</span><span class="s">SideCap</span>{idx}<span class="s">&quot;</span>, prof_r, <span class="n">24</span>)
+        cap.data.materials.append(red)
+        lug_prof = [(<span class="n">0.075</span>, reach + <span class="n">0.05</span>), (<span class="n">0.07</span>, reach + <span class="n">0.11</span>), (<span class="n">0.0</span>, reach + <span class="n">0.11</span>)]
+        lug = lathe_object(<span class="s">f&quot;</span><span class="s">Lug</span>{idx}<span class="s">&quot;</span>, lug_prof, <span class="n">6</span>)
+        lug.data.materials.append(iron)
+        cap_cage = lathe_object(<span class="s">f&quot;</span><span class="s">CapCage</span>{idx}<span class="s">&quot;</span>, prof_c, CAGE_SEG_CAP, inflate_cap)
+        lug_cage = lathe_object(<span class="s">f&quot;</span><span class="s">LugCage</span>{idx}<span class="s">&quot;</span>, lug_prof, CAGE_SEG_CAP, inflate_cap)
+        rot = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, math.radians(azim + <span class="n">90.0</span>))
+        <span class="k">for</span> o <span class="k">in</span> (cap, lug, cap_cage, lug_cage):
+            o.rotation_euler = rot
+            o.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, z)
+        groups.append({<span class="s">&quot;name&quot;</span>: <span class="s">&quot;pumper&quot;</span> <span class="k">if</span> big <span class="k">else</span> <span class="s">f&quot;</span><span class="s">side</span>{idx}<span class="s">&quot;</span>,
+                       <span class="s">&quot;render&quot;</span>: [cap, lug], <span class="s">&quot;cage&quot;</span>: [cap_cage, lug_cage]})
+    <span class="k">return</span> groups
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Hull construction and the contract checks.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> collect_points(objects):
+    <span class="s">&quot;&quot;&quot;World-space vertex cloud, read via foreach_get.&quot;&quot;&quot;</span>
+    bpy.context.view_layer.update()  <span class="c"># matrix_world lags RNA writes until evaluated</span>
+    pts = []
+    <span class="k">for</span> o <span class="k">in</span> objects:
+        me = o.data
+        buf = [<span class="n">0.0</span>] * (len(me.vertices) * <span class="n">3</span>)
+        me.vertices.foreach_get(<span class="s">&quot;co&quot;</span>, buf)
+        mw = o.matrix_world
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">0</span>, len(buf), <span class="n">3</span>):
+            pts.append(mw @ Vector((buf[i], buf[i + <span class="n">1</span>], buf[i + <span class="n">2</span>])))
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> build_hull(name, points):
+    <span class="s">&quot;&quot;&quot;Convex hull of a point cloud via bmesh.ops.convex_hull.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        verts = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> points]
+        bmesh.ops.convex_hull(bm, input=verts)
+        <span class="c"># the op leaves interior input verts behind; drop any vert not</span>
+        <span class="c"># referenced by a face so V - E + F is meaningful</span>
+        used = {v <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">for</span> v <span class="k">in</span> f.verts}
+        <span class="k">for</span> v <span class="k">in</span> list(bm.verts):
+            <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> used:
+                bm.verts.remove(v)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> max_plane_excursion(me, points):
+    <span class="s">&quot;&quot;&quot;Largest signed distance of any point to the OUTER side of any face
+    plane. &lt;= 0 means every point is inside or on the hull.&quot;&quot;&quot;</span>
+    worst = -math.inf
+    where = <span class="k">None</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        n = p.normal
+        c = p.center
+        <span class="k">for</span> q <span class="k">in</span> points:
+            d = (q - c).dot(n)
+            <span class="k">if</span> d &gt; worst:
+                worst = d
+                where = (p.index, tuple(round(v, <span class="n">4</span>) <span class="k">for</span> v <span class="k">in</span> q))
+    <span class="k">return</span> worst, where
+
+
+<span class="k">def</span> check(pieces):
+    <span class="s">&quot;&quot;&quot;pieces: [(group_name, hull_obj, render_points)]. Returns exit code.&quot;&quot;&quot;</span>
+    total_faces = <span class="n">0</span>
+    <span class="k">for</span> name, hull, points <span class="k">in</span> pieces:
+        me = hull.data
+        nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+        total_faces += nf
+
+        bm = bmesh.new()  <span class="c"># watertight: every edge borders exactly two faces</span>
+        <span class="k">try</span>:
+            bm.from_mesh(me)
+            bad_edges = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
+        <span class="k">finally</span>:
+            bm.free()
+        <span class="k">if</span> bad_edges:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: </span>{bad_edges}<span class="s"> hull edge(s) do not border </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">exactly two faces — proxy is not watertight</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+
+        vol = signed_volume(me)  <span class="c"># winding: positive signed volume</span>
+        <span class="k">if</span> vol &lt;= <span class="n">0.0</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: signed volume </span>{vol:<span class="s">.6f</span>}<span class="s"> &lt;= 0 — hull </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">winding is inverted</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+
+        contain_err, where = max_plane_excursion(me, points)
+        <span class="k">if</span> contain_err &gt; TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: render vertex escapes its hull by </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{contain_err:<span class="s">.6f</span>}<span class="s"> (tol </span>{TOL}<span class="s">) at face </span>{where[<span class="n">0</span>]}<span class="s">, point </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{where[<span class="n">1</span>]}<span class="s"> — proxy does not enclose the render mesh</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+
+        hull_pts = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        hull_err, _ = max_plane_excursion(me, hull_pts)
+        <span class="k">if</span> hull_err &gt; TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: hull vertex off its own face plane by </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{hull_err:<span class="s">.6f</span>}<span class="s"> — proxy is not convex</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+
+        euler = nv - ne + nf  <span class="c"># a convex hull is a topological sphere</span>
+        <span class="k">if</span> euler != <span class="n">2</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: Euler characteristic </span>{euler}<span class="s"> != 2 — </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">hull is not a closed manifold sphere</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">7</span>
+
+        <span class="k">if</span> nf &gt; HULL_BUDGET:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: piece </span>{name}<span class="s">: </span>{nf}<span class="s"> faces, over the </span>{HULL_BUDGET}<span class="s">-face </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">per-piece collision budget</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">8</span>
+
+        print(<span class="s">f&quot;</span><span class="s">piece </span>{name}<span class="s">: verts=</span>{nv}<span class="s"> edges=</span>{ne}<span class="s"> faces=</span>{nf}<span class="s"> watertight=True </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">euler=2 volume=</span>{vol:<span class="s">.6f</span>}<span class="s"> containment=</span>{contain_err:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">convexity=</span>{hull_err:<span class="s">.3e</span>}<span class="s"> budget=</span>{nf}<span class="s">&lt;=</span>{HULL_BUDGET}<span class="s">&quot;</span>)
+
+    print(<span class="s">f&quot;</span><span class="s">compound: pieces=</span>{len(pieces)}<span class="s"> total_faces=</span>{total_faces}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">(per-piece budget </span>{HULL_BUDGET}<span class="s">; engine ingests the compound)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render: dark-studio staging per docs/VISUAL-STYLE.md. The hull pieces draw</span>
+<span class="c"># as faceted translucent shells with a thin wire overlay; if a piece failed</span>
+<span class="c"># to enclose its geometry, painted metal would poke through the shell.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> render_still(groups, pieces, path, engine):
+    scene = bpy.context.scene
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">for</span> o <span class="k">in</span> g[<span class="s">&quot;render&quot;</span>]:
+            <span class="k">for</span> p <span class="k">in</span> o.data.polygons:
+                p.use_smooth = <span class="k">True</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:  <span class="c"># cages exist only to build hulls; never rendered</span>
+        <span class="k">for</span> o <span class="k">in</span> g[<span class="s">&quot;cage&quot;</span>]:
+            o.hide_render = <span class="k">True</span>
+
+    <span class="c"># translucent shell: Transparent mixed over Principled works identically</span>
+    <span class="c"># in EEVEE and Cycles without touching blend-method RNA (renamed in 4.2)</span>
+    shell = bpy.data.materials.new(<span class="s">&quot;HullShell&quot;</span>)
+    shell.use_nodes = <span class="k">True</span>
+    nt = shell.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    mix.inputs[<span class="n">0</span>].default_value = <span class="n">0.14</span>          <span class="c"># 86% transparent: output =</span>
+                                                <span class="c"># (1-Fac)*Transparent + Fac*Principled</span>
+    transp = nt.nodes.new(<span class="s">&quot;ShaderNodeBsdfTransparent&quot;</span>)
+    bsdf = nt.nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.16</span>, <span class="n">0.55</span>, <span class="n">0.75</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.12</span>
+    nt.links.new(transp.outputs[<span class="n">0</span>], mix.inputs[<span class="n">1</span>])
+    nt.links.new(bsdf.outputs[<span class="n">0</span>], mix.inputs[<span class="n">2</span>])
+    nt.links.new(mix.outputs[<span class="n">0</span>], out.inputs[<span class="n">0</span>])
+
+    wire_mat = make_material(<span class="s">&quot;HullWire&quot;</span>, (<span class="n">0.35</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.4</span>)
+    wbsdf = wire_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    wbsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.2</span>, <span class="n">0.65</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)
+    wbsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.6</span>
+
+    <span class="k">for</span> name, hull, _ <span class="k">in</span> pieces:
+        hull.data.materials.append(shell)
+        <span class="k">for</span> p <span class="k">in</span> hull.data.polygons:
+            p.use_smooth = <span class="k">False</span>                <span class="c"># facets must read as facets</span>
+        hull.data.materials.append(wire_mat)
+        wire = bpy.data.objects.new(<span class="s">f&quot;</span>{name}<span class="s">Wire</span><span class="s">&quot;</span>, hull.data)
+        mod = wire.modifiers.new(<span class="s">&quot;Wire&quot;</span>, <span class="s">&#x27;WIREFRAME&#x27;</span>)
+        mod.thickness = <span class="n">0.010</span>
+        mod.material_offset = <span class="n">1</span>
+        scene.collection.objects.link(wire)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># key/fill/rim/wedge per docs/VISUAL-STYLE.md</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">300.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># small warm glint off the camera-left shoulder: lifts the pumper cap face</span>
+    light(<span class="s">&quot;Glint&quot;</span>, (-<span class="n">1.5</span>, -<span class="n">4.0</span>, <span class="n">3.5</span>), <span class="n">260.0</span>, <span class="n">2.0</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">55</span>, <span class="n">0</span>, -<span class="n">15</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">52.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.05</span>, -<span class="n">4.5</span>, <span class="n">1.85</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.72</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">48</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would flatten the enamel toward pastel (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    groups = build_hydrant()
+    pieces = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        hull = build_hull(<span class="s">f&quot;</span>{g[<span class="s">&#x27;name&#x27;</span>]}<span class="s">Hull</span><span class="s">&quot;</span>, collect_points(g[<span class="s">&quot;cage&quot;</span>]))
+        pieces.append((g[<span class="s">&quot;name&quot;</span>], hull, collect_points(g[<span class="s">&quot;render&quot;</span>])))
+    code = check(pieces)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(groups, pieces, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;collision-hull-proxy OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

@@ -448,3 +448,15 @@ jobs:
           # (ld.light_linking is an AttributeError). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/light-link-studio/light_link_studio.py --
+
+      - name: Shipped example - collision hull proxy (compound convex pieces)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a lathed fire hydrant prop plus its
+          # four-piece compound collision, each piece a bmesh convex_hull of
+          # a coarse sec(pi/n)-inflated cage; asserts per-piece watertightness,
+          # positive signed volume, render-vertex containment and hull
+          # convexity by closed-form plane tests, Euler characteristic 2, and
+          # the 255-face per-piece engine budget. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/collision-hull-proxy/collision_hull_proxy.py --

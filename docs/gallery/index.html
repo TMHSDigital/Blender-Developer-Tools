@@ -535,6 +535,17 @@
           <a class="card-link" href="light-link-studio/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="bmesh mesh">
+        <a class="card-media" href="collision-hull-proxy/" aria-label="collision-hull-proxy example detail page">
+          <img src="assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy — A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="collision-hull-proxy/">collision-hull-proxy</a></h2>
+          <p class="teaches">A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 368 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> A hull of the dense render mesh measures 368 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 5.9e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</p>
+          <a class="card-link" href="collision-hull-proxy/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>
