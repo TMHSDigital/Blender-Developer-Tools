@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>custom-normals-shade — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/custom-normals-shade/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="custom-normals-shade — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/custom-normals-shade/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="custom-normals-shade — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: filter chips ---- */
+    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>custom-normals-shade</h1>
+    <p>A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact).</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom custom-normals-shade render">
+      <img src="../assets/custom-normals-shade-hero.webp" alt="custom-normals-shade render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (188 of 388 edges over 3 meshes).</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/custom-normals-shade/custom_normals_shade.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example that builds a jerry can prop — rounded-slab shell, pressed X ribs, spout and cap, three-post handle — and verifies the shading contract a game prop&#x27;s silhouette depends on: which edges read hard and which read smooth is mesh DATA, carried since Blender 4.1 by face smooth flags plus a <code>sharp_edge</code> attribute, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p><strong>Pipeline arc neighbor:</strong> collision in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a> (the pair partner — same prop-pipeline audience), tangent space in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a> — normal maps are baked against exactly this shading, and engines harden or soften the same edges at ingest.</p>
+<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on. It is not an engine exporter and does not claim engine/FiveM compatibility — it proves the mesh-data properties such an asset&#x27;s shading must have.</p>
+<p><strong>What it witnesses:</strong></p>
+<ul><li><strong>The legacy shading API is gone — on both supported versions.</strong> <code>use_auto_smooth</code>, <code>use_custom_normals</code>, and <code>calc_normals</code> are AttributeError on 4.5 LTS *and* 5.1. AI-generated Blender code still emits <code>mesh.use_auto_smooth = True</code> constantly; any script carrying that habit dies immediately, and this check keeps it dead.</li><li><strong>Shade-by-angle is exact.</strong> <code>mesh.set_sharp_from_angle(30°)</code> (which also sets the face smooth flags — probed on both versions) marks sharp exactly the edges whose *independently recomputed* dihedral angle crosses the threshold: Shell 48 of 72 edges, rib 12 of 12, neck 128 of 304 — an exact set match, not a count approximation.</li><li><strong>The evaluated shading matches the attribute&#x27;s promise.</strong> Through depsgraph evaluation, loop normals across a smooth edge are welded (deviation 0.0, tol 1e-3) and loop normals across a sharp edge carry their face normals split by exactly the dihedral (angle error 0.0 rad, tol 5e-3), all unit length (err 5.6e-08).</li><li><strong>Custom split normals survive depsgraph evaluation</strong> — with a quantization budget, not float precision: <code>normals_split_custom_set</code> stores per-loop normals in int16, so a 144-loop round-trip reads back within <strong>1.407e-04</strong> (tol 2e-4), unit length within 1.1e-07. Asserting float-exact custom normals is a real bug this check catches.</li><li><strong>The divergence: the legacy <code>shade_auto_smooth</code> OPERATOR is a version-split trap.</strong> It builds the Smooth-by-Angle node-group modifier from a bundled asset. Headless on <strong>4.5 LTS the asset load never finishes</strong>: the op returns <code>{&#x27;CANCELLED&#x27;}</code> — no exception — and the mesh stays <strong>untouched</strong> (measured: 0 smooth faces, 0 modifiers). Any script that ignores the return set ships flat shading and never knows. On <strong>5.1</strong> it FINISHES and adds the <code>Smooth by Angle</code> NODES modifier. The portable path is the data API above, version-gated here explicitly.</li></ul>
+<p><strong>What each check catches on failure:</strong> author/audit threshold drift (probe: sharp marks applied at 20° but audited at 30°, exit 5, 4 extra edges); the two halves of the contract out of sync (probe: <code>sharp_edge</code> set but face smooth flags lost, exit 6, smooth-edge loops split by 3.83e-01); float-exactness assumed of custom normals (probe: tolerance 1e-6, exit 7, measured 1.407e-04); and any future version that resurrects the legacy API or changes the operator&#x27;s headless behavior (exit 3/8).</p>
+<p><strong>Version witness:</strong> every value above is identical on Blender 4.5.11 LTS and 5.1.2 except the <code>shade_auto_smooth</code> operator behavior, which is asserted per version (CANCELLED + untouched on 4.5, FINISHED + NODES modifier on 5.1).</p>
+<p>The render shows the same can shaded three ways — flat (faceted corners), smooth-everywhere (the smeared AI bug: ribs melt, highlights warp at the rim), and by-angle (the contract: smooth walls, crisp edges) — under a strip light whose reflection exposes every normal discontinuity.</p>
+<h2>Run</h2>
+<pre><code># Cheap correctness check (no render) — the CI check:
+blender --background --python custom_normals_shade.py --
+
+# Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
+blender --background --python custom_normals_shade.py -- --output cans.png
+blender --background --python custom_normals_shade.py -- --output cans.png --engine cycles</code></pre>
+<p>It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral mismatch, broken normal welds, custom normals lost or dequantized in evaluation, or legacy-operator divergence drift). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/custom-normals-shade/custom_normals_shade.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/custom-normals-shade/custom_normals_shade.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;A jerry can prop shaded three ways — a runnable example.
+
+Witnesses the shading contract a game prop&#x27;s silhouette depends on (engines
+generally, FiveM/GTA-style prop workflows specifically): which edges read
+hard and which read smooth is mesh DATA, and since Blender 4.1 it is carried
+by face smooth flags plus a `sharp_edge` attribute — `use_auto_smooth` is
+gone. AI-generated Blender code still emits the pre-4.1 API
+(`mesh.use_auto_smooth = True`, `bpy.ops.object.shade_auto_smooth()`), so
+this example asserts what the supported versions actually expose:
+
+  legacy API    — use_auto_smooth, use_custom_normals, calc_normals are
+                  AttributeError on BOTH 4.5 LTS and 5.1
+  by-angle data — `mesh.set_sharp_from_angle(angle)` + face smooth flags:
+                  the sharp set lands EXACTLY where an independently
+                  recomputed dihedral angle crosses the threshold
+  normal welds  — through depsgraph evaluation, loops across a smooth edge
+                  share one normal (welded) and loops across a sharp edge
+                  carry their face normals (split by the dihedral)
+  custom normals— per-loop normals set with `normals_split_custom_set`
+                  survive depsgraph evaluation within the int16 storage
+                  quantization (~7.5e-05 measured, tol 2e-4), unit length
+  divergence    — the legacy `shade_auto_smooth` OPERATOR needs the bundled
+                  Smooth-by-Angle node-group asset: headless on 4.5 LTS it
+                  returns {&#x27;CANCELLED&#x27;} (&quot;Asset loading is unfinished&quot;) and
+                  the mesh is UNTOUCHED — silent flat shading for any script
+                  that ignores the return set; on 5.1 it FINISHES and adds
+                  the NODES modifier. The portable path is the data API.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still (the same can shaded flat /
+smooth-everywhere / by-angle, so a broken path reads as faceting or smear):
+
+    blender --background --python custom_normals_shade.py --                 # check only
+    blender --background --python custom_normals_shade.py -- --output c.png  # + render
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+ANGLE_DEG = <span class="n">30.0</span>          <span class="c"># shade-by-angle threshold</span>
+ANGLE = math.radians(ANGLE_DEG)
+TOL_NORMAL = <span class="n">2e-4</span>         <span class="c"># custom-normal readback: int16 storage quantizes to ~7.5e-05</span>
+TOL_UNIT = <span class="n">1e-6</span>           <span class="c"># unit-length tolerance for evaluated normals (measured 4.5e-08)</span>
+TOL_SMOOTH = <span class="n">1e-3</span>         <span class="c"># loop-normal equality across a welded (smooth) edge</span>
+TOL_SHARP = <span class="n">5e-3</span>          <span class="c"># radians: split-normal angle vs dihedral across a sharp edge</span>
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Prop construction. A 20-unit jerry can: rounded-slab shell, pressed X ribs</span>
+<span class="c"># floating on both faces, spout neck + cap, three-post carry handle. All</span>
+<span class="c"># dimensions invented for this prop; ribs are floater prisms, the game-prop</span>
+<span class="c"># norm — every checked mesh is itself closed and manifold.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n">1.8</span>, <span class="n">0.62</span>, <span class="n">0.28</span>
+
+
+<span class="k">def</span> signed_volume(me):
+    <span class="s">&quot;&quot;&quot;Divergence-theorem volume; positive when face winding points outward.&quot;&quot;&quot;</span>
+    vol = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> p.vertices]
+        v0 = vs[<span class="n">0</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+            vol += v0.dot(vs[i].cross(vs[i + <span class="n">1</span>])) / <span class="n">6.0</span>
+    <span class="k">return</span> vol
+
+
+<span class="k">def</span> finish_mesh(name, bm):
+    me = bpy.data.meshes.new(name)
+    <span class="k">try</span>:
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">if</span> signed_volume(me) &lt; <span class="n">0.0</span>:  <span class="c"># pin outward winding by the closed form</span>
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.flip()
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> rounded_rect_profile(w, h, r, segs):
+    <span class="s">&quot;&quot;&quot;(x, z) loop of a rounded rectangle, z from 0 to h, CCW seen from -Y.&quot;&quot;&quot;</span>
+    pts = []
+    <span class="k">for</span> cx, cz, a0 <span class="k">in</span> ((w / <span class="n">2</span> - r, r, -<span class="n">90</span>), (w / <span class="n">2</span> - r, h - r, <span class="n">0</span>),
+                       (-(w / <span class="n">2</span> - r), h - r, <span class="n">90</span>), (-(w / <span class="n">2</span> - r), r, <span class="n">180</span>)):
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            a = math.radians(a0 + <span class="n">90.0</span> * i / segs)
+            pts.append((cx + r * math.cos(a), cz + r * math.sin(a)))
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> build_shell():
+    <span class="s">&quot;&quot;&quot;Loft the rounded-rect profile along Y; caps are the end ngons.&quot;&quot;&quot;</span>
+    prof = rounded_rect_profile(SHELL_W, SHELL_H, SHELL_R, <span class="n">6</span>)
+    n = len(prof)
+    y0, y1 = -SHELL_D / <span class="n">2</span>, SHELL_D / <span class="n">2</span>
+    bm = bmesh.new()
+    front = [bm.verts.new((x, y0, z)) <span class="k">for</span> x, z <span class="k">in</span> prof]
+    back = [bm.verts.new((x, y1, z)) <span class="k">for</span> x, z <span class="k">in</span> prof]
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        j = (i + <span class="n">1</span>) % n
+        bm.faces.new((front[i], back[i], back[j], front[j]))
+    bm.faces.new(front)
+    bm.faces.new(back)
+    <span class="k">return</span> finish_mesh(<span class="s">&quot;Shell&quot;</span>, bm)
+
+
+<span class="k">def</span> build_rib(name, p0, p1, face_y, outward):
+    <span class="s">&quot;&quot;&quot;Trapezoid-section pressed rib from p0 to p1 (x, z), raised off the
+    face plane by `outward` (-1 front, +1 back).&quot;&quot;&quot;</span>
+    wb, wt, hgt = <span class="n">0.09</span>, <span class="n">0.06</span>, <span class="n">0.045</span>
+    d = Vector((p1[<span class="n">0</span>] - p0[<span class="n">0</span>], <span class="n">0.0</span>, p1[<span class="n">1</span>] - p0[<span class="n">1</span>])).normalized()
+    side = Vector((-d.z, <span class="n">0.0</span>, d.x))
+    up = Vector((<span class="n">0.0</span>, outward, <span class="n">0.0</span>))
+    bm = bmesh.new()
+    ends = []
+    <span class="k">for</span> px, pz <span class="k">in</span> (p0, p1):
+        c = Vector((px, face_y, pz))
+        ends.append([bm.verts.new(c - side * wb), bm.verts.new(c + side * wb),
+                     bm.verts.new(c + side * wt + up * hgt),
+                     bm.verts.new(c - side * wt + up * hgt)])
+    a, b = ends
+    bm.faces.new((a[<span class="n">0</span>], a[<span class="n">1</span>], a[<span class="n">2</span>], a[<span class="n">3</span>]))
+    bm.faces.new((b[<span class="n">1</span>], b[<span class="n">0</span>], b[<span class="n">3</span>], b[<span class="n">2</span>]))
+    bm.faces.new((a[<span class="n">1</span>], b[<span class="n">1</span>], b[<span class="n">2</span>], a[<span class="n">2</span>]))
+    bm.faces.new((a[<span class="n">3</span>], b[<span class="n">3</span>], b[<span class="n">0</span>], a[<span class="n">0</span>]))
+    bm.faces.new((a[<span class="n">0</span>], b[<span class="n">0</span>], b[<span class="n">1</span>], a[<span class="n">1</span>]))
+    bm.faces.new((a[<span class="n">2</span>], b[<span class="n">2</span>], b[<span class="n">3</span>], a[<span class="n">3</span>]))
+    <span class="k">return</span> finish_mesh(name, bm)
+
+
+<span class="k">def</span> lathe(name, profile, segments):
+    <span class="s">&quot;&quot;&quot;Spin an (r, z) profile around Z; r == 0 ends become poles.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    bot = top = <span class="k">None</span>
+    <span class="k">if</span> profile[<span class="n">0</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+        bot = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[<span class="n">0</span>][<span class="n">1</span>]))
+        profile = profile[<span class="n">1</span>:]
+    <span class="k">if</span> profile[-<span class="n">1</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+        top = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[-<span class="n">1</span>][<span class="n">1</span>]))
+        profile = profile[:-<span class="n">1</span>]
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(segments):
+        a = <span class="n">2.0</span> * math.pi * i / segments
+        rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+                      <span class="k">for</span> r, z <span class="k">in</span> profile])
+    <span class="k">for</span> i <span class="k">in</span> range(segments):
+        j = (i + <span class="n">1</span>) % segments
+        <span class="k">for</span> k <span class="k">in</span> range(len(profile) - <span class="n">1</span>):
+            bm.faces.new((rings[i][k], rings[j][k], rings[j][k + <span class="n">1</span>], rings[i][k + <span class="n">1</span>]))
+        <span class="k">if</span> bot <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            bm.faces.new((rings[j][<span class="n">0</span>], rings[i][<span class="n">0</span>], bot))
+        <span class="k">if</span> top <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            bm.faces.new((rings[i][-<span class="n">1</span>], rings[j][-<span class="n">1</span>], top))
+    <span class="k">return</span> finish_mesh(name, bm)
+
+
+<span class="k">def</span> build_jerry_can():
+    <span class="s">&quot;&quot;&quot;All parts at world placement; returns {&quot;shell&quot;, &quot;rib&quot;, &quot;neck&quot;, &quot;parts&quot;}.&quot;&quot;&quot;</span>
+    shell = build_shell()
+    parts = [shell]
+
+    ribs = []
+    inset = [(<span class="n">0.46</span>, <span class="n">0.22</span>), (<span class="n">0.46</span>, <span class="n">1.58</span>)]
+    specs = [((inset[<span class="n">0</span>], ( -inset[<span class="n">0</span>][<span class="n">0</span>], inset[<span class="n">1</span>][<span class="n">1</span>])), <span class="s">&quot;RibDiagA&quot;</span>),
+             (((-inset[<span class="n">0</span>][<span class="n">0</span>], inset[<span class="n">0</span>][<span class="n">1</span>]), inset[<span class="n">1</span>]), <span class="s">&quot;RibDiagB&quot;</span>),
+             (((<span class="n">0.0</span>, <span class="n">0.18</span>), (<span class="n">0.0</span>, <span class="n">1.62</span>)), <span class="s">&quot;RibVert&quot;</span>)]
+    <span class="k">for</span> fy, out, tag <span class="k">in</span> ((-SHELL_D / <span class="n">2</span>, -<span class="n">1.0</span>, <span class="s">&quot;F&quot;</span>), (SHELL_D / <span class="n">2</span>, <span class="n">1.0</span>, <span class="s">&quot;B&quot;</span>)):
+        <span class="k">for</span> (p0, p1), rn <span class="k">in</span> specs:
+            ribs.append(build_rib(<span class="s">f&quot;</span>{rn}{tag}<span class="s">&quot;</span>, p0, p1, fy, out))
+    parts.extend(ribs)
+
+    neck = lathe(<span class="s">&quot;Neck&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.21</span>, <span class="n">0.0</span>), (<span class="n">0.21</span>, <span class="n">0.05</span>), (<span class="n">0.175</span>, <span class="n">0.07</span>),
+                          (<span class="n">0.165</span>, <span class="n">0.10</span>), (<span class="n">0.165</span>, <span class="n">0.16</span>), (<span class="n">0.185</span>, <span class="n">0.17</span>),
+                          (<span class="n">0.185</span>, <span class="n">0.20</span>), (<span class="n">0.165</span>, <span class="n">0.21</span>), (<span class="n">0.165</span>, <span class="n">0.24</span>), (<span class="n">0.0</span>, <span class="n">0.24</span>)], <span class="n">16</span>)
+    neck.location = (<span class="n">0.42</span>, -<span class="n">0.12</span>, <span class="n">1.75</span>)
+    neck.rotation_euler = (math.radians(-<span class="n">8.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    cap = lathe(<span class="s">&quot;Cap&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.205</span>, <span class="n">0.0</span>), (<span class="n">0.205</span>, <span class="n">0.04</span>), (<span class="n">0.19</span>, <span class="n">0.05</span>),
+                        (<span class="n">0.19</span>, <span class="n">0.11</span>), (<span class="n">0.14</span>, <span class="n">0.14</span>), (<span class="n">0.0</span>, <span class="n">0.145</span>)], <span class="n">16</span>)
+    cap.location = (<span class="n">0.42</span>, -<span class="n">0.0866</span>, <span class="n">1.9877</span>)
+    cap.rotation_euler = (math.radians(-<span class="n">8.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    parts.extend((neck, cap))
+
+    <span class="k">for</span> i, x <span class="k">in</span> enumerate((-<span class="n">0.28</span>, <span class="n">0.0</span>, <span class="n">0.28</span>)):
+        post = lathe(<span class="s">f&quot;</span><span class="s">Post</span>{i}<span class="s">&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.055</span>, <span class="n">0.0</span>), (<span class="n">0.055</span>, <span class="n">0.17</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>)], <span class="n">16</span>)
+        post.location = (x, <span class="n">0.08</span>, <span class="n">1.79</span>)
+        parts.append(post)
+    grip = lathe(<span class="s">&quot;Grip&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.68</span>), (<span class="n">0.0</span>, <span class="n">0.68</span>)], <span class="n">16</span>)
+    grip.rotation_euler = (<span class="n">0.0</span>, math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>)
+    grip.location = (-<span class="n">0.34</span>, <span class="n">0.08</span>, <span class="n">1.96</span>)
+    parts.append(grip)
+
+    <span class="k">return</span> {<span class="s">&quot;shell&quot;</span>: shell, <span class="s">&quot;rib&quot;</span>: ribs[<span class="n">0</span>], <span class="s">&quot;neck&quot;</span>: neck, <span class="s">&quot;parts&quot;</span>: parts}
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># The contract checks.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> manifold_dihedrals(me):
+    <span class="s">&quot;&quot;&quot;Independent recompute: {vertex-pair key: (degrees, v1, v2)} for edges
+    with exactly two link faces, plus the count of non-manifold edges.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    out = {}
+    nonmanifold = <span class="n">0</span>
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                nonmanifold += <span class="n">1</span>
+                <span class="k">continue</span>
+            deg = math.degrees(e.link_faces[<span class="n">0</span>].normal.angle(e.link_faces[<span class="n">1</span>].normal))
+            v1, v2 = e.verts[<span class="n">0</span>].index, e.verts[<span class="n">1</span>].index
+            out[frozenset((v1, v2))] = (deg, v1, v2)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> out, nonmanifold
+
+
+<span class="k">def</span> sharp_edge_keys(me):
+    attr = me.attributes.get(<span class="s">&quot;sharp_edge&quot;</span>)
+    <span class="k">if</span> attr <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> set()
+    <span class="k">return</span> {frozenset((me.edges[i].vertices[<span class="n">0</span>], me.edges[i].vertices[<span class="n">1</span>]))
+            <span class="k">for</span> i, d <span class="k">in</span> enumerate(attr.data) <span class="k">if</span> d.value}
+
+
+<span class="k">def</span> check_api_surface(me):
+    <span class="s">&quot;&quot;&quot;The legacy shading API is gone on every supported version.&quot;&quot;&quot;</span>
+    <span class="k">for</span> gone <span class="k">in</span> (<span class="s">&quot;use_auto_smooth&quot;</span>, <span class="s">&quot;use_custom_normals&quot;</span>, <span class="s">&quot;calc_normals&quot;</span>):
+        <span class="k">if</span> hasattr(me, gone):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: mesh still exposes </span>{gone}<span class="s"> on </span>{bpy.app.version_string}<span class="s"> — </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">the pre-4.1 shading API must stay removed</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+    <span class="k">for</span> needed <span class="k">in</span> (<span class="s">&quot;normals_split_custom_set&quot;</span>, <span class="s">&quot;normals_split_custom_set_from_vertices&quot;</span>,
+                   <span class="s">&quot;set_sharp_from_angle&quot;</span>, <span class="s">&quot;corner_normals&quot;</span>, <span class="s">&quot;has_custom_normals&quot;</span>):
+        <span class="k">if</span> <span class="k">not</span> hasattr(me, needed):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: mesh lacks </span>{needed}<span class="s"> on </span>{bpy.app.version_string}<span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">3</span>
+    print(<span class="s">f&quot;</span><span class="s">api-surface: use_auto_smooth/use_custom_normals/calc_normals absent, </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">modern path present (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_by_angle(objs):
+    <span class="s">&quot;&quot;&quot;set_sharp_from_angle must mark exactly the edges whose independently
+    recomputed dihedral crosses the threshold — on every checked mesh.&quot;&quot;&quot;</span>
+    total_sharp = total_manifold = <span class="n">0</span>
+    <span class="k">for</span> obj <span class="k">in</span> objs:
+        me = obj.data
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.use_smooth = <span class="k">True</span>
+        me.set_sharp_from_angle(angle=ANGLE)
+        dih, nonmanifold = manifold_dihedrals(me)
+        <span class="k">if</span> nonmanifold:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{obj.name}<span class="s">: </span>{nonmanifold}<span class="s"> non-manifold edge(s) — the </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">dihedral test is undefined there</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">4</span>
+        expect = {k <span class="k">for</span> k, (deg, _, _) <span class="k">in</span> dih.items() <span class="k">if</span> deg &gt; ANGLE_DEG}
+        got = sharp_edge_keys(me)
+        <span class="k">if</span> got != expect:
+            only_got = len(got - expect)
+            only_exp = len(expect - got)
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{obj.name}<span class="s">: sharp set mismatch vs independent dihedral </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">test (</span>{only_got}<span class="s"> extra, </span>{only_exp}<span class="s"> missing of </span>{len(expect)}<span class="s"> </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">expected)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+        total_sharp += len(got)
+        total_manifold += len(dih)
+        print(<span class="s">f&quot;</span><span class="s">by-angle </span>{obj.name}<span class="s">: edges=</span>{len(dih)}<span class="s"> sharp=</span>{len(got)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">matches independent dihedral recompute (&gt;</span>{ANGLE_DEG:<span class="s">.0f</span>}<span class="s">deg)</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">by-angle: </span>{len(objs)}<span class="s"> meshes, </span>{total_manifold}<span class="s"> manifold edges, </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span>{total_sharp}<span class="s"> sharp, exact set match</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_normal_welds(obj):
+    <span class="s">&quot;&quot;&quot;Through depsgraph evaluation: loops across a smooth edge share one
+    normal; loops across a sharp edge carry their face normals (split by the
+    dihedral). The rendered shading, verified — not the attribute&#x27;s say-so.&quot;&quot;&quot;</span>
+    me = obj.data
+    dih, _ = manifold_dihedrals(me)
+    sharp = sharp_edge_keys(me)
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg).to_mesh()
+    <span class="k">try</span>:
+        <span class="c"># per manifold edge, per endpoint vertex, per polygon: the loop normal</span>
+        loop_normal = [tuple(l.normal) <span class="k">for</span> l <span class="k">in</span> ev.loops]
+        poly_of_loop = [<span class="n">0</span>] * len(ev.loops)
+        <span class="k">for</span> p <span class="k">in</span> ev.polygons:
+            <span class="k">for</span> li <span class="k">in</span> range(p.loop_start, p.loop_start + p.loop_total):
+                poly_of_loop[li] = p.index
+        by_edge = {}
+        <span class="k">for</span> li, l <span class="k">in</span> enumerate(ev.loops):
+            pi, vi = poly_of_loop[li], l.vertex_index
+            <span class="k">for</span> vj <span class="k">in</span> ev.polygons[pi].vertices:
+                <span class="k">if</span> vj == vi:
+                    <span class="k">continue</span>
+                k = frozenset((vi, vj))
+                <span class="k">if</span> k <span class="k">in</span> dih:
+                    by_edge.setdefault(k, {}).setdefault(vi, {})[pi] = loop_normal[li]
+        max_smooth = <span class="n">0.0</span>
+        max_sharp = <span class="n">0.0</span>
+        unit_worst = <span class="n">0.0</span>
+        <span class="k">for</span> k, (deg, v1, v2) <span class="k">in</span> dih.items():
+            <span class="k">for</span> v <span class="k">in</span> (v1, v2):
+                sides = by_edge.get(k, {}).get(v, {})
+                <span class="k">if</span> len(sides) != <span class="n">2</span>:
+                    print(<span class="s">f&quot;</span><span class="s">ERROR: edge </span>{tuple(sorted(k))}<span class="s"> endpoint v</span>{v}<span class="s">: expected </span><span class="s">&quot;</span>
+                          <span class="s">f&quot;</span><span class="s">loop normals on both sides, got </span>{len(sides)}<span class="s">&quot;</span>, file=sys.stderr)
+                    <span class="k">return</span> <span class="n">6</span>
+                n1, n2 = (Vector(s) <span class="k">for</span> s <span class="k">in</span> sides.values())
+                unit_worst = max(unit_worst, abs(n1.length - <span class="n">1.0</span>), abs(n2.length - <span class="n">1.0</span>))
+                <span class="k">if</span> k <span class="k">in</span> sharp:
+                    err = abs(n1.angle(n2) - math.radians(deg))
+                    max_sharp = max(max_sharp, err)
+                <span class="k">else</span>:
+                    max_smooth = max(max_smooth, (n1 - n2).length)
+        <span class="k">if</span> unit_worst &gt; TOL_UNIT:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated normal off unit length by </span>{unit_worst:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_UNIT}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        <span class="k">if</span> max_smooth &gt; TOL_SMOOTH:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: smooth edge not welded: loop normals differ by </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{max_smooth:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_SMOOTH}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        <span class="k">if</span> max_sharp &gt; TOL_SHARP:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: sharp edge split </span>{max_sharp:<span class="s">.6f</span>}<span class="s"> rad off its dihedral </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_SHARP}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">6</span>
+        print(<span class="s">f&quot;</span><span class="s">normal-welds </span>{obj.name}<span class="s">: smooth max deviation </span>{max_smooth:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_SMOOTH}<span class="s">), sharp max angle err </span>{max_sharp:<span class="s">.3e</span>}<span class="s"> rad </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_SHARP}<span class="s">), unit err </span>{unit_worst:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">finally</span>:
+        obj.evaluated_get(dg).to_mesh_clear()
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_custom_normals_roundtrip(obj):
+    <span class="s">&quot;&quot;&quot;Per-loop custom normals survive depsgraph evaluation. Tolerance is the
+    int16 storage quantization, measured 7.5e-05 on both versions.&quot;&quot;&quot;</span>
+    me = obj.data
+    n = len(me.loops)
+    custom = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        a = <span class="n">2.0</span> * math.pi * i / n
+        custom.append(Vector((<span class="n">0.5</span> * math.cos(a), <span class="n">0.5</span> * math.sin(a), <span class="n">0.85</span>)).normalized())
+    me.normals_split_custom_set(custom)
+    <span class="k">if</span> <span class="k">not</span> me.has_custom_normals:
+        print(<span class="s">&quot;ERROR: has_custom_normals False after normals_split_custom_set — &quot;</span>
+              <span class="s">&quot;no use_custom_normals flag exists to flip anymore&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg).to_mesh()
+    <span class="k">try</span>:
+        err = max((Vector(tuple(l.normal)) - custom[i]).length
+                  <span class="k">for</span> i, l <span class="k">in</span> enumerate(ev.loops))
+        unit = max(abs(Vector(tuple(l.normal)).length - <span class="n">1.0</span>) <span class="k">for</span> l <span class="k">in</span> ev.loops)
+    <span class="k">finally</span>:
+        obj.evaluated_get(dg).to_mesh_clear()
+    <span class="k">if</span> err &gt; TOL_NORMAL <span class="k">or</span> unit &gt; TOL_UNIT:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: custom normals lost in evaluation: max_err </span>{err:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_NORMAL}<span class="s">), unit err </span>{unit:<span class="s">.3e</span>}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    print(<span class="s">f&quot;</span><span class="s">custom-normals: </span>{n}<span class="s"> loops survive depsgraph evaluation, </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">max_err </span>{err:<span class="s">.3e</span>}<span class="s"> (tol </span>{TOL_NORMAL}<span class="s">), unit err </span>{unit:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> check_legacy_operator():
+    <span class="s">&quot;&quot;&quot;The shade_auto_smooth OPERATOR is a version-split trap: it builds the
+    Smooth-by-Angle node-group modifier from a bundled asset. Headless on
+    4.5 LTS the asset load never finishes and the op CANCELS — silently, no
+    exception — leaving flat shading. On 5.1 it FINISHES with the modifier.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;LegacyProbe&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(<span class="s">&quot;LegacyProbe&quot;</span>, me)
+    bpy.context.collection.objects.link(obj)
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(<span class="k">True</span>)
+    <span class="k">try</span>:
+        result = bpy.ops.object.shade_auto_smooth(angle=ANGLE)
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: shade_auto_smooth raised </span>{type(e).__name__}<span class="s">: </span>{e}<span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    mods = [(m.name, m.type) <span class="k">for</span> m <span class="k">in</span> obj.modifiers]
+    smooth = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.use_smooth)
+    bpy.data.objects.remove(obj)
+    bpy.data.meshes.remove(me)
+    <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>):
+        ok = result == {<span class="s">&#x27;FINISHED&#x27;</span>} <span class="k">and</span> any(t == <span class="s">&#x27;NODES&#x27;</span> <span class="k">for</span> _, t <span class="k">in</span> mods) <span class="k">and</span> smooth &gt; <span class="n">0</span>
+        detail = <span class="s">f&quot;</span><span class="s">expect FINISHED + Smooth-by-Angle NODES modifier, got </span>{result}<span class="s"> mods=</span>{mods}<span class="s"> smooth=</span>{smooth}<span class="s">&quot;</span>
+    <span class="k">else</span>:
+        ok = result == {<span class="s">&#x27;CANCELLED&#x27;</span>} <span class="k">and</span> <span class="k">not</span> mods <span class="k">and</span> smooth == <span class="n">0</span>
+        detail = <span class="s">f&quot;</span><span class="s">expect CANCELLED headless (asset load never finishes) + untouched mesh, got </span>{result}<span class="s"> mods=</span>{mods}<span class="s"> smooth=</span>{smooth}<span class="s">&quot;</span>
+    <span class="k">if</span> <span class="k">not</span> ok:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: legacy-operator divergence drifted: </span>{detail}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    print(<span class="s">f&quot;</span><span class="s">legacy-op (</span>{bpy.app.version_string}<span class="s">): </span>{detail}<span class="s"> — as asserted</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render: the same can three ways — flat (faceting), smooth-everywhere (the</span>
+<span class="c"># smeared AI bug), by-angle (the contract). Failure modes flank the truth.</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
+
+
+<span class="k">def</span> make_material(name, color, metallic, roughness):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> variant_meshes(parts, mode):
+    <span class="s">&quot;&quot;&quot;Fresh mesh copies with one shading treatment applied.&quot;&quot;&quot;</span>
+    out = []
+    <span class="k">for</span> o <span class="k">in</span> parts:
+        me = o.data.copy()
+        me.name = <span class="s">f&quot;</span>{o.name}<span class="s">_</span>{mode}<span class="s">&quot;</span>
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            p.use_smooth = mode != <span class="s">&quot;flat&quot;</span>
+        <span class="k">if</span> mode == <span class="s">&quot;byangle&quot;</span>:
+            me.set_sharp_from_angle(angle=ANGLE)
+        dup = bpy.data.objects.new(<span class="s">f&quot;</span>{o.name}<span class="s">_</span>{mode}<span class="s">&quot;</span>, me)
+        dup.location = o.location
+        dup.rotation_euler = o.rotation_euler
+        bpy.context.collection.objects.link(dup)
+        out.append(dup)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> render_still(can, path, engine):
+    scene = bpy.context.scene
+    <span class="c"># semi-gloss painted steel: rough enough to read as paint, glossy enough</span>
+    <span class="c"># that a highlight exposes every normal discontinuity — matte would hide</span>
+    <span class="c"># the very shading differences this render exists to show</span>
+    steel = make_material(<span class="s">&quot;OliveDrab&quot;</span>, (<span class="n">0.31</span>, <span class="n">0.35</span>, <span class="n">0.15</span>), <span class="n">0.8</span>, <span class="n">0.26</span>)
+    accent = make_material(<span class="s">&quot;FuelMarker&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.06</span>, <span class="n">0.03</span>), <span class="n">0.3</span>, <span class="n">0.30</span>)
+
+    <span class="c"># the checked base can IS the by-angle variant; the two failure modes are</span>
+    <span class="c"># mesh copies with their own shading, no materials yet</span>
+    variants = []
+    <span class="k">for</span> mode, x <span class="k">in</span> ((<span class="s">&quot;flat&quot;</span>, -<span class="n">1.5</span>), (<span class="s">&quot;smooth&quot;</span>, <span class="n">0.0</span>), (<span class="s">&quot;byangle&quot;</span>, <span class="n">1.5</span>)):
+        objs = variant_meshes(can[<span class="s">&quot;parts&quot;</span>], mode)
+        <span class="k">for</span> o <span class="k">in</span> objs:
+            o.location.x += x
+            o.rotation_euler.z += math.radians(-<span class="n">10.0</span>)  <span class="c"># uniform yaw, fronts to camera</span>
+            o.data.materials.append(steel)
+            <span class="k">if</span> o.name.startswith(<span class="s">&quot;Cap&quot;</span>):
+                o.data.materials.append(accent)
+                <span class="k">for</span> p <span class="k">in</span> o.data.polygons:  <span class="c"># cap rim ring in the marker red</span>
+                    <span class="k">if</span> p.center.z &lt; <span class="n">0.045</span>:
+                        p.material_index = <span class="n">1</span>
+        variants.append(objs)
+    <span class="c"># hide the checked originals: the byangle variant re-shows the same data</span>
+    <span class="k">for</span> o <span class="k">in</span> can[<span class="s">&quot;parts&quot;</span>]:
+        o.hide_render = <span class="k">True</span>
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    <span class="c"># key/fill/rim/wedge per docs/VISUAL-STYLE.md</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">340.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">58</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># the shading audit light: a tall strip whose reflection runs down each</span>
+    <span class="c"># can face — it stair-steps on flat shading, warps at the rim on</span>
+    <span class="c"># smooth-everything, and stays straight with crisp edges on by-angle</span>
+    ld = bpy.data.lights.new(<span class="s">&quot;Strip&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
+    ld.energy = <span class="n">460.0</span>
+    ld.shape = <span class="s">&#x27;RECTANGLE&#x27;</span>
+    ld.size = <span class="n">1.0</span>
+    ld.size_y = <span class="n">8.0</span>
+    ld.color = (<span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)
+    strip = bpy.data.objects.new(<span class="s">&quot;Strip&quot;</span>, ld)
+    strip.location = (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">3.2</span>)
+    strip.rotation_euler = (math.radians(<span class="n">60</span>), <span class="n">0.0</span>, math.radians(-<span class="n">30</span>))
+    scene.collection.objects.link(strip)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.9</span>, -<span class="n">7.2</span>, <span class="n">2.6</span>)
+    scene.collection.objects.link(cam)
+    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    scene.collection.objects.link(target)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = target
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+        scene.cycles.samples = <span class="n">48</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    scene.render.filepath = path
+    <span class="c"># AgX would flatten the olive drab toward mud (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    can = build_jerry_can()
+
+    <span class="k">for</span> step <span class="k">in</span> (<span class="k">lambda</span>: check_api_surface(can[<span class="s">&quot;shell&quot;</span>].data),
+                 <span class="k">lambda</span>: check_by_angle([can[<span class="s">&quot;shell&quot;</span>], can[<span class="s">&quot;rib&quot;</span>], can[<span class="s">&quot;neck&quot;</span>]]),
+                 <span class="k">lambda</span>: check_normal_welds(can[<span class="s">&quot;shell&quot;</span>]),
+                 <span class="k">lambda</span>: check_custom_normals_roundtrip(can[<span class="s">&quot;shell&quot;</span>]),
+                 check_legacy_operator):
+        code = step()
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        <span class="k">if</span> <span class="k">not</span> render_still(can, os.path.abspath(args.output), args.engine):
+            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;custom-normals-shade OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback; traceback.print_exc(); print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr); sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/custom-normals-shade-hero.webp" alt="custom-normals-shade render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
