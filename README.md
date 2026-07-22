@@ -668,7 +668,7 @@ with the Smooth-by-Angle modifier on 5.1.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: dual-panel dirty vs clean street electrical pedestal — left orange emissive wireframe with loose-vert bead and DIRTY placard, right teal CLEAN manifold — proving the engine-ingest topology checklist" /></a>
+<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: dual-panel dirty vs clean brass street valves filling the frame — left with backlit through-hole, emissive boundary tubes and loose-vert bead over a DIRTY placard, right intact CLEAN manifold — proving the engine-ingest topology checklist" /></a>
 </td>
 <td valign="middle">
 
@@ -686,7 +686,7 @@ still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals — left bare-parent accessory teleports with expected-seat ghost, right accessory stays put, emissive origin markers at base — proving scale apply, base origin, and matrix_parent_inverse" /></a>
+<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated — proving scale apply, base origin, and matrix_parent_inverse" /></a>
 </td>
 <td valign="middle">
 

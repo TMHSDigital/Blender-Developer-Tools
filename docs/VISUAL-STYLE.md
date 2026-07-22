@@ -49,8 +49,18 @@ the default stage.
 
 ## Framing and camera
 
-- The subject fills roughly 70–90 % of the frame in at least one axis.
-  Nothing that matters may touch or cross the frame edge.
+- The subject fills 70–90 % of the frame in at least one axis, measured —
+  never eyeballed. Nothing that matters may touch or cross the frame edge.
+- Measure with the shared helper `examples/gallery_framing.py`, called on the
+  render path only (import shim and full contract in its docstring):
+  `gallery_framing.check_framing(sc, cam, hero=..., elements=..., stage=...)`
+  prints the numbers and exits 10 on violation. **Fill** is measured on the
+  hero subject only and must land in the 0.70–0.90 band in at least one axis,
+  neither axis above 0.90. **Margin** is measured on the union of every
+  element that matters — hero, placards, labels, comparison props, overlay
+  markers — and must clear all four edges by ≥ 2 % of the frame dimension.
+  Default strategy is the silhouette alpha matte; projection is the cheap
+  bbox alternative for boxy subjects (tradeoff in the helper's docstring).
 - Camera: a chosen angle, not the default — typically a 45–55 mm lens,
   slightly above subject height, aimed with a `TRACK_TO` constraint at an
   empty on the subject. Flat subjects present toward the camera (lean or

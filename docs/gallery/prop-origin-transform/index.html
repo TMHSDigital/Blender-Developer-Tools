@@ -195,7 +195,7 @@
 <pre><code>blender --background --python prop_origin_transform.py --
 blender --background --python prop_origin_transform.py -- --output origin.png
 blender --background --python prop_origin_transform.py -- --output origin.png --engine cycles</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -220,6 +220,11 @@ to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 BBOX_EPS = <span class="n">1e-6</span>
 WORLD_EPS = <span class="n">1e-5</span>
@@ -654,6 +659,7 @@ JUMP_MIN = <span class="n">0.05</span>
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="k">return</span> floor, wall
 
 
 <span class="k">def</span> render_still(path, engine):
@@ -717,8 +723,8 @@ JUMP_MIN = <span class="n">0.05</span>
     left_front = left.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.52</span>, <span class="n">0.78</span>))
     right_front = right.matrix_world @ Vector((<span class="n">0.0</span>, -<span class="n">0.52</span>, <span class="n">0.78</span>))
 
-    make_socket(<span class="s">&quot;TrapSocket&quot;</span>, left_front, sock_empty_m, parent=left)
-    make_socket(<span class="s">&quot;KeepSocket&quot;</span>, right_front, sock_m, parent=right)
+    trap_sock = make_socket(<span class="s">&quot;TrapSocket&quot;</span>, left_front, sock_empty_m, parent=left)
+    keep_sock = make_socket(<span class="s">&quot;KeepSocket&quot;</span>, right_front, sock_m, parent=right)
 
     trap_acc = make_acc(<span class="s">&quot;TrapAcc&quot;</span>, left_front + Vector((<span class="n">0.0</span>, -<span class="n">0.05</span>, <span class="n">0.0</span>)), acc_m)
     keep_acc = make_acc(<span class="s">&quot;KeepAcc&quot;</span>, right_front + Vector((<span class="n">0.0</span>, -<span class="n">0.05</span>, <span class="n">0.0</span>)), acc_m)
@@ -748,19 +754,19 @@ JUMP_MIN = <span class="n">0.05</span>
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    placard(sc, <span class="s">&quot;TRAP&quot;</span>, (<span class="n">0.15</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
-    placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">2.1</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
+    p_trap = placard(sc, <span class="s">&quot;TRAP&quot;</span>, (<span class="n">0.15</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
+    p_keep = placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">2.1</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
 
-    build_studio(sc)
+    floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">48.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Closer for fill; placards still clear the bottom</span>
-    cam.location = (<span class="n">1.15</span>, -<span class="n">5.35</span>, <span class="n">1.45</span>)
+    <span class="c"># Pulled back until the framing gate&#x27;s margins clear — not further.</span>
+    cam.location = (<span class="n">1.15</span>, -<span class="n">5.9</span>, <span class="n">1.55</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">1.1</span>, <span class="n">0.0</span>, <span class="n">0.70</span>)
+    aim.location = (<span class="n">1.1</span>, <span class="n">0.0</span>, <span class="n">0.72</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
@@ -783,8 +789,23 @@ JUMP_MIN = <span class="n">0.05</span>
     sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     sc.render.filepath = path
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    hero = [left, right, trap_acc, keep_acc, trap_sock, keep_sock]
+    markers = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name.startswith((<span class="s">&quot;OriginBead&quot;</span>, <span class="s">&quot;Axis&quot;</span>))]
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=hero,
+        elements=hero + [p_trap, p_keep] + markers,
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -801,9 +822,9 @@ JUMP_MIN = <span class="n">0.05</span>
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;prop-origin-transform OK&quot;</span>)

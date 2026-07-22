@@ -16,6 +16,11 @@ to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Matrix, Vector
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 BBOX_EPS = 1e-6
 WORLD_EPS = 1e-5
 MPI_EPS = 1e-6
@@ -449,6 +454,7 @@ def build_studio(sc):
     light("Fill", (5.0, -3.5, 2.5), 120.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
     light("Rim", (1.5, 4.5, 3.5), 280.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
     light("Wedge", (2.5, 5.5, 4.0), 400.0, 6.0, (1.0, 0.72, 0.42), (-68, 0, 190))
+    return floor, wall
 
 
 def render_still(path, engine):
@@ -512,8 +518,8 @@ def render_still(path, engine):
     left_front = left.matrix_world @ Vector((0.0, -0.52, 0.78))
     right_front = right.matrix_world @ Vector((0.0, -0.52, 0.78))
 
-    make_socket("TrapSocket", left_front, sock_empty_m, parent=left)
-    make_socket("KeepSocket", right_front, sock_m, parent=right)
+    trap_sock = make_socket("TrapSocket", left_front, sock_empty_m, parent=left)
+    keep_sock = make_socket("KeepSocket", right_front, sock_m, parent=right)
 
     trap_acc = make_acc("TrapAcc", left_front + Vector((0.0, -0.05, 0.0)), acc_m)
     keep_acc = make_acc("KeepAcc", right_front + Vector((0.0, -0.05, 0.0)), acc_m)
@@ -543,19 +549,19 @@ def render_still(path, engine):
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    placard(sc, "TRAP", (0.15, -1.25, 0.02), size=0.11)
-    placard(sc, "MPI KEEP", (2.1, -1.25, 0.02), size=0.11)
+    p_trap = placard(sc, "TRAP", (0.15, -1.25, 0.02), size=0.11)
+    p_keep = placard(sc, "MPI KEEP", (2.1, -1.25, 0.02), size=0.11)
 
-    build_studio(sc)
+    floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 48.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    # Closer for fill; placards still clear the bottom
-    cam.location = (1.15, -5.35, 1.45)
+    # Pulled back until the framing gate's margins clear — not further.
+    cam.location = (1.15, -5.9, 1.55)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (1.1, 0.0, 0.70)
+    aim.location = (1.1, 0.0, 0.72)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -578,8 +584,23 @@ def render_still(path, engine):
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = path
     sc.view_settings.view_transform = "Standard"
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    hero = [left, right, trap_acc, keep_acc, trap_sock, keep_sock]
+    markers = [o for o in sc.objects if o.name.startswith(("OriginBead", "Axis"))]
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=hero,
+        elements=hero + [p_trap, p_keep] + markers,
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 9
+    return 0
 
 
 def main():
@@ -596,9 +617,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("prop-origin-transform OK")
