@@ -25,3 +25,5 @@ blender --background --python shader_node_group.py -- --output spheres.png --eng
 
 It exits non-zero on failure (missing interface sockets, unshared group, or identical
 instance parameters). The `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

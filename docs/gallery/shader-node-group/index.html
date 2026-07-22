@@ -193,6 +193,7 @@ blender --background --python shader_node_group.py --
 blender --background --python shader_node_group.py -- --output spheres.png
 blender --background --python shader_node_group.py -- --output spheres.png --engine cycles</code></pre>
 <p>It exits non-zero on failure (missing interface sockets, unshared group, or identical instance parameters). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -217,6 +218,11 @@ check. Pass --output to also render a still:
     blender --background --python shader_node_group.py -- --output s.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 TINTS = {
     <span class="s">&quot;SphereA&quot;</span>: (<span class="n">0.012</span>, <span class="n">0.32</span>, <span class="n">0.30</span>, <span class="n">1.0</span>),   <span class="c"># teal</span>
@@ -356,7 +362,7 @@ TINTS = {
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">58.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">7.8</span>, <span class="n">2.6</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.7</span>, <span class="n">2.6</span>)
     cam.rotation_euler = (math.radians(<span class="n">78</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -373,8 +379,21 @@ TINTS = {
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=list(objs),
+        elements=list(objs),
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -391,9 +410,9 @@ TINTS = {
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(objs, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">7</span>
+        rcode = render_still(objs, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;shader-node-group OK&quot;</span>)
