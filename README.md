@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>39 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>40 examples</strong>
 </p>
 
 <p align="center">
@@ -759,6 +759,26 @@ palette[K−1], and the measured shear matches the palette closed form
 [`color-attribute-wheel`](examples/color-attribute-wheel/) (domain sizing,
 `active_color`, the shader Attribute node). The broken state is in-frame:
 the right pinwheel is the falsification variant.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/degenerate-bevel-weld/"><img src="examples/degenerate-bevel-weld/preview.webp" alt="Degenerate bevel weld: two teal display trays side by side — left with a soft rounded bevel, right collapsed to a knife edge with orange seam markers at the zero-area face centroids, proving the half-dimension bevel collapse ships degenerate triangles" /></a>
+</td>
+<td valign="middle">
+
+### [degenerate-bevel-weld](examples/degenerate-bevel-weld/)
+
+The half-dimension bevel collapse, isolated. A slab beveled at
+`offset == min_dim/2` pinches its band into exactly **12 zero-area faces**
+(4 min-axis edges × 3 segments) with 16 coincident verts and `min_area`
+down 3.2e5× — and a stdlib re-parse of the exported GLB counts **32
+degenerate triangles shipped** to disk, where an engine merge-by-distance
+welds their loops. Companion to
+[`gltf-export-roundtrip`](examples/gltf-export-roundtrip/) (where the count
+check first caught the weld) and [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/)
+(topology gates). Seam markers are placed from live mesh data.
 
 </td>
 </tr>

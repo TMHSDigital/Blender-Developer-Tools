@@ -642,6 +642,17 @@
           <a class="card-link" href="attribute-domain-shear/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="bmesh mesh game-pipeline">
+        <a class="card-media" href="degenerate-bevel-weld/" aria-label="degenerate-bevel-weld example detail page">
+          <img src="assets/degenerate-bevel-weld-hero.webp" alt="degenerate-bevel-weld — Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles…" loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="degenerate-bevel-weld/">degenerate-bevel-weld</a></h2>
+          <p class="teaches">Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.</p>
+          <a class="card-link" href="degenerate-bevel-weld/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
   </main>
   <footer>

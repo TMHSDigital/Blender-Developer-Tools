@@ -69,6 +69,7 @@
     "examples/curve-bevel-arc",
     "examples/custom-normals-shade",
     "examples/damped-track-aim",
+    "examples/degenerate-bevel-weld",
     "examples/depsgraph-export",
     "examples/driver-wave",
     "examples/gltf-export-roundtrip",
