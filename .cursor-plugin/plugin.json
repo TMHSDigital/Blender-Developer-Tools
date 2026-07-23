@@ -60,10 +60,11 @@
   ],
   "examples": [
     "examples/armature-bend",
+    "examples/attribute-domain-shear",
     "examples/bmesh-gear",
     "examples/car-mirror-symmetry",
-    "examples/color-attribute-wheel",
     "examples/collision-hull-proxy",
+    "examples/color-attribute-wheel",
     "examples/compositor-glare",
     "examples/curve-bevel-arc",
     "examples/custom-normals-shade",
