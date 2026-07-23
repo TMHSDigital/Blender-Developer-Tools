@@ -198,6 +198,7 @@ blender --background --python triangulate_tangents.py --
 blender --background --python triangulate_tangents.py -- --output buckler.png
 blender --background --python triangulate_tangents.py -- --output buckler.png --engine cycles</code></pre>
 <p>It exits non-zero on failure (topology drift, reallocated UV layer, non-orthonormal basis, bitangent-convention drift, formula excursion, or a flip inside a smooth field). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -242,6 +243,11 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">import</span> mathutils
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 SIDES = <span class="n">48</span>                      <span class="c"># buckler lathe resolution</span>
 RINGS = <span class="n">6</span>                       <span class="c"># dome profile rings (closed form below)</span>
@@ -571,19 +577,22 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
     <span class="c"># (docs/VISUAL-STYLE.md); the glint is the anisotropic streak&#x27;s driver</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">500.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">320.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">340.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.5</span>, -<span class="n">5.5</span>, <span class="n">5.5</span>), <span class="n">400.0</span>, <span class="n">1.2</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">15</span>))
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.5</span>, -<span class="n">5.5</span>, <span class="n">5.5</span>), <span class="n">150.0</span>, <span class="n">1.2</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">15</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.6</span>, -<span class="n">8.8</span>, <span class="n">2.8</span>)
+    <span class="c"># Reframed: the old (0.6,-8.8,2.8) left the buckler at 0.334 fill adrift</span>
+    <span class="c"># in the stage; moved in ~2.2x so the brushed-steel tangent sweep fills</span>
+    <span class="c"># the frame — the grooves are the tangent-field evidence.</span>
+    cam.location = (<span class="n">0.6</span>, -<span class="n">6.35</span>, <span class="n">2.62</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.42</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -603,8 +612,22 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     scene.render.filepath = path
     <span class="c"># AgX would wash the steel toward chalk (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    stand_ob = scene.objects.get(<span class="s">&quot;Stand&quot;</span>)
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj] + ([stand_ob] <span class="k">if</span> stand_ob <span class="k">else</span> []),
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -622,9 +645,9 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">10</span>
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;triangulate-tangents OK&quot;</span>)
