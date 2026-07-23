@@ -28,3 +28,5 @@ blender --background --python depsgraph_export.py -- --obj exported.obj
 It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The
 `blender-smoke` workflow runs this check on Blender 4.5 LTS and 5.1: base 8 → evaluated/exported
 98 vertices with a 2-level SUBSURF.
+
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

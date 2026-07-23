@@ -36,6 +36,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 import mathutils
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 SIDES = 48                      # buckler lathe resolution
 RINGS = 6                       # dome profile rings (closed form below)
 BOSS_R = 1.0
@@ -364,19 +369,22 @@ def render_still(obj, path, engine):
 
     # shaped warm key, faint cool fill, cool rim, warm wedge on the back wall
     # (docs/VISUAL-STYLE.md); the glint is the anisotropic streak's driver
-    light("Key", (-4.0, -5.0, 6.0), 500.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
+    light("Key", (-4.0, -5.0, 6.0), 320.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
     light("Fill", (5.0, -4.0, 3.0), 100.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
     light("Rim", (0.5, 4.5, 5.0), 340.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
     light("Wedge", (2.5, 3.5, 4.2), 480.0, 6.0, (1.0, 0.76, 0.5), (-72, 0, 195))
-    light("Glint", (1.5, -5.5, 5.5), 400.0, 1.2, (1.0, 0.9, 0.75), (42, 0, 15))
+    light("Glint", (1.5, -5.5, 5.5), 150.0, 1.2, (1.0, 0.9, 0.75), (42, 0, 15))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.6, -8.8, 2.8)
+    # Reframed: the old (0.6,-8.8,2.8) left the buckler at 0.334 fill adrift
+    # in the stage; moved in ~2.2x so the brushed-steel tangent sweep fills
+    # the frame — the grooves are the tangent-field evidence.
+    cam.location = (0.6, -6.35, 2.62)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.0, 0.0, 1.35)
+    target.location = (0.0, 0.0, 1.42)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
@@ -396,8 +404,22 @@ def render_still(obj, path, engine):
     scene.render.filepath = path
     # AgX would wash the steel toward chalk (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    stand_ob = scene.objects.get("Stand")
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj] + ([stand_ob] if stand_ob else []),
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 10
+    return 0
 
 
 def main():
@@ -415,9 +437,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 10
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("triangulate-tangents OK")

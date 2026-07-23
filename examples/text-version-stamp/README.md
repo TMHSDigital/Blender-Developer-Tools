@@ -38,3 +38,5 @@ non-planar flat text, extrude/bevel closed form off, geometry not regenerating, 
 `to_mesh_clear()` reference surviving). The `blender-smoke` workflow runs the check on
 Blender 4.5 LTS and 5.1. The render scales the stamp to a constant width, so the frame
 holds for any version-string length.
+
+The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
