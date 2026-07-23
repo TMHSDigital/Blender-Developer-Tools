@@ -197,6 +197,7 @@ blender --background --python vertex_weight_limit.py --
 blender --background --python vertex_weight_limit.py -- --output arm.png
 blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles</code></pre>
 <p>It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -237,6 +238,11 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">import</span> mathutils
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 SIDES = <span class="n">32</span>
 MAX_INFLUENCES = <span class="n">4</span>              <span class="c"># the engine constraint being witnessed</span>
@@ -625,10 +631,13 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">52.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">5.8</span>, -<span class="n">6.9</span>, <span class="n">2.2</span>)
+    <span class="c"># Reframed: the old (5.8,-6.9,2.2) aim 1.5 cropped the base at the bottom</span>
+    <span class="c"># edge and left the subject adrift right-of-center; slightly more frontal</span>
+    <span class="c"># and lower-aimed so the full base and the lean both sit in frame.</span>
+    cam.location = (<span class="n">4.6</span>, -<span class="n">8.2</span>, <span class="n">2.3</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.45</span>, <span class="n">0.0</span>, <span class="n">1.5</span>)
+    target.location = (<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">1.25</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -649,8 +658,21 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     <span class="c"># AgX would wash the hazard orange and teal accent toward pastel</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj],
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -674,9 +696,9 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">10</span>
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;vertex-weight-limit OK&quot;</span>)

@@ -32,6 +32,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 import mathutils
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 SIDES = 32
 MAX_INFLUENCES = 4              # the engine constraint being witnessed
 BUMP_R = 1.8                    # flex-cuff blend support; guarantees 5 pre-limit
@@ -419,10 +424,13 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 52.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (5.8, -6.9, 2.2)
+    # Reframed: the old (5.8,-6.9,2.2) aim 1.5 cropped the base at the bottom
+    # edge and left the subject adrift right-of-center; slightly more frontal
+    # and lower-aimed so the full base and the lean both sit in frame.
+    cam.location = (4.6, -8.2, 2.3)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.45, 0.0, 1.5)
+    target.location = (0.35, 0.0, 1.25)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
@@ -443,8 +451,21 @@ def render_still(obj, path, engine):
     # AgX would wash the hazard orange and teal accent toward pastel
     # (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj],
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 10
+    return 0
 
 
 def main():
@@ -468,9 +489,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 10
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("vertex-weight-limit OK")
