@@ -554,3 +554,15 @@ jobs:
           # non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/attribute-domain-shear/attribute_domain_shear.py --
+
+      - name: Shipped example - degenerate bevel weld (half-dimension collapse)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 1.6x0.4x1.0 slab beveled at safe (0.10)
+          # and threshold (0.20 == min/2) offsets; asserts zero vs exactly 12
+          # zero-area faces (4 min-axis edges x 3 segments), 16 coincident
+          # verts (4 x (segments+1)), min_area collapse > 1e5x, and a stdlib
+          # GLB re-parse counting 32 degenerate triangles shipped versus 0.
+          # Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/degenerate-bevel-weld/degenerate_bevel_weld.py --

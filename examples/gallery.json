@@ -482,6 +482,19 @@
         "mesh",
         "rendering"
       ]
+    },
+    {
+      "name": "degenerate-bevel-weld",
+      "dir": "examples/degenerate-bevel-weld",
+      "teaches": "Bevel offset >= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data.",
+      "witnessesFix": "At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.",
+      "hero": "docs/gallery/assets/degenerate-bevel-weld-hero.webp",
+      "preview": "examples/degenerate-bevel-weld/preview.webp",
+      "tags": [
+        "bmesh",
+        "mesh",
+        "game-pipeline"
+      ]
     }
   ]
 }
