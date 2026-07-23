@@ -542,3 +542,15 @@ jobs:
           # non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/car-mirror-symmetry/car_mirror_symmetry.py --
+
+      - name: Shipped example - attribute domain shear (POINT vs CORNER semantics)
+        run: |
+          set -euo pipefail
+          # Check only (no render): an 8-wedge pinwheel around one shared hub
+          # vertex; asserts CORNER attr sizing (3K loops) and exact per-wedge
+          # hub colors, POINT sizing (K+1 verts), and that a naive per-wedge
+          # POINT loop shears to the last write at every shared vertex with
+          # the measured deviation equal to the palette closed form. Exits
+          # non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/attribute-domain-shear/attribute_domain_shear.py --

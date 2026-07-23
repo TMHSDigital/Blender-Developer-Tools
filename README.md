@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>38 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>39 examples</strong>
 </p>
 
 <p align="center">
@@ -738,6 +738,27 @@ parked **on** the symmetry plane — offset the data, never the object.
 Companion to [`depsgraph-export`](examples/depsgraph-export/) (evaluated-vs-
 original) and [`shape-key-blend`](examples/shape-key-blend/) (non-destructive
 evaluation). Break the mirror and the render is literally half a car.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two eight-petal pinwheels side by side — left CORNER-domain with crisp colored petals to the hub, right naive POINT-domain smeared into a swirl, proving last-write-wins shear at shared vertices" /></a>
+</td>
+<td valign="middle">
+
+### [attribute-domain-shear](examples/attribute-domain-shear/)
+
+What `POINT` versus `CORNER` **means** on `Mesh.color_attributes` once a mesh
+has shared vertices. An eight-wedge pinwheel around one raised hub: CORNER
+authoring holds each wedge's exact color (hub corners disagree by face,
+err ≤ 1e-6), while the naive per-wedge POINT loop rewrites every shared
+vertex once per neighbor and the **last write wins** — the hub reads
+palette[K−1], and the measured shear matches the palette closed form
+(0.751031) exactly. Companion to
+[`color-attribute-wheel`](examples/color-attribute-wheel/) (domain sizing,
+`active_color`, the shader Attribute node). The broken state is in-frame:
+the right pinwheel is the falsification variant.
 
 </td>
 </tr>
