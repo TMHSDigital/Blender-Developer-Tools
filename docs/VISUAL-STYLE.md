@@ -85,6 +85,18 @@ the default stage.
 - The image must witness the API: if the contract failed, the render should
   visibly break. If the render would look the same whether the code worked or
   not, the scene design is wrong, not merely unpolished.
+- **Numeric-only contracts are a narrow, declared exception.** Some contracts
+  have no visual signature: the broken state renders pixel-identical because
+  the evidence is a count, a cap, or a buffer invariant, not a shape. Then
+  the example says so in its README, the render's job is to depict the
+  subject and its setup legibly — so the reader can see what the numbers
+  describe — and the falsification pass is satisfied by naming why no visual
+  difference exists. Precedents: `vertex-weight-limit` (the prune preserves
+  the pose by design, so the 4-influence cap is numeric) and
+  `triangulate-tangents` (the ring sweep is UV/bump-driven, so a
+  tangent-field break does not move pixels). This is for contracts that
+  genuinely cannot be seen, not for scenes that were not designed hard
+  enough: where a visual witness is possible, it is required.
 - Presentation may be staged; evidence may not. When the witnessed artifact
   is itself an image (a sequencer frame, a pixel buffer, a baked texture),
   the authentic pixels must appear unaltered — mount them in the scene
