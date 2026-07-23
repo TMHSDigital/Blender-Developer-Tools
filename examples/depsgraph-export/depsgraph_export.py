@@ -14,6 +14,11 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -148,9 +153,18 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.4, 3.0)
-    cam.rotation_euler = (math.radians(76), 0.0, 0.0)
+    # Reframed: the rotated base cube spans ~5.9 units with the evaluated
+    # sphere, wider than the old (0,-7.4,3.0) frame — the cube was amputated
+    # at the left edge. Aim-based framing on the pair's center.
+    cam.location = (0.0, -9.6, 2.6)
     scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = (0.0, 0.0, 0.9)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new('TRACK_TO')
+    con.target = aim
+    con.track_axis = 'TRACK_NEGATIVE_Z'
+    con.up_axis = 'UP_Y'
     scene.camera = cam
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
@@ -168,8 +182,21 @@ def render_still(obj, path, engine):
     # AgX would flatten the graphite-vs-green contrast this still hinges on
     # (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[base_obj, obj],
+        elements=[base_obj, obj],
+        stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 6
+    return 0
 
 
 def main():
@@ -188,9 +215,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("depsgraph-export OK")
