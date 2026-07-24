@@ -45,6 +45,7 @@ import bpy, bmesh, sys, os, math, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 TOL = 1e-6            # UV0 preservation tolerance
 BOUNDS_TOL = 1e-5     # UV1 unit-square slack
@@ -88,11 +89,11 @@ def _box(name, dims, center, bevel=0.0):
     return me
 
 
-def _wheel(name, radius, width, center):
+def _wheel_disc(name, radius, width, center):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=20,
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=24,
                               radius1=radius, radius2=radius, depth=width)
         # cone axis is Z; the wheel rolls around Y -> rotate verts, applied in data
         for v in bm.verts:
@@ -106,37 +107,135 @@ def _wheel(name, radius, width, center):
     return me
 
 
+def _ring(name, r_out, r_in, width, center, segments=24):
+    """Flat annulus (iron tire band) spun from a 4-vert profile, watertight."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        hw = width / 2
+        prof = [(r_in, -hw), (r_out, -hw), (r_out, hw), (r_in, hw)]
+        vs = [bm.verts.new((r, 0.0, z)) for r, z in prof]
+        es = [bm.edges.new((vs[i], vs[(i + 1) % 4])) for i in range(4)]
+        bmesh.ops.spin(bm, geom=vs + es, cent=(0.0, 0.0, 0.0),
+                       axis=(0.0, 0.0, 1.0), dvec=(0.0, 0.0, 0.0),
+                       angle=2 * math.pi, steps=segments, use_merge=True)
+        for v in bm.verts:
+            x, y, z = v.co.x, v.co.y, v.co.z
+            v.co = (x + center[0], z + center[1], y + center[2])
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _bolt_ring(name, count, ring_r, bolt_r, center):
+    """count bolt heads on a ring around Y — one mesh, disconnected islands."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for i in range(count):
+            a = 2 * math.pi * i / count
+            cx, cz = center[0] + ring_r * math.cos(a), center[2] + ring_r * math.sin(a)
+            before_v = set(bm.verts)
+            bmesh.ops.create_uvsphere(bm, u_segments=8, v_segments=6, radius=bolt_r)
+            for v in set(bm.verts) - before_v:
+                v.co.x += cx
+                v.co.y += center[1]
+                v.co.z += cz
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _arc_band(bm, xc, width, radius, thickness, z0, segments):
+    """One arched sheet spanning x in [xc, xc+width], solidified with rims."""
+    sweep = math.radians(120.0)
+    a0 = math.radians(90.0) - sweep / 2
+    outer, inner = [], []
+    for i in range(segments + 1):
+        a = a0 + sweep * i / segments
+        ca, sa = math.cos(a), math.sin(a)
+        outer.append(bm.verts.new((xc, radius * ca, z0 + radius * sa)))
+        inner.append(bm.verts.new((xc, (radius - thickness) * ca,
+                                   z0 + (radius - thickness) * sa)))
+    def band(ring_o, ring_i):
+        for i in range(segments):
+            a, b = i, i + 1
+            bm.faces.new((ring_o[a], ring_o[b], ring_i[b], ring_i[a]))
+    outer_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) for v in outer]
+    inner_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) for v in inner]
+    band(outer, inner)               # underside (thickness face)
+    band(inner_x2, outer_x2)         # top face
+    for i in range(segments):        # the two long rims
+        a, b = i, i + 1
+        bm.faces.new((outer[a], outer_x2[a], outer_x2[b], outer[b]))
+        bm.faces.new((inner[a], inner[b], inner_x2[b], inner_x2[a]))
+    bm.faces.new((outer[0], inner[0], inner_x2[0], outer_x2[0]))
+    bm.faces.new((outer[-1], outer_x2[-1], inner_x2[-1], inner[-1]))
+
+
 def _canopy(name, width, radius, thickness, z0, segments=14):
     """Arched canvas sheet: an arc band solidified with a rim, watertight."""
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        sweep = math.radians(120.0)
-        a0 = math.radians(90.0) - sweep / 2
-        outer, inner = [], []
-        for i in range(segments + 1):
-            a = a0 + sweep * i / segments
-            ca, sa = math.cos(a), math.sin(a)
-            outer.append(bm.verts.new((-width / 2, radius * ca, z0 + radius * sa)))
-            inner.append(bm.verts.new((-width / 2, (radius - thickness) * ca,
-                                       z0 + (radius - thickness) * sa)))
-        def band(off_x, ring_o, ring_i):
-            for i in range(segments):
-                a, b = i, i + 1
-                bm.faces.new((ring_o[a], ring_o[b], ring_i[b], ring_i[a]))
-        outer_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) for v in outer]
-        inner_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) for v in inner]
-        band(0, outer, inner)          # underside (thickness face)
-        band(width, inner_x2, outer_x2)  # top face
-        for i in range(segments):      # the two long rims
-            a, b = i, i + 1
-            bm.faces.new((outer[a], outer_x2[a], outer_x2[b], outer[b]))
-            bm.faces.new((inner[a], inner[b], inner_x2[b], inner_x2[a]))
-        for ring in ((outer, outer_x2), (inner, inner_x2)):  # end caps
-            for i in (0, segments):
-                pass
-        bm.faces.new((outer[0], inner[0], inner_x2[0], outer_x2[0]))
-        bm.faces.new((outer[-1], outer_x2[-1], inner_x2[-1], inner[-1]))
+        _arc_band(bm, -width / 2, width, radius, thickness, z0, segments)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _canopy_ribs(name, positions, width, radius, thickness, z0, segments=14):
+    """Thin wooden ribs following the canopy arc, one mesh, N islands."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for px in positions:
+            _arc_band(bm, px - width / 2, width, radius, thickness, z0, segments)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _bolts(name, positions, radius):
+    """Bolt head spheres at positions — one mesh, disconnected islands."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for px, py, pz in positions:
+            before_v = set(bm.verts)
+            bmesh.ops.create_uvsphere(bm, u_segments=8, v_segments=6, radius=radius)
+            for v in set(bm.verts) - before_v:
+                v.co.x += px
+                v.co.y += py
+                v.co.z += pz
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _multi_box(name, specs):
+    """Several beveled boxes as one mesh (disconnected islands, each
+    watertight). specs: (dims, center, bevel)."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for dims, center, bevel in specs:
+            before_e = set(bm.edges)
+            before_v = set(bm.verts)
+            bmesh.ops.create_cube(bm, size=1.0)
+            new_edges = list(set(bm.edges) - before_e)
+            for v in set(bm.verts) - before_v:
+                v.co.x = v.co.x * dims[0] + center[0]
+                v.co.y = v.co.y * dims[1] + center[1]
+                v.co.z = v.co.z * dims[2] + center[2]
+            if bevel > 0.0:
+                bmesh.ops.bevel(bm, geom=new_edges, offset=bevel, segments=2,
+                                profile=0.5, affect="EDGES", clamp_overlap=True)
         bm.to_mesh(me)
     finally:
         bm.free()
@@ -144,16 +243,43 @@ def _canopy(name, width, radius, thickness, z0, segments=14):
 
 
 def build_cart_meshes():
+    """The cart as an assembly of named, watertight parts: real wheel
+    assemblies (disc + hub + iron band + bolt ring), plank-grooved bed with
+    side rails, corner brackets, and fasteners, and a ribbed canvas canopy."""
     parts = {}
     parts["Bed"] = _box("Cart.Bed", (2.2, 1.2, 0.22), (0.0, 0.0, 0.85), 0.03)
-    parts["Axle"] = _wheel("Cart.Axle", 0.05, 1.5, (0.55, 0.0, 0.5))
-    parts["Wheel.L"] = _wheel("Cart.Wheel.L", 0.45, 0.12, (0.55, 0.68, 0.45))
-    parts["Wheel.R"] = _wheel("Cart.Wheel.R", 0.45, 0.12, (0.55, -0.68, 0.45))
+    parts["Bed.Rails"] = _multi_box("Cart.Bed.Rails", [
+        ((2.2, 0.06, 0.18), (0.0, 0.57, 1.02), 0.015),
+        ((2.2, 0.06, 0.18), (0.0, -0.57, 1.02), 0.015)])
+    parts["Bed.Grooves"] = _multi_box("Cart.Bed.Grooves", [
+        ((0.035, 1.14, 0.015), (x, 0.0, 0.9575), 0.0)
+        for x in (-0.66, -0.22, 0.22, 0.66)])
+    parts["Bed.Brackets"] = _multi_box("Cart.Bed.Brackets", [
+        ((0.03, 0.13, 0.26), (sx * 1.105, sy * 0.535, 0.85), 0.008)
+        for sx in (-1, 1) for sy in (-1, 1)])
+    parts["Bed.Bolts"] = _bolts("Cart.Bed.Bolts", [
+        (sx * 1.125, sy * 0.535, z) for sx in (-1, 1) for sy in (-1, 1)
+        for z in (0.78, 0.92)], 0.018)
+    parts["Axle"] = _wheel_disc("Cart.Axle", 0.05, 1.56, (0.55, 0.0, 0.5))
+    parts["Axle.Caps"] = _multi_box("Cart.Axle.Caps", [
+        ((0.14, 0.05, 0.14), (0.55, sy * 0.80, 0.5), 0.02) for sy in (-1, 1)])
+    for tag, sy in (("L", 1.0), ("R", -1.0)):
+        y = sy * 0.68
+        parts[f"Wheel.{tag}.Disc"] = _wheel_disc(
+            f"Cart.Wheel.{tag}.Disc", 0.45, 0.10, (0.55, y, 0.45))
+        parts[f"Wheel.{tag}.Hub"] = _wheel_disc(
+            f"Cart.Wheel.{tag}.Hub", 0.14, 0.16, (0.55, y, 0.45))
+        parts[f"Wheel.{tag}.Band"] = _ring(
+            f"Cart.Wheel.{tag}.Band", 0.47, 0.435, 0.10, (0.55, y, 0.45))
+        parts[f"Wheel.{tag}.Bolts"] = _bolt_ring(
+            f"Cart.Wheel.{tag}.Bolts", 6, 0.09, 0.02, (0.55, y + sy * 0.085, 0.45))
     for tag, (px, py) in (("FL", (0.95, 0.48)), ("FR", (0.95, -0.48)),
                           ("RL", (-0.95, 0.48)), ("RR", (-0.95, -0.48))):
         parts[f"Post.{tag}"] = _box(f"Cart.Post.{tag}", (0.09, 0.09, 1.35),
                                     (px, py, 1.55), 0.015)
     parts["Canopy"] = _canopy("Cart.Canopy", 2.3, 0.85, 0.04, 1.9)
+    parts["Canopy.Ribs"] = _canopy_ribs("Cart.Canopy.Ribs", (-0.75, 0.0, 0.75),
+                                        0.07, 0.875, 0.035, 1.9)
     return parts
 
 
@@ -512,18 +638,30 @@ def render_still(path, engine, falsify=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    wood = make_material("Wood", (0.42, 0.26, 0.13), rough=0.6)
+    wood = make_material("Wood", (0.38, 0.22, 0.10), rough=0.55)
     darkwood = make_material("DarkWood", (0.16, 0.10, 0.05), rough=0.7)
-    iron = make_material("Iron", (0.18, 0.18, 0.20), rough=0.35, metallic=0.9)
+    iron = make_material("Iron", (0.26, 0.26, 0.30), rough=0.3, metallic=0.9)
     canvas = make_material("Canvas", (0.66, 0.56, 0.40), rough=0.9)
+    groovemat = make_material("Groove", (0.05, 0.04, 0.03), rough=0.9)
 
-    mats = {"Bed": wood, "Axle": iron, "Wheel.L": darkwood, "Wheel.R": darkwood,
-            "Canopy": canvas}
+    mat_by_part = {
+        "Bed": wood, "Bed.Rails": wood, "Bed.Grooves": groovemat,
+        "Bed.Brackets": iron, "Bed.Bolts": iron,
+        "Axle": iron, "Axle.Caps": iron,
+        "Canopy": canvas, "Canopy.Ribs": darkwood,
+    }
+    for tag in ("L", "R"):
+        mat_by_part[f"Wheel.{tag}.Disc"] = darkwood
+        mat_by_part[f"Wheel.{tag}.Hub"] = darkwood
+        mat_by_part[f"Wheel.{tag}.Band"] = iron
+        mat_by_part[f"Wheel.{tag}.Bolts"] = iron
+    for tag in ("FL", "FR", "RL", "RR"):
+        mat_by_part[f"Post.{tag}"] = darkwood
+
     parts_obs = []
     meshes = build_cart_meshes()
     for suffix, me in meshes.items():
-        me.materials.append(mats.get(suffix.split(".")[0], wood)
-                            if not suffix.startswith("Post") else wood)
+        me.materials.append(mat_by_part[suffix])
         me.uv_layers.new(name=LAYER0)
         me.uv_layers.new(name=LAYER1)
         write_uv0_box_projection(me)
@@ -553,10 +691,10 @@ def render_still(path, engine, falsify=False):
     # atlas board: the Bed's live UV1 as flat island polygons mapped onto the
     # board face — a change in the packed atlas moves the board geometry
     board_mat = make_material("Board", (0.04, 0.04, 0.05), rough=0.5, metallic=0.4)
-    board = _box("Atlas.Board", (0.07, 1.7, 1.7), (0.0, 0.0, 0.0), 0.02)
+    board = _box("Atlas.Board", (0.08, 2.2, 2.0), (0.0, 0.0, 0.0), 0.02)
     board.materials.append(board_mat)
     board_ob = bpy.data.objects.new("Atlas.Board", board)
-    board_ob.location = (1.75, 0.55, 1.0)
+    board_ob.location = (2.05, 0.55, 1.15)
     sc.collection.objects.link(board_ob)
 
     bed = meshes["Bed"]
@@ -571,7 +709,7 @@ def render_still(path, engine, falsify=False):
         bm = bmesh.new()
         try:
             # board face: +X side; UV [0,1]^2 -> y,z on the face (u -> -y, v -> z)
-            vs = [bm.verts.new((0.0, (0.5 - uv[0]) * 1.5, (uv[1] - 0.5) * 1.5))
+            vs = [bm.verts.new((0.0, (0.5 - uv[0]) * 1.9, (uv[1] - 0.5) * 1.9))
                   for uv in pts]
             bm.faces.new(vs)
             bm.to_mesh(me)
@@ -582,7 +720,7 @@ def render_still(path, engine, falsify=False):
         me.materials.append(make_material(f"IslandMat{fi}", rgb, rough=0.5,
                                           emit=rgb, estr=1.6 if defect else 0.5))
         ob = bpy.data.objects.new(f"Atlas.Island.{fi}", me)
-        ob.location = (1.75 + 0.037 + (0.004 if fi in dragged else 0.0), 0.55, 1.0)
+        ob.location = (2.05 + 0.045 + (0.004 if fi in dragged else 0.0), 0.55, 1.15)
         sc.collection.objects.link(ob)
         iso_obs.append(ob)
 
@@ -591,10 +729,10 @@ def render_still(path, engine, falsify=False):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 47.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (5.4, -6.6, 2.7)
+    cam.location = (5.9, -7.2, 2.8)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.75, 0.1, 1.08)
+    aim.location = (0.85, 0.1, 1.05)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -625,6 +763,10 @@ def render_still(path, engine, falsify=False):
     )
     if fcode:
         return fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=hero, stage=[floor, wall])
+    if aqcode:
+        return aqcode
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
