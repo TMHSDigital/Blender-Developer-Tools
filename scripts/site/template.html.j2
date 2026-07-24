@@ -153,6 +153,11 @@
       text-overflow: ellipsis; }
     .panel-cta { display: inline-block; margin-top: 1.25rem; font-weight: 500; font-size: 0.9rem; color: var(--select); }
     .panel-cta:hover { text-decoration: underline; }
+    /* featured subset: gallery link is the section's primary call to action */
+    .cta-row { margin: -0.25rem 0 1.5rem; }
+    .btn-cta { display: inline-block; background: var(--select); color: #1a1b1e; font-weight: 500;
+      font-size: 0.92rem; border-radius: 4px; padding: 0.55rem 1.15rem; transition: filter 0.15s; }
+    .btn-cta:hover { filter: brightness(1.12); }
 
     /* skills */
     .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2.25rem; }
@@ -284,19 +289,21 @@
   <main id="main">
 
   {% if examples %}
+  {% set shown = featured_examples if featured_examples else examples %}
   <section class="panel" id="examples">
     <div class="panel-head">
       <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Render Result</span>
-      <span class="hud count">{{ example_count }} frames</span>
+      <span class="hud count">{% if featured_examples %}{{ featured_count }} of {% endif %}{{ example_count }} frames</span>
     </div>
     <div class="panel-body">
       <h2>Every render here is a CI artifact.</h2>
       <p class="lede">These aren't mockups. Each example runs headless on Blender 4.5 LTS and 5.1 in the
         smoke workflow, asserts its own correctness, and exits non-zero if the API drifted. The render is
         what the code produced.</p>
+      <p class="cta-row"><a class="btn-cta" href="gallery/">Browse all {{ example_count }} examples in the gallery &rarr;</a></p>
       <div class="render-grid">
-        {% for ex in examples %}
+        {% for ex in shown %}
         <a class="render-card" href="gallery/{{ ex.name }}/">
           <img src="{{ ex.heroSite }}" alt="{{ ex.name }} render" loading="lazy" width="1280" height="720" />
           <div class="render-meta">
