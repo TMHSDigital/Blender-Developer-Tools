@@ -8,8 +8,9 @@ positions with no gap and no overlap. Interior geometry is free-form
 deliberate authoring pass, and the check is what catches you skipping it.
 
 **The asset, for reuse:** a 4 × 3 × 3 m corridor segment (hollow-rectangle
-shell plus twelve detail parts — frame rib, walkway plate, wall panels,
-trim rails, emissive light strips). Origin at the connection pivot
+shell plus twenty detail parts — frame rib, walkway plate, wall panel
+assemblies (backing plate + inset panel + four bolt heads each), trim
+rails, emissive light strips). Origin at the connection pivot
 (floor-center of the start edge, so instance *n* places at `x = n·4`),
 identity transforms by construction, datablocks under
 `Kit.CorridorSeg.*`, manifold everywhere except the two intentional open
@@ -57,7 +58,15 @@ and 5.1.2 — same counts, same zero measured deviations.
 falsification variant (`--falsify`) accumulates a 120 mm gap, 50 mm lateral
 jogs, and 40 mm floor steps at each joint: floor plates split with dark
 seams and the trim rails visibly break. The check measures the same failure
-class at 3 mm; the render exaggerates it to read at frame scale.
+class at 3 mm; the render exaggerates it to read at frame scale. The render
+path also gates the asset through `examples/gallery_asset_quality.py`
+(naming, material variation, edge treatment — exit 11). An earlier revision
+shipped flat grey wall panels and was remodeled under that gate: each panel
+is now an assembly (backing plate + inset panel + four bolt heads), the
+palette shifted teal-slate so the card does not twin with
+`lightmap-uv-channel`'s warm cart, and mean luminance was brought into the
+calibration range (82.7 → 66.1, ceiling 77.7) — no luminance deviation
+needed.
 
 **Framing deviation:** the still is an interior corridor run — the envelope
 surrounds the camera on five sides and the tiling joints are the proof, so

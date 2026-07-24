@@ -46,6 +46,7 @@ import bpy, bmesh, sys, os, math, argparse
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 TILE = 4.0                # tile length along X, metres
 WIDTH = 3.0               # corridor width along Y ( +/- 1.5 )
@@ -141,11 +142,6 @@ def detail_layout():
         ("Rib.Beam", (0.24, 2 * inner_y - 0.30, 0.34), (0.18, 0.0, HEIGHT - WALL - 0.17), 0.02),
         # walkway floor plate
         ("FloorPlate", (3.4, 1.8, 0.05), (TILE / 2, 0.0, WALL + 0.025), 0.015),
-        # wall panels, two per side, recessed-look slabs on the bore face
-        ("Panel.L.1", (1.15, 0.05, 1.15), (1.2, inner_y - 0.025, 1.55), 0.02),
-        ("Panel.L.2", (1.15, 0.05, 1.15), (2.8, inner_y - 0.025, 1.55), 0.02),
-        ("Panel.R.1", (1.15, 0.05, 1.15), (1.2, -(inner_y - 0.025), 1.55), 0.02),
-        ("Panel.R.2", (1.15, 0.05, 1.15), (2.8, -(inner_y - 0.025), 1.55), 0.02),
         # orange trim rails — the lines that jog visibly when a joint steps
         ("Trim.L", (3.7, 0.06, 0.09), (TILE / 2, inner_y - 0.03, 0.78), 0.015),
         ("Trim.R", (3.7, 0.06, 0.09), (TILE / 2, -(inner_y - 0.03), 0.78), 0.015),
@@ -153,7 +149,34 @@ def detail_layout():
         ("Light.L", (3.0, 0.05, 0.07), (TILE / 2, inner_y - 0.025, HEIGHT - WALL - 0.09), 0.01),
         ("Light.R", (3.0, 0.05, 0.07), (TILE / 2, -(inner_y - 0.025), HEIGHT - WALL - 0.09), 0.01),
     ]
+    # wall panel assemblies: backing plate proud of the bore face, a lighter
+    # inset panel — depth, not flat grey rectangles. Bolt heads are spheres,
+    # built by _bolts_mesh in build_kit_meshes rather than as boxes.
+    for side, sy in (("L", 1.0), ("R", -1.0)):
+        for idx, px in ((1, 1.2), (2, 2.8)):
+            parts.append((f"PanelBack.{side}.{idx}", (1.35, 0.04, 1.35),
+                          (px, sy * (inner_y - 0.02), 1.55), 0.015))
+            parts.append((f"Panel.{side}.{idx}", (1.15, 0.05, 1.15),
+                          (px, sy * (inner_y - 0.045), 1.55), 0.02))
     return parts
+
+
+def _bolts_mesh(name, positions, radius):
+    """Bolt head spheres at positions — one mesh, disconnected islands."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for px, py, pz in positions:
+            before_v = set(bm.verts)
+            bmesh.ops.create_uvsphere(bm, u_segments=8, v_segments=6, radius=radius)
+            for v in set(bm.verts) - before_v:
+                v.co.x += px
+                v.co.y += py
+                v.co.z += pz
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
 
 
 def build_kit_meshes(skew=0.0, nudge=0.0):
@@ -161,6 +184,14 @@ def build_kit_meshes(skew=0.0, nudge=0.0):
     meshes = {"Shell": build_shell("Kit.CorridorSeg.Shell", skew, nudge)}
     for suffix, dims, center, bevel in detail_layout():
         meshes[suffix] = build_detail(f"Kit.CorridorSeg.{suffix}", dims, center, bevel)
+    # panel fixings: four bolt heads per panel, proud of the inset panel
+    inner_y = WIDTH / 2 - WALL
+    for side, sy in (("L", 1.0), ("R", -1.0)):
+        for idx, px in ((1, 1.2), (2, 2.8)):
+            positions = [(px + dx, sy * (inner_y - 0.07), 1.55 + dz)
+                         for dx in (-0.5, 0.5) for dz in (-0.5, 0.5)]
+            meshes[f"PanelBolts.{side}.{idx}"] = _bolts_mesh(
+                f"Kit.CorridorSeg.PanelBolts.{side}.{idx}", positions, 0.022)
     return meshes
 
 
@@ -368,19 +399,28 @@ def make_material(name, rgb, rough=0.45, metallic=0.6, emit=None, estr=0.0):
 
 
 SEGMENT_MATS = {
-    "Shell": ("Shell", (0.10, 0.11, 0.13), 0.5, 0.8, None, 0.0),
+    "Shell": ("Shell", (0.075, 0.095, 0.115), 0.5, 0.8, None, 0.0),
     "Rib": ("Rib", (0.05, 0.05, 0.06), 0.45, 0.85, None, 0.0),
-    "FloorPlate": ("FloorPlate", (0.07, 0.08, 0.09), 0.6, 0.7, None, 0.0),
-    "Panel": ("Panel", (0.19, 0.25, 0.33), 0.4, 0.6, None, 0.0),
+    "FloorPlate": ("FloorPlate", (0.06, 0.075, 0.09), 0.6, 0.7, None, 0.0),
+    "Panel": ("Panel", (0.10, 0.21, 0.26), 0.42, 0.6, None, 0.0),
+    "PanelBack": ("PanelBack", (0.06, 0.10, 0.13), 0.5, 0.75, None, 0.0),
+    "PanelBolts": ("PanelBolts", (0.35, 0.38, 0.42), 0.3, 0.9, None, 0.0),
     "Trim": ("Trim", (0.85, 0.35, 0.08), 0.35, 0.3, None, 0.0),
     "Light": ("LightStrip", (0.30, 0.25, 0.18), 0.5, 0.2, (1.0, 0.75, 0.4), 8.0),
 }
 
 
+_mat_cache = {}
+
+
 def mat_for(suffix):
+    """One material per design key, shared across segments (an earlier
+    revision instantiated a duplicate material per part per segment)."""
     key = suffix.split(".")[0]
-    name, rgb, rough, metal, emit, estr = SEGMENT_MATS[key]
-    return make_material(name, rgb, rough, metal, emit, estr)
+    if key not in _mat_cache:
+        name, rgb, rough, metal, emit, estr = SEGMENT_MATS[key]
+        _mat_cache[key] = make_material(name, rgb, rough, metal, emit, estr)
+    return _mat_cache[key]
 
 
 def build_kit_objects(sc, x_offset, skew=0.0, nudge=0.0, y_jog=0.0, z_jog=0.0):
@@ -443,7 +483,7 @@ def build_studio(sc):
     # the kit's own lighting language, designed with the asset
     for i in range(4):
         ld = bpy.data.lights.new(f"Fixture{i}", "AREA")
-        ld.energy = 130.0
+        ld.energy = 85.0
         ld.size = 3.2
         ld.color = (1.0, 0.8, 0.55)
         ob = bpy.data.objects.new(f"Fixture{i}", ld)
@@ -458,7 +498,7 @@ def build_bulkhead(sc):
     Not part of the kit — the corridor's destination for this still."""
     frame_mat = make_material("Bulkhead", (0.06, 0.06, 0.07), rough=0.4, metallic=0.85)
     door_mat = make_material("BulkheadDoor", (0.30, 0.16, 0.07), rough=0.5,
-                             metallic=0.3, emit=(1.0, 0.42, 0.12), estr=0.6)
+                             metallic=0.3, emit=(1.0, 0.42, 0.12), estr=0.5)
     inner_y = WIDTH / 2 - WALL
     end_x = TILE * 4
     parts = []
@@ -479,7 +519,7 @@ def build_bulkhead(sc):
     parts.append(door_ob)
     # warm spill into the corridor, toward the camera
     ld = bpy.data.lights.new("BulkheadSpill", "AREA")
-    ld.energy = 140.0
+    ld.energy = 90.0
     ld.size = 1.8
     ld.color = (1.0, 0.62, 0.3)
     ob = bpy.data.objects.new("BulkheadSpill", ld)
@@ -489,7 +529,7 @@ def build_bulkhead(sc):
     # cool rim from the mouth behind the camera: lifts the near right wall and
     # the ceiling edge out of dead black without touching the warm pools
     rd = bpy.data.lights.new("MouthRim", "AREA")
-    rd.energy = 65.0
+    rd.energy = 45.0
     rd.size = 2.0
     rd.color = (0.62, 0.76, 1.0)
     rob = bpy.data.objects.new("MouthRim", rd)
@@ -508,6 +548,7 @@ def render_still(path, engine, falsify=False):
     sc = bpy.context.scene
 
     all_parts = []
+    aq_hero = None
     for i in range(4):
         if falsify:
             obs = build_kit_objects(
@@ -516,6 +557,8 @@ def render_still(path, engine, falsify=False):
                 z_jog=(0.04 if i % 2 else 0.0))
         else:
             obs = build_kit_objects(sc, TILE * i)
+        if aq_hero is None:
+            aq_hero = obs[1:]         # the asset-quality gate scores one segment
         all_parts.extend(obs[1:])   # mesh parts only, not the root empties
     floor, wall = build_studio(sc)
     bulkhead = build_bulkhead(sc)
@@ -563,6 +606,10 @@ def render_still(path, engine, falsify=False):
     )
     if fcode:
         return fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=aq_hero, stage=[floor, wall])
+    if aqcode:
+        return aqcode
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
