@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>41 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>42 examples</strong>
 </p>
 
 <p align="center">
@@ -799,6 +799,26 @@ contained inside the tile. The unsnapped probe (3 mm skew) fails with the
 measured error printed. Companion to
 [`prop-origin-transform`](examples/prop-origin-transform/) (pivot discipline)
 and [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/) (topology gates).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/lightmap-uv-channel/"><img src="examples/lightmap-uv-channel/preview.webp" alt="Lightmap UV channel: a wooden market cart with a cream canvas canopy beside a dark atlas board glowing with the bed's packed lightmap islands — proof the second UV layer packs with no overlaps, channel zero untouched" /></a>
+</td>
+<td valign="middle">
+
+### [lightmap-uv-channel](examples/lightmap-uv-channel/)
+
+The second UV layer engines need for baked lighting, on a reusable market
+cart. Per-part `UVMap`/`UVLight` with **`active` vs `active_render` pinned**
+(the edit-mode UV ops clear both flags — re-assert or lose them), channel
+zero untouched by the second unwrap (drift **0.0**, the clobber probe
+measures **2.068**), every island inside [0,1], **0** overlapping islands
+by an independent SAT scan, and a measured min island distance of
+**0.00401** against the stated margin. Companion to
+[`uv-layer-grid`](examples/uv-layer-grid/) (UV authoring) and
+[`triangulate-tangents`](examples/triangulate-tangents/) (tangents from UVs).
 
 </td>
 </tr>

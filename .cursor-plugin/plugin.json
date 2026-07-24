@@ -80,6 +80,7 @@
     "examples/grease-pencil-rosette",
     "examples/image-pixels-testcard",
     "examples/light-link-studio",
+    "examples/lightmap-uv-channel",
     "examples/lod-decimate-chain",
     "examples/mesh-hygiene-audit",
     "examples/modular-kit-snap",

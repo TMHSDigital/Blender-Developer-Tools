@@ -579,3 +579,17 @@ jobs:
           # origins). Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/modular-kit-snap/modular_kit_snap.py --
+
+      - name: Shipped example - lightmap UV channel (two-layer bake contract)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 9-part market cart; asserts per-part
+          # UVMap/UVLight layers with active == UVLight and
+          # active_render == UVMap re-asserted after the ops (they clear
+          # both flags), UV0 loops untouched by the UV1 unwrap (drift 0),
+          # every UV1 loop inside [0,1], zero overlapping islands via an
+          # independent binned SAT scan, measured min island distance >=
+          # half the nominal pack margin, and watertight parts. Exits
+          # non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/lightmap-uv-channel/lightmap_uv_channel.py --

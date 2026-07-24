@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lightmap-uv-channel — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lightmap-uv-channel/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="lightmap-uv-channel — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lightmap-uv-channel/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="lightmap-uv-channel — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>lightmap-uv-channel</h1>
+    <p>A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom lightmap-uv-channel render">
+      <img src="../assets/lightmap-uv-channel-hero.webp" alt="lightmap-uv-channel render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 1114 islands with 0 SAT overlaps, min island distance 0.00401.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart (bed, axle, two wheels, four posts, arched canvas canopy — ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks, watertight parts throughout). UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
+<p><strong>What it witnesses</strong> (all independently derived, nothing trusted from the packer):</p>
+<ul><li><strong>The flag trap.</strong> <code>uv_layers.new()</code> does <strong>not</strong> move the active flags — the first layer keeps <code>active</code> + <code>active_render</code>, so a UV op runs against channel 0 unless you move <code>active</code> yourself (probed: unwrap+pack with the flags unmoved destroys channel 0, measured drift <strong>2.068</strong>). Worse, the edit-mode UV ops <strong>clear both flags</strong> — the sequence must re-assert them. The check pins, per part: exactly two layers <code>UVMap</code>/<code>UVLight</code>, <code>active == UVLight</code> (edit target), <code>active_render == UVMap</code> (render target).</li><li><strong>Channel zero untouched.</strong> UV0 loops snapshotted before the UVLight unwrap, compared after: drift <strong>0.0</strong> on every part (tol 1e-6).</li><li><strong>Bounds.</strong> Every UVLight loop inside <code>[0, 1]</code> within 1e-5.</li><li><strong>Non-overlap.</strong> UV1 triangles binned into a 256² spatial hash and tested pairwise with strict SAT (epsilon-separated, so shared edges don&#x27;t count): <strong>0</strong> overlapping pairs.</li><li><strong>Margin.</strong> <code>MARGIN_DIV</code> semantics measured live: nominal margin == <code>MARGIN_DIV × 0.01</code> UV units; the check requires the measured min island-pair distance ≥ half the nominal — measured <strong>0.00401</strong> (≈ 2× the nominal 0.002, the packer&#x27;s per-island margin applied twice).</li><li><strong>Island census + watertight parts.</strong> Connected components counted independently per part; loops conserved; every part manifold.</li></ul>
+<p><strong>What each check catches on failure:</strong> wrong layer names/count (exit 3); flags not re-established after the ops (exit 4); channel 0 touched by the UV1 unwrap (exit 5 — probed via the clobber trap, drift 2.068); UV1 loops outside the unit square (exit 6); overlapping islands (exit 7 — probed by translating an island onto a neighbor, 15 SAT hits); margin floor broken (exit 8 — probed with <code>MARGIN_DIV=0</code>, measured 2e-5 &lt; 0.001); non-watertight part (exit 9).</p>
+<p><strong>Authoring hazards pinned while building this</strong> (probes in <code>.scratch</code>-style bisect scripts; the reasons the check code re-fetches layers by name and re-asserts flags):</p>
+<ul><li>Holding a <code>MeshUVLoopLayer</code> reference across edit-mode UV ops and then iterating its <code>.data</code> <strong>segfaults Blender 4.5.11 headless</strong> (<code>EXCEPTION_ACCESS_VIOLATION</code>, 5/5 repro); the same read survives on 5.1.2. Re-fetch <code>mesh.uv_layers[name]</code> after CustomData-reallocating calls. Second confirmation of the UV-handle lifetime hazard found authoring <code>triangulate-tangents</code>.</li><li><code>bpy.ops.uv.lightmap_pack</code> <strong>silently packs nothing</strong> (exit OK) when the active layer has no UVs yet — unwrap first, then pack.</li></ul>
+<p><strong>Pipeline arc neighbors:</strong> UV-layer authoring in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/uv-layer-grid"><code>uv-layer-grid</code></a>, tangent-space from UVs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export round-trip in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, pivot discipline in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform"><code>prop-origin-transform</code></a>.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (9 parts, 1114 islands, drift 0, overlap 0, min island distance 0.00401). The UV *layout* is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
+<p><strong>Render as proof:</strong> the cart beside its UV1 atlas board — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe).</p>
+<h2>Run</h2>
+<pre><code>blender --background --python lightmap_uv_channel.py --
+blender --background --python lightmap_uv_channel.py -- --output atlas.png
+blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</code></pre>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/lightmap-uv-channel/lightmap_uv_channel.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel/lightmap_uv_channel.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Lightmap UV channel — the second UV layer engines need for baked lighting.
+
+Witnesses the two-channel UV contract a bake pipeline depends on, on an
+asset built to be reused (a market cart: bed, axle, two wheels, four posts,
+arched canvas canopy — ground-level pivot, identity transforms, named
+datablocks, watertight parts):
+
+1. **The flag trap.** `uv_layers.new()` does NOT move the active flags:
+   the first layer keeps `active` + `active_render`, so a UV op runs against
+   channel 0 unless you move `active` yourself. Worse, the edit-mode UV ops
+   CLEAR both flags — they must be re-asserted after the unwrap/pack
+   sequence. The check pins: per part, exactly two layers named UVMap +
+   UVLight, with `active == UVLight` (edit target) and
+   `active_render == UVMap` (render target) at the end.
+2. **Channel zero is untouched.** UV0 loops are snapshotted before the
+   UVLight unwrap and compared after: max abs diff == 0 (tol 1e-6).
+3. **Bounds.** Every UVLight loop sits inside [0, 1] within 1e-5.
+4. **Non-overlap, independently computed.** UV1 triangles are binned into a
+   spatial hash and tested pairwise with exact strict SAT (epsilon-separated,
+   so shared edges/touching don&#x27;t count) — never trusted from the packer.
+5. **Margin.** lightmap_pack MARGIN_DIV semantics measured live: nominal
+   margin == MARGIN_DIV * 0.01 UV units; the check requires the measured
+   min island-pair distance &gt;= half the nominal margin, printed.
+6. **Island census.** Connected components of welded UV verts, counted
+   independently, printed per part; loops conserved (no UV data lost).
+
+Authoring hazards pinned while building this (see code comments):
+- Holding a `MeshUVLoopLayer` reference across edit-mode UV ops and then
+  iterating its `.data` SEGFAULTS Blender 4.5.11 headless
+  (EXCEPTION_ACCESS_VIOLATION, repro 5/5); the same read survives on 5.1.2.
+  Always re-fetch `mesh.uv_layers[name]` after CustomData-reallocating ops.
+- `bpy.ops.uv.lightmap_pack` silently packs NOTHING (exit OK) when the
+  active layer has no UVs yet — unwrap first, then pack.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python lightmap_uv_channel.py --                 # check only
+    blender --background --python lightmap_uv_channel.py -- --output u.png  # + render
+    blender --background --python lightmap_uv_channel.py -- --falsify f.png # overlapping atlas
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
+TOL = <span class="n">1e-6</span>            <span class="c"># UV0 preservation tolerance</span>
+BOUNDS_TOL = <span class="n">1e-5</span>     <span class="c"># UV1 unit-square slack</span>
+MARGIN_DIV = <span class="n">0.2</span>      <span class="c"># packer request; nominal margin = MARGIN_DIV * 0.01</span>
+MARGIN_FACTOR = <span class="n">0.5</span>   <span class="c"># require measured min island distance &gt;= this * nominal</span>
+SAT_EPS = <span class="n">1e-9</span>        <span class="c"># strict-separation epsilon: touching is not overlap</span>
+UV_WELD = <span class="n">1e-6</span>        <span class="c"># uv vert weld for island connectivity</span>
+BIN_N = <span class="n">256</span>           <span class="c"># spatial hash resolution over [0,1]^2</span>
+
+LAYER0 = <span class="s">&quot;UVMap&quot;</span>
+LAYER1 = <span class="s">&quot;UVLight&quot;</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Asset construction (bmesh, ground pivot at z=0; cart runs along X)</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> _beveled_box(bm, dims, center, bevel=<span class="n">0.0</span>, segments=<span class="n">2</span>):
+    bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    <span class="k">for</span> v <span class="k">in</span> bm.verts:
+        v.co.x = v.co.x * dims[<span class="n">0</span>] + center[<span class="n">0</span>]
+        v.co.y = v.co.y * dims[<span class="n">1</span>] + center[<span class="n">1</span>]
+        v.co.z = v.co.z * dims[<span class="n">2</span>] + center[<span class="n">2</span>]
+    <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=segments,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+
+
+<span class="k">def</span> _box(name, dims, center, bevel=<span class="n">0.0</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        _beveled_box(bm, dims, center, bevel)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _wheel(name, radius, width, center):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=<span class="n">20</span>,
+                              radius1=radius, radius2=radius, depth=width)
+        <span class="c"># cone axis is Z; the wheel rolls around Y -&gt; rotate verts, applied in data</span>
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            x, y, z = v.co.x, v.co.y, v.co.z
+            v.co = (x + center[<span class="n">0</span>], z + center[<span class="n">1</span>], y + center[<span class="n">2</span>])
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.02</span>, segments=<span class="n">2</span>,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _canopy(name, width, radius, thickness, z0, segments=<span class="n">14</span>):
+    <span class="s">&quot;&quot;&quot;Arched canvas sheet: an arc band solidified with a rim, watertight.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        sweep = math.radians(<span class="n">120.0</span>)
+        a0 = math.radians(<span class="n">90.0</span>) - sweep / <span class="n">2</span>
+        outer, inner = [], []
+        <span class="k">for</span> i <span class="k">in</span> range(segments + <span class="n">1</span>):
+            a = a0 + sweep * i / segments
+            ca, sa = math.cos(a), math.sin(a)
+            outer.append(bm.verts.new((-width / <span class="n">2</span>, radius * ca, z0 + radius * sa)))
+            inner.append(bm.verts.new((-width / <span class="n">2</span>, (radius - thickness) * ca,
+                                       z0 + (radius - thickness) * sa)))
+        <span class="k">def</span> band(off_x, ring_o, ring_i):
+            <span class="k">for</span> i <span class="k">in</span> range(segments):
+                a, b = i, i + <span class="n">1</span>
+                bm.faces.new((ring_o[a], ring_o[b], ring_i[b], ring_i[a]))
+        outer_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> outer]
+        inner_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> inner]
+        band(<span class="n">0</span>, outer, inner)          <span class="c"># underside (thickness face)</span>
+        band(width, inner_x2, outer_x2)  <span class="c"># top face</span>
+        <span class="k">for</span> i <span class="k">in</span> range(segments):      <span class="c"># the two long rims</span>
+            a, b = i, i + <span class="n">1</span>
+            bm.faces.new((outer[a], outer_x2[a], outer_x2[b], outer[b]))
+            bm.faces.new((inner[a], inner[b], inner_x2[b], inner_x2[a]))
+        <span class="k">for</span> ring <span class="k">in</span> ((outer, outer_x2), (inner, inner_x2)):  <span class="c"># end caps</span>
+            <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, segments):
+                <span class="k">pass</span>
+        bm.faces.new((outer[<span class="n">0</span>], inner[<span class="n">0</span>], inner_x2[<span class="n">0</span>], outer_x2[<span class="n">0</span>]))
+        bm.faces.new((outer[-<span class="n">1</span>], outer_x2[-<span class="n">1</span>], inner_x2[-<span class="n">1</span>], inner[-<span class="n">1</span>]))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> build_cart_meshes():
+    parts = {}
+    parts[<span class="s">&quot;Bed&quot;</span>] = _box(<span class="s">&quot;Cart.Bed&quot;</span>, (<span class="n">2.2</span>, <span class="n">1.2</span>, <span class="n">0.22</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.85</span>), <span class="n">0.03</span>)
+    parts[<span class="s">&quot;Axle&quot;</span>] = _wheel(<span class="s">&quot;Cart.Axle&quot;</span>, <span class="n">0.05</span>, <span class="n">1.5</span>, (<span class="n">0.55</span>, <span class="n">0.0</span>, <span class="n">0.5</span>))
+    parts[<span class="s">&quot;Wheel.L&quot;</span>] = _wheel(<span class="s">&quot;Cart.Wheel.L&quot;</span>, <span class="n">0.45</span>, <span class="n">0.12</span>, (<span class="n">0.55</span>, <span class="n">0.68</span>, <span class="n">0.45</span>))
+    parts[<span class="s">&quot;Wheel.R&quot;</span>] = _wheel(<span class="s">&quot;Cart.Wheel.R&quot;</span>, <span class="n">0.45</span>, <span class="n">0.12</span>, (<span class="n">0.55</span>, -<span class="n">0.68</span>, <span class="n">0.45</span>))
+    <span class="k">for</span> tag, (px, py) <span class="k">in</span> ((<span class="s">&quot;FL&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;FR&quot;</span>, (<span class="n">0.95</span>, -<span class="n">0.48</span>)),
+                          (<span class="s">&quot;RL&quot;</span>, (-<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;RR&quot;</span>, (-<span class="n">0.95</span>, -<span class="n">0.48</span>))):
+        parts[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = _box(<span class="s">f&quot;</span><span class="s">Cart.Post.</span>{tag}<span class="s">&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">1.35</span>),
+                                    (px, py, <span class="n">1.55</span>), <span class="n">0.015</span>)
+    parts[<span class="s">&quot;Canopy&quot;</span>] = _canopy(<span class="s">&quot;Cart.Canopy&quot;</span>, <span class="n">2.3</span>, <span class="n">0.85</span>, <span class="n">0.04</span>, <span class="n">1.9</span>)
+    <span class="k">return</span> parts
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># UV authoring</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> write_uv0_box_projection(me):
+    <span class="s">&quot;&quot;&quot;Channel 0: deterministic dominant-axis box projection per face.
+    Deliberately un-normalized (world-scale UVs) — this is the texture
+    channel; only UV1 is asserted inside [0,1].&quot;&quot;&quot;</span>
+    layer = me.uv_layers[LAYER0]
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        n = poly.normal
+        ax = max(range(<span class="n">3</span>), key=<span class="k">lambda</span> i: abs(n[i]))
+        <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
+            co = me.vertices[me.loops[li].vertex_index].co
+            layer.data[li].uv = ((co.y, co.z) <span class="k">if</span> ax == <span class="n">0</span>
+                                 <span class="k">else</span> (co.x, co.z) <span class="k">if</span> ax == <span class="n">1</span> <span class="k">else</span> (co.x, co.y))
+
+
+<span class="k">def</span> snapshot(layer):
+    <span class="k">return</span> [tuple(d.uv) <span class="k">for</span> d <span class="k">in</span> layer.data]
+
+
+<span class="k">def</span> author_uv1(ob, clobber=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Channel 1: smart_project then lightmap_pack into the ACTIVE layer.
+
+    clobber=False: the correct pipeline — active moved to UVLight first, so
+    channel 0 survives. clobber=True: the classic trap — active left on
+    UVMap, so the unwrap+pack lands on channel 0 and destroys it.
+    &quot;&quot;&quot;</span>
+    me = ob.data
+    <span class="k">if</span> <span class="k">not</span> clobber:
+        <span class="k">for</span> layer <span class="k">in</span> me.uv_layers:
+            layer.active = (layer.name == LAYER1)
+            layer.active_render = (layer.name == LAYER0)
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(<span class="k">True</span>)
+    bpy.ops.object.mode_set(mode=<span class="s">&quot;EDIT&quot;</span>)
+    bpy.ops.mesh.select_all(action=<span class="s">&quot;SELECT&quot;</span>)
+    bpy.ops.uv.smart_project(angle_limit=<span class="n">1.1519</span>, island_margin=<span class="n">0.0</span>,
+                             area_weight=<span class="k">False</span>, correct_aspect=<span class="k">True</span>,
+                             scale_to_bounds=<span class="k">False</span>)
+    bpy.ops.uv.lightmap_pack(PREF_CONTEXT=<span class="s">&quot;ALL_FACES&quot;</span>, PREF_PACK_IN_ONE=<span class="k">True</span>,
+                             PREF_NEW_UVLAYER=<span class="k">False</span>, PREF_MARGIN_DIV=MARGIN_DIV)
+    bpy.ops.object.mode_set(mode=<span class="s">&quot;OBJECT&quot;</span>)
+    ob.select_set(<span class="k">False</span>)
+    <span class="c"># HAZARD (pinned while authoring): the ops above CLEAR layer.active and</span>
+    <span class="c"># layer.active_render — re-assert them or downstream bakes/renders pick</span>
+    <span class="c"># whatever Blender falls back to. And never read a held layer handle</span>
+    <span class="c"># here: iterating a stale MeshUVLoopLayer.data segfaults 4.5.11.</span>
+    <span class="k">if</span> <span class="k">not</span> clobber:
+        <span class="k">for</span> layer <span class="k">in</span> me.uv_layers:
+            layer.active = (layer.name == LAYER1)
+            layer.active_render = (layer.name == LAYER0)
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Independent UV1 geometry analysis (never trusted from the packer)</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> uv_tris(me, layer_name):
+    <span class="s">&quot;&quot;&quot;UV1 triangles per face (fan), plus a weld map for island connectivity.&quot;&quot;&quot;</span>
+    layer = me.uv_layers[layer_name]
+    tris = []
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        pts = [tuple(layer.data[li].uv) <span class="k">for</span> li <span class="k">in</span> poly.loop_indices]
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(pts) - <span class="n">1</span>):
+            tris.append((pts[<span class="n">0</span>], pts[i], pts[i + <span class="n">1</span>]))
+    <span class="k">return</span> tris
+
+
+<span class="k">def</span> islands(me, layer_name):
+    <span class="s">&quot;&quot;&quot;Connected components of UV verts welded at UV_WELD precision.&quot;&quot;&quot;</span>
+    layer = me.uv_layers[layer_name]
+    parent = {}
+
+    <span class="k">def</span> find(k):
+        parent.setdefault(k, k)
+        <span class="k">while</span> parent[k] != k:
+            parent[k] = parent[parent[k]]
+            k = parent[k]
+        <span class="k">return</span> k
+
+    <span class="k">def</span> key(uv):
+        <span class="k">return</span> (round(uv[<span class="n">0</span>] / UV_WELD), round(uv[<span class="n">1</span>] / UV_WELD))
+
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        ks = [find(key(tuple(layer.data[li].uv))) <span class="k">for</span> li <span class="k">in</span> poly.loop_indices]
+        <span class="k">for</span> k <span class="k">in</span> ks[<span class="n">1</span>:]:
+            parent[find(k)] = ks[<span class="n">0</span>]
+    comps = {}
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
+            comps.setdefault(find(key(tuple(layer.data[li].uv))), len(comps))
+    <span class="k">return</span> len(comps)
+
+
+<span class="k">def</span> _tri_overlap(t1, t2):
+    <span class="s">&quot;&quot;&quot;Strict 2D SAT: True only for area-positive overlap (SAT_EPS-separated,
+    so shared edges and touching corners do not count).&quot;&quot;&quot;</span>
+    <span class="k">for</span> tri <span class="k">in</span> (t1, t2):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            x1, y1 = tri[i]
+            x2, y2 = tri[(i + <span class="n">1</span>) % <span class="n">3</span>]
+            nx, ny = -(y2 - y1), (x2 - x1)
+            nlen = math.hypot(nx, ny)
+            <span class="k">if</span> nlen &lt; <span class="n">1e-12</span>:
+                <span class="k">continue</span>
+            nx, ny = nx / nlen, ny / nlen
+            p1 = [nx * p[<span class="n">0</span>] + ny * p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> t1]
+            p2 = [nx * p[<span class="n">0</span>] + ny * p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> t2]
+            <span class="k">if</span> min(max(p1), max(p2)) - max(min(p1), min(p2)) &lt; SAT_EPS:
+                <span class="k">return</span> <span class="k">False</span>
+    <span class="k">return</span> <span class="k">True</span>
+
+
+<span class="k">def</span> overlap_report(tris):
+    <span class="s">&quot;&quot;&quot;(overlapping pair count, worst measured overlap depth) via binned SAT.&quot;&quot;&quot;</span>
+    bins = {}
+    <span class="k">def</span> bounds(t):
+        <span class="k">return</span> (min(p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> t), min(p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> t),
+                max(p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> t), max(p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> t))
+    <span class="k">for</span> i, t <span class="k">in</span> enumerate(tris):
+        x0, y0, x1, y1 = bounds(t)
+        <span class="k">for</span> bx <span class="k">in</span> range(max(<span class="n">0</span>, int(x0 * BIN_N)), min(BIN_N - <span class="n">1</span>, int(x1 * BIN_N)) + <span class="n">1</span>):
+            <span class="k">for</span> by <span class="k">in</span> range(max(<span class="n">0</span>, int(y0 * BIN_N)), min(BIN_N - <span class="n">1</span>, int(y1 * BIN_N)) + <span class="n">1</span>):
+                bins.setdefault((bx, by), []).append(i)
+    pairs = set()
+    hits = <span class="n">0</span>
+    worst = <span class="n">0.0</span>
+    <span class="k">for</span> members <span class="k">in</span> bins.values():
+        <span class="k">for</span> a <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> b <span class="k">in</span> range(a + <span class="n">1</span>, len(members)):
+                i, j = members[a], members[b]
+                <span class="k">if</span> (i, j) <span class="k">in</span> pairs:
+                    <span class="k">continue</span>
+                pairs.add((i, j))
+                <span class="k">if</span> _tri_overlap(tris[i], tris[j]):
+                    hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> min_island_distance(me, layer_name):
+    <span class="s">&quot;&quot;&quot;Min distance between distinct islands&#x27; UV edges (exact seg-seg).&quot;&quot;&quot;</span>
+    layer = me.uv_layers[layer_name]
+    parent = {}
+
+    <span class="k">def</span> find(k):
+        parent.setdefault(k, k)
+        <span class="k">while</span> parent[k] != k:
+            parent[k] = parent[parent[k]]
+            k = parent[k]
+        <span class="k">return</span> k
+
+    <span class="k">def</span> key(uv):
+        <span class="k">return</span> (round(uv[<span class="n">0</span>] / UV_WELD), round(uv[<span class="n">1</span>] / UV_WELD))
+
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        ks = [find(key(tuple(layer.data[li].uv))) <span class="k">for</span> li <span class="k">in</span> poly.loop_indices]
+        <span class="k">for</span> k <span class="k">in</span> ks[<span class="n">1</span>:]:
+            parent[find(k)] = ks[<span class="n">0</span>]
+    edges = {}  <span class="c"># island root -&gt; list of segments</span>
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        pts = [tuple(layer.data[li].uv) <span class="k">for</span> li <span class="k">in</span> poly.loop_indices]
+        root = find(key(pts[<span class="n">0</span>]))
+        <span class="k">for</span> i <span class="k">in</span> range(len(pts)):
+            edges.setdefault(root, []).append((pts[i], pts[(i + <span class="n">1</span>) % len(pts)]))
+
+    <span class="k">def</span> seg_dist(s1, s2):
+        <span class="k">def</span> pt_seg(p, s):
+            (x, y), ((ax, ay), (bx, by)) = p, s
+            dx, dy = bx - ax, by - ay
+            L2 = dx * dx + dy * dy
+            <span class="k">if</span> L2 &lt; <span class="n">1e-18</span>:
+                <span class="k">return</span> math.hypot(x - ax, y - ay)
+            t = max(<span class="n">0.0</span>, min(<span class="n">1.0</span>, ((x - ax) * dx + (y - ay) * dy) / L2))
+            <span class="k">return</span> math.hypot(x - (ax + t * dx), y - (ay + t * dy))
+        <span class="k">if</span> _seg_intersect(s1, s2):
+            <span class="k">return</span> <span class="n">0.0</span>
+        <span class="k">return</span> min(pt_seg(s1[<span class="n">0</span>], s2), pt_seg(s1[<span class="n">1</span>], s2),
+                   pt_seg(s2[<span class="n">0</span>], s1), pt_seg(s2[<span class="n">1</span>], s1))
+
+    <span class="k">def</span> _seg_intersect(s1, s2):
+        (ax, ay), (bx, by) = s1
+        (cx, cy), (dx, dy) = s2
+        <span class="k">def</span> cross(ox, oy, px, py, qx, qy):
+            <span class="k">return</span> (px - ox) * (qy - oy) - (py - oy) * (qx - ox)
+        d1 = cross(cx, cy, dx, dy, ax, ay)
+        d2 = cross(cx, cy, dx, dy, bx, by)
+        d3 = cross(ax, ay, bx, by, cx, cy)
+        d4 = cross(ax, ay, bx, by, dx, dy)
+        <span class="k">return</span> ((d1 &gt; <span class="n">0</span>) != (d2 &gt; <span class="n">0</span>)) <span class="k">and</span> ((d3 &gt; <span class="n">0</span>) != (d4 &gt; <span class="n">0</span>))
+
+    roots = sorted(edges)
+    best = float(<span class="s">&quot;inf&quot;</span>)
+    <span class="k">for</span> i <span class="k">in</span> range(len(roots)):
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(roots)):
+            <span class="k">for</span> s1 <span class="k">in</span> edges[roots[i]]:
+                <span class="k">for</span> s2 <span class="k">in</span> edges[roots[j]]:
+                    d = seg_dist(s1, s2)
+                    <span class="k">if</span> d &lt; best:
+                        best = d
+    <span class="k">return</span> best
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Check</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> check():
+    meshes = build_cart_meshes()
+    fails = []
+
+    <span class="k">def</span> fail(code, msg):
+        print(<span class="s">f&quot;</span><span class="s">ERROR (</span>{code}<span class="s">): </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+        fails.append(code)
+
+    nominal_margin = MARGIN_DIV * <span class="n">0.01</span>
+    total_islands = <span class="n">0</span>
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        l0 = me.uv_layers.new(name=LAYER0)
+        me.uv_layers.new(name=LAYER1)
+        write_uv0_box_projection(me)
+        uv0_before = snapshot(me.uv_layers[LAYER0])
+
+        ob = bpy.data.objects.new(me.name, me)
+        bpy.context.collection.objects.link(ob)
+        author_uv1(ob)
+
+        <span class="c"># re-fetch by name after CustomData-reallocating ops (see header)</span>
+        layers = me.uv_layers
+        names = [l.name <span class="k">for</span> l <span class="k">in</span> layers]
+        <span class="k">if</span> names != [LAYER0, LAYER1]:
+            fail(<span class="n">3</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: layers </span>{names}<span class="s"> != </span>{[LAYER0, LAYER1]}<span class="s">&quot;</span>)
+        act = layers[LAYER1].active
+        rnd = layers[LAYER0].active_render
+        <span class="k">if</span> <span class="k">not</span> act <span class="k">or</span> <span class="k">not</span> rnd:
+            fail(<span class="n">4</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: flags wrong after re-assert — </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{LAYER1}<span class="s">.active=</span>{act}<span class="s">, </span>{LAYER0}<span class="s">.active_render=</span>{rnd}<span class="s"> </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(edit-mode UV ops clear both; re-assert after the sequence)</span><span class="s">&quot;</span>)
+
+        uv0_after = snapshot(layers[LAYER0])
+        drift = max((max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(u0, u1))
+                     <span class="k">for</span> u0, u1 <span class="k">in</span> zip(uv0_before, uv0_after)), default=<span class="n">0.0</span>)
+        <span class="k">if</span> len(uv0_before) != len(uv0_after) <span class="k">or</span> drift &gt; TOL:
+            fail(<span class="n">5</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: channel 0 touched by the UV1 unwrap </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(loops </span>{len(uv0_before)}<span class="s">-&gt;</span>{len(uv0_after)}<span class="s">, drift </span>{drift:<span class="s">.3e</span>}<span class="s">)</span><span class="s">&quot;</span>)
+
+        tris = uv_tris(me, LAYER1)
+        out = [uv <span class="k">for</span> t <span class="k">in</span> tris <span class="k">for</span> uv <span class="k">in</span> t
+               <span class="k">if</span> <span class="k">not</span> (-BOUNDS_TOL &lt;= uv[<span class="n">0</span>] &lt;= <span class="n">1</span> + BOUNDS_TOL
+                       <span class="k">and</span> -BOUNDS_TOL &lt;= uv[<span class="n">1</span>] &lt;= <span class="n">1</span> + BOUNDS_TOL)]
+        <span class="k">if</span> out:
+            fail(<span class="n">6</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: </span>{len(out)}<span class="s"> UV1 loops outside [0,1], </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">worst </span>{out[<span class="n">0</span>]}<span class="s">&quot;</span>)
+
+        hits = overlap_report(tris)
+        <span class="k">if</span> hits:
+            fail(<span class="n">7</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: </span>{hits}<span class="s"> overlapping UV1 triangle pairs </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(independent SAT scan, not the packer&#x27;s word)</span><span class="s">&quot;</span>)
+
+        n_islands = islands(me, LAYER1)
+        total_islands += n_islands
+        dist = min_island_distance(me, LAYER1)
+        need = MARGIN_FACTOR * nominal_margin
+        <span class="k">if</span> dist &lt; need:
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: min island distance </span>{dist:<span class="s">.5f</span>}<span class="s"> &lt; </span>{need:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(half of nominal margin </span>{nominal_margin}<span class="s">)</span><span class="s">&quot;</span>)
+        print(<span class="s">f&quot;</span><span class="s">part </span>{suffix}<span class="s">: loops=</span>{len(me.loops)}<span class="s"> tris=</span>{len(tris)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">islands=</span>{n_islands}<span class="s"> uv0_drift=</span>{drift:<span class="s">.1e</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">overlap=</span>{hits}<span class="s"> min_island_dist=</span>{dist:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">flags ok=</span>{act <span class="k">and</span> rnd}<span class="s">&quot;</span>)
+
+        <span class="c"># every part watertight</span>
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bm.from_mesh(me)
+            n_boundary = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
+        <span class="k">finally</span>:
+            bm.free()
+        <span class="k">if</span> n_boundary:
+            fail(<span class="n">9</span>, <span class="s">f&quot;</span>{suffix}<span class="s">: </span>{n_boundary}<span class="s"> non-two-face edges — not watertight</span><span class="s">&quot;</span>)
+
+    <span class="k">if</span> fails:
+        <span class="k">return</span> fails[<span class="n">0</span>]
+    print(<span class="s">f&quot;</span><span class="s">lightmap-uv-channel OK parts=</span>{len(meshes)}<span class="s"> islands=</span>{total_islands}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">margin&gt;=</span>{MARGIN_FACTOR}<span class="s">*</span>{nominal_margin}<span class="s"> uv0_drift=0 overlap=0</span><span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_studio(sc):
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">430.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">300.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="k">return</span> floor, wall
+
+
+<span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;The cart beside its UV1 atlas board — island polygons built from the
+    LIVE packed UVs, so a change in the atlas moves the board. Falsified:
+    one island dragged onto another, overlap marked in emissive red.&quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+
+    wood = make_material(<span class="s">&quot;Wood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.26</span>, <span class="n">0.13</span>), rough=<span class="n">0.6</span>)
+    darkwood = make_material(<span class="s">&quot;DarkWood&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.10</span>, <span class="n">0.05</span>), rough=<span class="n">0.7</span>)
+    iron = make_material(<span class="s">&quot;Iron&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.18</span>, <span class="n">0.20</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.9</span>)
+    canvas = make_material(<span class="s">&quot;Canvas&quot;</span>, (<span class="n">0.66</span>, <span class="n">0.56</span>, <span class="n">0.40</span>), rough=<span class="n">0.9</span>)
+
+    mats = {<span class="s">&quot;Bed&quot;</span>: wood, <span class="s">&quot;Axle&quot;</span>: iron, <span class="s">&quot;Wheel.L&quot;</span>: darkwood, <span class="s">&quot;Wheel.R&quot;</span>: darkwood,
+            <span class="s">&quot;Canopy&quot;</span>: canvas}
+    parts_obs = []
+    meshes = build_cart_meshes()
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        me.materials.append(mats.get(suffix.split(<span class="s">&quot;.&quot;</span>)[<span class="n">0</span>], wood)
+                            <span class="k">if</span> <span class="k">not</span> suffix.startswith(<span class="s">&quot;Post&quot;</span>) <span class="k">else</span> wood)
+        me.uv_layers.new(name=LAYER0)
+        me.uv_layers.new(name=LAYER1)
+        write_uv0_box_projection(me)
+        ob = bpy.data.objects.new(me.name, me)
+        sc.collection.objects.link(ob)
+        author_uv1(ob, clobber=<span class="k">False</span>)
+        parts_obs.append(ob)
+
+    <span class="c"># falsify: translate the Bed&#x27;s SECOND-LARGEST UV1 island, shape intact,</span>
+    <span class="c"># onto the largest island&#x27;s anchor — a big visible overlap, marked</span>
+    <span class="c"># emissive red on the board (tiny-strip overlaps would not read)</span>
+    dragged = set()
+    <span class="k">if</span> falsify:
+        bed = meshes[<span class="s">&quot;Bed&quot;</span>]
+        layer = bed.uv_layers[LAYER1]
+        polys = sorted(bed.polygons, key=<span class="k">lambda</span> p: p.area, reverse=<span class="k">True</span>)
+        big, second = polys[<span class="n">0</span>], polys[<span class="n">1</span>]
+        anchor = tuple(layer.data[big.loop_indices[<span class="n">0</span>]].uv)
+        dragged.add(second.index)
+        first = second.loop_indices[<span class="n">0</span>]
+        du = (anchor[<span class="n">0</span>] - layer.data[first].uv[<span class="n">0</span>],
+              anchor[<span class="n">1</span>] - layer.data[first].uv[<span class="n">1</span>])
+        <span class="k">for</span> li <span class="k">in</span> second.loop_indices:
+            u, v = layer.data[li].uv
+            layer.data[li].uv = (u + du[<span class="n">0</span>], v + du[<span class="n">1</span>])
+
+    <span class="c"># atlas board: the Bed&#x27;s live UV1 as flat island polygons mapped onto the</span>
+    <span class="c"># board face — a change in the packed atlas moves the board geometry</span>
+    board_mat = make_material(<span class="s">&quot;Board&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.04</span>, <span class="n">0.05</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.4</span>)
+    board = _box(<span class="s">&quot;Atlas.Board&quot;</span>, (<span class="n">0.07</span>, <span class="n">1.7</span>, <span class="n">1.7</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.02</span>)
+    board.materials.append(board_mat)
+    board_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Board&quot;</span>, board)
+    board_ob.location = (<span class="n">1.75</span>, <span class="n">0.55</span>, <span class="n">1.0</span>)
+    sc.collection.objects.link(board_ob)
+
+    bed = meshes[<span class="s">&quot;Bed&quot;</span>]
+    layer = bed.uv_layers[LAYER1]
+    palette = [(<span class="n">0.95</span>, <span class="n">0.45</span>, <span class="n">0.15</span>), (<span class="n">0.2</span>, <span class="n">0.75</span>, <span class="n">0.85</span>), (<span class="n">0.55</span>, <span class="n">0.85</span>, <span class="n">0.3</span>),
+               (<span class="n">0.85</span>, <span class="n">0.3</span>, <span class="n">0.5</span>), (<span class="n">0.95</span>, <span class="n">0.8</span>, <span class="n">0.25</span>), (<span class="n">0.5</span>, <span class="n">0.55</span>, <span class="n">0.95</span>),
+               (<span class="n">0.7</span>, <span class="n">0.4</span>, <span class="n">0.9</span>), (<span class="n">0.4</span>, <span class="n">0.85</span>, <span class="n">0.6</span>)]
+    iso_obs = []
+    <span class="k">for</span> fi, poly <span class="k">in</span> enumerate(bed.polygons):
+        pts = [tuple(layer.data[li].uv) <span class="k">for</span> li <span class="k">in</span> poly.loop_indices]
+        me = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Atlas.Island.</span>{fi}<span class="s">&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            <span class="c"># board face: +X side; UV [0,1]^2 -&gt; y,z on the face (u -&gt; -y, v -&gt; z)</span>
+            vs = [bm.verts.new((<span class="n">0.0</span>, (<span class="n">0.5</span> - uv[<span class="n">0</span>]) * <span class="n">1.5</span>, (uv[<span class="n">1</span>] - <span class="n">0.5</span>) * <span class="n">1.5</span>))
+                  <span class="k">for</span> uv <span class="k">in</span> pts]
+            bm.faces.new(vs)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        defect = fi <span class="k">in</span> dragged
+        rgb = (<span class="n">1.0</span>, <span class="n">0.12</span>, <span class="n">0.08</span>) <span class="k">if</span> defect <span class="k">else</span> palette[fi % len(palette)]
+        me.materials.append(make_material(<span class="s">f&quot;</span><span class="s">IslandMat</span>{fi}<span class="s">&quot;</span>, rgb, rough=<span class="n">0.5</span>,
+                                          emit=rgb, estr=<span class="n">1.6</span> <span class="k">if</span> defect <span class="k">else</span> <span class="n">0.5</span>))
+        ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Atlas.Island.</span>{fi}<span class="s">&quot;</span>, me)
+        ob.location = (<span class="n">1.75</span> + <span class="n">0.037</span> + (<span class="n">0.004</span> <span class="k">if</span> fi <span class="k">in</span> dragged <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.55</span>, <span class="n">1.0</span>)
+        sc.collection.objects.link(ob)
+        iso_obs.append(ob)
+
+    floor, wall = build_studio(sc)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">47.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">5.4</span>, -<span class="n">6.6</span>, <span class="n">2.7</span>)
+    sc.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.75</span>, <span class="n">0.1</span>, <span class="n">1.08</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    <span class="c"># Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    hero = parts_obs
+    fcode = gallery_framing.check_framing(
+        sc, cam, hero=hero, elements=hero + [board_ob] + iso_obs,
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">10</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
+                   help=<span class="s">&quot;optional: render the overlapping-atlas variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output/--falsify (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    code = check()
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    <span class="k">if</span> args.falsify:
+        rcode = render_still(os.path.abspath(args.falsify), args.engine, falsify=<span class="k">True</span>)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered falsified variant </span>{args.falsify}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;lightmap-uv-channel OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/lightmap-uv-channel-hero.webp" alt="lightmap-uv-channel render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
