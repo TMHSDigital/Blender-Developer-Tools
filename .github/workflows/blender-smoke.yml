@@ -593,3 +593,19 @@ jobs:
           # non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/lightmap-uv-channel/lightmap_uv_channel.py --
+
+      - name: Shipped example - socket attach points (spawn mount contract)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 21-part survey drone with 7 SKT_ socket
+          # empties and 7 seated modules; asserts every socket's evaluated
+          # world matrix equals the authored transform within 1e-6 with an
+          # orthonormal right-handed basis, socket +Z == the mount pad's
+          # Newell normal and origin == that face's centroid (two independent
+          # derivations), the documented up-axis fallback rule, modules seated
+          # with a strictly identity local transform, rigid invariance under a
+          # re-pose, and that freezing the root transform preserves world
+          # matrices while clearing all 7 parent-inverses and pushing the
+          # root scale down into the children. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/socket-attach-points/socket_attach_points.py --

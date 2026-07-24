@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>42 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>43 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 38 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 43 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -819,6 +819,29 @@ by an independent SAT scan, and a measured min island distance of
 **0.00401** against the stated margin. Companion to
 [`uv-layer-grid`](examples/uv-layer-grid/) (UV authoring) and
 [`triangulate-tangents`](examples/triangulate-tangents/) (tangents from UVs).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/socket-attach-points/"><img src="examples/socket-attach-points/preview.webp" alt="Socket attach points: a dark carbon survey quadcopter hovering on a studio stage, orange mount pads ringing each canted rotor, a gimbal camera pod under the belly and a sensor mast on the deck — every module seated exactly on its named socket" /></a>
+</td>
+<td valign="middle">
+
+### [socket-attach-points](examples/socket-attach-points/)
+
+Named `SKT_` empties as the spawn contract, on a reusable survey drone. All
+**7** socket world matrices land within **1.788e-07** of the authored
+transform with orthonormal right-handed bases, each socket's **+Z** equals its
+mount pad's **Newell normal** (**1.794e-07**) by a derivation independent of
+the basis construction, and modules seat at offset **exactly 0.0** with
+identity local transforms. Freezing the root preserves world matrices but
+clears **7/7** parent-inverses and pushes the root scale into the children —
+both halves asserted. The no-parent-inverse probe jumps **0.690128 m**.
+Companion to [`prop-origin-transform`](examples/prop-origin-transform/)
+(pivot discipline) and
+[`parent-inverse-orrery`](examples/parent-inverse-orrery/) (parent-inverse
+under animation).
 
 </td>
 </tr>
