@@ -250,6 +250,16 @@ def load_examples(repo_root: Path) -> list[dict]:
     return examples
 
 
+def pick_featured(examples: list[dict]) -> list[dict]:
+    """Landing-page showcase subset: entries carrying a ``featured_rank``
+    integer in gallery.json, sorted by rank. Returns [] when nothing is
+    curated; the template then falls back to the full list."""
+    return sorted(
+        (ex for ex in examples if isinstance(ex.get("featured_rank"), int)),
+        key=lambda ex: ex["featured_rank"],
+    )
+
+
 def load_mcp_tools(repo_root: Path) -> list[dict]:
     mcp_file = repo_root / "mcp-tools.json"
     if not mcp_file.is_file():
@@ -365,6 +375,7 @@ def main():
     skills = parse_skills(repo_root)
     rules = parse_rules(repo_root)
     examples = load_examples(repo_root)
+    featured = pick_featured(examples)
     mcp_tools = load_mcp_tools(repo_root)
     mcp_grouped = group_by_category(mcp_tools)
     changelog = parse_changelog(repo_root)
@@ -378,6 +389,8 @@ def main():
         "rule_count": len(rules),
         "examples": examples,
         "example_count": len(examples),
+        "featured_examples": featured,
+        "featured_count": len(featured),
         "snippet_count": len(plugin.get("snippets", [])),
         "template_count": len(plugin.get("templates", [])),
         # basenames for display: snippets/foo-bar.py -> foo-bar

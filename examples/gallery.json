@@ -86,7 +86,8 @@
       "tags": [
         "mesh",
         "bmesh"
-      ]
+      ],
+      "featured_rank": 7
     },
     {
       "name": "shader-node-group",
@@ -170,7 +171,8 @@
       "tags": [
         "constraints",
         "animation"
-      ]
+      ],
+      "featured_rank": 3
     },
     {
       "name": "color-attribute-wheel",
@@ -183,7 +185,8 @@
         "mesh",
         "materials",
         "attributes"
-      ]
+      ],
+      "featured_rank": 8
     },
     {
       "name": "parent-inverse-orrery",
@@ -219,7 +222,8 @@
       "tags": [
         "armature",
         "depsgraph"
-      ]
+      ],
+      "featured_rank": 6
     },
     {
       "name": "text-version-stamp",
@@ -368,7 +372,8 @@
       "tags": [
         "rendering",
         "objects"
-      ]
+      ],
+      "featured_rank": 4
     },
     {
       "name": "collision-hull-proxy",
@@ -380,7 +385,8 @@
       "tags": [
         "bmesh",
         "mesh"
-      ]
+      ],
+      "featured_rank": 5
     },
     {
       "name": "custom-normals-shade",
@@ -456,7 +462,8 @@
       "tags": [
         "bmesh",
         "mesh"
-      ]
+      ],
+      "featured_rank": 2
     },
     {
       "name": "car-mirror-symmetry",
@@ -468,7 +475,8 @@
       "tags": [
         "modifiers",
         "depsgraph"
-      ]
+      ],
+      "featured_rank": 1
     },
     {
       "name": "attribute-domain-shear",
