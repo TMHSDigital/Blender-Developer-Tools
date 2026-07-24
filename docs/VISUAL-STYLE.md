@@ -103,6 +103,85 @@ the default stage.
   (`vse-cut-list` on a monitor, `image-pixels-testcard` on a TV) rather than
   recreating them.
 
+## Asset quality (measured gate)
+
+"Modeled with intent" is measured, not a vibe. Three parts: measurable
+floors, a named reference bar, and the asset sheet. The floors are the
+cheap filter that catches the obvious failures; the asset sheet is what
+actually decides. Applies to asset-type examples (game props, kits) —
+not to world, field, art, or media subjects.
+
+### Floors
+
+Computed by `examples/gallery_asset_quality.py` (render path only, same
+call pattern as `gallery_framing`; prints measured values; exit 11 on
+violation; never imported by a check-only path):
+
+- **Naming** — no default datablock names on hero parts (Cube, Sphere,
+  Torus, Suzanne, …). A designed asset names its parts.
+- **Material variation** — a hero assembled from ≥ 2 parts carries ≥ 2
+  distinct materials. A single flat Principled slot across an entire prop
+  is this gallery's most reliable placeholder predictor. Single-part
+  subjects are exempt: one honest material is their truth (a brass gear).
+- **Edge treatment** — at most **75 %** of a hero's manifold edges may be
+  right angles (90° ± 2°). Unbroken 90° corners across the board means no
+  bevel, no chamfer, no shading break. Honest machined teeth pass
+  (`bmesh-gear` measures 0.667); raw boxes (1.0) fail.
+
+Calibrated empirically against the gallery's own assets, exactly as the
+0.02 margin floor was:
+
+| asset | parts | materials | edge90 | compactness (info only) |
+| --- | --- | --- | --- | --- |
+| collision-hull-proxy (reference) | 16 | 6 | 0.044 | 65.9 |
+| custom-normals-shade (reference) | 39 | 2 | 0.288 | 31.0 |
+| vertex-weight-limit (reference) | 1 | 4 | 0.150 | 34.8 |
+| lod-decimate-chain (reference) | 3 | 4 | 0.019 | 79.1 |
+| depsgraph-export (weak) | 2 | 1 | 1.000 | 23.9 |
+| text-version-stamp (weak) | 1 | 1 | 1.000 | 405.3 |
+| bmesh-gear (simple, honest) | 1 | 1 | 0.667 | 18.3 |
+| soccer-ball-goldberg (simple, honest) | 1 | 2 | 0.000 | 10.0 |
+
+Dropped floors, with the evidence that killed them — a floor that cannot
+be set without failing a genuinely good asset is not a floor, and a floor
+hand-tuned to pass everything is not one either:
+
+- **Part count** — `vertex-weight-limit`'s mech arm is a single skinned
+  mesh and is reference-quality. Skinned deform meshes are one mesh by
+  design. The naming half survives.
+- **Silhouette compactness** — `soccer-ball-goldberg` scores 10.0,
+  `bmesh-gear` 18.3, `turntable` 19.1: genuinely good simple subjects
+  with low-complexity silhouettes. Measured and printed as information.
+- **Dominant-material share** — `custom-normals-shade`'s jerry can and
+  `lod-decimate-chain`'s rocket carry their accents in per-face
+  assignment, invisible to a per-part share (both measure 1.0 dominant).
+  Printed as information only.
+
+### The Goodhart warning
+
+These floors are necessary, not sufficient. Bolting meaningless greebles
+onto a box to raise silhouette complexity satisfies every number above
+and still fails. Detail must serve the object's plausibility: fixtures
+where fixtures belong, wear where contact happens, structure where
+structure carries load. The asset sheet exists because metrics can be
+gamed; a lineup of peers cannot.
+
+### Reference bar
+
+The asset-quality reference set is pinned in `CLAUDE.md` § Quality Gates
+for Example Runs — canonical membership lives there, not here.
+
+### Asset sheet gate
+
+For every new asset-type example: render the hero alone — neutral
+three-quarter view, plain studio lighting, no staging tricks, no labels,
+no comparison props — composite it beside the reference assets rendered
+the same way, commit under `docs/gallery/asset-sheets/`, and link it in
+the PR body with a verdict. The asset ships only if it is not
+identifiable as the least-designed object in that lineup. Isolating the
+asset from its staging is the point: a strong scene can carry a weak
+model, and this gate removes the scene.
+
 ## Output
 
 - Render 1280×720 PNG (`taa_render_samples`/`cycles.samples` 32–64).
