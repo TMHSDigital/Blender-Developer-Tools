@@ -6,6 +6,12 @@ example (docs/gallery/<name>/index.html) with the hero render (click to
 zoom), a run-it-yourself command, the example's README rendered inline, and
 the full Python source syntax-highlighted at build time.
 
+The index carries a sticky controls bar (search, tag chips, compact/detailed
+density toggle, back-to-top) driven by inline vanilla JS — no external
+dependencies. Everything is no-JS safe: compact density and chip collapsing
+are applied only via JS-added classes, so with JavaScript disabled every
+card renders expanded and readable.
+
 This is a LOCAL, this-repo gallery that rides alongside the generated
 docs/index.html (which scripts/site/build_site.py owns and overwrites). It
 writes ONLY under docs/gallery/ so it never collides with the landing build's
@@ -164,14 +170,82 @@ SHELL = """<!DOCTYPE html>
       font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
     header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
 
-    /* ---- index: filter chips ---- */
-    .chips { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem 0.25rem;
-      display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
       border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
-      font-family: var(--font-mono); cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
     .chip:hover { color: var(--select); border-color: var(--select); }
     .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
 
     main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
     .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
@@ -249,12 +323,20 @@ SHELL = """<!DOCTYPE html>
     footer .statusbar code { font-family: inherit; text-transform: none; }
 
     @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .card { transition: none; }
       .card:hover { transform: none; }
+      .to-top { transition: none; }
     }
-  </style>
+  </style>__HEADJS__
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -279,21 +361,173 @@ __PAGEJS__
 </html>
 """
 
+# Index-only head script: runs before first paint so the persisted/default
+# density never flashes as a full-height detailed page first. Adds the `js`
+# class that gates every JS-only affordance (collapsible chips, scroll strip);
+# with JS disabled no class is ever applied and every card renders expanded.
+INDEX_HEADJS = """
+  <script>
+    (function () {
+      var de = document.documentElement;
+      de.classList.add('js');
+      var d = 'compact';
+      var m = location.hash.match(/(?:^|[#&])d=(compact|detailed)/);
+      if (m) { d = m[1]; }
+      else {
+        try {
+          var s = localStorage.getItem('bdt-gallery-density');
+          if (s === 'compact' || s === 'detailed') d = s;
+        } catch (e) {}
+      }
+      if (d === 'compact') de.classList.add('density-compact');
+    })();
+  </script>"""
+
 INDEX_JS = """
     (function () {
-      var chips = document.querySelectorAll('.chip');
-      var cards = document.querySelectorAll('.card');
+      var de = document.documentElement;
+      var grid = document.getElementById('grid');
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+      var chipsEl = document.getElementById('chips');
+      var chips = Array.prototype.slice.call(chipsEl.querySelectorAll('.chip'));
+      var q = document.getElementById('q');
+      var qClear = document.getElementById('qClear');
+      var count = document.getElementById('count');
+      var noResults = document.getElementById('noResults');
+      var resetFilters = document.getElementById('resetFilters');
+      var densityBtns = Array.prototype.slice.call(document.querySelectorAll('.density-btn'));
+      var tagsToggle = document.getElementById('tagsToggle');
+      var toTop = document.getElementById('toTop');
+      var total = cards.length;
+      var LS_KEY = 'bdt-gallery-density';
+      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Searchable text is the card's own DOM text: name, teaches, and the
+      // WITNESSES line (visually collapsed in compact mode, still in the DOM).
+      var haystacks = cards.map(function (c) { return c.textContent.toLowerCase(); });
+      var state = { q: '', tag: '', density: 'compact' };
+
+      function parseHash() {
+        var out = {};
+        location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+          var i = kv.indexOf('=');
+          if (i < 0) return;
+          var k = kv.slice(0, i), v = kv.slice(i + 1);
+          try { v = decodeURIComponent(v); } catch (e) {}
+          if (k === 'q' || k === 'tag' || k === 'd') out[k] = v;
+        });
+        return out;
+      }
+
+      function writeHash() {
+        var parts = [];
+        if (state.q) parts.push('q=' + encodeURIComponent(state.q));
+        if (state.tag) parts.push('tag=' + encodeURIComponent(state.tag));
+        parts.push('d=' + state.density);
+        history.replaceState(null, '', location.pathname + location.search + '#' + parts.join('&'));
+      }
+
+      function syncChips() {
+        chips.forEach(function (c) {
+          c.classList.toggle('active', (c.getAttribute('data-tag') || '') === state.tag);
+        });
+        tagsToggle.classList.toggle('has-active', !!state.tag);
+      }
+
+      function applyDensity() {
+        de.classList.toggle('density-compact', state.density === 'compact');
+        densityBtns.forEach(function (b) {
+          var on = b.getAttribute('data-density') === state.density;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        try { localStorage.setItem(LS_KEY, state.density); } catch (e) {}
+      }
+
+      function applyFilters() {
+        var query = state.q.trim().toLowerCase();
+        var shown = 0;
+        cards.forEach(function (card, i) {
+          var tagOK = !state.tag || (card.getAttribute('data-tags') || '').split(' ').indexOf(state.tag) !== -1;
+          var qOK = !query || haystacks[i].indexOf(query) !== -1;
+          var show = tagOK && qOK;
+          card.classList.toggle('hidden', !show);
+          if (show) shown++;
+        });
+        count.textContent = (query || state.tag) ? (shown + ' of ' + total) : (total + ' examples');
+        noResults.hidden = shown !== 0;
+        qClear.hidden = !state.q;
+      }
+
+      q.addEventListener('input', function () {
+        state.q = q.value;
+        applyFilters();
+        writeHash();
+      });
+      qClear.addEventListener('click', function () {
+        q.value = ''; state.q = '';
+        applyFilters(); writeHash(); q.focus();
+      });
       chips.forEach(function (chip) {
         chip.addEventListener('click', function () {
-          chips.forEach(function (c) { c.classList.remove('active'); });
-          chip.classList.add('active');
-          var tag = chip.getAttribute('data-tag');
-          cards.forEach(function (card) {
-            var tags = (card.getAttribute('data-tags') || '').split(' ');
-            card.classList.toggle('hidden', !!tag && tags.indexOf(tag) === -1);
-          });
+          state.tag = chip.getAttribute('data-tag') || '';
+          syncChips(); applyFilters(); writeHash();
         });
       });
+      densityBtns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.density = b.getAttribute('data-density');
+          applyDensity(); writeHash();
+        });
+      });
+      resetFilters.addEventListener('click', function () {
+        state.q = ''; state.tag = ''; q.value = '';
+        syncChips(); applyFilters(); writeHash(); q.focus();
+      });
+      tagsToggle.addEventListener('click', function () {
+        var open = chipsEl.classList.toggle('open');
+        tagsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        var ae = document.activeElement;
+        var typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
+        if (e.key === '/' && !typing) {
+          e.preventDefault();
+          q.focus();
+          q.select();
+        } else if (e.key === 'Escape' && ae === q) {
+          q.value = ''; state.q = '';
+          applyFilters(); writeHash(); q.blur();
+        }
+      });
+
+      function onScroll() { toTop.classList.toggle('show', window.scrollY > 600); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+      toTop.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+      });
+
+      // Restore state: URL hash wins; density falls back to localStorage.
+      var h = parseHash();
+      state.q = h.q || '';
+      state.tag = h.tag || '';
+      if (h.d === 'compact' || h.d === 'detailed') state.density = h.d;
+      else {
+        try {
+          var s = localStorage.getItem(LS_KEY);
+          if (s === 'compact' || s === 'detailed') state.density = s;
+        } catch (e) {}
+      }
+      // A tag in the hash that no chip knows would silently show zero cards.
+      var known = chips.some(function (c) { return (c.getAttribute('data-tag') || '') === state.tag; });
+      if (!known) state.tag = '';
+      q.value = state.q;
+      syncChips();
+      applyDensity();
+      applyFilters();
     })();
 """
 
@@ -494,7 +728,7 @@ def make_resolver(repo_base: str, ex_dir: str):
 
 def shell(*, title: str, desc: str, canonical: str, og_image: str,
           site_root: str, back_href: str, back_label: str, repo_url: str,
-          content: str, page_js: str) -> str:
+          content: str, page_js: str, head_js: str = "") -> str:
     return (SHELL
             .replace("__TITLE__", html.escape(title))
             .replace("__DESC__", html.escape(desc, quote=True))
@@ -505,7 +739,8 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
             .replace("__BACKLABEL__", html.escape(back_label))
             .replace("__REPO__", html.escape(repo_url, quote=True))
             .replace("__CONTENT__", content)
-            .replace("__PAGEJS__", page_js))
+            .replace("__PAGEJS__", page_js)
+            .replace("__HEADJS__", head_js))
 
 
 def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
@@ -574,17 +809,42 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
     examples = data["examples"]
     title = data.get("title", "Examples Gallery")
     desc = data.get("description", "")
+    total = len(examples)
 
     all_tags = sorted({t for ex in examples for t in ex.get("tags", [])})
-    chip_html = ""
+    chips_html = ""
     if all_tags:
         chips = ['<button class="chip active" data-tag="" type="button">All</button>']
         chips += [
             f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button">{html.escape(t)}</button>'
             for t in all_tags
         ]
-        chip_html = ('  <div class="chips" role="toolbar" aria-label="Filter examples by topic">\n    '
-                     + "\n    ".join(chips) + "\n  </div>\n")
+        chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter examples by topic">\n        '
+                      + "\n        ".join(chips) + "\n      </div>\n")
+
+    # Sticky controls bar. Every control is inert but harmless with JS
+    # disabled: the search box and toggles do nothing, the count already reads
+    # correctly, and all cards render expanded (the compact class is JS-only).
+    controls = (
+        '  <div class="controls">\n'
+        '    <div class="controls-inner">\n'
+        '      <div class="controls-row">\n'
+        '        <div class="searchwrap">\n'
+        '          <input id="q" type="search" placeholder="Search examples (press /)"\n'
+        '            autocomplete="off" spellcheck="false" aria-label="Search examples" />\n'
+        '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
+        '        </div>\n'
+        f'        <span class="count" id="count" role="status" aria-live="polite">{total} examples</span>\n'
+        '        <div class="density" role="group" aria-label="Card density">\n'
+        '          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
+        '          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
+        '        </div>\n'
+        '        <button class="tags-toggle" id="tagsToggle" type="button" aria-expanded="false" aria-controls="chips">Tags</button>\n'
+        '      </div>\n'
+        + chips_html +
+        '    </div>\n'
+        '  </div>\n'
+    )
 
     cards = []
     for ex in examples:
@@ -605,10 +865,14 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         f"    <h1>{html.escape(title)}</h1>\n"
         f"    <p>{html.escape(desc)}</p>\n"
         "  </header>\n"
-        + chip_html
-        + '  <main id="main">\n    <div class="grid">\n'
+        + controls
+        + '  <main id="main">\n    <div class="grid" id="grid">\n'
         + "\n".join(cards)
-        + "\n    </div>\n  </main>"
+        + "\n    </div>\n"
+        + '    <p class="noresults" id="noResults" hidden>No examples match the current filters.\n'
+        + '      <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>\n'
+        + "  </main>\n"
+        + '  <button class="to-top" id="toTop" type="button"><span aria-hidden="true">&uarr;</span> Top</button>'
     )
 
     og_image = f"{site}/gallery/assets/{page_relative(examples[0]['hero']).split('/')[-1]}" if site else ""
@@ -623,6 +887,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         repo_url=repo_root_url,
         content=content,
         page_js=INDEX_JS,
+        head_js=INDEX_HEADJS,
     )
 
 
