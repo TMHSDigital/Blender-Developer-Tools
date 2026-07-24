@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>40 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>41 examples</strong>
 </p>
 
 <p align="center">
@@ -779,6 +779,26 @@ welds their loops. Companion to
 [`gltf-export-roundtrip`](examples/gltf-export-roundtrip/) (where the count
 check first caught the weld) and [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/)
 (topology gates). Seam markers are placed from live mesh data.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/modular-kit-snap/"><img src="examples/modular-kit-snap/preview.webp" alt="Modular kit snap: a corridor run of four tiling segments — dark steel walls with blue-gray panels, orange trim rails, and ceiling light strips converging on a glowing amber doorway, with every joint seamless because the boundary verts snap exactly to the tile grid" /></a>
+</td>
+<td valign="middle">
+
+### [modular-kit-snap](examples/modular-kit-snap/)
+
+A tiling corridor kit where the snap is the contract. **16 boundary verts**
+on `x ∈ {0, 4}` within **1e-6 m**, opposing end loops coincident under the
+tile offset, and a linked duplicate's joint positions matching within 1e-6 —
+zero gap, zero overlap. Shell bbox equals the declared tile exactly, the
+tube is manifold except its two open ends, and all twelve detail parts are
+contained inside the tile. The unsnapped probe (3 mm skew) fails with the
+measured error printed. Companion to
+[`prop-origin-transform`](examples/prop-origin-transform/) (pivot discipline)
+and [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/) (topology gates).
 
 </td>
 </tr>

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>modular-kit-snap — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/modular-kit-snap/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="modular-kit-snap — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/modular-kit-snap/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/modular-kit-snap-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="modular-kit-snap — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/modular-kit-snap-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>modular-kit-snap</h1>
+    <p>A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom modular-kit-snap render">
+      <img src="../assets/modular-kit-snap-hero.webp" alt="modular-kit-snap render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> 16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/modular-kit-snap/modular_kit_snap.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example building the asset a tiling modular kit lives or dies by: a corridor segment whose open-end boundary vertices sit <strong>exactly</strong> on the declared tile grid, so instances placed at 4 m multiples share boundary positions with no gap and no overlap. Interior geometry is free-form (beveled detail boxes); only the boundary is snapped — the snap is a deliberate authoring pass, and the check is what catches you skipping it.</p>
+<p><strong>The asset, for reuse:</strong> a 4 × 3 × 3 m corridor segment (hollow-rectangle shell plus twelve detail parts — frame rib, walkway plate, wall panels, trim rails, emissive light strips). Origin at the connection pivot (floor-center of the start edge, so instance *n* places at <code>x = n·4</code>), identity transforms by construction, datablocks under <code>Kit.CorridorSeg.*</code>, manifold everywhere except the two intentional open ends, and every detail part contained strictly inside the tile so it can never break a joint. Drop the hierarchy into a scene and array it along X.</p>
+<p><strong>Pipeline arc neighbors:</strong> watertight parametric solids in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a>, topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>, origin/pivot discipline in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform"><code>prop-origin-transform</code></a>, collision packaging in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>.</p>
+<p><strong>What it witnesses</strong> (all closed form or independently re-derived):</p>
+<ul><li><strong>Snap.</strong> Exactly <strong>16</strong> boundary verts (8 per open end, from the hollow-rectangle profile), every one on its end plane <code>x ∈ {0, 4}</code> within <strong>1e-6 m</strong>; every boundary edge lies on an end plane.</li><li><strong>Loop coincidence.</strong> The two end rings, matched by nearest (y, z) key, agree within <strong>1e-6</strong> — opposing loops are coincident under the tile offset.</li><li><strong>Tiling.</strong> A linked duplicate offset by <code>(4, 0, 0)</code> places its start ring at world positions matching the original&#x27;s end ring within <strong>1e-6</strong> — no gap, no overlap at the joint.</li><li><strong>Bounding box.</strong> The shell&#x27;s local bbox equals the declared tile exactly (<code>0..4 × ±1.5 × 0..3</code>, all float32-exact values, deviation 0.0), and the whole-asset bbox matches it because detail is contained.</li><li><strong>Manifold.</strong> Every edge has exactly 2 link faces except the <strong>16</strong> boundary ring edges (1 face each) — the open ends are the only boundaries.</li><li><strong>Reuse hygiene.</strong> Identity scales, <code>Kit.CorridorSeg.*</code> names, all part origins at the pivot.</li></ul>
+<p><strong>What each check catches on failure</strong> (probed with an unsnapped variant built by the same code minus the snap pass — 3 mm end-ring skew, 2 mm y-nudge on two verts): boundary verts off the end planes, worst <strong>3.000e-03 m</strong> (exit 3); opposing rings displaced <strong>2.000e-03</strong> (exit 4); tiled joint gap/overlap (exit 5); bbox off the declared tile by <strong>3.000e-03</strong> (exit 6); boundary edges torn off the rim (exit 7); non-watertight detail (exit 8); detail escaping the tile (exit 9); unapplied transforms, default names, or wandering origins (exit 11).</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same zero measured deviations.</p>
+<p><strong>Render as proof:</strong> a four-segment run — the joints vanish. The falsification variant (<code>--falsify</code>) accumulates a 120 mm gap, 50 mm lateral jogs, and 40 mm floor steps at each joint: floor plates split with dark seams and the trim rails visibly break. The check measures the same failure class at 3 mm; the render exaggerates it to read at frame scale.</p>
+<p><strong>Framing deviation:</strong> the still is an interior corridor run — the envelope surrounds the camera on five sides and the tiling joints are the proof, so the subject reads as extending past the frame (the radiating-architecture class of VISUAL-STYLE Layer 1). <code>check_framing</code> measures and reports (fill 1.000/1.000, all-edge bleed) without enforcing, with the reason string at the call site.</p>
+<h2>Run</h2>
+<pre><code>blender --background --python modular_kit_snap.py --
+blender --background --python modular_kit_snap.py -- --output corridor.png
+blender --background --python modular_kit_snap.py -- --falsify seams.png</code></pre>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (reported under the documented deviation above) before writing the still.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/modular-kit-snap/modular_kit_snap.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/modular-kit-snap/modular_kit_snap.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Modular kit snap — boundary vertices welded to the tile grid so segments tile seamlessly.
+
+Witnesses the contract a tiling modular kit lives or dies by: a corridor
+segment whose open-end boundary vertices sit EXACTLY on the declared tile
+grid, so instances placed at tile multiples share boundary positions with
+no gap and no overlap. Interior geometry is free-form (beveled detail);
+only the boundary is snapped — the snap is a deliberate authoring pass,
+not an accident of box modeling. An unsnapped variant built with the same
+code minus the snap pass carries a measured 3 mm joint error, which is
+what the check catches.
+
+The asset is built to be reused: geometry authored in kit space with the
+origin at the connection pivot (floor-center of the start edge), identity
+transforms by construction, clean named datablocks, manifold everywhere
+except the two intentional open ends, and all detail contained strictly
+inside the tile so it can never affect tiling.
+
+Check (all closed form or independently re-derived, nothing captured):
+
+1. Snap: exactly 16 boundary verts (8 per open end, closed form from the
+   hollow-rectangle profile), every one on its end plane x in {0, TILE}
+   within 1e-6 m; every boundary edge lies on an end plane.
+2. Loop coincidence: the two end rings matched by (y, z) key agree within
+   1e-6 — opposing loops are coincident under the tile offset.
+3. Tiling: a linked duplicate offset by (TILE, 0, 0) places its start ring
+   at world positions matching the original&#x27;s end ring within 1e-6 — no
+   gap, no overlap at the joint.
+4. Bounding box: the shell&#x27;s local bbox equals the declared tile size
+   exactly (0..TILE x +/-1.5 x 0..3, all float32-exact values), and the
+   whole-asset bbox matches it because every detail part is contained.
+5. Manifold: every edge has exactly 2 link faces except the 16 boundary
+   ring edges (1 face each) — the two open ends are the only boundaries.
+6. Reuse hygiene: identity object scales, names under Kit.CorridorSeg.*,
+   all part origins at the pivot.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python modular_kit_snap.py --                 # check only
+    blender --background --python modular_kit_snap.py -- --output k.png  # + render
+    blender --background --python modular_kit_snap.py -- --falsify f.png # seam variant
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
+TILE = <span class="n">4.0</span>                <span class="c"># tile length along X, metres</span>
+WIDTH = <span class="n">3.0</span>               <span class="c"># corridor width along Y ( +/- 1.5 )</span>
+HEIGHT = <span class="n">3.0</span>              <span class="c"># corridor height along Z</span>
+WALL = <span class="n">0.15</span>               <span class="c"># shell thickness (floor / walls / ceiling)</span>
+TOL = <span class="n">1e-6</span>                <span class="c"># snap / coincidence / tiling tolerance (metres)</span>
+BBOX_TOL = <span class="n">2e-6</span>           <span class="c"># float32 rounding slack at the bbox extremes</span>
+SKEW = <span class="n">3e-3</span>               <span class="c"># unsnapped variant: end-ring x error (3 mm)</span>
+NUDGE = <span class="n">2e-3</span>              <span class="c"># unsnapped variant: two verts jogged in y (2 mm)</span>
+EXPECT_BOUNDARY_VERTS = <span class="n">16</span>   <span class="c"># 8 per open end (hollow-rectangle profile)</span>
+EXPECT_BOUNDARY_EDGES = <span class="n">16</span>   <span class="c"># 8 per open end</span>
+
+<span class="c"># Hollow-rectangle profile (y, z): outer shell corners then inner bore corners,</span>
+<span class="c"># ordered as one continuous ring so the extrusion&#x27;s side faces come out quads.</span>
+<span class="c"># The ring is the cross-section of the tube wall: outer bottom-left -&gt; outer</span>
+<span class="c"># bottom-right -&gt; outer top-right -&gt; outer top-left -&gt; inner top-left -&gt; ...</span>
+OUTER = [(-WIDTH / <span class="n">2</span>, <span class="n">0.0</span>), (WIDTH / <span class="n">2</span>, <span class="n">0.0</span>),
+         (WIDTH / <span class="n">2</span>, HEIGHT), (-WIDTH / <span class="n">2</span>, HEIGHT)]
+INNER = [(-(WIDTH / <span class="n">2</span> - WALL), HEIGHT - WALL), (WIDTH / <span class="n">2</span> - WALL, HEIGHT - WALL),
+         (WIDTH / <span class="n">2</span> - WALL, WALL), (-(WIDTH / <span class="n">2</span> - WALL), WALL)]
+PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per open end</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Asset construction (bmesh, kit space: origin = floor-center of the x=0 edge)</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> build_shell(name, skew=<span class="n">0.0</span>, nudge=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;The corridor tube: hollow-rectangle profile extruded over x in [0, TILE].
+
+    With skew=0 the end ring lands exactly on x == TILE (the snapped asset).
+    skew shifts the end ring in x (unsnapped variant), nudge jogs two of its
+    verts in y — the joint errors the check must catch.
+    &quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        ring_a = [bm.verts.new((<span class="n">0.0</span>, y, z)) <span class="k">for</span> (y, z) <span class="k">in</span> PROFILE]
+        ring_b = []
+        <span class="k">for</span> i, (y, z) <span class="k">in</span> enumerate(PROFILE):
+            x = TILE + skew
+            <span class="k">if</span> nudge <span class="k">and</span> i <span class="k">in</span> (<span class="n">1</span>, <span class="n">5</span>):      <span class="c"># deterministic pair, jogged in y</span>
+                y += nudge
+            ring_b.append(bm.verts.new((x, y, z)))
+        n = len(PROFILE)
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            a, b = i, (i + <span class="n">1</span>) % n
+            bm.faces.new((ring_a[a], ring_a[b], ring_b[b], ring_b[a]))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _beveled_box(bm, dims, center, bevel=<span class="n">0.0</span>, segments=<span class="n">2</span>):
+    <span class="s">&quot;&quot;&quot;One watertight box; small bevels are interior detail (never boundary).&quot;&quot;&quot;</span>
+    bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    <span class="k">for</span> v <span class="k">in</span> bm.verts:
+        v.co.x = v.co.x * dims[<span class="n">0</span>] + center[<span class="n">0</span>]
+        v.co.y = v.co.y * dims[<span class="n">1</span>] + center[<span class="n">1</span>]
+        v.co.z = v.co.z * dims[<span class="n">2</span>] + center[<span class="n">2</span>]
+    <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+        bmesh.ops.bevel(
+            bm, geom=list(bm.edges), offset=bevel, segments=segments,
+            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>,
+        )
+
+
+<span class="k">def</span> build_detail(name, dims, center, bevel=<span class="n">0.0</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        _beveled_box(bm, dims, center, bevel)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="c"># Detail layout: (suffix, dims, center, bevel). Every box sits strictly inside</span>
+<span class="c"># the tile — x in (0, TILE), |y| &lt; WIDTH/2, z in (0, HEIGHT) — so detail can</span>
+<span class="c"># never touch a boundary plane (check 6 proves it).</span>
+<span class="k">def</span> detail_layout():
+    inner_y = WIDTH / <span class="n">2</span> - WALL                    <span class="c"># 1.35, the bore face</span>
+    parts = [
+        <span class="c"># start-edge frame rib: two posts + a top beam, just inside x=0</span>
+        (<span class="s">&quot;Rib.Post.L&quot;</span>, (<span class="n">0.24</span>, <span class="n">0.30</span>, HEIGHT - <span class="n">2</span> * WALL), (<span class="n">0.18</span>, inner_y - <span class="n">0.15</span>, HEIGHT / <span class="n">2</span>), <span class="n">0.02</span>),
+        (<span class="s">&quot;Rib.Post.R&quot;</span>, (<span class="n">0.24</span>, <span class="n">0.30</span>, HEIGHT - <span class="n">2</span> * WALL), (<span class="n">0.18</span>, -(inner_y - <span class="n">0.15</span>), HEIGHT / <span class="n">2</span>), <span class="n">0.02</span>),
+        (<span class="s">&quot;Rib.Beam&quot;</span>, (<span class="n">0.24</span>, <span class="n">2</span> * inner_y - <span class="n">0.30</span>, <span class="n">0.34</span>), (<span class="n">0.18</span>, <span class="n">0.0</span>, HEIGHT - WALL - <span class="n">0.17</span>), <span class="n">0.02</span>),
+        <span class="c"># walkway floor plate</span>
+        (<span class="s">&quot;FloorPlate&quot;</span>, (<span class="n">3.4</span>, <span class="n">1.8</span>, <span class="n">0.05</span>), (TILE / <span class="n">2</span>, <span class="n">0.0</span>, WALL + <span class="n">0.025</span>), <span class="n">0.015</span>),
+        <span class="c"># wall panels, two per side, recessed-look slabs on the bore face</span>
+        (<span class="s">&quot;Panel.L.1&quot;</span>, (<span class="n">1.15</span>, <span class="n">0.05</span>, <span class="n">1.15</span>), (<span class="n">1.2</span>, inner_y - <span class="n">0.025</span>, <span class="n">1.55</span>), <span class="n">0.02</span>),
+        (<span class="s">&quot;Panel.L.2&quot;</span>, (<span class="n">1.15</span>, <span class="n">0.05</span>, <span class="n">1.15</span>), (<span class="n">2.8</span>, inner_y - <span class="n">0.025</span>, <span class="n">1.55</span>), <span class="n">0.02</span>),
+        (<span class="s">&quot;Panel.R.1&quot;</span>, (<span class="n">1.15</span>, <span class="n">0.05</span>, <span class="n">1.15</span>), (<span class="n">1.2</span>, -(inner_y - <span class="n">0.025</span>), <span class="n">1.55</span>), <span class="n">0.02</span>),
+        (<span class="s">&quot;Panel.R.2&quot;</span>, (<span class="n">1.15</span>, <span class="n">0.05</span>, <span class="n">1.15</span>), (<span class="n">2.8</span>, -(inner_y - <span class="n">0.025</span>), <span class="n">1.55</span>), <span class="n">0.02</span>),
+        <span class="c"># orange trim rails — the lines that jog visibly when a joint steps</span>
+        (<span class="s">&quot;Trim.L&quot;</span>, (<span class="n">3.7</span>, <span class="n">0.06</span>, <span class="n">0.09</span>), (TILE / <span class="n">2</span>, inner_y - <span class="n">0.03</span>, <span class="n">0.78</span>), <span class="n">0.015</span>),
+        (<span class="s">&quot;Trim.R&quot;</span>, (<span class="n">3.7</span>, <span class="n">0.06</span>, <span class="n">0.09</span>), (TILE / <span class="n">2</span>, -(inner_y - <span class="n">0.03</span>), <span class="n">0.78</span>), <span class="n">0.015</span>),
+        <span class="c"># emissive light strips along the wall/ceiling join</span>
+        (<span class="s">&quot;Light.L&quot;</span>, (<span class="n">3.0</span>, <span class="n">0.05</span>, <span class="n">0.07</span>), (TILE / <span class="n">2</span>, inner_y - <span class="n">0.025</span>, HEIGHT - WALL - <span class="n">0.09</span>), <span class="n">0.01</span>),
+        (<span class="s">&quot;Light.R&quot;</span>, (<span class="n">3.0</span>, <span class="n">0.05</span>, <span class="n">0.07</span>), (TILE / <span class="n">2</span>, -(inner_y - <span class="n">0.025</span>), HEIGHT - WALL - <span class="n">0.09</span>), <span class="n">0.01</span>),
+    ]
+    <span class="k">return</span> parts
+
+
+<span class="k">def</span> build_kit_meshes(skew=<span class="n">0.0</span>, nudge=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;All kit meshes, keyed by part suffix. Skew/nudge touch the shell only.&quot;&quot;&quot;</span>
+    meshes = {<span class="s">&quot;Shell&quot;</span>: build_shell(<span class="s">&quot;Kit.CorridorSeg.Shell&quot;</span>, skew, nudge)}
+    <span class="k">for</span> suffix, dims, center, bevel <span class="k">in</span> detail_layout():
+        meshes[suffix] = build_detail(<span class="s">f&quot;</span><span class="s">Kit.CorridorSeg.</span>{suffix}<span class="s">&quot;</span>, dims, center, bevel)
+    <span class="k">return</span> meshes
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Check helpers</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> boundary_verts(me):
+    <span class="s">&quot;&quot;&quot;Verts of the open-end rings: x within TOL of an end plane candidate.
+    Returns (on_plane, off_plane) — off_plane must be empty in the snapped
+    asset and carries the measured error in the unsnapped one.&quot;&quot;&quot;</span>
+    on, off = [], []
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        <span class="k">if</span> abs(v.co.x) &lt;= <span class="n">0.01</span> <span class="k">or</span> abs(v.co.x - TILE) &lt;= <span class="n">0.01</span> + SKEW:
+            <span class="k">if</span> abs(v.co.x) &lt;= TOL <span class="k">or</span> abs(v.co.x - TILE) &lt;= TOL:
+                on.append(v)
+            <span class="k">else</span>:
+                off.append(v)
+    <span class="k">return</span> on, off
+
+
+<span class="k">def</span> ring_key(co):
+    <span class="k">return</span> (round(co.y, <span class="n">6</span>), round(co.z, <span class="n">6</span>))
+
+
+<span class="k">def</span> max_nearest_dev(keys_a, keys_b):
+    <span class="s">&quot;&quot;&quot;Worst displacement between two rings: for every key in A, the distance
+    to its nearest key in B, maximized. Robust to a displaced vert reordering
+    the ring (a sorted-zip would mispair and report a bogus cascade).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="k">not</span> keys_a <span class="k">or</span> <span class="k">not</span> keys_b <span class="k">or</span> len(keys_a) != len(keys_b):
+        <span class="k">return</span> float(<span class="s">&quot;inf&quot;</span>)
+    <span class="k">return</span> max(min(math.dist(a, b) <span class="k">for</span> b <span class="k">in</span> keys_b) <span class="k">for</span> a <span class="k">in</span> keys_a)
+
+
+<span class="k">def</span> mesh_bbox(me):
+    xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">return</span> (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> manifold_report(me):
+    <span class="s">&quot;&quot;&quot;(boundary_edges, nonmanifold_edges) via bmesh link-face counts.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        boundary = [e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">1</span>]
+        nonmanifold = [e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) <span class="k">not</span> <span class="k">in</span> (<span class="n">1</span>, <span class="n">2</span>)]
+        off_plane = [e <span class="k">for</span> e <span class="k">in</span> boundary
+                     <span class="k">if</span> <span class="k">not</span> all(abs(v.co.x) &lt;= TOL <span class="k">or</span> abs(v.co.x - TILE) &lt;= TOL
+                                <span class="k">for</span> v <span class="k">in</span> e.verts)]
+        <span class="k">return</span> len(boundary), len(nonmanifold), len(off_plane)
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> check():
+    meshes = build_kit_meshes()
+    shell = meshes[<span class="s">&quot;Shell&quot;</span>]
+    fails = []
+
+    <span class="k">def</span> fail(code, msg):
+        print(<span class="s">f&quot;</span><span class="s">ERROR (</span>{code}<span class="s">): </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+        fails.append(code)
+
+    <span class="c"># --- 1. snap: 16 boundary verts, all on x in {0, TILE} -----------------</span>
+    on, off = boundary_verts(shell)
+    print(<span class="s">f&quot;</span><span class="s">snap boundary_verts=</span>{len(on)}<span class="s"> off_plane=</span>{len(off)}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">(closed form </span>{EXPECT_BOUNDARY_VERTS}<span class="s">)</span><span class="s">&quot;</span>)
+    <span class="k">if</span> len(on) != EXPECT_BOUNDARY_VERTS:
+        fail(<span class="n">3</span>, <span class="s">f&quot;</span><span class="s">boundary vert count </span>{len(on)}<span class="s"> != </span>{EXPECT_BOUNDARY_VERTS}<span class="s"> — </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">the profile or an end plane moved</span><span class="s">&quot;</span>)
+    <span class="k">if</span> off:
+        worst = max(min(abs(v.co.x), abs(v.co.x - TILE)) <span class="k">for</span> v <span class="k">in</span> off)
+        fail(<span class="n">3</span>, <span class="s">f&quot;</span>{len(off)}<span class="s"> boundary verts off the end planes, worst </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span>{worst:<span class="s">.3e</span>}<span class="s"> m &gt; </span>{TOL:<span class="s">.0e</span>}<span class="s"> — the snap pass was skipped</span><span class="s">&quot;</span>)
+    worst_on = max((min(abs(v.co.x), abs(v.co.x - TILE)) <span class="k">for</span> v <span class="k">in</span> on), default=<span class="n">0.0</span>)
+    print(<span class="s">f&quot;</span><span class="s">snap max_dev=</span>{worst_on:<span class="s">.3e</span>}<span class="s"> tol=</span>{TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+
+    <span class="c"># --- 2. loop coincidence: end rings agree under the tile offset --------</span>
+    ring_a = [ring_key(v.co) <span class="k">for</span> v <span class="k">in</span> on <span class="k">if</span> abs(v.co.x) &lt;= TOL]
+    ring_b = [ring_key(v.co) <span class="k">for</span> v <span class="k">in</span> on <span class="k">if</span> abs(v.co.x - TILE) &lt;= TOL]
+    co_dev = max_nearest_dev(ring_a, ring_b)
+    print(<span class="s">f&quot;</span><span class="s">loop_coincidence rings=</span>{len(ring_a)}<span class="s">/</span>{len(ring_b)}<span class="s"> max_dev=</span>{co_dev:<span class="s">.3e</span>}<span class="s"> tol=</span>{TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> len(ring_a) != EXPECT_BOUNDARY_VERTS // <span class="n">2</span> <span class="k">or</span> len(ring_b) != EXPECT_BOUNDARY_VERTS // <span class="n">2</span>:
+        fail(<span class="n">4</span>, <span class="s">&quot;end rings do not partition evenly — profile asymmetry&quot;</span>)
+    <span class="k">if</span> co_dev &gt; TOL:
+        fail(<span class="n">4</span>, <span class="s">f&quot;</span><span class="s">opposing end loops differ by </span>{co_dev:<span class="s">.3e</span>}<span class="s"> &gt; </span>{TOL:<span class="s">.0e</span>}<span class="s"> — </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">segments would not butt cleanly</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 3. tiling: linked duplicate shares boundary world positions -------</span>
+    root = bpy.data.objects.new(<span class="s">&quot;Kit.CorridorSeg&quot;</span>, <span class="k">None</span>)
+    bpy.context.collection.objects.link(root)
+    shell_ob = bpy.data.objects.new(<span class="s">&quot;Kit.CorridorSeg.Shell&quot;</span>, shell)
+    bpy.context.collection.objects.link(shell_ob)
+    shell_ob.parent = root
+    dup = shell_ob.copy()                       <span class="c"># linked duplicate (shares mesh)</span>
+    dup.parent = <span class="k">None</span>
+    dup.location = (TILE, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    bpy.context.collection.objects.link(dup)
+    bpy.context.view_layer.update()
+    end_b_yz = [ring_key(shell_ob.matrix_world @ v.co) <span class="k">for</span> v <span class="k">in</span> on
+                <span class="k">if</span> abs(v.co.x - TILE) &lt;= TOL]
+    start_a_yz = [ring_key(dup.matrix_world @ v.co) <span class="k">for</span> v <span class="k">in</span> on
+                  <span class="k">if</span> abs(v.co.x) &lt;= TOL]
+    gap = max_nearest_dev(end_b_yz, start_a_yz)
+    x_gap = max((abs((dup.matrix_world @ v.co).x - TILE) <span class="k">for</span> v <span class="k">in</span> on
+                 <span class="k">if</span> abs(v.co.x) &lt;= TOL), default=float(<span class="s">&quot;inf&quot;</span>))
+    print(<span class="s">f&quot;</span><span class="s">tiling joint gap/overlap yz_dev=</span>{gap:<span class="s">.3e</span>}<span class="s"> x_dev=</span>{x_gap:<span class="s">.3e</span>}<span class="s"> tol=</span>{TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> gap &gt; TOL <span class="k">or</span> x_gap &gt; TOL:
+        fail(<span class="n">5</span>, <span class="s">f&quot;</span><span class="s">tiled instances do not share boundary positions </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">(yz </span>{gap:<span class="s">.3e</span>}<span class="s">, x </span>{x_gap:<span class="s">.3e</span>}<span class="s">) — gap or overlap at the joint</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 4. bbox == declared tile, for shell and for the whole asset -------</span>
+    lo, hi = mesh_bbox(shell)
+    want_lo, want_hi = (<span class="n">0.0</span>, -WIDTH / <span class="n">2</span>, <span class="n">0.0</span>), (TILE, WIDTH / <span class="n">2</span>, HEIGHT)
+    bbox_dev = max(max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(lo, want_lo)),
+                   max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(hi, want_hi)))
+    all_lo = [min(mesh_bbox(m)[<span class="n">0</span>][i] <span class="k">for</span> m <span class="k">in</span> meshes.values()) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)]
+    all_hi = [max(mesh_bbox(m)[<span class="n">1</span>][i] <span class="k">for</span> m <span class="k">in</span> meshes.values()) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)]
+    asset_dev = max(max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(all_lo, want_lo)),
+                    max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(all_hi, want_hi)))
+    print(<span class="s">f&quot;</span><span class="s">bbox shell_dev=</span>{bbox_dev:<span class="s">.3e</span>}<span class="s"> asset_dev=</span>{asset_dev:<span class="s">.3e</span>}<span class="s"> tol=</span>{BBOX_TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> bbox_dev &gt; BBOX_TOL:
+        fail(<span class="n">6</span>, <span class="s">f&quot;</span><span class="s">shell bbox deviates </span>{bbox_dev:<span class="s">.3e</span>}<span class="s"> from the declared tile — </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">footprint is not the contract size</span><span class="s">&quot;</span>)
+    <span class="k">if</span> asset_dev &gt; BBOX_TOL:
+        fail(<span class="n">6</span>, <span class="s">f&quot;</span><span class="s">whole-asset bbox deviates </span>{asset_dev:<span class="s">.3e</span>}<span class="s"> — detail escapes </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">the tile envelope</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 5. manifold except the two open ends -------------------------------</span>
+    n_boundary, n_nonmanifold, n_off = manifold_report(shell)
+    print(<span class="s">f&quot;</span><span class="s">manifold boundary_edges=</span>{n_boundary}<span class="s"> (closed form </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span>{EXPECT_BOUNDARY_EDGES}<span class="s">) nonmanifold=</span>{n_nonmanifold}<span class="s"> off_plane_edges=</span>{n_off}<span class="s">&quot;</span>)
+    <span class="k">if</span> n_boundary != EXPECT_BOUNDARY_EDGES:
+        fail(<span class="n">7</span>, <span class="s">f&quot;</span>{n_boundary}<span class="s"> boundary edges != </span>{EXPECT_BOUNDARY_EDGES}<span class="s"> — </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">the tube is not open exactly at its two ends</span><span class="s">&quot;</span>)
+    <span class="k">if</span> n_nonmanifold:
+        fail(<span class="n">7</span>, <span class="s">f&quot;</span>{n_nonmanifold}<span class="s"> edges with != 2 link faces (excluding open ends)</span><span class="s">&quot;</span>)
+    <span class="k">if</span> n_off:
+        fail(<span class="n">7</span>, <span class="s">f&quot;</span>{n_off}<span class="s"> boundary edges off the end planes — torn rim</span><span class="s">&quot;</span>)
+
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        <span class="k">if</span> suffix == <span class="s">&quot;Shell&quot;</span>:
+            <span class="k">continue</span>
+        db, dn, _ = manifold_report(me)
+        <span class="k">if</span> db <span class="k">or</span> dn:
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span><span class="s">detail part </span>{suffix}<span class="s"> not watertight </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(boundary=</span>{db}<span class="s"> nonmanifold=</span>{dn}<span class="s">)</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 6. detail containment: nothing touches the boundary planes --------</span>
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        <span class="k">if</span> suffix == <span class="s">&quot;Shell&quot;</span>:
+            <span class="k">continue</span>
+        d_lo, d_hi = mesh_bbox(me)
+        outside = (d_lo[<span class="n">0</span>] &lt;= TOL <span class="k">or</span> d_hi[<span class="n">0</span>] &gt;= TILE - TOL <span class="k">or</span>
+                   d_lo[<span class="n">1</span>] &lt;= -WIDTH / <span class="n">2</span> + TOL <span class="k">or</span> d_hi[<span class="n">1</span>] &gt;= WIDTH / <span class="n">2</span> - TOL <span class="k">or</span>
+                   d_lo[<span class="n">2</span>] &lt;= -TOL <span class="k">or</span> d_hi[<span class="n">2</span>] &gt;= HEIGHT - TOL)
+        <span class="k">if</span> outside:
+            fail(<span class="n">9</span>, <span class="s">f&quot;</span><span class="s">detail part </span>{suffix}<span class="s"> reaches a tile boundary </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{d_lo}<span class="s">..</span>{d_hi}<span class="s"> — it would break tiling</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">detail_containment parts=</span>{len(meshes) - <span class="n">1</span>}<span class="s"> all_inside=True</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 7. reuse hygiene: transforms, names, origins -----------------------</span>
+    parts_obs = []
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        ob = bpy.data.objects.new(me.name, me)
+        bpy.context.collection.objects.link(ob)
+        ob.parent = root
+        parts_obs.append(ob)
+    bpy.context.view_layer.update()
+    <span class="k">for</span> ob <span class="k">in</span> parts_obs:
+        <span class="k">if</span> max(abs(s - <span class="n">1.0</span>) <span class="k">for</span> s <span class="k">in</span> ob.scale) &gt; <span class="n">0.0</span>:
+            fail(<span class="n">11</span>, <span class="s">f&quot;</span>{ob.name}<span class="s"> scale </span>{tuple(ob.scale)}<span class="s"> not applied</span><span class="s">&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> ob.name.startswith(<span class="s">&quot;Kit.CorridorSeg.&quot;</span>):
+            fail(<span class="n">11</span>, <span class="s">f&quot;</span><span class="s">datablock name </span>{ob.name!r}<span class="s"> outside the kit namespace</span><span class="s">&quot;</span>)
+        <span class="k">if</span> max(abs(c) <span class="k">for</span> c <span class="k">in</span> ob.location) &gt; <span class="n">0.0</span>:
+            fail(<span class="n">11</span>, <span class="s">f&quot;</span>{ob.name}<span class="s"> origin off the pivot </span>{tuple(ob.location)}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">hygiene parts=</span>{len(parts_obs)}<span class="s"> identity_scale=True origins_at_pivot=True</span><span class="s">&quot;</span>)
+
+    <span class="k">if</span> fails:
+        <span class="k">return</span> fails[<span class="n">0</span>]
+    print(<span class="s">f&quot;</span><span class="s">modular-kit-snap OK tile=</span>{TILE}<span class="s">x</span>{WIDTH}<span class="s">x</span>{HEIGHT}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">boundary=</span>{len(on)}<span class="s">v/</span>{n_boundary}<span class="s">e dev&lt;=</span>{TOL:<span class="s">.0e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">joint yz=</span>{gap:<span class="s">.3e</span>}<span class="s"> bbox_dev=</span>{bbox_dev:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.6</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">return</span> mat
+
+
+SEGMENT_MATS = {
+    <span class="s">&quot;Shell&quot;</span>: (<span class="s">&quot;Shell&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">0.13</span>), <span class="n">0.5</span>, <span class="n">0.8</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Rib&quot;</span>: (<span class="s">&quot;Rib&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.45</span>, <span class="n">0.85</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;FloorPlate&quot;</span>: (<span class="s">&quot;FloorPlate&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.08</span>, <span class="n">0.09</span>), <span class="n">0.6</span>, <span class="n">0.7</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Panel&quot;</span>: (<span class="s">&quot;Panel&quot;</span>, (<span class="n">0.19</span>, <span class="n">0.25</span>, <span class="n">0.33</span>), <span class="n">0.4</span>, <span class="n">0.6</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Trim&quot;</span>: (<span class="s">&quot;Trim&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.35</span>, <span class="n">0.08</span>), <span class="n">0.35</span>, <span class="n">0.3</span>, <span class="k">None</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Light&quot;</span>: (<span class="s">&quot;LightStrip&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.25</span>, <span class="n">0.18</span>), <span class="n">0.5</span>, <span class="n">0.2</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.4</span>), <span class="n">8.0</span>),
+}
+
+
+<span class="k">def</span> mat_for(suffix):
+    key = suffix.split(<span class="s">&quot;.&quot;</span>)[<span class="n">0</span>]
+    name, rgb, rough, metal, emit, estr = SEGMENT_MATS[key]
+    <span class="k">return</span> make_material(name, rgb, rough, metal, emit, estr)
+
+
+<span class="k">def</span> build_kit_objects(sc, x_offset, skew=<span class="n">0.0</span>, nudge=<span class="n">0.0</span>, y_jog=<span class="n">0.0</span>, z_jog=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;One placed segment: root empty at (x_offset, y_jog, z_jog) + all parts.&quot;&quot;&quot;</span>
+    meshes = build_kit_meshes(skew, nudge)
+    root = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Kit.CorridorSeg</span><span class="s">&quot;</span>, <span class="k">None</span>)
+    root.location = (x_offset, y_jog, z_jog)
+    sc.collection.objects.link(root)
+    parts = []
+    <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
+        <span class="k">if</span> <span class="k">not</span> me.materials:
+            me.materials.append(mat_for(suffix))
+        ob = bpy.data.objects.new(me.name, me)
+        sc.collection.objects.link(ob)
+        ob.parent = root
+        parts.append(ob)
+    <span class="k">return</span> [root] + parts
+
+
+<span class="k">def</span> build_studio(sc):
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    <span class="c"># exterior identity rig (VISUAL-STYLE Layer 2)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># corridor fixtures: one warm area per segment under the light strips —</span>
+    <span class="c"># the kit&#x27;s own lighting language, designed with the asset</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+        ld = bpy.data.lights.new(<span class="s">f&quot;</span><span class="s">Fixture</span>{i}<span class="s">&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = <span class="n">130.0</span>
+        ld.size = <span class="n">3.2</span>
+        ld.color = (<span class="n">1.0</span>, <span class="n">0.8</span>, <span class="n">0.55</span>)
+        ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Fixture</span>{i}<span class="s">&quot;</span>, ld)
+        ob.location = (TILE * i + TILE / <span class="n">2</span>, <span class="n">0.0</span>, HEIGHT - WALL - <span class="n">0.12</span>)
+        ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)  <span class="c"># facing straight down (area -Z)</span>
+        sc.collection.objects.link(ob)
+    <span class="k">return</span> floor, wall
+
+
+<span class="k">def</span> build_bulkhead(sc):
+    <span class="s">&quot;&quot;&quot;Presentation focal: a lit door bulkhead capping the far end of the run.
+    Not part of the kit — the corridor&#x27;s destination for this still.&quot;&quot;&quot;</span>
+    frame_mat = make_material(<span class="s">&quot;Bulkhead&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.06</span>, <span class="n">0.07</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.85</span>)
+    door_mat = make_material(<span class="s">&quot;BulkheadDoor&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.16</span>, <span class="n">0.07</span>), rough=<span class="n">0.5</span>,
+                             metallic=<span class="n">0.3</span>, emit=(<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.12</span>), estr=<span class="n">0.6</span>)
+    inner_y = WIDTH / <span class="n">2</span> - WALL
+    end_x = TILE * <span class="n">4</span>
+    parts = []
+    <span class="k">for</span> suffix, dims, center <span class="k">in</span> [
+        (<span class="s">&quot;Post.L&quot;</span>, (<span class="n">0.5</span>, <span class="n">0.35</span>, HEIGHT), (end_x + <span class="n">0.25</span>, inner_y - <span class="n">0.17</span>, HEIGHT / <span class="n">2</span>)),
+        (<span class="s">&quot;Post.R&quot;</span>, (<span class="n">0.5</span>, <span class="n">0.35</span>, HEIGHT), (end_x + <span class="n">0.25</span>, -(inner_y - <span class="n">0.17</span>), HEIGHT / <span class="n">2</span>)),
+        (<span class="s">&quot;Head&quot;</span>, (<span class="n">0.5</span>, <span class="n">2</span> * inner_y, WALL + <span class="n">0.35</span>), (end_x + <span class="n">0.25</span>, <span class="n">0.0</span>, HEIGHT - (WALL + <span class="n">0.35</span>) / <span class="n">2</span>)),
+    ]:
+        me = build_detail(<span class="s">f&quot;</span><span class="s">Bulkhead.</span>{suffix}<span class="s">&quot;</span>, dims, center, <span class="n">0.03</span>)
+        me.materials.append(frame_mat)
+        ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Bulkhead.</span>{suffix}<span class="s">&quot;</span>, me)
+        sc.collection.objects.link(ob)
+        parts.append(ob)
+    door = build_detail(<span class="s">&quot;Bulkhead.Door&quot;</span>, (<span class="n">0.12</span>, <span class="n">1.6</span>, <span class="n">2.1</span>), (end_x + <span class="n">0.55</span>, <span class="n">0.0</span>, <span class="n">1.05</span>))
+    door.materials.append(door_mat)
+    door_ob = bpy.data.objects.new(<span class="s">&quot;Bulkhead.Door&quot;</span>, door)
+    sc.collection.objects.link(door_ob)
+    parts.append(door_ob)
+    <span class="c"># warm spill into the corridor, toward the camera</span>
+    ld = bpy.data.lights.new(<span class="s">&quot;BulkheadSpill&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
+    ld.energy = <span class="n">140.0</span>
+    ld.size = <span class="n">1.8</span>
+    ld.color = (<span class="n">1.0</span>, <span class="n">0.62</span>, <span class="n">0.3</span>)
+    ob = bpy.data.objects.new(<span class="s">&quot;BulkheadSpill&quot;</span>, ld)
+    ob.location = (end_x - <span class="n">0.6</span>, <span class="n">0.0</span>, <span class="n">1.5</span>)
+    ob.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, math.radians(-<span class="n">90</span>))  <span class="c"># face -X</span>
+    sc.collection.objects.link(ob)
+    <span class="c"># cool rim from the mouth behind the camera: lifts the near right wall and</span>
+    <span class="c"># the ceiling edge out of dead black without touching the warm pools</span>
+    rd = bpy.data.lights.new(<span class="s">&quot;MouthRim&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
+    rd.energy = <span class="n">65.0</span>
+    rd.size = <span class="n">2.0</span>
+    rd.color = (<span class="n">0.62</span>, <span class="n">0.76</span>, <span class="n">1.0</span>)
+    rob = bpy.data.objects.new(<span class="s">&quot;MouthRim&quot;</span>, rd)
+    rob.location = (-<span class="n">1.2</span>, -<span class="n">0.9</span>, <span class="n">2.2</span>)
+    rob.rotation_euler = (math.radians(<span class="n">70</span>), <span class="n">0.0</span>, math.radians(-<span class="n">70</span>))
+    sc.collection.objects.link(rob)
+    <span class="k">return</span> parts
+
+
+<span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;A four-segment run. Snapped: joints vanish. Falsified: each segment
+    accumulates a 120 mm x gap, alternating 50 mm y jogs, and 40 mm floor
+    steps, so every joint reads as a seam — the render-scale exaggeration of
+    the failure the check measures at 3 mm (probe_unsnapped).&quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    sc = bpy.context.scene
+
+    all_parts = []
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+        <span class="k">if</span> falsify:
+            obs = build_kit_objects(
+                sc, TILE * i + i * <span class="n">0.12</span>,
+                y_jog=(<span class="n">0.05</span> <span class="k">if</span> i % <span class="n">2</span> <span class="k">else</span> <span class="n">0.0</span>),
+                z_jog=(<span class="n">0.04</span> <span class="k">if</span> i % <span class="n">2</span> <span class="k">else</span> <span class="n">0.0</span>))
+        <span class="k">else</span>:
+            obs = build_kit_objects(sc, TILE * i)
+        all_parts.extend(obs[<span class="n">1</span>:])   <span class="c"># mesh parts only, not the root empties</span>
+    floor, wall = build_studio(sc)
+    bulkhead = build_bulkhead(sc)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">25.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (-<span class="n">0.7</span>, -<span class="n">0.42</span>, <span class="n">1.58</span>)
+    sc.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">10.0</span>, <span class="n">0.35</span>, <span class="n">1.25</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    <span class="c"># Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    <span class="c"># Layer 1 framing gate. The corridor surrounds the camera on five sides</span>
+    <span class="c"># and reads as extending past the frame — a documented deviation class</span>
+    <span class="c"># (radiating architecture), measured and reported by the helper.</span>
+    fcode = gallery_framing.check_framing(
+        sc, cam,
+        hero=all_parts,
+        elements=all_parts + bulkhead,
+        stage=[floor, wall],
+        deviation=<span class="s">&quot;interior corridor run: the envelope surrounds the camera &quot;</span>
+                  <span class="s">&quot;and the tiling joints are the proof; edge bleed is the design&quot;</span>,
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
+                   help=<span class="s">&quot;optional: render the unsnapped-joint seam variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output/--falsify (cycles for GPU-less hosts)&quot;</span>)
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    code = check()
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    <span class="k">if</span> args.falsify:
+        rcode = render_still(os.path.abspath(args.falsify), args.engine, falsify=<span class="k">True</span>)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered falsified variant </span>{args.falsify}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;modular-kit-snap OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/modular-kit-snap-hero.webp" alt="modular-kit-snap render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

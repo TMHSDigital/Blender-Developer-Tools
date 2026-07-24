@@ -185,8 +185,7 @@
         "mesh",
         "materials",
         "attributes"
-      ],
-      "featured_rank": 8
+      ]
     },
     {
       "name": "parent-inverse-orrery",
@@ -503,6 +502,21 @@
         "mesh",
         "game-pipeline"
       ]
+    },
+    {
+      "name": "modular-kit-snap",
+      "dir": "examples/modular-kit-snap",
+      "teaches": "A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.",
+      "witnessesFix": "16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.",
+      "hero": "docs/gallery/assets/modular-kit-snap-hero.webp",
+      "preview": "examples/modular-kit-snap/preview.webp",
+      "tags": [
+        "mesh",
+        "bmesh",
+        "game-pipeline",
+        "instancing"
+      ],
+      "featured_rank": 8
     }
   ]
 }
