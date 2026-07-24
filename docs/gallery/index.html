@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">40 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">41 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -760,6 +760,17 @@
           <p class="teaches">Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data.</p>
           <p class="witnesses"><span class="tag">witnesses</span> At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.</p>
           <a class="card-link" href="degenerate-bevel-weld/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh bmesh game-pipeline instancing">
+        <a class="card-media" href="modular-kit-snap/" aria-label="modular-kit-snap example detail page">
+          <img src="assets/modular-kit-snap-hero.webp" alt="modular-kit-snap — A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="modular-kit-snap/">modular-kit-snap</a></h2>
+          <p class="teaches">A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> 16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.</p>
+          <a class="card-link" href="modular-kit-snap/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

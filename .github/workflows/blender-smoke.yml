@@ -566,3 +566,16 @@ jobs:
           # Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/degenerate-bevel-weld/degenerate_bevel_weld.py --
+
+      - name: Shipped example - modular kit snap (tile boundary contract)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a 4x3x3 corridor segment; asserts 16
+          # boundary verts on x in {0, TILE} within 1e-6, end-ring coincidence
+          # within 1e-6, a linked duplicate's joint positions matching within
+          # 1e-6, shell bbox == declared tile (dev 0), manifold shell except
+          # the 16 open-end edges, watertight detail parts contained inside
+          # the tile, and reuse hygiene (identity scales, kit names, pivot
+          # origins). Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/modular-kit-snap/modular_kit_snap.py --
