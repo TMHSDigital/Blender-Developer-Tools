@@ -517,6 +517,19 @@
         "instancing"
       ],
       "featured_rank": 8
+    },
+    {
+      "name": "lightmap-uv-channel",
+      "dir": "examples/lightmap-uv-channel",
+      "teaches": "A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.",
+      "witnessesFix": "Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 1114 islands with 0 SAT overlaps, min island distance 0.00401.",
+      "hero": "docs/gallery/assets/lightmap-uv-channel-hero.webp",
+      "preview": "examples/lightmap-uv-channel/preview.webp",
+      "tags": [
+        "uv",
+        "game-pipeline",
+        "render"
+      ]
     }
   ]
 }

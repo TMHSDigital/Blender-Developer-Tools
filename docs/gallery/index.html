@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">41 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">42 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -771,6 +771,17 @@
           <p class="teaches">A tiling corridor kit whose open-end boundary verts snap to the tile grid, so instances at 4 m multiples join with zero gap or overlap.</p>
           <p class="witnesses"><span class="tag">witnesses</span> 16 boundary verts on x∈{0,4} within 1e-6 m, linked-duplicate joint deviation 0.0, bbox == declared tile; unsnapped probe fails at 3e-3 m.</p>
           <a class="card-link" href="modular-kit-snap/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="uv game-pipeline render">
+        <a class="card-media" href="lightmap-uv-channel/" aria-label="lightmap-uv-channel example detail page">
+          <img src="assets/lightmap-uv-channel-hero.webp" alt="lightmap-uv-channel — A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="lightmap-uv-channel/">lightmap-uv-channel</a></h2>
+          <p class="teaches">A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 1114 islands with 0 SAT overlaps, min island distance 0.00401.</p>
+          <a class="card-link" href="lightmap-uv-channel/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>
