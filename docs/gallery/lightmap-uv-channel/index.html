@@ -253,21 +253,21 @@
       <img src="../assets/lightmap-uv-channel-hero.webp" alt="lightmap-uv-channel render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 1114 islands with 0 SAT overlaps, min island distance 0.00401.</div>
+    <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 3680 islands with 0 SAT overlaps, min island distance 0.00401.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/lightmap-uv-channel/lightmap_uv_channel.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart (bed, axle, two wheels, four posts, arched canvas canopy — ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks, watertight parts throughout). UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
+<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 21 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, real wheel assemblies (disc + hub + iron band + bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
 <p><strong>What it witnesses</strong> (all independently derived, nothing trusted from the packer):</p>
 <ul><li><strong>The flag trap.</strong> <code>uv_layers.new()</code> does <strong>not</strong> move the active flags — the first layer keeps <code>active</code> + <code>active_render</code>, so a UV op runs against channel 0 unless you move <code>active</code> yourself (probed: unwrap+pack with the flags unmoved destroys channel 0, measured drift <strong>2.068</strong>). Worse, the edit-mode UV ops <strong>clear both flags</strong> — the sequence must re-assert them. The check pins, per part: exactly two layers <code>UVMap</code>/<code>UVLight</code>, <code>active == UVLight</code> (edit target), <code>active_render == UVMap</code> (render target).</li><li><strong>Channel zero untouched.</strong> UV0 loops snapshotted before the UVLight unwrap, compared after: drift <strong>0.0</strong> on every part (tol 1e-6).</li><li><strong>Bounds.</strong> Every UVLight loop inside <code>[0, 1]</code> within 1e-5.</li><li><strong>Non-overlap.</strong> UV1 triangles binned into a 256² spatial hash and tested pairwise with strict SAT (epsilon-separated, so shared edges don&#x27;t count): <strong>0</strong> overlapping pairs.</li><li><strong>Margin.</strong> <code>MARGIN_DIV</code> semantics measured live: nominal margin == <code>MARGIN_DIV × 0.01</code> UV units; the check requires the measured min island-pair distance ≥ half the nominal — measured <strong>0.00401</strong> (≈ 2× the nominal 0.002, the packer&#x27;s per-island margin applied twice).</li><li><strong>Island census + watertight parts.</strong> Connected components counted independently per part; loops conserved; every part manifold.</li></ul>
 <p><strong>What each check catches on failure:</strong> wrong layer names/count (exit 3); flags not re-established after the ops (exit 4); channel 0 touched by the UV1 unwrap (exit 5 — probed via the clobber trap, drift 2.068); UV1 loops outside the unit square (exit 6); overlapping islands (exit 7 — probed by translating an island onto a neighbor, 15 SAT hits); margin floor broken (exit 8 — probed with <code>MARGIN_DIV=0</code>, measured 2e-5 &lt; 0.001); non-watertight part (exit 9).</p>
 <p><strong>Authoring hazards pinned while building this</strong> (probes in <code>.scratch</code>-style bisect scripts; the reasons the check code re-fetches layers by name and re-asserts flags):</p>
 <ul><li>Holding a <code>MeshUVLoopLayer</code> reference across edit-mode UV ops and then iterating its <code>.data</code> <strong>segfaults Blender 4.5.11 headless</strong> (<code>EXCEPTION_ACCESS_VIOLATION</code>, 5/5 repro); the same read survives on 5.1.2. Re-fetch <code>mesh.uv_layers[name]</code> after CustomData-reallocating calls. Second confirmation of the UV-handle lifetime hazard found authoring <code>triangulate-tangents</code>.</li><li><code>bpy.ops.uv.lightmap_pack</code> <strong>silently packs nothing</strong> (exit OK) when the active layer has no UVs yet — unwrap first, then pack.</li></ul>
 <p><strong>Pipeline arc neighbors:</strong> UV-layer authoring in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/uv-layer-grid"><code>uv-layer-grid</code></a>, tangent-space from UVs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export round-trip in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, pivot discipline in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform"><code>prop-origin-transform</code></a>.</p>
-<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (9 parts, 1114 islands, drift 0, overlap 0, min island distance 0.00401). The UV *layout* is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
-<p><strong>Render as proof:</strong> the cart beside its UV1 atlas board — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe).</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance 0.00401). The UV *layout* is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
+<p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas board — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 21 named parts, 5 materials, right-angle share 0.069.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python lightmap_uv_channel.py --
 blender --background --python lightmap_uv_channel.py -- --output atlas.png
@@ -327,6 +327,7 @@ check. Pass --output to also render a still:
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 TOL = <span class="n">1e-6</span>            <span class="c"># UV0 preservation tolerance</span>
 BOUNDS_TOL = <span class="n">1e-5</span>     <span class="c"># UV1 unit-square slack</span>
@@ -370,11 +371,11 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="k">return</span> me
 
 
-<span class="k">def</span> _wheel(name, radius, width, center):
+<span class="k">def</span> _wheel_disc(name, radius, width, center):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=<span class="n">20</span>,
+        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=<span class="n">24</span>,
                               radius1=radius, radius2=radius, depth=width)
         <span class="c"># cone axis is Z; the wheel rolls around Y -&gt; rotate verts, applied in data</span>
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
@@ -388,37 +389,135 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="k">return</span> me
 
 
+<span class="k">def</span> _ring(name, r_out, r_in, width, center, segments=<span class="n">24</span>):
+    <span class="s">&quot;&quot;&quot;Flat annulus (iron tire band) spun from a 4-vert profile, watertight.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        hw = width / <span class="n">2</span>
+        prof = [(r_in, -hw), (r_out, -hw), (r_out, hw), (r_in, hw)]
+        vs = [bm.verts.new((r, <span class="n">0.0</span>, z)) <span class="k">for</span> r, z <span class="k">in</span> prof]
+        es = [bm.edges.new((vs[i], vs[(i + <span class="n">1</span>) % <span class="n">4</span>])) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
+        bmesh.ops.spin(bm, geom=vs + es, cent=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                       axis=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>), dvec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                       angle=<span class="n">2</span> * math.pi, steps=segments, use_merge=<span class="k">True</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            x, y, z = v.co.x, v.co.y, v.co.z
+            v.co = (x + center[<span class="n">0</span>], z + center[<span class="n">1</span>], y + center[<span class="n">2</span>])
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _bolt_ring(name, count, ring_r, bolt_r, center):
+    <span class="s">&quot;&quot;&quot;count bolt heads on a ring around Y — one mesh, disconnected islands.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> i <span class="k">in</span> range(count):
+            a = <span class="n">2</span> * math.pi * i / count
+            cx, cz = center[<span class="n">0</span>] + ring_r * math.cos(a), center[<span class="n">2</span>] + ring_r * math.sin(a)
+            before_v = set(bm.verts)
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">8</span>, v_segments=<span class="n">6</span>, radius=bolt_r)
+            <span class="k">for</span> v <span class="k">in</span> set(bm.verts) - before_v:
+                v.co.x += cx
+                v.co.y += center[<span class="n">1</span>]
+                v.co.z += cz
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _arc_band(bm, xc, width, radius, thickness, z0, segments):
+    <span class="s">&quot;&quot;&quot;One arched sheet spanning x in [xc, xc+width], solidified with rims.&quot;&quot;&quot;</span>
+    sweep = math.radians(<span class="n">120.0</span>)
+    a0 = math.radians(<span class="n">90.0</span>) - sweep / <span class="n">2</span>
+    outer, inner = [], []
+    <span class="k">for</span> i <span class="k">in</span> range(segments + <span class="n">1</span>):
+        a = a0 + sweep * i / segments
+        ca, sa = math.cos(a), math.sin(a)
+        outer.append(bm.verts.new((xc, radius * ca, z0 + radius * sa)))
+        inner.append(bm.verts.new((xc, (radius - thickness) * ca,
+                                   z0 + (radius - thickness) * sa)))
+    <span class="k">def</span> band(ring_o, ring_i):
+        <span class="k">for</span> i <span class="k">in</span> range(segments):
+            a, b = i, i + <span class="n">1</span>
+            bm.faces.new((ring_o[a], ring_o[b], ring_i[b], ring_i[a]))
+    outer_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> outer]
+    inner_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> inner]
+    band(outer, inner)               <span class="c"># underside (thickness face)</span>
+    band(inner_x2, outer_x2)         <span class="c"># top face</span>
+    <span class="k">for</span> i <span class="k">in</span> range(segments):        <span class="c"># the two long rims</span>
+        a, b = i, i + <span class="n">1</span>
+        bm.faces.new((outer[a], outer_x2[a], outer_x2[b], outer[b]))
+        bm.faces.new((inner[a], inner[b], inner_x2[b], inner_x2[a]))
+    bm.faces.new((outer[<span class="n">0</span>], inner[<span class="n">0</span>], inner_x2[<span class="n">0</span>], outer_x2[<span class="n">0</span>]))
+    bm.faces.new((outer[-<span class="n">1</span>], outer_x2[-<span class="n">1</span>], inner_x2[-<span class="n">1</span>], inner[-<span class="n">1</span>]))
+
+
 <span class="k">def</span> _canopy(name, width, radius, thickness, z0, segments=<span class="n">14</span>):
     <span class="s">&quot;&quot;&quot;Arched canvas sheet: an arc band solidified with a rim, watertight.&quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        sweep = math.radians(<span class="n">120.0</span>)
-        a0 = math.radians(<span class="n">90.0</span>) - sweep / <span class="n">2</span>
-        outer, inner = [], []
-        <span class="k">for</span> i <span class="k">in</span> range(segments + <span class="n">1</span>):
-            a = a0 + sweep * i / segments
-            ca, sa = math.cos(a), math.sin(a)
-            outer.append(bm.verts.new((-width / <span class="n">2</span>, radius * ca, z0 + radius * sa)))
-            inner.append(bm.verts.new((-width / <span class="n">2</span>, (radius - thickness) * ca,
-                                       z0 + (radius - thickness) * sa)))
-        <span class="k">def</span> band(off_x, ring_o, ring_i):
-            <span class="k">for</span> i <span class="k">in</span> range(segments):
-                a, b = i, i + <span class="n">1</span>
-                bm.faces.new((ring_o[a], ring_o[b], ring_i[b], ring_i[a]))
-        outer_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> outer]
-        inner_x2 = [bm.verts.new((v.co.x + width, v.co.y, v.co.z)) <span class="k">for</span> v <span class="k">in</span> inner]
-        band(<span class="n">0</span>, outer, inner)          <span class="c"># underside (thickness face)</span>
-        band(width, inner_x2, outer_x2)  <span class="c"># top face</span>
-        <span class="k">for</span> i <span class="k">in</span> range(segments):      <span class="c"># the two long rims</span>
-            a, b = i, i + <span class="n">1</span>
-            bm.faces.new((outer[a], outer_x2[a], outer_x2[b], outer[b]))
-            bm.faces.new((inner[a], inner[b], inner_x2[b], inner_x2[a]))
-        <span class="k">for</span> ring <span class="k">in</span> ((outer, outer_x2), (inner, inner_x2)):  <span class="c"># end caps</span>
-            <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, segments):
-                <span class="k">pass</span>
-        bm.faces.new((outer[<span class="n">0</span>], inner[<span class="n">0</span>], inner_x2[<span class="n">0</span>], outer_x2[<span class="n">0</span>]))
-        bm.faces.new((outer[-<span class="n">1</span>], outer_x2[-<span class="n">1</span>], inner_x2[-<span class="n">1</span>], inner[-<span class="n">1</span>]))
+        _arc_band(bm, -width / <span class="n">2</span>, width, radius, thickness, z0, segments)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _canopy_ribs(name, positions, width, radius, thickness, z0, segments=<span class="n">14</span>):
+    <span class="s">&quot;&quot;&quot;Thin wooden ribs following the canopy arc, one mesh, N islands.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> px <span class="k">in</span> positions:
+            _arc_band(bm, px - width / <span class="n">2</span>, width, radius, thickness, z0, segments)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _bolts(name, positions, radius):
+    <span class="s">&quot;&quot;&quot;Bolt head spheres at positions — one mesh, disconnected islands.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> px, py, pz <span class="k">in</span> positions:
+            before_v = set(bm.verts)
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">8</span>, v_segments=<span class="n">6</span>, radius=radius)
+            <span class="k">for</span> v <span class="k">in</span> set(bm.verts) - before_v:
+                v.co.x += px
+                v.co.y += py
+                v.co.z += pz
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> _multi_box(name, specs):
+    <span class="s">&quot;&quot;&quot;Several beveled boxes as one mesh (disconnected islands, each
+    watertight). specs: (dims, center, bevel).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> dims, center, bevel <span class="k">in</span> specs:
+            before_e = set(bm.edges)
+            before_v = set(bm.verts)
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            new_edges = list(set(bm.edges) - before_e)
+            <span class="k">for</span> v <span class="k">in</span> set(bm.verts) - before_v:
+                v.co.x = v.co.x * dims[<span class="n">0</span>] + center[<span class="n">0</span>]
+                v.co.y = v.co.y * dims[<span class="n">1</span>] + center[<span class="n">1</span>]
+                v.co.z = v.co.z * dims[<span class="n">2</span>] + center[<span class="n">2</span>]
+            <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+                bmesh.ops.bevel(bm, geom=new_edges, offset=bevel, segments=<span class="n">2</span>,
+                                profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
@@ -426,16 +525,43 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
 
 
 <span class="k">def</span> build_cart_meshes():
+    <span class="s">&quot;&quot;&quot;The cart as an assembly of named, watertight parts: real wheel
+    assemblies (disc + hub + iron band + bolt ring), plank-grooved bed with
+    side rails, corner brackets, and fasteners, and a ribbed canvas canopy.&quot;&quot;&quot;</span>
     parts = {}
     parts[<span class="s">&quot;Bed&quot;</span>] = _box(<span class="s">&quot;Cart.Bed&quot;</span>, (<span class="n">2.2</span>, <span class="n">1.2</span>, <span class="n">0.22</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.85</span>), <span class="n">0.03</span>)
-    parts[<span class="s">&quot;Axle&quot;</span>] = _wheel(<span class="s">&quot;Cart.Axle&quot;</span>, <span class="n">0.05</span>, <span class="n">1.5</span>, (<span class="n">0.55</span>, <span class="n">0.0</span>, <span class="n">0.5</span>))
-    parts[<span class="s">&quot;Wheel.L&quot;</span>] = _wheel(<span class="s">&quot;Cart.Wheel.L&quot;</span>, <span class="n">0.45</span>, <span class="n">0.12</span>, (<span class="n">0.55</span>, <span class="n">0.68</span>, <span class="n">0.45</span>))
-    parts[<span class="s">&quot;Wheel.R&quot;</span>] = _wheel(<span class="s">&quot;Cart.Wheel.R&quot;</span>, <span class="n">0.45</span>, <span class="n">0.12</span>, (<span class="n">0.55</span>, -<span class="n">0.68</span>, <span class="n">0.45</span>))
+    parts[<span class="s">&quot;Bed.Rails&quot;</span>] = _multi_box(<span class="s">&quot;Cart.Bed.Rails&quot;</span>, [
+        ((<span class="n">2.2</span>, <span class="n">0.06</span>, <span class="n">0.18</span>), (<span class="n">0.0</span>, <span class="n">0.57</span>, <span class="n">1.02</span>), <span class="n">0.015</span>),
+        ((<span class="n">2.2</span>, <span class="n">0.06</span>, <span class="n">0.18</span>), (<span class="n">0.0</span>, -<span class="n">0.57</span>, <span class="n">1.02</span>), <span class="n">0.015</span>)])
+    parts[<span class="s">&quot;Bed.Grooves&quot;</span>] = _multi_box(<span class="s">&quot;Cart.Bed.Grooves&quot;</span>, [
+        ((<span class="n">0.035</span>, <span class="n">1.14</span>, <span class="n">0.015</span>), (x, <span class="n">0.0</span>, <span class="n">0.9575</span>), <span class="n">0.0</span>)
+        <span class="k">for</span> x <span class="k">in</span> (-<span class="n">0.66</span>, -<span class="n">0.22</span>, <span class="n">0.22</span>, <span class="n">0.66</span>)])
+    parts[<span class="s">&quot;Bed.Brackets&quot;</span>] = _multi_box(<span class="s">&quot;Cart.Bed.Brackets&quot;</span>, [
+        ((<span class="n">0.03</span>, <span class="n">0.13</span>, <span class="n">0.26</span>), (sx * <span class="n">1.105</span>, sy * <span class="n">0.535</span>, <span class="n">0.85</span>), <span class="n">0.008</span>)
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)])
+    parts[<span class="s">&quot;Bed.Bolts&quot;</span>] = _bolts(<span class="s">&quot;Cart.Bed.Bolts&quot;</span>, [
+        (sx * <span class="n">1.125</span>, sy * <span class="n">0.535</span>, z) <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)
+        <span class="k">for</span> z <span class="k">in</span> (<span class="n">0.78</span>, <span class="n">0.92</span>)], <span class="n">0.018</span>)
+    parts[<span class="s">&quot;Axle&quot;</span>] = _wheel_disc(<span class="s">&quot;Cart.Axle&quot;</span>, <span class="n">0.05</span>, <span class="n">1.56</span>, (<span class="n">0.55</span>, <span class="n">0.0</span>, <span class="n">0.5</span>))
+    parts[<span class="s">&quot;Axle.Caps&quot;</span>] = _multi_box(<span class="s">&quot;Cart.Axle.Caps&quot;</span>, [
+        ((<span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">0.14</span>), (<span class="n">0.55</span>, sy * <span class="n">0.80</span>, <span class="n">0.5</span>), <span class="n">0.02</span>) <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)])
+    <span class="k">for</span> tag, sy <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, <span class="n">1.0</span>), (<span class="s">&quot;R&quot;</span>, -<span class="n">1.0</span>)):
+        y = sy * <span class="n">0.68</span>
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>] = _wheel_disc(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>, <span class="n">0.45</span>, <span class="n">0.10</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>] = _wheel_disc(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>, <span class="n">0.14</span>, <span class="n">0.16</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>] = _ring(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>, <span class="n">0.47</span>, <span class="n">0.435</span>, <span class="n">0.10</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
+        parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>] = _bolt_ring(
+            <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>, <span class="n">6</span>, <span class="n">0.09</span>, <span class="n">0.02</span>, (<span class="n">0.55</span>, y + sy * <span class="n">0.085</span>, <span class="n">0.45</span>))
     <span class="k">for</span> tag, (px, py) <span class="k">in</span> ((<span class="s">&quot;FL&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;FR&quot;</span>, (<span class="n">0.95</span>, -<span class="n">0.48</span>)),
                           (<span class="s">&quot;RL&quot;</span>, (-<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;RR&quot;</span>, (-<span class="n">0.95</span>, -<span class="n">0.48</span>))):
         parts[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = _box(<span class="s">f&quot;</span><span class="s">Cart.Post.</span>{tag}<span class="s">&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">1.35</span>),
                                     (px, py, <span class="n">1.55</span>), <span class="n">0.015</span>)
     parts[<span class="s">&quot;Canopy&quot;</span>] = _canopy(<span class="s">&quot;Cart.Canopy&quot;</span>, <span class="n">2.3</span>, <span class="n">0.85</span>, <span class="n">0.04</span>, <span class="n">1.9</span>)
+    parts[<span class="s">&quot;Canopy.Ribs&quot;</span>] = _canopy_ribs(<span class="s">&quot;Cart.Canopy.Ribs&quot;</span>, (-<span class="n">0.75</span>, <span class="n">0.0</span>, <span class="n">0.75</span>),
+                                        <span class="n">0.07</span>, <span class="n">0.875</span>, <span class="n">0.035</span>, <span class="n">1.9</span>)
     <span class="k">return</span> parts
 
 
@@ -794,18 +920,30 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
 
-    wood = make_material(<span class="s">&quot;Wood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.26</span>, <span class="n">0.13</span>), rough=<span class="n">0.6</span>)
+    wood = make_material(<span class="s">&quot;Wood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.22</span>, <span class="n">0.10</span>), rough=<span class="n">0.55</span>)
     darkwood = make_material(<span class="s">&quot;DarkWood&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.10</span>, <span class="n">0.05</span>), rough=<span class="n">0.7</span>)
-    iron = make_material(<span class="s">&quot;Iron&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.18</span>, <span class="n">0.20</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.9</span>)
+    iron = make_material(<span class="s">&quot;Iron&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.26</span>, <span class="n">0.30</span>), rough=<span class="n">0.3</span>, metallic=<span class="n">0.9</span>)
     canvas = make_material(<span class="s">&quot;Canvas&quot;</span>, (<span class="n">0.66</span>, <span class="n">0.56</span>, <span class="n">0.40</span>), rough=<span class="n">0.9</span>)
+    groovemat = make_material(<span class="s">&quot;Groove&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.04</span>, <span class="n">0.03</span>), rough=<span class="n">0.9</span>)
 
-    mats = {<span class="s">&quot;Bed&quot;</span>: wood, <span class="s">&quot;Axle&quot;</span>: iron, <span class="s">&quot;Wheel.L&quot;</span>: darkwood, <span class="s">&quot;Wheel.R&quot;</span>: darkwood,
-            <span class="s">&quot;Canopy&quot;</span>: canvas}
+    mat_by_part = {
+        <span class="s">&quot;Bed&quot;</span>: wood, <span class="s">&quot;Bed.Rails&quot;</span>: wood, <span class="s">&quot;Bed.Grooves&quot;</span>: groovemat,
+        <span class="s">&quot;Bed.Brackets&quot;</span>: iron, <span class="s">&quot;Bed.Bolts&quot;</span>: iron,
+        <span class="s">&quot;Axle&quot;</span>: iron, <span class="s">&quot;Axle.Caps&quot;</span>: iron,
+        <span class="s">&quot;Canopy&quot;</span>: canvas, <span class="s">&quot;Canopy.Ribs&quot;</span>: darkwood,
+    }
+    <span class="k">for</span> tag <span class="k">in</span> (<span class="s">&quot;L&quot;</span>, <span class="s">&quot;R&quot;</span>):
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Disc</span><span class="s">&quot;</span>] = darkwood
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Hub</span><span class="s">&quot;</span>] = darkwood
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>] = iron
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>] = iron
+    <span class="k">for</span> tag <span class="k">in</span> (<span class="s">&quot;FL&quot;</span>, <span class="s">&quot;FR&quot;</span>, <span class="s">&quot;RL&quot;</span>, <span class="s">&quot;RR&quot;</span>):
+        mat_by_part[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = darkwood
+
     parts_obs = []
     meshes = build_cart_meshes()
     <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():
-        me.materials.append(mats.get(suffix.split(<span class="s">&quot;.&quot;</span>)[<span class="n">0</span>], wood)
-                            <span class="k">if</span> <span class="k">not</span> suffix.startswith(<span class="s">&quot;Post&quot;</span>) <span class="k">else</span> wood)
+        me.materials.append(mat_by_part[suffix])
         me.uv_layers.new(name=LAYER0)
         me.uv_layers.new(name=LAYER1)
         write_uv0_box_projection(me)
@@ -835,10 +973,10 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     <span class="c"># atlas board: the Bed&#x27;s live UV1 as flat island polygons mapped onto the</span>
     <span class="c"># board face — a change in the packed atlas moves the board geometry</span>
     board_mat = make_material(<span class="s">&quot;Board&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.04</span>, <span class="n">0.05</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.4</span>)
-    board = _box(<span class="s">&quot;Atlas.Board&quot;</span>, (<span class="n">0.07</span>, <span class="n">1.7</span>, <span class="n">1.7</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.02</span>)
+    board = _box(<span class="s">&quot;Atlas.Board&quot;</span>, (<span class="n">0.08</span>, <span class="n">2.2</span>, <span class="n">2.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.02</span>)
     board.materials.append(board_mat)
     board_ob = bpy.data.objects.new(<span class="s">&quot;Atlas.Board&quot;</span>, board)
-    board_ob.location = (<span class="n">1.75</span>, <span class="n">0.55</span>, <span class="n">1.0</span>)
+    board_ob.location = (<span class="n">2.05</span>, <span class="n">0.55</span>, <span class="n">1.15</span>)
     sc.collection.objects.link(board_ob)
 
     bed = meshes[<span class="s">&quot;Bed&quot;</span>]
@@ -853,7 +991,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         bm = bmesh.new()
         <span class="k">try</span>:
             <span class="c"># board face: +X side; UV [0,1]^2 -&gt; y,z on the face (u -&gt; -y, v -&gt; z)</span>
-            vs = [bm.verts.new((<span class="n">0.0</span>, (<span class="n">0.5</span> - uv[<span class="n">0</span>]) * <span class="n">1.5</span>, (uv[<span class="n">1</span>] - <span class="n">0.5</span>) * <span class="n">1.5</span>))
+            vs = [bm.verts.new((<span class="n">0.0</span>, (<span class="n">0.5</span> - uv[<span class="n">0</span>]) * <span class="n">1.9</span>, (uv[<span class="n">1</span>] - <span class="n">0.5</span>) * <span class="n">1.9</span>))
                   <span class="k">for</span> uv <span class="k">in</span> pts]
             bm.faces.new(vs)
             bm.to_mesh(me)
@@ -864,7 +1002,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         me.materials.append(make_material(<span class="s">f&quot;</span><span class="s">IslandMat</span>{fi}<span class="s">&quot;</span>, rgb, rough=<span class="n">0.5</span>,
                                           emit=rgb, estr=<span class="n">1.6</span> <span class="k">if</span> defect <span class="k">else</span> <span class="n">0.5</span>))
         ob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Atlas.Island.</span>{fi}<span class="s">&quot;</span>, me)
-        ob.location = (<span class="n">1.75</span> + <span class="n">0.037</span> + (<span class="n">0.004</span> <span class="k">if</span> fi <span class="k">in</span> dragged <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.55</span>, <span class="n">1.0</span>)
+        ob.location = (<span class="n">2.05</span> + <span class="n">0.045</span> + (<span class="n">0.004</span> <span class="k">if</span> fi <span class="k">in</span> dragged <span class="k">else</span> <span class="n">0.0</span>), <span class="n">0.55</span>, <span class="n">1.15</span>)
         sc.collection.objects.link(ob)
         iso_obs.append(ob)
 
@@ -873,10 +1011,10 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">47.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">5.4</span>, -<span class="n">6.6</span>, <span class="n">2.7</span>)
+    cam.location = (<span class="n">5.9</span>, -<span class="n">7.2</span>, <span class="n">2.8</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.75</span>, <span class="n">0.1</span>, <span class="n">1.08</span>)
+    aim.location = (<span class="n">0.85</span>, <span class="n">0.1</span>, <span class="n">1.05</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
@@ -907,6 +1045,10 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=hero, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)

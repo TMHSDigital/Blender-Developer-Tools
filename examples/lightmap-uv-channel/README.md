@@ -1,10 +1,15 @@
 # Lightmap UV Channel
 
 A runnable example building the second UV layer engines require for baked
-lighting, on an asset built to be reused: a market cart (bed, axle, two
-wheels, four posts, arched canvas canopy — ground-level pivot at `z=0`,
-identity transforms by construction, `Cart.*` datablocks, watertight parts
-throughout). UV0 is the texture channel (deterministic dominant-axis box
+lighting, on an asset built to be reused: a market cart assembled from
+21 named, watertight parts — a plank-grooved bed with side rails, corner
+brackets, and fasteners, real wheel assemblies (disc + hub + iron band +
+bolt ring) on a capped axle, four posts, and a ribbed canvas canopy.
+Ground-level pivot at `z=0`, identity transforms by construction, `Cart.*`
+datablocks. (An earlier revision shipped a soft uniform-tan cart with
+lumpy polygon wheels and was remodeled under the asset-quality gate;
+its wheel material was also silently never applied — a name-key lookup
+bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box
 projection per face); UVLight is the baked-lighting atlas
 (`smart_project` → `lightmap_pack`).
 
@@ -60,15 +65,19 @@ layers by name and re-asserts flags):
 [`prop-origin-transform`](../prop-origin-transform/).
 
 **Version witness:** check output is byte-identical on Blender 4.5.11 LTS
-and 5.1.2 (9 parts, 1114 islands, drift 0, overlap 0, min island distance
+and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance
 0.00401). The UV *layout* is packer-version-dependent by design; the
 contracts are layout-independent invariants.
 
-**Render as proof:** the cart beside its UV1 atlas board — the Bed's
-packed lightmap built from live UV data, so a change in the atlas moves
-the board geometry. The falsification variant (`--falsify`) translates the
-second-largest island onto the largest: a big emissive-red island visibly
-stacked over the atlas (15 SAT hits in the check probe).
+**Render as proof:** the cart beside its enlarged UV1 atlas board — the
+Bed's packed lightmap built from live UV data, so a change in the atlas
+moves the board geometry. The falsification variant (`--falsify`)
+translates the second-largest island onto the largest: a big emissive-red
+island visibly stacked over the atlas (15 SAT hits in the check probe).
+The render path also gates the asset itself through
+`examples/gallery_asset_quality.py` (naming, material variation, edge
+treatment — exit 11): 21 named parts, 5 materials, right-angle share
+0.069.
 
 ## Run
 
