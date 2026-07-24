@@ -530,6 +530,20 @@
         "game-pipeline",
         "render"
       ]
+    },
+    {
+      "name": "socket-attach-points",
+      "dir": "examples/socket-attach-points",
+      "teaches": "A survey drone whose named SKT_ empties are the spawn contract: modules parented with an identity local transform seat exactly on their mount pads.",
+      "witnessesFix": "7 socket world matrices within 1.788e-07 of the authored transform, socket +Z == the pad's Newell normal (1.794e-07), seating offset 0.0; the no-parent-inverse probe jumps 0.690128 m.",
+      "hero": "docs/gallery/assets/socket-attach-points-hero.webp",
+      "preview": "examples/socket-attach-points/preview.webp",
+      "tags": [
+        "mesh",
+        "transforms",
+        "game-pipeline",
+        "instancing"
+      ]
     }
   ]
 }
