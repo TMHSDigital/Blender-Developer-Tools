@@ -21,7 +21,7 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 12 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
 templates/<template-name>/     - Starter projects, 2 total
 snippets/<snippet-name>.py     - Standalone code patterns, 17 total
-examples/<name>/               - Runnable smoke-gated examples, 40 total (+ gallery.json)
+examples/<name>/               - Runnable smoke-gated examples, 44 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
@@ -82,11 +82,11 @@ v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh 
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
-## Examples (40)
+## Examples (44)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
-`--output`. All forty run headless on Blender 4.5 LTS and 5.1 in `blender-smoke.yml`;
+`--output`. All of them run headless on Blender 4.5 LTS and 5.1 in `blender-smoke.yml`;
 their renders ship in the site gallery at `docs/gallery/`. `examples/gallery.json` is the
 gallery's source of truth. When authoring a new one, copy the anatomy of
 `examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and
@@ -127,7 +127,7 @@ Stage with **explicit paths only** — never `git add -A` or `git add .`. Cursor
 - **Asset-sheet gate (asset-type examples — game props/kits):** composite the hero asset rendered alone (neutral three-quarter view, plain studio lighting, no staging tricks, no labels, no comparison props) beside the pinned asset-quality reference set — currently `collision-hull-proxy`, `custom-normals-shade`, `vertex-weight-limit`, `lod-decimate-chain` — rendered the same way; commit under `docs/gallery/asset-sheets/`, link it in the PR body, and report a verdict. The asset ships only if it is not identifiable as the least-designed object in that lineup — a strong scene can carry a weak model; this gate removes the scene. **This list is the canonical home of the reference set** — update it here when a new asset outclasses a member. The measurable floors behind the gate (naming, material variation, edge treatment) live in `examples/gallery_asset_quality.py` — render path only, same call pattern as `gallery_framing`, exit 11 on violation — with the calibration table and dropped-floor evidence in `docs/VISUAL-STYLE.md` § Asset quality.
 - **Falsification:** every check must be proven to fail once — break the contract, observe the non-zero exit, restore — with the probe and the measured error reported in the PR body. An assertion that cannot fail witnesses nothing.
 - **After gallery regeneration** (`python scripts/build_gallery.py`), read the **generated HTML** character by character — the `<img alt>` text and witnesses callouts in `docs/gallery/index.html` and `docs/gallery/<name>/index.html` — not just `examples/gallery.json`. Precedent: the `teaches.split(".")[0]` bug truncated 14/21 card alts at dotted API paths like `bmesh.ops` while the source JSON looked fine (fixed in PR #68).
-- **Playwright gallery captures:** gallery `<img>` tags lazy-load, and Chromium scroll-anchoring defeats `scrollTo(0, 0)` after images load — take full-page captures and crop locally, not scroll-then-shoot.
+- **Playwright gallery captures:** gallery `<img>` tags lazy-load, so force them first (`document.querySelectorAll('img').forEach(i => i.loading = 'eager')`, then wait). **Scroll the target card into view and take a viewport capture** — `scrollIntoView({block:'center', behavior:'instant'})`, short wait, `browser_take_screenshot` with `fullPage` omitted. A `fullPage` capture is NOT a workaround: on a tall gallery page it renders every card image blank even when the images are verified loaded (`complete === true`, `naturalWidth === 1280`, `opacity === 1`) — measured on the 44-card grid at 1425x4516. Verify load state via `browser_evaluate` rather than trusting the pixels.
 
 ## Example-Run Process
 

@@ -157,6 +157,23 @@ hand-tuned to pass everything is not one either:
   assignment, invisible to a per-part share (both measure 1.0 dominant).
   Printed as information only.
 
+### Status: what the floors have actually caught
+
+Recorded honestly so nobody mistakes a floor pass for a quality verdict.
+**No floor has ever bound on a shipped asset.** Every example that reached
+the asset sheet had already cleared naming, material variation and edge
+treatment. More pointedly, `socket-attach-points` passed all three on its
+first draft (`edge90` 0.000, 10 materials, no default names) — a model that
+was then judged bad by eye and rebuilt from scratch. The floors scored the
+bevels, not the design.
+
+Treat them as a crude filter for obvious failures — a raw box, an unnamed
+`Cube`, one flat slot across a whole prop — and nothing more. The asset
+sheet is the gate that decides. Their one confirmed catch to date was
+indirect: `measure_edge90` hit a zero-area face from an over-large bevel.
+It used to raise `ValueError` there; it now reports `degenerate_faces` in
+the line, which is the more useful signal.
+
 ### The Goodhart warning
 
 These floors are necessary, not sufficient. Bolting meaningless greebles
@@ -185,9 +202,23 @@ model, and this gate removes the scene.
 ## Output
 
 - Render 1280×720 PNG (`taa_render_samples`/`cycles.samples` 32–64).
-- Gallery assets: hero webp 1280×720 and preview webp 1200×675, quality 85
-  (load the PNG in Blender, `save(filepath=..., quality=85)`, `scale()` for
-  the preview — this preserves pixels without re-applying color management).
+- Gallery assets: hero webp 1280×720 and preview webp 1200×675, quality 85.
+  **Encode with Pillow, not with Blender's `Image.save()`.** The Blender path
+  keeps the buffer RGBA and ignores the `quality` argument, writing a
+  near-lossless file: measured 991 KB for a hero that Pillow writes at 19 KB
+  from the same PNG, and two heroes shipped at 1.15 MB and 984 KB before this
+  was caught. Reading the rendered PNG and writing WebP does not re-apply
+  colour management either way, so the pixels are equally faithful:
+
+  ```python
+  from PIL import Image
+  im = Image.open(png).convert("RGB")          # drop the unused alpha
+  im.save(hero_webp, quality=85, method=6)
+  im.resize((1200, 675), Image.LANCZOS).save(preview_webp, quality=85, method=6)
+  ```
+
+  Sanity floor: a 1280×720 hero should land in the tens of kilobytes. Anything
+  over ~200 KB means the alpha channel survived and the encode went lossless.
 - After touching any example: `python scripts/build_gallery.py`, and update
   the README gallery-row alt text if the composition changed.
 
