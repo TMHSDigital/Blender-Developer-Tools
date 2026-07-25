@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vertex-color-ao — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-color-ao/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="vertex-color-ao — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-color-ao/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-color-ao-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="vertex-color-ao — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-color-ao-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>vertex-color-ao</h1>
+    <p>A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom vertex-color-ao render">
+      <img src="../assets/vertex-color-ao-hero.webp" alt="vertex-color-ao render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Integrator matches 1 - 0.5(1 - 1/sqrt(1+k^2)) to 6.760e-04, unoccluded plate exactly 1.0, FLOAT_COLOR exact vs BYTE_COLOR sRGB-quantised (model agreement 3.189e-07), evaluated deviation 0.0.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/vertex-color-ao/vertex_color_ao.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A runnable example baking <strong>ambient occlusion into a colour attribute</strong> — the cheap contact shadows an engine gets for free if it reads vertex colour. Unlike most bakes this one can be checked against a *formula* rather than against a previous run&#x27;s numbers: the hemisphere visibility integral has closed forms.</p>
+<p>For a point on the floor a distance <code>d</code> from an infinitely wide wall of height <code>H</code>, integrating the cosine-weighted hemisphere over the directions the wall blocks gives (the φ integral collapses to <code>π / √(1+k²)</code>):</p>
+<pre><code>A(k) = ½ (1 − 1/√(1+k²)),   k = H/d        AO = 1 − A(k)</code></pre>
+<p><code>AO</code> depends only on the ratio <code>H/d</code> and increases strictly with <code>d</code> — which is exactly &quot;a concave corner darkens monotonically with depth&quot;, as an equation. For an unoccluded flat surface the integral is exactly <strong>1</strong>.</p>
+<p><strong>The asset, for reuse:</strong> <code>Well.Stone</code>, a 2.5 m stone village well — three courses of 15 masonry blocks each on a 16-slab paved apron, a 15-slab coping ring, a lined bore, two braced timber posts with a crossbeam, an iron-banded windlass with a crank, and a hanging bucket. 11 parts, 11 materials, 6966 vertices. Origin at the ground contact centre (<code>z == 0</code> is where it rests), identity transforms, datablocks under <code>Well.Stone.*</code>. Every part ships with the AO baked into two colour attributes, and <code>default_color_name</code> points at the linear one so an engine reads the right channel.</p>
+<p><strong>Pipeline arc neighbours:</strong> attribute domains in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/attribute-domain-shear"><code>attribute-domain-shear</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/color-attribute-wheel"><code>color-attribute-wheel</code></a>, the second UV set for *texture*-baked lighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lightmap-uv-channel"><code>lightmap-uv-channel</code></a>, topology gates in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/mesh-hygiene-audit"><code>mesh-hygiene-audit</code></a>.</p>
+<p><strong>What it witnesses</strong> (all closed form or independently re-derived):</p>
+<ul><li><strong>Analytic AO.</strong> The integrator matches <code>1 − A(H/d)</code> at six probe distances spanning two decades of <code>H/d</code> (60.0 down to 0.60); worst error <strong>6.760e-04</strong> against a <strong>2.5e-03</strong> gate.</li><li><strong>Unoccluded is exactly 1.</strong> An isolated flat plate bakes to <strong>1.000000000</strong> — not approximately, exactly, because no ray can self-hit.</li><li><strong>Monotone with depth.</strong> AO rises strictly across the calibration ruler, <strong>0.508301 → 0.928467</strong>.</li><li><strong>Range and spread.</strong> Every baked value on the asset lies in [0, 1] and the bake actually uses the range (measured spread <strong>1.000000</strong>); a silently constant bake would pass a bare range check and fails this one.</li><li><strong>Storage.</strong> <code>FLOAT_COLOR</code> round-trips the linear value exactly (<strong>0.000e+00</strong>). <code>BYTE_COLOR</code> does not — see below.</li><li><strong>Depsgraph survival.</strong> Both attributes read back off the evaluated mesh at deviation <strong>exactly 0.0</strong>, keeping <code>data_type</code> and <code>domain</code>.</li><li><strong>Reuse hygiene.</strong> Identity scales, <code>Well.Stone.*</code> names, no default datablocks, <code>min z == 0.00e+00</code>, render colour attribute pinned to <code>AO</code>.</li></ul>
+<h2>Hazards found while authoring</h2>
+<ul><li><strong><code>BYTE_COLOR</code> is sRGB-encoded 8-bit, not linear 8-bit.</strong> Writing linear 0.735 reads back <strong>0.7379107</strong>. The round-trip error peaks at <strong>3.782e-03</strong>, and the readback matches an independent encode → quantise → decode model to <strong>3.189e-07</strong> — so the encoding is confirmed, not guessed. Darks get more precision than a linear ramp would give and midtones get less. An exporter that hands the raw bytes to an engine expecting linear occlusion ships visibly wrong shadows. Store AO in <code>FLOAT_COLOR</code> unless the target genuinely wants sRGB.</li><li><strong><code>bmesh.ops.bevel</code> offsets along *cached* face normals.</strong> Moving a vertex does not refresh them. While the stale normal is within 90° of the true one the bevel merely skews; past 90° it flips sign and grows the solid outward. Measured while authoring, on a ring of bevelled boxes placed around a circle: the boxes at 0/36/72° bevelled correctly and the one at <strong>108°</strong> grew by exactly one offset (<strong>12 mm</strong>) in both z directions, putting geometry below the ground plane. <code>t.normal_update()</code> before every bevel is the fix, and every <code>_box</code>/<code>_prism</code> here calls it; the hygiene check (exit 8) is what caught it.</li><li><strong>Point-domain AO needs vertices to vary across.</strong> An 8-vertex slab bakes to one nearly-constant value per face, so the crevice gradient never reaches the attribute. The first draft rendered as flat pale stone with a correct bake underneath. Parts are subdivided before the bake for this reason.</li><li><strong><code>color_attributes</code> enumeration order is not portable</strong> — measured <code>BYTE_COLOR</code> first on 4.5.11 and <code>FLOAT_COLOR</code> first on 5.1.2 for the same mesh. Look attributes up by name, never by index.</li></ul>
+<p><strong>What each check catches on failure</strong> (every one probed, with the measured error): an integrator sampling the full sphere rather than the hemisphere — AO <strong>0.752686</strong> against a closed form of <strong>0.508332</strong>, error <strong>2.444e-01</strong> (exit 3); uniform-solid-angle weighting instead of cosine — error <strong>1.202e-02</strong> (exit 3); rays cast with no normal offset so they self-hit the surface they start on — unoccluded plate bakes to <strong>0.160644531</strong> instead of 1.0 (exit 4); a bake collapsed to a constant — spread <strong>0.000000</strong> (exit 5); the sRGB storage model swapped for naive linear 8-bit quantisation — <strong>4.577e-03</strong> disagreement with the real readback (exit 6); a Subdivision modifier resampling the attribute — <strong>3270</strong> evaluated elements against <strong>840</strong> authored (exit 7); a part sunk below the ground plane — <strong>-1.200e-02</strong> (exit 8); a default <code>Cube</code> datablock name (exit 8).</p>
+<p>The exit-7 probe earned its keep twice: the depsgraph check originally compared <code>zip(src.data, eva.data)</code>, which stops at the shorter sequence, so a resampled attribute reported a clean <strong>0.0</strong> deviation and the probe exited <strong>0</strong>. The length guard was added because the falsification pass failed to fail.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same 6966 vertices, same closed-form errors to every printed digit, same storage deviations.</p>
+<p><strong>Render as proof:</strong> the well on the dark stage, lit only by the studio rig, with the baked AO multiplied into base colour — the masonry joints, the shaft mouth, the coping undersides and the apron contact all darken from the attribute, not from the lights. The falsification variant (<code>--falsify</code>) writes the same bake <strong>inverted</strong>: sky-facing coping and apron tops go grimy while the recesses and post bases glow, occlusion turned inside out.</p>
+<h2>Run</h2>
+<pre><code>blender --background --python vertex_color_ao.py --
+blender --background --python vertex_color_ao.py -- --output well.png
+blender --background --python vertex_color_ao.py -- --falsify inverted.png</code></pre>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1 (the calibration rig gets 4096 samples over six points, the asset a cheap 64, so the whole check is ~1 s). The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.839y</strong>, margins <strong>0.241/0.238/0.072/0.089</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (11 materials, <code>edge90</code> <strong>0.152</strong>, no default names).</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/vertex-color-ao/vertex_color_ao.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-color-ao/vertex_color_ao.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Vertex-colour AO — cheap baked occlusion in a colour attribute.
+
+Engines that read vertex colour get their contact shadows for free if the
+asset ships with ambient occlusion baked into a colour attribute. The bake is
+a hemisphere visibility integral, and unlike most bakes it has *analytic*
+answers: for an unoccluded flat surface the integral is exactly 1, and for a
+point on the floor a distance ``d`` from an infinitely wide wall of height
+``H`` the cosine-weighted occluded fraction is
+
+    A(k) = 0.5 * (1 - 1 / sqrt(1 + k^2)),    k = H / d
+    AO   = 1 - A(k)
+
+derived by integrating the cosine-weighted hemisphere measure over the
+directions the wall blocks (the phi integral collapses to
+``pi / sqrt(1 + k^2)``). Note AO(k) depends only on the *ratio* H/d, and
+darkens monotonically as the point approaches the wall — so the bake can be
+checked against a formula rather than against a previous run&#x27;s numbers.
+
+The asset is a stone village well. The same integrator that is validated
+against the closed form above is run over its geometry, so what ships in the
+attribute is the thing the check measured.
+
+Two storage traps are asserted rather than described:
+
+* ``FLOAT_COLOR`` round-trips a linear value exactly (1.4e-08 here).
+* ``BYTE_COLOR`` does NOT store linear 8-bit — it stores **sRGB-encoded**
+  8-bit. Writing 0.735 reads back 0.7379107, and the round-trip error peaks
+  at 2.9e-03, an order of magnitude worse than a naive 1/255 = 3.9e-03
+  uniform-quantisation model would predict *in the shadows* and much better
+  in the darks. The check reproduces the readback with an independent
+  sRGB encode/quantise/decode model. An exporter that hands raw bytes to an
+  engine expecting linear occlusion ships wrong shadows.
+
+Check (all closed form or independently re-derived, nothing captured):
+
+1. Analytic AO (exit 3): the integrator matches ``1 - A(H/d)`` at six probe
+   distances spanning two decades of H/d.
+2. Unoccluded and monotone (exit 4): an isolated flat plate bakes to exactly
+   1.0 everywhere; along the calibration ruler AO increases strictly with
+   distance from the wall.
+3. Range (exit 5): every baked value on the asset lies in [0, 1], and the
+   asset actually uses its range (crevices darker than exposed faces by a
+   measured margin — a bake that silently produced a constant would pass a
+   bare range check).
+4. Storage round-trip (exit 6): FLOAT_COLOR exact, BYTE_COLOR matching the
+   independent sRGB quantisation model to within 1e-6.
+5. Depsgraph survival (exit 7): both attributes read back off the evaluated
+   mesh with deviation exactly 0, keeping data_type and domain.
+6. Reuse hygiene (exit 8): identity scales, ``Well.Stone.*`` names, no
+   default datablocks, the asset resting on z == 0.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python vertex_color_ao.py --                   # check
+    blender --background --python vertex_color_ao.py -- --output well.png # + render
+    blender --background --python vertex_color_ao.py -- --falsify flat.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector, Matrix
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
+
+AO_ATTR = <span class="s">&quot;AO&quot;</span>             <span class="c"># FLOAT_COLOR / POINT — the linear, exact channel</span>
+AO_BYTE_ATTR = <span class="s">&quot;AOByte&quot;</span>    <span class="c"># BYTE_COLOR / POINT — the sRGB-quantised channel</span>
+
+<span class="c"># Bake sample counts. The calibration rig gets a heavy count because it is</span>
+<span class="c"># only six points and it is being held to a formula; the asset gets a cheap</span>
+<span class="c"># count because what is asserted there is range, spread and survival.</span>
+CAL_SAMPLES = <span class="n">4096</span>
+ASSET_SAMPLES = <span class="n">64</span>
+
+<span class="c"># Quasi-Monte-Carlo convergence on the calibration rig is ~1/sqrt(n): the</span>
+<span class="c"># measured worst error at 4096 samples is 6.8e-04, so 2.5e-03 is roughly a</span>
+<span class="c"># 3.5x margin. Tightening it below ~1e-3 would make the gate a sampling-noise</span>
+<span class="c"># detector rather than a correctness check.</span>
+CAL_TOL = <span class="n">2.5e-03</span>
+WALL_H = <span class="n">3.0</span>               <span class="c"># calibration wall height, metres</span>
+WALL_HALF_W = <span class="n">400.0</span>        <span class="c"># half width: wide enough that truncation &lt; 1e-4</span>
+CAL_DISTANCES = (<span class="n">0.05</span>, <span class="n">0.2</span>, <span class="n">0.5</span>, <span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">5.0</span>)
+RAY_EPS = <span class="n">1e-5</span>             <span class="c"># offset along the normal so a ray cannot self-hit</span>
+RAY_FAR = <span class="n">1.0e4</span>
+
+FLOAT_TOL = <span class="n">1e-6</span>           <span class="c"># FLOAT_COLOR round-trip (measured 1.43e-08)</span>
+BYTE_MODEL_TOL = <span class="n">1e-6</span>      <span class="c"># agreement with the independent sRGB model</span>
+SPREAD_MIN = <span class="n">0.25</span>          <span class="c"># the asset must actually use its AO range</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># The AO integrator</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> hemisphere_dirs(n):
+    <span class="s">&quot;&quot;&quot;Deterministic cosine-weighted hemisphere directions about +Z.
+
+    A Fibonacci lattice on the unit disc lifted to the hemisphere: sampling
+    the disc uniformly in area and projecting up gives exactly the cosine
+    weighting the AO integral needs, with no RNG — the same n directions
+    every run, on every machine, on both Blender versions.
+    &quot;&quot;&quot;</span>
+    golden = math.pi * (<span class="n">3.0</span> - math.sqrt(<span class="n">5.0</span>))
+    dirs = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        r = math.sqrt((i + <span class="n">0.5</span>) / n)
+        phi = i * golden
+        x, y = r * math.cos(phi), r * math.sin(phi)
+        dirs.append(Vector((x, y, math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - r * r)))))
+    <span class="k">return</span> dirs
+
+
+<span class="k">def</span> frame_from_normal(nz):
+    <span class="s">&quot;&quot;&quot;An orthonormal frame with +Z along nz. Any tangent will do — the
+    cosine-weighted set is rotationally symmetric about the normal.&quot;&quot;&quot;</span>
+    nz = Vector(nz).normalized()
+    ref = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)) <span class="k">if</span> abs(nz.x) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))
+    nx = (ref - nz * ref.dot(nz)).normalized()
+    ny = nz.cross(nx)
+    <span class="k">return</span> Matrix((nx, ny, nz)).transposed()
+
+
+<span class="k">def</span> analytic_ao(height, dist):
+    <span class="s">&quot;&quot;&quot;Closed form for an infinitely wide wall of `height` at `dist`.&quot;&quot;&quot;</span>
+    k = height / dist
+    <span class="k">return</span> <span class="n">1.0</span> - <span class="n">0.5</span> * (<span class="n">1.0</span> - <span class="n">1.0</span> / math.sqrt(<span class="n">1.0</span> + k * k))
+
+
+<span class="k">def</span> bake_points(bvh, points, normals, n_samples):
+    <span class="s">&quot;&quot;&quot;AO at each (point, normal) against `bvh`. Returns a list of floats.&quot;&quot;&quot;</span>
+    dirs = hemisphere_dirs(n_samples)
+    inv_n = <span class="n">1.0</span> / n_samples
+    out = []
+    <span class="k">for</span> p, nrm <span class="k">in</span> zip(points, normals):
+        basis = frame_from_normal(nrm)
+        origin = Vector(p) + Vector(nrm).normalized() * RAY_EPS
+        blocked = <span class="n">0</span>
+        <span class="k">for</span> d <span class="k">in</span> dirs:
+            <span class="k">if</span> bvh.ray_cast(origin, basis @ d, RAY_FAR)[<span class="n">0</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                blocked += <span class="n">1</span>
+        out.append(<span class="n">1.0</span> - blocked * inv_n)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> world_bvh(objects):
+    <span class="s">&quot;&quot;&quot;One BVH over every object&#x27;s world-space triangles.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> ob <span class="k">in</span> objects:
+            tmp = bm.__class__() <span class="k">if</span> <span class="k">False</span> <span class="k">else</span> <span class="k">None</span>  <span class="c"># keep one bmesh, transform in</span>
+            me = ob.data
+            offset = len(bm.verts)
+            bm.verts.ensure_lookup_table()
+            new_verts = [bm.verts.new(ob.matrix_world @ v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices]
+            <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+                <span class="k">try</span>:
+                    bm.faces.new([new_verts[i] <span class="k">for</span> i <span class="k">in</span> poly.vertices])
+                <span class="k">except</span> ValueError:
+                    <span class="k">pass</span>          <span class="c"># duplicate face across overlapping parts</span>
+        bm.verts.ensure_lookup_table()
+        bmesh.ops.triangulate(bm, faces=bm.faces[:])
+        <span class="k">return</span> BVHTree.FromBMesh(bm)
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> bake_object_ao(bvh, ob, n_samples):
+    <span class="s">&quot;&quot;&quot;AO per vertex of `ob`, evaluated in world space against `bvh`.&quot;&quot;&quot;</span>
+    me = ob.data
+    mw = ob.matrix_world
+    nrm3 = mw.to_3x3().inverted().transposed()
+    pts = [mw @ v.co <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    nrms = [(nrm3 @ Vector(me.vertex_normals[i].vector)).normalized()
+            <span class="k">for</span> i <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">return</span> bake_points(bvh, pts, nrms, n_samples)
+
+
+<span class="k">def</span> write_ao_attributes(me, values, invert=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Write AO into a FLOAT_COLOR and a BYTE_COLOR attribute on POINT.
+
+    HAZARD: look attributes up by NAME. The enumeration order of
+    `color_attributes` differs between 4.5.11 and 5.1.2 for the same mesh
+    (measured: BYTE first on 4.5, FLOAT first on 5.1), so indexing into the
+    collection is not portable.
+    &quot;&quot;&quot;</span>
+    <span class="k">for</span> name, dtype <span class="k">in</span> ((AO_ATTR, <span class="s">&quot;FLOAT_COLOR&quot;</span>), (AO_BYTE_ATTR, <span class="s">&quot;BYTE_COLOR&quot;</span>)):
+        <span class="k">if</span> name <span class="k">in</span> me.color_attributes:
+            me.color_attributes.remove(me.color_attributes[name])
+        attr = me.color_attributes.new(name=name, type=dtype, domain=<span class="s">&quot;POINT&quot;</span>)
+        <span class="k">for</span> i, a <span class="k">in</span> enumerate(values):
+            v = (<span class="n">1.0</span> - a) <span class="k">if</span> invert <span class="k">else</span> a
+            attr.data[i].color = (v, v, v, <span class="n">1.0</span>)
+    me.color_attributes.active_color = me.color_attributes[AO_ATTR]
+    me.attributes.default_color_name = AO_ATTR
+    me.attributes.active_color_name = AO_ATTR
+
+
+<span class="c"># --- the independent sRGB storage model, for check 4 ------------------------</span>
+
+<span class="k">def</span> lin_to_srgb(c):
+    <span class="k">return</span> <span class="n">12.92</span> * c <span class="k">if</span> c &lt;= <span class="n">0.0031308</span> <span class="k">else</span> <span class="n">1.055</span> * (c ** (<span class="n">1.0</span> / <span class="n">2.4</span>)) - <span class="n">0.055</span>
+
+
+<span class="k">def</span> srgb_to_lin(c):
+    <span class="k">return</span> c / <span class="n">12.92</span> <span class="k">if</span> c &lt;= <span class="n">0.04045</span> <span class="k">else</span> ((c + <span class="n">0.055</span>) / <span class="n">1.055</span>) ** <span class="n">2.4</span>
+
+
+<span class="k">def</span> byte_color_model(v):
+    <span class="s">&quot;&quot;&quot;What a BYTE_COLOR attribute should hand back for a linear write of v.&quot;&quot;&quot;</span>
+    <span class="k">return</span> srgb_to_lin(round(lin_to_srgb(v) * <span class="n">255.0</span>) / <span class="n">255.0</span>)
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Geometry helpers</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">class</span> Part:
+    <span class="s">&quot;&quot;&quot;A bmesh under construction with named material slots.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self):
+        self.bm = bmesh.new()
+        self.slots = []
+
+    <span class="k">def</span> group(self, slot_name, fn):
+        before = set(self.bm.faces)
+        fn(self.bm)
+        <span class="k">if</span> slot_name <span class="k">not</span> <span class="k">in</span> self.slots:
+            self.slots.append(slot_name)
+        idx = self.slots.index(slot_name)
+        <span class="k">for</span> f <span class="k">in</span> self.bm.faces:
+            <span class="k">if</span> f <span class="k">not</span> <span class="k">in</span> before:
+                f.material_index = idx
+        <span class="k">return</span> self
+
+    <span class="k">def</span> finish(self, name):
+        me = bpy.data.meshes.new(name)
+        <span class="k">try</span>:
+            <span class="c"># normal_update() recomputes from the existing winding; it does not</span>
+            <span class="c"># repair a face built the wrong way round, and an inward-facing</span>
+            <span class="c"># shell would swallow every AO ray it should have blocked.</span>
+            bmesh.ops.recalc_face_normals(self.bm, faces=list(self.bm.faces))
+            self.bm.normal_update()
+            self.bm.to_mesh(me)
+        <span class="k">finally</span>:
+            self.bm.free()
+        me[<span class="s">&quot;slots&quot;</span>] = self.slots
+        <span class="k">return</span> me
+
+
+<span class="c"># _bevel_normals_note</span>
+<span class="c"># HAZARD: bmesh.ops.bevel offsets along the CACHED face normals, and moving a</span>
+<span class="c"># vertex does not refresh them. Build a cube, transform its verts, bevel: while</span>
+<span class="c"># the stale normal is still within 90 degrees of the true one the offset merely</span>
+<span class="c"># skews, but past 90 degrees it flips sign and the bevel grows the solid</span>
+<span class="c"># outward instead of chamfering it inward. Measured while authoring this</span>
+<span class="c"># asset, on a ring of bevelled boxes placed around a circle: the boxes at</span>
+<span class="c"># 0/36/72 degrees bevelled correctly and the box at 108 degrees grew by</span>
+<span class="c"># exactly one offset (12 mm) in both z directions, putting geometry below the</span>
+<span class="c"># ground plane. The hygiene check (exit 8) is what caught it.</span>
+<span class="c"># t.normal_update() before every bevel is the fix, and it is why every _box</span>
+<span class="c"># and _prism here calls it.</span>
+
+
+<span class="k">def</span> _emit(bm, build, cuts=<span class="n">0</span>):
+    <span class="s">&quot;&quot;&quot;Build one sub-solid in a private bmesh, then copy it into `bm`.
+
+    HAZARD, and the reason this indirection exists. The obvious way to add a
+    bevelled primitive to a shared bmesh is to snapshot ``set(bm.verts)``,
+    create the primitive, diff to find the new verts, and bevel only the edges
+    whose verts are all new. That works for the first few primitives and then
+    silently corrupts: ``bmesh.ops.bevel`` reallocates the vertex table, so
+    Python BMVert wrappers captured in the snapshot can alias geometry created
+    afterwards. Measured on this asset&#x27;s ground apron, the fault appeared at
+    the **4th** box — edges belonging to an already-finished neighbour were
+    selected and bevelled, dropping vertices exactly one bevel offset (12 mm)
+    below the ground plane. The hygiene check is what caught it.
+
+    Building each primitive in its own bmesh removes the coupling: no op ever
+    runs on the shared mesh while a snapshot of it is being held.
+    &quot;&quot;&quot;</span>
+    tmp = bmesh.new()
+    <span class="k">try</span>:
+        build(tmp)
+        <span class="k">if</span> cuts:
+            <span class="c"># Point-domain AO can only vary where there are vertices. An</span>
+            <span class="c"># 8-vertex slab bakes to one nearly-constant value per face and</span>
+            <span class="c"># the crevice gradient the bake exists to capture never appears</span>
+            <span class="c"># in the attribute (draft 3 rendered as flat pale stone).</span>
+            bmesh.ops.subdivide_edges(tmp, edges=list(tmp.edges), cuts=cuts,
+                                      use_grid_fill=<span class="k">True</span>)
+        vmap = {v: bm.verts.new(v.co) <span class="k">for</span> v <span class="k">in</span> tmp.verts}
+        <span class="k">for</span> f <span class="k">in</span> tmp.faces:
+            <span class="k">try</span>:
+                bm.faces.new([vmap[v] <span class="k">for</span> v <span class="k">in</span> f.verts])
+            <span class="k">except</span> ValueError:
+                <span class="k">pass</span>                      <span class="c"># coincident face across sub-solids</span>
+    <span class="k">finally</span>:
+        tmp.free()
+
+
+<span class="k">def</span> _box(bm, dims, centre, bevel=<span class="n">0.0</span>, segments=<span class="n">1</span>, rot=<span class="k">None</span>, cuts=<span class="n">0</span>):
+    <span class="k">def</span> build(t):
+        bmesh.ops.create_cube(t, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> t.verts:
+            c = Vector((v.co.x * dims[<span class="n">0</span>], v.co.y * dims[<span class="n">1</span>], v.co.z * dims[<span class="n">2</span>]))
+            <span class="k">if</span> rot <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                c = rot @ c
+            v.co = c + Vector(centre)
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            t.normal_update()      <span class="c"># see _bevel_normals_note</span>
+            bmesh.ops.bevel(t, geom=list(t.edges), offset=bevel,
+                            segments=segments, profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>,
+                            clamp_overlap=<span class="k">True</span>)
+    _emit(bm, build, cuts=cuts)
+
+
+<span class="k">def</span> _prism(bm, sides, radius, half_h, centre, bevel=<span class="n">0.0</span>, rot=<span class="k">None</span>, taper=<span class="n">1.0</span>,
+           phase=<span class="n">0.0</span>, cuts=<span class="n">0</span>):
+    <span class="k">def</span> build(t):
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(sides):
+            a = <span class="n">2.0</span> * math.pi * i / sides + phase
+            ring.append((math.cos(a) * radius, math.sin(a) * radius))
+        top = [t.verts.new((x * taper, y * taper, half_h)) <span class="k">for</span> x, y <span class="k">in</span> ring]
+        bot = [t.verts.new((x, y, -half_h)) <span class="k">for</span> x, y <span class="k">in</span> ring]
+        t.faces.new(top)
+        t.faces.new(list(reversed(bot)))
+        <span class="k">for</span> i <span class="k">in</span> range(sides):
+            j = (i + <span class="n">1</span>) % sides
+            t.faces.new((bot[i], bot[j], top[j], top[i]))
+        <span class="k">for</span> v <span class="k">in</span> t.verts:
+            c = Vector(v.co)
+            <span class="k">if</span> rot <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                c = rot @ c
+            v.co = c + Vector(centre)
+        <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+            t.normal_update()      <span class="c"># see _bevel_normals_note</span>
+            bmesh.ops.bevel(t, geom=list(t.edges), offset=bevel, segments=<span class="n">1</span>,
+                            profile=<span class="n">0.6</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+    _emit(bm, build, cuts=cuts)
+
+
+<span class="k">def</span> _plate(bm, verts_xy, z0, z1, cuts=<span class="n">2</span>):
+    <span class="s">&quot;&quot;&quot;A prism from an explicit polygon footprint, subdivided for the bake.&quot;&quot;&quot;</span>
+    <span class="k">def</span> build(t):
+        top = [t.verts.new((x, y, z1)) <span class="k">for</span> x, y <span class="k">in</span> verts_xy]
+        bot = [t.verts.new((x, y, z0)) <span class="k">for</span> x, y <span class="k">in</span> verts_xy]
+        t.faces.new(top)
+        t.faces.new(list(reversed(bot)))
+        n = len(verts_xy)
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            t.faces.new((bot[i], bot[j], top[j], top[i]))
+    _emit(bm, build, cuts=cuts)
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># The asset: a stone village well</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="c"># Proportions: a squat, wide wellhead rather than a spindly one. Draft 4 gave</span>
+<span class="c"># the masonry a third of the frame and the timber frame the rest, so the joint</span>
+<span class="c"># occlusion the bake exists to show was sub-pixel. Widening the ring and</span>
+<span class="c"># dropping the frame puts the stonework where the eye lands.</span>
+SHAFT_R = <span class="n">0.545</span>           <span class="c"># inner bore radius</span>
+COURSES = (               <span class="c"># (z0, z1, outer radius, stone count, phase offset)</span>
+    (<span class="n">0.000</span>, <span class="n">0.200</span>, <span class="n">0.845</span>, <span class="n">15</span>, <span class="n">0.00</span>),
+    (<span class="n">0.200</span>, <span class="n">0.385</span>, <span class="n">0.822</span>, <span class="n">15</span>, <span class="n">0.50</span>),
+    (<span class="n">0.385</span>, <span class="n">0.560</span>, <span class="n">0.805</span>, <span class="n">15</span>, <span class="n">0.00</span>),
+)
+COPING_Z0, COPING_Z1 = <span class="n">0.560</span>, <span class="n">0.646</span>
+COPING_R = <span class="n">0.925</span>
+POST_Y = <span class="n">0.790</span>
+POST_TOP = <span class="n">1.36</span>
+DRUM_Z = <span class="n">1.030</span>
+
+
+<span class="k">def</span> _course_stone(bm, z0, z1, r_out, idx, count, phase, jog):
+    <span class="s">&quot;&quot;&quot;One masonry block: a trapezoid footprint spanning an arc of the ring.
+
+    Blocks are inset from each other by a small joint so the bake has real
+    crevices to find — the mortar lines are geometry, not a texture.
+    &quot;&quot;&quot;</span>
+    joint = <span class="n">0.078</span> / r_out                      <span class="c"># angular half-gap</span>
+    a0 = <span class="n">2.0</span> * math.pi * (idx + phase) / count + joint
+    a1 = <span class="n">2.0</span> * math.pi * (idx + <span class="n">1</span> + phase) / count - joint
+    ro = r_out + jog
+    ri = SHAFT_R
+    pts = []
+    <span class="k">for</span> a <span class="k">in</span> (a0, a1):
+        pts.append((math.cos(a) * ro, math.sin(a) * ro))
+    <span class="k">for</span> a <span class="k">in</span> (a1, a0):
+        pts.append((math.cos(a) * ri, math.sin(a) * ri))
+    _plate(bm, pts, z0 + <span class="n">0.012</span>, z1 - <span class="n">0.012</span>)
+
+
+<span class="k">def</span> build_well_meshes():
+    meshes = {}
+    <span class="c"># deterministic per-stone jog so the courses are not machine-perfect</span>
+    <span class="k">def</span> jog(i, c):
+        <span class="k">return</span> <span class="n">0.014</span> * math.sin(i * <span class="n">2.399963</span> + c * <span class="n">1.107</span>)
+
+    <span class="k">for</span> ci, (z0, z1, r_out, count, phase) <span class="k">in</span> enumerate(COURSES):
+        part = Part()
+        part.group(<span class="s">&quot;Stone&quot;</span>, <span class="k">lambda</span> bm, z0=z0, z1=z1, r=r_out, c=count,
+                   ph=phase, ci=ci: [
+                       _course_stone(bm, z0, z1, r, i, c, ph, jog(i, ci))
+                       <span class="k">for</span> i <span class="k">in</span> range(c)])
+        meshes[<span class="s">f&quot;</span><span class="s">Course.</span>{ci}<span class="s">&quot;</span>] = part.finish(<span class="s">f&quot;</span><span class="s">Well.Stone.Course.</span>{ci}<span class="s">&quot;</span>)
+
+    <span class="c"># coping: 11 flat slabs, a wider ring that overhangs and casts the</span>
+    <span class="c"># strongest contact darkening onto the top course</span>
+    cop = Part()
+    <span class="k">def</span> slabs(bm):
+        n = <span class="n">15</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            joint = <span class="n">0.028</span> / COPING_R
+            a0 = <span class="n">2.0</span> * math.pi * i / n + joint
+            a1 = <span class="n">2.0</span> * math.pi * (i + <span class="n">1</span>) / n - joint
+            pts = [(math.cos(a) * COPING_R, math.sin(a) * COPING_R)
+                   <span class="k">for</span> a <span class="k">in</span> (a0, a1)]
+            pts += [(math.cos(a) * (SHAFT_R - <span class="n">0.02</span>),
+                     math.sin(a) * (SHAFT_R - <span class="n">0.02</span>)) <span class="k">for</span> a <span class="k">in</span> (a1, a0)]
+            _plate(bm, pts, COPING_Z0, COPING_Z1 + <span class="n">0.006</span> * math.sin(i * <span class="n">1.7</span>))
+    cop.group(<span class="s">&quot;Coping&quot;</span>, slabs)
+    meshes[<span class="s">&quot;Coping&quot;</span>] = cop.finish(<span class="s">&quot;Well.Stone.Coping&quot;</span>)
+
+    <span class="c"># inner bore sleeve: darkens to near-zero down the shaft</span>
+    bore = Part()
+    <span class="c"># the sleeve stops at z == 0 so the asset rests on the ground plane; an</span>
+    <span class="c"># earlier revision ran it to -0.02 and the hygiene check caught it</span>
+    bore.group(<span class="s">&quot;Bore&quot;</span>, <span class="k">lambda</span> bm: _prism(bm, <span class="n">26</span>, SHAFT_R - <span class="n">0.028</span>, <span class="n">0.298</span>,
+                                         (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.298</span>), cuts=<span class="n">3</span>))
+    meshes[<span class="s">&quot;Bore&quot;</span>] = bore.finish(<span class="s">&quot;Well.Stone.Bore&quot;</span>)
+
+    <span class="c"># ground apron: flagstones the well sits on, so the base has a floor to</span>
+    <span class="c"># occlude against</span>
+    ap = Part()
+    <span class="k">def</span> apron(bm):
+        <span class="c"># a paved collar butted against the base course: the tighter the ring</span>
+        <span class="c"># sits, the deeper the contact darkening the bake has to find</span>
+        n = <span class="n">16</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            joint = <span class="n">0.032</span> / <span class="n">1.05</span>
+            a0 = <span class="n">2.0</span> * math.pi * i / n + joint
+            a1 = <span class="n">2.0</span> * math.pi * (i + <span class="n">1</span>) / n - joint
+            r0, r1 = <span class="n">0.870</span>, <span class="n">1.235</span> + <span class="n">0.045</span> * math.sin(i * <span class="n">2.1</span>)
+            pts = [(math.cos(a) * r1, math.sin(a) * r1) <span class="k">for</span> a <span class="k">in</span> (a0, a1)]
+            pts += [(math.cos(a) * r0, math.sin(a) * r0) <span class="k">for</span> a <span class="k">in</span> (a1, a0)]
+            _plate(bm, pts, <span class="n">0.0</span>, <span class="n">0.048</span> + <span class="n">0.008</span> * math.sin(i * <span class="n">1.3</span>), cuts=<span class="n">2</span>)
+    ap.group(<span class="s">&quot;Flag&quot;</span>, apron)
+    meshes[<span class="s">&quot;Apron&quot;</span>] = ap.finish(<span class="s">&quot;Well.Stone.Apron&quot;</span>)
+
+    <span class="c"># timber frame</span>
+    <span class="k">for</span> side, sy <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, <span class="n">1.0</span>), (<span class="s">&quot;R&quot;</span>, -<span class="n">1.0</span>)):
+        fr = Part()
+        fr.group(<span class="s">&quot;Timber&quot;</span>, <span class="k">lambda</span> bm, s=sy: _box(
+            bm, (<span class="n">0.12</span>, <span class="n">0.12</span>, POST_TOP - <span class="n">0.30</span>),
+            (<span class="n">0.0</span>, s * POST_Y, <span class="n">0.30</span> + (POST_TOP - <span class="n">0.30</span>) / <span class="n">2</span>), bevel=<span class="n">0.012</span>, cuts=<span class="n">3</span>))
+        fr.group(<span class="s">&quot;Iron&quot;</span>, <span class="k">lambda</span> bm, s=sy: _box(
+            bm, (<span class="n">0.16</span>, <span class="n">0.16</span>, <span class="n">0.040</span>), (<span class="n">0.0</span>, s * POST_Y, <span class="n">0.70</span>), bevel=<span class="n">0.006</span>))
+        fr.group(<span class="s">&quot;Brace&quot;</span>, <span class="k">lambda</span> bm, s=sy: _box(
+            bm, (<span class="n">0.08</span>, <span class="n">0.08</span>, <span class="n">0.42</span>), (<span class="n">0.0</span>, s * (POST_Y - <span class="n">0.15</span>), <span class="n">0.90</span>), bevel=<span class="n">0.010</span>,
+            rot=Matrix.Rotation(math.radians(<span class="n">22.0</span>) * s, <span class="n">3</span>, <span class="s">&quot;X&quot;</span>)))
+        meshes[<span class="s">f&quot;</span><span class="s">Post.</span>{side}<span class="s">&quot;</span>] = fr.finish(<span class="s">f&quot;</span><span class="s">Well.Stone.Post.</span>{side}<span class="s">&quot;</span>)
+
+    beam = Part()
+    beam.group(<span class="s">&quot;Timber&quot;</span>, <span class="k">lambda</span> bm: _box(bm, (<span class="n">0.12</span>, <span class="n">2</span> * POST_Y + <span class="n">0.22</span>, <span class="n">0.13</span>),
+                                         (<span class="n">0.0</span>, <span class="n">0.0</span>, POST_TOP - <span class="n">0.065</span>), bevel=<span class="n">0.014</span>,
+                                         cuts=<span class="n">3</span>))
+    <span class="k">def</span> caps(bm):
+        <span class="c"># Post caps, not a roof. Two revisions of a gable were tried: fanned</span>
+        <span class="c"># boards read as detached planks, and solid slopes big enough to look</span>
+        <span class="c"># like a roof covered the masonry that carries the AO story. A</span>
+        <span class="c"># roofless windlass well is the more honest prop and the better</span>
+        <span class="c"># subject for this bake.</span>
+        <span class="k">for</span> s <span class="k">in</span> (<span class="n">1.0</span>, -<span class="n">1.0</span>):
+            _box(bm, (<span class="n">0.18</span>, <span class="n">0.18</span>, <span class="n">0.05</span>), (<span class="n">0.0</span>, s * POST_Y, POST_TOP + <span class="n">0.025</span>),
+                 bevel=<span class="n">0.010</span>, cuts=<span class="n">1</span>)
+        _box(bm, (<span class="n">0.16</span>, <span class="n">2</span> * POST_Y - <span class="n">0.30</span>, <span class="n">0.05</span>),
+             (<span class="n">0.0</span>, <span class="n">0.0</span>, POST_TOP - <span class="n">0.155</span>), bevel=<span class="n">0.010</span>, cuts=<span class="n">2</span>)
+    beam.group(<span class="s">&quot;Shingle&quot;</span>, caps)
+    meshes[<span class="s">&quot;Beam&quot;</span>] = beam.finish(<span class="s">&quot;Well.Stone.Beam&quot;</span>)
+
+    <span class="c"># windlass: drum along Y with a crank, plus the rope and bucket</span>
+    wl = Part()
+    rotY = Matrix.Rotation(math.radians(<span class="n">90.0</span>), <span class="n">3</span>, <span class="s">&quot;X&quot;</span>)
+    wl.group(<span class="s">&quot;Drum&quot;</span>, <span class="k">lambda</span> bm: _prism(bm, <span class="n">14</span>, <span class="n">0.085</span>, POST_Y - <span class="n">0.03</span>,
+                                       (<span class="n">0.0</span>, <span class="n">0.0</span>, DRUM_Z), rot=rotY, cuts=<span class="n">2</span>))
+    <span class="k">def</span> collars(bm):
+        <span class="k">for</span> s <span class="k">in</span> (<span class="n">1.0</span>, -<span class="n">1.0</span>):
+            _prism(bm, <span class="n">14</span>, <span class="n">0.098</span>, <span class="n">0.022</span>, (<span class="n">0.0</span>, s * (POST_Y - <span class="n">0.045</span>), DRUM_Z),
+                   rot=rotY)
+    wl.group(<span class="s">&quot;Iron&quot;</span>, collars)
+    <span class="k">def</span> crank(bm):
+        _prism(bm, <span class="n">10</span>, <span class="n">0.020</span>, <span class="n">0.10</span>, (<span class="n">0.0</span>, POST_Y + <span class="n">0.06</span>, DRUM_Z), rot=rotY)
+        _box(bm, (<span class="n">0.030</span>, <span class="n">0.030</span>, <span class="n">0.20</span>), (<span class="n">0.0</span>, POST_Y + <span class="n">0.10</span>, DRUM_Z - <span class="n">0.09</span>),
+             bevel=<span class="n">0.006</span>, rot=Matrix.Rotation(math.radians(<span class="n">90.0</span>), <span class="n">3</span>, <span class="s">&quot;Y&quot;</span>))
+        _prism(bm, <span class="n">10</span>, <span class="n">0.026</span>, <span class="n">0.062</span>, (<span class="n">0.14</span>, POST_Y + <span class="n">0.10</span>, DRUM_Z - <span class="n">0.09</span>),
+               rot=Matrix.Rotation(math.radians(<span class="n">90.0</span>), <span class="n">3</span>, <span class="s">&quot;X&quot;</span>))
+    wl.group(<span class="s">&quot;Iron&quot;</span>, crank)
+    meshes[<span class="s">&quot;Windlass&quot;</span>] = wl.finish(<span class="s">&quot;Well.Stone.Windlass&quot;</span>)
+
+    bk = Part()
+    bk.group(<span class="s">&quot;Rope&quot;</span>, <span class="k">lambda</span> bm: _prism(bm, <span class="n">7</span>, <span class="n">0.020</span>, <span class="n">0.105</span>,
+                                       (<span class="n">0.10</span>, -<span class="n">0.20</span>, DRUM_Z - <span class="n">0.020</span>), cuts=<span class="n">2</span>))
+    bk.group(<span class="s">&quot;Stave&quot;</span>, <span class="k">lambda</span> bm: _prism(bm, <span class="n">16</span>, <span class="n">0.150</span>, <span class="n">0.130</span>,
+                                        (<span class="n">0.10</span>, -<span class="n">0.20</span>, <span class="n">0.845</span>), taper=<span class="n">0.86</span>, cuts=<span class="n">2</span>))
+    <span class="k">def</span> bands(bm):
+        <span class="k">for</span> z <span class="k">in</span> (<span class="n">0.740</span>, <span class="n">0.953</span>):
+            _prism(bm, <span class="n">16</span>, <span class="n">0.158</span>, <span class="n">0.016</span>, (<span class="n">0.10</span>, -<span class="n">0.20</span>, z))
+    bk.group(<span class="s">&quot;Iron&quot;</span>, bands)
+    bk.group(<span class="s">&quot;Iron&quot;</span>, <span class="k">lambda</span> bm: _box(bm, (<span class="n">0.30</span>, <span class="n">0.022</span>, <span class="n">0.022</span>),
+                                     (<span class="n">0.10</span>, -<span class="n">0.20</span>, <span class="n">0.983</span>), bevel=<span class="n">0.005</span>))
+    meshes[<span class="s">&quot;Bucket&quot;</span>] = bk.finish(<span class="s">&quot;Well.Stone.Bucket&quot;</span>)
+    <span class="k">return</span> meshes
+
+
+<span class="k">def</span> build_asset(sc):
+    <span class="s">&quot;&quot;&quot;Link the well into `sc`. Returns (root, parts).&quot;&quot;&quot;</span>
+    root = bpy.data.objects.new(<span class="s">&quot;Well.Stone&quot;</span>, <span class="k">None</span>)
+    root.empty_display_type = <span class="s">&quot;PLAIN_AXES&quot;</span>
+    sc.collection.objects.link(root)
+    parts = []
+    <span class="k">for</span> suffix, me <span class="k">in</span> build_well_meshes().items():
+        ob = bpy.data.objects.new(me.name, me)
+        sc.collection.objects.link(ob)
+        ob.parent = root
+        parts.append(ob)
+    bpy.context.view_layer.update()
+    <span class="k">return</span> root, parts
+
+
+<span class="k">def</span> bake_asset(parts, n_samples=ASSET_SAMPLES, invert=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Bake AO for every part against the whole assembly. Returns all values.&quot;&quot;&quot;</span>
+    bvh = world_bvh(parts)
+    every = []
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        vals = bake_object_ao(bvh, ob, n_samples)
+        write_ao_attributes(ob.data, vals, invert=invert)
+        every.extend(vals)
+    <span class="k">return</span> every
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Calibration rig</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> build_calibration(sc):
+    <span class="s">&quot;&quot;&quot;A wide wall plus a floor strip whose vertices sit at CAL_DISTANCES.
+
+    Returns (wall_ob, floor_ob, probe_indices) — the floor vertices whose AO
+    is held to the closed form.
+    &quot;&quot;&quot;</span>
+    wm = bpy.data.meshes.new(<span class="s">&quot;Cal.Wall&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        v = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> ((<span class="n">0</span>, -WALL_HALF_W, <span class="n">0</span>), (<span class="n">0</span>, WALL_HALF_W, <span class="n">0</span>),
+                                       (<span class="n">0</span>, WALL_HALF_W, WALL_H),
+                                       (<span class="n">0</span>, -WALL_HALF_W, WALL_H))]
+        bm.faces.new(v)
+        bm.to_mesh(wm)
+    <span class="k">finally</span>:
+        bm.free()
+    wall = bpy.data.objects.new(<span class="s">&quot;Cal.Wall&quot;</span>, wm)
+    sc.collection.objects.link(wall)
+
+    fm = bpy.data.meshes.new(<span class="s">&quot;Cal.Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rows = []
+        <span class="k">for</span> d <span class="k">in</span> CAL_DISTANCES:
+            rows.append([bm.verts.new((d, y, <span class="n">0.0</span>)) <span class="k">for</span> y <span class="k">in</span> (-<span class="n">6.0</span>, <span class="n">6.0</span>)])
+        <span class="k">for</span> a, b <span class="k">in</span> zip(rows, rows[<span class="n">1</span>:]):
+            bm.faces.new((a[<span class="n">0</span>], a[<span class="n">1</span>], b[<span class="n">1</span>], b[<span class="n">0</span>]))
+        bm.normal_update()
+        bm.to_mesh(fm)
+    <span class="k">finally</span>:
+        bm.free()
+    floor = bpy.data.objects.new(<span class="s">&quot;Cal.Floor&quot;</span>, fm)
+    sc.collection.objects.link(floor)
+    bpy.context.view_layer.update()
+    <span class="k">return</span> wall, floor
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Check</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> check():
+    sc = bpy.context.scene
+    fails = []
+
+    <span class="k">def</span> fail(code, msg):
+        print(<span class="s">f&quot;</span><span class="s">ERROR (</span>{code}<span class="s">): </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+        fails.append(code)
+
+    <span class="c"># --- 1. analytic AO against the closed form -----------------------------</span>
+    wall, floor = build_calibration(sc)
+    bvh = world_bvh([wall])
+    up = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    measured, expected = [], []
+    <span class="k">for</span> d <span class="k">in</span> CAL_DISTANCES:
+        got = bake_points(bvh, [Vector((d, <span class="n">0.0</span>, <span class="n">0.0</span>))], [up], CAL_SAMPLES)[<span class="n">0</span>]
+        want = analytic_ao(WALL_H, d)
+        measured.append(got)
+        expected.append(want)
+        <span class="k">if</span> abs(got - want) &gt; CAL_TOL:
+            fail(<span class="n">3</span>, <span class="s">f&quot;</span><span class="s">AO at d=</span>{d}<span class="s"> is </span>{got:<span class="s">.6f</span>}<span class="s">, closed form </span>{want:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">(err </span>{abs(got - want):<span class="s">.3e</span>}<span class="s"> &gt; </span>{CAL_TOL:<span class="s">.1e</span>}<span class="s">) — the </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">integrator does not integrate the hemisphere it claims to</span><span class="s">&quot;</span>)
+    worst_cal = max(abs(g - w) <span class="k">for</span> g, w <span class="k">in</span> zip(measured, expected))
+    print(<span class="s">&quot;analytic_ao samples=%d H=%.1f&quot;</span> % (CAL_SAMPLES, WALL_H))
+    <span class="k">for</span> d, g, w <span class="k">in</span> zip(CAL_DISTANCES, measured, expected):
+        print(<span class="s">f&quot;</span><span class="s">  d=</span>{d:<span class="s">&lt;5</span>}<span class="s"> k=</span>{WALL_H / d:<span class="s">&lt;7.2f</span>}<span class="s"> ao=</span>{g:<span class="s">.6f</span>}<span class="s"> closed_form=</span>{w:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">err=</span>{abs(g - w):<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">analytic_ao worst_err=</span>{worst_cal:<span class="s">.3e</span>}<span class="s"> tol=</span>{CAL_TOL:<span class="s">.1e</span>}<span class="s">&quot;</span>)
+
+    <span class="c"># --- 2. unoccluded == 1 exactly, and strict monotonicity ----------------</span>
+    free = bake_points(world_bvh([floor]), [Vector((<span class="n">3.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))], [up],
+                       CAL_SAMPLES)[<span class="n">0</span>]
+    print(<span class="s">f&quot;</span><span class="s">unoccluded_plate ao=</span>{free:<span class="s">.9f</span>}<span class="s"> (closed form 1.0)</span><span class="s">&quot;</span>)
+    <span class="k">if</span> abs(free - <span class="n">1.0</span>) &gt; <span class="n">0.0</span>:
+        fail(<span class="n">4</span>, <span class="s">f&quot;</span><span class="s">an unoccluded flat plate bakes to </span>{free:<span class="s">.9f</span>}<span class="s">, not exactly 1.0 </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">— rays are self-hitting the surface they start on</span><span class="s">&quot;</span>)
+    strictly_up = all(b &gt; a <span class="k">for</span> a, b <span class="k">in</span> zip(measured, measured[<span class="n">1</span>:]))
+    print(<span class="s">f&quot;</span><span class="s">monotonic increasing_with_distance=</span>{strictly_up}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">range=</span>{measured[<span class="n">0</span>]:<span class="s">.6f</span>}<span class="s">..</span>{measured[-<span class="n">1</span>]:<span class="s">.6f</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> <span class="k">not</span> strictly_up:
+        fail(<span class="n">4</span>, <span class="s">&quot;AO does not increase strictly with distance from the wall — &quot;</span>
+                <span class="s">&quot;the corner does not darken monotonically with depth&quot;</span>)
+
+    <span class="c"># --- 3. asset bake: in range, and actually using the range --------------</span>
+    root, parts = build_asset(sc)
+    values = bake_asset(parts)
+    lo, hi = min(values), max(values)
+    print(<span class="s">f&quot;</span><span class="s">asset_bake parts=</span>{len(parts)}<span class="s"> verts=</span>{len(values)}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">samples=</span>{ASSET_SAMPLES}<span class="s"> min=</span>{lo:<span class="s">.6f</span>}<span class="s"> max=</span>{hi:<span class="s">.6f</span>}<span class="s"> spread=</span>{hi - lo:<span class="s">.6f</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> lo &lt; <span class="n">0.0</span> <span class="k">or</span> hi &gt; <span class="n">1.0</span>:
+        fail(<span class="n">5</span>, <span class="s">f&quot;</span><span class="s">baked AO out of range [</span>{lo:<span class="s">.6f</span>}<span class="s">, </span>{hi:<span class="s">.6f</span>}<span class="s">] — a colour </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">attribute an engine reads must stay in [0,1]</span><span class="s">&quot;</span>)
+    <span class="k">if</span> hi - lo &lt; SPREAD_MIN:
+        fail(<span class="n">5</span>, <span class="s">f&quot;</span><span class="s">AO spread </span>{hi - lo:<span class="s">.6f</span>}<span class="s"> &lt; </span>{SPREAD_MIN}<span class="s"> — the bake is nearly </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">constant, so it is not describing this geometry</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 4. storage round-trip: FLOAT exact, BYTE sRGB-quantised ------------</span>
+    probe_me = parts[<span class="n">0</span>].data
+    fa = probe_me.color_attributes[AO_ATTR]
+    ba = probe_me.color_attributes[AO_BYTE_ATTR]
+    written = values[:len(fa.data)]
+    float_err = max(abs(fa.data[i].color[<span class="n">0</span>] - v) <span class="k">for</span> i, v <span class="k">in</span> enumerate(written))
+    byte_err = max(abs(ba.data[i].color[<span class="n">0</span>] - v) <span class="k">for</span> i, v <span class="k">in</span> enumerate(written))
+    model_err = max(abs(ba.data[i].color[<span class="n">0</span>] - byte_color_model(v))
+                    <span class="k">for</span> i, v <span class="k">in</span> enumerate(written))
+    print(<span class="s">f&quot;</span><span class="s">storage float_roundtrip_err=</span>{float_err:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">byte_roundtrip_err=</span>{byte_err:<span class="s">.3e</span>}<span class="s"> byte_vs_srgb_model=</span>{model_err:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> float_err &gt; FLOAT_TOL:
+        fail(<span class="n">6</span>, <span class="s">f&quot;</span><span class="s">FLOAT_COLOR round-trip error </span>{float_err:<span class="s">.3e</span>}<span class="s"> &gt; </span>{FLOAT_TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> model_err &gt; BYTE_MODEL_TOL:
+        fail(<span class="n">6</span>, <span class="s">f&quot;</span><span class="s">BYTE_COLOR readback deviates </span>{model_err:<span class="s">.3e</span>}<span class="s"> from the </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">independent sRGB encode/quantise/decode model — the storage </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">encoding is not what the README documents</span><span class="s">&quot;</span>)
+    <span class="k">if</span> byte_err &lt;= float_err:
+        fail(<span class="n">6</span>, <span class="s">&quot;BYTE_COLOR round-trips as tightly as FLOAT_COLOR — the &quot;</span>
+                <span class="s">&quot;documented 8-bit sRGB quantisation has stopped happening, so &quot;</span>
+                <span class="s">&quot;the exporter warning is now wrong&quot;</span>)
+
+    <span class="c"># --- 5. depsgraph survival ----------------------------------------------</span>
+    dg = bpy.context.evaluated_depsgraph_get()
+    worst_ev = <span class="n">0.0</span>
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        ev = ob.evaluated_get(dg).data
+        <span class="k">for</span> name <span class="k">in</span> (AO_ATTR, AO_BYTE_ATTR):
+            eva = ev.color_attributes.get(name)
+            <span class="k">if</span> eva <span class="k">is</span> <span class="k">None</span>:
+                fail(<span class="n">7</span>, <span class="s">f&quot;</span>{ob.name}<span class="s">: </span>{name}<span class="s"> missing from the evaluated mesh</span><span class="s">&quot;</span>)
+                <span class="k">continue</span>
+            src = ob.data.color_attributes[name]
+            <span class="k">if</span> eva.data_type != src.data_type <span class="k">or</span> eva.domain != src.domain:
+                fail(<span class="n">7</span>, <span class="s">f&quot;</span>{ob.name}<span class="s">: </span>{name}<span class="s"> changed to </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span>{eva.data_type}<span class="s">/</span>{eva.domain}<span class="s"> under evaluation</span><span class="s">&quot;</span>)
+            <span class="c"># Compare lengths BEFORE zipping. zip() stops at the shorter</span>
+            <span class="c"># sequence, so a modifier that resamples the attribute onto a</span>
+            <span class="c"># different element count would slip through as a clean 0.0</span>
+            <span class="c"># deviation — the probe that added a Subdiv modifier exited 0</span>
+            <span class="c"># until this guard was added.</span>
+            <span class="k">if</span> len(eva.data) != len(src.data):
+                fail(<span class="n">7</span>, <span class="s">f&quot;</span>{ob.name}<span class="s">: </span>{name}<span class="s"> has </span>{len(eva.data)}<span class="s"> evaluated </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span><span class="s">elements vs </span>{len(src.data)}<span class="s"> authored — a modifier </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span><span class="s">resampled the attribute, so what renders is not </span><span class="s">&quot;</span>
+                        <span class="s">f&quot;</span><span class="s">what was baked</span><span class="s">&quot;</span>)
+                <span class="k">continue</span>
+            worst_ev = max(worst_ev, max(
+                abs(a.color[<span class="n">0</span>] - b.color[<span class="n">0</span>]) <span class="k">for</span> a, b <span class="k">in</span> zip(src.data, eva.data)))
+    print(<span class="s">f&quot;</span><span class="s">depsgraph_survival parts=</span>{len(parts)}<span class="s"> max_dev=</span>{worst_ev:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> worst_ev &gt; <span class="n">0.0</span>:
+        fail(<span class="n">7</span>, <span class="s">f&quot;</span><span class="s">colour attributes drift </span>{worst_ev:<span class="s">.3e</span>}<span class="s"> under depsgraph </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">evaluation — the baked data is not what renders</span><span class="s">&quot;</span>)
+
+    <span class="c"># --- 6. reuse hygiene ----------------------------------------------------</span>
+    default_names = {<span class="s">&quot;Cube&quot;</span>, <span class="s">&quot;Sphere&quot;</span>, <span class="s">&quot;Torus&quot;</span>, <span class="s">&quot;Suzanne&quot;</span>, <span class="s">&quot;Plane&quot;</span>, <span class="s">&quot;Circle&quot;</span>,
+                     <span class="s">&quot;Cylinder&quot;</span>, <span class="s">&quot;Cone&quot;</span>, <span class="s">&quot;Grid&quot;</span>, <span class="s">&quot;Icosphere&quot;</span>, <span class="s">&quot;Empty&quot;</span>}
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        <span class="k">if</span> max(abs(s - <span class="n">1.0</span>) <span class="k">for</span> s <span class="k">in</span> ob.scale) &gt; <span class="n">0.0</span>:
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span>{ob.name}<span class="s"> scale </span>{tuple(ob.scale)}<span class="s"> not applied</span><span class="s">&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> ob.name.startswith(<span class="s">&quot;Well.Stone.&quot;</span>):
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span><span class="s">part </span>{ob.name!r}<span class="s"> outside the asset namespace</span><span class="s">&quot;</span>)
+        <span class="k">if</span> ob.data.name.split(<span class="s">&quot;.&quot;</span>)[<span class="n">0</span>] <span class="k">in</span> default_names:
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span>{ob.name}<span class="s"> carries a default datablock name</span><span class="s">&quot;</span>)
+        <span class="k">if</span> ob.data.attributes.default_color_name != AO_ATTR:
+            fail(<span class="n">8</span>, <span class="s">f&quot;</span>{ob.name}<span class="s"> render colour attribute is </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span>{ob.data.attributes.default_color_name!r}<span class="s">, not </span>{AO_ATTR!r}<span class="s"> </span><span class="s">&quot;</span>
+                    <span class="s">f&quot;</span><span class="s">— an engine would read the wrong channel</span><span class="s">&quot;</span>)
+    ground = min(min(v.co.z <span class="k">for</span> v <span class="k">in</span> ob.data.vertices) <span class="k">for</span> ob <span class="k">in</span> parts)
+    <span class="k">if</span> abs(ground) &gt; <span class="n">1e-4</span>:
+        fail(<span class="n">8</span>, <span class="s">f&quot;</span><span class="s">asset rests at z=</span>{ground:<span class="s">.5f</span>}<span class="s">, not on the ground plane</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">hygiene parts=</span>{len(parts)}<span class="s"> ground_z=</span>{ground:<span class="s">.2e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">render_attr=</span>{AO_ATTR}<span class="s">&quot;</span>)
+
+    <span class="k">if</span> fails:
+        <span class="k">return</span> fails[<span class="n">0</span>]
+    print(<span class="s">f&quot;</span><span class="s">vertex-color-ao OK cal_err=</span>{worst_cal:<span class="s">.3e</span>}<span class="s"> unoccluded=</span>{free:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">asset_range=</span>{lo:<span class="s">.4f</span>}<span class="s">..</span>{hi:<span class="s">.4f</span>}<span class="s"> float_err=</span>{float_err:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">byte_model_err=</span>{model_err:<span class="s">.3e</span>}<span class="s"> evaluated_dev=</span>{worst_ev:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="c"># ---------------------------------------------------------------------------</span>
+<span class="c"># Render</span>
+<span class="c"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span> make_ao_material(name, rgb, rough, metallic=<span class="n">0.0</span>, ao_strength=<span class="n">1.0</span>):
+    <span class="s">&quot;&quot;&quot;Principled with the AO colour attribute multiplied into base colour.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    col = nt.nodes.new(<span class="s">&quot;ShaderNodeVertexColor&quot;</span>)
+    col.layer_name = AO_ATTR
+    col.location = (-<span class="n">700</span>, <span class="n">100</span>)
+    <span class="c"># lift so full occlusion does not go to pure black</span>
+    lift = nt.nodes.new(<span class="s">&quot;ShaderNodeMixRGB&quot;</span>)
+    lift.blend_type = <span class="s">&quot;MIX&quot;</span>
+    lift.inputs[<span class="s">&quot;Fac&quot;</span>].default_value = ao_strength
+    lift.inputs[<span class="s">&quot;Color1&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    lift.location = (-<span class="n">500</span>, <span class="n">100</span>)
+    nt.links.new(col.outputs[<span class="s">&quot;Color&quot;</span>], lift.inputs[<span class="s">&quot;Color2&quot;</span>])
+    tint = nt.nodes.new(<span class="s">&quot;ShaderNodeMixRGB&quot;</span>)
+    tint.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    tint.inputs[<span class="s">&quot;Fac&quot;</span>].default_value = <span class="n">1.0</span>
+    tint.inputs[<span class="s">&quot;Color1&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    tint.location = (-<span class="n">300</span>, <span class="n">100</span>)
+    nt.links.new(lift.outputs[<span class="s">&quot;Color&quot;</span>], tint.inputs[<span class="s">&quot;Color2&quot;</span>])
+    nt.links.new(tint.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+SLOT_MATS = {
+    <span class="s">&quot;Stone&quot;</span>:   ((<span class="n">0.086</span>, <span class="n">0.079</span>, <span class="n">0.069</span>), <span class="n">0.86</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Coping&quot;</span>:  ((<span class="n">0.118</span>, <span class="n">0.108</span>, <span class="n">0.094</span>), <span class="n">0.80</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Bore&quot;</span>:    ((<span class="n">0.038</span>, <span class="n">0.035</span>, <span class="n">0.032</span>), <span class="n">0.92</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Flag&quot;</span>:    ((<span class="n">0.066</span>, <span class="n">0.061</span>, <span class="n">0.055</span>), <span class="n">0.89</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Timber&quot;</span>:  ((<span class="n">0.148</span>, <span class="n">0.078</span>, <span class="n">0.030</span>), <span class="n">0.74</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Brace&quot;</span>:   ((<span class="n">0.120</span>, <span class="n">0.064</span>, <span class="n">0.026</span>), <span class="n">0.76</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Shingle&quot;</span>: ((<span class="n">0.092</span>, <span class="n">0.056</span>, <span class="n">0.028</span>), <span class="n">0.82</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Drum&quot;</span>:    ((<span class="n">0.170</span>, <span class="n">0.098</span>, <span class="n">0.040</span>), <span class="n">0.72</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Stave&quot;</span>:   ((<span class="n">0.205</span>, <span class="n">0.118</span>, <span class="n">0.048</span>), <span class="n">0.70</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Rope&quot;</span>:    ((<span class="n">0.255</span>, <span class="n">0.208</span>, <span class="n">0.122</span>), <span class="n">0.88</span>, <span class="n">0.0</span>),
+    <span class="s">&quot;Iron&quot;</span>:    ((<span class="n">0.075</span>, <span class="n">0.078</span>, <span class="n">0.084</span>), <span class="n">0.44</span>, <span class="n">0.85</span>),
+}
+
+_mat_cache = {}
+
+
+<span class="k">def</span> bind_materials(ob, ao_strength=<span class="n">1.0</span>):
+    me = ob.data
+    <span class="k">if</span> me.materials:
+        <span class="k">return</span>
+    <span class="k">for</span> slot <span class="k">in</span> me.get(<span class="s">&quot;slots&quot;</span>, []):
+        key = (slot, ao_strength)
+        <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> _mat_cache:
+            rgb, rough, metal = SLOT_MATS[slot]
+            _mat_cache[key] = make_ao_material(slot, rgb, rough, metal,
+                                               ao_strength)
+        me.materials.append(_mat_cache[key])
+
+
+<span class="k">def</span> build_studio(sc):
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">40.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.030</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    sc.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    sc.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.020</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    sc.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy, ld.size, ld.color = energy, size, col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        sc.collection.objects.link(ob)
+
+    <span class="c"># VISUAL-STYLE Layer 2 rig, energies scaled to a ~1.9 m subject</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.3</span>, -<span class="n">2.4</span>, <span class="n">3.6</span>), <span class="n">430.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">40</span>, <span class="n">0</span>, -<span class="n">42</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.0</span>, -<span class="n">2.0</span>, <span class="n">1.2</span>), <span class="n">78.0</span>, <span class="n">5.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">54</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.9</span>, <span class="n">3.0</span>, <span class="n">2.6</span>), <span class="n">240.0</span>, <span class="n">2.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">54</span>, <span class="n">0</span>, <span class="n">196</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.3</span>, <span class="n">5.0</span>, <span class="n">0.7</span>), <span class="n">300.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">86</span>, <span class="n">0</span>, <span class="n">182</span>))
+    <span class="k">return</span> floor, wall
+
+
+<span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;The well with its baked AO driving base colour.
+
+    Falsified: the same bake written INVERTED, so the crevices between the
+    masonry courses and the inside of the shaft read bright while the exposed,
+    sky-facing stone goes dark — occlusion turned inside out.
+    &quot;&quot;&quot;</span>
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    _mat_cache.clear()
+    sc = bpy.context.scene
+
+    root, parts = build_asset(sc)
+    bake_asset(parts, n_samples=<span class="n">192</span>, invert=falsify)
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        bind_materials(ob)
+    floor, wall = build_studio(sc)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">3.62</span>, -<span class="n">4.78</span>, <span class="n">3.42</span>)
+    sc.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.49</span>)
+    sc.collection.objects.link(aim)
+    tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    tr.target = aim
+    tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    sc.camera = cam
+
+    sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
+        sc.cycles.samples = <span class="n">64</span>
+        sc.cycles.use_denoising = <span class="k">True</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            sc.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    sc.render.filepath = path
+    <span class="c"># Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)</span>
+    sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+    bpy.context.view_layer.update()
+
+    fcode = gallery_framing.check_framing(sc, cam, hero=parts, elements=parts,
+                                          stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(sc, cam, hero=parts,
+                                                       stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
+                   help=<span class="s">&quot;optional: render the inverted-AO variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    args = p.parse_args(argv)
+
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    code = check()
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    <span class="k">if</span> args.falsify:
+        rcode = render_still(os.path.abspath(args.falsify), args.engine,
+                             falsify=<span class="k">True</span>)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered falsified variant </span>{args.falsify}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;vertex-color-ao OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/vertex-color-ao-hero.webp" alt="vertex-color-ao render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

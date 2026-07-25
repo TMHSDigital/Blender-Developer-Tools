@@ -609,3 +609,18 @@ jobs:
           # root scale down into the children. Exits non-zero on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/socket-attach-points/socket_attach_points.py --
+
+      - name: Shipped example - vertex colour AO (baked occlusion attribute)
+        run: |
+          set -euo pipefail
+          # Check only (no render): a deterministic cosine-weighted hemisphere
+          # AO integrator validated against the closed form
+          # 1 - 0.5(1 - 1/sqrt(1+k^2)) at six probe distances, an unoccluded
+          # plate baking to exactly 1.0, strict monotonicity with distance,
+          # then the same integrator run over an 11-part stone well: values in
+          # [0,1] with real spread, FLOAT_COLOR exact round-trip vs BYTE_COLOR
+          # matching an independent sRGB quantisation model, both attributes
+          # surviving depsgraph evaluation at deviation 0 with element counts
+          # intact, and reuse hygiene. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/vertex-color-ao/vertex_color_ao.py --

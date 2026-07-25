@@ -98,6 +98,7 @@
     "examples/triangulate-tangents",
     "examples/turntable",
     "examples/uv-layer-grid",
+    "examples/vertex-color-ao",
     "examples/vertex-weight-limit",
     "examples/vse-cut-list",
     "examples/vse-gamma-cross",
