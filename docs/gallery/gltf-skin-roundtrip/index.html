@@ -599,6 +599,12 @@ EXPORT_KWARGS = dict(
             a = p[<span class="s">&quot;attributes&quot;</span>]
             w = acc_f(a[<span class="s">&quot;WEIGHTS_0&quot;</span>], <span class="n">4</span>)
             j = acc_u(a[<span class="s">&quot;JOINTS_0&quot;</span>], <span class="n">4</span>, g[<span class="s">&quot;accessors&quot;</span>][a[<span class="s">&quot;JOINTS_0&quot;</span>]][<span class="s">&quot;componentType&quot;</span>])
+            <span class="c"># JOINTS_0 and WEIGHTS_0 must cover the same vertices; zip() would</span>
+            <span class="c"># otherwise silently score only the shorter accessor</span>
+            <span class="k">if</span> len(w) != len(j):
+                print(<span class="s">f&quot;</span><span class="s">ERROR: WEIGHTS_0 count </span>{len(w)}<span class="s"> != JOINTS_0 count </span><span class="s">&quot;</span>
+                      <span class="s">f&quot;</span>{len(j)}<span class="s"> on a primitive</span><span class="s">&quot;</span>, file=sys.stderr)
+                <span class="k">return</span> <span class="n">7</span>
             disk_verts += len(w)
             <span class="k">for</span> ws, js <span class="k">in</span> zip(w, j):
                 total = sum(x <span class="k">for</span> x, ji <span class="k">in</span> zip(ws, js) <span class="k">if</span> ji &lt; len(BONES))

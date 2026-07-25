@@ -96,6 +96,7 @@ POS_TOL = 2e-5          # float32 on disk vs float32 in Blender, plus axis math
 NRM_TOL = 2e-4
 UV_TOL = 3e-5
 UNIT_TOL = 1e-3         # |length(n) - 1| for re-imported loop normals
+UV_SAMPLE = 32          # loops sampled for the V-flip check; asserted, not assumed
 KEY_DIGITS = 4          # position-key grid for attribute lookups
 
 
@@ -341,12 +342,32 @@ def check(crate):
         disk_pos = acc_floats(prim0["POSITION"], 3)
         disk_uv = acc_floats(prim0["TEXCOORD_0"], 2)
         uv_set = set_map(snap["loops"], snap["uvs"])
+        # The comparison below is only evidence if it actually runs on a known
+        # number of pairs. zip() truncates to the shorter sequence, so without
+        # these guards a primitive that carried no TEXCOORD_0 at all would
+        # leave flip_err at its initial 0.0 and pass. Assert the pairing and
+        # count the comparisons, then require the count.
+        if len(disk_uv) != len(disk_pos):
+            print(f"ERROR: prim0 TEXCOORD_0 count {len(disk_uv)} != POSITION "
+                  f"count {len(disk_pos)} - the UV attribute does not cover "
+                  "the primitive", file=sys.stderr)
+            return 11
+        if len(disk_pos) < UV_SAMPLE:
+            print(f"ERROR: prim0 carries only {len(disk_pos)} loops, fewer than "
+                  f"the {UV_SAMPLE} the V-flip check samples", file=sys.stderr)
+            return 11
         flip_err = 0.0
-        for pd, (u, v) in zip(disk_pos[:32], disk_uv[:32]):
+        sampled = 0
+        for pd, (u, v) in zip(disk_pos[:UV_SAMPLE], disk_uv[:UV_SAMPLE]):
             pb = (pd[0], -pd[2], pd[1])  # glTF (x, z, -y) -> Blender (x, y, z)
             best = min((max(abs(u - e[0]), abs((1.0 - v) - e[1]))
                         for e in candidates(uv_set, pb)), default=1e30)
             flip_err = max(flip_err, best)
+            sampled += 1
+        if sampled != UV_SAMPLE:
+            print(f"ERROR: V-flip check compared {sampled} loops, expected "
+                  f"{UV_SAMPLE}", file=sys.stderr)
+            return 11
         if flip_err > UV_TOL:
             print(f"ERROR: on-disk UVs deviate {flip_err:.3e} from the V-flipped "
                   "authored layout (glTF texture origin is top-left)", file=sys.stderr)

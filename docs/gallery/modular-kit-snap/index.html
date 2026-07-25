@@ -340,6 +340,9 @@ SKEW = <span class="n">3e-3</span>               <span class="c"># unsnapped var
 NUDGE = <span class="n">2e-3</span>              <span class="c"># unsnapped variant: two verts jogged in y (2 mm)</span>
 EXPECT_BOUNDARY_VERTS = <span class="n">16</span>   <span class="c"># 8 per open end (hollow-rectangle profile)</span>
 EXPECT_BOUNDARY_EDGES = <span class="n">16</span>   <span class="c"># 8 per open end</span>
+EXPECT_PARTS = <span class="n">21</span>            <span class="c"># shell + 20 detail parts; asserted before the</span>
+                             <span class="c"># per-part loops below, which assert nothing on</span>
+                             <span class="c"># an empty dict</span>
 
 <span class="c"># Hollow-rectangle profile (y, z): outer shell corners then inner bore corners,</span>
 <span class="c"># ordered as one continuous ring so the extrusion&#x27;s side faces come out quads.</span>
@@ -538,6 +541,11 @@ PROFILE = OUTER + INNER   <span class="c"># 8 points -&gt; 8 boundary verts per 
     <span class="k">def</span> fail(code, msg):
         print(<span class="s">f&quot;</span><span class="s">ERROR (</span>{code}<span class="s">): </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
         fails.append(code)
+
+    <span class="k">if</span> len(meshes) != EXPECT_PARTS:
+        fail(<span class="n">11</span>, <span class="s">f&quot;</span><span class="s">kit built </span>{len(meshes)}<span class="s"> parts, expected </span>{EXPECT_PARTS}<span class="s"> - the </span><span class="s">&quot;</span>
+                 <span class="s">f&quot;</span><span class="s">per-part loops below would iterate over the wrong set</span><span class="s">&quot;</span>)
+        <span class="k">return</span> fails[<span class="n">0</span>]
 
     <span class="c"># --- 1. snap: 16 boundary verts, all on x in {0, TILE} -----------------</span>
     on, off = boundary_verts(shell)

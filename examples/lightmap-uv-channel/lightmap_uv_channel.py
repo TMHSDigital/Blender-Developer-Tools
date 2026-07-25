@@ -499,6 +499,28 @@ def check():
         print(f"ERROR ({code}): {msg}", file=sys.stderr)
         fails.append(code)
 
+    # --- 0. positive control for the overlap detector -----------------------
+    # "0 overlapping pairs" is only evidence if the detector can find one. A
+    # blinded detector reports zero and the whole check passes: widening
+    # SAT_EPS to 1e9 makes every axis test read as separated, and this example
+    # still exited 0 before this control existed. Prove sensitivity and
+    # strictness on hand-built triangles before trusting the scan.
+    _overlapping = (((0.0, 0.0), (1.0, 0.0), (0.0, 1.0)),
+                    ((0.2, 0.2), (1.2, 0.2), (0.2, 1.2)))
+    _disjoint = (((0.0, 0.0), (1.0, 0.0), (0.0, 1.0)),
+                 ((5.0, 5.0), (6.0, 5.0), (5.0, 6.0)))
+    _touching = (((0.0, 0.0), (1.0, 0.0), (0.0, 1.0)),
+                 ((1.0, 0.0), (2.0, 0.0), (1.0, 1.0)))
+    ctl = (_tri_overlap(*_overlapping), _tri_overlap(*_disjoint),
+           _tri_overlap(*_touching))
+    print(f"sat_control overlapping={ctl[0]} disjoint={ctl[1]} touching={ctl[2]} "
+          f"(want True/False/False)")
+    if ctl != (True, False, False):
+        fail(7, f"SAT self-test {ctl} != (True, False, False) — the overlap "
+                f"detector cannot detect, so a zero-overlap result proves "
+                f"nothing")
+        return fails[0]
+
     nominal_margin = MARGIN_DIV * 0.01
     total_islands = 0
     for suffix, me in meshes.items():

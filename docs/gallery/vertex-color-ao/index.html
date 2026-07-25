@@ -376,6 +376,7 @@ RAY_FAR = <span class="n">1.0e4</span>
 FLOAT_TOL = <span class="n">1e-6</span>           <span class="c"># FLOAT_COLOR round-trip (measured 1.43e-08)</span>
 BYTE_MODEL_TOL = <span class="n">1e-6</span>      <span class="c"># agreement with the independent sRGB model</span>
 SPREAD_MIN = <span class="n">0.25</span>          <span class="c"># the asset must actually use its AO range</span>
+EXPECT_PARTS = <span class="n">11</span>          <span class="c"># asserted before any per-part loop runs (check 0)</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -926,7 +927,16 @@ DRUM_Z = <span class="n">1.030</span>
 
     <span class="c"># --- 3. asset bake: in range, and actually using the range --------------</span>
     root, parts = build_asset(sc)
+    <span class="c"># A loop over nothing asserts nothing: pin the population before the</span>
+    <span class="c"># per-part and per-vertex checks below iterate over it.</span>
+    <span class="k">if</span> len(parts) != EXPECT_PARTS:
+        fail(<span class="n">8</span>, <span class="s">f&quot;</span><span class="s">asset built </span>{len(parts)}<span class="s"> parts, expected </span>{EXPECT_PARTS}<span class="s"> - </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">the checks below would iterate over the wrong set</span><span class="s">&quot;</span>)
+        <span class="k">return</span> fails[<span class="n">0</span>]
     values = bake_asset(parts)
+    <span class="k">if</span> <span class="k">not</span> values:
+        fail(<span class="n">5</span>, <span class="s">&quot;the bake produced no values at all&quot;</span>)
+        <span class="k">return</span> fails[<span class="n">0</span>]
     lo, hi = min(values), max(values)
     print(<span class="s">f&quot;</span><span class="s">asset_bake parts=</span>{len(parts)}<span class="s"> verts=</span>{len(values)}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">samples=</span>{ASSET_SAMPLES}<span class="s"> min=</span>{lo:<span class="s">.6f</span>}<span class="s"> max=</span>{hi:<span class="s">.6f</span>}<span class="s"> spread=</span>{hi - lo:<span class="s">.6f</span>}<span class="s">&quot;</span>)

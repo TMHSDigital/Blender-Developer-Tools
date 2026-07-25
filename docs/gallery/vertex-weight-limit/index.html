@@ -593,6 +593,13 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     pose_after = eval_positions(obj)
 
     <span class="c"># contract 3: pruning did not damage the pose</span>
+    <span class="c"># zip() would truncate if the prune changed the evaluated vertex count,</span>
+    <span class="c"># comparing only the shared prefix and reporting a clean deviation.</span>
+    <span class="k">if</span> len(pose_after) != len(pose_before) <span class="k">or</span> <span class="k">not</span> pose_before:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated vertex count changed across the prune </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(</span>{len(pose_before)}<span class="s"> -&gt; </span>{len(pose_after)}<span class="s">) - the pose </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">comparison would only cover the shared prefix</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
     pose_dev = max((mathutils.Vector(a) - mathutils.Vector(b)).length
                    <span class="k">for</span> a, b <span class="k">in</span> zip(pose_before, pose_after))
     <span class="k">if</span> pose_dev &gt; POSE_TOL:

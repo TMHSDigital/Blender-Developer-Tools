@@ -379,6 +379,7 @@ POS_TOL = <span class="n">2e-5</span>          <span class="c"># float32 on disk
 NRM_TOL = <span class="n">2e-4</span>
 UV_TOL = <span class="n">3e-5</span>
 UNIT_TOL = <span class="n">1e-3</span>         <span class="c"># |length(n) - 1| for re-imported loop normals</span>
+UV_SAMPLE = <span class="n">32</span>          <span class="c"># loops sampled for the V-flip check; asserted, not assumed</span>
 KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key grid for attribute lookups</span>
 
 
@@ -624,12 +625,32 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
         disk_pos = acc_floats(prim0[<span class="s">&quot;POSITION&quot;</span>], <span class="n">3</span>)
         disk_uv = acc_floats(prim0[<span class="s">&quot;TEXCOORD_0&quot;</span>], <span class="n">2</span>)
         uv_set = set_map(snap[<span class="s">&quot;loops&quot;</span>], snap[<span class="s">&quot;uvs&quot;</span>])
+        <span class="c"># The comparison below is only evidence if it actually runs on a known</span>
+        <span class="c"># number of pairs. zip() truncates to the shorter sequence, so without</span>
+        <span class="c"># these guards a primitive that carried no TEXCOORD_0 at all would</span>
+        <span class="c"># leave flip_err at its initial 0.0 and pass. Assert the pairing and</span>
+        <span class="c"># count the comparisons, then require the count.</span>
+        <span class="k">if</span> len(disk_uv) != len(disk_pos):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: prim0 TEXCOORD_0 count </span>{len(disk_uv)}<span class="s"> != POSITION </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">count </span>{len(disk_pos)}<span class="s"> - the UV attribute does not cover </span><span class="s">&quot;</span>
+                  <span class="s">&quot;the primitive&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">11</span>
+        <span class="k">if</span> len(disk_pos) &lt; UV_SAMPLE:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: prim0 carries only </span>{len(disk_pos)}<span class="s"> loops, fewer than </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">the </span>{UV_SAMPLE}<span class="s"> the V-flip check samples</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">11</span>
         flip_err = <span class="n">0.0</span>
-        <span class="k">for</span> pd, (u, v) <span class="k">in</span> zip(disk_pos[:<span class="n">32</span>], disk_uv[:<span class="n">32</span>]):
+        sampled = <span class="n">0</span>
+        <span class="k">for</span> pd, (u, v) <span class="k">in</span> zip(disk_pos[:UV_SAMPLE], disk_uv[:UV_SAMPLE]):
             pb = (pd[<span class="n">0</span>], -pd[<span class="n">2</span>], pd[<span class="n">1</span>])  <span class="c"># glTF (x, z, -y) -&gt; Blender (x, y, z)</span>
             best = min((max(abs(u - e[<span class="n">0</span>]), abs((<span class="n">1.0</span> - v) - e[<span class="n">1</span>]))
                         <span class="k">for</span> e <span class="k">in</span> candidates(uv_set, pb)), default=<span class="n">1e30</span>)
             flip_err = max(flip_err, best)
+            sampled += <span class="n">1</span>
+        <span class="k">if</span> sampled != UV_SAMPLE:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: V-flip check compared </span>{sampled}<span class="s"> loops, expected </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{UV_SAMPLE}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">11</span>
         <span class="k">if</span> flip_err &gt; UV_TOL:
             print(<span class="s">f&quot;</span><span class="s">ERROR: on-disk UVs deviate </span>{flip_err:<span class="s">.3e</span>}<span class="s"> from the V-flipped </span><span class="s">&quot;</span>
                   <span class="s">&quot;authored layout (glTF texture origin is top-left)&quot;</span>, file=sys.stderr)

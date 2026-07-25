@@ -586,6 +586,12 @@ def render_still(path, engine):
 
 
 def near(got, want, tol):
+    # all() over an empty zip is True, so an empty or short sample would make
+    # every "is this pixel the right colour" test pass without comparing
+    # anything. Refuse to answer rather than answer vacuously.
+    if len(got) != len(want) or not got:
+        raise ValueError(f"near(): {len(got)} sampled values against "
+                         f"{len(want)} expected - nothing would be compared")
     return all(abs(g - w) <= tol for g, w in zip(got, want))
 
 

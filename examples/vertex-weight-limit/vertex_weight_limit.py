@@ -310,6 +310,13 @@ def check(obj, arm, groups, pose_before):
     pose_after = eval_positions(obj)
 
     # contract 3: pruning did not damage the pose
+    # zip() would truncate if the prune changed the evaluated vertex count,
+    # comparing only the shared prefix and reporting a clean deviation.
+    if len(pose_after) != len(pose_before) or not pose_before:
+        print(f"ERROR: evaluated vertex count changed across the prune "
+              f"({len(pose_before)} -> {len(pose_after)}) - the pose "
+              f"comparison would only cover the shared prefix", file=sys.stderr)
+        return 7
     pose_dev = max((mathutils.Vector(a) - mathutils.Vector(b)).length
                    for a, b in zip(pose_before, pose_after))
     if pose_dev > POSE_TOL:

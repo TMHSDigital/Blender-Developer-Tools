@@ -58,6 +58,9 @@ SKEW = 3e-3               # unsnapped variant: end-ring x error (3 mm)
 NUDGE = 2e-3              # unsnapped variant: two verts jogged in y (2 mm)
 EXPECT_BOUNDARY_VERTS = 16   # 8 per open end (hollow-rectangle profile)
 EXPECT_BOUNDARY_EDGES = 16   # 8 per open end
+EXPECT_PARTS = 21            # shell + 20 detail parts; asserted before the
+                             # per-part loops below, which assert nothing on
+                             # an empty dict
 
 # Hollow-rectangle profile (y, z): outer shell corners then inner bore corners,
 # ordered as one continuous ring so the extrusion's side faces come out quads.
@@ -256,6 +259,11 @@ def check():
     def fail(code, msg):
         print(f"ERROR ({code}): {msg}", file=sys.stderr)
         fails.append(code)
+
+    if len(meshes) != EXPECT_PARTS:
+        fail(11, f"kit built {len(meshes)} parts, expected {EXPECT_PARTS} - the "
+                 f"per-part loops below would iterate over the wrong set")
+        return fails[0]
 
     # --- 1. snap: 16 boundary verts, all on x in {0, TILE} -----------------
     on, off = boundary_verts(shell)

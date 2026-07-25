@@ -316,6 +316,12 @@ def check(obj, arm, part_of):
             a = p["attributes"]
             w = acc_f(a["WEIGHTS_0"], 4)
             j = acc_u(a["JOINTS_0"], 4, g["accessors"][a["JOINTS_0"]]["componentType"])
+            # JOINTS_0 and WEIGHTS_0 must cover the same vertices; zip() would
+            # otherwise silently score only the shorter accessor
+            if len(w) != len(j):
+                print(f"ERROR: WEIGHTS_0 count {len(w)} != JOINTS_0 count "
+                      f"{len(j)} on a primitive", file=sys.stderr)
+                return 7
             disk_verts += len(w)
             for ws, js in zip(w, j):
                 total = sum(x for x, ji in zip(ws, js) if ji < len(BONES))
