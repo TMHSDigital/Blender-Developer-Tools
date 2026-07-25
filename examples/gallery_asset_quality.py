@@ -121,6 +121,7 @@ def measure_edge90(hero):
     """
     total = 0
     right = 0
+    degenerate = 0
     for _, me in _hero_meshes(hero):
         bm = bmesh.new()
         try:
@@ -128,15 +129,21 @@ def measure_edge90(hero):
             for e in bm.edges:
                 if len(e.link_faces) != 2:
                     continue
-                total += 1
                 n1 = e.link_faces[0].normal
                 n2 = e.link_faces[1].normal
-                ang = math.degrees(n1.angle(n2))
-                if abs(ang - 90.0) <= EDGE90_DEG:
+                # A zero-area face has a zero-length normal, and Vector.angle
+                # RAISES on one. Reporting beats throwing: a degenerate face is
+                # a real defect the caller should hear about, not a crash that
+                # hides every other measurement on the asset.
+                if n1.length_squared <= 0.0 or n2.length_squared <= 0.0:
+                    degenerate += 1
+                    continue
+                total += 1
+                if abs(math.degrees(n1.angle(n2)) - 90.0) <= EDGE90_DEG:
                     right += 1
         finally:
             bm.free()
-    return (right / total) if total else 0.0, right, total
+    return (right / total) if total else 0.0, right, total, degenerate
 
 
 def _matte_render(scene, camera, hide, path, width, height):
@@ -246,6 +253,7 @@ class AssetQualityResult:
         self.edge90 = 0.0
         self.edge_right = 0
         self.edge_total = 0
+        self.degenerate_faces = 0   # zero-area faces skipped by measure_edge90
         self.compactness = 0.0
         self.perimeter = 0
         self.area = 0
@@ -264,6 +272,7 @@ class AssetQualityResult:
             f"ceiling={DOMINANT_MAT_MAX} (applies at parts>=2, n={self.parts}) "
             f"{mark(mat_ok)}",
             f"aq_edge90 frac={self.edge90:.3f} ({self.edge_right}/{self.edge_total}) "
+            f"degenerate_faces={self.degenerate_faces} "
             f"ceiling={EDGE90_MAX_FRAC} {mark(edge_ok)}",
             f"aq_compactness {self.compactness:.1f} (perim={self.perimeter} "
             f"area={self.area}) informational-only",
@@ -277,7 +286,8 @@ def measure_asset_quality(scene, camera, hero, stage=()):
     res.parts, res.bad_names = measure_parts(hero)
     (res.materials, res.mat_names,
      res.dominant_share, res.dominant_name) = measure_materials(hero)
-    res.edge90, res.edge_right, res.edge_total = measure_edge90(hero)
+    (res.edge90, res.edge_right, res.edge_total,
+     res.degenerate_faces) = measure_edge90(hero)
     res.compactness, res.perimeter, res.area = measure_compactness(
         scene, camera, hero, stage=stage)
     return res

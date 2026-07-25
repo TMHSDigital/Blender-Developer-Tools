@@ -781,6 +781,28 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
         print(<span class="s">f&quot;</span><span class="s">ERROR (</span>{code}<span class="s">): </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
         fails.append(code)
 
+    <span class="c"># --- 0. positive control for the overlap detector -----------------------</span>
+    <span class="c"># &quot;0 overlapping pairs&quot; is only evidence if the detector can find one. A</span>
+    <span class="c"># blinded detector reports zero and the whole check passes: widening</span>
+    <span class="c"># SAT_EPS to 1e9 makes every axis test read as separated, and this example</span>
+    <span class="c"># still exited 0 before this control existed. Prove sensitivity and</span>
+    <span class="c"># strictness on hand-built triangles before trusting the scan.</span>
+    _overlapping = (((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>)),
+                    ((<span class="n">0.2</span>, <span class="n">0.2</span>), (<span class="n">1.2</span>, <span class="n">0.2</span>), (<span class="n">0.2</span>, <span class="n">1.2</span>)))
+    _disjoint = (((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>)),
+                 ((<span class="n">5.0</span>, <span class="n">5.0</span>), (<span class="n">6.0</span>, <span class="n">5.0</span>), (<span class="n">5.0</span>, <span class="n">6.0</span>)))
+    _touching = (((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>)),
+                 ((<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">2.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">1.0</span>)))
+    ctl = (_tri_overlap(*_overlapping), _tri_overlap(*_disjoint),
+           _tri_overlap(*_touching))
+    print(<span class="s">f&quot;</span><span class="s">sat_control overlapping=</span>{ctl[<span class="n">0</span>]}<span class="s"> disjoint=</span>{ctl[<span class="n">1</span>]}<span class="s"> touching=</span>{ctl[<span class="n">2</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">(want True/False/False)</span><span class="s">&quot;</span>)
+    <span class="k">if</span> ctl != (<span class="k">True</span>, <span class="k">False</span>, <span class="k">False</span>):
+        fail(<span class="n">7</span>, <span class="s">f&quot;</span><span class="s">SAT self-test </span>{ctl}<span class="s"> != (True, False, False) — the overlap </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">detector cannot detect, so a zero-overlap result proves </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">nothing</span><span class="s">&quot;</span>)
+        <span class="k">return</span> fails[<span class="n">0</span>]
+
     nominal_margin = MARGIN_DIV * <span class="n">0.01</span>
     total_islands = <span class="n">0</span>
     <span class="k">for</span> suffix, me <span class="k">in</span> meshes.items():

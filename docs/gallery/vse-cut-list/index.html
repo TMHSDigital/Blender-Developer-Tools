@@ -876,6 +876,12 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
 
 
 <span class="k">def</span> near(got, want, tol):
+    <span class="c"># all() over an empty zip is True, so an empty or short sample would make</span>
+    <span class="c"># every &quot;is this pixel the right colour&quot; test pass without comparing</span>
+    <span class="c"># anything. Refuse to answer rather than answer vacuously.</span>
+    <span class="k">if</span> len(got) != len(want) <span class="k">or</span> <span class="k">not</span> got:
+        <span class="k">raise</span> ValueError(<span class="s">f&quot;</span><span class="s">near(): </span>{len(got)}<span class="s"> sampled values against </span><span class="s">&quot;</span>
+                         <span class="s">f&quot;</span>{len(want)}<span class="s"> expected - nothing would be compared</span><span class="s">&quot;</span>)
     <span class="k">return</span> all(abs(g - w) &lt;= tol <span class="k">for</span> g, w <span class="k">in</span> zip(got, want))
 
 

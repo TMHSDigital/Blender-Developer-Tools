@@ -96,6 +96,13 @@ REPOSE_ROT = (math.radians(13.0), math.radians(-21.0), math.radians(-64.0))
 # real change to the object transform rather than a no-op.
 APPLY_SCALE = 1.35
 
+# Asset population, asserted before any per-element loop runs (see check 0).
+EXPECT_SOCKETS = 7        # 4 rotor + camera + mast + battery
+EXPECT_PARTS = 14         # hull + 4 arms + 2 landing gear + 7 mount pads
+# Camera (-Z) and mast (+Z) are parallel to chassis up and take the +X up-axis
+# fallback; the four canted rotors and the tilted battery take Gram-Schmidt.
+EXPECT_FALLBACK_SOCKETS = 2
+
 
 def eevee_engine_id():
     return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
@@ -668,6 +675,19 @@ def check():
     local_by_socket = {s[0]: authored_local(s[2], s[3]) for s in spec}
     normal_by_socket = {s[0]: Vector(s[3]).normalized() for s in spec}
 
+    # --- 0. population: every check below is a loop over these collections,
+    # and a loop over nothing asserts nothing. Pin the counts first so an
+    # empty spec or a failed build cannot report a clean pass.
+    if (len(sockets) != EXPECT_SOCKETS or len(modules) != EXPECT_SOCKETS
+            or len(parts) != EXPECT_PARTS):
+        fail(6, f"asset population is {len(parts)} parts / {len(sockets)} "
+                f"sockets / {len(modules)} modules, expected {EXPECT_PARTS} / "
+                f"{EXPECT_SOCKETS} / {EXPECT_SOCKETS} - the checks below would "
+                f"iterate over the wrong set")
+        return fails[0]
+    print(f"population parts={len(parts)} sockets={len(sockets)} "
+          f"modules={len(modules)}")
+
     # --- 1. socket matrices == authored world transform ---------------------
     worst_m, worst_o, worst_det = 0.0, 0.0, 0.0
     for name, skt in sockets.items():
@@ -716,8 +736,22 @@ def check():
         if updev > TOL:
             fail(4, f"{name} +Y deviates {updev:.3e} from the documented up rule "
                     f"— modules spawn rolled about their mount axis")
+    # The up-axis assertion above compares the socket basis against a
+    # re-derivation that uses the same PARALLEL threshold, so on its own it
+    # cannot notice a wrong threshold — both sides move together. Requiring
+    # that both branches are actually taken makes the threshold observable:
+    # collapsing PARALLEL sends every socket down one branch and this fires.
+    fallback = sum(1 for n in normal_by_socket.values()
+                   if abs(n.dot(CHASSIS_UP)) > PARALLEL)
+    gram = len(sockets) - fallback
     print(f"pad_orientation sockets={len(sockets)} normal_dev={worst_n:.3e} "
-          f"centroid_dev={worst_c:.3e} up_dev={worst_up:.3e} tol={TOL:.0e}")
+          f"centroid_dev={worst_c:.3e} up_dev={worst_up:.3e} "
+          f"up_branch fallback={fallback} gram_schmidt={gram} tol={TOL:.0e}")
+    if fallback != EXPECT_FALLBACK_SOCKETS or gram != len(sockets) - EXPECT_FALLBACK_SOCKETS:
+        fail(4, f"up-axis branch split is {fallback} fallback / {gram} "
+                f"Gram-Schmidt, expected {EXPECT_FALLBACK_SOCKETS} / "
+                f"{len(sockets) - EXPECT_FALLBACK_SOCKETS} — the PARALLEL "
+                f"threshold is not selecting the branches it documents")
 
     # --- 3. module seating --------------------------------------------------
     worst_seat, worst_axis = 0.0, 0.0

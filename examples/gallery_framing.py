@@ -126,6 +126,45 @@ class FramingResult:
     def ok(self):
         return self.fill_ok and self.margins_ok
 
+    def advice(self):
+        """Diagnostic only: how far off, and which way to move.
+
+        A bare FAIL costs a render per guess. Subject extent on screen is
+        very nearly inversely proportional to camera distance, so
+        `distance x= measured_fill / target_fill` lands the dominant axis in
+        the band in one step. Margins are reported as the shortfall per edge.
+        """
+        out = []
+        if not self.fill_ok:
+            worst = max(self.fill_x, self.fill_y)
+            axis = "x" if self.fill_x >= self.fill_y else "y"
+            target = (FILL_MIN + FILL_MAX) / 2.0
+            if worst > 0.0:
+                factor = worst / target
+                verb = "back" if factor > 1.0 else "in"
+                # A silhouette that runs off frame measures 1.000 no matter how
+                # far past the edge it actually goes, so the ratio is only a
+                # lower bound and one step will not be enough.
+                saturated = worst >= 1.0 - 1e-6 or bool(self.touches or self.crosses)
+                qual = (" AT LEAST (fill saturated: the subject leaves the "
+                        "frame, so its true extent is unknown - re-measure "
+                        "and repeat)" if saturated else "")
+                out.append(f"framing_advice fill {axis}={worst:.3f} target"
+                           f"={target:.3f} -> move camera {verb}, "
+                           f"distance x={factor:.3f}{qual} "
+                           f"(aim-relative; keeps the aim point fixed)")
+        short = {e: MARGIN_MIN - m for e, m in self.margins.items()
+                 if m < MARGIN_MIN}
+        for e in self.touches:
+            short.setdefault(e, MARGIN_MIN)
+        if short:
+            worst_edge = max(short, key=short.get)
+            detail = " ".join(f"{e}+{d:.3f}" for e, d in sorted(short.items()))
+            out.append(f"framing_advice margins short on {detail} "
+                       f"(worst {worst_edge}); shift the aim point away from "
+                       f"that edge, or move back if several edges are short")
+        return out
+
     def report(self):
         def mark(flag):
             return "ok" if flag else "FAIL"
@@ -142,6 +181,7 @@ class FramingResult:
             f"framing_edges touch={touch} cross={cross}",
             f"framing_strategy {self.strategy} {self.note}".rstrip(),
         ]
+        lines.extend(self.advice())
         if self.ok:
             lines.append("framing_ok")
         return "\n".join(lines)

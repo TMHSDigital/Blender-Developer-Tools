@@ -133,6 +133,16 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 
 - ~~Gallery framing recomposition worklist~~ **DRAINED**: all four recomposition cases restaged and gated with `check_framing` — depsgraph-export (0.984x/touch→0.812x; cube+dome recentered, aim-based camera), vertex-weight-limit (touch B→0.867y; more frontal camera, lower aim, base in frame), triangulate-tangents (0.334x→0.833y; 2x-class move-in plus Key/Glint trim that also cleared a pre-existing dome blowout), text-version-stamp (0.663x→0.719x; moved in with aim on the stamp center, dead third gone). The seven marginal cases were camera-nudged in the preceding sweep; deviations documented in #108 (damped-track-aim, wave-displace); sky-texture-sun-elevation is a measurement artifact (world subject — report-only if wired). Remaining: nothing on the framing worklist — future examples inherit the gate at authoring time.
 
+## Asset sheets committed before 2026-07-25 are not comparable
+
+The neutral asset-sheet harness sized its camera from the subject's bounding
+box **diagonal**, which cropped tall subjects and shrank wide ones, so panels
+in one sheet were at different effective scales. It now solves the required
+distance from the real field of view on both axes. Sheets committed before
+this fix (`modular-kit-snap`, `lightmap-uv-channel`) show mis-scaled panels
+and must not be cited as evidence for or against an asset; re-render them if
+that comparison is ever needed.
+
 ## Asset-quality survey worklist (measured 2026-07-24, `gallery_asset_quality` floors)
 
 Full-gallery floor survey after the gate landed (`feat/asset-quality-gate`).

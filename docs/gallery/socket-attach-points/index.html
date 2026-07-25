@@ -384,6 +384,13 @@ REPOSE_ROT = (math.radians(<span class="n">13.0</span>), math.radians(-<span cla
 <span class="c"># real change to the object transform rather than a no-op.</span>
 APPLY_SCALE = <span class="n">1.35</span>
 
+<span class="c"># Asset population, asserted before any per-element loop runs (see check 0).</span>
+EXPECT_SOCKETS = <span class="n">7</span>        <span class="c"># 4 rotor + camera + mast + battery</span>
+EXPECT_PARTS = <span class="n">14</span>         <span class="c"># hull + 4 arms + 2 landing gear + 7 mount pads</span>
+<span class="c"># Camera (-Z) and mast (+Z) are parallel to chassis up and take the +X up-axis</span>
+<span class="c"># fallback; the four canted rotors and the tilted battery take Gram-Schmidt.</span>
+EXPECT_FALLBACK_SOCKETS = <span class="n">2</span>
+
 
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
@@ -956,6 +963,19 @@ MODULE_MOUNT_AXIS = Vector((<span class="n">0.0</span>, <span class="n">0.0</spa
     local_by_socket = {s[<span class="n">0</span>]: authored_local(s[<span class="n">2</span>], s[<span class="n">3</span>]) <span class="k">for</span> s <span class="k">in</span> spec}
     normal_by_socket = {s[<span class="n">0</span>]: Vector(s[<span class="n">3</span>]).normalized() <span class="k">for</span> s <span class="k">in</span> spec}
 
+    <span class="c"># --- 0. population: every check below is a loop over these collections,</span>
+    <span class="c"># and a loop over nothing asserts nothing. Pin the counts first so an</span>
+    <span class="c"># empty spec or a failed build cannot report a clean pass.</span>
+    <span class="k">if</span> (len(sockets) != EXPECT_SOCKETS <span class="k">or</span> len(modules) != EXPECT_SOCKETS
+            <span class="k">or</span> len(parts) != EXPECT_PARTS):
+        fail(<span class="n">6</span>, <span class="s">f&quot;</span><span class="s">asset population is </span>{len(parts)}<span class="s"> parts / </span>{len(sockets)}<span class="s"> </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">sockets / </span>{len(modules)}<span class="s"> modules, expected </span>{EXPECT_PARTS}<span class="s"> / </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span>{EXPECT_SOCKETS}<span class="s"> / </span>{EXPECT_SOCKETS}<span class="s"> - the checks below would </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">iterate over the wrong set</span><span class="s">&quot;</span>)
+        <span class="k">return</span> fails[<span class="n">0</span>]
+    print(<span class="s">f&quot;</span><span class="s">population parts=</span>{len(parts)}<span class="s"> sockets=</span>{len(sockets)}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">modules=</span>{len(modules)}<span class="s">&quot;</span>)
+
     <span class="c"># --- 1. socket matrices == authored world transform ---------------------</span>
     worst_m, worst_o, worst_det = <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>
     <span class="k">for</span> name, skt <span class="k">in</span> sockets.items():
@@ -1004,8 +1024,22 @@ MODULE_MOUNT_AXIS = Vector((<span class="n">0.0</span>, <span class="n">0.0</spa
         <span class="k">if</span> updev &gt; TOL:
             fail(<span class="n">4</span>, <span class="s">f&quot;</span>{name}<span class="s"> +Y deviates </span>{updev:<span class="s">.3e</span>}<span class="s"> from the documented up rule </span><span class="s">&quot;</span>
                     <span class="s">f&quot;</span><span class="s">— modules spawn rolled about their mount axis</span><span class="s">&quot;</span>)
+    <span class="c"># The up-axis assertion above compares the socket basis against a</span>
+    <span class="c"># re-derivation that uses the same PARALLEL threshold, so on its own it</span>
+    <span class="c"># cannot notice a wrong threshold — both sides move together. Requiring</span>
+    <span class="c"># that both branches are actually taken makes the threshold observable:</span>
+    <span class="c"># collapsing PARALLEL sends every socket down one branch and this fires.</span>
+    fallback = sum(<span class="n">1</span> <span class="k">for</span> n <span class="k">in</span> normal_by_socket.values()
+                   <span class="k">if</span> abs(n.dot(CHASSIS_UP)) &gt; PARALLEL)
+    gram = len(sockets) - fallback
     print(<span class="s">f&quot;</span><span class="s">pad_orientation sockets=</span>{len(sockets)}<span class="s"> normal_dev=</span>{worst_n:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">centroid_dev=</span>{worst_c:<span class="s">.3e</span>}<span class="s"> up_dev=</span>{worst_up:<span class="s">.3e</span>}<span class="s"> tol=</span>{TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+          <span class="s">f&quot;</span><span class="s">centroid_dev=</span>{worst_c:<span class="s">.3e</span>}<span class="s"> up_dev=</span>{worst_up:<span class="s">.3e</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">up_branch fallback=</span>{fallback}<span class="s"> gram_schmidt=</span>{gram}<span class="s"> tol=</span>{TOL:<span class="s">.0e</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> fallback != EXPECT_FALLBACK_SOCKETS <span class="k">or</span> gram != len(sockets) - EXPECT_FALLBACK_SOCKETS:
+        fail(<span class="n">4</span>, <span class="s">f&quot;</span><span class="s">up-axis branch split is </span>{fallback}<span class="s"> fallback / </span>{gram}<span class="s"> </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">Gram-Schmidt, expected </span>{EXPECT_FALLBACK_SOCKETS}<span class="s"> / </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span>{len(sockets) - EXPECT_FALLBACK_SOCKETS}<span class="s"> — the PARALLEL </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">threshold is not selecting the branches it documents</span><span class="s">&quot;</span>)
 
     <span class="c"># --- 3. module seating --------------------------------------------------</span>
     worst_seat, worst_axis = <span class="n">0.0</span>, <span class="n">0.0</span>

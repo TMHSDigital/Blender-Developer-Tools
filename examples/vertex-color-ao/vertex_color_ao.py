@@ -89,6 +89,7 @@ RAY_FAR = 1.0e4
 FLOAT_TOL = 1e-6           # FLOAT_COLOR round-trip (measured 1.43e-08)
 BYTE_MODEL_TOL = 1e-6      # agreement with the independent sRGB model
 SPREAD_MIN = 0.25          # the asset must actually use its AO range
+EXPECT_PARTS = 11          # asserted before any per-part loop runs (check 0)
 
 
 def eevee_engine_id():
@@ -639,7 +640,16 @@ def check():
 
     # --- 3. asset bake: in range, and actually using the range --------------
     root, parts = build_asset(sc)
+    # A loop over nothing asserts nothing: pin the population before the
+    # per-part and per-vertex checks below iterate over it.
+    if len(parts) != EXPECT_PARTS:
+        fail(8, f"asset built {len(parts)} parts, expected {EXPECT_PARTS} - "
+                f"the checks below would iterate over the wrong set")
+        return fails[0]
     values = bake_asset(parts)
+    if not values:
+        fail(5, "the bake produced no values at all")
+        return fails[0]
     lo, hi = min(values), max(values)
     print(f"asset_bake parts={len(parts)} verts={len(values)} "
           f"samples={ASSET_SAMPLES} min={lo:.6f} max={hi:.6f} spread={hi - lo:.6f}")
