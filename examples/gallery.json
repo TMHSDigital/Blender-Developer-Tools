@@ -544,6 +544,20 @@
         "game-pipeline",
         "instancing"
       ]
+    },
+    {
+      "name": "vertex-color-ao",
+      "dir": "examples/vertex-color-ao",
+      "teaches": "A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.",
+      "witnessesFix": "Integrator matches 1 - 0.5(1 - 1/sqrt(1+k^2)) to 6.760e-04, unoccluded plate exactly 1.0, FLOAT_COLOR exact vs BYTE_COLOR sRGB-quantised (model agreement 3.189e-07), evaluated deviation 0.0.",
+      "hero": "docs/gallery/assets/vertex-color-ao-hero.webp",
+      "preview": "examples/vertex-color-ao/preview.webp",
+      "tags": [
+        "mesh",
+        "attributes",
+        "game-pipeline",
+        "render"
+      ]
     }
   ]
 }

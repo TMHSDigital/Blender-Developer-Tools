@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>43 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>44 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 43 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 44 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -842,6 +842,27 @@ Companion to [`prop-origin-transform`](examples/prop-origin-transform/)
 (pivot discipline) and
 [`parent-inverse-orrery`](examples/parent-inverse-orrery/) (parent-inverse
 under animation).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/vertex-color-ao/"><img src="examples/vertex-color-ao/preview.webp" alt="Vertex colour AO: a stone village well on a dark studio stage, its masonry joints, shaft mouth and coping undersides darkened by ambient occlusion baked into a colour attribute rather than by the lights" /></a>
+</td>
+<td valign="middle">
+
+### [vertex-color-ao](examples/vertex-color-ao/)
+
+Baked occlusion in a colour attribute, checked against a **formula** instead
+of a captured value: the cosine-weighted hemisphere integral for a wall of
+height `H` at distance `d` is `1 - ½(1 - 1/√(1+k²))`, `k = H/d`, and the
+integrator matches it to **6.760e-04** across two decades of `k`. An
+unoccluded plate bakes to exactly **1.0**. `FLOAT_COLOR` round-trips exactly
+while **`BYTE_COLOR` is sRGB-encoded 8-bit** — 0.735 reads back
+**0.7379107**, matching an independent encode/quantise/decode model to
+**3.189e-07**. Both survive depsgraph evaluation at deviation **0.0**.
+Companion to [`color-attribute-wheel`](examples/color-attribute-wheel/) and
+[`attribute-domain-shear`](examples/attribute-domain-shear/).
 
 </td>
 </tr>
