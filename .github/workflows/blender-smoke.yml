@@ -77,12 +77,6 @@ jobs:
           "$BLENDER" --version | head -1 | grep -q "Blender ${{ matrix.series }}\." \
             || { echo "::error::version does not match series ${{ matrix.series }}"; exit 1; }
 
-      - name: Canary — 5.2 matrix must actually execute
-        if: matrix.series == '5.2'
-        run: |
-          echo "::error::intentional 5.2 canary; revert after the red run"
-          exit 1
-
       - name: Run in-Blender smoke driver
         run: |
           set -euo pipefail
