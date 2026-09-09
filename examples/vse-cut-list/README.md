@@ -81,7 +81,13 @@ accessors, then re-asserted after a save/reload round-trip:
 `bpy.app.version` tuple (`>= (5, 0, 0)`), never on `version_string`
 (`"4.5.11 LTS"` is not bare semver). Each side asserts its own canonical
 contract plus the other side's removal/bridge state. Measured values are
-identical on 4.5.11 and 5.1.1, including the pixel witness.
+identical on 4.5.11 and 5.1.2, including the pixel witness. **5.2 LTS
+COLOR strips bake readonly `width`/`height` from the scene render
+resolution at `new_effect` time** (4.5/5.1 have no intrinsic size — scale
+is a fraction of the output frame). The pixel check sets 96×54 *before*
+building the cut list; creating at factory 1920×1080 then rendering 96×54
+makes 0.36-scaled cells larger than the output, C covers the frame, and
+TL samples amber `(0.949, 0.62, 0.102)` instead of crimson.
 
 **Render:** the program wall *is* the sequencer output at frame 29 (mid
 cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend,

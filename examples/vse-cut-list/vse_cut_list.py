@@ -76,6 +76,13 @@ CELL_SCALE = 0.36
 CELL_OX = 244.4      # 28 px crosshair gap, ~165 px side margins at 1280x720
 CELL_OY = 143.6      # 28 px gap, ~87 px top/bottom margins
 XF_TOL = 1e-3        # float32 transform read-back tolerance
+# Visual mosaic (A top-left, B top-right, C bottom-left, GC bottom-right).
+MOSAIC = (
+    ("A", -CELL_OX, CELL_OY),
+    ("B", CELL_OX, CELL_OY),
+    ("C", -CELL_OX, -CELL_OY),
+    ("GC", CELL_OX, -CELL_OY),
+)
 
 A_RGB = (0.85, 0.10, 0.22)    # crimson
 B_RGB = (0.06, 0.75, 0.80)    # teal
@@ -277,8 +284,7 @@ def check(coll_owner):
 
     # 9. Mosaic transforms + compositing defaults persist on the strips.
     xf_err = 0.0
-    for name, ox, oy in (("A", -CELL_OX, CELL_OY), ("B", CELL_OX, CELL_OY),
-                         ("C", -CELL_OX, -CELL_OY), ("GC", CELL_OX, -CELL_OY)):
+    for name, ox, oy in MOSAIC:
         t = coll.get(name).transform
         xf_err = max(xf_err, abs(t.scale_x - CELL_SCALE),
                      abs(t.scale_y - CELL_SCALE),
@@ -598,9 +604,27 @@ def near(got, want, tol):
 def check_pixels(engine):
     """Compositing witness on a tiny render: cell centers carry their strip
     colors, the cross cell is the blend (neither source), and a margin point
-    is stage-dark — if T1 composited independently it would be crimson."""
+    is stage-dark — if T1 composited independently it would be crimson.
+
+    5.2 COLOR strips bake readonly ``width``/``height`` from the scene render
+    resolution at ``new_effect`` time. Transform scale/offset are then in
+    that media space, not the later output size. 4.5/5.1 COLOR strips have
+    no intrinsic size — scale is always a fraction of the output frame.
+    Set the tiny resolution *before* building the cut list or C (channel 4)
+    covers the 96×54 frame and TL samples amber.
+    """
     sc = bpy.context.scene
+    sc.render.resolution_x = PXW
+    sc.render.resolution_y = PXH
     build_cut_list(sc, pix=PXW / RENDER_W)
+    if bpy.app.version >= (5, 2, 0):
+        a = strips_coll(sc.sequence_editor).get("A")
+        if (a.width, a.height) != (PXW, PXH):
+            return fail(
+                f"5.2 COLOR size {(a.width, a.height)} != render {(PXW, PXH)} "
+                f"— width/height bake at new_effect drifted",
+                12,
+            )
     build_stage(bpy.data.scenes["Stage"])
     tmp = tempfile.mkdtemp(prefix="vse_pixels_")
     path = os.path.join(tmp, "px.png")
