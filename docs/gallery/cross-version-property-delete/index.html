@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cross-version-property-delete — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cross-version-property-delete/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cross-version-property-delete/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>cross-version-property-delete</h1>
+    <p>Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom cross-version-property-delete render">
+      <img src="../assets/cross-version-property-delete-hero.webp" alt="cross-version-property-delete render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/cross-version-property-delete/cross_version_property_delete.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A pair of machined specimen tags that witnesses the custom <strong>ID-property</strong> delete contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/cross-version-property-delete.py"><code>cross-version-property-delete.py</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/custom-properties/SKILL.md"><code>custom-properties</code></a> — not the snippet&#x27;s <code>__main__</code>, which keys off <code>context.active_object</code> and prints nothing in <code>--background</code>.</p>
+<p>The IDs are built with <code>bpy.data.objects.new</code>. The Keep tag still carries <code>[&quot;accession&quot;] = 42</code> (emissive enamel). The Clear tag had <code>del obj[&quot;accession&quot;]</code> (empty pocket). Same <code>del</code> on 4.5 LTS and 5.x; there is no version branch.</p>
+<p><strong>What it witnesses:</strong> <code>property_unset</code> is a TypeError on a custom ID key and does <strong>not</strong> remove it. <code>del id_block[key]</code> does. After factory-empty, there is no <code>active_object</code>.</p>
+<p><strong>What failure each check would catch:</strong></p>
+<ul><li>exit 2 — someone set an active object; the snippet <code>__main__</code> would have been the only path</li><li>exit 3 — the ID property never landed</li><li>exit 4 — <code>property_unset</code> removed the key or failed to raise</li><li>exit 7 — <code>del</code> did not run (<code>--skip-delete</code> / <code>--unset-instead</code> falsify this: measured <code>clear_has=True</code>)</li></ul>
+<h2>Run</h2>
+<pre><code>blender --background --python cross_version_property_delete.py --
+blender --background --python cross_version_property_delete.py -- --output tags.png</code></pre>
+<p><code>--skip-delete</code> and <code>--unset-instead</code> are falsification switches: both leave the Clear plate tagged and exit 7.</p>
+<p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/cross-version-property-delete/cross_version_property_delete.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/cross-version-property-delete/cross_version_property_delete.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Custom ID-property delete — a runnable example.
+
+Witnesses the contract the snippet ``cross-version-property-delete`` teaches,
+not the snippet&#x27;s ``__main__`` (which keys off ``context.active_object`` and
+is dark headless). Builds the ID through ``bpy.data.objects.new`` and asserts:
+
+1. ``obj[&quot;accession&quot;] = 42`` lands in ``obj.keys()``.
+2. ``property_unset(&quot;accession&quot;)`` is a TypeError and does **not** remove
+   the ID property — that RNA call resets a registered property to default.
+3. ``del obj[&quot;accession&quot;]`` removes it. Same on 4.5 LTS and 5.x; no version
+   branch.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python cross_version_property_delete.py --
+    blender --background --python cross_version_property_delete.py -- --output t.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing
+
+KEY = <span class="s">&quot;accession&quot;</span>
+VALUE = <span class="n">42</span>
+
+
+<span class="k">def</span> beveled_box(name, size, bevel, segments=<span class="n">2</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= size[<span class="n">0</span>]
+            v.co.y *= size[<span class="n">1</span>]
+            v.co.z *= size[<span class="n">2</span>]
+        bm.normal_update()
+        bmesh.ops.bevel(
+            bm, geom=list(bm.edges), offset=bevel, segments=segments,
+            profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>,
+        )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> cylinder(name, radius, depth, loc, segs=<span class="n">24</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=segs,
+            radius1=radius, radius2=radius, depth=depth,
+        )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> build_tag(name, x, yaw):
+    <span class="s">&quot;&quot;&quot;Machined specimen tag: plate, pocket, hanging ring. No ID property yet.&quot;&quot;&quot;</span>
+    plate = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Plate</span><span class="s">&quot;</span>, (<span class="n">1.70</span>, <span class="n">0.10</span>, <span class="n">1.05</span>), <span class="n">0.035</span>)
+    plate.location = (x, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    plate.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, yaw)
+    pocket = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Pocket</span><span class="s">&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.04</span>, <span class="n">0.48</span>), <span class="n">0.02</span>)
+    pocket.parent = plate
+    pocket.location = (<span class="n">0.18</span>, -<span class="n">0.05</span>, -<span class="n">0.03</span>)
+    ring = cylinder(<span class="s">f&quot;</span>{name}<span class="s">Ring</span><span class="s">&quot;</span>, <span class="n">0.11</span>, <span class="n">0.05</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), segs=<span class="n">20</span>)
+    ring.parent = plate
+    ring.location = (-<span class="n">0.68</span>, <span class="n">0.0</span>, <span class="n">0.33</span>)
+    ring.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="k">return</span> plate, pocket, ring
+
+
+<span class="k">def</span> add_inlay(name, plate):
+    <span class="s">&quot;&quot;&quot;Emissive enamel only when the ID property is still on the plate.&quot;&quot;&quot;</span>
+    inlay = beveled_box(<span class="s">f&quot;</span>{name}<span class="s">Inlay</span><span class="s">&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.03</span>, <span class="n">0.40</span>), <span class="n">0.015</span>)
+    inlay.parent = plate
+    inlay.location = (<span class="n">0.18</span>, -<span class="n">0.07</span>, -<span class="n">0.03</span>)
+    <span class="k">return</span> inlay
+
+
+<span class="k">def</span> build():
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    keep_parts = build_tag(<span class="s">&quot;Keep&quot;</span>, -<span class="n">1.15</span>, <span class="n">0.0</span>)
+    clear_parts = build_tag(<span class="s">&quot;Clear&quot;</span>, <span class="n">1.15</span>, <span class="n">0.0</span>)
+    post = cylinder(<span class="s">&quot;StandPost&quot;</span>, <span class="n">0.07</span>, <span class="n">1.55</span>, (<span class="n">0.0</span>, <span class="n">0.22</span>, <span class="n">0.78</span>))
+    base = beveled_box(<span class="s">&quot;StandBase&quot;</span>, (<span class="n">3.4</span>, <span class="n">0.9</span>, <span class="n">0.12</span>), <span class="n">0.04</span>)
+    base.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.06</span>)
+    bar = beveled_box(<span class="s">&quot;StandBar&quot;</span>, (<span class="n">2.6</span>, <span class="n">0.08</span>, <span class="n">0.08</span>), <span class="n">0.02</span>)
+    bar.location = (<span class="n">0.0</span>, <span class="n">0.22</span>, <span class="n">1.52</span>)
+    <span class="k">return</span> keep_parts, clear_parts, [post, base, bar]
+
+
+<span class="k">def</span> remove_custom_property(id_block, key):
+    <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> id_block.keys():
+        <span class="k">return</span> <span class="k">False</span>
+    <span class="k">del</span> id_block[key]
+    <span class="k">return</span> <span class="k">True</span>
+
+
+<span class="k">def</span> check(keep_plate, clear_plate, skip_delete=<span class="k">False</span>, unset_instead=<span class="k">False</span>):
+    <span class="k">if</span> bpy.context.active_object <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        print(
+            <span class="s">&quot;ERROR: expected no active_object after factory empty + data-API build; &quot;</span>
+            <span class="s">&quot;the snippet __main__ would have been dark for the same reason&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">2</span>
+
+    keep_plate[KEY] = VALUE
+    clear_plate[KEY] = VALUE
+    <span class="k">if</span> KEY <span class="k">not</span> <span class="k">in</span> keep_plate.keys() <span class="k">or</span> keep_plate[KEY] != VALUE:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Keep plate</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">if</span> KEY <span class="k">not</span> <span class="k">in</span> clear_plate.keys():
+        print(<span class="s">f&quot;</span><span class="s">ERROR: ID property </span>{KEY}<span class="s"> did not land on Clear plate</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
+
+    <span class="k">try</span>:
+        keep_plate.property_unset(KEY)
+        print(<span class="s">&quot;ERROR: property_unset on a custom ID key returned instead of TypeError&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+    <span class="k">except</span> TypeError <span class="k">as</span> exc:
+        print(<span class="s">f&quot;</span><span class="s">property_unset TypeError=</span>{exc}<span class="s">&quot;</span>)
+    <span class="k">if</span> KEY <span class="k">not</span> <span class="k">in</span> keep_plate.keys():
+        print(<span class="s">&quot;ERROR: property_unset removed the ID property — it must not&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="k">if</span> unset_instead:
+        <span class="k">try</span>:
+            clear_plate.property_unset(KEY)
+        <span class="k">except</span> TypeError:
+            <span class="k">pass</span>
+    <span class="k">elif</span> <span class="k">not</span> skip_delete:
+        <span class="k">if</span> <span class="k">not</span> remove_custom_property(clear_plate, KEY):
+            print(<span class="s">&quot;ERROR: del did not report removal&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">5</span>
+
+    keep_has = KEY <span class="k">in</span> keep_plate.keys()
+    clear_has = KEY <span class="k">in</span> clear_plate.keys()
+    print(
+        <span class="s">f&quot;</span><span class="s">active_object=None keep_has=</span>{keep_has}<span class="s"> clear_has=</span>{clear_has}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">skip_delete=</span>{skip_delete}<span class="s"> unset_instead=</span>{unset_instead}<span class="s">&quot;</span>
+    )
+    <span class="k">if</span> <span class="k">not</span> keep_has:
+        print(<span class="s">&quot;ERROR: Keep plate lost the ID property&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">if</span> clear_has:
+        print(
+            <span class="s">&quot;ERROR: Clear plate still has the ID property — del did not run &quot;</span>
+            <span class="s">&quot;(property_unset is not a delete)&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">7</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> principled(name, color, metallic, roughness, emission=<span class="k">None</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = bsdf.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> bsdf.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = emission
+        bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">4.5</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> assign(ob, mat):
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+<span class="k">def</span> render_still(keep_parts, clear_parts, stand, path, engine):
+    scene = bpy.context.scene
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.50</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.22</span>)
+    pocket = principled(<span class="s">&quot;Pocket&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.042</span>, <span class="n">0.05</span>, <span class="n">1.0</span>), <span class="n">0.2</span>, <span class="n">0.55</span>)
+    enamel = principled(
+        <span class="s">&quot;Enamel&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.35</span>, <span class="n">0.55</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
+        emission=(<span class="n">0.05</span>, <span class="n">0.55</span>, <span class="n">0.85</span>, <span class="n">1.0</span>),
+    )
+    steel = principled(<span class="s">&quot;Steel&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.19</span>, <span class="n">0.21</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.38</span>)
+
+    keep_plate, keep_pocket, keep_ring = keep_parts
+    clear_plate, clear_pocket, clear_ring = clear_parts
+    <span class="k">for</span> ob <span class="k">in</span> (keep_plate, keep_ring, clear_plate, clear_ring):
+        assign(ob, brass)
+    assign(keep_pocket, pocket)
+    assign(clear_pocket, pocket)
+    <span class="k">for</span> ob <span class="k">in</span> stand:
+        assign(ob, steel)
+
+    inlay = <span class="k">None</span>
+    <span class="k">if</span> KEY <span class="k">in</span> keep_plate.keys():
+        inlay = add_inlay(<span class="s">&quot;Keep&quot;</span>, keep_plate)
+        assign(inlay, enamel)
+    <span class="k">if</span> KEY <span class="k">in</span> clear_plate.keys():
+        ghost = add_inlay(<span class="s">&quot;Clear&quot;</span>, clear_plate)
+        assign(ghost, enamel)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    floor_me.materials.append(principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.data.materials.clear()
+    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.6</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">850.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.7</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">18</span>))
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    aim.hide_render = <span class="k">True</span>
+    scene.collection.objects.link(aim)
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">3.55</span>, -<span class="n">6.59</span>, <span class="n">3.30</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    track.target = aim
+    track.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    track.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    hero = [keep_plate, clear_plate, keep_ring, clear_ring] + list(stand)
+    <span class="k">if</span> inlay <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        hero.append(inlay)
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=hero, elements=hero, stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(
+        <span class="s">&quot;--skip-delete&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: leave the Clear plate tagged&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--unset-instead&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: call property_unset instead of del&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    keep_parts, clear_parts, stand = build()
+    code = check(
+        keep_parts[<span class="n">0</span>], clear_parts[<span class="n">0</span>],
+        skip_delete=args.skip_delete, unset_instead=args.unset_instead,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(
+            keep_parts, clear_parts, stand,
+            os.path.abspath(args.output), args.engine,
+        )
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;cross-version-property-delete OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        <span class="k">import</span> traceback
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/cross-version-property-delete-hero.webp" alt="cross-version-property-delete render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

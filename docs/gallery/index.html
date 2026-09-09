@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">45 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">47 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -308,6 +308,7 @@
         <button class="chip" data-tag="operators" type="button">operators</button>
         <button class="chip" data-tag="parenting" type="button">parenting</button>
         <button class="chip" data-tag="performance" type="button">performance</button>
+        <button class="chip" data-tag="properties" type="button">properties</button>
         <button class="chip" data-tag="render" type="button">render</button>
         <button class="chip" data-tag="rendering" type="button">rendering</button>
         <button class="chip" data-tag="sequencer" type="button">sequencer</button>
@@ -815,6 +816,28 @@
           <p class="teaches">A stone well carrying baked ambient occlusion in a colour attribute, with the bake held to the closed-form hemisphere integral rather than to a captured value.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Integrator matches 1 - 0.5(1 - 1/sqrt(1+k^2)) to 6.760e-04, unoccluded plate exactly 1.0, FLOAT_COLOR exact vs BYTE_COLOR sRGB-quantised (model agreement 3.189e-07), evaluated deviation 0.0.</p>
           <a class="card-link" href="vertex-color-ao/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="context properties">
+        <a class="card-media" href="cross-version-property-delete/" aria-label="cross-version-property-delete example detail page">
+          <img src="assets/cross-version-property-delete-hero.webp" alt="cross-version-property-delete — Custom ID properties are removed with del, not property_unset." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="cross-version-property-delete/">cross-version-property-delete</a></h2>
+          <p class="teaches">Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</p>
+          <a class="card-link" href="cross-version-property-delete/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="depsgraph export">
+        <a class="card-media" href="usd-export-evaluation-mode/" aria-label="usd-export-evaluation-mode example detail page">
+          <img src="assets/usd-export-evaluation-mode-hero.webp" alt="usd-export-evaluation-mode — The USD exporter evaluation_mode chooses viewport versus render modifier quality." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="usd-export-evaluation-mode/">usd-export-evaluation-mode</a></h2>
+          <p class="teaches">The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.</p>
+          <a class="card-link" href="usd-export-evaluation-mode/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

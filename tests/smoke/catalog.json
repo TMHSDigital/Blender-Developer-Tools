@@ -53,5 +53,7 @@
   {"name": "modular-kit-snap", "script": "examples/modular-kit-snap/modular_kit_snap.py"},
   {"name": "lightmap-uv-channel", "script": "examples/lightmap-uv-channel/lightmap_uv_channel.py"},
   {"name": "socket-attach-points", "script": "examples/socket-attach-points/socket_attach_points.py"},
-  {"name": "vertex-color-ao", "script": "examples/vertex-color-ao/vertex_color_ao.py"}
+  {"name": "vertex-color-ao", "script": "examples/vertex-color-ao/vertex_color_ao.py"},
+  {"name": "cross-version-property-delete", "script": "examples/cross-version-property-delete/cross_version_property_delete.py"},
+  {"name": "usd-export-evaluation-mode", "script": "examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py"}
 ]

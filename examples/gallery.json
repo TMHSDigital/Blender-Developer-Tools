@@ -570,6 +570,30 @@
         "game-pipeline",
         "render"
       ]
+    },
+    {
+      "name": "cross-version-property-delete",
+      "dir": "examples/cross-version-property-delete",
+      "teaches": "Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.",
+      "witnessesFix": "Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.",
+      "hero": "docs/gallery/assets/cross-version-property-delete-hero.webp",
+      "preview": "examples/cross-version-property-delete/preview.webp",
+      "tags": [
+        "context",
+        "properties"
+      ]
+    },
+    {
+      "name": "usd-export-evaluation-mode",
+      "dir": "examples/usd-export-evaluation-mode",
+      "teaches": "The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.",
+      "witnessesFix": "TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.",
+      "hero": "docs/gallery/assets/usd-export-evaluation-mode-hero.webp",
+      "preview": "examples/usd-export-evaluation-mode/preview.webp",
+      "tags": [
+        "depsgraph",
+        "export"
+      ]
     }
   ]
 }

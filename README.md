@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>45 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>47 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 45 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 47 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -203,7 +203,7 @@ Gallery still is a dual-elevation diptych so the contract reads at thumbnail sca
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 10 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 11 examples</summary>
 
 <table>
 <tr>
@@ -307,6 +307,21 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
 `evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
 modifier-applied geometry (exported vertex count == evaluated > base).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/usd-export-evaluation-mode/"><img src="examples/usd-export-evaluation-mode/preview.webp" alt="USD export evaluation_mode: two steel SUBSURF cubes on a dark studio floor — left faceted viewport tessellation, right smoother render tessellation, warm wedge on the back wall" /></a>
+</td>
+<td valign="middle">
+
+### [usd-export-evaluation-mode](examples/usd-export-evaluation-mode/)
+
+`wm.usd_export` `evaluation_mode='RENDER'` versus `'VIEWPORT'`. TESSELLATE writes
+the closed-form Catmull-Clark counts (26/24 vs 98/96); default BEST_MATCH writes
+the 8-vert cage and the mode is silent. Asserts the USDA point counts, not the
+still.
 
 </td>
 </tr>
@@ -496,7 +511,7 @@ and every orbit lands on its closed form.
 </details>
 
 <details>
-<summary><strong>Context &amp; Grease Pencil</strong> — 3 examples</summary>
+<summary><strong>Context &amp; Grease Pencil</strong> — 4 examples</summary>
 
 <table>
 <tr>
@@ -510,6 +525,20 @@ and every orbit lands on its closed form.
 Three unit cubes joined into a staircase under `bpy.context.temp_override` — the supported
 replacement for the removed `context.copy()` dict-pass form. Asserts one mesh remains,
 sources are gone, and local Z spans all three steps.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/cross-version-property-delete/"><img src="examples/cross-version-property-delete/preview.webp" alt="Cross-version property delete: two brass specimen tags on a dark studio stand — left tag with a cyan emissive enamel inlay (ID property kept), right tag with an empty grey pocket (ID property deleted)" /></a>
+</td>
+<td valign="middle">
+
+### [cross-version-property-delete](examples/cross-version-property-delete/)
+
+Custom ID properties are removed with `del id_block[key]`, not `property_unset`.
+IDs are built with `bpy.data.objects.new` — the snippet `__main__` keys off
+`active_object` and is dark headless. Same `del` on 4.5 LTS and 5.x.
 
 </td>
 </tr>
