@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>gn-zone-iterate — Examples — Blender Developer Tools</title>
+  <meta name="description" content="Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-zone-iterate/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="gn-zone-iterate — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-zone-iterate/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-zone-iterate-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="gn-zone-iterate — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-zone-iterate-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>gn-zone-iterate</h1>
+    <p>Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gn-zone-iterate render">
+      <img src="../assets/gn-zone-iterate-hero.webp" alt="gn-zone-iterate render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Repeat 32/24 verts/faces with X-centers at k*1.2; For Each 48/36 with Z-centers at i*0.6+0.21. Unpaired evaluates empty; For Each main Geometry passthrough is 6 verts.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python examples/gn-zone-iterate/gn_zone_iterate.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A Repeat Zone row and a For Each Element tower that witness <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> zone pairing — not tree structure.</p>
+<p><code>pair_with_output</code> is load-bearing. Unpaired Repeat Input has no Geometry sockets; unpaired For Each evaluates empty (<code>Cannot evaluate node group</code> on 4.5). For Each&#x27;s main <code>Geometry</code> output is the input mesh passthrough; generated cubes live on <code>Generation_0</code>.</p>
+<p>Closed forms (cube = 8 verts / 6 faces):</p>
+<ul><li>Repeat: join one translated cube per iteration. verts = <code>8 × (1 + N)</code> with N=3 → 32. X-centers at <code>k × 1.2</code> for k = 0..3.</li><li>For Each: one cube per POINT, Z-offset by <code>Index × 0.6</code>. verts = <code>8 × P</code> with P=6 → 48. Z-centers at <code>i × 0.6 + 0.21</code>.</li></ul>
+<p><strong>Count alone is not enough.</strong> Joining N+1 cubes at the origin hits 32 verts with a single X-center (<code>--no-offset</code>). The center axis is the second witness.</p>
+<p>Same on 4.5 LTS and 5.x (zones are 4.3+). No skip.</p>
+<p><strong>What failure each check would catch:</strong></p>
+<ul><li>exit 3 — Repeat pairing broken or iterations wrong (<code>--unpair-repeat</code> → 0/0; <code>--repeat-iterations 1</code> → 16/12)</li><li>exit 4 — Repeat count matches but cubes collapsed (<code>--no-offset</code>)</li><li>exit 5 — For Each pairing broken, element count wrong, or main-socket passthrough (<code>--unpair-foreach</code> → 0/0; <code>--foreach-count 3</code> → 24/18; <code>--foreach-main</code> → 6/0)</li><li>exit 6 — For Each count matches but Z-centers do not</li></ul>
+<h2>Run</h2>
+<pre><code>blender --background --python gn_zone_iterate.py --
+blender --background --python gn_zone_iterate.py -- --output zones.png</code></pre>
+<p>The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>examples/gn-zone-iterate/gn_zone_iterate.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gn-zone-iterate/gn_zone_iterate.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Geometry Nodes zone pairing — a runnable example.
+
+Witnesses Repeat Zone and For Each Element from
+``skills/geometry-nodes-python``: ``pair_with_output`` is load-bearing, and
+the evaluated mesh must match a closed form. Tree-structure checks are
+vacuous — a For Each whose Group Output reads the *main* Geometry socket
+passes &quot;nodes exist and are linked&quot; while shipping the unevaluated grid.
+
+Closed forms (cube = 8 verts / 6 faces):
+
+* Repeat: start with one cube, each iteration Joins another translated by
+  ``(Iteration + 1) * STEP``. verts = 8 * (1 + N), unique X-centers at
+  ``k * STEP`` for k = 0..N.
+* For Each Element: one cube per POINT, offset in Z by ``Index * STEP``.
+  verts = 8 * P, unique Z-centers at ``i * STEP`` for i = 0..P-1.
+
+Count alone is not enough: Joining N+1 cubes at the origin hits the vert
+count with one X-center. The center axis is the second witness.
+
+By default it runs only the correctness check (no render) — the CI smoke
+check. Pass --output to also render a still:
+
+    blender --background --python gn_zone_iterate.py --
+    blender --background --python gn_zone_iterate.py -- --output z.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing
+
+CUBE_VERTS = <span class="n">8</span>
+CUBE_FACES = <span class="n">6</span>
+
+REPEAT_N = <span class="n">3</span>
+REPEAT_STEP = <span class="n">1.2</span>
+REPEAT_SIZE = <span class="n">0.55</span>
+REPEAT_VERTS = CUBE_VERTS * (<span class="n">1</span> + REPEAT_N)
+REPEAT_FACES = CUBE_FACES * (<span class="n">1</span> + REPEAT_N)
+REPEAT_CENTERS_X = [k * REPEAT_STEP <span class="k">for</span> k <span class="k">in</span> range(REPEAT_N + <span class="n">1</span>)]
+
+FOREACH_P = <span class="n">6</span>
+FOREACH_STEP = <span class="n">0.60</span>
+FOREACH_SIZE = <span class="n">0.42</span>
+FOREACH_VERTS = CUBE_VERTS * FOREACH_P
+FOREACH_FACES = CUBE_FACES * FOREACH_P
+FOREACH_CENTERS_Z = [i * FOREACH_STEP + FOREACH_SIZE / <span class="n">2</span> <span class="k">for</span> i <span class="k">in</span> range(FOREACH_P)]
+
+
+<span class="k">def</span> sock(node, collection, identifier):
+    <span class="k">for</span> s <span class="k">in</span> getattr(node, collection):
+        <span class="k">if</span> s.identifier == identifier:
+            <span class="k">return</span> s
+    <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span>{node.bl_idname}<span class="s"> has no </span>{collection}<span class="s"> </span>{identifier!r}<span class="s">&quot;</span>)
+
+
+<span class="k">def</span> eval_mesh(obj):
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    <span class="k">try</span>:
+        coords = [(v.co.x, v.co.y, v.co.z) <span class="k">for</span> v <span class="k">in</span> me.vertices]
+        faces = len(me.polygons)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+    <span class="k">return</span> coords, faces
+
+
+<span class="k">def</span> centers_ok(coords, centers, half, axis):
+    <span class="s">&quot;&quot;&quot;Every vert on `axis` sits in exactly one center ± half; each center has 8 verts.&quot;&quot;&quot;</span>
+    counts = [<span class="n">0</span>] * len(centers)
+    worst = <span class="n">0.0</span>
+    <span class="k">for</span> co <span class="k">in</span> coords:
+        val = co[axis]
+        dists = [abs(val - c) <span class="k">for</span> c <span class="k">in</span> centers]
+        i = min(range(len(centers)), key=<span class="k">lambda</span> k: dists[k])
+        worst = max(worst, dists[i])
+        <span class="k">if</span> dists[i] &gt; half + <span class="n">1e-3</span>:
+            <span class="k">return</span> <span class="k">False</span>, counts, dists[i]
+        counts[i] += <span class="n">1</span>
+    <span class="k">return</span> all(c == CUBE_VERTS <span class="k">for</span> c <span class="k">in</span> counts), counts, worst
+
+
+<span class="k">def</span> build_repeat_tree(n, pair=<span class="k">True</span>, offset=<span class="k">True</span>, material=<span class="k">None</span>):
+    tree = bpy.data.node_groups.new(<span class="s">&quot;RepeatZone&quot;</span>, <span class="s">&quot;GeometryNodeTree&quot;</span>)
+    tree.interface.new_socket(name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&quot;OUTPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketGeometry&quot;</span>)
+    go = tree.nodes.new(<span class="s">&quot;NodeGroupOutput&quot;</span>)
+    cube0 = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshCube&quot;</span>)
+    cube0.inputs[<span class="s">&quot;Size&quot;</span>].default_value = (REPEAT_SIZE, REPEAT_SIZE, REPEAT_SIZE)
+    rin = tree.nodes.new(<span class="s">&quot;GeometryNodeRepeatInput&quot;</span>)
+    rout = tree.nodes.new(<span class="s">&quot;GeometryNodeRepeatOutput&quot;</span>)
+    <span class="k">if</span> pair:
+        <span class="k">if</span> <span class="k">not</span> rin.pair_with_output(rout):
+            <span class="k">raise</span> RuntimeError(<span class="s">&quot;RepeatInput.pair_with_output failed&quot;</span>)
+    rin.inputs[<span class="s">&quot;Iterations&quot;</span>].default_value = n
+
+    cube1 = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshCube&quot;</span>)
+    cube1.inputs[<span class="s">&quot;Size&quot;</span>].default_value = (REPEAT_SIZE, REPEAT_SIZE, REPEAT_SIZE)
+    join = tree.nodes.new(<span class="s">&quot;GeometryNodeJoinGeometry&quot;</span>)
+    shade = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
+    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+
+    added = cube1.outputs[<span class="s">&quot;Mesh&quot;</span>]
+    <span class="k">if</span> offset <span class="k">and</span> pair:
+        add = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        add.operation = <span class="s">&quot;ADD&quot;</span>
+        add.inputs[<span class="n">1</span>].default_value = <span class="n">1.0</span>
+        mul = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        mul.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+        mul.inputs[<span class="n">1</span>].default_value = REPEAT_STEP
+        comb = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+        xf = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
+        tree.links.new(rin.outputs[<span class="s">&quot;Iteration&quot;</span>], add.inputs[<span class="n">0</span>])
+        tree.links.new(add.outputs[<span class="s">&quot;Value&quot;</span>], mul.inputs[<span class="n">0</span>])
+        tree.links.new(mul.outputs[<span class="s">&quot;Value&quot;</span>], comb.inputs[<span class="s">&quot;X&quot;</span>])
+        tree.links.new(cube1.outputs[<span class="s">&quot;Mesh&quot;</span>], xf.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        tree.links.new(comb.outputs[<span class="s">&quot;Vector&quot;</span>], xf.inputs[<span class="s">&quot;Translation&quot;</span>])
+        added = xf.outputs[<span class="s">&quot;Geometry&quot;</span>]
+
+    lift = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
+    lift.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, REPEAT_SIZE / <span class="n">2</span>)
+
+    <span class="k">if</span> pair:
+        tree.links.new(cube0.outputs[<span class="s">&quot;Mesh&quot;</span>], rin.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        tree.links.new(rin.outputs[<span class="s">&quot;Geometry&quot;</span>], join.inputs[<span class="n">0</span>])
+        tree.links.new(added, join.inputs[<span class="n">0</span>])
+        tree.links.new(join.outputs[<span class="s">&quot;Geometry&quot;</span>], rout.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        tree.links.new(rout.outputs[<span class="s">&quot;Geometry&quot;</span>], lift.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="k">else</span>:
+        <span class="c"># Unpaired Repeat Input has no Geometry sockets. Leave the output empty</span>
+        <span class="c"># so evaluation cannot silently pass the start cube through.</span>
+        <span class="k">pass</span>
+
+    tree.links.new(lift.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    out = shade.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sm = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
+        sm.inputs[<span class="s">&quot;Material&quot;</span>].default_value = material
+        tree.links.new(out, sm.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        out = sm.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    tree.links.new(out, go.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="k">return</span> tree
+
+
+<span class="k">def</span> build_foreach_tree(count, pair=<span class="k">True</span>, use_generation=<span class="k">True</span>, material=<span class="k">None</span>):
+    tree = bpy.data.node_groups.new(<span class="s">&quot;ForEachZone&quot;</span>, <span class="s">&quot;GeometryNodeTree&quot;</span>)
+    tree.interface.new_socket(name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&quot;OUTPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketGeometry&quot;</span>)
+    go = tree.nodes.new(<span class="s">&quot;NodeGroupOutput&quot;</span>)
+    line = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshLine&quot;</span>)
+    line.inputs[<span class="s">&quot;Count&quot;</span>].default_value = count
+    <span class="c"># degenerate line — elements exist; Index, not position, places the cubes</span>
+    line.inputs[<span class="s">&quot;Offset&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+
+    fin = tree.nodes.new(<span class="s">&quot;GeometryNodeForeachGeometryElementInput&quot;</span>)
+    fout = tree.nodes.new(<span class="s">&quot;GeometryNodeForeachGeometryElementOutput&quot;</span>)
+    <span class="k">if</span> pair:
+        <span class="k">if</span> <span class="k">not</span> fin.pair_with_output(fout):
+            <span class="k">raise</span> RuntimeError(<span class="s">&quot;ForeachInput.pair_with_output failed&quot;</span>)
+    fout.domain = <span class="s">&quot;POINT&quot;</span>
+
+    cube = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshCube&quot;</span>)
+    cube.inputs[<span class="s">&quot;Size&quot;</span>].default_value = (FOREACH_SIZE, FOREACH_SIZE, FOREACH_SIZE)
+    mul = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    mul.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    mul.inputs[<span class="n">1</span>].default_value = FOREACH_STEP
+    comb = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    sp = tree.nodes.new(<span class="s">&quot;GeometryNodeSetPosition&quot;</span>)
+    shade = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
+    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+    lift = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
+    lift.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, FOREACH_SIZE / <span class="n">2</span>)
+
+    tree.links.new(line.outputs[<span class="s">&quot;Mesh&quot;</span>], fin.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(fin.outputs[<span class="s">&quot;Index&quot;</span>], mul.inputs[<span class="n">0</span>])
+    tree.links.new(mul.outputs[<span class="s">&quot;Value&quot;</span>], comb.inputs[<span class="s">&quot;Z&quot;</span>])
+    tree.links.new(cube.outputs[<span class="s">&quot;Mesh&quot;</span>], sp.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(comb.outputs[<span class="s">&quot;Vector&quot;</span>], sp.inputs[<span class="s">&quot;Offset&quot;</span>])
+
+    <span class="k">if</span> pair:
+        gen_in = sock(fout, <span class="s">&quot;inputs&quot;</span>, <span class="s">&quot;Generation_0&quot;</span>)
+        tree.links.new(sp.outputs[<span class="s">&quot;Geometry&quot;</span>], gen_in)
+        <span class="k">if</span> use_generation:
+            body = sock(fout, <span class="s">&quot;outputs&quot;</span>, <span class="s">&quot;Generation_0&quot;</span>)
+        <span class="k">else</span>:
+            body = fout.outputs[<span class="s">&quot;Geometry&quot;</span>]
+        tree.links.new(body, lift.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(lift.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    out = shade.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sm = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
+        sm.inputs[<span class="s">&quot;Material&quot;</span>].default_value = material
+        tree.links.new(out, sm.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        out = sm.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    tree.links.new(out, go.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="k">return</span> tree
+
+
+<span class="k">def</span> principled(name, color, metallic, roughness):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> carrier(name):
+    me = bpy.data.meshes.new(name)
+    me.vertices.add(<span class="n">1</span>)
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> attach(obj, tree):
+    mod = obj.modifiers.new(<span class="s">&quot;GN&quot;</span>, <span class="s">&quot;NODES&quot;</span>)
+    mod.node_group = tree
+    <span class="k">return</span> mod
+
+
+<span class="k">def</span> build(repeat_n, foreach_p, pair_repeat, pair_foreach, offset_repeat, foreach_generation):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.55</span>, <span class="n">0.16</span>, <span class="n">1.0</span>), <span class="n">0.85</span>, <span class="n">0.34</span>)
+    teal = principled(<span class="s">&quot;Teal&quot;</span>, (<span class="n">0.08</span>, <span class="n">0.55</span>, <span class="n">0.58</span>, <span class="n">1.0</span>), <span class="n">0.15</span>, <span class="n">0.32</span>)
+    rpt = carrier(<span class="s">&quot;RepeatRow&quot;</span>)
+    fee = carrier(<span class="s">&quot;ForEachTower&quot;</span>)
+    rpt.location = (-<span class="n">2.80</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    fee.location = (<span class="n">2.20</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    attach(rpt, build_repeat_tree(repeat_n, pair=pair_repeat, offset=offset_repeat, material=brass))
+    attach(fee, build_foreach_tree(
+        foreach_p, pair=pair_foreach, use_generation=foreach_generation, material=teal,
+    ))
+    bpy.context.view_layer.update()
+    <span class="k">return</span> rpt, fee
+
+
+<span class="k">def</span> check(rpt, fee, expect_n, expect_p):
+    <span class="k">if</span> len(rpt.data.vertices) != <span class="n">1</span> <span class="k">or</span> len(fee.data.vertices) != <span class="n">1</span>:
+        print(<span class="s">&quot;ERROR: carrier mesh was rewritten; zones must not apply in-place&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">2</span>
+
+    r_coords, r_faces = eval_mesh(rpt)
+    f_coords, f_faces = eval_mesh(fee)
+    r_exp_v = CUBE_VERTS * (<span class="n">1</span> + expect_n)
+    r_exp_f = CUBE_FACES * (<span class="n">1</span> + expect_n)
+    f_exp_v = CUBE_VERTS * expect_p
+    f_exp_f = CUBE_FACES * expect_p
+    r_centers = [k * REPEAT_STEP <span class="k">for</span> k <span class="k">in</span> range(expect_n + <span class="n">1</span>)]
+    f_centers = [i * FOREACH_STEP + FOREACH_SIZE / <span class="n">2</span> <span class="k">for</span> i <span class="k">in</span> range(expect_p)]
+
+    print(
+        <span class="s">f&quot;</span><span class="s">repeat verts=</span>{len(r_coords)}<span class="s"> faces=</span>{r_faces}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">foreach verts=</span>{len(f_coords)}<span class="s"> faces=</span>{f_faces}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">expect repeat=</span>{r_exp_v}<span class="s">/</span>{r_exp_f}<span class="s"> foreach=</span>{f_exp_v}<span class="s">/</span>{f_exp_f}<span class="s">&quot;</span>
+    )
+
+    <span class="k">if</span> len(r_coords) != r_exp_v <span class="k">or</span> r_faces != r_exp_f:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: Repeat evaluated </span>{len(r_coords)}<span class="s">/</span>{r_faces}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">closed form 8*(1+N)=</span>{r_exp_v}<span class="s">/</span>{r_exp_f}<span class="s"> with N=</span>{expect_n}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+    ok, counts, worst = centers_ok(r_coords, r_centers, REPEAT_SIZE / <span class="n">2</span>, <span class="n">0</span>)
+    <span class="k">if</span> <span class="k">not</span> ok:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: Repeat X-centers </span>{counts}<span class="s"> worst=</span>{worst:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">expected </span>{CUBE_VERTS}<span class="s"> verts at </span>{r_centers}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="k">if</span> len(f_coords) != f_exp_v <span class="k">or</span> f_faces != f_exp_f:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: For Each evaluated </span>{len(f_coords)}<span class="s">/</span>{f_faces}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">closed form 8*P=</span>{f_exp_v}<span class="s">/</span>{f_exp_f}<span class="s"> with P=</span>{expect_p}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">5</span>
+    ok, counts, worst = centers_ok(f_coords, f_centers, FOREACH_SIZE / <span class="n">2</span>, <span class="n">2</span>)
+    <span class="k">if</span> <span class="k">not</span> ok:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: For Each Z-centers </span>{counts}<span class="s"> worst=</span>{worst:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">expected </span>{CUBE_VERTS}<span class="s"> verts at </span>{f_centers}<span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">6</span>
+
+    print(
+        <span class="s">f&quot;</span><span class="s">repeat_N=</span>{expect_n}<span class="s"> foreach_P=</span>{expect_p}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">x_centers=</span>{r_centers}<span class="s"> z_centers=</span>{f_centers}<span class="s"> pairing=ok</span><span class="s">&quot;</span>
+    )
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> render_still(rpt, fee, path, engine):
+    scene = bpy.context.scene
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    studio = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
+    floor_me.materials.append(studio)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.data.materials.clear()
+    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">160.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">360.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">0.4</span>, -<span class="n">5.2</span>, <span class="n">5.5</span>), <span class="n">700.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.92</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">8</span>))
+
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.50</span>)
+    aim.hide_render = <span class="k">True</span>
+    scene.collection.objects.link(aim)
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">6.6</span>, -<span class="n">9.3</span>, <span class="n">3.55</span>)
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    track.target = aim
+    track.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    track.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    hero = [rpt, fee]
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=hero, elements=hero, stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--unpair-repeat&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--unpair-foreach&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--repeat-iterations&quot;</span>, type=int, default=REPEAT_N)
+    p.add_argument(<span class="s">&quot;--foreach-count&quot;</span>, type=int, default=FOREACH_P)
+    p.add_argument(<span class="s">&quot;--foreach-main&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: Group Output reads For Each main Geometry&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-offset&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: Repeat Join without Iteration translation&quot;</span>)
+    args = p.parse_args(argv)
+
+    rpt, fee = build(
+        args.repeat_iterations, args.foreach_count,
+        pair_repeat=<span class="k">not</span> args.unpair_repeat,
+        pair_foreach=<span class="k">not</span> args.unpair_foreach,
+        offset_repeat=<span class="k">not</span> args.no_offset,
+        foreach_generation=<span class="k">not</span> args.foreach_main,
+    )
+    code = check(rpt, fee, REPEAT_N, FOREACH_P)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+
+    <span class="k">if</span> args.output:
+        rcode = render_still(rpt, fee, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+
+    print(<span class="s">&quot;gn-zone-iterate OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> exc:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{type(exc).__name__}<span class="s">: </span>{exc}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/gn-zone-iterate-hero.webp" alt="gn-zone-iterate render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">47 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">48 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -838,6 +838,17 @@
           <p class="teaches">The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.</p>
           <p class="witnesses"><span class="tag">witnesses</span> TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.</p>
           <a class="card-link" href="usd-export-evaluation-mode/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="geometry-nodes">
+        <a class="card-media" href="gn-zone-iterate/" aria-label="gn-zone-iterate example detail page">
+          <img src="assets/gn-zone-iterate-hero.webp" alt="gn-zone-iterate — Repeat Zone and For Each Element only iterate after pair_with_output." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gn-zone-iterate/">gn-zone-iterate</a></h2>
+          <p class="teaches">Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Repeat 32/24 verts/faces with X-centers at k*1.2; For Each 48/36 with Z-centers at i*0.6+0.21. Unpaired evaluates empty; For Each main Geometry passthrough is 6 verts.</p>
+          <a class="card-link" href="gn-zone-iterate/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

@@ -594,6 +594,17 @@
         "depsgraph",
         "export"
       ]
+    },
+    {
+      "name": "gn-zone-iterate",
+      "dir": "examples/gn-zone-iterate",
+      "teaches": "Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure.",
+      "witnessesFix": "Repeat 32/24 verts/faces with X-centers at k*1.2; For Each 48/36 with Z-centers at i*0.6+0.21. Unpaired evaluates empty; For Each main Geometry passthrough is 6 verts.",
+      "hero": "docs/gallery/assets/gn-zone-iterate-hero.webp",
+      "preview": "examples/gn-zone-iterate/preview.webp",
+      "tags": [
+        "geometry-nodes"
+      ]
     }
   ]
 }

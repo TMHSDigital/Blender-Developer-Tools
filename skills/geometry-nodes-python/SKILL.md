@@ -243,6 +243,35 @@ You then build a bundle inside the tree using the `Combine Bundle` node (`Geomet
 
 Bundles are 5.0+ only; on 4.5 LTS you fall back to multiple separate sockets.
 
+## Zone pairing (Repeat / For Each Element)
+
+Repeat and For Each Element are **paired** input/output nodes. Creating both
+and linking sockets is not enough: call `pair_with_output` on the input node.
+Unpaired Repeat Input has no Geometry sockets (only Iterations). Unpaired
+For Each evaluates to empty geometry (`Cannot evaluate node group` on 4.5).
+
+```python
+rin = tree.nodes.new("GeometryNodeRepeatInput")
+rout = tree.nodes.new("GeometryNodeRepeatOutput")
+rin.pair_with_output(rout)  # creates the Geometry items on both nodes
+rin.inputs["Iterations"].default_value = 3
+
+fin = tree.nodes.new("GeometryNodeForeachGeometryElementInput")
+fout = tree.nodes.new("GeometryNodeForeachGeometryElementOutput")
+fin.pair_with_output(fout)
+fout.domain = "POINT"
+```
+
+For Each Element has two Geometry outputs. `outputs["Geometry"]` is the **main**
+passthrough (the input mesh). Generated meshes live on `Generation_0`. Wiring
+Group Output to the main socket is the vacuous tree: nodes exist and are
+linked, the zone does not iterate into the result.
+
+Do not assert that the zone nodes exist. Assert evaluated topology against a
+closed form (cube verts = `8 × (1 + N)` for a Repeat that joins one cube per
+iteration; `8 × P` for a For Each over P points). Count alone can still pass
+if N+1 cubes are Joined at the origin — also assert per-iteration positions.
+
 ## Detecting Geometry Nodes feature support
 
 ```python
@@ -285,6 +314,8 @@ def has_for_each_element():
 
 6. **Building the tree without group input/output nodes**. The tree's interface sockets only matter once you have `NodeGroupInput` and `NodeGroupOutput` instances connected to actual nodes inside the tree.
 
+7. **Creating Repeat / For Each input and output nodes without `pair_with_output`**. Unpaired zones do not iterate. For Each: wiring Group Output to the main `Geometry` socket ships the input mesh and looks linked.
+
 ## Worked example: replicate the "Mesh to SDF then Grid to Mesh" pipeline
 
 An SDF grid is meshed with **Grid to Mesh** (`GeometryNodeGridToMesh`), not **Volume to
@@ -326,6 +357,7 @@ def build_remesh_via_sdf(voxel_size=0.05, threshold=0.0):
 ## Related
 
 - `addon-scaffolding` for shipping a tree-building script as part of an extension
+- Example `gn-zone-iterate` for Repeat / For Each pairing versus evaluated closed forms
 - `mesh-editing-and-bmesh` for reading the modifier-applied result via depsgraph
 
 ## References

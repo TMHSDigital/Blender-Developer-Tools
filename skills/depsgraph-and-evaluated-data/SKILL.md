@@ -148,15 +148,22 @@ For most read paths, prefer the depsgraph route. The cost is one indirection; th
 
 ## `evaluation_mode` for exporters
 
-The USD, Alembic, and OBJ exporters in 5.x accept an `evaluation_mode` parameter that controls how Blender evaluates the scene before exporting:
+The USD, Alembic, and OBJ exporters accept an `evaluation_mode` parameter that controls how Blender evaluates the scene before exporting:
 
 - `'RENDER'`: include render-only modifiers (subsurf at render levels, etc.). Use for final exports.
 - `'VIEWPORT'`: use viewport modifier levels. Use for fast preview exports.
+
+Default `export_subdivision='BEST_MATCH'` writes the **cage** plus
+`subdivisionScheme = catmullClark`. VIEWPORT and RENDER files are then
+identical — `evaluation_mode` is silent. Pass `export_subdivision='TESSELLATE'`
+to make the mode observable. Catmull-Clark on a cube is closed form:
+verts = `2 + 6 × 4^n` (n=1 → 26, n=2 → 98).
 
 ```python
 bpy.ops.wm.usd_export(
     filepath="/tmp/scene.usdc",
     evaluation_mode='RENDER',
+    export_subdivision='TESSELLATE',
 )
 ```
 
@@ -171,6 +178,7 @@ When you build your own exporter on top of `evaluated_depsgraph_get()`, the deps
 - **Treating `obj.data` as identical to `obj_eval.data`**. They are different mesh datablocks. The first is the source; the second is post-evaluation.
 - **Using the raw object's `matrix_world` after evaluating**. `obj.matrix_world` and `obj_eval.matrix_world` may differ (parent constraints evaluate during depsgraph). Use `obj_eval.matrix_world` for world-space positions.
 - **Calling `to_mesh()` inside a tight loop without clearing**. Each iteration leaks a temp mesh. Even with the right intent, this exhausts memory fast.
+- **USD `evaluation_mode` without `export_subdivision='TESSELLATE'`**. Default `BEST_MATCH` writes the cage plus `subdivisionScheme = catmullClark`, so RENDER and VIEWPORT files match and the mode looks like a no-op.
 
 ## Version correctness
 
@@ -184,6 +192,7 @@ In 5.0 the underlying Animation 2025 work changed how armature evaluation intera
 - Skill `mesh-editing-and-bmesh`: bmesh has its own load-edit-free contract.
 - Snippet `depsgraph-evaluated-mesh.py` for the minimal copy-paste pattern.
 - Snippet `usd-export-evaluation-mode.py` for the exporter parameter.
+- Example `usd-export-evaluation-mode` for the TESSELLATE closed form versus the BEST_MATCH cage.
 
 ## References
 
