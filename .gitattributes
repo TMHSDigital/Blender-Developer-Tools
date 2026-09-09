@@ -1,0 +1,8 @@
+# Line endings. JSON and Markdown stay LF so Windows checkouts
+# do not churn gallery.json, plugin.json, or skill files.
+*.json text eol=lf
+*.md text eol=lf
+
+# Binary. Gallery stills and any future .blend fixtures.
+*.webp binary
+*.blend binary

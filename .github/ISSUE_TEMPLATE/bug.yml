@@ -1,0 +1,82 @@
+name: Bug report
+description: Something in a skill, rule, snippet, template, example, or CI is wrong
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. For security issues, do not file a public issue — open a [Security Advisory](https://github.com/TMHSDigital/Blender-Developer-Tools/security/advisories/new) instead.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Skill
+        - Rule
+        - Snippet
+        - Template
+        - Example
+        - Gallery / docs
+        - CI workflows
+        - Plugin manifest
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: affected
+    attributes:
+      label: Affected path
+      description: Skill directory, example name, snippet filename, workflow, etc.
+      placeholder: e.g. skills/vse-python/ or examples/vse-cut-list/
+    validations:
+      required: true
+
+  - type: dropdown
+    id: blender
+    attributes:
+      label: Blender series
+      options:
+        - 5.2 LTS
+        - 5.1
+        - 4.5 LTS
+        - Multiple / cross-version
+        - Not Blender-runtime (docs/CI only)
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal steps. Include the exact binary path and `blender --version` output if this is a runtime bug.
+      placeholder: |
+        1. blender --background --python examples/vse-cut-list/vse_cut_list.py -- --check-pixels
+        2. Observe …
+        3. Expected …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: Include the measured error / exit code. An assertion that cannot fail witnesses nothing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      render: shell
+    validations:
+      required: false

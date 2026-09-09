@@ -1,0 +1,47 @@
+name: Content request
+description: Propose a new skill, rule, snippet, template, or example
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Skim [ROADMAP.md](https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/ROADMAP.md) first. Struck-through candidate-pool items already shipped.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - New skill
+        - New rule
+        - New snippet
+        - New template
+        - New example
+        - Improvement to existing content
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract
+    attributes:
+      label: API contract
+      description: What should a headless script be able to assert? Name the RNA types / operators. If this is a version split, say which series diverge.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it belongs here
+      description: The AI mistake this catches, or the gap versus what the python_api notes already list.
+    validations:
+      required: true
+
+  - type: textarea
+    id: witness
+    attributes:
+      label: Witness plan
+      description: Cheap headless asserts, a .blend fixture, or not witnessable in `--background`. Do not propose a gallery render as the only proof.
+    validations:
+      required: false

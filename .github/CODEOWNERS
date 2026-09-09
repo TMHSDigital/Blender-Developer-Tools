@@ -1,0 +1,9 @@
+# Enforced only when branch protection on `main` enables
+# "Require a pull request before merging" AND "Require review from Code Owners".
+# Without that setting this file documents ownership, it does not gate merges.
+
+* @TMHSDigital
+
+/.github/ @TMHSDigital
+/scripts/ @TMHSDigital
+/.cursor-plugin/ @TMHSDigital
