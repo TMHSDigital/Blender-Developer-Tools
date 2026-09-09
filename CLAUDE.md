@@ -130,6 +130,20 @@ Stage with **explicit paths only** — never `git add -A` or `git add .`. Cursor
 - **After gallery regeneration** (`python scripts/build_gallery.py`), read the **generated HTML** character by character — the `<img alt>` text and witnesses callouts in `docs/gallery/index.html` and `docs/gallery/<name>/index.html` — not just `examples/gallery.json`. Precedent: the `teaches.split(".")[0]` bug truncated 14/21 card alts at dotted API paths like `bmesh.ops` while the source JSON looked fine (fixed in PR #68).
 - **Playwright gallery captures:** gallery `<img>` tags lazy-load, so force them first (`document.querySelectorAll('img').forEach(i => i.loading = 'eager')`, then wait). **Scroll the target card into view and take a viewport capture** — `scrollIntoView({block:'center', behavior:'instant'})`, short wait, `browser_take_screenshot` with `fullPage` omitted. A `fullPage` capture is NOT a workaround: on a tall gallery page it renders every card image blank even when the images are verified loaded (`complete === true`, `naturalWidth === 1280`, `opacity === 1`) — measured on the 45-card grid at 1425x4516. Verify load state via `browser_evaluate` rather than trusting the pixels.
 
+## Smoke skip and post-exit
+
+The host runner is `tests/smoke/run_example.py`. Shipped examples are listed in
+`tests/smoke/catalog.json` (not a new YAML step per example).
+
+- **SKIP:** print `SMOKE_SKIP: <reason>` and `sys.exit(77)`. Legal only when the
+  catalog/runner `--min-version` is **above** this Blender. Exit 0 with that
+  marker is FAIL (vacuous). Skip on a version that should run is FAIL.
+- **Post-exit sidecar:** opt-in `--expect-sidecar PATH`. The example writes
+  `$BDT_SMOKE_SIDECAR` (set by the runner). The harness asserts after Blender
+  exits. Not a gallery still.
+- **Summary:** `tests/smoke/summarize.py` prints passed/skipped/failed. Zero
+  PASSes makes the job red even if every example skipped cleanly.
+
 ## Example-Run Process
 
 - The canonical example-creation prompt lives at `docs/new-example-prompt.md`; keep it in agreement with this file and `AGENTS.md`.

@@ -270,3 +270,12 @@ jobs:
 
           print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets, {example_count} examples')
           PYEOF
+
+  validate-harness:
+    name: Validate smoke harness protocol
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Harness unit tests
+        run: python3 tests/smoke/test_harness.py -v

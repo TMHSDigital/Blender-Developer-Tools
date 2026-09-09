@@ -157,8 +157,12 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
 - `blender-smoke.yml` executes every shipped example (check-only, no render)
   plus snippet/template smoke tests inside REAL headless Blender, on
-  5.2 LTS and 4.5 LTS for every PR (5.1 on the weekly cron). A new example is not
-  shipped until it has a step here.
+  5.2 LTS and 4.5 LTS for every PR (5.1 on the weekly cron). Examples run
+  through `tests/smoke/run_example.py` (catalog: `tests/smoke/catalog.json`).
+  SKIP is exit 77 plus a `SMOKE_SKIP:` reason, and only when `--min-version`
+  is above this Blender; exit 0 with that marker is a vacuous pass and fails.
+  Post-exit sidecars are opt-in (`--expect-sidecar`). A leg with zero PASSes
+  is red. A new example is not shipped until it has a catalog row.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
   drift-check@v1.15` to enforce ecosystem standards-version markers.
 - `release.yml` auto-bumps the version, tags, force-updates floating tags

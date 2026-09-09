@@ -46,7 +46,11 @@ you write code:
 Where an API diverges between 4.5, 5.1, and 5.2, asserting each side's actual contract is
 part of the witness—version-gate explicitly and document the divergence rather than
 papering over it. Version-gate on the `bpy.app.version` tuple, not
-`version_string`, which is not bare semver on LTS builds. If you discover an
+`version_string`, which is not bare semver on LTS builds. If an example cannot
+run on a matrix leg, it must print `SMOKE_SKIP: <reason>` and `sys.exit(77)` —
+exit 0 is a pass, not a skip. Set catalog `min_version` so a skip on a version
+that should run is FAIL. Post-exit sidecars (`$BDT_SMOKE_SIDECAR`, harness
+`--expect-sidecar`) are opt-in and are not gallery stills. If you discover an
 undocumented hazard while authoring (a crash, a dangling reference, an ordering
 constraint), that discovery belongs in the code comments and README; it is often
 more valuable than the original subject.
@@ -67,8 +71,8 @@ The example must:
 
 Complete every integration required for a shipped example. Infer the exact current
 shape from neighboring examples and repository configuration, including the example
-directory, README, gallery metadata and assets, plugin manifest, smoke workflow,
-top-level README, and generated gallery pages. After regenerating the gallery with
+directory, README, gallery metadata and assets, plugin manifest, smoke catalog
+(`tests/smoke/catalog.json`), top-level README, and generated gallery pages. After regenerating the gallery with
 `python scripts/build_gallery.py`, read the **generated** output character by
 character—not only `examples/gallery.json` source fields. Open
 `docs/gallery/index.html` and `docs/gallery/<name>/index.html` and inspect the

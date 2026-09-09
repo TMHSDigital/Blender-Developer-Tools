@@ -9,19 +9,32 @@ so the test catches drift in the shipped content rather than masking it.
 """
 import bpy, sys, os, tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from protocol import PASS, SKIP, FAIL, summarize_records
+
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 OUT = ARGS[0] if ARGS else tempfile.mkdtemp()
 os.makedirs(OUT, exist_ok=True)
 V = bpy.app.version
 print(f"=== smoke on Blender {V[0]}.{V[1]}.{V[2]} -> {OUT} ===")
 
+_RESULTS = []
+
 def require(example, cond, evidence):
     """Pass-or-die assertion. On failure print which example failed and exit 1."""
     status = "ok" if cond else "FAIL"
     print(f"[{status}] {example}: {evidence}")
     if not cond:
+        _RESULTS.append({"name": example, "status": FAIL, "detail": evidence})
         print(f"SMOKE FAILED at example '{example}' on Blender {V[0]}.{V[1]}.{V[2]}")
         sys.exit(1)
+    _RESULTS.append({"name": example, "status": PASS, "detail": evidence})
+
+
+def skip(example, reason):
+    """Record a version skip. Does not fail. A run with zero PASSes still fails."""
+    print(f"[SKIP] {example}: {reason}")
+    _RESULTS.append({"name": example, "status": SKIP, "detail": reason})
 
 def reset():
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -182,4 +195,12 @@ for fn in (smoke_mesh, smoke_driver, smoke_sdf, smoke_eevee, smoke_slotted, smok
               f"Blender {V[0]}.{V[1]}.{V[2]}: {e}")
         sys.exit(1)
 
+passed, skipped, failed, code = summarize_records(_RESULTS)
+print(
+    f"=== SMOKE SUMMARY: {passed} passed, {skipped} skipped, {failed} failed "
+    f"on Blender {V[0]}.{V[1]}.{V[2]} ==="
+)
+if code == 2:
+    print("SMOKE FAILED: every check skipped — job is not green")
+    sys.exit(2)
 print(f"=== ALL SMOKE CHECKS PASSED on Blender {V[0]}.{V[1]}.{V[2]} ===")
