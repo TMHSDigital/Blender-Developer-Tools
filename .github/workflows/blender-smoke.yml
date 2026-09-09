@@ -3,7 +3,10 @@ name: Blender Smoke Test
 # Executes the snippets' and skills' headline examples inside REAL Blender, headless,
 # on the current stable (5.2.x LTS) and the fallback LTS (4.5.x) on every PR,
 # plus 5.1.x on the weekly cron, and fails on any error or
-# empty-output assertion. py_compile (in validate.yml) cannot catch API-level regressions
+# empty-output assertion. Shipped examples go through tests/smoke/run_example.py
+# (catalog.json): SKIP is exit 77 + SMOKE_SKIP below --min-version, never exit 0.
+# Post-exit sidecars are opt-in. A leg with zero PASSes is red.
+# py_compile (in validate.yml) cannot catch API-level regressions
 # like the EEVEE-id inversion, the slotted-actions boundary, the driver TypeError, or the
 # dead SDF link -- this gate runs the code so those surface in CI, not in users' files.
 
@@ -32,6 +35,18 @@ jobs:
         series: ${{ github.event_name == 'schedule' && fromJSON('["5.2","5.1","4.5"]') || fromJSON('["5.2","4.5"]') }}
     steps:
       - uses: actions/checkout@v7
+
+      - name: Harness protocol unit tests
+        run: |
+          set -euo pipefail
+          python3 tests/smoke/test_harness.py -v
+
+      - name: Init smoke status log
+        run: |
+          set -euo pipefail
+          # runner.temp is illegal in job-level env; set it from the step shell.
+          echo "BDT_SMOKE_STATUS=$RUNNER_TEMP/smoke-status.jsonl" >> "$GITHUB_ENV"
+          : > "$RUNNER_TEMP/smoke-status.jsonl"
 
       - name: Install Blender runtime libraries
         run: |
@@ -117,518 +132,74 @@ jobs:
             --output "$RUNNER_TEMP/out/render.png" --engine CYCLES
           test -s "$RUNNER_TEMP/out/render.png" || { echo "::error::render PNG missing/empty"; exit 1; }
 
-      - name: Shipped example - swatch grid renders and self-verifies
+      - name: Canary - expected skip is SKIP not PASS
         run: |
           set -euo pipefail
-          # Run the SHIPPED example file (not a copy). It asserts non-black AND
-          # distinct-region-count == material-count internally and exits non-zero on
-          # failure. Cycles (CPU) for pixels on the GPU-less runner; the example still
-          # asserts the version-correct EEVEE engine id before rendering. Small/low-sample
-          # for speed -- region detection holds at this size.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/swatch-grid/swatch_grid.py -- \
-            --output "$RUNNER_TEMP/out/swatch.png" --engine cycles --samples 8 --width 640
-          test -s "$RUNNER_TEMP/out/swatch.png" || { echo "::error::swatch grid output missing/empty"; exit 1; }
+          python3 tests/smoke/run_example.py \
+            --name canary-skip \
+            --blender "$BLENDER" \
+            --script tests/smoke/canary_skip.py \
+            --series "${{ matrix.series }}" \
+            --min-version 99.0 \
+            --xvfb
 
-      - name: Shipped example - turntable correctness (slotted actions)
+      - name: Canary - unexpected skip is red
         run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): asserts the rotation keys drive
-          # playback via the cross-version channelbag path; exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/turntable/turntable.py --
+          set +e
+          python3 tests/smoke/run_example.py --no-record \
+            --name canary-skip-unexpected \
+            --blender "$BLENDER" \
+            --script tests/smoke/canary_skip.py \
+            --series "${{ matrix.series }}" \
+            --min-version 4.0 \
+            --xvfb
+          code=$?
+          set -e
+          [ "$code" -eq 1 ] || { echo "::error::unexpected skip did not fail (got $code)"; exit 1; }
+          echo "unexpected skip exited 1 (correct)"
 
-      - name: Shipped example - GN SDF remesh correctness (GridToMesh)
+      - name: Canary - post-exit sidecar
         run: |
           set -euo pipefail
-          # Frame-independent check only (no render): asserts the SDF->GridToMesh remesh
-          # yields geometry (eval vcount > 0 and != base); exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gn-sdf-remesh/gn_sdf_remesh.py --
+          python3 tests/smoke/run_example.py \
+            --name canary-sidecar \
+            --blender "$BLENDER" \
+            --script tests/smoke/canary_sidecar.py \
+            --series "${{ matrix.series }}" \
+            --expect-sidecar "$RUNNER_TEMP/out/canary.sidecar" \
+            --sidecar-contains sidecar-ok \
+            --xvfb
 
-      - name: Shipped example - depsgraph-evaluated export
+      - name: Canary - missing sidecar is red
         run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): asserts wm.obj_export ships the
-          # depsgraph-evaluated (modifier-applied) geometry -- exported vcount == evaluated
-          # > base. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/depsgraph-export/depsgraph_export.py --
+          set +e
+          python3 tests/smoke/run_example.py --no-record \
+            --name canary-sidecar-missing \
+            --blender "$BLENDER" \
+            --script tests/smoke/canary_sidecar.py \
+            --series "${{ matrix.series }}" \
+            --expect-sidecar "$RUNNER_TEMP/out/missing.sidecar" \
+            --sidecar-contains sidecar-ok \
+            --xvfb \
+            -- --omit-sidecar
+          code=$?
+          set -e
+          [ "$code" -eq 1 ] || { echo "::error::missing sidecar did not fail (got $code)"; exit 1; }
+          echo "missing sidecar exited 1 (correct)"
 
-      - name: Shipped example - wave displace (foreach bulk IO)
+      - name: Shipped examples
         run: |
           set -euo pipefail
-          # Frame-independent check only (no render): 9409 verts displaced via one
-          # foreach_get + one foreach_set; asserts the Z span matches the amplitude
-          # and every vertex matches the closed-form wave. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/wave-displace/wave_displace.py --
+          python3 tests/smoke/run_catalog.py \
+            --blender "$BLENDER" \
+            --series "${{ matrix.series }}" \
+            --status "$BDT_SMOKE_STATUS" \
+            --out "$RUNNER_TEMP/out" \
+            --xvfb \
+            --catalog tests/smoke/catalog.json
 
-      - name: Shipped example - driver wave (driver_namespace + depsgraph)
+      - name: Smoke summary
+        if: ${{ always() && env.BLENDER != '' }}
         run: |
           set -euo pipefail
-          # Frame-independent check only (no render): sixteen SCRIPTED drivers call a
-          # driver_namespace function; asserts the driven values on the evaluated copy
-          # AND the flushed-back original both match the closed form. Exits non-zero
-          # on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/driver-wave/driver_wave.py --
-
-      - name: Shipped example - bmesh gear (ownership + watertight topology)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): parametric gear via bmesh with
-          # bm.free() in try/finally; asserts closed-form vert/edge/face counts and
-          # that every edge borders exactly two faces. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/bmesh-gear/bmesh_gear.py --
-
-      - name: Shipped example - shader node group (interface sockets + sharing)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): TintedGloss group declared via
-          # tree.interface.new_socket, instanced by two materials; asserts the sockets
-          # exist, the group datablock is shared (users == 2), and the per-instance
-          # Tint values differ. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/shader-node-group/shader_node_group.py --
-
-      - name: Shipped example - temp-override join (context override)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): three-step staircase joined under
-          # bpy.context.temp_override; asserts one mesh remains, sources are gone,
-          # topology verts=24 faces=18, and local Z spans all steps. Exits non-zero
-          # on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/temp-override-join/temp_override_join.py --
-
-      - name: Shipped example - GN instance grid (Instance on Points)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): generative GN tree instances a
-          # cube on a 3x3 grid and realizes; asserts eval verts=72 faces=54, Set
-          # Material carries Lime, and corner center matches the grid. Exits non-zero
-          # on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gn-instance-grid/gn_instance_grid.py --
-
-      - name: Shipped example - GN modifier inputs (5.1 dict vs 5.2 RNA)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): one GN tree, three modifier
-          # copies; writes Scale 1/2/3 via version-appropriate path; asserts
-          # readback and evaluated Z-extent match. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gn-modifier-inputs/gn_modifier_inputs.py --
-
-      - name: Shipped example - shape-key blend (data API + evaluated mesh)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): relative Tall key lifts+flares
-          # at value=0.5; asserts undeformed mesh stays at Basis and every evaluated
-          # vert matches basis + value*(key-basis). Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/shape-key-blend/shape_key_blend.py --
-
-      - name: Shipped example - curve bevel arc (Bezier + bevel_depth)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): beveled Bezier semicircle via
-          # curve data API; asserts 8 points, bevel_depth=0.15, fill caps, eval
-          # verts=1044 faces=1028, tube rests on floor. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/curve-bevel-arc/curve_bevel_arc.py --
-
-      - name: Shipped example - compositor glare (Fog Glow + 5.x node group)
-        run: |
-          set -euo pipefail
-          # Two tiny 1-sample Cycles renders (compositor on vs off, ~seconds each):
-          # asserts the cross-version compositor plumbing (compositing_node_group
-          # on 5.x, scene.node_tree on 4.x), the Glare Fog Glow configuration, a
-          # strictly-falling halo with the compositor on, and exactly-zero halo
-          # pixels with it off. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/compositor-glare/compositor_glare.py --
-
-      - name: Shipped example - damped-track aim (DAMPED_TRACK data API)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): twelve needles aim at an
-          # emissive core via Object.constraints.new('DAMPED_TRACK') on TRACK_Z;
-          # asserts one unmuted constraint per needle and evaluated local +Z
-          # aligns toward the core (dot ≥ 0.998). Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/damped-track-aim/damped_track_aim.py --
-
-      - name: Shipped example - color attribute wheel (color_attributes CORNER domain)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): an HSV wheel disc colored via
-          # mesh.color_attributes.new() on the CORNER domain; asserts the attribute
-          # is sized to loop count (not vertex count), is active_color, and probe
-          # loops match the closed-form HSV for their vertex. Exits non-zero on
-          # failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/color-attribute-wheel/color_attribute_wheel.py --
-
-      - name: Shipped example - parent inverse orrery (matrix_parent_inverse)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): a data-API orrery whose arms,
-          # planets, and moon are parented with the keep-world idiom; asserts bare
-          # `.parent =` teleports a probe, matrix_parent_inverse restores it exactly,
-          # matrix_world is stale until view_layer.update(), and every orbit lands
-          # on its closed form. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/parent-inverse-orrery/parent_inverse_orrery.py --
-
-      - name: Shipped example - grease pencil rosette (GPv3 attribute API)
-        run: |
-          set -euo pipefail
-          # Frame-independent check only (no render): five nested rose curves drawn
-          # as GPv3 strokes; asserts the version-gated datablock address (4.5:
-          # grease_pencils_v3 with grease_pencils still legacy; 5.x: grease_pencils
-          # is GPv3, legacy names gone), lazy attribute-layer materialization from
-          # point writes, and a closed-form round-trip of every position through
-          # the raw POINT attribute buffer. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/grease-pencil-rosette/grease_pencil_rosette.py --
-
-      - name: Shipped example - gp line art contour (LINEART modifier + thickness trap)
-        run: |
-          set -euo pipefail
-          # Check only (no render): GPv3 object + LINEART modifier; asserts
-          # source_object is load-bearing (clear → 0 strokes), contour+crease
-          # off → 0, restore recovers silhouette strokes, and thickness is
-          # 4.5-only (AttributeError on 5.1; portable path is radius).
-          # Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gp-lineart-contour/gp_lineart_contour.py --
-
-      - name: Shipped example - armature bend (edit_bones + LBS closed form)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a four-bone chain skins a tapered tube via
-          # name-bound vertex groups; asserts edit_bones is empty outside edit
-          # mode and holds the closed-form chain inside it, then compares every
-          # depsgraph-evaluated vertex against re-implemented linear blend
-          # skinning (root ring pinned, tip deflected — a straight tube fails).
-          # Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/armature-bend/armature_bend.py --
-
-      - name: Shipped example - text version stamp (TextCurve solids + version string)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a TextCurve whose body is the live
-          # bpy.app.version_string; asserts the Curve subclass and built-in
-          # font contracts, that flat text is filled but planar, the closed
-          # form z-extent = 2*(extrude+bevel_depth), body edits regenerating
-          # geometry, that version_string starts with the dotted version tuple
-          # ("4.5.11 LTS" is not bare semver), and that a Mesh reference dies
-          # at to_mesh_clear(). Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/text-version-stamp/text_version_stamp.py --
-
-      - name: Shipped example - image pixels testcard (flat RGBA buffer + save lifecycle)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a procedural broadcast test card written with
-          # one pixels.foreach_set; asserts the buffer is always flat RGBA
-          # (channels == 4 even with alpha=False, RGB-stride writes raise), the
-          # byte round-trip error is <= 0.5/255 and strictly > 0 (storage really
-          # is 8-bit) while float_buffer=True round-trips at float32 precision,
-          # scale() reallocates so stale-size bulk reads raise, and save() flips
-          # source to FILE and drops the buffer (pixels silently re-load from
-          # disk — proven with an imposter file) while save_render() preserves
-          # it. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/image-pixels-testcard/image_pixels_testcard.py --
-
-      - name: Shipped example - uv layer grid (calc_uvs silent no-op)
-        run: |
-          set -euo pipefail
-          # Check only (no render): create_grid(..., calc_uvs=True) without a
-          # pre-existing UV layer leaves 0 layers (silent no-op); pre-create +
-          # calc_uvs fills loops to the closed-form grid UVs
-          # ((x/size+1)/2, (y/size+1)/2) within 1e-6 including mesh persistence;
-          # explicit loop assignment is the calc_uvs-free fallback. Exits
-          # non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/uv-layer-grid/uv_layer_grid.py --
-
-      - name: Shipped example - png vs exr alpha (float PNG false unpremul)
-        run: |
-          set -euo pipefail
-          # Check only (no render): float_buffer=True Image.save() to PNG writes
-          # RGBA16 and unpremultiplies as if associated-alpha, so straight-authored
-          # dark values at low alpha clamp to white (closed-form err 0.98 at
-          # RGB 0.02 / a=1/255); OpenEXR round-trips within 1e-5; byte→PNG is
-          # straight RGBA8; EXR color_mode=RGB drops alpha to opaque. Exits
-          # non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/png-exr-alpha/png_exr_alpha.py --
-
-      - name: Shipped example - vse cut list (sequencer 4.5 vs 5.x rename)
-        run: |
-          set -euo pipefail
-          # Check only (no render): asserts the accessor rename (.sequences
-          # gone on 5.x, bridged on 4.5), the new_effect end-kwarg rename
-          # (frame_end on 4.5, length on 5.x — the wrong kwarg TypeErrors),
-          # closed-form spans on each version's canonical accessors
-          # (frame_final_* vs left_handle/right_handle/duration with the
-          # deprecation bridge), GC wiring and clamping, scene-strip span,
-          # and a save/reload round-trip. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/vse-cut-list/vse_cut_list.py --
-          # Compositing witness on a tiny Cycles render: mosaic cells carry
-          # their strip colors, the cross cell is a true mid blend, and a
-          # consumed cross source never composites independently.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/vse-cut-list/vse_cut_list.py -- \
-            --check-pixels --engine cycles
-
-      - name: Shipped example - glTF export round-trip (+Y-up, applied modifiers, UVs)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 35-part supply crate exported GLTF_SEPARATE
-          # and re-imported; asserts the exporter/importer kwarg set still exists
-          # (RNA guard), the on-disk +Y-up conversion ((x,y,z)->(x,z,-y) baked
-          # into POSITION bounds, no node rotation), disk vertex count ==
-          # evaluated loop count (export_apply), V-flipped TEXCOORD_0, and the
-          # full round-trip of positions/normals/UVs/per-triangle material
-          # bindings within float tolerances. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gltf-export-roundtrip/gltf_export_roundtrip.py --
-
-      - name: Shipped example - LOD decimate chain (depsgraph + ratio bounds)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a lathed retro rocket evaluated at LOD0/1/2
-          # through the Decimate modifier; asserts closed-form base topology and
-          # bbox, evaluated-vs-original non-destructiveness (obj.data unchanged),
-          # evaluated triangle counts within 5% of ratio*base, and silhouette
-          # (bbox) preservation within 1e-3. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/lod-decimate-chain/lod_decimate_chain.py --
-
-      - name: Shipped example - vertex weight limit (4-influence cap + LBS)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a five-bone mech arm with rich 5-influence
-          # boots, pruned to the 4-influence engine cap via the data API;
-          # asserts pre/post-limit influence counts, unit weight sums, pose
-          # preservation (pre vs post pruning), exact LBS from the mesh's own
-          # deform layer, and a pinned Root mount. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/vertex-weight-limit/vertex_weight_limit.py --
-
-      - name: Shipped example - triangulate + tangents (mikktspace contract)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a lathed buckler with polar/strip/planar
-          # UV charts; asserts closed-form loop-triangle count, unit and
-          # orthogonal tangent frames, bitangent == sign*(n x t), tangents
-          # matching the independent edge/UV-delta formula on smooth-field
-          # triangles, zero flips off seams, and the re-fetched UV layer
-          # surviving calc_tangents. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/triangulate-tangents/triangulate_tangents.py --
-
-      - name: Shipped example - glTF skin round-trip (skins, weights, deform)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 7-bone mech scorpion exported with
-          # export_skins and re-imported; asserts skins[0] joints, JOINTS_0/
-          # WEIGHTS_0 unit sums, bone/parent/rest-matrix round-trip, bit-exact
-          # weights via position-key lookup, and identical deformation of the
-          # re-imported rig. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --
-
-      - name: Shipped example - VSE gamma cross (blend-curve closed form)
-        run: |
-          set -euo pipefail
-          # Check only: renders tiny frames across a GAMMA_CROSS and asserts
-          # every sample against the gamma-0.5 closed form ((1-t)*sqrt(A) +
-          # t*sqrt(B))^2 with t = (frame-start)/duration, plus the material
-          # lerp deviation at mid. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/vse-gamma-cross/vse_gamma_cross.py --
-
-      - name: Shipped example - light link studio (receiver collections in pixels)
-        run: |
-          set -euo pipefail
-          # Check only (two tiny Cycles renders): a key linked to the hero
-          # collection must light only the hero (luminance ratio >= 3x at
-          # projected centers), and unlinking must raise the decoy >= 50%
-          # with hero drift <= 5%. Also guards the Object-level API path
-          # (ld.light_linking is an AttributeError). Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/light-link-studio/light_link_studio.py --
-
-      - name: Shipped example - collision hull proxy (compound convex pieces)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a lathed fire hydrant prop plus its
-          # four-piece compound collision, each piece a bmesh convex_hull of
-          # a coarse sec(pi/n)-inflated cage; asserts per-piece watertightness,
-          # positive signed volume, render-vertex containment and hull
-          # convexity by closed-form plane tests, Euler characteristic 2, and
-          # the 255-face per-piece engine budget. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/collision-hull-proxy/collision_hull_proxy.py --
-
-      - name: Shipped example - custom normals + shade by angle (post-4.1 shading contract)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a jerry can prop; asserts the legacy
-          # shading API stays removed (use_auto_smooth/use_custom_normals/
-          # calc_normals), set_sharp_from_angle sharp sets matching an
-          # independent dihedral recompute exactly, evaluated normal welds/
-          # splits, custom split normals surviving depsgraph evaluation
-          # within int16 quantization, and the version-gated shade_auto_smooth
-          # operator divergence (CANCELLED headless on 4.5, FINISHED on 5.1).
-          # Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/custom-normals-shade/custom_normals_shade.py --
-
-      - name: Shipped example - sky texture sun elevation (Nishita / MS + zenith rise)
-        run: |
-          set -euo pipefail
-          # Check only (no gallery still): World ShaderNodeTexSky drives
-          # Background Color; sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING
-          # on 5.1 (NISHITA gone); dust_density is 4.5-only (aerosol_density on
-          # 5.1). Two tiny Cycles OPEN_EXR zenith probes assert sun_elevation
-          # 8→55 deg brightens zenith (rise gate ≥ 1.25). Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/sky-texture-sun-elevation/sky_texture_sun_elevation.py --
-
-      - name: Shipped example - mesh hygiene audit (topology ingest checklist)
-        run: |
-          set -euo pipefail
-          # Check only (no render): stepped utility pedestal; asserts no ngons,
-          # no loose verts, manifold edges (exactly 2 faces), no zero-area faces,
-          # positive signed volume, Euler V-E+F == 2. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --
-
-      - name: Shipped example - prop origin transform (base origin + scale + MPI)
-        run: |
-          set -euo pipefail
-          # Check only (no render): street pedestal; asserts scale (1,1,1) after
-          # data-API apply, local bbox min.z == 0, world AABB unchanged, bare
-          # parent jumps accessory, matrix_parent_inverse restores world location,
-          # and matrix_world stays stale until view_layer.update(). Exits non-zero
-          # on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/prop-origin-transform/prop_origin_transform.py --
-
-      - name: Shipped example - soccer ball Goldberg (polyhedron invariants + panel binding)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a bmesh icosphere truncated at 1/3 per edge
-          # into the Goldberg polyhedron; asserts closed-form counts (60/90/32,
-          # Euler 2), 12-pentagon/20-hexagon census, uniform degree 3,
-          # watertightness, edge-length uniformity, face planarity vs an
-          # independent Newell normal, centroid-at-origin circumsphere, and
-          # panel materials bound by face vertex count. Exits non-zero on
-          # failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/soccer-ball-goldberg/soccer_ball_goldberg.py --
-
-      - name: Shipped example - car mirror symmetry (Mirror modifier + depsgraph)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a hatchback lofted as one half and
-          # completed by the Mirror modifier; asserts the datablock keeps the
-          # half (126/231/106, 28 centerline verts), the evaluated mesh is
-          # exactly 2n-c (224/434/212), watertight with Euler 2, every
-          # evaluated vertex has an exact negated-X partner, and wheels/lamps
-          # mirror about object origins parked on the symmetry plane. Exits
-          # non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/car-mirror-symmetry/car_mirror_symmetry.py --
-
-      - name: Shipped example - attribute domain shear (POINT vs CORNER semantics)
-        run: |
-          set -euo pipefail
-          # Check only (no render): an 8-wedge pinwheel around one shared hub
-          # vertex; asserts CORNER attr sizing (3K loops) and exact per-wedge
-          # hub colors, POINT sizing (K+1 verts), and that a naive per-wedge
-          # POINT loop shears to the last write at every shared vertex with
-          # the measured deviation equal to the palette closed form. Exits
-          # non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/attribute-domain-shear/attribute_domain_shear.py --
-
-      - name: Shipped example - degenerate bevel weld (half-dimension collapse)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 1.6x0.4x1.0 slab beveled at safe (0.10)
-          # and threshold (0.20 == min/2) offsets; asserts zero vs exactly 12
-          # zero-area faces (4 min-axis edges x 3 segments), 16 coincident
-          # verts (4 x (segments+1)), min_area collapse > 1e5x, and a stdlib
-          # GLB re-parse counting 32 degenerate triangles shipped versus 0.
-          # Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/degenerate-bevel-weld/degenerate_bevel_weld.py --
-
-      - name: Shipped example - modular kit snap (tile boundary contract)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 4x3x3 corridor segment; asserts 16
-          # boundary verts on x in {0, TILE} within 1e-6, end-ring coincidence
-          # within 1e-6, a linked duplicate's joint positions matching within
-          # 1e-6, shell bbox == declared tile (dev 0), manifold shell except
-          # the 16 open-end edges, watertight detail parts contained inside
-          # the tile, and reuse hygiene (identity scales, kit names, pivot
-          # origins) across 21 parts. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/modular-kit-snap/modular_kit_snap.py --
-
-      - name: Shipped example - lightmap UV channel (two-layer bake contract)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 21-part market cart; asserts per-part
-          # UVMap/UVLight layers with active == UVLight and
-          # active_render == UVMap re-asserted after the ops (they clear
-          # both flags), UV0 loops untouched by the UV1 unwrap (drift 0),
-          # every UV1 loop inside [0,1], zero overlapping islands via an
-          # independent binned SAT scan, measured min island distance >=
-          # half the nominal pack margin, and watertight parts. Exits
-          # non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/lightmap-uv-channel/lightmap_uv_channel.py --
-
-      - name: Shipped example - socket attach points (spawn mount contract)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a 21-part survey drone with 7 SKT_ socket
-          # empties and 7 seated modules; asserts every socket's evaluated
-          # world matrix equals the authored transform within 1e-6 with an
-          # orthonormal right-handed basis, socket +Z == the mount pad's
-          # Newell normal and origin == that face's centroid (two independent
-          # derivations), the documented up-axis fallback rule, modules seated
-          # with a strictly identity local transform, rigid invariance under a
-          # re-pose, and that freezing the root transform preserves world
-          # matrices while clearing all 7 parent-inverses and pushing the
-          # root scale down into the children. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/socket-attach-points/socket_attach_points.py --
-
-      - name: Shipped example - vertex colour AO (baked occlusion attribute)
-        run: |
-          set -euo pipefail
-          # Check only (no render): a deterministic cosine-weighted hemisphere
-          # AO integrator validated against the closed form
-          # 1 - 0.5(1 - 1/sqrt(1+k^2)) at six probe distances, an unoccluded
-          # plate baking to exactly 1.0, strict monotonicity with distance,
-          # then the same integrator run over an 11-part stone well: values in
-          # [0,1] with real spread, FLOAT_COLOR exact round-trip vs BYTE_COLOR
-          # matching an independent sRGB quantisation model, both attributes
-          # surviving depsgraph evaluation at deviation 0 with element counts
-          # intact, and reuse hygiene. Exits non-zero on failure.
-          xvfb-run -a "$BLENDER" --background \
-            --python examples/vertex-color-ao/vertex_color_ao.py --
+          python3 tests/smoke/summarize.py --status "$BDT_SMOKE_STATUS"
