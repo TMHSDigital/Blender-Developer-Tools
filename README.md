@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>45 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>45 examples</strong>
 </p>
 
 <p align="center">
@@ -36,13 +36,13 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 45 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 45 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data |
 | **Templates** | A working Extensions Platform add-on starter and a headless batch script starter |
 | **Snippets** | 17 small standalone Python files demonstrating canonical patterns |
@@ -887,7 +887,7 @@ Companion to [`color-attribute-wheel`](examples/color-attribute-wheel/) and
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 12 skill files, YAML frontmatter, one canonical pattern each
+skills/<name>/SKILL.md   - 13 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 6 rule files, anti-pattern + correction
 templates/<name>/        - 2 template directories (extension-addon-template, headless-batch-script-template)
 snippets/<name>.py       - 17 standalone Python snippets, 5 to 50 lines each

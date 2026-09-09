@@ -2,6 +2,47 @@
 
 _Audit date: 2026-06-20 · Repo @ v0.5.0 · Auditor: Principal Eng review_
 
+## Findings the release notes did not list
+
+_Standing log. Notes-derived 5.1→5.2 (and later) deltas are incomplete by default._
+
+The Blender `python_api` release notes are a starting set, not a closed
+inventory. A sweep that only copies listed removals will miss behavior
+changes that keep the same RNA names. Record those here when CI or
+authoring finds them, even when upstream notes omit the break. Do not
+treat a clean notes-diff as proof that two series are interchangeable.
+
+### 2026-09-09 — COLOR strip intrinsic size (5.2, not in the notes)
+
+**4.5 LTS / 5.1:** COLOR strips have no intrinsic size. `transform.scale_*`
+is a fraction of the output frame. Creating at factory resolution then
+rendering a tiny buffer is fine.
+
+**5.2+:** `new_effect(..., type='COLOR')` bakes readonly `width` / `height`
+from `scene.render.resolution_*` at creation. Scale and offset are in that
+media space. Factory 1920×1080 + later 96×54 render → 0.36-scaled cells
+larger than the output; the long-runner covers the frame.
+
+A lone COLOR strip **does** honor `transform.scale_*` on 5.2. The break is
+media size vs a later output size, not "transform is ignored."
+
+Set scene resolution **before** building strips.
+
+- Taught: `skills/vse-python/SKILL.md`
+- Witness: `examples/vse-cut-list/` `--check-pixels` (on 5.2 asserts
+  `A.width, A.height == (96, 54)`). No separate example — that script
+  already fails if the bake drifts.
+
+### Contrast — NodesModifier dict assignment (5.2, was in the notes)
+
+`mod[identifier] = value` raises `TypeError` on 5.2 (`id properties not
+supported for this type`). Replacement: `getattr(mod.properties.inputs,
+ident).value`. This one **was** listed in the 5.2 python_api notes.
+Taught in `skills/geometry-nodes-python/SKILL.md`, witnessed by
+`examples/gn-modifier-inputs/`. Keep both classes of finding in this
+log: notes-listed removals that still need a taught split, and
+behavior changes the notes never mentioned.
+
 ## 0. Important reframing
 
 The audit brief assumed a runnable add-on (operators, UI panels, a socket/file-watcher

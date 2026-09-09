@@ -17,7 +17,7 @@ The **Blender Developer Tools** repository is at **v0.47.0**. It packages skills
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 12 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 13 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
 templates/<template-name>/     - Starter projects, 2 total
 snippets/<snippet-name>.py     - Standalone code patterns, 17 total
@@ -28,7 +28,7 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (12)
+## Skills (13)
 
 | Skill | Purpose |
 | --- | --- |
@@ -44,6 +44,7 @@ VERSION                        - Source of truth for the repo version
 | depsgraph-and-evaluated-data | `evaluated_get` / `to_mesh` / `to_mesh_clear` lifetime contract for exporters and measurement |
 | drivers-and-app-handlers | Driver expressions, `driver_namespace`, application handlers including the new 5.1 `exit_pre` |
 | bl-info-migration | Three-step migration from legacy `bl_info` to Extensions Platform, dual-format pattern |
+| vse-python | VSE timeline from Python: `.strips` vs `.sequences`, `new_effect` kwargs, 5.2 COLOR `width`/`height` bake |
 
 ## Rules (6)
 
@@ -149,7 +150,7 @@ The AI consumes content via:
 
 ## Key Conventions
 
-- **Blender versions**: 5.2 LTS primary, 5.1 prior stable, 4.5 LTS fallback. Skills must show both code paths when 4.x and 5.x APIs diverge, and the 5.1-vs-5.2 NodesModifier input split.
+- **Blender versions**: 5.2 LTS primary, 5.1 prior stable, 4.5 LTS fallback. Skills must show both code paths when 4.x and 5.x APIs diverge, including the 5.1-vs-5.2 NodesModifier input split and the 5.2 COLOR strip `width`/`height` bake.
 - **Properties as annotations**: `my_prop: bpy.props.FloatProperty(...)` (correct), not `my_prop = bpy.props.FloatProperty(...)` (deprecated).
 - **bmesh memory**: every `bmesh.new()` must be paired with `bm.free()` in a `try`/`finally`.
 - **No `bpy.ops` in tight loops**: use `bpy.data.*` and `bmesh` for bulk work.
