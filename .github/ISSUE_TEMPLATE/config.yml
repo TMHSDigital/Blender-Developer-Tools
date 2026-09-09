@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/TMHSDigital/Blender-Developer-Tools/security/advisories/new
+    about: Report a security issue privately via GitHub Security Advisory. Do not open a public issue for vulnerabilities.
+  - name: Roadmap / candidate pool
+    url: https://github.com/TMHSDigital/Blender-Developer-Tools/blob/main/ROADMAP.md
+    about: Check ROADMAP.md before requesting new skills, snippets, or examples. Shipped items are struck through there.
