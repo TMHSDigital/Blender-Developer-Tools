@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>47 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>48 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 47 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 48 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -377,7 +377,7 @@ inside the effect. Per-frame sample renders assert the closed form (mid dips
 </details>
 
 <details>
-<summary><strong>Geometry Nodes</strong> — 3 examples</summary>
+<summary><strong>Geometry Nodes</strong> — 4 examples</summary>
 
 <table>
 <tr>
@@ -419,6 +419,22 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 One Geometry Nodes tree, three modifier copies. Writes a Float Scale input through
 `mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1. Asserts readback and
 evaluated Z-extent equal 1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-zone-iterate/"><img src="examples/gn-zone-iterate/preview.webp" alt="GN zone iterate: four brass cubes in a row (Repeat Zone) beside a tower of six teal cubes (For Each Element) on a dark studio floor, proving pair_with_output actually iterates" /></a>
+</td>
+<td valign="middle">
+
+### [gn-zone-iterate](examples/gn-zone-iterate/)
+
+Repeat Zone and For Each Element only iterate after `pair_with_output`. Asserts
+evaluated cubes against closed forms — Repeat `8×(1+N)` with X-centers at
+`k×1.2`, For Each `8×P` with Z-centers at `i×0.6+0.21` — not that the zone
+nodes exist. Unpaired evaluates empty; For Each's main Geometry socket is a
+passthrough.
 
 </td>
 </tr>

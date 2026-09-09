@@ -33,6 +33,33 @@ Set scene resolution **before** building strips.
   `A.width, A.height == (96, 54)`). No separate example — that script
   already fails if the bake drifts.
 
+### 2026-09-09 — USD `export_subdivision='BEST_MATCH'` silences `evaluation_mode`
+
+Default `wm.usd_export` `export_subdivision='BEST_MATCH'` writes the cage
+plus `subdivisionScheme = catmullClark`. VIEWPORT and RENDER USDA files
+are then identical, so `evaluation_mode` looks like a no-op. TESSELLATE
+makes the mode observable. Catmull-Clark on a cube: verts =
+`2 + 6 × 4^n` (n=1 → 26, n=2 → 98). Same on 4.5 LTS and 5.2 LTS; not a
+version split, an exporter-default trap. Not listed in the python_api notes
+as a behavior change because the RNA names did not move.
+
+- Taught: `skills/depsgraph-and-evaluated-data/SKILL.md`
+- Witness: `examples/usd-export-evaluation-mode/`
+
+### 2026-09-09 — Geometry Nodes zone pairing is load-bearing
+
+Creating Repeat / For Each Element input and output nodes and linking
+sockets is not enough. `pair_with_output` creates the Geometry items;
+unpaired Repeat Input has only Iterations, unpaired For Each evaluates
+empty. For Each's main `Geometry` output is the input-mesh passthrough;
+generated meshes live on `Generation_0`. Tree-structure checks are
+vacuous. Count-only is also insufficient: joining N+1 cubes at the origin
+hits `8×(1+N)` verts with one X-center. Same on 4.5 LTS and 5.x (zones
+are 4.3+). Not a version split.
+
+- Taught: `skills/geometry-nodes-python/SKILL.md`
+- Witness: `examples/gn-zone-iterate/`
+
 ### Contrast — NodesModifier dict assignment (5.2, was in the notes)
 
 `mod[identifier] = value` raises `TypeError` on 5.2 (`id properties not
