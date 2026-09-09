@@ -15,7 +15,8 @@ derives the actual version from conventional-commit types.
 | Materials, drivers, migration | 12 | 6 | 2 | 17 | Shipped (v0.2.0) |
 | Examples and demos (smoke-gated) | 12 | 6 | 2 | 17 | Shipped (v0.3.0) |
 | More examples (turntable, SDF remesh) | 12 | 6 | 2 | 17 | Shipped (v0.4.0) |
-| 5.2 LTS sweep, modal operators, USD | — | — | — | — | Upcoming |
+| 5.2 LTS targeting, GN modifier inputs | 12 | 6 | 2 | 17 | Shipped |
+| Modal operators, USD, mathutils | — | — | — | — | Upcoming |
 | Stable | — | — | — | — | Upcoming |
 
 ## v0.1.0 - Foundation
@@ -93,9 +94,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - `modal-operators` skill -- `invoke` returning `RUNNING_MODAL`, the `modal()` event handler, modal cancellation patterns
 - `usd-pipelines` skill -- USD export options, `evaluation_mode`, instancing, the USD vs glTF tradeoffs
 - `mathutils-patterns` skill -- `mathutils.Vector`, `Matrix`, `Quaternion`, common transforms, the `@` operator
-- Blender 5.2 LTS sweep (after the 5.2 LTS release in mid-2026)
-- Refresh the `slotted-actions-animation` skill against any 5.2 changes
-- Bump `blender_version_min` in the templates if 5.2 APIs are used
+- ~~Blender 5.2 LTS sweep~~ **SHIPPED** as targeting + smoke matrix (5.2 + 4.5 on PRs, 5.1 weekly) plus `examples/gn-modifier-inputs/` — NodesModifier dict assignment raises TypeError on 5.2; RNA `mod.properties.inputs.<id>.value` is the replacement
 - Additional snippets for asset library scripting, EXR baking, multi-file extensions
 - ~~UV-layer authoring witness~~ **SHIPPED** as `examples/uv-layer-grid/` — `create_grid(..., calc_uvs=True)` silent no-op without a pre-existing UV layer; closed-form UV fill + explicit assignment fallback; dual-panel render (flat texel (0,0) vs neon checker)
 - ~~Image save-format witness~~ **SHIPPED** as `examples/png-exr-alpha/` — float→PNG is RGBA16 and false-unpremultiplies as if associated-alpha (closed-form err 0.98 at RGB 0.02 / a=1/255); OpenEXR preserves float RGBA; byte→PNG is straight RGBA8; `EXR color_mode='RGB'` drops alpha

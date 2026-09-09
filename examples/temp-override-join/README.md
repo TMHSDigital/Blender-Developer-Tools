@@ -25,5 +25,5 @@ blender --background --python temp_override_join.py -- --output join.png --engin
 ```
 
 It exits non-zero on failure (wrong object count, topology mismatch, sources still alive,
-or incomplete Z span). The `blender-smoke` workflow runs the check on Blender 4.5 LTS and
-5.1.
+or incomplete Z span). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and
+4.5 LTS.

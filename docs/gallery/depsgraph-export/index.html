@@ -271,7 +271,7 @@ blender --background --python depsgraph_export.py -- --output depsgraph.png --en
 
 # Write the exported OBJ to a specific path:
 blender --background --python depsgraph_export.py -- --obj exported.obj</code></pre>
-<p>It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The <code>blender-smoke</code> workflow runs this check on Blender 4.5 LTS and 5.1: base 8 → evaluated/exported 98 vertices with a 2-level SUBSURF.</p>
+<p>It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The <code>blender-smoke</code> workflow runs this check on Blender 5.2 LTS and 4.5 LTS: base 8 → evaluated/exported 98 vertices with a 2-level SUBSURF.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">

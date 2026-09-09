@@ -116,7 +116,7 @@ blender --background --python vertex_color_ao.py -- --falsify inverted.png
 ```
 
 Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1 (the calibration rig gets 4096 samples over six
+Blender 5.2 LTS and 4.5 LTS (the calibration rig gets 4096 samples over six
 points, the asset a cheap 64, so the whole check is ~1 s). The `--output`
 render path additionally gates framing via `examples/gallery_framing.py`
 (fill **0.839y**, margins **0.241/0.238/0.072/0.089**, no edge touched) and the

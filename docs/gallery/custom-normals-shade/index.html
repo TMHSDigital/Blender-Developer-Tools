@@ -274,7 +274,7 @@ blender --background --python custom_normals_shade.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python custom_normals_shade.py -- --output cans.png
 blender --background --python custom_normals_shade.py -- --output cans.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral mismatch, broken normal welds, custom normals lost or dequantized in evaluation, or legacy-operator divergence drift). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral mismatch, broken normal welds, custom normals lost or dequantized in evaluation, or legacy-operator divergence drift). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

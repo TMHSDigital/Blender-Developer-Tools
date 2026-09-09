@@ -31,4 +31,4 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png --
 
 It exits non-zero on failure (no jump from the trap, keep-world error, stale-matrix
 contract broken, or an orbit off its closed form). The `blender-smoke` workflow runs the
-check on Blender 4.5 LTS and 5.1.
+check on Blender 5.2 LTS and 4.5 LTS.

@@ -13,12 +13,12 @@
 
 <p align="center">
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/validate.yml?branch=main&style=flat-square&label=validate" alt="Validate" /></a>
-  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/blender-smoke.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/blender-smoke.yml?branch=main&style=flat-square&label=blender%204.5%20%2B%205.1%20smoke" alt="Blender smoke tests" /></a>
+  <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/blender-smoke.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/blender-smoke.yml?branch=main&style=flat-square&label=blender%204.5%20%2B%205.2%20smoke" alt="Blender smoke tests" /></a>
   <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/actions/workflows/drift-check.yml"><img src="https://img.shields.io/github/actions/workflow/status/TMHSDigital/Blender-Developer-Tools/drift-check.yml?branch=main&style=flat-square&label=drift-check" alt="Drift check" /></a>
 </p>
 
 <p align="center">
-  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>44 examples</strong>
+  <strong>12 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>45 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 44 runnable examples** for Blender Python development targeting Blender 5.1 (current stable) with Blender 4.5 LTS fallback support.
+This repository ships **12 skills, 6 rules, 2 templates, 17 snippets, and 45 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -65,14 +65,14 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 
 | Version | Status |
 | --- | --- |
-| Blender 5.1.x | Primary target (all examples assume 5.1) |
+| Blender 5.2 LTS | Primary target (current stable; all examples assume 5.2 unless a 4.5 path is shown) |
+| Blender 5.1 | Prior stable (weekly smoke only) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
-| Blender 5.2 LTS | Sweep planned for July 2026 (see [ROADMAP.md](ROADMAP.md)) |
 
 ## Examples
 
 Runnable, smoke-gated demos live in [`examples/`](examples/) — each is executed headless on
-both Blender 4.5 LTS and 5.1 by the `blender-smoke` workflow, so the screenshots reflect code
+Blender 5.2 LTS and 4.5 LTS by the `blender-smoke` workflow (5.1 on the weekly cron), so the screenshots reflect code
 that actually runs. Browse them all with filters and full-size renders in the
 **[examples gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**,
 or expand a category below.
@@ -362,7 +362,7 @@ inside the effect. Per-frame sample renders assert the closed form (mid dips
 </details>
 
 <details>
-<summary><strong>Geometry Nodes</strong> — 2 examples</summary>
+<summary><strong>Geometry Nodes</strong> — 3 examples</summary>
 
 <table>
 <tr>
@@ -390,6 +390,20 @@ and that a `Set Material` node carries the material through the remesh.
 A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
 attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
 verts = 72, faces = 54, and `Set Material` carries the lime accent.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
+</td>
+<td valign="middle">
+
+### [gn-modifier-inputs](examples/gn-modifier-inputs/)
+
+One Geometry Nodes tree, three modifier copies. Writes a Float Scale input through
+`mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1. Asserts readback and
+evaluated Z-extent equal 1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
 
 </td>
 </tr>
@@ -906,7 +920,8 @@ Each snippet is a standalone Python file under `snippets/`. They are not loaded 
 
 | Resource | Use it for |
 | --- | --- |
-| [Blender 5.1 Python API](https://docs.blender.org/api/current/) | Authoritative reference for current stable APIs |
+| [Blender 5.2 LTS Python API](https://docs.blender.org/api/current/) | Authoritative reference for current stable APIs |
+| [Blender 5.1 Python API](https://docs.blender.org/api/5.1/) | Prior stable |
 | [Blender 4.5 LTS Python API](https://docs.blender.org/api/4.5/) | LTS reference when targeting 4.5 |
 | [Extensions Platform manual](https://docs.blender.org/manual/en/latest/advanced/extensions/index.html) | `blender_manifest.toml` schema, hosting, install flow |
 | [developer.blender.org](https://developer.blender.org/) | Release notes, breaking change tracking, design docs |
@@ -915,8 +930,7 @@ When community content (Stack Overflow, older add-on source) conflicts with the 
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for the candidate pool and what ships next — including the
-planned Blender 5.2 LTS sweep (July 2026). Releases are cut automatically from
+See [ROADMAP.md](ROADMAP.md) for the candidate pool and what ships next. Releases are cut automatically from
 conventional commits; the full history lives in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing

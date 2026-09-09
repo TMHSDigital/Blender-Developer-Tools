@@ -29,7 +29,7 @@ you write code:
   subjects are ones AI-generated Blender code commonly gets wrong: object-mode
   versus edit-mode data lifetimes, evaluated versus original data, ordering
   constraints, references that dangle after CustomData reallocation, APIs renamed
-  or restructured between 4.5 LTS and 5.1.
+  or restructured between 4.5 LTS, 5.1, and 5.2 LTS.
 - Its check can fail for a real reason. Before trusting any assertion, prove it
   catches the failure it claims to catch: temporarily break the contract (skip the
   pose, swap the buffer, use the legacy path) and confirm the check exits non-zero,
@@ -43,7 +43,7 @@ you write code:
   to infer what contract is being demonstrated. If the render would look the same
   whether the API worked or not, redesign the scene until failure would be visible.
 
-Where an API diverges between 4.5 and 5.1, asserting each side's actual contract is
+Where an API diverges between 4.5, 5.1, and 5.2, asserting each side's actual contract is
 part of the witness—version-gate explicitly and document the divergence rather than
 papering over it. Version-gate on the `bpy.app.version` tuple, not
 `version_string`, which is not bare semver on LTS builds. If you discover an
@@ -53,7 +53,7 @@ more valuable than the original subject.
 
 The example must:
 
-- run headlessly in Blender 5.1 and Blender 4.5 LTS;
+- run headlessly in Blender 5.2 LTS and Blender 4.5 LTS (5.1 remains prior stable);
 - perform deterministic checks of a real Blender API contract and exit non-zero on
   failure, with numeric tolerances chosen deliberately and printed on success so CI
   logs carry the measured values;
@@ -61,7 +61,7 @@ The example must:
 - follow repository conventions and relevant Blender safety rules;
 - include concise documentation explaining what it teaches, what each check
   witnesses, what failure it would catch, and any version-gated divergence between
-  4.5 and 5.1;
+  4.5 LTS, 5.1, and 5.2 LTS;
 - produce a deliberate, well-framed render rather than a mockup, primitive dump, or
   placeholder.
 
@@ -79,13 +79,14 @@ the ROADMAP candidate pool in sync: remove the shipped subject, and add any
 promising subjects you identified but did not build. Do not hand-edit release-owned
 version fields or generated pages; use the repository's generator.
 
-Run the new example's check-only path on both supported Blender versions. Locate
+Run the new example's check-only path on Blender 5.2 LTS and 4.5 LTS. Locate
 local binaries per `CLAUDE.md`'s runtime discovery guidance (`.scratch/` at repo
 root first, then system installs; download official releases into `.scratch/` if a
 needed version is missing—it is gitignored). Do not probe blindly; state the exact
 binary path and the version the binary itself reports for every run. If Blender 4.5
 is unavailable locally, say so precisely and use the repository's 4.5 CI job—4.4 is
-not a substitute and must never be reported as 4.5. If the render path requires an
+not a substitute and must never be reported as 4.5. 5.2 LTS is the local check
+version; 5.1 is prior stable (weekly smoke). If the render path requires an
 engine or device unavailable locally (Cycles on a GPU-less host), say so and
 identify exactly which paths were exercised only in CI or by inspection. Fix every
 failure you introduce.
@@ -127,7 +128,7 @@ After implementation and local verification:
    with the contact-sheet link, and an exact test plan. Label explicitly what was
    proven by live run versus established by inspection only.
 4. Watch every attached PR check, including validation, manifest/count checks,
-   ecosystem drift, Socket Security checks, and Blender 4.5/5.1 smoke jobs.
+   ecosystem drift, Socket Security checks, and Blender 5.2/4.5 smoke jobs.
    Investigate and fix failures within this change's scope, push fixes, and repeat
    until all checks pass. A pending or failing Socket check is unresolved—wait
    before merging.

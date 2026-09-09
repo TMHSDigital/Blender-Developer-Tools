@@ -32,4 +32,4 @@ blender --background --python color_attribute_wheel.py -- --output wheel.png --e
 
 It exits non-zero on failure (missing/mis-sized/mis-domained attribute, wrong
 active attribute, a probe color mismatch, or an unlinked Attribute node). The
-`blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

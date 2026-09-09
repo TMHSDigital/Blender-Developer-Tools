@@ -274,7 +274,7 @@ blender --background --python png_exr_alpha.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python png_exr_alpha.py -- --output alpha.png
 blender --background --python png_exr_alpha.py -- --output alpha.png --engine cycles</code></pre>
-<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">

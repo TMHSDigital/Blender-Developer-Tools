@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Examples Gallery — Blender Developer Tools</title>
-  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <meta name="description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Examples Gallery — Blender Developer Tools" />
-  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <meta property="og:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Examples Gallery — Blender Developer Tools" />
-  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs." />
+  <meta name="twitter:description" content="Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -262,7 +262,7 @@
   </div>
   <header class="hero">
     <h1>Examples Gallery</h1>
-    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.</p>
+    <p>Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs.</p>
   </header>
   <div class="controls">
     <div class="controls-inner">
@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">44 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">45 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -430,6 +430,17 @@
           <p class="teaches">A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.</p>
           <p class="witnesses"><span class="tag">witnesses</span> Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.</p>
           <a class="card-link" href="gn-instance-grid/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="geometry-nodes modifiers">
+        <a class="card-media" href="gn-modifier-inputs/" aria-label="gn-modifier-inputs example detail page">
+          <img src="assets/gn-modifier-inputs-hero.webp" alt="gn-modifier-inputs — Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="gn-modifier-inputs/">gn-modifier-inputs</a></h2>
+          <p class="teaches">Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.</p>
+          <a class="card-link" href="gn-modifier-inputs/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
       <article class="card" data-tags="mesh shape-keys">

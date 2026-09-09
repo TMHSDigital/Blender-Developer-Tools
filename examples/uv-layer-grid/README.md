@@ -69,4 +69,4 @@ blender --background --python uv_layer_grid.py -- --output uv.png --engine cycle
 
 It exits non-zero on failure and prints every measured error and tolerance on
 success, so CI logs carry the numbers. The `blender-smoke` workflow runs the
-check on Blender 4.5 LTS and 5.1.
+check on Blender 5.2 LTS and 4.5 LTS.

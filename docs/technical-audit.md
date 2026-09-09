@@ -39,7 +39,7 @@ runtime robustness of a live tool.
   *content*, not just "no exception" (e.g. EEVEE engine-id polarity, slotted-actions boundary,
   driver `id_type` fix, SDF `GridToMesh` link validity, render-non-black). It deliberately
   **copies** content rather than importing it, to catch drift in shipped files.
-- `blender-smoke.yml` runs that harness on both the current stable and active LTS, plus runs the
+- `blender-smoke.yml` runs that harness on the current stable (5.2 LTS) and fallback LTS (4.5), plus 5.1 on the weekly cron, plus runs the
   shipped templates and examples end-to-end (glTF magic-bytes check, exit-code-2 no-mesh path).
 - Conventional-commit-driven release automation with doc-sync; count-integrity gate in CI.
 
@@ -75,10 +75,8 @@ there is no skill on **profiling / scaling to dense meshes** (e.g. numpy buffer 
 `foreach_get` into preallocated numpy arrays, attribute-domain bulk ops, depsgraph cost). For a
 tool whose whole pitch is "do bulk work the fast way," this is a content gap.
 
-### G6 — LTS/version sweep is manual and unpinned
-5.2 LTS lands ~mid-2026. The smoke matrix hard-codes `5.1`/`4.5`. There is no scheduled job to
-detect a new stable/LTS series and open a sweep issue, so the "5.2 sweep" depends on a human
-remembering.
+### G6 — LTS/version sweep is a matrix + human delta pass
+5.2 LTS is current stable. The smoke matrix is 5.2 + 4.5 on PRs, with 5.1 on the weekly cron. A 5.1→5.2 API removal (NodesModifier dict assignment) still required a human reading of the python_api notes — the LTS "no API change" guarantee does not cover the 5.1 to 5.2 minor step.
 
 ## 3. Roadmap
 
@@ -108,8 +106,7 @@ remembering.
   checks. Ships as an optional adjacent package so the content repo stays a pure pack.
 - **Rules-as-linter**: compile the 6 `.mdc` anti-patterns into an actual AST linter
   (`libcst`/`ast`) that runs in CI and is reusable by the MCP `lint` tool and by consumers.
-- **5.2 LTS parity sweep** once released; bump templates' `blender_version_min` where 5.2 APIs are
-  used.
+- **5.2 LTS targeting** is the current primary; keep `blender_version_min` at 4.5.0 unless a 5.2-only API is required. NodesModifier input writes must version-gate dict vs `mod.properties.inputs`.
 - **Fleet Pages examples support** (already in ROADMAP) — lift `gallery.json` into the shared
   template, retire the local generator.
 

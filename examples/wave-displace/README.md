@@ -31,4 +31,4 @@ blender --background --python wave_displace.py -- --output wave.png --engine cyc
 ```
 
 It exits non-zero on failure (span wrong, or any vertex off the closed form). The
-`blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

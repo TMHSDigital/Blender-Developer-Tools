@@ -272,7 +272,7 @@ blender --background --python swatch_grid.py -- --output swatch.png
 # GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still
 # asserted; only the final pixels use Cycles.
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
-<p>The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no network). It <strong>exits non-zero</strong> on any failure, including a render that comes out uniformly black or without the expected six distinct swatch regions — the same honest check the CI smoke gate runs on both Blender 4.5 LTS and 5.1.</p>
+<p>The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no network). It <strong>exits non-zero</strong> on any failure, including a render that comes out uniformly black or without the expected six distinct swatch regions — the same honest check the CI smoke gate runs on Blender 5.2 LTS and 4.5 LTS.</p>
 <h2>Verified</h2>
 <p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>

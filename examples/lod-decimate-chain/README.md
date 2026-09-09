@@ -51,4 +51,4 @@ blender --background --python lod_decimate_chain.py -- --output rocket.png --eng
 
 It exits non-zero on failure (base-topology drift, no reduction, a mutated
 original datablock, a ratio-bounds excursion, or silhouette loss). The
-`blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

@@ -269,7 +269,7 @@ blender --background --python gn_sdf_remesh.py --
 # Also render the remeshed result (EEVEE on a GPU host; --engine cycles on GPU-less hosts):
 blender --background --python gn_sdf_remesh.py -- --output remesh.png
 blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine cycles</code></pre>
-<p>By default it runs only the <strong>frame-independent correctness check</strong>: the depsgraph-evaluated vertex count must be &gt; 0 AND differ from the base mesh (the remesh produced geometry). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 4.5 LTS and 5.1.</p>
+<p>By default it runs only the <strong>frame-independent correctness check</strong>: the depsgraph-evaluated vertex count must be &gt; 0 AND differ from the base mesh (the remesh produced geometry). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 5.2 LTS and 4.5 LTS.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

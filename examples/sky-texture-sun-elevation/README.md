@@ -59,4 +59,4 @@ blender --background --python sky_texture_sun_elevation.py -- --output sky.png
 ```
 
 It exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1.
+Blender 5.2 LTS and 4.5 LTS.

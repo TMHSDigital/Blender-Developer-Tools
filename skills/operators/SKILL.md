@@ -1,6 +1,6 @@
 ---
 name: operators
-description: Author Blender operators with bpy.types.Operator, bl_idname conventions, the poll/invoke/execute/modal lifecycle, REGISTER and UNDO options, and defensive context handling. Targets 5.1 with 4.5 LTS compatibility.
+description: Author Blender operators with bpy.types.Operator, bl_idname conventions, the poll/invoke/execute/modal lifecycle, REGISTER and UNDO options, and defensive context handling. Targets 5.2 LTS with 4.5 LTS compatibility.
 standards-version: 1.10.0
 ---
 

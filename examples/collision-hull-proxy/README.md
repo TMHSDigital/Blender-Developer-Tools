@@ -69,4 +69,4 @@ blender --background --python collision_hull_proxy.py -- --output hydrant.png --
 It exits non-zero on failure (render geometry escaping a hull, inverted
 winding, a non-watertight or non-convex piece, Euler drift, or a piece over
 the 255-face budget). The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1.
+Blender 5.2 LTS and 4.5 LTS.

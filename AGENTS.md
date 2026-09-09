@@ -14,13 +14,13 @@ repeats the other.
 ## Repository overview
 
 Skills, rules, snippets, starter templates, and runnable smoke-gated examples
-for Blender Python development. The repo targets **Blender 5.1** (current
-stable) with a **Blender 4.5 LTS** fallback. There is no MCP server. It ships
+for Blender Python development. The repo targets **Blender 5.2 LTS** (current
+stable) with a **Blender 4.5 LTS** fallback. **Blender 5.1** is prior stable. There is no MCP server. It ships
 a `.cursor-plugin/plugin.json` manifest so the ecosystem drift checker
 classifies it as a `cursor-plugin`. This is content the AI loads when the user
 asks Blender questions or works on Blender add-ons in Cursor or Claude Code.
 
-The content base is 12 skills, 6 rules, 2 templates, 17 snippets, and 44
+The content base is 12 skills, 6 rules, 2 templates, 17 snippets, and 45
 examples (counts are CI-enforced against README.md and the manifest). The full
 inventory tables and per-item purposes live in `CLAUDE.md`. Example anatomy
 and authoring rules: copy `examples/bmesh-gear/`; the render look is specified
@@ -35,7 +35,7 @@ Blender-Developer-Tools/
   rules/<rule-name>.mdc          # 6 rule files
   templates/<template-name>/     # 2 starter templates
   snippets/<snippet-name>.py     # 17 standalone Python snippets
-  examples/<name>/               # 40 runnable smoke-gated examples (+ gallery.json)
+  examples/<name>/               # 45 runnable smoke-gated examples (+ gallery.json)
   examples/gallery_framing.py    # shared Layer 1 framing measurement (render path only)
   scripts/build_gallery.py       # generates docs/gallery/ (stdlib only)
   scripts/site/                  # vendored landing-page build (build_site.py + template)
@@ -76,7 +76,7 @@ Blender-Developer-Tools/
 - **Smoke jobs do not re-run on the merge SHA.** `blender-smoke.yml` triggers
   on `pull_request` (plus a weekly schedule and manual dispatch) — there is no
   `push` trigger. The correct post-merge evidence for example changes is:
-  both Blender smoke jobs (4.5 LTS and 5.1) passed on the PR head SHA that
+  both Blender smoke jobs (5.2 LTS and 4.5 LTS) passed on the PR head SHA that
   became the sole squash-merged commit, with the actual binary versions
   confirmed in the job logs.
 - **Post-merge, verify green on `main`:** Release (`release.yml`), Validate
@@ -97,12 +97,13 @@ Blender-Developer-Tools/
 
 ## Blender version targeting
 
-- Primary: **Blender 5.1.x** (current stable). All examples assume 5.1
+- Primary: **Blender 5.2 LTS** (current stable). All examples assume 5.2
   unless otherwise stated.
+- Prior stable: **Blender 5.1**. Skills document 5.1-only contracts where they
+  still matter; weekly smoke keeps a 5.1 leg.
 - Fallback: **Blender 4.5 LTS**. Skills and the extension template note 4.5
   compatibility where it matters (slotted actions bridge, property delete,
-  manifest fields).
-- Future: a 5.2 LTS sweep is planned for July 2026 (see `ROADMAP.md`).
+  manifest fields, NodesModifier dict inputs).
 
 When a 4.x and 5.x API genuinely diverge, skills must show both code paths,
 not just the 5.x one. The `slotted-actions-animation` skill is the load-bearing
@@ -155,8 +156,8 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   and the manifest `version` must equal `VERSION`. The release pipeline owns
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
 - `blender-smoke.yml` executes every shipped example (check-only, no render)
-  plus snippet/template smoke tests inside REAL headless Blender, on both
-  4.5 LTS and 5.1, on every PR and a weekly schedule. A new example is not
+  plus snippet/template smoke tests inside REAL headless Blender, on
+  5.2 LTS and 4.5 LTS for every PR (5.1 on the weekly cron). A new example is not
   shipped until it has a step here.
 - `drift-check.yml` consumes `Developer-Tools-Directory/.github/actions/
   drift-check@v1.15` to enforce ecosystem standards-version markers.
@@ -176,7 +177,8 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
 
 ## Where to look for canonical references
 
-- Blender 5.1 Python API: https://docs.blender.org/api/current/
+- Blender 5.2 LTS Python API: https://docs.blender.org/api/current/
+- Blender 5.1 Python API: https://docs.blender.org/api/5.1/
 - Blender 4.5 LTS Python API: https://docs.blender.org/api/4.5/
 - Extensions Platform reference: https://docs.blender.org/manual/en/latest/advanced/extensions/index.html
 - Release notes (`developer.blender.org`): https://developer.blender.org/

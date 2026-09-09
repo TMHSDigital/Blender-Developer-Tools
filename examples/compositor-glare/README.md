@@ -36,4 +36,4 @@ blender --background --python compositor_glare.py -- --output rings.png --engine
 
 It exits non-zero on failure (wrong tree plumbing, wrong Glare configuration, a
 missing or non-falling halo, or halo pixels that appear without the compositor).
-The `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

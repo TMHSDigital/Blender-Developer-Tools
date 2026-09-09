@@ -25,5 +25,5 @@ blender --background --python gn_instance_grid.py -- --output grid.png --engine 
 ```
 
 It exits non-zero on failure (wrong carrier, topology mismatch, missing material, or
-misplaced corner). The `blender-smoke` workflow runs the check on Blender 4.5 LTS and
-5.1.
+misplaced corner). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and
+4.5 LTS.
