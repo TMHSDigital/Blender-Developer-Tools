@@ -25,7 +25,8 @@
     "skills/procedural-materials-and-shaders/SKILL.md",
     "skills/depsgraph-and-evaluated-data/SKILL.md",
     "skills/drivers-and-app-handlers/SKILL.md",
-    "skills/bl-info-migration/SKILL.md"
+    "skills/bl-info-migration/SKILL.md",
+    "skills/vse-python/SKILL.md"
   ],
   "rules": [
     "rules/prefer-data-over-ops-in-loops.mdc",
