@@ -91,6 +91,9 @@ Audit pass on v0.1.0 content: standards-version markers bumped from `1.9.1` to `
 
 Not committed; target list for the next content version. (v0.3.0 shipped the smoke-gated `examples/` track.)
 
+- ~~Custom ID-property delete witness~~ **SHIPPED** as `examples/cross-version-property-delete/` — IDs built via `bpy.data.objects.new` (not `active_object`); `property_unset` is TypeError and leaves the key; `del` removes it on 4.5 LTS and 5.x
+- ~~USD export evaluation_mode witness~~ **SHIPPED** as `examples/usd-export-evaluation-mode/` — probed `wm.usd_export` on CI Linux portables 5.2.1 (`9e2066aef7ef`) and 4.5.13 (`daeeeca98fb0`); TESSELLATE+VIEWPORT 26/24, TESSELLATE+RENDER 98/96; BEST_MATCH writes the 8-vert catmullClark cage so the mode is silent
+- Tighten inverted smoke canaries: assert the expected `[FAIL]` marker text (`skipped on ... should run` / `missing post-exit sidecar`) alongside wrapper exit 1, so a canary that dies for the wrong reason does not satisfy the gate
 - ~~Fleet Pages facelift + examples support~~ **RESOLVED differently (2026-07-03)**: the meta-repo migration was dropped — the fleet template only scaffolds new tools, and each tool's site evolves independently after that. This repo vendored the site build into `scripts/site/`, redesigned landing + gallery as the Blender-viewport system (see `docs/gallery/DESIGN_NOTES.md`), added the examples grid, nav link, and full hero stats locally. `scripts/build_gallery.py` and `examples/gallery.json` are now permanent, not a prototype awaiting lift-and-shift.
 - `modal-operators` skill -- `invoke` returning `RUNNING_MODAL`, the `modal()` event handler, modal cancellation patterns
 - `usd-pipelines` skill -- USD export options, `evaluation_mode`, instancing, the USD vs glTF tradeoffs
