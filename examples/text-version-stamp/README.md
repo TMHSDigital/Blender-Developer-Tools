@@ -36,7 +36,7 @@ blender --background --python text_version_stamp.py -- --output stamp.png --engi
 It exits non-zero on failure (wrong subclass, missing font, body/version mismatch,
 non-planar flat text, extrude/bevel closed form off, geometry not regenerating, or a
 `to_mesh_clear()` reference surviving). The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1. The render scales the stamp to a constant width, so the frame
+Blender 5.2 LTS and 4.5 LTS. The render scales the stamp to a constant width, so the frame
 holds for any version-string length.
 
 The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

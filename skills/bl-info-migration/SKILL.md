@@ -1,6 +1,6 @@
 ---
 name: bl-info-migration
-description: Migrate a legacy bl_info-format add-on to the Extensions Platform. Three concrete steps, before-and-after diff, dual-format pattern for backward compatibility, and answers to "is bl_info still supported?" Targets Blender 5.1.
+description: Migrate a legacy bl_info-format add-on to the Extensions Platform. Three concrete steps, before-and-after diff, dual-format pattern for backward compatibility, and answers to "is bl_info still supported?" Targets Blender 5.2 LTS.
 standards-version: 1.10.0
 ---
 

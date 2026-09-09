@@ -42,4 +42,4 @@ blender --background --python armature_bend.py -- --output bend.png --engine cyc
 
 It exits non-zero on failure (edit-bone lifetime violation, LBS deviation, moved root
 ring, or an undeformed tip). The `blender-smoke` workflow runs the check on Blender
-4.5 LTS and 5.1.
+5.2 LTS and 4.5 LTS.

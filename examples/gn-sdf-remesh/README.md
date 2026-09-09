@@ -29,5 +29,5 @@ blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine c
 
 By default it runs only the **frame-independent correctness check**: the depsgraph-evaluated
 vertex count must be > 0 AND differ from the base mesh (the remesh produced geometry). It
-exits non-zero on failure — the same check the `blender-smoke` workflow runs on Blender 4.5
-LTS and 5.1.
+exits non-zero on failure — the same check the `blender-smoke` workflow runs on Blender 5.2 LTS and
+4.5 LTS.

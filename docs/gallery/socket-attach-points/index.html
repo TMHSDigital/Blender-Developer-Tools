@@ -278,7 +278,7 @@
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.881x</strong>, margins <strong>0.066/0.053/0.122/0.106</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). The <code>--falsify</code> render is a diagnostic, not a gallery hero, so it takes a documented framing deviation — its whole point is that the modules leave the frame.</p>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.881x</strong>, margins <strong>0.066/0.053/0.122/0.106</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). The <code>--falsify</code> render is a diagnostic, not a gallery hero, so it takes a documented framing deviation — its whole point is that the modules leave the frame.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

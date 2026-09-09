@@ -1,6 +1,6 @@
 ---
 name: addon-scaffolding
-description: Scaffold a Blender add-on against the Extensions Platform format with blender_manifest.toml, modular file layout, and the register_classes_factory pattern. Targets Blender 5.1 with 4.5 LTS fallback.
+description: Scaffold a Blender add-on against the Extensions Platform format with blender_manifest.toml, modular file layout, and the register_classes_factory pattern. Targets Blender 5.2 LTS with 4.5 LTS fallback.
 standards-version: 1.10.0
 ---
 

@@ -1,7 +1,7 @@
 {
   "_comment": "FORWARD-COMPATIBLE SOURCE OF TRUTH for the examples gallery. The local page at docs/gallery/index.html is GENERATED from this file by scripts/build_gallery.py -- do not hand-edit the HTML. When the fleet template (Developer-Tools-Directory: site-template/build_site.py + template.html.j2) gains examples support (see ROADMAP: 'Fleet Pages examples support'), it reads this same file and the local page is retired. That migration is a lift-and-shift, not a rewrite: keep this schema stable. Per-entry schema: {name, dir, teaches, witnessesFix, hero, preview, tags?}; hero/preview/dir are repo-root-relative; tags is an optional additive list driving the gallery filter chips. build_gallery.py also emits a detail page per example at docs/gallery/<name>/.",
   "title": "Examples Gallery",
-  "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 4.5 LTS and 5.1, so every render reflects code that actually runs.",
+  "description": "Runnable, smoke-gated Blender Python examples — each executed headless on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron), so every render reflects code that actually runs.",
   "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
   "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
   "examples": [
@@ -123,6 +123,18 @@
       "tags": [
         "geometry-nodes",
         "instancing"
+      ]
+    },
+    {
+      "name": "gn-modifier-inputs",
+      "dir": "examples/gn-modifier-inputs",
+      "teaches": "Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.",
+      "witnessesFix": "The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.",
+      "hero": "docs/gallery/assets/gn-modifier-inputs-hero.webp",
+      "preview": "examples/gn-modifier-inputs/preview.webp",
+      "tags": [
+        "geometry-nodes",
+        "modifiers"
       ]
     },
     {

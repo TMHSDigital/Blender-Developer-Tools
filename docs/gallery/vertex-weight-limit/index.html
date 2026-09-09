@@ -272,7 +272,7 @@ blender --background --python vertex_weight_limit.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python vertex_weight_limit.py -- --output arm.png
 blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">

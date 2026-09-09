@@ -1,6 +1,6 @@
 ---
 name: mesh-editing-and-bmesh
-description: Performant mesh manipulation in Blender. When to use bpy.data vs bpy.ops vs bmesh, the canonical bm.new/free pattern, foreach_set bulk vertex injection, and depsgraph evaluation for modifier-applied geometry. Targets 5.1.
+description: Performant mesh manipulation in Blender. When to use bpy.data vs bpy.ops vs bmesh, the canonical bm.new/free pattern, foreach_set bulk vertex injection, and depsgraph evaluation for modifier-applied geometry. Targets 5.2 LTS.
 standards-version: 1.10.0
 ---
 

@@ -202,13 +202,22 @@ mod = obj.modifiers.new(name="MyDisplace", type='NODES')
 mod.node_group = tree
 ```
 
-To set the tree's input values per-modifier (each modifier has its own copies of the tree's exposed inputs):
+To set the tree's input values per-modifier (each modifier has its own copies of the tree's exposed inputs), look up the socket **identifier**, then branch on `bpy.app.version`. The dict form is correct on 4.5 LTS and 5.1. It is **removed** in 5.2: `mod[identifier] = value` raises `TypeError: bpy_struct[key] = val: id properties not supported for this type` rather than silently no-opping. 5.2+ uses the RNA properties added on `NodesModifier`.
 
 ```python
-mod["Input_2"] = 2.5  # the "Strength" input via its identifier
+ident = None
+for item in tree.interface.items_tree:
+    if item.in_out == 'INPUT' and item.name == "Strength":
+        ident = item.identifier
+        break
+
+if bpy.app.version >= (5, 2, 0):
+    getattr(mod.properties.inputs, ident).value = 2.5
+else:
+    mod[ident] = 2.5
 ```
 
-Modifier inputs are addressed by their socket identifier, not their display name. Find identifiers via:
+Find identifiers via the interface (do not guess `"Input_2"` — current trees emit `Socket_N`):
 
 ```python
 for item in tree.interface.items_tree:
@@ -216,7 +225,7 @@ for item in tree.interface.items_tree:
         print(item.identifier, item.name, item.socket_type)
 ```
 
-In the 5.x interface, `item.identifier` is what you key into `mod[...]` with.
+After writing a modifier input, tag the object and update the view layer before `evaluated_get`. Otherwise the depsgraph still holds the previous scale.
 
 ## Bundles (5.0+)
 
@@ -264,11 +273,12 @@ def has_for_each_element():
 
 3. **Linking nodes by name when both inputs share a name** (`Value`, `Vector`, `Geometry`) and getting the wrong one. Use indices or the named inputs of the parent node.
 
-4. **Setting modifier inputs by display name**:
+4. **Setting modifier inputs by display name, or using the 5.1 dict form on 5.2**:
 
    ```python
-   mod["Strength"] = 2.5  # WRONG, that's the display name
-   mod["Input_2"] = 2.5   # RIGHT, that's the identifier
+   mod["Strength"] = 2.5  # WRONG on every version — that's the display name
+   mod["Socket_1"] = 2.5  # RIGHT on 4.5 / 5.1; TypeError on 5.2
+   getattr(mod.properties.inputs, "Socket_1").value = 2.5  # RIGHT on 5.2+; AttributeError on 4.5 / 5.1
    ```
 
 5. **Forgetting to assign `mod.node_group`** after creating the modifier. The modifier exists but does nothing.

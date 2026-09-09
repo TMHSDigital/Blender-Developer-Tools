@@ -124,7 +124,7 @@ blender --background --python socket_attach_points.py -- --probe
 ```
 
 Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 4.5 LTS and 5.1. The `--output` render path additionally gates framing
+Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally gates framing
 via `examples/gallery_framing.py` (fill **0.881x**, margins
 **0.066/0.053/0.122/0.106**, no edge touched) and the asset floors via
 `examples/gallery_asset_quality.py` (32 materials, `edge90` **0.027**, no

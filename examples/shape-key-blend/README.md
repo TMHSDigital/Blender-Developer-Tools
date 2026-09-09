@@ -22,4 +22,4 @@ blender --background --python shape_key_blend.py -- --output blend.png --engine 
 ```
 
 It exits non-zero on failure (missing keys, wrong value, per-vert blend mismatch, or
-flare miss). The `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+flare miss). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

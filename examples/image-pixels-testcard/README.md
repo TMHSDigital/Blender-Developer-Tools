@@ -64,7 +64,7 @@ blender --background --python image_pixels_testcard.py -- --output card.png --en
 
 It exits non-zero on failure and prints every measured error and tolerance on success,
 so CI logs carry the numbers. The `blender-smoke` workflow runs the check on Blender
-4.5 LTS and 5.1. In the render, `Closest` interpolation keeps the pixel grid honest —
+5.2 LTS and 4.5 LTS. In the render, `Closest` interpolation keeps the pixel grid honest —
 the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the
 PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The
 monitor is staged as a designed object — beveled dark-polymer case, machined metal

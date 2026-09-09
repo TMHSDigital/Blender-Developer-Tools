@@ -268,7 +268,7 @@ blender --background --python turntable.py --
 # Also render one still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python turntable.py -- --output turntable.png
 blender --background --python turntable.py -- --output turntable.png --engine cycles</code></pre>
-<p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 4.5 LTS and 5.1. <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
+<p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 5.2 LTS and 4.5 LTS. <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

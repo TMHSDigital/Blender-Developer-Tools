@@ -24,5 +24,5 @@ blender --background --python turntable.py -- --output turntable.png --engine cy
 By default it runs only the **frame-independent correctness check**: it inserts the rotation
 keys, samples the object's Z rotation at frame 1 vs a later frame, and asserts they **differ**
 (the keys drive playback). It exits non-zero on failure — the same check the `blender-smoke`
-workflow runs on Blender 4.5 LTS and 5.1. `--output` additionally renders a still; the full
+workflow runs on Blender 5.2 LTS and 4.5 LTS. `--output` additionally renders a still; the full
 animated loop is a showcase extra, not part of the CI check.

@@ -277,7 +277,7 @@
 <pre><code>blender --background --python vertex_color_ao.py --
 blender --background --python vertex_color_ao.py -- --output well.png
 blender --background --python vertex_color_ao.py -- --falsify inverted.png</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1 (the calibration rig gets 4096 samples over six points, the asset a cheap 64, so the whole check is ~1 s). The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.839y</strong>, margins <strong>0.241/0.238/0.072/0.089</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (11 materials, <code>edge90</code> <strong>0.152</strong>, no default names).</p>
+<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (the calibration rig gets 4096 samples over six points, the asset a cheap 64, so the whole check is ~1 s). The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.839y</strong>, margins <strong>0.241/0.238/0.072/0.089</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (11 materials, <code>edge90</code> <strong>0.152</strong>, no default names).</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

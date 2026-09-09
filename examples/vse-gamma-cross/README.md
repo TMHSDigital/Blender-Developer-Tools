@@ -59,4 +59,4 @@ blender --background --python vse_gamma_cross.py -- --output bench.png --engine 
 
 It exits non-zero on failure (span drift, wrong inputs, t-convention drift,
 a sample off the closed form, or a missing gamma dip). The `blender-smoke`
-workflow runs the check on Blender 4.5 LTS and 5.1.
+workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

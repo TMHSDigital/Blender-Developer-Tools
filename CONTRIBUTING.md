@@ -88,7 +88,7 @@ templates/
 
 ## Blender Version Targeting
 
-Content targets **Blender 5.1** as primary, with **Blender 4.5 LTS** as fallback. When the API differs, branch on `bpy.app.version` and document both paths. Example:
+Content targets **Blender 5.2 LTS** as primary, **Blender 5.1** as prior stable, and **Blender 4.5 LTS** as fallback. When the API differs, branch on `bpy.app.version` and document both paths. Example:
 
 ```python
 if bpy.app.version >= (5, 0, 0):

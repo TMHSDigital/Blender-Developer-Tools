@@ -1,7 +1,8 @@
 name: Blender Smoke Test
 
 # Executes the snippets' and skills' headline examples inside REAL Blender, headless,
-# on the current stable (5.1.x) and the active LTS (4.5.x), and fails on any error or
+# on the current stable (5.2.x LTS) and the fallback LTS (4.5.x) on every PR,
+# plus 5.1.x on the weekly cron, and fails on any error or
 # empty-output assertion. py_compile (in validate.yml) cannot catch API-level regressions
 # like the EEVEE-id inversion, the slotted-actions boundary, the driver TypeError, or the
 # dead SDF link -- this gate runs the code so those surface in CI, not in users' files.
@@ -24,13 +25,11 @@ jobs:
   smoke:
     name: Blender ${{ matrix.series }} smoke
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - series: "5.1"   # current stable
-          - series: "4.5"   # active LTS
+        series: ${{ github.event_name == 'schedule' && fromJSON('["5.2","5.1","4.5"]') || fromJSON('["5.2","4.5"]') }}
     steps:
       - uses: actions/checkout@v7
 
@@ -77,6 +76,12 @@ jobs:
           # series guard: confirm we actually got the matrix series
           "$BLENDER" --version | head -1 | grep -q "Blender ${{ matrix.series }}\." \
             || { echo "::error::version does not match series ${{ matrix.series }}"; exit 1; }
+
+      - name: Canary — 5.2 matrix must actually execute
+        if: matrix.series == '5.2'
+        run: |
+          echo "::error::intentional 5.2 canary; revert after the red run"
+          exit 1
 
       - name: Run in-Blender smoke driver
         run: |
@@ -213,6 +218,15 @@ jobs:
           # on failure.
           xvfb-run -a "$BLENDER" --background \
             --python examples/gn-instance-grid/gn_instance_grid.py --
+
+      - name: Shipped example - GN modifier inputs (5.1 dict vs 5.2 RNA)
+        run: |
+          set -euo pipefail
+          # Frame-independent check only (no render): one GN tree, three modifier
+          # copies; writes Scale 1/2/3 via version-appropriate path; asserts
+          # readback and evaluated Z-extent match. Exits non-zero on failure.
+          xvfb-run -a "$BLENDER" --background \
+            --python examples/gn-modifier-inputs/gn_modifier_inputs.py --
 
       - name: Shipped example - shape-key blend (data API + evaluated mesh)
         run: |

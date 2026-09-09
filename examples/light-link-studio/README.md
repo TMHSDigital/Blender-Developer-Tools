@@ -59,4 +59,4 @@ blender --background --python light_link_studio.py -- --output linked.png
 
 It exits non-zero on failure (API moved, assignment lost, ratio below gate,
 insufficient unlink rise, or hero drift). The `blender-smoke` workflow runs
-the check on Blender 4.5 LTS and 5.1.
+the check on Blender 5.2 LTS and 4.5 LTS.

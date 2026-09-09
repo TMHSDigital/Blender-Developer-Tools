@@ -269,7 +269,7 @@ blender --background --python text_version_stamp.py --
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python text_version_stamp.py -- --output stamp.png
 blender --background --python text_version_stamp.py -- --output stamp.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong subclass, missing font, body/version mismatch, non-planar flat text, extrude/bevel closed form off, geometry not regenerating, or a <code>to_mesh_clear()</code> reference surviving). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1. The render scales the stamp to a constant width, so the frame holds for any version-string length.</p>
+<p>It exits non-zero on failure (wrong subclass, missing font, body/version mismatch, non-planar flat text, extrude/bevel closed form off, geometry not regenerating, or a <code>to_mesh_clear()</code> reference surviving). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The render scales the stamp to a constant width, so the frame holds for any version-string length.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">

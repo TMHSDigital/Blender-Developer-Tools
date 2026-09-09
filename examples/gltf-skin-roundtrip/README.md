@@ -60,4 +60,4 @@ blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --eng
 
 It exits non-zero on failure (missing skin, joint drift, weight-sum drift,
 skeleton drift, weight excursion, or deformation excursion). The
-`blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

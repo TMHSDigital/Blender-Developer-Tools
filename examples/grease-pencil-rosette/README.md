@@ -34,4 +34,4 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png -
 
 It exits non-zero on failure (wrong version gate, structural mismatch, missing attribute
 layers, or attribute-buffer deviation from the closed form). The `blender-smoke` workflow
-runs the check on Blender 4.5 LTS and 5.1.
+runs the check on Blender 5.2 LTS and 4.5 LTS.

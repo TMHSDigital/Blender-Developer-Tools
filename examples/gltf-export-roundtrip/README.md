@@ -64,4 +64,4 @@ blender --background --python gltf_export_roundtrip.py -- --output crate.png --e
 
 It exits non-zero on failure (RNA kwarg drift, cage drift, missing on-disk
 conversion, vertex-split drift, or any round-trip excursion beyond tolerance).
-The `blender-smoke` workflow runs the check on Blender 4.5 LTS and 5.1.
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

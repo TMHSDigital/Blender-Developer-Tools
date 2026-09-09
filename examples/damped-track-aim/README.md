@@ -33,4 +33,4 @@ blender --background --python damped_track_aim.py -- --output aim.png --engine c
 
 It exits non-zero on failure (wrong constraint type/target/axis, or evaluated
 aim outside the angular epsilon). The `blender-smoke` workflow runs the check
-on Blender 4.5 LTS and 5.1.
+on Blender 5.2 LTS and 4.5 LTS.

@@ -81,4 +81,4 @@ blender --background --python custom_normals_shade.py -- --output cans.png --eng
 It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral
 mismatch, broken normal welds, custom normals lost or dequantized in
 evaluation, or legacy-operator divergence drift). The `blender-smoke`
-workflow runs the check on Blender 4.5 LTS and 5.1.
+workflow runs the check on Blender 5.2 LTS and 4.5 LTS.

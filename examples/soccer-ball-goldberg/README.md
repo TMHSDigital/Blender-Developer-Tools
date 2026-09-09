@@ -75,4 +75,4 @@ blender --background --python soccer_ball_goldberg.py -- --output ball.png --eng
 
 It exits non-zero on failure (topology, census, degree, edge uniformity,
 planarity, circumsphere, or panel binding). The `blender-smoke` workflow runs
-the check on Blender 4.5 LTS and 5.1.
+the check on Blender 5.2 LTS and 4.5 LTS.

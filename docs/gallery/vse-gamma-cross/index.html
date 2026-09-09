@@ -272,7 +272,7 @@ blender --background --python vse_gamma_cross.py --
 # Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (span drift, wrong inputs, t-convention drift, a sample off the closed form, or a missing gamma dip). The <code>blender-smoke</code> workflow runs the check on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure (span drift, wrong inputs, t-convention drift, a sample off the closed form, or a missing gamma dip). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

@@ -279,7 +279,7 @@ blender --background --python vse_cut_list.py -- --check-pixels --engine cycles
 
 # Also render the still (EEVEE on a GPU host; --engine cycles on GPU-less):
 blender --background --python vse_cut_list.py -- --output vse.png</code></pre>
-<p>It exits non-zero on failure and prints every measured value and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check and the pixel witness on Blender 4.5 LTS and 5.1.</p>
+<p>It exits non-zero on failure and prints every measured value and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check and the pixel witness on Blender 5.2 LTS and 4.5 LTS.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">

@@ -34,7 +34,7 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no
 network). It **exits non-zero** on any failure, including a render that comes out uniformly
 black or without the expected six distinct swatch regions — the same honest check the CI
-smoke gate runs on both Blender 4.5 LTS and 5.1.
+smoke gate runs on Blender 5.2 LTS and 4.5 LTS.
 
 ## Verified
 
