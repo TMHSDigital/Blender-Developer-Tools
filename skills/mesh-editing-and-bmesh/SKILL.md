@@ -266,6 +266,10 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 
 7. **Wrong dtype in `foreach_set`** (`float64` instead of `float32`). Silently writes garbage on some platforms.
 
+8. **Trusting glTF as an n-gon witness.** The exporter always triangulates. A cube and a hexagon-from-dissolved-edge both ship 12 tris. Hygiene (`len(poly.vertices) <= 4`) and `Mesh.calc_tangents` (aborts on n-gons) must run on the Blender mesh. Witness: `examples/ngon-triangulate/`.
+
+9. **Treating coincident duplicate shells as non-manifold.** Two cubes occupying the same space are still valence-2. They ship as extra glTF triangles until `bmesh.ops.remove_doubles`. Witness: `examples/coincident-vert-weld/`.
+
 ## Related
 
 - `headless-batch-scripting` for using these patterns in CLI scripts
@@ -273,6 +277,8 @@ After mutating selection, call `bm.select_flush_mode()` if you've changed indivi
 - Rule `prefer-data-over-ops-in-loops`
 - Rule `always-free-bmesh`
 - Snippet `canonical-object-creation.py`, `canonical-object-deletion.py`, `bmesh-load-edit-free.py`, `depsgraph-evaluated-mesh.py`, `foreach-set-vertices.py`
+- Example `ngon-triangulate` for synthesized n-gons vs `calc_tangents` / triangulate
+- Example `coincident-vert-weld` for authored duplicate shells vs glTF
 
 ## References
 

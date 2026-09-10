@@ -72,6 +72,21 @@ on `bundle_items` are load-bearing. Vert count alone is not a witness.
 - Taught: `skills/geometry-nodes-python/SKILL.md`
 - Witness: `examples/gn-bundle-roundtrip/`
 
+### 2026-09-09 — glTF `export_apply` does not bake object scale
+
+RNA: "Apply modifiers (excluding Armatures) to mesh objects". Unapplied
+object scale is written to the glTF node, Y-up permuted
+`(sx, sy, sz) → (sx, sz, sy)`. POSITION stays the local mesh. Baking
+scale in Blender (`mesh.transform` + identity `obj.scale`) is what
+removes `node.scale` and puts world extents in POSITION. Same on
+4.5 LTS and 5.2 LTS; not a version split. `gltf-export-roundtrip`
+asserts no node scale because that crate is identity. Not listed in
+the python_api notes as a behavior change because the RNA name did
+not move.
+
+- Taught: `skills/depsgraph-and-evaluated-data/SKILL.md`
+- Witness: `examples/unapplied-scale-gltf/`
+
 ### Contrast — NodesModifier dict assignment (5.2, was in the notes)
 
 `mod[identifier] = value` raises `TypeError` on 5.2 (`id properties not

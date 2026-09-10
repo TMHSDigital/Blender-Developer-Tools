@@ -64,5 +64,8 @@
     "min_version": "5.1",
     "expect_sidecar": "$OUT/exit-pre-sidecar.sidecar",
     "sidecar_contains": "exit_pre-ok"
-  }
+  },
+  {"name": "ngon-triangulate", "script": "examples/ngon-triangulate/ngon_triangulate.py"},
+  {"name": "unapplied-scale-gltf", "script": "examples/unapplied-scale-gltf/unapplied_scale_gltf.py"},
+  {"name": "coincident-vert-weld", "script": "examples/coincident-vert-weld/coincident_vert_weld.py"}
 ]
