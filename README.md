@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>50 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>53 examples</strong>
 </p>
 
 <p align="center">
@@ -627,7 +627,7 @@ portable path is `radius`.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 9 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 20 examples</summary>
 
 <table>
 <tr>
@@ -953,6 +953,51 @@ while **`BYTE_COLOR` is sRGB-encoded 8-bit** — 0.735 reads back
 **3.189e-07**. Both survive depsgraph evaluation at deviation **0.0**.
 Companion to [`color-attribute-wheel`](examples/color-attribute-wheel/) and
 [`attribute-domain-shear`](examples/attribute-domain-shear/).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — a hexagon on a cube is not thumbnail-legible
+</td>
+<td valign="middle">
+
+### [ngon-triangulate](examples/ngon-triangulate/)
+
+Synthesizes one 6-loop hexagon by dissolving a cube edge. Pre-asserts the
+n-gon exists (1 face / 6 loops / 5 faces), then `calc_tangents` aborts until
+`bmesh.ops.triangulate` yields 4 tris + 4 quads / 28 loops. glTF tri count
+is 12 either way. Inverse of [`mesh-hygiene-audit`](examples/mesh-hygiene-audit/).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — unapplied scale looks like modeled non-uniform size
+</td>
+<td valign="middle">
+
+### [unapplied-scale-gltf](examples/unapplied-scale-gltf/)
+
+Unit cube with object scale `(2, 1, 0.5)`. Pre-asserts unapplied non-uniform
+scale and local ±1 verts, then glTF `export_apply=True` still writes Y-up
+node.scale `(2, 0.5, 1)` with local POSITION. `export_apply` is modifiers
+only. Inverse of [`gltf-export-roundtrip`](examples/gltf-export-roundtrip/).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — coincident cubes look like one cube
+</td>
+<td valign="middle">
+
+### [coincident-vert-weld](examples/coincident-vert-weld/)
+
+Two cubes in one mesh: 16 verts / 8 unique / still manifold. Pre-asserts
+the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
+`remove_doubles` collapses to one cube. Inverse of
+[`degenerate-bevel-weld`](examples/degenerate-bevel-weld/).
 
 </td>
 </tr>
