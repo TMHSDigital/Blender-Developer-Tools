@@ -6,6 +6,7 @@ all-skip summary is not green.
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
 import tempfile
@@ -157,6 +158,17 @@ class Summarize(unittest.TestCase):
     def test_empty_is_not_green(self):
         _, _, _, code = summarize_records([])
         self.assertEqual(code, 2)
+
+
+class CatalogWiring(unittest.TestCase):
+    def test_exit_pre_row_has_sidecar_and_floor(self):
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, "catalog.json"), encoding="utf-8") as fh:
+            catalog = json.load(fh)
+        row = next(i for i in catalog if i["name"] == "exit-pre-sidecar")
+        self.assertEqual(row["min_version"], "5.1")
+        self.assertIn("$OUT", row["expect_sidecar"])
+        self.assertEqual(row["sidecar_contains"], "exit_pre-ok")
 
 
 if __name__ == "__main__":

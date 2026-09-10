@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>49 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>50 examples</strong>
 </p>
 
 <p align="center">
@@ -459,7 +459,7 @@ fails creating the 5.x RNA.
 </details>
 
 <details>
-<summary><strong>Animation, rigging &amp; constraints</strong> — 5 examples</summary>
+<summary><strong>Animation, rigging &amp; constraints</strong> — 6 examples</summary>
 
 <table>
 <tr>
@@ -487,6 +487,21 @@ A slotted-actions Z-rotation turntable keyed through the cross-version channelba
 A `driver_namespace` function driving sixteen column heights through SCRIPTED drivers.
 Witnesses the evaluation contract: driven values appear after a view-layer update on the
 evaluated copy **and** the flushed-back original, and both must match the closed form.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — no geometry
+</td>
+<td valign="middle">
+
+### [exit-pre-sidecar](examples/exit-pre-sidecar/)
+
+`bpy.app.handlers.exit_pre` writes `$BDT_SMOKE_SIDECAR` as Blender dies; the
+harness asserts `exit_pre-ok` after the process exits. Skips 4.5
+(`min_version` 5.1). `--silent-handler` / `--no-handler` miss the file;
+`--wrong-text` / `--write-in-main` fail the content check.
 
 </td>
 </tr>

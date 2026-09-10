@@ -53,6 +53,13 @@ def main(argv=None):
             cmd.append("--xvfb")
         if item.get("min_version"):
             cmd.extend(["--min-version", item["min_version"]])
+        if item.get("expect_sidecar"):
+            cmd.extend([
+                "--expect-sidecar",
+                item["expect_sidecar"].replace("$OUT", args.out),
+            ])
+        if item.get("sidecar_contains"):
+            cmd.extend(["--sidecar-contains", item["sidecar_contains"]])
         if extra:
             cmd.append("--")
             cmd.extend(extra)
