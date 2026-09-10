@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>48 examples</strong>
+  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>49 examples</strong>
 </p>
 
 <p align="center">
@@ -377,7 +377,7 @@ inside the effect. Per-frame sample renders assert the closed form (mid dips
 </details>
 
 <details>
-<summary><strong>Geometry Nodes</strong> — 4 examples</summary>
+<summary><strong>Geometry Nodes</strong> — 5 examples</summary>
 
 <table>
 <tr>
@@ -435,6 +435,22 @@ evaluated cubes against closed forms — Repeat `8×(1+N)` with X-centers at
 `k×1.2`, For Each `8×P` with Z-centers at `i×0.6+0.21` — not that the zone
 nodes exist. Unpaired evaluates empty; For Each's main Geometry socket is a
 passthrough.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — item-name round-trip is not thumbnail-legible
+</td>
+<td valign="middle">
+
+### [gn-bundle-roundtrip](examples/gn-bundle-roundtrip/)
+
+Combine / Separate Bundle on 5.x (`NodeCombineBundle`, not
+`GeometryNodeCombineBundle`). Asserts evaluated 8/6 plus x-extent
+`[0.5, 2.5]` and POINT `bundle_mark=0.314159` — count-only is a cube that
+never entered the bundle. Skips 4.5 (`min_version` 5.0); `--force-run`
+fails creating the 5.x RNA.
 
 </td>
 </tr>
