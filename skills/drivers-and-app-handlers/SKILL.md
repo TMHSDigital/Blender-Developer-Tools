@@ -265,6 +265,7 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 - **Recursively modifying the scene from a depsgraph handler.** The modification triggers another depsgraph evaluation, which calls the handler, which modifies the scene. Infinite loop, often manifesting as a hang.
 - **Asymmetric register/unregister.** The handler is appended on register but not removed on unregister. Disabling the add-on leaves the callback in place. After enable/disable cycles, the callback runs N times per event.
 - **Treating the `save_pre` argument as a Scene.** The save/load handlers receive the **file path string** (empty for the startup file), not a Scene. Name the parameter `filepath` (or take `*args`), and reach scenes via `bpy.context.scene` / `bpy.data.scenes`. A membership test like `'key' in arg0` against the path string is silently wrong, and `del arg0['key']` raises `TypeError`.
+- **Doing exit cleanup in the script body instead of `exit_pre`.** A `--background --python` script can `sys.exit(0)` without the handler firing if you never registered it. The witness is a sidecar written from `exit_pre`, asserted after the process dies.
 
 ## Version correctness
 
@@ -279,6 +280,7 @@ The `exit_pre` handler list is new in Blender 5.1. On 4.5 LTS, fall back to OS-l
 
 - Snippet `driver-with-custom-function.py` for the driver_namespace pattern.
 - Snippet `app-handler-registration.py` for save_pre with proper unregister.
+- Example `exit-pre-sidecar` for `exit_pre` writing a post-exit sidecar (5.1+; skip 4.5).
 - Skill `custom-properties` for the data the driver might be reading.
 
 ## References

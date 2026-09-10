@@ -74,6 +74,7 @@
     "examples/degenerate-bevel-weld",
     "examples/depsgraph-export",
     "examples/driver-wave",
+    "examples/exit-pre-sidecar",
     "examples/gltf-export-roundtrip",
     "examples/gltf-skin-roundtrip",
     "examples/gn-bundle-roundtrip",

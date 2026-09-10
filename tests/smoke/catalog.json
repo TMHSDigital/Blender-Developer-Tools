@@ -57,5 +57,12 @@
   {"name": "cross-version-property-delete", "script": "examples/cross-version-property-delete/cross_version_property_delete.py"},
   {"name": "usd-export-evaluation-mode", "script": "examples/usd-export-evaluation-mode/usd_export_evaluation_mode.py"},
   {"name": "gn-zone-iterate", "script": "examples/gn-zone-iterate/gn_zone_iterate.py"},
-  {"name": "gn-bundle-roundtrip", "script": "examples/gn-bundle-roundtrip/gn_bundle_roundtrip.py", "min_version": "5.0"}
+  {"name": "gn-bundle-roundtrip", "script": "examples/gn-bundle-roundtrip/gn_bundle_roundtrip.py", "min_version": "5.0"},
+  {
+    "name": "exit-pre-sidecar",
+    "script": "examples/exit-pre-sidecar/exit_pre_sidecar.py",
+    "min_version": "5.1",
+    "expect_sidecar": "$OUT/exit-pre-sidecar.sidecar",
+    "sidecar_contains": "exit_pre-ok"
+  }
 ]
