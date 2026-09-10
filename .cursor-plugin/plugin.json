@@ -76,6 +76,7 @@
     "examples/driver-wave",
     "examples/gltf-export-roundtrip",
     "examples/gltf-skin-roundtrip",
+    "examples/gn-bundle-roundtrip",
     "examples/gn-instance-grid",
     "examples/gn-modifier-inputs",
     "examples/gn-sdf-remesh",

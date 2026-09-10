@@ -60,6 +60,18 @@ are 4.3+). Not a version split.
 - Taught: `skills/geometry-nodes-python/SKILL.md`
 - Witness: `examples/gn-zone-iterate/`
 
+### 2026-09-09 — Bundle RNA renamed; 4.5 is experimental
+
+5.x Combine / Separate Bundle RNA is `NodeCombineBundle` /
+`NodeSeparateBundle`. `GeometryNodeCombineBundle` is undefined on 5.2
+and is the 4.5 experimental id. 4.5 LTS evaluates empty unless
+`preferences.experimental.use_bundle_and_closure_nodes` is on; with the
+flag the same closed form lands. Official contract is 5.0+. Item names
+on `bundle_items` are load-bearing. Vert count alone is not a witness.
+
+- Taught: `skills/geometry-nodes-python/SKILL.md`
+- Witness: `examples/gn-bundle-roundtrip/`
+
 ### Contrast — NodesModifier dict assignment (5.2, was in the notes)
 
 `mod[identifier] = value` raises `TypeError` on 5.2 (`id properties not

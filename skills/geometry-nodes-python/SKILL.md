@@ -227,9 +227,38 @@ for item in tree.interface.items_tree:
 
 After writing a modifier input, tag the object and update the view layer before `evaluated_get`. Otherwise the depsgraph still holds the previous scale.
 
-## Bundles (5.0+)
+## Bundles (5.0+ official)
 
-Bundles let one socket carry a set of typed values, similar to a struct. Useful for passing multiple related fields between subtrees:
+Bundles let one socket carry a set of typed values, similar to a struct. Useful for passing multiple related fields between subtrees.
+
+The 5.x RNA names are `NodeCombineBundle` / `NodeSeparateBundle`.
+`GeometryNodeCombineBundle` is the **4.5 experimental** id and raises
+`RuntimeError: Node type GeometryNodeCombineBundle undefined` on 5.2.
+Items live on `node.bundle_items` (not `items` — that is a dict method):
+
+```python
+comb = tree.nodes.new("NodeCombineBundle")
+sep = tree.nodes.new("NodeSeparateBundle")
+comb.bundle_items.new("GEOMETRY", "Mesh")
+comb.bundle_items.new("FLOAT", "Scale")
+sep.bundle_items.new("GEOMETRY", "Mesh")
+sep.bundle_items.new("FLOAT", "Scale")
+tree.links.new(comb.outputs["Bundle"], sep.inputs["Bundle"])
+```
+
+Separate item **names** must match Combine. A linked tree whose Separate
+looks up `Geom` instead of `Mesh` evaluates empty.
+
+Do not assert that the bundle nodes exist. Assert evaluated geometry
+against a closed form, and do not stop at a vert count — a cube that
+never entered the bundle is still 8 verts. Second axis: unpacked Scale /
+Offset bbox. Third: a packed Float stored as a named attribute.
+
+4.5 LTS: the old `GeometryNodeCombineBundle` RNA exists behind
+`preferences.experimental.use_bundle_and_closure_nodes` (default **off**).
+With the flag off, evaluation is empty. With it on, the same closed form
+lands. Official / CI contract is 5.0+; skip 4.5 rather than flipping
+experimental preferences.
 
 ```python
 bundle_socket = tree.interface.new_socket(
@@ -238,10 +267,6 @@ bundle_socket = tree.interface.new_socket(
     socket_type='NodeSocketBundle',
 )
 ```
-
-You then build a bundle inside the tree using the `Combine Bundle` node (`GeometryNodeCombineBundle`) with named slots, and unpack it with `Separate Bundle` (`GeometryNodeSeparateBundle`).
-
-Bundles are 5.0+ only; on 4.5 LTS you fall back to multiple separate sockets.
 
 ## Zone pairing (Repeat / For Each Element)
 
@@ -316,6 +341,8 @@ def has_for_each_element():
 
 7. **Creating Repeat / For Each input and output nodes without `pair_with_output`**. Unpaired zones do not iterate. For Each: wiring Group Output to the main `Geometry` socket ships the input mesh and looks linked.
 
+8. **`tree.nodes.new("GeometryNodeCombineBundle")` on 5.x**. That id is 4.5 experimental. 5.x is `NodeCombineBundle` / `NodeSeparateBundle`. `bundle_items.new("FLOAT", "Name")` — `node.items` is a dict method, not the collection.
+
 ## Worked example: replicate the "Mesh to SDF then Grid to Mesh" pipeline
 
 An SDF grid is meshed with **Grid to Mesh** (`GeometryNodeGridToMesh`), not **Volume to
@@ -358,6 +385,7 @@ def build_remesh_via_sdf(voxel_size=0.05, threshold=0.0):
 
 - `addon-scaffolding` for shipping a tree-building script as part of an extension
 - Example `gn-zone-iterate` for Repeat / For Each pairing versus evaluated closed forms
+- Example `gn-bundle-roundtrip` for Combine / Separate item-name round-trip (5.0+; skip 4.5)
 - `mesh-editing-and-bmesh` for reading the modifier-applied result via depsgraph
 
 ## References

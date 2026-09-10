@@ -35,6 +35,12 @@ you write code:
   pose, swap the buffer, use the legacy path) and confirm the check exits non-zero,
   then restore it. An assertion that cannot fail witnesses nothing. State in the
   README what failure each check would catch.
+- When the primary assertion is a scalar (a vert count, a file size, a single
+  float), check whether a broken construction can produce the same scalar. If
+  it can, the scalar is not a sufficient witness — add a second axis. Worked
+  example: `examples/gn-zone-iterate/` `--no-offset` still hits Repeat
+  `8×(1+N)` verts by joining N+1 cubes at the origin; X-centers are the
+  second axis. Count-only would have been green.
 - Its correctness is independently derivable. The best checks compare Blender's
   output against a closed-form or independently computed expectation
   (re-implemented math, a round-trip through a raw buffer, a known geometric
