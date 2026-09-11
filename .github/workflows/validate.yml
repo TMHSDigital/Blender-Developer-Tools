@@ -130,6 +130,9 @@ jobs:
           fi
           echo "All snippets have valid Python syntax."
 
+      - name: Check import-scale and unevaluated-export anti-patterns
+        run: python3 tests/check_import_export_rules.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."
