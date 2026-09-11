@@ -1,0 +1,89 @@
+---
+description: Flag an export call on objects that still carry unapplied modifiers when the export arguments do not request evaluated geometry. The engine then receives the authored cage, not the modifier result.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# No unapplied modifiers on export
+
+`obj.data` is the authored mesh. DECIMATE, subdivision, and geometry nodes
+live in the depsgraph. An export that does not ask for evaluated geometry
+writes the cage: the LOD modifier is dropped, the engine gets the dense
+mesh, and the script still exits 0.
+
+glTF: `export_apply=True` applies modifiers excluding armatures.
+USD: `evaluation_mode='RENDER'` or `'VIEWPORT'`.
+FBX: `use_mesh_modifiers=True`.
+
+`export_apply` is not "apply object transforms". Apply object scale first.
+See rule `validate-imported-mesh-scale`.
+
+## What this rule flags
+
+A `bpy.ops.export_scene.gltf`, `bpy.ops.export_scene.fbx`, or
+`bpy.ops.wm.usd_export` call in a file that adds modifiers (`modifiers.new`)
+and never requests evaluated geometry (`export_apply=True` or
+`evaluation_mode=`), and never applies those modifiers before export.
+
+```python
+# WRONG: DECIMATE on the object, glTF without export_apply
+mod = obj.modifiers.new("Lod", "DECIMATE")
+mod.decimate_type = "COLLAPSE"
+mod.ratio = 0.25
+bpy.ops.export_scene.gltf(filepath=path, use_selection=True)
+```
+
+```python
+# WRONG: USD viewport/render mode omitted; default BEST_MATCH writes the cage
+obj.modifiers.new("ss", "SUBSURF").levels = 2
+bpy.ops.wm.usd_export(filepath=path)
+```
+
+## The required pattern
+
+```python
+import bpy
+
+mod = obj.modifiers.new("DecimateBudget", "DECIMATE")
+mod.decimate_type = "COLLAPSE"
+mod.ratio = 0.25
+
+bpy.ops.export_scene.gltf(
+    filepath=path,
+    use_selection=True,
+    export_apply=True,
+    export_yup=True,
+)
+```
+
+USD:
+
+```python
+bpy.ops.wm.usd_export(
+    filepath=path,
+    evaluation_mode="RENDER",
+    export_subdivision="TESSELLATE",
+)
+```
+
+Alternatively apply the modifier before export with `temp_override` and
+`bpy.ops.object.modifier_apply`. Either path is valid; omitting both is not.
+
+## Why it matters
+
+A live DECIMATE that never ships is the usual LOD bug: Blender's viewport
+shows the reduced mesh, the glTF still has the source triangle count, and
+the engine budget check fails in production. `examples/lod-decimate-chain/`
+shows the modifier is non-destructive on `obj.data`; export must opt in to
+the evaluated result.
+
+## Related
+
+- Skill `ai-mesh-cleanup`
+- Skill `depsgraph-and-evaluated-data`
+- Snippet `gltf_draco_export.py`
+- Snippet `usd-export-evaluation-mode.py`
+- Example `lod-decimate-chain`
+- `bpy.ops.export_scene.gltf`: https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.gltf
