@@ -1,0 +1,83 @@
+---
+description: Flag export_scene.gltf calls that pass FBX axis_forward or axis_up, and export_scene.fbx calls that pass glTF export_yup. The two exporters do not share axis RNA.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# Use correct axis RNA per exporter
+
+`bpy.ops.export_scene.gltf` exposes axis as `export_yup` (bool).
+`bpy.ops.export_scene.fbx` exposes `axis_forward` and `axis_up` (axis
+enums) plus `global_scale`. Mixing them is the usual engine-preset bug:
+the glTF call raises or ignores FBX names, and the FBX call never sees
+`export_yup`.
+
+Verified: https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.gltf
+and https://docs.blender.org/api/current/bpy.ops.export_scene.html#bpy.ops.export_scene.fbx
+
+## What this rule flags
+
+A `bpy.ops.export_scene.gltf(...)` call whose arguments include
+`axis_forward` or `axis_up`. A `bpy.ops.export_scene.fbx(...)` call whose
+arguments include `export_yup`. Whole-file scans are not enough: a file
+that correctly calls both exporters (Unreal glTF plus Unreal FBX) must
+still pass.
+
+```python
+# WRONG: FBX axis names on the glTF operator
+bpy.ops.export_scene.gltf(
+    filepath=path,
+    use_selection=True,
+    axis_forward="-Z",
+    axis_up="Y",
+)
+```
+
+```python
+# WRONG: glTF Y-up flag on the FBX operator
+bpy.ops.export_scene.fbx(
+    filepath=path,
+    use_selection=True,
+    export_yup=True,
+)
+```
+
+## The required pattern
+
+```python
+# glTF: Unity Y-up
+bpy.ops.export_scene.gltf(
+    filepath=path,
+    use_selection=True,
+    export_yup=True,
+    export_apply=True,
+)
+
+# FBX: Unreal centimeters
+bpy.ops.export_scene.fbx(
+    filepath=path,
+    use_selection=True,
+    axis_forward="-Z",
+    axis_up="Y",
+    global_scale=100.0,
+    use_mesh_modifiers=True,
+)
+```
+
+## Why it matters
+
+Unity vs Godot vs Unreal is not one export with different comments. glTF
+Y-up bakes `(x, y, z) -> (x, z, -y)` into POSITION. Z-up glTF writes the
+Blender coords. FBX uses a different axis pair and can scale to
+centimeters without mutating the mesh. Getting the RNA names wrong ships
+the default axis and looks like "the engine importer is broken".
+
+## Related
+
+- Skill `engine-export-presets`
+- Example `export-preset-axis`
+- Example `gltf-export-roundtrip`
+- Snippet `export_preset_unity.py`
+- Snippet `export_preset_unreal.py`
