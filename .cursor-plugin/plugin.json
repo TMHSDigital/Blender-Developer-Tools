@@ -15,6 +15,7 @@
   ],
   "skills": [
     "skills/addon-scaffolding/SKILL.md",
+    "skills/ai-mesh-cleanup/SKILL.md",
     "skills/operators/SKILL.md",
     "skills/ui-panels/SKILL.md",
     "skills/custom-properties/SKILL.md",
@@ -34,7 +35,9 @@
     "rules/target-extensions-platform-format.mdc",
     "rules/type-annotate-props-and-defend-context.mdc",
     "rules/prefer-temp-override-over-context-copy.mdc",
-    "rules/use-foreach-set-for-bulk-data.mdc"
+    "rules/use-foreach-set-for-bulk-data.mdc",
+    "rules/validate-imported-mesh-scale.mdc",
+    "rules/no-unapplied-modifiers-on-export.mdc"
   ],
   "snippets": [
     "snippets/action-ensure-channelbag-for-slot.py",
@@ -42,11 +45,15 @@
     "snippets/bmesh-load-edit-free.py",
     "snippets/canonical-object-creation.py",
     "snippets/canonical-object-deletion.py",
+    "snippets/convex_hull_collider.py",
     "snippets/cross-version-property-delete.py",
+    "snippets/decimate_to_budget.py",
     "snippets/depsgraph-evaluated-mesh.py",
     "snippets/driver-with-custom-function.py",
     "snippets/foreach-get-vertices.py",
     "snippets/foreach-set-vertices.py",
+    "snippets/gltf_draco_export.py",
+    "snippets/lod_chain.py",
     "snippets/pointerproperty-binding.py",
     "snippets/principled-bsdf-material.py",
     "snippets/register-classes-factory.py",

@@ -17,10 +17,10 @@ The **Blender Developer Tools** repository is at **v0.53.0**. It packages skills
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 13 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 6 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 14 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 8 total
 templates/<template-name>/     - Starter projects, 2 total
-snippets/<snippet-name>.py     - Standalone code patterns, 17 total
+snippets/<snippet-name>.py     - Standalone code patterns, 21 total
 examples/<name>/               - Runnable smoke-gated examples, 53 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
@@ -28,11 +28,12 @@ docs/gallery/                  - Committed generated gallery pages + hero render
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (13)
+## Skills (14)
 
 | Skill | Purpose |
 | --- | --- |
 | addon-scaffolding | Extensions Platform manifest, file layout, register/unregister symmetry |
+| ai-mesh-cleanup | Ordered cleanup for imported generated meshes: units, transform apply, origin, normals, budget, collider |
 | operators | `bpy.types.Operator` lifecycle, `bl_idname`, redo, defensive context handling |
 | ui-panels | `bpy.types.Panel` declarative `draw()`, layout primitives, conditional UI |
 | custom-properties | `bpy.props` annotations, PropertyGroup, PointerProperty, storage tradeoffs |
@@ -46,7 +47,7 @@ VERSION                        - Source of truth for the repo version
 | bl-info-migration | Three-step migration from legacy `bl_info` to Extensions Platform, dual-format pattern |
 | vse-python | VSE timeline from Python: `.strips` vs `.sequences`, `new_effect` kwargs, 5.2 COLOR `width`/`height` bake |
 
-## Rules (6)
+## Rules (8)
 
 | Rule | Scope | What it flags |
 | --- | --- | --- |
@@ -56,6 +57,8 @@ VERSION                        - Source of truth for the repo version
 | type-annotate-props-and-defend-context | `*.py` | `bpy.props` defined as assignments, unguarded `context.active_object` |
 | prefer-temp-override-over-context-copy | `*.py` | `bpy.context.copy()` passed to operators (deprecated 4.x, removed 5.x) |
 | use-foreach-set-for-bulk-data | `*.py` | Python loops over `mesh.vertices` setting bulk attributes one at a time |
+| validate-imported-mesh-scale | `*.py` | glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check |
+| no-unapplied-modifiers-on-export | `*.py` | Export with live modifiers when the export does not request evaluated geometry |
 
 ## Templates (2)
 
@@ -75,13 +78,15 @@ VERSION                        - Source of truth for the repo version
 - glTF export via `bpy.ops.export_scene.gltf`
 - Explicit exit codes for CI integration
 
-## Snippets (17)
+## Snippets (21)
 
 Small standalone `.py` files at `snippets/<name>.py`, each 5 to 50 lines.
 
 v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh load-edit-free, temp_override context, foreach_set vertex bulk write, register_classes_factory, PointerProperty binding, cross-version property delete, and the `action_ensure_channelbag_for_slot` slotted-actions bridge.
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
+
+AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`.
 
 ## Examples (53)
 
