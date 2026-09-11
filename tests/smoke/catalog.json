@@ -35,6 +35,7 @@
     "args": ["--check-pixels", "--engine", "cycles"]
   },
   {"name": "gltf-export-roundtrip", "script": "examples/gltf-export-roundtrip/gltf_export_roundtrip.py"},
+  {"name": "export-preset-axis", "script": "examples/export-preset-axis/export_preset_axis.py"},
   {"name": "lod-decimate-chain", "script": "examples/lod-decimate-chain/lod_decimate_chain.py"},
   {"name": "vertex-weight-limit", "script": "examples/vertex-weight-limit/vertex_weight_limit.py"},
   {"name": "triangulate-tangents", "script": "examples/triangulate-tangents/triangulate_tangents.py"},
