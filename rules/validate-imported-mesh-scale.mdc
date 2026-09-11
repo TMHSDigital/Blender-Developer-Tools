@@ -1,0 +1,94 @@
+---
+description: Flag a glTF or FBX import followed by mesh operations with no transform_apply and no unit-scale check. Generated files often arrive with non-identity object scale or a non-meter scene scale; mesh edits then bake the wrong size.
+alwaysApply: true
+globs:
+  - "**/*.py"
+standards-version: 1.10.0
+---
+
+# Validate imported mesh scale
+
+`bpy.ops.import_scene.gltf` and `bpy.ops.import_scene.fbx` leave object
+scale and scene units as the file authored them. Generated assets commonly
+arrive at 0.01 object scale (centimeters stored as meters) or with
+`scene.unit_settings.scale_length != 1.0`. Mesh operators, decimate ratios,
+and collision hulls then run in the wrong space.
+
+glTF import RNA has no `global_scale` on 4.5 LTS or 5.x. The check is on
+`scene.unit_settings` and `obj.scale` after import. FBX does take
+`global_scale`.
+
+`export_apply=True` does not apply object scale. It applies modifiers.
+
+## What this rule flags
+
+A `bpy.ops.import_scene.gltf` or `bpy.ops.import_scene.fbx` call in the same
+file as later mesh work (`bmesh`, `modifiers.new`, `from_pydata`, vertex
+writes) when the file never calls `transform_apply` and never reads
+`unit_settings` / `scale_length` / `global_scale`.
+
+```python
+# WRONG: import then edit with no scale check
+import bmesh
+import bpy
+
+bpy.ops.import_scene.gltf(filepath=path)
+obj = bpy.context.selected_objects[0]
+bm = bmesh.new()
+try:
+    bm.from_mesh(obj.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
+    bm.to_mesh(obj.data)
+finally:
+    bm.free()
+```
+
+```python
+# WRONG: FBX import, then DECIMATE, no global_scale and no apply
+bpy.ops.import_scene.fbx(filepath=path)
+obj = bpy.context.selected_objects[0]
+mod = obj.modifiers.new("Lod", "DECIMATE")
+mod.ratio = 0.25
+```
+
+## The required pattern
+
+```python
+import bpy
+
+bpy.ops.import_scene.gltf(filepath=path)
+
+scene = bpy.context.scene
+if scene.unit_settings.system not in {"METRIC", "NONE"}:
+    scene.unit_settings.system = "METRIC"
+scene.unit_settings.scale_length = 1.0
+
+for obj in bpy.context.selected_objects:
+    if obj.type != "MESH":
+        continue
+    sx, sy, sz = obj.scale
+    if abs(sx - 1.0) > 1e-6 or abs(sy - 1.0) > 1e-6 or abs(sz - 1.0) > 1e-6:
+        with bpy.context.temp_override(
+            object=obj, active_object=obj, selected_objects=[obj]
+        ):
+            bpy.ops.object.transform_apply(
+                location=False, rotation=True, scale=True
+            )
+```
+
+For FBX, pass `global_scale=1.0` on import as well, then still check
+`obj.scale` and apply if needed.
+
+## Why it matters
+
+A 0.01 leftover scale makes a 1 m prop 1 cm in the engine, or a decimate
+`dist` / weld threshold 100x too tight. The failure is silent: the script
+exits 0 and the asset is wrong. `examples/unapplied-scale-gltf/` is the
+witness that `export_apply` does not bake object scale into POSITION.
+
+## Related
+
+- Skill `ai-mesh-cleanup`
+- Skill `headless-batch-scripting` for `temp_override`
+- Example `unapplied-scale-gltf`
+- `bpy.ops.import_scene.gltf`: https://docs.blender.org/api/current/bpy.ops.import_scene.html#bpy.ops.import_scene.gltf

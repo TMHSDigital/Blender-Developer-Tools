@@ -18,6 +18,10 @@ derives the actual version from conventional-commit types.
 | 5.2 LTS targeting, GN modifier inputs | 12 | 6 | 2 | 17 | Shipped |
 | VSE COLOR strip intrinsic size (undocumented 5.2) | 13 | 6 | 2 | 17 | Shipped |
 | Modal operators, USD, mathutils | — | — | — | — | Upcoming |
+| AI asset pipeline: post-generation cleanup | - | - | - | - | Upcoming |
+| AI asset pipeline: engine export presets | - | - | - | - | Upcoming |
+| AI asset pipeline: headless template | - | - | - | - | Upcoming |
+| AI asset pipeline: live-session bridge (spike) | - | - | - | - | Upcoming |
 | Stable | — | — | — | — | Upcoming |
 
 ## v0.1.0 - Foundation
@@ -86,6 +90,15 @@ The 7 new snippets:
 - `usd-export-evaluation-mode.py`
 
 Audit pass on v0.1.0 content: standards-version markers bumped from `1.9.1` to `1.9.4` across all skills, rules, AGENTS.md, CLAUDE.md, and ROADMAP.md. Verified the `bpy_extras.anim_utils.action_ensure_channelbag_for_slot` import path against the current Blender 5.1 API reference and removed the stale "verify before production" caveat in `slotted-actions-animation/SKILL.md`.
+
+## AI asset pipeline track
+
+Provider-agnostic GLB-in / engine-ready-out. This repo does not generate meshes.
+
+- **Post-generation cleanup skills** (this phase starts the family; bake/UV/atlas follow on): import and unit-scale normalization, transform apply and origin, poly-budget decimate, LOD chain, collision mesh, high-to-low bake, UV transfer and atlas packing. Phase 1: `ai-mesh-cleanup`, four snippets, two rules.
+- **Engine export presets.** Unity (Y-up), Godot, and Unreal (centimeter scale) glTF and FBX paths with Draco. One skill, one snippet set.
+- **`ai-asset-pipeline-template/`.** Third template. Headless: GLB path in; LOD set, convex collider, engine-preset export; explicit CI exit codes. Pattern: `templates/headless-batch-script-template/`. Phase 2.
+- **Live-session agent bridge.** Research spike, not a committed deliverable. MCP server or socket listener so an agent can execute against a running Blender instance instead of blind `--background` scripts. Built on `templates/extension-addon-template/`. Needs its own design pass.
 
 ## Candidate pool (next content)
 

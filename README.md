@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>13 skills</strong> &nbsp;&bull;&nbsp; <strong>6 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>17 snippets</strong> &nbsp;&bull;&nbsp; <strong>53 examples</strong>
+  <strong>14 skills</strong> &nbsp;&bull;&nbsp; <strong>8 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>21 snippets</strong> &nbsp;&bull;&nbsp; <strong>53 examples</strong>
 </p>
 
 <p align="center">
@@ -36,16 +36,16 @@
 
 ## Overview
 
-This repository ships **13 skills, 6 rules, 2 templates, 17 snippets, and 48 runnable examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **14 skills, 8 rules, 2 templates, 21 snippets, and 53 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer |
-| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup |
+| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry |
 | **Templates** | A working Extensions Platform add-on starter and a headless batch script starter |
-| **Snippets** | 17 small standalone Python files demonstrating canonical patterns |
+| **Snippets** | 21 small standalone Python files demonstrating canonical patterns |
 
 ## Quick start
 
@@ -1008,15 +1008,15 @@ the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 13 skill files, YAML frontmatter, one canonical pattern each
-rules/<name>.mdc         - 6 rule files, anti-pattern + correction
+skills/<name>/SKILL.md   - 14 skill files, YAML frontmatter, one canonical pattern each
+rules/<name>.mdc         - 8 rule files, anti-pattern + correction
 templates/<name>/        - 2 template directories (extension-addon-template, headless-batch-script-template)
-snippets/<name>.py       - 17 standalone Python snippets, 5 to 50 lines each
+snippets/<name>.py       - 21 standalone Python snippets, 5 to 50 lines each
 ```
 
 ## Using rules in Cursor
 
-The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The six rules are:
+The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The eight rules are:
 
 - `prefer-data-over-ops-in-loops`: flags `bpy.ops.*` calls inside object iteration
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
@@ -1024,6 +1024,8 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `type-annotate-props-and-defend-context`: flags `bpy.props` assignment form and unguarded `context.active_object`
 - `prefer-temp-override-over-context-copy`: flags `bpy.context.copy()` passed to operators (deprecated 4.x, removed 5.x)
 - `use-foreach-set-for-bulk-data`: flags Python loops over `mesh.vertices` setting `co`, normals, or other per-element bulk data
+- `validate-imported-mesh-scale`: flags glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check
+- `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
 
 Symlink or clone this repo, then point Cursor at it as a skills/rules source.
 
