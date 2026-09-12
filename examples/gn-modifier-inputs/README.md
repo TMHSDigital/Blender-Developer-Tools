@@ -22,7 +22,10 @@ Follows [`geometry-nodes-python`](../../skills/geometry-nodes-python/SKILL.md).
 # Cheap correctness check (no render) — the CI check:
 blender --background --python gn_modifier_inputs.py --
 
-# Force one side of the split (must fail on the other series):
+# Portable falsifier: write 1.0 to every modifier. Must exit non-zero.
+blender --background --python gn_modifier_inputs.py -- --same-scale
+
+# Force one side of the split (must fail on the other series, not all three):
 blender --background --python gn_modifier_inputs.py -- --api dict
 blender --background --python gn_modifier_inputs.py -- --api rna
 
@@ -31,10 +34,30 @@ blender --background --python gn_modifier_inputs.py -- --output stairs.png
 blender --background --python gn_modifier_inputs.py -- --output stairs.png --engine cycles
 ```
 
-It exits non-zero on failure (missing identifier, write/read raise, readback
-mismatch, evaluated Z-extent ≠ scale, or three extents not distinct). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
-(5.1 on the weekly cron).
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Scale input identifier missing on the tree interface |
+| 4 | Modifiers do not share one node_group |
+| 5 | Version-path write raised (`--api dict` on 5.2, `--api rna` on 4.5) |
+| 6 | Version-path read raised |
+| 7 | Readback ≠ intended scale (`--same-scale` lands here) |
+| 8 | Evaluated Z-extent ≠ intended scale |
+| 9 | Evaluated mesh not sitting on z=0 |
+| 10 | Gallery framing violation |
+| 11 | Evaluated extents not distinct |
+| 12 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--same-scale`, or `--api dict`/`rna`.
 
 ## Falsification
 

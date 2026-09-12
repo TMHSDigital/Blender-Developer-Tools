@@ -26,11 +26,16 @@ this example asserts what the supported versions actually expose:
                   that ignores the return set; on 5.1 it FINISHES and adds
                   the NODES modifier. The portable path is the data API.
 
+``--mismatch-angle`` marks sharp at 20° and still audits against the 30°
+dihedral set, so the sharp-set match fails. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still (the same can shaded flat /
 smooth-everywhere / by-angle, so a broken path reads as faceting or smear):
 
     blender --background --python custom_normals_shade.py --                 # check only
+    blender --background --python custom_normals_shade.py -- --mismatch-angle
     blender --background --python custom_normals_shade.py -- --output c.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -244,15 +249,16 @@ def check_api_surface(me):
     return 0
 
 
-def check_by_angle(objs):
+def check_by_angle(objs, mismatch_angle=False):
     """set_sharp_from_angle must mark exactly the edges whose independently
     recomputed dihedral crosses the threshold — on every checked mesh."""
+    mark = math.radians(20.0) if mismatch_angle else ANGLE
     total_sharp = total_manifold = 0
     for obj in objs:
         me = obj.data
         for p in me.polygons:
             p.use_smooth = True
-        me.set_sharp_from_angle(angle=ANGLE)
+        me.set_sharp_from_angle(angle=mark)
         dih, nonmanifold = manifold_dihedrals(me)
         if nonmanifold:
             print(f"ERROR: {obj.name}: {nonmanifold} non-manifold edge(s) — the "
@@ -557,13 +563,17 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--mismatch-angle", action="store_true",
+                   help="mark sharp at 20° while auditing 30° (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     can = build_jerry_can()
 
     for step in (lambda: check_api_surface(can["shell"].data),
-                 lambda: check_by_angle([can["shell"], can["rib"], can["neck"]]),
+                 lambda: check_by_angle(
+                     [can["shell"], can["rib"], can["neck"]],
+                     mismatch_angle=args.mismatch_angle),
                  lambda: check_normal_welds(can["shell"]),
                  lambda: check_custom_normals_roundtrip(can["shell"]),
                  check_legacy_operator):

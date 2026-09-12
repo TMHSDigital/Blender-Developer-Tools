@@ -44,11 +44,33 @@ the nose facets coarsen, exactly the geometry the triangle counts assert.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python lod_decimate_chain.py --
 
+# Falsifier: no Decimate on the LOD copies. Must exit non-zero (no reduction).
+blender --background --python lod_decimate_chain.py -- --no-decimate
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python lod_decimate_chain.py -- --output rocket.png
 blender --background --python lod_decimate_chain.py -- --output rocket.png --engine cycles
 ```
 
-It exits non-zero on failure (base-topology drift, no reduction, a mutated
-original datablock, a ratio-bounds excursion, or silhouette loss). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Base topology ≠ closed form |
+| 4 | Base bbox ≠ closed form |
+| 5 | LOD0 evaluated counts ≠ base |
+| 6 | Evaluated tris ≥ base (`--no-decimate` lands here) |
+| 7 | Original datablock mutated after evaluation |
+| 8 | LOD tris outside ratio bounds |
+| 9 | LOD bbox lost silhouette-critical dimensions |
+| 10 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-decimate`.
