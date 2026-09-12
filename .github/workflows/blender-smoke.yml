@@ -2,37 +2,88 @@ name: Blender Smoke Test
 
 # Executes the snippets' and skills' headline examples inside REAL Blender, headless,
 # on the current stable (5.2.x LTS) and the fallback LTS (4.5.x) on every PR,
-# plus 5.1.x on the weekly cron, and fails on any error or
+# plus 5.1.x on the weekly cron, the opt-in `needs-5.1` PR label, or a
+# workflow_dispatch series input, and fails on any error or
 # empty-output assertion. Shipped examples go through tests/smoke/run_example.py
 # (catalog.json): SKIP is exit 77 + SMOKE_SKIP below --min-version, never exit 0.
 # Post-exit sidecars are opt-in. A leg with zero PASSes is red.
 # py_compile (in validate.yml) cannot catch API-level regressions
 # like the EEVEE-id inversion, the slotted-actions boundary, the driver TypeError, or the
 # dead SDF link -- this gate runs the code so those surface in CI, not in users' files.
+#
+# Default PR matrix stays 5.2 + 4.5. `labeled` is in pull_request.types so
+# applying `needs-5.1` starts a 5.1 job; other labels are ignored and must
+# not cancel an in-progress default run. Auto-label does not apply needs-5.1.
+# Manual dispatch: Actions > Blender Smoke Test > Run workflow > pick series.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      series:
+        description: Blender series to smoke (single version, on-demand)
+        required: true
+        type: choice
+        options:
+          - "5.2"
+          - "5.1"
+          - "4.5"
+        default: "5.2"
   schedule:
     - cron: "0 7 * * 1"   # weekly, Monday 07:00 UTC
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, labeled]
 
 permissions:
   contents: read
 
 concurrency:
-  group: blender-smoke-${{ github.ref }}
+  # Isolate labeled runs so auto-label (`ci`, `documentation`, ...) does not
+  # cancel the default 4.5/5.2 jobs. synchronize still cancels the previous
+  # synchronize on the same PR.
+  group: blender-smoke-${{ github.event.pull_request.number || github.ref }}${{ github.event.action == 'labeled' && format('-label-{0}', github.event.label.name) || '' }}
   cancel-in-progress: true
 
 jobs:
+  resolve-matrix:
+    name: Resolve smoke matrix
+    runs-on: ubuntu-latest
+    if: github.event.action != 'labeled' || github.event.label.name == 'needs-5.1'
+    outputs:
+      series: ${{ steps.set.outputs.series }}
+    steps:
+      - id: set
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          DISPATCH_SERIES: ${{ github.event.inputs.series }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            json='["5.2","5.1","4.5"]'
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            json=$(printf '["%s"]' "$DISPATCH_SERIES")
+          elif [ "$EVENT_ACTION" = "labeled" ]; then
+            json='["5.1"]'
+          elif echo ",$PR_LABELS," | grep -q ",needs-5.1,"; then
+            json='["5.2","5.1","4.5"]'
+          else
+            json='["5.2","4.5"]'
+          fi
+          echo "series=$json" >> "$GITHUB_OUTPUT"
+          echo "Smoke matrix: $json"
+
   smoke:
     name: Blender ${{ matrix.series }} smoke
+    needs: resolve-matrix
+    if: needs.resolve-matrix.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        series: ${{ github.event_name == 'schedule' && fromJSON('["5.2","5.1","4.5"]') || fromJSON('["5.2","4.5"]') }}
+        series: ${{ fromJSON(needs.resolve-matrix.outputs.series) }}
     steps:
       - uses: actions/checkout@v7
 
