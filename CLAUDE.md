@@ -17,23 +17,24 @@ The **Blender Developer Tools** repository is at **v0.54.0**. It packages skills
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 14 total
-rules/<rule-name>.mdc          - Anti-pattern rules, 8 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 15 total
+rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 2 total
-snippets/<snippet-name>.py     - Standalone code patterns, 21 total
-examples/<name>/               - Runnable smoke-gated examples, 53 total (+ gallery.json)
+snippets/<snippet-name>.py     - Standalone code patterns, 24 total
+examples/<name>/               - Runnable smoke-gated examples, 54 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (14)
+## Skills (15)
 
 | Skill | Purpose |
 | --- | --- |
 | addon-scaffolding | Extensions Platform manifest, file layout, register/unregister symmetry |
 | ai-mesh-cleanup | Ordered cleanup for imported generated meshes: units, transform apply, origin, normals, budget, collider |
+| engine-export-presets | Unity Y-up, Godot Z-up, and Unreal centimeter glTF/FBX presets; glTF uses export_yup, FBX uses axis_forward/axis_up |
 | operators | `bpy.types.Operator` lifecycle, `bl_idname`, redo, defensive context handling |
 | ui-panels | `bpy.types.Panel` declarative `draw()`, layout primitives, conditional UI |
 | custom-properties | `bpy.props` annotations, PropertyGroup, PointerProperty, storage tradeoffs |
@@ -47,7 +48,7 @@ VERSION                        - Source of truth for the repo version
 | bl-info-migration | Three-step migration from legacy `bl_info` to Extensions Platform, dual-format pattern |
 | vse-python | VSE timeline from Python: `.strips` vs `.sequences`, `new_effect` kwargs, 5.2 COLOR `width`/`height` bake |
 
-## Rules (8)
+## Rules (9)
 
 | Rule | Scope | What it flags |
 | --- | --- | --- |
@@ -59,6 +60,7 @@ VERSION                        - Source of truth for the repo version
 | use-foreach-set-for-bulk-data | `*.py` | Python loops over `mesh.vertices` setting bulk attributes one at a time |
 | validate-imported-mesh-scale | `*.py` | glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check |
 | no-unapplied-modifiers-on-export | `*.py` | Export with live modifiers when the export does not request evaluated geometry |
+| use-correct-axis-rna-per-exporter | `*.py` | `export_scene.gltf` with FBX `axis_forward`/`axis_up`, or `export_scene.fbx` with glTF `export_yup` |
 
 ## Templates (2)
 
@@ -78,7 +80,7 @@ VERSION                        - Source of truth for the repo version
 - glTF export via `bpy.ops.export_scene.gltf`
 - Explicit exit codes for CI integration
 
-## Snippets (21)
+## Snippets (24)
 
 Small standalone `.py` files at `snippets/<name>.py`, each 5 to 50 lines.
 
@@ -86,9 +88,9 @@ v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh 
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
-AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`.
+AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`.
 
-## Examples (53)
+## Examples (54)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via

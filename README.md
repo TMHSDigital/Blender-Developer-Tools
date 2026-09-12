@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>14 skills</strong> &nbsp;&bull;&nbsp; <strong>8 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>21 snippets</strong> &nbsp;&bull;&nbsp; <strong>53 examples</strong>
+  <strong>15 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>24 snippets</strong> &nbsp;&bull;&nbsp; <strong>54 examples</strong>
 </p>
 
 <p align="center">
@@ -36,16 +36,16 @@
 
 ## Overview
 
-This repository ships **14 skills, 8 rules, 2 templates, 21 snippets, and 53 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **15 skills, 9 rules, 2 templates, 24 snippets, and 54 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
-| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup |
-| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry |
+| **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, engine export presets |
+| **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter and a headless batch script starter |
-| **Snippets** | 21 small standalone Python files demonstrating canonical patterns |
+| **Snippets** | 24 small standalone Python files demonstrating canonical patterns |
 
 ## Quick start
 
@@ -627,7 +627,7 @@ portable path is `radius`.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 20 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 21 examples</summary>
 
 <table>
 <tr>
@@ -645,6 +645,22 @@ Witnesses the +Y-up convention baked into vertex data with no node rotation,
 loop), V-flipped UVs, and per-triangle material bindings — all against the
 depsgraph-evaluated mesh. The exporter/importer RNA signatures are probed
 byte-identical on 4.5.11 and 5.1.2 and guarded against future renames.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/export-preset-axis/"><img src="examples/export-preset-axis/preview.webp" alt="Export preset axis: a radio beacon exported under Unity and Godot glTF presets and re-imported side by side on a dark studio floor - Unity standing with a glowing cap, Godot lying on its base - proving the two files have different vertex orientation" /></a>
+</td>
+<td valign="middle">
+
+### [export-preset-axis](examples/export-preset-axis/)
+
+The same beacon mesh under the Unity (`export_yup=True`) and Godot
+(`export_yup=False`) glTF presets. Re-importing each file proves the axis
+conversion: Unity stands, Godot lies along `-Y`. `--same-axis` exports both
+Y-up and the differ check exits 9. Neighbor of
+[`gltf-export-roundtrip`](examples/gltf-export-roundtrip/).
 
 </td>
 </tr>
@@ -1008,15 +1024,15 @@ the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 14 skill files, YAML frontmatter, one canonical pattern each
-rules/<name>.mdc         - 8 rule files, anti-pattern + correction
+skills/<name>/SKILL.md   - 15 skill files, YAML frontmatter, one canonical pattern each
+rules/<name>.mdc         - 9 rule files, anti-pattern + correction
 templates/<name>/        - 2 template directories (extension-addon-template, headless-batch-script-template)
-snippets/<name>.py       - 21 standalone Python snippets, 5 to 50 lines each
+snippets/<name>.py       - 24 standalone Python snippets, 5 to 50 lines each
 ```
 
 ## Using rules in Cursor
 
-The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The eight rules are:
+The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Python project, scoped by the `globs` in each rule's frontmatter. The nine rules are:
 
 - `prefer-data-over-ops-in-loops`: flags `bpy.ops.*` calls inside object iteration
 - `always-free-bmesh`: flags `bmesh.new()` without paired `bm.free()` in `try`/`finally`
@@ -1026,6 +1042,7 @@ The `.mdc` files in `rules/` apply automatically when Cursor opens a Blender Pyt
 - `use-foreach-set-for-bulk-data`: flags Python loops over `mesh.vertices` setting `co`, normals, or other per-element bulk data
 - `validate-imported-mesh-scale`: flags glTF/FBX import then mesh work with no `transform_apply` and no unit-scale check
 - `no-unapplied-modifiers-on-export`: flags export of objects with live modifiers when the export does not request evaluated geometry
+- `use-correct-axis-rna-per-exporter`: flags `export_scene.gltf` calls that pass FBX `axis_forward` / `axis_up`, and `export_scene.fbx` calls that pass glTF `export_yup`
 
 Symlink or clone this repo, then point Cursor at it as a skills/rules source.
 

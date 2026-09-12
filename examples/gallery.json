@@ -314,6 +314,17 @@
       ]
     },
     {
+      "name": "export-preset-axis",
+      "dir": "examples/export-preset-axis",
+      "teaches": "A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation",
+      "witnessesFix": "Unity export_yup=True round-trips standing (x,y,z); Godot export_yup=False reimports lying along -Y as (x,-z,y); --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly",
+      "hero": "docs/gallery/assets/export-preset-axis-hero.webp",
+      "preview": "examples/export-preset-axis/preview.webp",
+      "tags": [
+        "export"
+      ]
+    },
+    {
       "name": "lod-decimate-chain",
       "dir": "examples/lod-decimate-chain",
       "teaches": "A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.",

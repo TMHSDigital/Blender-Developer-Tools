@@ -1,5 +1,5 @@
-"""Static checks for validate-imported-mesh-scale and
-no-unapplied-modifiers-on-export.
+"""Static checks for validate-imported-mesh-scale,
+no-unapplied-modifiers-on-export, and use-correct-axis-rna-per-exporter.
 
 Scans snippets/ and templates/**/*.py. examples/ is excluded because several
 examples are intentional pathology witnesses (unapplied-scale-gltf).
@@ -14,6 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUIRED_RULES = (
     "rules/validate-imported-mesh-scale.mdc",
     "rules/no-unapplied-modifiers-on-export.mdc",
+    "rules/use-correct-axis-rna-per-exporter.mdc",
 )
 
 IMPORT_RE = re.compile(r"bpy\.ops\.import_scene\.(gltf|fbx)\s*\(")
@@ -27,6 +28,11 @@ EXPORT_EVAL_RE = re.compile(
 )
 MODIFIER_NEW_RE = re.compile(r"modifiers\.new")
 MODIFIER_APPLY_RE = re.compile(r"modifier_apply")
+GLTF_CALL_RE = re.compile(r"bpy\.ops\.export_scene\.gltf\s*\(")
+FBX_CALL_RE = re.compile(r"bpy\.ops\.export_scene\.fbx\s*\(")
+AXIS_FORWARD_RE = re.compile(r"\baxis_forward\b")
+AXIS_UP_RE = re.compile(r"\baxis_up\b")
+EXPORT_YUP_RE = re.compile(r"\bexport_yup\b")
 
 
 def scan_paths(extra):
@@ -38,6 +44,31 @@ def scan_paths(extra):
     for item in extra:
         paths.append(item if os.path.isabs(item) else os.path.join(ROOT, item))
     return paths
+
+
+def _call_bodies(text, opener_re):
+    """Extract argument text of each matching call, paren-matched.
+
+    Whole-file scans false-positive a file that correctly calls both
+    exporters (Unreal glTF plus Unreal FBX). Per-call bodies keep those
+    legal.
+    """
+    bodies = []
+    for match in opener_re.finditer(text):
+        i = match.end()
+        depth = 1
+        start = i
+        while i < len(text) and depth:
+            char = text[i]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            i += 1
+        if depth != 0:
+            continue
+        bodies.append(text[start : i - 1])
+    return bodies
 
 
 def check_text(rel, text):
@@ -54,6 +85,18 @@ def check_text(rel, text):
             errors.append(
                 f"{rel}: export with modifiers.new but no export_apply=True, "
                 "evaluation_mode, or modifier_apply"
+            )
+    for body in _call_bodies(text, GLTF_CALL_RE):
+        if AXIS_FORWARD_RE.search(body) or AXIS_UP_RE.search(body):
+            errors.append(
+                f"{rel}: export_scene.gltf call passes axis_forward or "
+                "axis_up (FBX RNA; glTF uses export_yup)"
+            )
+    for body in _call_bodies(text, FBX_CALL_RE):
+        if EXPORT_YUP_RE.search(body):
+            errors.append(
+                f"{rel}: export_scene.fbx call passes export_yup "
+                "(glTF RNA; FBX uses axis_forward / axis_up)"
             )
     return errors
 
