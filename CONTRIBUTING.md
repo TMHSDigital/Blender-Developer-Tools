@@ -99,6 +99,19 @@ else:
     ...
 ```
 
+## Blender smoke on pull requests
+
+Default PR smoke is Blender 5.2 and 4.5 (`.github/workflows/blender-smoke.yml`).
+5.1 is not in that matrix.
+
+- Apply the `needs-5.1` label when the change can diverge on 5.1 (bake, UV
+  RNA, version-branched API). That starts a 5.1 smoke job. Auto-label will
+  not apply this; it is opt-in.
+- Run any series on demand: Actions > Blender Smoke Test > Run workflow,
+  pick the branch and the `series` input.
+- Monday 07:00 UTC cron still runs 5.2, 5.1, and 4.5. Do not treat cron as
+  PR evidence.
+
 ## Standards-version Markers
 
 Files that participate in ecosystem drift checking must carry a `standards-version` marker matching the current meta-repo `STANDARDS_VERSION` (which is decoupled from this repo's `VERSION`):

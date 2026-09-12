@@ -66,13 +66,13 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 | Version | Status |
 | --- | --- |
 | Blender 5.2 LTS | Primary target (current stable; all examples assume 5.2 unless a 4.5 path is shown) |
-| Blender 5.1 | Prior stable (weekly smoke only) |
+| Blender 5.1 | Prior stable (weekly cron; PR via `needs-5.1` or manual dispatch) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
 
 ## Examples
 
 Runnable, smoke-gated demos live in [`examples/`](examples/) — each is executed headless on
-Blender 5.2 LTS and 4.5 LTS by the `blender-smoke` workflow (5.1 on the weekly cron), so the screenshots reflect code
+Blender 5.2 LTS and 4.5 LTS by the `blender-smoke` workflow (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch), so the screenshots reflect code
 that actually runs. Browse them all with filters and full-size renders in the
 **[examples gallery](https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/)**,
 or expand a category below.
