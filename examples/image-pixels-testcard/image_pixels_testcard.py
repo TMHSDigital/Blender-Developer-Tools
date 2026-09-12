@@ -18,10 +18,15 @@ with a different image and reading the imposter's pixels back through the
 original datablock. `save_render()` writes the same PNG but leaves
 `source` == 'GENERATED' and the buffer intact and exact.
 
+``--wrong-origin`` writes the card top-down and still compares against
+the bottom-left closed form, so the byte round-trip fails. That is the
+falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python image_pixels_testcard.py --                 # check only
+    blender --background --python image_pixels_testcard.py -- --wrong-origin  # must fail
     blender --background --python image_pixels_testcard.py -- --output t.png  # + render
 """
 import bpy, sys, os, math, argparse, tempfile
@@ -66,14 +71,15 @@ def pattern(x, y):
     return r, g, b, 1.0
 
 
-def flat_pattern():
+def flat_pattern(flip_origin=False):
     """The whole card as one flat RGBA buffer in pixel-buffer order:
     row-major from the BOTTOM row up, 4 floats per pixel."""
     buf = [0.0] * (W * H * 4)
     i = 0
     for y in range(H):
+        y_src = (H - 1 - y) if flip_origin else y
         for x in range(W):
-            buf[i:i + 4] = pattern(x, y)
+            buf[i:i + 4] = pattern(x, y_src)
             i += 4
     return buf
 
@@ -83,9 +89,10 @@ def fail(msg, code):
     return code
 
 
-def check():
+def check(wrong_origin=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     expected = flat_pattern()
+    written = flat_pattern(flip_origin=True) if wrong_origin else expected
 
     # -- buffer geometry: always RGBA, even with alpha=False ----------------
     img = bpy.data.images.new("TestCard", W, H, alpha=False)
@@ -99,7 +106,7 @@ def check():
         pass
 
     # -- byte image: one bulk write, quantized round-trip --------------------
-    img.pixels.foreach_set(expected)
+    img.pixels.foreach_set(written)
     got = [0.0] * (W * H * 4)
     img.pixels.foreach_get(got)
     byte_err = max(abs(a - b) for a, b in zip(expected, got))
@@ -370,9 +377,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--wrong-origin", action="store_true",
+                   help="write the card top-down (must fail)")
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(wrong_origin=args.wrong_origin)
     if code:
         return code
 

@@ -10,10 +10,14 @@ back, and asserts the evaluated Z-extent equals the written scale
 4.5 LTS and 5.1 write ``mod[identifier] = value``. 5.2+ removed ID
 properties on NodesModifier — that assignment raises TypeError — and
 the replacement is ``mod.properties.inputs.<identifier>.value``.
-``--api dict`` / ``--api rna`` force one side so the witness can fail
-on purpose.
+``--api dict`` / ``--api rna`` force one side of the 5.1/5.2 split — they
+fail on the *other* series, not on every binary. ``--same-scale`` writes
+1.0 to every modifier and still asserts 1 / 2 / 3, so the second cube's
+readback fails on all three. That is the portable falsifier
+(``--same-axis`` in export-preset-axis).
 
     blender --background --python gn_modifier_inputs.py --
+    blender --background --python gn_modifier_inputs.py -- --same-scale
     blender --background --python gn_modifier_inputs.py -- --api dict
     blender --background --python gn_modifier_inputs.py -- --output s.png
 """
@@ -178,7 +182,7 @@ def evaluated_z_extent(obj):
         ev.to_mesh_clear()
 
 
-def check(tree, objs, mods, api):
+def check(tree, objs, mods, api, same_scale=False):
     ident = scale_identifier(tree)
     if not ident:
         print("ERROR: Scale input identifier missing on the tree interface",
@@ -191,8 +195,9 @@ def check(tree, objs, mods, api):
         return 4
 
     for obj, mod, scale in zip(objs, mods, SCALES):
+        written = SCALES[0] if same_scale else scale
         try:
-            set_mod_input(mod, ident, scale, api)
+            set_mod_input(mod, ident, written, api)
         except Exception as e:
             print(
                 f"ERROR: {api} write of {scale} on {obj.name} raised "
@@ -368,11 +373,15 @@ def main():
         "--api", default="auto", choices=("auto", "dict", "rna"),
         help="force the 5.1 dict path, the 5.2 RNA path, or pick from bpy.app.version",
     )
+    p.add_argument(
+        "--same-scale", action="store_true",
+        help="write 1.0 to every modifier (must fail)",
+    )
     args = p.parse_args(argv)
 
     tree, objs, mods = build()
     api = _api_choice(args.api)
-    code = check(tree, objs, mods, api)
+    code = check(tree, objs, mods, api, same_scale=args.same_scale)
     if code:
         return code
 

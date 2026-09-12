@@ -57,11 +57,44 @@ silhouette would lose the rounded edges.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_export_roundtrip.py --
 
+# Falsifier: export_yup=False. Must exit non-zero (bbox is Z-up on disk).
+blender --background --python gltf_export_roundtrip.py -- --no-yup
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gltf_export_roundtrip.py -- --output crate.png
 blender --background --python gltf_export_roundtrip.py -- --output crate.png --engine cycles
 ```
 
-It exits non-zero on failure (RNA kwarg drift, cage drift, missing on-disk
-conversion, vertex-split drift, or any round-trip excursion beyond tolerance).
-The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Exporter/importer RNA kwargs drifted |
+| 4 | Base cage drifted from its closed form |
+| 5 | Authored UVs drifted from the box-map closed form |
+| 6 | Bevel produced no evaluated geometry |
+| 7 | On-disk node/mesh/generator contract drifted |
+| 8 | On-disk primitive/material binding count drifted |
+| 9 | On-disk POSITION bounds ≠ axis-converted bbox (`--no-yup` lands here) |
+| 10 | On-disk POSITION count ≠ evaluated loop count |
+| 11 | On-disk UV V-flip failed |
+| 12 | Re-import did not produce exactly one mesh |
+| 13 | Re-imported object carries a transform |
+| 14 | Material names drifted on re-import |
+| 15 | Re-import vert count ≠ evaluated loop count |
+| 16 | Round-trip position drift |
+| 17 | Round-trip normal drift |
+| 18 | Round-trip UV drift |
+| 19 | Re-import triangle count drifted |
+| 20 | Per-triangle material bindings drifted |
+| 21 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-yup`.
