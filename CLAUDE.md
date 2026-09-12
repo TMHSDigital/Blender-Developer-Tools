@@ -17,23 +17,24 @@ The **Blender Developer Tools** repository is at **v0.56.0**. It packages skills
 ## Repository Architecture
 
 ```
-skills/<skill-name>/SKILL.md   - AI workflow definitions, 15 total
+skills/<skill-name>/SKILL.md   - AI workflow definitions, 16 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 3 total
-snippets/<snippet-name>.py     - Standalone code patterns, 24 total
-examples/<name>/               - Runnable smoke-gated examples, 54 total (+ gallery.json)
+snippets/<snippet-name>.py     - Standalone code patterns, 27 total
+examples/<name>/               - Runnable smoke-gated examples, 55 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
 VERSION                        - Source of truth for the repo version
 ```
 
-## Skills (15)
+## Skills (16)
 
 | Skill | Purpose |
 | --- | --- |
 | addon-scaffolding | Extensions Platform manifest, file layout, register/unregister symmetry |
 | ai-mesh-cleanup | Ordered cleanup for imported generated meshes: units, transform apply, origin, normals, budget, collider |
+| bake-high-to-low | Cycles cage-bake of high-poly detail onto a low-poly target as a tangent-space normal map |
 | engine-export-presets | Unity Y-up, Godot Z-up, and Unreal centimeter glTF/FBX presets; glTF uses export_yup, FBX uses axis_forward/axis_up |
 | operators | `bpy.types.Operator` lifecycle, `bl_idname`, redo, defensive context handling |
 | ui-panels | `bpy.types.Panel` declarative `draw()`, layout primitives, conditional UI |
@@ -88,7 +89,7 @@ VERSION                        - Source of truth for the repo version
 - Unity / Godot / Unreal glTF export via the engine-export-presets contract
 - Explicit exit codes matching `headless-batch-script-template` (0, then 2+)
 
-## Snippets (24)
+## Snippets (27)
 
 Small standalone `.py` files at `snippets/<name>.py`, each 5 to 50 lines.
 
@@ -96,9 +97,9 @@ v0.1.0: canonical object creation and deletion, depsgraph evaluated mesh, bmesh 
 
 v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namespace`, application handler registration, shader node group with cross-version `interface` API, `foreach_get` bulk vertex read, version-branch skeleton, and USD export with `evaluation_mode='RENDER'`.
 
-AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`.
+AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`, `setup_bake_target_image.py`, `bake_normal_high_to_low.py`, `save_baked_image.py`.
 
-## Examples (54)
+## Examples (55)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via

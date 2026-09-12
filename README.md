@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>15 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>24 snippets</strong> &nbsp;&bull;&nbsp; <strong>54 examples</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>55 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **15 skills, 9 rules, 3 templates, 24 snippets, and 54 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 55 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -683,6 +683,22 @@ as the caught failure mode.
 </tr>
 <tr>
 <td width="46%" valign="middle">
+<a href="examples/bake-normal-high-to-low/"><img src="examples/bake-normal-high-to-low/preview.webp" alt="Bake normal high to low: an unlit tangent-space normal map card of a six-lobe riveted hatch beside the collapse-decimated bronze plate wearing that map, dark studio" /></a>
+</td>
+<td valign="middle">
+
+### [bake-normal-high-to-low](examples/bake-normal-high-to-low/)
+
+Cycles cage-bakes a ribbed hatch onto a `DECIMATE COLLAPSE` LOD. Asserts the
+map is not flat (frac 0.7211, MAD 0.09356 vs `(0.5, 0.5, 1.0)`) while a
+flat-source control is (frac 0.0000). `--flat-source` exits 5. Byte-identity
+across 4.5 / 5.1 / 5.2 is not the contract — Cycles bake is stochastic.
+Neighbor of [`lod-decimate-chain`](examples/lod-decimate-chain/).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
 <a href="examples/vertex-weight-limit/"><img src="examples/vertex-weight-limit/preview.webp" alt="Vertex weight limit: a posed mech arm on a dark studio floor - orange armor shells, a glowing teal flex cuff around the hex-bolted elbow hinge, long plated forearm, three-finger gripper - deformed by weights pruned to the four-influence engine cap" /></a>
 </td>
 <td valign="middle">
@@ -1024,10 +1040,10 @@ the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
 ## How content is organized
 
 ```
-skills/<name>/SKILL.md   - 15 skill files, YAML frontmatter, one canonical pattern each
+skills/<name>/SKILL.md   - 16 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 9 rule files, anti-pattern + correction
 templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
-snippets/<name>.py       - 24 standalone Python snippets, 5 to 50 lines each
+snippets/<name>.py       - 27 standalone Python snippets, 5 to 50 lines each
 ```
 
 ## Using rules in Cursor

@@ -616,6 +616,17 @@
       "tags": [
         "geometry-nodes"
       ]
+    },
+    {
+      "name": "bake-normal-high-to-low",
+      "dir": "examples/bake-normal-high-to-low",
+      "teaches": "A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source",
+      "witnessesFix": "Statistical gates not byte-identity: detail frac 0.7211 / MAD 0.09356 vs flat 0.0000 / 0.00277; --flat-source exits 5; type=NORMAL not bake_type; RNA identical on 4.5.11, 5.1.2, 5.2.1",
+      "hero": "docs/gallery/assets/bake-normal-high-to-low-hero.webp",
+      "preview": "examples/bake-normal-high-to-low/preview.webp",
+      "tags": [
+        "mesh"
+      ]
     }
   ]
 }
