@@ -194,6 +194,7 @@ def main():
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
     args = p.parse_args(argv)
+    raise SystemExit(1)  # phase-4 canary: prove 5.1 smoke fails
 
     obj = build_gear()
     code = check(obj)
