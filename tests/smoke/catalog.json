@@ -68,5 +68,6 @@
   },
   {"name": "ngon-triangulate", "script": "examples/ngon-triangulate/ngon_triangulate.py"},
   {"name": "unapplied-scale-gltf", "script": "examples/unapplied-scale-gltf/unapplied_scale_gltf.py"},
-  {"name": "coincident-vert-weld", "script": "examples/coincident-vert-weld/coincident_vert_weld.py"}
+  {"name": "coincident-vert-weld", "script": "examples/coincident-vert-weld/coincident_vert_weld.py"},
+  {"name": "bake-normal-high-to-low", "script": "examples/bake-normal-high-to-low/bake_normal_high_to_low.py"}
 ]

@@ -16,6 +16,7 @@
   "skills": [
     "skills/addon-scaffolding/SKILL.md",
     "skills/ai-mesh-cleanup/SKILL.md",
+    "skills/bake-high-to-low/SKILL.md",
     "skills/engine-export-presets/SKILL.md",
     "skills/operators/SKILL.md",
     "skills/ui-panels/SKILL.md",
@@ -44,6 +45,7 @@
   "snippets": [
     "snippets/action-ensure-channelbag-for-slot.py",
     "snippets/app-handler-registration.py",
+    "snippets/bake_normal_high_to_low.py",
     "snippets/bmesh-load-edit-free.py",
     "snippets/canonical-object-creation.py",
     "snippets/canonical-object-deletion.py",
@@ -62,7 +64,9 @@
     "snippets/pointerproperty-binding.py",
     "snippets/principled-bsdf-material.py",
     "snippets/register-classes-factory.py",
+    "snippets/save_baked_image.py",
     "snippets/shader-node-group.py",
+    "snippets/setup_bake_target_image.py",
     "snippets/temp-override-context.py",
     "snippets/usd-export-evaluation-mode.py",
     "snippets/version-branch-skeleton.py"
@@ -75,6 +79,7 @@
   "examples": [
     "examples/armature-bend",
     "examples/attribute-domain-shear",
+    "examples/bake-normal-high-to-low",
     "examples/bmesh-gear",
     "examples/car-mirror-symmetry",
     "examples/coincident-vert-weld",
