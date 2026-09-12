@@ -111,6 +111,37 @@ Default PR smoke is Blender 5.2 and 4.5 (`.github/workflows/blender-smoke.yml`).
   pick the branch and the `series` input.
 - Monday 07:00 UTC cron still runs 5.2, 5.1, and 4.5. Do not treat cron as
   PR evidence.
+- **There is deliberately no `push` trigger on `blender-smoke.yml`.**
+  Squash-merging a green PR makes `main` identical to the content already
+  smoke-tested, so a push job would re-prove the same tree at double the
+  CI cost. Absence of post-merge smoke is not a coverage gap.
+- **`pages.yml` is path-filtered.** A workflow-or-docs-only merge does not
+  deploy Pages. Observed on `13ea521` (`ci:` #137): Validate, drift-check,
+  and Release ran; Pages did not. Intentional, not a failed job.
+
+## Exit codes
+
+Three roles, not one global table. Do not copy a code from one script into
+another and assume it means the same thing. `9` is a valid sequential-check
+code; there is no rule against it.
+
+**Per-script exits** (examples and headless templates). `0` success. `2`
+argument or usage error, matching argparse. `3` and above for that script's
+own sequential check failures, in the order the checks run. These codes are
+file-local and are not portable. `no-mesh` is `2` in
+`templates/headless-batch-script-template/` and `5` in
+`templates/ai-asset-pipeline-template/`; both are correct. Copy a template's
+own table from that template, not from this paragraph.
+
+**FATAL wrapper.** `sys.exit(1)` on an uncaught exception in the `__main__`
+guard. Uniform across the examples. `1` means crashed, never a named check.
+
+**Smoke protocol.** Owned by `tests/` and the runner, not by product check
+tables. `0` pass, `1` fail (`tests/smoke/run_example.py`,
+`tests/check_import_export_rules.py`), `77` skip (`tests/smoke/canary_skip.py`,
+and the product scripts that self-skip: `examples/gn-bundle-roundtrip/`,
+`examples/exit-pre-sidecar/`). A script under test prints `SMOKE_SKIP:` and
+exits 77; the runner records SKIP and returns 0 so the YAML step stays green.
 
 ## Standards-version Markers
 
