@@ -17,7 +17,7 @@ Label every claim.
 - **live-run-proven:** exact binary path + the version that binary printed (`blender --version`). Headless harness only. Live MCP does not count.
 - **inspection-only:** read the skill / diff / RNA docs; no process ran.
 
-`blender-smoke.yml` has no `push` trigger. Post-merge smoke evidence is the PR-head 5.2 + 4.5 jobs (state the versions from those logs).
+`blender-smoke.yml` has no `push` trigger. Post-merge smoke evidence is the PR-head 5.2 + 4.5 jobs (state the versions from those logs). Apply `needs-5.1` when 5.1 must be CI-proven on the PR; default matrix does not include it.
 
 ## Release-owned fields — do not hand-edit
 

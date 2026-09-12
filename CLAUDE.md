@@ -102,7 +102,7 @@ AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lo
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
-`--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron);
+`--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
 their renders ship in the site gallery at `docs/gallery/`. `examples/gallery.json` is the
 gallery's source of truth. When authoring a new one, copy the anatomy of
 `examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and
