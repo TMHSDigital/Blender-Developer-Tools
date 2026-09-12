@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>15 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>2 templates</strong> &nbsp;&bull;&nbsp; <strong>24 snippets</strong> &nbsp;&bull;&nbsp; <strong>54 examples</strong>
+  <strong>15 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>24 snippets</strong> &nbsp;&bull;&nbsp; <strong>54 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **15 skills, 9 rules, 2 templates, 24 snippets, and 54 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **15 skills, 9 rules, 3 templates, 24 snippets, and 54 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -44,7 +44,7 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | --- | --- |
 | **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, engine export presets |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
-| **Templates** | A working Extensions Platform add-on starter and a headless batch script starter |
+| **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 24 small standalone Python files demonstrating canonical patterns |
 
 ## Quick start
@@ -1026,7 +1026,7 @@ the duplicates, then glTF ships 24 tris / 48 positions / 8 unique.
 ```
 skills/<name>/SKILL.md   - 15 skill files, YAML frontmatter, one canonical pattern each
 rules/<name>.mdc         - 9 rule files, anti-pattern + correction
-templates/<name>/        - 2 template directories (extension-addon-template, headless-batch-script-template)
+templates/<name>/        - 3 template directories (extension-addon-template, headless-batch-script-template, ai-asset-pipeline-template)
 snippets/<name>.py       - 24 standalone Python snippets, 5 to 50 lines each
 ```
 
@@ -1051,6 +1051,8 @@ Symlink or clone this repo, then point Cursor at it as a skills/rules source.
 `templates/extension-addon-template/` is a working Blender extension. Copy the directory, edit `blender_manifest.toml` (id, version, name, maintainer), and install via Edit > Preferences > Get Extensions > Install From Disk. The template registers an Operator, a Panel, and a PropertyGroup, and demonstrates the `register_classes_factory` pattern with symmetric `register()` and `unregister()`.
 
 `templates/headless-batch-script-template/` is a working starter for unattended Blender batch jobs. It opens a `.blend`, optionally adds and applies a modifier to every mesh, and exports to glTF, with explicit exit codes for CI integration. Run with `blender --background <input.blend> --python script.py -- --output ...`.
+
+`templates/ai-asset-pipeline-template/` is a working starter for a headless GLB-in / engine-ready-out job. It imports a GLB, runs the `ai-mesh-cleanup` order, emits an LOD chain and optional collider, and exports under a Unity, Godot, or Unreal glTF preset. Run with `blender --background --python pipeline.py -- --input ... --outdir ... --preset unity`.
 
 ## Snippets
 

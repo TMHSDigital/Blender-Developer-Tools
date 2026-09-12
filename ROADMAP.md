@@ -20,7 +20,7 @@ derives the actual version from conventional-commit types.
 | Modal operators, USD, mathutils | — | — | — | — | Upcoming |
 | AI asset pipeline: post-generation cleanup | 14 | 8 | 2 | 21 | Shipped (v0.54.0) |
 | AI asset pipeline: engine export presets | 15 | 9 | 2 | 24 | Shipped |
-| AI asset pipeline: headless template | - | - | - | - | Upcoming |
+| AI asset pipeline: headless template | 15 | 9 | 3 | 24 | Shipped |
 | AI asset pipeline: live-session bridge (spike) | - | - | - | - | Upcoming |
 | Stable | — | — | — | — | Upcoming |
 
@@ -97,7 +97,7 @@ Provider-agnostic GLB-in / engine-ready-out. This repo does not generate meshes.
 
 - **Post-generation cleanup skills.** Import and unit-scale normalization, transform apply and origin, poly-budget decimate, LOD chain, collision mesh. Phase 1 shipped in v0.54.0 as `ai-mesh-cleanup`, four snippets, two rules. Bake/UV/atlas follow on.
 - **Engine export presets.** **Delivered.** Unity (Y-up glTF), Godot (Z-up glTF, meters), Unreal (centimeter glTF bake and FBX `global_scale`). Skill `engine-export-presets`, three snippets, rule `use-correct-axis-rna-per-exporter`, witness `examples/export-preset-axis/`. Draco remains opt-in via `gltf_draco_export.py`.
-- **`ai-asset-pipeline-template/`.** Third template. Headless: GLB path in; LOD set, convex collider, engine-preset export; explicit CI exit codes. Pattern: `templates/headless-batch-script-template/`. Phase 3. Unpinned.
+- **`ai-asset-pipeline-template/`.** **Delivered.** Third template. Headless: GLB path in; LOD set, convex or box collider, engine-preset export; explicit CI exit codes. Pattern: `templates/headless-batch-script-template/`.
 - **Live-session agent bridge.** Research spike, not a committed deliverable. MCP server or socket listener so an agent can execute against a running Blender instance instead of blind `--background` scripts. Built on `templates/extension-addon-template/`. Needs its own design pass. Unpinned.
 
 ## Candidate pool (next content)

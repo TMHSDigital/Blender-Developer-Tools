@@ -19,7 +19,7 @@ The **Blender Developer Tools** repository is at **v0.55.0**. It packages skills
 ```
 skills/<skill-name>/SKILL.md   - AI workflow definitions, 15 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
-templates/<template-name>/     - Starter projects, 2 total
+templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 24 total
 examples/<name>/               - Runnable smoke-gated examples, 54 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
@@ -62,7 +62,7 @@ VERSION                        - Source of truth for the repo version
 | no-unapplied-modifiers-on-export | `*.py` | Export with live modifiers when the export does not request evaluated geometry |
 | use-correct-axis-rna-per-exporter | `*.py` | `export_scene.gltf` with FBX `axis_forward`/`axis_up`, or `export_scene.fbx` with glTF `export_yup` |
 
-## Templates (2)
+## Templates (3)
 
 `templates/extension-addon-template/` is a copy-paste-ready Blender extension demonstrating:
 
@@ -79,6 +79,14 @@ VERSION                        - Source of truth for the repo version
 - Modifier application via `bpy.context.temp_override` (not the deprecated context-dict form)
 - glTF export via `bpy.ops.export_scene.gltf`
 - Explicit exit codes for CI integration
+
+`templates/ai-asset-pipeline-template/` is a working starter for a headless GLB-in / engine-ready-out job:
+
+- `argparse` parsing of args after the `--` separator
+- Import, unit-scale check, transform apply, origin, normals, evaluated tris
+- LOD chain and optional convex/box collider
+- Unity / Godot / Unreal glTF export via the engine-export-presets contract
+- Explicit exit codes matching `headless-batch-script-template` (0, then 2+)
 
 ## Snippets (24)
 
