@@ -68,6 +68,7 @@
     "snippets/version-branch-skeleton.py"
   ],
   "templates": [
+    "templates/ai-asset-pipeline-template",
     "templates/extension-addon-template",
     "templates/headless-batch-script-template"
   ],
