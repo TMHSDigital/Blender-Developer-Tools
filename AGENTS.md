@@ -160,7 +160,9 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
   5.2 LTS and 4.5 LTS for every PR. 5.1 is weekly cron, the opt-in
   `needs-5.1` PR label (`pull_request` types include `labeled`), or
   `workflow_dispatch` with a `series` input. Auto-label does not apply
-  `needs-5.1`. Contributor-facing notes live in CONTRIBUTING.md. Examples run
+  `needs-5.1`. Contributor-facing notes for the smoke lever, the deliberate
+  lack of a `push` trigger, Pages path filters, and the three-role exit-code
+  convention live in CONTRIBUTING.md. Examples run
   through `tests/smoke/run_example.py` (catalog: `tests/smoke/catalog.json`).
   SKIP is exit 77 plus a `SMOKE_SKIP:` reason, and only when `--min-version`
   is above this Blender; exit 0 with that marker is a vacuous pass and fails.
