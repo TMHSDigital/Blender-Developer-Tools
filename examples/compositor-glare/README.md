@@ -29,11 +29,29 @@ absence of any EEVEE bloom toggle.
 # Cheap correctness check (two tiny renders) — the CI check:
 blender --background --python compositor_glare.py --
 
+# Falsifier: Threshold=10.0. Must exit non-zero (Threshold==1.0).
+blender --background --python compositor_glare.py -- --threshold-high
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python compositor_glare.py -- --output rings.png
 blender --background --python compositor_glare.py -- --output rings.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong tree plumbing, wrong Glare configuration, a
-missing or non-falling halo, or halo pixels that appear without the compositor).
-The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Compositor tree / Glare / Threshold / link-chain contract (`--threshold-high` lands here) |
+| 4 | Check render missing, tube dark, no halo, or halo does not fall off |
+| 5 | Halo present with compositing off |
+| 6 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--threshold-high`.

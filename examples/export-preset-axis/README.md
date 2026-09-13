@@ -43,7 +43,26 @@ blender --background --python export_preset_axis.py -- --output beacon.png
 blender --background --python export_preset_axis.py -- --output beacon.png --engine cycles
 ```
 
-It exits non-zero on failure (RNA drift, source not Z-dominant, Unity disk
-not converted, Godot disk not Z-up, Unity not standing, Godot not lying,
-orientations equal). The `blender-smoke` workflow runs the check on Blender
-5.2 LTS and 4.5 LTS (5.1 on the weekly cron).
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+| 3 | Source mast is not Z-dominant, or tip drifted |
+| 4 | glTF reimport produced no mesh |
+| 5 | Unity disk POSITION is not `(x, z, -y)`, or Unity node has rotation |
+| 6 | Godot disk POSITION is not raw Z-up; also `--output` produced no file |
+| 7 | Unity reimport is not standing |
+| 8 | Godot reimport is not lying along Y, or reimported tip mismatch |
+| 9 | Reimported orientations did not differ (`--same-axis` lands here) |
+| 10 | Gallery framing violation |
+| 11 | `--same-axis` did not collapse the axis difference |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--same-axis`.

@@ -52,11 +52,31 @@ identical, so the still visibly breaks with the contract.
 # Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
 
+# Falsifier: GC T2 -> T1. Must exit non-zero (inputs).
+blender --background --python vse_gamma_cross.py -- --swap-inputs
+
 # Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles
 ```
 
-It exits non-zero on failure (span drift, wrong inputs, t-convention drift,
-a sample off the closed form, or a missing gamma dip). The `blender-smoke`
-workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | GC span off closed form |
+| 4 | GC inputs are not T1 → T2 (`--swap-inputs` lands here) |
+| 5 | Sample `t` convention drifted |
+| 6 | Cross sample off the gamma-0.5 closed form |
+| 7 | Mid-cross lerp deviation missing (naive mix) |
+| 8 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--swap-inputs`.

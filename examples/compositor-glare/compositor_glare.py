@@ -17,12 +17,17 @@ constantly:
   the ring silhouette, falls off strictly with distance, and vanishes entirely
   when `scene.render.use_compositing` is off.
 
+``--threshold-high`` sets the shared ``Threshold`` input to 10.0 and still
+asserts it equals 1.0. That is the falsifier (``--same-axis`` in
+export-preset-axis). The 4.x/5.x Type-menu shim is untouched.
+
 By default it runs only the correctness check (two 96x54 single-sample Cycles
 renders, compositor on vs off) — the CI smoke check. Pass --output to also
 render a still:
 
-    blender --background --python compositor_glare.py --                 # check only
-    blender --background --python compositor_glare.py -- --output n.png  # + render
+    blender --background --python compositor_glare.py --                   # check only
+    blender --background --python compositor_glare.py -- --threshold-high   # must fail
+    blender --background --python compositor_glare.py -- --output n.png    # + render
 """
 import bpy
 import sys
@@ -337,9 +342,14 @@ def main():
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--samples", type=int, default=32, help="--output sample count")
     p.add_argument("--width", type=int, default=1280, help="--output width; height is width*9/16")
+    p.add_argument("--threshold-high", action="store_true",
+                   help="falsifier: Threshold=10.0, still assert Threshold==1.0")
     args = p.parse_args(argv)
 
     scene, tree, glare = build_scene()
+    if args.threshold_high:
+        glare.inputs['Threshold'].default_value = 10.0
+
     code = check_structure(scene, tree, glare)
     if code:
         return code

@@ -31,3 +31,20 @@ blender --background --python unapplied_scale_gltf.py --
 blender --background --python unapplied_scale_gltf.py -- --identity
 blender --background --python unapplied_scale_gltf.py -- --bake
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+| 3 | Pathology missing: unapplied non-uniform scale (`--identity` lands here) |
+| 4 | Export handling failed (`--bake` lands here) |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--identity` or `--bake`.

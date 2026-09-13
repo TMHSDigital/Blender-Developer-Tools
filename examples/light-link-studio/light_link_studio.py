@@ -20,10 +20,14 @@ deterministic tiny-sample CPU renders. The API is stable between Blender
 4.5 LTS and 5.1 (ObjectLightLinking with
 receiver_collection/blocker_collection on both).
 
+``--skip-link`` leaves ``receiver_collection`` unset and still asserts the
+hero collection. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs the two-render correctness check (no gallery still) — the
 CI smoke check. Pass --output to also render a still:
 
     blender --background --python light_link_studio.py --                 # check only
+    blender --background --python light_link_studio.py -- --skip-link     # must fail
     blender --background --python light_link_studio.py -- --output l.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile, shutil
@@ -288,7 +292,7 @@ def render_lumas(sc, tmp, name, hero, decoy):
     return out[0], out[1]
 
 
-def check(sc, key, hero_c, hero, decoy):
+def check(sc, key, hero_c, hero, decoy, skip_link=False):
     # contract 0 (RNA guard): the API is on the light OBJECT
     ld = key.data
     if hasattr(ld, "light_linking"):
@@ -300,7 +304,7 @@ def check(sc, key, hero_c, hero, decoy):
         return 4
 
     # contract 1 (assignment round-trip through the API itself)
-    key.light_linking.receiver_collection = hero_c
+    key.light_linking.receiver_collection = None if skip_link else hero_c
     if key.light_linking.receiver_collection != hero_c:
         print("ERROR: receiver_collection assignment did not read back",
               file=sys.stderr)
@@ -398,12 +402,15 @@ def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
+    p.add_argument("--skip-link", action="store_true",
+                   help="falsifier: leave receiver_collection unset, still assert hero_c")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     hero, decoy, hero_c, key = build_studio(sc)
-    code = check(sc, key, hero_c, hero, decoy)
+    code = check(sc, key, hero_c, hero, decoy, skip_link=args.skip_link)
+
     if code:
         return code
 

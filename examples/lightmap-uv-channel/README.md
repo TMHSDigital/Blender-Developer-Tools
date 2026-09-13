@@ -87,7 +87,27 @@ blender --background --python lightmap_uv_channel.py -- --output atlas.png
 blender --background --python lightmap_uv_channel.py -- --falsify overlap.png
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
-on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper. `11` is the shared asset-quality
+helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | UV layer names ≠ UV0 / UV1 |
+| 4 | UVMap / UV1 render/clone flags wrong after re-assert |
+| 5 | Channel 0 (UV0) touched by the UV1 unwrap |
+| 6 | UV1 loops outside `[0,1]` |
+| 7 | SAT overlap self-test failed, or UV1 triangle pairs overlap |
+| 8 | Min island distance below margin |
+| 9 | Part is not watertight |
+| 10 | Gallery framing violation; also `--output` produced no file |
+| 11 | Gallery asset-quality violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--falsify`.

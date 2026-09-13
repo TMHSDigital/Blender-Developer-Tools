@@ -36,3 +36,25 @@ the Clear plate tagged and exit 7.
 
 The `--output` render path measures framing against the Layer 1 band via
 `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also an active object existed after the data-API build |
+| 3 | Custom ID property did not land |
+| 4 | `property_unset` on a custom ID key did not TypeError, or it deleted the key |
+| 5 | `del` did not report removal |
+| 6 | Keep plate lost the ID property |
+| 7 | Clear plate still has the ID property (`--skip-delete` / `--unset-instead` land here) |
+| 10 | Gallery framing violation |
+| 12 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--skip-delete`, or `--unset-instead`.

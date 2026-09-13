@@ -12,10 +12,15 @@ gets wrong across the 4.5 LTS → 5.1 window:
 4. ``sun_elevation`` is load-bearing: raising it brightens zenith luminance
    — proven with two tiny Cycles EXR probes (straight-up camera) in one check.
 
+``--unlink-sky`` drops the Sky → Background Color link and still asserts
+the chain. That is the falsifier (``--same-axis`` in export-preset-axis).
+The sky_type / dust_density version traps are untouched.
+
 By default it runs the correctness check (tiny Cycles CPU renders, no gallery
 still). Pass --output to also render a still:
 
     blender --background --python sky_texture_sun_elevation.py --
+    blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
     blender --background --python sky_texture_sun_elevation.py -- --output s.png
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile, shutil
@@ -304,7 +309,12 @@ def check_links(world):
     return 0
 
 
-def check(sc, world, sky, bg):
+def check(sc, world, sky, bg, unlink_sky=False):
+    if unlink_sky:
+        nt = world.node_tree
+        for link in list(nt.links):
+            if link.from_node == sky and link.to_node.name == "Background":
+                nt.links.remove(link)
     code = check_links(world)
     if code:
         return code
@@ -502,11 +512,16 @@ def main():
         choices=("eevee", "cycles"),
         help="render engine for --output (cycles default: sky is a Cycles strength)",
     )
+    p.add_argument(
+        "--unlink-sky",
+        action="store_true",
+        help="falsifier: drop Sky→Background link, still assert the chain",
+    )
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     sc, world, sky, bg = build_scene()
-    code = check(sc, world, sky, bg)
+    code = check(sc, world, sky, bg, unlink_sky=args.unlink_sky)
     if code:
         return code
 

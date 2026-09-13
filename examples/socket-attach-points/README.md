@@ -123,11 +123,35 @@ blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally gates framing
-via `examples/gallery_framing.py` (fill **0.881x**, margins
+The `--output` render path additionally gates framing via
+`examples/gallery_framing.py` (fill **0.881x**, margins
 **0.066/0.053/0.122/0.106**, no edge touched) and the asset floors via
 `examples/gallery_asset_quality.py` (32 materials, `edge90` **0.027**, no
 default names). The `--falsify` render is a diagnostic, not a gallery hero, so
 it takes a documented framing deviation — its whole point is that the modules
 leave the frame.
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper. `11` is the shared asset-quality
+helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Socket world matrix, orthonormal basis, or determinant |
+| 4 | Socket pad normal, origin, or up-axis rule |
+| 5 | Module seating / mount axis / leftover local transform |
+| 6 | Population, namespace, default datablock name, SKT_ prefix, or skid plane |
+| 7 | Re-pose: socket or module lost the root |
+| 8 | Parent-inverse clear, child scale pushdown, or post-apply module drift |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+| 11 | Gallery asset-quality violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--falsify`, or `--probe`.

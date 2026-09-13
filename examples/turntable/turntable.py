@@ -10,7 +10,12 @@ the rotation keys, sample the object's Z rotation at frame 1 vs a later frame, a
 they DIFFER -- proving the keys drive playback. Exits non-zero on failure. This is the check
 the CI smoke gate runs on both builds.
 
+``--no-keys`` skips inserting the rotation keys and still asserts they drive playback.
+That is the falsifier (``--same-axis`` in export-preset-axis). The EEVEE-id
+era check is untouched.
+
     blender --background --python turntable.py --                 # correctness check only
+    blender --background --python turntable.py -- --no-keys       # must fail
     blender --background --python turntable.py -- --output t.png  # also render one still
     blender --background --python turntable.py -- --output t.png --engine cycles  # GPU-less
 """
@@ -29,7 +34,7 @@ def get_channelbag_for_slot(action, slot):
     strip = layer.strips[0] if layer.strips else layer.strips.new(type='KEYFRAME')
     return strip.channelbag(slot, ensure=True)
 
-def build():
+def build(no_keys=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.mesh.primitive_monkey_add(location=(0, 0, 1.0))
     obj = bpy.context.active_object
@@ -48,11 +53,12 @@ def build():
         slot = act.slots.new(id_type='OBJECT', name=obj.name); obj.animation_data.action_slot = slot
     cbag = get_channelbag_for_slot(act, slot)
     fc = cbag.fcurves.new("rotation_euler", index=2)
-    fc.keyframe_points.insert(1, 0.0)
-    fc.keyframe_points.insert(FRAMES, math.radians(360))
-    for kp in fc.keyframe_points:
-        kp.interpolation = 'LINEAR'
-    fc.update()
+    if not no_keys:
+        fc.keyframe_points.insert(1, 0.0)
+        fc.keyframe_points.insert(FRAMES, math.radians(360))
+        for kp in fc.keyframe_points:
+            kp.interpolation = 'LINEAR'
+        fc.update()
     return obj
 
 def correctness(obj):
@@ -122,6 +128,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None, help="optional: render one still to this PNG")
     p.add_argument("--engine", choices=["auto", "cycles"], default="auto")
+    p.add_argument("--no-keys", action="store_true",
+                   help="falsifier: skip rotation keys, still assert they drive playback")
     args = p.parse_args(argv)
 
     # the EEVEE-id mapping is asserted regardless of whether we render: the
@@ -135,7 +143,7 @@ def main():
         pass  # correctly rejected
     bpy.context.scene.render.engine = eid  # raises TypeError if the helper's id is invalid
 
-    obj = build()
+    obj = build(no_keys=args.no_keys)
     if not correctness(obj):
         print("ERROR: rotation keys do not drive playback", file=sys.stderr); return 3
 

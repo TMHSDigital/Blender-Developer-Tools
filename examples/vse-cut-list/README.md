@@ -112,6 +112,10 @@ explicitly.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python vse_cut_list.py --
 
+# Falsifier: GC T2 -> T1. Must exit non-zero (wiring). `--check-pixels` is a
+# second witness, not this falsifier.
+blender --background --python vse_cut_list.py -- --swap-inputs
+
 # Compositing witness on a tiny render (Cycles CPU, CI-safe):
 blender --background --python vse_cut_list.py -- --check-pixels --engine cycles
 
@@ -119,8 +123,27 @@ blender --background --python vse_cut_list.py -- --check-pixels --engine cycles
 blender --background --python vse_cut_list.py -- --output vse.png
 ```
 
-It exits non-zero on failure and prints every measured value and tolerance on
-success, so CI logs carry the numbers. The `blender-smoke` workflow runs the
-check and the pixel witness on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is also the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | `.sequences` accessor contract for this Blender |
+| 4 | Wrong-era `new_effect` end kwarg or TRANSFORM type did not TypeError |
+| 5 | Strip span or channel off closed form |
+| 6 | `frame_final_*` deprecation bridge for this Blender |
+| 7 | GC wiring or strip `.type` enum (`--swap-inputs` lands here) |
+| 8 | Scene strip span or Stage source |
+| 9 | Mosaic transform, compositing defaults, text body, or strip color |
+| 10 | Save/reload round-trip re-assert failed; also gallery framing violation |
+| 11 | `--output` produced no file |
+| 12 | `--check-pixels` compositing contract |
+
+The `blender-smoke` workflow runs the check and the pixel witness on Blender
+5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the `needs-5.1` PR label, or
+manual dispatch). Smoke does not pass `--output` or `--swap-inputs`.

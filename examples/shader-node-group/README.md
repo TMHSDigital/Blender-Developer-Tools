@@ -18,12 +18,31 @@ colors.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python shader_node_group.py --
 
+# Falsifier: identical instance Tints. Must exit non-zero.
+blender --background --python shader_node_group.py -- --same-tint
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python shader_node_group.py -- --output spheres.png
 blender --background --python shader_node_group.py -- --output spheres.png --engine cycles
 ```
 
-It exits non-zero on failure (missing interface sockets, unshared group, or identical
-instance parameters). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Interface sockets missing Tint / Roughness / Shader |
+| 4 | Group datablock `users` ≠ 2 |
+| 5 | Instance points at a different node tree |
+| 6 | Instance Tint values identical (`--same-tint` lands here) |
+| 7 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--same-tint`.

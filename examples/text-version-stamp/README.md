@@ -28,15 +28,36 @@ on every LTS build; branch on the `bpy.app.version` tuple instead.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python text_version_stamp.py --
 
+# Falsifier: body is not version_string. Must exit non-zero.
+blender --background --python text_version_stamp.py -- --wrong-body
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python text_version_stamp.py -- --output stamp.png
 blender --background --python text_version_stamp.py -- --output stamp.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong subclass, missing font, body/version mismatch,
-non-planar flat text, extrude/bevel closed form off, geometry not regenerating, or a
-`to_mesh_clear()` reference surviving). The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The render scales the stamp to a constant width, so the frame
-holds for any version-string length.
+The render scales the stamp to a constant width, so the frame holds for any
+version-string length.
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Not a FONT `TextCurve` with the built-in Bfont |
+| 4 | `body` is not the live `version_string` (`--wrong-body` lands here) |
+| 5 | Flat text is not a filled planar mesh |
+| 6 | Extrude / bevel closed form failed |
+| 7 | Appending characters did not widen the text |
+| 8 | Mesh survived `to_mesh_clear()` |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--wrong-body`.

@@ -17,9 +17,15 @@ gets wrong across the 4.5 LTS → 5.1 window:
 The check evaluates the modifier through the depsgraph (no bake required)
 and asserts stroke/point lower bounds against the known failure modes above.
 
+``--no-contour`` clears ``use_contour`` after the modifier is built and
+still asserts it is True. That is the falsifier (``--same-axis`` in
+export-preset-axis). The GPv3 address shim and the thickness/radius trap
+are untouched.
+
 By default it runs the correctness check only. Pass --output to render:
 
     blender --background --python gp_lineart_contour.py --
+    blender --background --python gp_lineart_contour.py -- --no-contour
     blender --background --python gp_lineart_contour.py -- --output l.png
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -415,10 +421,18 @@ def main():
         choices=("eevee", "cycles"),
         help="render engine for --output",
     )
+    p.add_argument(
+        "--no-contour",
+        action="store_true",
+        help="falsifier: use_contour=False, still assert True",
+    )
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     sc, crystal, la_ob, mod = build_scene()
+    if args.no_contour:
+        mod.use_contour = False
+
     code = check(sc, crystal, la_ob, mod)
     if code:
         return code

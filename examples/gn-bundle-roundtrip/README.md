@@ -43,3 +43,23 @@ not read at thumbnail.
 blender --background --python gn_bundle_roundtrip.py --
 blender --background --python gn_bundle_roundtrip.py -- --force-run
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `77` is the smoke skip protocol, not a product check.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; carrier mesh rewritten; `--legacy-rna` on 5.x |
+| 3 | Evaluated vert/face count off closed form (`--mismatch`) |
+| 4 | Unpacked Scale/Offset x-extent off (`--bypass`) |
+| 5 | `bundle_mark` missing or off closed form |
+| 77 | `SMOKE_SKIP:` Bundles require Blender 5.0+ |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the
+weekly cron, the `needs-5.1` PR label, or manual dispatch) and skips on 4.5
+LTS. Smoke does not pass `--bypass`, `--legacy-rna`, `--mismatch`, or
+`--force-run`.

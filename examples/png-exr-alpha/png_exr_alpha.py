@@ -10,11 +10,14 @@ float precision. A byte image (`float_buffer=False`) writes **8-bit** PNG
 with straight alpha and only pays ordinary quantization.
 
 AI-generated Blender code commonly trusts `Image.save()` to PNG for float
-RGBA scratch buffers (masks, ID mattes, AOVs). Pass --output to also render
-a staged still of two framed verification displays: left is the PNG-mangled
-reload, right is the EXR-clean reload.
+RGBA scratch buffers (masks, ID mattes, AOVs). ``--opaque-alpha`` authors
+every pixel at alpha 1.0 and still asserts the float→PNG error floor.
+That is the falsifier (``--same-axis`` in export-preset-axis). Pass --output
+to also render a staged still of two framed verification displays: left is
+the PNG-mangled reload, right is the EXR-clean reload.
 
     blender --background --python png_exr_alpha.py --
+    blender --background --python png_exr_alpha.py -- --opaque-alpha
     blender --background --python png_exr_alpha.py -- --output alpha.png
 """
 import bpy
@@ -86,11 +89,12 @@ def expected_byte_png_rgba(r, g, b, a):
     return (q8(r), q8(g), q8(b), q8(a))
 
 
-def fill_pattern(img):
+def fill_pattern(img, opaque_alpha=False):
     buf = [0.0] * (W * H * 4)
+    alphas = [1.0] * W if opaque_alpha else ALPHAS
     for y, rgb in enumerate(COLORS):
         r, g, b = rgb
-        for x, a in enumerate(ALPHAS):
+        for x, a in enumerate(alphas):
             i = (y * W + x) * 4
             buf[i : i + 4] = [r, g, b, a]
     img.pixels.foreach_set(buf)
@@ -169,7 +173,7 @@ def png_bit_depth(path):
     return None, None
 
 
-def check():
+def check(opaque_alpha=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
     # --- Closed-form worst case on this palette (independent of Blender) ---
@@ -198,7 +202,7 @@ def check():
     img_f = new_float_image("FloatSrc")
     if not img_f.is_float:
         return fail("float_buffer=True image reports is_float=False", 3)
-    orig = fill_pattern(img_f)
+    orig = fill_pattern(img_f, opaque_alpha=opaque_alpha)
     png_got, png_path = save_and_reload(img_f, "PNG", "png")
 
     bit, color = png_bit_depth(png_path)
@@ -651,9 +655,13 @@ def main():
         "--engine", default="eevee", choices=("eevee", "cycles"),
         help="render engine for --output (cycles for GPU-less hosts)",
     )
+    p.add_argument(
+        "--opaque-alpha", action="store_true",
+        help="falsifier: author alpha=1.0, still assert the float→PNG error floor",
+    )
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(opaque_alpha=args.opaque_alpha)
     if code != 0:
         return code
     if args.output:

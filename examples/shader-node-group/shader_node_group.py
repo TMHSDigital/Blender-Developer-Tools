@@ -8,10 +8,15 @@ interface carries the declared sockets, both materials share the same group
 datablock (users == 2), and their instance-level Tint values differ — the
 whole point of grouping.
 
+``--same-tint`` copies SphereA's Tint onto both instances and still asserts
+the values differ. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python shader_node_group.py --                 # check only
+    blender --background --python shader_node_group.py -- --same-tint     # must fail
     blender --background --python shader_node_group.py -- --output s.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -59,7 +64,7 @@ def material_from_group(name, tree, tint):
     return mat
 
 
-def build_scene():
+def build_scene(same_tint=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     tree = build_group()
     objs = []
@@ -75,7 +80,8 @@ def build_scene():
         obj.location = (-1.35 + i * 2.7, 0.0, 1.0)
         for poly in me.polygons:
             poly.use_smooth = True
-        me.materials.append(material_from_group(f"Mat.{name}", tree, tint))
+        inst_tint = TINTS["SphereA"] if same_tint else tint
+        me.materials.append(material_from_group(f"Mat.{name}", tree, inst_tint))
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     return tree, objs
@@ -199,9 +205,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--same-tint", action="store_true",
+                   help="falsifier: identical instance Tints, still assert they differ")
     args = p.parse_args(argv)
 
-    tree, objs = build_scene()
+    tree, objs = build_scene(same_tint=args.same_tint)
+
     code = check(tree, objs)
     if code:
         return code

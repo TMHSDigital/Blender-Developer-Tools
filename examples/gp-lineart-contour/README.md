@@ -36,11 +36,31 @@ not zeroing strokes (exit 6), flags-off or restore failure (exit 7).
 # Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
 
+# Falsifier: use_contour off. Must exit non-zero.
+blender --background --python gp_lineart_contour.py -- --no-contour
+
 # Also render the gallery still:
 blender --background --python gp_lineart_contour.py -- --output lineart.png
 ```
 
-It exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also GPv3 collection address contract |
+| 3 | LINEART `thickness` / `radius` trap for this Blender |
+| 4 | LINEART type, source, or `use_contour` (`--no-contour` lands here) |
+| 5 | Evaluated contour too thin |
+| 6 | Cleared `source_object` still produced strokes |
+| 7 | Contour+crease off still produced strokes, or restore failed |
+| 8 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-contour`.
