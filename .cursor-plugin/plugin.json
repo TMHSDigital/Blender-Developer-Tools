@@ -138,6 +138,8 @@
     "examples/wave-displace"
   ],
   "showcase": [
-    "showcase/shipping-crate"
+    "showcase/shipping-crate",
+    "showcase/stone-well",
+    "showcase/wooden-barrel"
   ]
 }
