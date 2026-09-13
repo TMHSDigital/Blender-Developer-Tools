@@ -144,6 +144,7 @@
     "showcase/campfire",
     "showcase/market-stall",
     "showcase/street-lantern",
-    "showcase/treasure-chest"
+    "showcase/treasure-chest",
+    "showcase/terrain-scatter"
   ]
 }

@@ -88,6 +88,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "terrain-scatter",
+      "dir": "showcase/terrain-scatter",
+      "teaches": "A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1194 tris, two materials with 486 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.655 m, LOD ratios in band, convex collider 52 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/terrain-scatter-hero.webp",
+      "preview": "showcase/terrain-scatter/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

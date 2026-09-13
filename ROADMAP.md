@@ -111,7 +111,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Wooden barrel showcase~~ **SHIPPED** as `showcase/wooden-barrel/` — bulged staves, four iron hoops, lid heads; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Campfire showcase~~ **SHIPPED** as `showcase/campfire/` — two-course fire ring, log tripod; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Market stall showcase~~ **SHIPPED** as `showcase/market-stall/` — timber frame, slatted counter, striped awning; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Procedural terrain or landscape showcase using Geometry Nodes scatter
+- ~~Procedural terrain or landscape showcase using Geometry Nodes scatter~~ **SHIPPED** as `showcase/terrain-scatter/` — GN sine-hill Mesh Grid, Index-jittered Instance-on-Points scatter replaced with bevelled masonry; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece~~ **SHIPPED** as `showcase/street-lantern/` and `showcase/treasure-chest/` — hanging iron lantern with muntined amber cage; slatted chest with iron bands and an open lid; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece
 - Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece
