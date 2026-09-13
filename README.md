@@ -24,7 +24,8 @@
 <p align="center">
   <a href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/">Examples Gallery</a>
   &nbsp;&bull;&nbsp; <a href="#quick-start">Quick start</a>
-  &nbsp;&bull;&nbsp; <a href="#examples">Examples</a>
+  &nbsp;&bull;&nbsp;   <a href="#examples">Examples</a>
+  &nbsp;&bull;&nbsp; <a href="showcase/">Showcase</a>
   &nbsp;&bull;&nbsp; <a href="skills/">Skills</a>
   &nbsp;&bull;&nbsp; <a href="rules/">Rules</a>
   &nbsp;&bull;&nbsp; <a href="templates/">Templates</a>
@@ -45,7 +46,8 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, engine export presets |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
-| **Snippets** | 24 small standalone Python files demonstrating canonical patterns |
+| **Snippets** | 27 small standalone Python files demonstrating canonical patterns |
+| **Showcase** | Budget-conformance props under [`showcase/`](showcase/). Not examples. Conventions: [`showcase/README.md`](showcase/README.md) |
 
 ## Quick start
 

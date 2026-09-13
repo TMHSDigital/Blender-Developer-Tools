@@ -22,7 +22,8 @@ rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 27 total
 examples/<name>/               - Runnable smoke-gated examples, 59 total (+ gallery.json)
-scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
+showcase/<name>/               - Budget-conformance props, 0 pieces (sibling of examples/; see showcase/README.md)
+scripts/build_gallery.py       - Regenerates docs/gallery/ from examples/gallery.json + showcase/gallery.json
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
 VERSION                        - Source of truth for the repo version
