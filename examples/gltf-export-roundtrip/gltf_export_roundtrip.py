@@ -8,8 +8,11 @@ code most often gets silently wrong:
    data itself — (x, y, z) -> (x, z, -y) on disk — with no node rotation.
    The check parses the exported .gltf JSON and asserts the POSITION accessor
    bounds equal the axis-converted evaluated bounding box, and that the node
-   carries neither rotation nor scale. Exporting with ``export_yup=False``
-   writes raw Z-up data that every engine will display lying on its back.
+   carries neither rotation nor scale. ``--no-yup`` exports with
+   ``export_yup=False`` and still runs that bbox check, so the +Y-up
+   conversion fails. That is the falsifier (``--same-axis`` in
+   export-preset-axis). Exporting with ``export_yup=False`` writes raw Z-up
+   data that every engine will display lying on its back.
 2. Modifiers ship evaluated geometry. ``export_apply=True`` applies the
    crate's bevel modifier: the re-imported mesh matches the
    depsgraph-evaluated mesh, not the base cage. With ``export_apply=False``
@@ -32,6 +35,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gltf_export_roundtrip.py --                 # check only
+    blender --background --python gltf_export_roundtrip.py -- --no-yup        # must fail
     blender --background --python gltf_export_roundtrip.py -- --output c.png  # + render
 """
 import bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
@@ -244,7 +248,7 @@ def read_gltf(path):
 # ---------------------------------------------------------------------------
 # The check. Distinct exit codes per contract; measured maxima printed on success.
 # ---------------------------------------------------------------------------
-def check(crate):
+def check(crate, export_kwargs):
     # contract 0 (version guard): every kwarg we rely on still exists.
     exp_props = {p.identifier for p in bpy.ops.export_scene.gltf.get_rna_type().properties}
     imp_props = {p.identifier for p in bpy.ops.import_scene.gltf.get_rna_type().properties}
@@ -285,7 +289,7 @@ def check(crate):
     tmp = tempfile.mkdtemp(prefix="gltf_roundtrip_")
     try:
         path = os.path.join(tmp, "crate.gltf").replace("\\", "/")
-        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+        bpy.ops.export_scene.gltf(filepath=path, **export_kwargs)
 
         # contract 1 (on disk): +Y-up is baked into vertex data, no node transform
         g, acc_floats = read_gltf(path)
@@ -592,13 +596,18 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-yup", action="store_true",
+                   help="export with export_yup=False (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     crate = build_crate()
     for m in make_materials():
         crate.data.materials.append(m)
-    code = check(crate)
+    kwargs = dict(EXPORT_KWARGS)
+    if args.no_yup:
+        kwargs["export_yup"] = False
+    code = check(crate, kwargs)
     if code:
         return code
 

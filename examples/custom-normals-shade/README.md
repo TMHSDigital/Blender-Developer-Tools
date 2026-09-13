@@ -73,12 +73,32 @@ strip light whose reflection exposes every normal discontinuity.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python custom_normals_shade.py --
 
+# Falsifier: mark sharp at 20° while auditing 30°. Must exit non-zero.
+blender --background --python custom_normals_shade.py -- --mismatch-angle
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python custom_normals_shade.py -- --output cans.png
 blender --background --python custom_normals_shade.py -- --output cans.png --engine cycles
 ```
 
-It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral
-mismatch, broken normal welds, custom normals lost or dequantized in
-evaluation, or legacy-operator divergence drift). The `blender-smoke`
-workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Legacy shading API present, or modern path missing |
+| 4 | Non-manifold edges (dihedral test undefined) |
+| 5 | Sharp set ≠ independent dihedral (`--mismatch-angle` lands here) |
+| 6 | Evaluated loop normals not welded/split as the sharp set promises |
+| 7 | Custom split normals lost or dequantized in evaluation |
+| 8 | `shade_auto_smooth` operator behavior drifted from the version split |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--mismatch-angle`.

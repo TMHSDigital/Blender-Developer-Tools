@@ -23,10 +23,15 @@ The Decimate modifier API (``decimate_type='COLLAPSE'``, ``ratio``) is stable
 between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
 is itself the version witness.
 
+``--no-decimate`` leaves the LOD copies without a Decimate modifier and
+still runs the reduction check, so evaluated tris equal the base. That is
+the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python lod_decimate_chain.py --                 # check only
+    blender --background --python lod_decimate_chain.py -- --no-decimate   # must fail
     blender --background --python lod_decimate_chain.py -- --output r.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -195,7 +200,7 @@ def add_decimate(obj, ratio):
     return mod
 
 
-def check(rocket, lod1, lod2):
+def check(rocket, lod1, lod2, no_decimate=False):
     me = rocket.data
     want_v, want_f, want_t = closed_form_counts()
     got = (len(me.vertices), len(me.polygons))
@@ -225,7 +230,8 @@ def check(rocket, lod1, lod2):
 
     measured = []
     for lod, ratio in ((lod1, LODS[0]), (lod2, LODS[1])):
-        add_decimate(lod, ratio)
+        if not no_decimate:
+            add_decimate(lod, ratio)
         snap = eval_mesh(lod)
         # contract 2: triangle count lands near ratio * base, within bounds
         target = ratio * want_t
@@ -396,6 +402,8 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-decimate", action="store_true",
+                   help="skip adding Decimate to the LOD copies (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -406,7 +414,8 @@ def main():
         for m in mats:
             r.data.materials.append(m)
         rockets.append(r)
-    code = check(rockets[0], rockets[1], rockets[2])
+    code = check(rockets[0], rockets[1], rockets[2],
+                 no_decimate=args.no_decimate)
     if code:
         return code
 

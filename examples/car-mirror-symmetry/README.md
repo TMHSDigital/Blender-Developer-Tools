@@ -58,11 +58,39 @@ windshield as a hot salmon slab.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python car_mirror_symmetry.py --
 
+# Falsifier: Mirror X off. Must exit non-zero (evaluated verts stay at n).
+blender --background --python car_mirror_symmetry.py -- --no-mirror
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python car_mirror_symmetry.py -- --output car.png
 blender --background --python car_mirror_symmetry.py -- --output car.png --engine cycles
 ```
 
-It exits non-zero on failure (applied mirror, doubled centerline, unwelded
-seam, broken symmetry, or a mirrored part off its plane origin). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Body datablock is not the authored half |
+| 4 | Authored centerline vert count ≠ 28 |
+| 5 | Evaluated verts ≠ `2n − c` (`--no-mirror` lands here) |
+| 6 | Evaluated on-plane verts ≠ centerline; also `--output` produced no file |
+| 7 | Evaluated Euler characteristic ≠ 2 |
+| 8 | Non-manifold edges in the evaluated shell |
+| 9 | Evaluated verts lack a mirrored partner |
+| 10 | Mirror partner deviation above tolerance |
+| 11 | Evaluated bbox not symmetric about X |
+| 12 | Mirrored-part origin off the plane |
+| 13 | Mirrored-part datablock is not the authored half |
+| 14 | Mirrored-part evaluated counts did not double |
+| 15 | Mirrored-part partner check failed |
+| 16 | Mirrored-part evaluated mesh stayed on one side |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-mirror`.

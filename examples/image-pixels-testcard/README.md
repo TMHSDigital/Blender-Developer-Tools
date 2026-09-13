@@ -57,14 +57,38 @@ and the screen renders as one flat color. The render path creates the layer expl
 # Cheap correctness check (no render) — the CI check:
 blender --background --python image_pixels_testcard.py --
 
+# Falsifier: write the card top-down. Must exit non-zero (byte round-trip).
+blender --background --python image_pixels_testcard.py -- --wrong-origin
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python image_pixels_testcard.py -- --output card.png
 blender --background --python image_pixels_testcard.py -- --output card.png --engine cycles
 ```
 
-It exits non-zero on failure and prints every measured error and tolerance on success,
-so CI logs carry the numbers. The `blender-smoke` workflow runs the check on Blender
-5.2 LTS and 4.5 LTS. In the render, `Closest` interpolation keeps the pixel grid honest —
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Pixel buffer is not always RGBA |
+| 4 | Byte round-trip vs closed-form card (`--wrong-origin` lands here) |
+| 5 | Float-buffer round-trip failed |
+| 6 | `scale()` did not reallocate, or stale-size read succeeded |
+| 7 | `save()` source/buffer-drop contract drifted |
+| 8 | `save_render()` flipped source or disturbed the buffer |
+| 9 | Byte PNG save/reload error |
+| 10 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--wrong-origin`.
+
+In the render, `Closest` interpolation keeps the pixel grid honest —
 the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the
 PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The
 monitor is staged as a designed object — beveled dark-polymer case, machined metal

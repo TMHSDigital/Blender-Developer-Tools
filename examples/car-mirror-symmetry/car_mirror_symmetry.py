@@ -10,10 +10,15 @@ centerline), the evaluated shell is watertight with Euler characteristic 2,
 and the wheels mirror about their object origins sitting ON the symmetry
 plane. Failure is dramatically visible: a car with one side missing.
 
+``--no-mirror`` turns off the Mirror X axis on every mirrored object and
+still runs the evaluated-count check, so the half-car fails ``2n − c``.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python car_mirror_symmetry.py --                 # check only
+    blender --background --python car_mirror_symmetry.py -- --no-mirror     # must fail
     blender --background --python car_mirror_symmetry.py -- --output c.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -269,7 +274,13 @@ def _symmetry_dev(verts, tol_plane):
     return dev, lone
 
 
-def check(objs):
+def check(objs, no_mirror=False):
+    if no_mirror:
+        for ob in [objs["body"]] + [w for w, *_ in objs["mirrored"]]:
+            for mod in ob.modifiers:
+                if mod.type == 'MIRROR':
+                    mod.use_axis[0] = False
+
     body = objs["body"]
     me = body.data
 
@@ -502,10 +513,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-mirror", action="store_true",
+                   help="turn off Mirror X (must fail)")
     args = p.parse_args(argv)
 
     objs = build_car()
-    code = check(objs)
+    code = check(objs, no_mirror=args.no_mirror)
     if code:
         return code
 
