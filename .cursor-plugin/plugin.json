@@ -140,6 +140,7 @@
   "showcase": [
     "showcase/shipping-crate",
     "showcase/stone-well",
-    "showcase/wooden-barrel"
+    "showcase/wooden-barrel",
+    "showcase/campfire"
   ]
 }

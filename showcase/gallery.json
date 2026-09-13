@@ -40,6 +40,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "campfire",
+      "dir": "showcase/campfire",
+      "teaches": "A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 7528 tris, three materials with 116 wood and 18 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.964×0.950×0.252 m, LOD ratios in band, convex collider 105 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/campfire-hero.webp",
+      "preview": "showcase/campfire/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
