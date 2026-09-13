@@ -16,6 +16,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "stone-well",
+      "dir": "showcase/stone-well",
+      "teaches": "A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 8388 tris, three materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.640×1.640×1.688 m, LOD ratios in band, convex collider 230 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/stone-well-hero.webp",
+      "preview": "showcase/stone-well/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
