@@ -278,7 +278,7 @@
 blender --background --python socket_attach_points.py -- --output drone.png
 blender --background --python socket_attach_points.py -- --falsify adrift.png
 blender --background --python socket_attach_points.py -- --probe</code></pre>
-<p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.881x</strong>, margins <strong>0.066/0.053/0.122/0.106</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). The <code>--falsify</code> render is a diagnostic, not a gallery hero, so it takes a documented framing deviation — its whole point is that the modules leave the frame.</p>
+<p>The <code>--output</code> render path additionally gates framing via <code>examples/gallery_framing.py</code> (fill <strong>0.881x</strong>, margins <strong>0.066/0.053/0.122/0.106</strong>, no edge touched) and the asset floors via <code>examples/gallery_asset_quality.py</code> (32 materials, <code>edge90</code> <strong>0.027</strong>, no default names). <code>--falsify</code> is a diagnostic, not a gallery hero: it measures and prints framing but does not enforce the Layer 1 band — modules leave the frame on purpose. <code>--falsify</code> and <code>--probe</code> still exit 0.</p>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
 <p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Socket world matrix, orthonormal basis, or determinant | | 4 | Socket pad normal, origin, or up-axis rule | | 5 | Module seating / mount axis / leftover local transform | | 6 | Population, namespace, default datablock name, SKT_ prefix, or skid plane | | 7 | Re-pose: socket or module lost the root | | 8 | Parent-inverse clear, child scale pushdown, or post-apply module drift | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation | | 11 | Gallery asset-quality violation |</p>
@@ -1359,17 +1359,19 @@ _mat_cache = {}
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     bpy.context.view_layer.update()
 
-    <span class="c"># The gallery still is gated; the --falsify diagnostic is not. Its whole</span>
-    <span class="c"># point is that the modules fly off the airframe, so measuring it against</span>
-    <span class="c"># the Layer 1 band would only ever report the breakage as a framing</span>
-    <span class="c"># violation. The numbers are still printed under an explicit reason.</span>
-    fcode = gallery_framing.check_framing(
-        sc, cam, hero=hero, elements=hero, stage=[floor, wall],
-        deviation=(<span class="s">&quot;falsification diagnostic: the sockets are deliberately &quot;</span>
-                   <span class="s">&quot;unparented, so modules leave the frame — this render is &quot;</span>
-                   <span class="s">&quot;evidence, not a gallery hero&quot;</span>) <span class="k">if</span> falsify <span class="k">else</span> <span class="k">None</span>)
-    <span class="k">if</span> fcode:
-        <span class="k">return</span> fcode
+    <span class="c"># The gallery still is gated by Layer 1. The --falsify diagnostic is not:</span>
+    <span class="c"># modules leave the frame on purpose, so enforcing the band would report</span>
+    <span class="c"># the breakage as a framing violation. Measure and print either way;</span>
+    <span class="c"># enforce only on the gallery path.</span>
+    <span class="k">if</span> falsify:
+        res = gallery_framing.measure_framing(
+            sc, cam, hero=hero, elements=hero, stage=[floor, wall])
+        print(res.report())
+    <span class="k">else</span>:
+        fcode = gallery_framing.check_framing(
+            sc, cam, hero=hero, elements=hero, stage=[floor, wall])
+        <span class="k">if</span> fcode:
+            <span class="k">return</span> fcode
     aqcode = gallery_asset_quality.check_asset_quality(sc, cam, hero=hero,
                                                        stage=[floor, wall])
     <span class="k">if</span> aqcode:

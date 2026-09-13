@@ -54,15 +54,12 @@ render exactly like a failed contract check fails the witness. The gate
 runs only on the opt-in render path; check-only semantics (non-zero ==
 API-contract drift) are unchanged.
 
-Deviations: VISUAL-STYLE Layer 1 allows a documented framing deviation
-when the bleed or the scale is the design — radiating subjects that read
-as extending past the frame, edge-to-edge fields where the fill is the
-point, subjects whose contract is the world or the atmosphere. The
-deviation must be visible in the example's source and render log: pass
-``deviation="reason"`` to `check_framing`, which switches enforcement to
-reporting and prints the reason with the numbers. An empty or whitespace
-reason raises ValueError — a deviation cannot be taken silently. The
-README must carry the same one-line note, exactly as stage deviations do.
+The helper measures; call sites enforce. `check_framing` always applies
+the Layer 1 band (0/10). Compositions whose contract *is* the bleed
+(interior corridor, radiating architecture) do not pass a `deviation=`
+flag — that parameter is gone. They call `measure_framing_deviation`,
+which returns the FramingResult plus a scalar score, and assert their
+own cap at the call site with their own exit code.
 
 Scope: the helper measures the (scene, camera) pair it is handed — pass
 the scene the still actually renders from. Multi-scene examples (e.g.
@@ -70,8 +67,7 @@ vse-cut-list, whose gallery still renders from a dedicated ``Bay`` scene
 while ``bpy.context.scene`` is the cut-list scene) must pass that scene
 and its camera explicitly. Examples whose subject IS the world or the
 atmosphere (sky-texture-sun-elevation) have no renderable hero for the
-matte to isolate — the number mismeasures a reference prop, so they take
-a documented deviation and report rather than enforce.
+matte to isolate — they do not call this helper.
 """
 import os
 import sys
@@ -386,32 +382,44 @@ def measure_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_ST
     return res
 
 
-def check_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_STRATEGY,
-                  deviation=None):
+def deviation_score(res):
+    """How far *res* sits outside the Layer 1 band. 0.0 iff ``res.ok``.
+
+    The score is the max of: fill overshoot past FILL_MAX, fill undershoot
+    below FILL_MIN when neither axis is in band, and the worst margin
+    shortfall below MARGIN_MIN. Call sites that own a bleed composition
+    compare this to their own cap; they do not ask ``check_framing`` to
+    skip enforcement.
+    """
+    fill = max(res.fill_x, res.fill_y)
+    fill_over = max(0.0, fill - FILL_MAX)
+    in_band = any(FILL_MIN <= f <= FILL_MAX for f in (res.fill_x, res.fill_y))
+    fill_under = 0.0 if (in_band or fill > FILL_MAX) else max(0.0, FILL_MIN - fill)
+    margin_short = max(0.0, MARGIN_MIN - min(res.margins.values()))
+    return max(fill_over, fill_under, margin_short)
+
+
+def measure_framing_deviation(scene, camera, hero, elements, stage=(),
+                              strategy=DEFAULT_STRATEGY):
+    """Measure framing and return ``(FramingResult, deviation_score)``.
+
+    Additive: ``check_framing`` still returns 0 or EXIT_FRAMING (10) and
+    is unchanged for callers that ignore this function. Bleed compositions
+    call this, print ``result.report()``, and enforce their own cap.
+    """
+    res = measure_framing(scene, camera, hero, elements, stage=stage, strategy=strategy)
+    return res, deviation_score(res)
+
+
+def check_framing(scene, camera, hero, elements, stage=(), strategy=DEFAULT_STRATEGY):
     """Measure, print the numbers, and gate: 0 pass, EXIT_FRAMING (10) on violation.
 
     Render path only — never call this from an example's check-only path.
-
-    deviation — None (default) enforces the band. A non-empty reason string
-    documents a legitimate framing deviation (VISUAL-STYLE Layer 1): the
-    numbers are still measured and printed with the reason, but the gate
-    reports instead of enforcing and always returns 0. An empty or
-    whitespace-only reason raises ValueError — no silent opt-outs.
+    Always enforces the Layer 1 band. Compositions that must bleed call
+    ``measure_framing_deviation`` and assert at the call site.
     """
-    if deviation is not None and not str(deviation).strip():
-        raise ValueError(
-            "check_framing deviation requires a non-empty reason string; "
-            "a framing deviation cannot be taken silently"
-        )
     res = measure_framing(scene, camera, hero, elements, stage=stage, strategy=strategy)
     print(res.report())
-    if deviation is not None:
-        print(
-            f'framing_deviation reason="{str(deviation).strip()}" '
-            f"enforcement=report fill_ok={res.fill_ok} "
-            f"margins_ok={res.margins_ok} (numbers printed, gate not enforced)"
-        )
-        return 0
     if not res.ok:
         print(
             "ERROR: framing violation — Layer 1 requires fill "

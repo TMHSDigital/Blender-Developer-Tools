@@ -70,10 +70,11 @@ needed.
 
 **Framing deviation:** the still is an interior corridor run — the envelope
 surrounds the camera on five sides and the tiling joints are the proof, so
-the subject reads as extending past the frame (the radiating-architecture
-class of VISUAL-STYLE Layer 1). `check_framing` measures and reports
-(fill 1.000/1.000, all-edge bleed) without enforcing, with the reason
-string at the call site.
+the subject reads as extending past the frame. The helper measures;
+this example enforces a projection-space fill-over cap (`FRAME_DEV_MAX =
+8.0`). Gallery camera scores ~5.06 (pass). `--close-camera` scores ~30.9
+and exits 10. Silhouette saturates at fill 1.0, so the cap is measured
+with `strategy="projection"`.
 
 ## Run
 
@@ -81,13 +82,14 @@ string at the call site.
 blender --background --python modular_kit_snap.py --
 blender --background --python modular_kit_snap.py -- --output corridor.png
 blender --background --python modular_kit_snap.py -- --falsify seams.png
+blender --background --python modular_kit_snap.py -- --output close.png --close-camera
 ```
 
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it. `10` is the shared framing helper. `11` is the shared asset-quality
-helper.
+against it. `10` is this example's framing-deviation cap (call site, not
+the shared Layer 1 helper). `11` is the shared asset-quality helper.
 
 | Code | Meaning |
 | --- | --- |
@@ -101,8 +103,9 @@ helper.
 | 7 | Boundary edge count, non-manifold edges, or rim off the end planes |
 | 8 | Detail part not watertight |
 | 9 | Detail part reaches a tile boundary; also `--output` produced no file |
+| 10 | Framing deviation score exceeds cap (`--close-camera`) |
 | 11 | Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
-Smoke does not pass `--output` or `--falsify`.
+Smoke does not pass `--output`, `--falsify`, or `--close-camera`.

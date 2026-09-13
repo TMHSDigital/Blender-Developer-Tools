@@ -40,8 +40,10 @@ entry in `showcase/gallery.json`, and a rendered still.
 - **Rendered still and gallery entry.** Showcase pieces are visual by
   definition. The pathology / sidecar exemption does not apply. Call
   `examples/gallery_framing.check_framing` on the `--output` path only.
-  Do not pass `deviation=`. Do not move or modify `gallery_framing.py` —
-  import it by resolving the repo root (see the shipping-crate script).
+  The `deviation=` parameter is gone; bleed compositions call
+  `measure_framing_deviation` and assert at the call site. Do not move
+  or modify `gallery_framing.py` — import it by resolving the repo root
+  (see the shipping-crate script).
 - **Composition.** The README names which shipped skills and snippets the
   piece composes. Duplicated helpers stay inlined or copied; showcase
   scripts do not import snippets as a package.
