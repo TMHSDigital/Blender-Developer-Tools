@@ -110,6 +110,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Round stone well showcase~~ **SHIPPED** as `showcase/stone-well/` — running-bond brick well, shingled pyramid roof, windlass/rope/bucket; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wooden barrel showcase~~ **SHIPPED** as `showcase/wooden-barrel/` — bulged staves, four iron hoops, lid heads; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Campfire showcase~~ **SHIPPED** as `showcase/campfire/` — cobble ring, ash mound, crossed logs; `--skip-decimate` exits 9 on the LOD1 ratio band
+- ~~Market stall showcase~~ **SHIPPED** as `showcase/market-stall/` — timber frame, striped awning, counter; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Procedural terrain or landscape showcase using Geometry Nodes scatter
 - Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece
 - Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)
