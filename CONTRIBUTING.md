@@ -143,6 +143,21 @@ and the product scripts that self-skip: `examples/gn-bundle-roundtrip/`,
 `examples/exit-pre-sidecar/`). A script under test prints `SMOKE_SKIP:` and
 exits 77; the runner records SKIP and returns 0 so the YAML step stays green.
 
+**Version-gated falsifiers.** A falsifier for a cross-version removal or
+rename is version-gated by nature. It exits its documented code on versions
+where the API changed and exits 0 on versions where the old API still works.
+That is the correct witness: the naive script is still valid on the older
+binaries. It differs from every other falsifier in the tree (for example
+`--same-axis`), which is red on all three versions.
+
+Do not "fix" these flags to fail unconditionally. The examples that behave
+this way:
+
+- `examples/vse-linear-modifiers/` (`--assume-present`)
+- `examples/gn-socket-rename/` (`--legacy-ids`)
+- `examples/eval-mesh-datablock-name/` (`--assume-distinct-names`)
+- `examples/mesh-automasking-settings/` (`--assume-brush-attrs`)
+
 ## Standards-version Markers
 
 Files that participate in ecosystem drift checking must carry a `standards-version` marker matching the current meta-repo `STANDARDS_VERSION` (which is decoupled from this repo's `VERSION`):
