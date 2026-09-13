@@ -49,11 +49,30 @@ thumbnail scale without faking annotation.
 
 ```bash
 blender --background --python mesh_hygiene_audit.py --
+blender --background --python mesh_hygiene_audit.py -- --inject-ngon
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --engine cycles
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
-on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Ngon present (`--inject-ngon` lands here) |
+| 4 | Loose vertices |
+| 5 | Non-manifold or boundary edges |
+| 6 | Zero-area faces |
+| 7 | Signed volume ≤ 0 |
+| 8 | Euler characteristic ≠ 2 |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--inject-ngon`.

@@ -62,11 +62,38 @@ the pixels prove the flat-vs-checker split (measured on 5.1.2: hazard spread
 # Cheap correctness check (no render) — the CI check:
 blender --background --python uv_layer_grid.py --
 
+# Falsifier: pre-create a UV layer on the silent-no-op probe. Must exit non-zero.
+blender --background --python uv_layer_grid.py -- --precreate-on-hazard
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python uv_layer_grid.py -- --output uv.png
 blender --background --python uv_layer_grid.py -- --output uv.png --engine cycles
 ```
 
-It exits non-zero on failure and prints every measured error and tolerance on
-success, so CI logs carry the numbers. The `blender-smoke` workflow runs the
-check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. This example does not call the gallery framing helper; `10`
+is the missing-render-file check.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Silent-no-op hazard gone (`--precreate-on-hazard` lands here) |
+| 4 | Grid topology drifted |
+| 5 | Pre-create + calc_uvs did not persist one UV layer |
+| 6 | calc_uvs closed-form error |
+| 7 | Mesh UV round-trip error |
+| 8 | calc_uvs=False unexpectedly created a UV layer |
+| 9 | Explicit UV assignment error |
+| 10 | `--output` produced no file |
+| 11 | Broken panel is not flat |
+| 12 | Broken panel is not texel-(0,0) teal |
+| 13 | Repaired panel is not a checker |
+| 14 | Broken and repaired panels render identically |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--precreate-on-hazard`.

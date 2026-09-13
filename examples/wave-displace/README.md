@@ -25,10 +25,28 @@ to `examples/gallery_framing.py`, call it with
 # Cheap correctness check (no render) — the CI check:
 blender --background --python wave_displace.py --
 
+# Falsifier: skip the foreach_set displacement. Must exit non-zero (z-span).
+blender --background --python wave_displace.py -- --flat
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python wave_displace.py -- --output wave.png
 blender --background --python wave_displace.py -- --output wave.png --engine cycles
 ```
 
-It exits non-zero on failure (span wrong, or any vertex off the closed form). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 4 | Z-span not in the closed-form band (`--flat` lands here) |
+| 5 | A vertex is off the closed-form wave |
+| 6 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--flat`.

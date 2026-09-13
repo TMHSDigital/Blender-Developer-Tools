@@ -49,11 +49,30 @@ broken state is in-frame by design.
 
 ```bash
 blender --background --python degenerate_bevel_weld.py --
+blender --background --python degenerate_bevel_weld.py -- --both-safe
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png --engine cycles
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
-on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Safe bevel produced zero-area faces |
+| 4 | Degenerate bevel zero-area count ≠ closed form (`--both-safe` lands here) |
+| 5 | min_area collapse under 1e5× |
+| 6 | Coincident-position count off the closed form |
+| 7 | Safe GLB carries degenerate triangles |
+| 8 | Degenerate GLB triangle or position count drifted |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--both-safe`.

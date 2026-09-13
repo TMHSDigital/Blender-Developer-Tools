@@ -17,10 +17,28 @@ faces). If an op leaks geometry or a face fails to close, the math catches it.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python bmesh_gear.py --
 
+# Falsifier: skip the extrude. Must exit non-zero (topology).
+blender --background --python bmesh_gear.py -- --no-extrude
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python bmesh_gear.py -- --output gear.png
 blender --background --python bmesh_gear.py -- --output gear.png --engine cycles
 ```
 
-It exits non-zero on failure (topology mismatch or non-manifold edges). The `blender-smoke`
-workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Topology ≠ closed form (`--no-extrude` lands here) |
+| 4 | Non-manifold edges |
+| 6 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-extrude`.

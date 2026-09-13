@@ -59,14 +59,32 @@ made visible.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python triangulate_tangents.py --
 
+# Falsifier: every UV at (0, 0). Must exit non-zero (authored UV closed form).
+blender --background --python triangulate_tangents.py -- --zero-uv
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python triangulate_tangents.py -- --output buckler.png
 blender --background --python triangulate_tangents.py -- --output buckler.png --engine cycles
 ```
 
-It exits non-zero on failure (topology drift, reallocated UV layer,
-non-orthonormal basis, bitangent-convention drift, formula excursion, or a
-flip inside a smooth field). The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Loop-triangle count ≠ closed form |
+| 4 | Re-fetched UV layer drifted from the polar field (`--zero-uv` lands here) |
+| 5 | Tangent basis not orthonormal |
+| 6 | Bitangent ≠ sign × (n × t) |
+| 7 | Tangents deviate from the edge/UV closed form |
+| 8 | Flipped tangent inside a clean triangle |
+| 10 | Gallery framing violation; also `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--zero-uv`.

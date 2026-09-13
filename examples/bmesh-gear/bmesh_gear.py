@@ -7,10 +7,15 @@ topology is exactly predictable. The check asserts the closed-form counts —
 verts = 2 x (4 x teeth), faces = sides + 2 caps, edges = 3 x profile — and
 that the mesh is watertight (every edge borders exactly 2 faces).
 
+``--no-extrude`` skips the face-region extrude and still runs the closed-form
+count check, so verts stay at one ring. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python bmesh_gear.py --                 # check only
+    blender --background --python bmesh_gear.py -- --no-extrude    # must fail
     blender --background --python bmesh_gear.py -- --output g.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -39,16 +44,17 @@ def gear_profile():
     return [(r * math.cos(a), r * math.sin(a), 0.0) for a, r in coords]
 
 
-def build_gear():
+def build_gear(no_extrude=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     me = bpy.data.meshes.new("Gear")
     bm = bmesh.new()
     try:
         verts = [bm.verts.new(co) for co in gear_profile()]
         face = bm.faces.new(verts)
-        ext = bmesh.ops.extrude_face_region(bm, geom=[face])
-        top_verts = [e for e in ext["geom"] if isinstance(e, bmesh.types.BMVert)]
-        bmesh.ops.translate(bm, verts=top_verts, vec=(0.0, 0.0, DEPTH))
+        if not no_extrude:
+            ext = bmesh.ops.extrude_face_region(bm, geom=[face])
+            top_verts = [e for e in ext["geom"] if isinstance(e, bmesh.types.BMVert)]
+            bmesh.ops.translate(bm, verts=top_verts, vec=(0.0, 0.0, DEPTH))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(me)
     finally:
@@ -193,9 +199,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-extrude", action="store_true",
+                   help="skip the face-region extrude (must fail)")
     args = p.parse_args(argv)
 
-    obj = build_gear()
+    obj = build_gear(no_extrude=args.no_extrude)
     code = check(obj)
     if code:
         return code

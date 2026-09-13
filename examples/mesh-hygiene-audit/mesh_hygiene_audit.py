@@ -15,6 +15,7 @@ By default it runs only the correctness check (no render). Pass --output
 to also render a still:
 
     blender --background --python mesh_hygiene_audit.py --
+    blender --background --python mesh_hygiene_audit.py -- --inject-ngon
     blender --background --python mesh_hygiene_audit.py -- --output h.png
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -577,10 +578,14 @@ def main():
         "--engine", default="eevee", choices=("eevee", "cycles"),
         help="render engine for --output",
     )
+    p.add_argument("--inject-ngon", action="store_true",
+                   help="dissolve one edge into an ngon (must fail)")
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     sc, ob = build_scene()
+    if args.inject_ngon:
+        inject_defect(ob.data, "ngon")
     code = check(ob.data)
     if code:
         return code

@@ -12,6 +12,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python wave_displace.py --                 # check only
+    blender --background --python wave_displace.py -- --flat          # must fail
     blender --background --python wave_displace.py -- --output w.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -133,10 +134,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--flat", action="store_true",
+                   help="skip the foreach_set displacement (must fail)")
     args = p.parse_args(argv)
 
     obj = build_grid()
-    n = displace(obj.data)
+    n = len(obj.data.vertices) if args.flat else displace(obj.data)
     code = check(obj, n)
     if code:
         return code
