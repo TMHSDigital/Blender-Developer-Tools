@@ -133,6 +133,9 @@ jobs:
       - name: Check import-scale and unevaluated-export anti-patterns
         run: python3 tests/check_import_export_rules.py
 
+      - name: Check product exit codes are in README tables
+        run: python3 tests/check_exit_code_readme.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."
