@@ -21,11 +21,15 @@ with ``length=`` on 5.x, ``frame_end=`` on 4.5.
 The blend math is identical on Blender 4.5 LTS and 5.1 (every sample matches
 to the quantization step).
 
+``--swap-inputs`` wires GC as T2 -> T1 and still asserts T1 -> T2. That is
+the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no gallery render) — the CI
 smoke check. Pass --output to also render a still:
 
-    blender --background --python vse_gamma_cross.py --                 # check only
-    blender --background --python vse_gamma_cross.py -- --output g.png  # + render
+    blender --background --python vse_gamma_cross.py --                   # check only
+    blender --background --python vse_gamma_cross.py -- --swap-inputs     # must fail
+    blender --background --python vse_gamma_cross.py -- --output g.png    # + render
 """
 import bpy, sys, os, math, argparse, tempfile, shutil
 
@@ -69,7 +73,7 @@ def strip_span(s):
     return s.frame_final_start, s.frame_final_end, s.frame_final_duration
 
 
-def build_cross(sc):
+def build_cross(sc, swap_inputs=False):
     """The two-strip cross: T1/T2 consumed by the GAMMA_CROSS above them
     (effect strips consume inputs only from below — vse-cut-list's wiring)."""
     sc.frame_start = SPAN[0]
@@ -80,7 +84,8 @@ def build_cross(sc):
     t1.color = A_RGB
     t2 = new_effect(coll, "T2", "COLOR", 2, SPAN)
     t2.color = B_RGB
-    gc = new_effect(coll, "GC", "GAMMA_CROSS", 3, SPAN, input1=t1, input2=t2)
+    src1, src2 = (t2, t1) if swap_inputs else (t1, t2)
+    gc = new_effect(coll, "GC", "GAMMA_CROSS", 3, SPAN, input1=src1, input2=src2)
     return gc
 
 
@@ -411,11 +416,13 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--swap-inputs", action="store_true",
+                   help="falsifier: GC T2 -> T1, still assert T1 -> T2")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
-    gc = build_cross(sc)
+    gc = build_cross(sc, swap_inputs=args.swap_inputs)
     code = check(sc, gc)
     if code:
         return code

@@ -63,13 +63,36 @@ contract failed, both panels would read the same.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python png_exr_alpha.py --
 
+# Falsifier: opaque authored alpha. Must exit non-zero (float→PNG error floor).
+blender --background --python png_exr_alpha.py -- --opaque-alpha
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python png_exr_alpha.py -- --output alpha.png
 blender --background --python png_exr_alpha.py -- --output alpha.png --engine cycles
 ```
 
-It exits non-zero on failure and prints every measured error and tolerance on
-success, so CI logs carry the numbers. The `blender-smoke` workflow runs the
-check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is also the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also closed-form palette no longer stresses unpremul |
+| 3 | `float_buffer=True` image reports `is_float=False` |
+| 4 | Float→PNG IHDR is not RGBA16 |
+| 5 | Float→PNG RGB error below floor (`--opaque-alpha` lands here) |
+| 6 | Float→PNG disagrees with closed-form false-unpremul model |
+| 7 | Float→EXR round-trip above tolerance |
+| 8 | `float_buffer=False` image reports `is_float=True` |
+| 9 | Byte→PNG IHDR is not RGBA8 |
+| 10 | Byte→PNG disagrees with straight-alpha 8-bit model; also gallery framing violation |
+| 11 | Byte→PNG stress cell looks false-unpremul-mangled |
+| 12 | EXR `color_mode=RGB` alpha-drop contract |
+| 13 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--opaque-alpha`.

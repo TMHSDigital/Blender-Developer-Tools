@@ -27,11 +27,32 @@ raw `position` attribute buffer via `foreach_get`.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python grease_pencil_rosette.py --
 
+# Falsifier: open strokes. Must exit non-zero (cyclic).
+blender --background --python grease_pencil_rosette.py -- --open-strokes
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python grease_pencil_rosette.py -- --output rosette.png
 blender --background --python grease_pencil_rosette.py -- --output rosette.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong version gate, structural mismatch, missing attribute
-layers, or attribute-buffer deviation from the closed form). The `blender-smoke` workflow
-runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | GPv3 address / legacy trap for this Blender |
+| 4 | Object type, layer count, or frame number |
+| 5 | Stroke topology or cyclic (`--open-strokes` lands here) |
+| 6 | Lazy attribute layers missing or wrong domain/type |
+| 7 | Position buffer length or closed-form round-trip |
+| 8 | Grease Pencil material missing gpencil settings |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--open-strokes`.

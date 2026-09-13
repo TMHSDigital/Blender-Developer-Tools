@@ -19,11 +19,16 @@ the legacy trap on 4.5, the structural contract, lazy attribute
 materialization, and a closed-form round-trip of every position through the
 raw POINT attribute buffer.
 
+``--open-strokes`` leaves every stroke non-cyclic and still asserts they
+are cyclic. That is the falsifier (``--same-axis`` in export-preset-axis).
+The GPv3 address shim is untouched.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
-    blender --background --python grease_pencil_rosette.py --                # check only
-    blender --background --python grease_pencil_rosette.py -- --output r.png # + render
+    blender --background --python grease_pencil_rosette.py --                  # check only
+    blender --background --python grease_pencil_rosette.py -- --open-strokes   # must fail
+    blender --background --python grease_pencil_rosette.py -- --output r.png   # + render
 """
 import bpy, sys, os, math, argparse, colorsys
 
@@ -66,7 +71,7 @@ def gp_data_new(name):
     return bpy.data.grease_pencils_v3.new(name)       # 4.5 LTS: GPv3 lives at _v3
 
 
-def build_rosette():
+def build_rosette(open_strokes=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     gp = gp_data_new("Rosette")
     layer = gp.layers.new("Ink")
@@ -75,8 +80,9 @@ def build_rosette():
 
     drawing.add_strokes([POINTS] * RINGS)
     for ring, stroke in enumerate(drawing.strokes):
-        stroke.cyclic = True
+        stroke.cyclic = not open_strokes
         for i, pt in enumerate(stroke.points):
+
             pt.position = rose_point(ring, i)
             pt.radius = point_radius(ring, i)
             pt.opacity = 1.0
@@ -267,9 +273,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--open-strokes", action="store_true",
+                   help="falsifier: strokes not cyclic, still assert cyclic")
     args = p.parse_args(argv)
 
-    obj = build_rosette()
+    obj = build_rosette(open_strokes=args.open_strokes)
+
     code = check(obj)
     if code:
         return code

@@ -9,10 +9,14 @@ evaluated vert/face counts as a MEASURED regression gate — curve tessellation
 has no simple closed form, so those two constants pin today's behavior (see
 EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 
+``--no-caps`` leaves ``use_fill_caps`` False and still asserts the ends are
+capped. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python curve_bevel_arc.py --                 # check only
+    blender --background --python curve_bevel_arc.py -- --no-caps       # must fail
     blender --background --python curve_bevel_arc.py -- --output c.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -35,14 +39,15 @@ EXPECT_VERTS = 1044
 EXPECT_FACES = 1028
 
 
-def build():
+def build(no_caps=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     curve = bpy.data.curves.new("Arc", 'CURVE')
     curve.dimensions = '3D'
     curve.bevel_depth = BEVEL
     curve.bevel_resolution = BEVEL_RES
     curve.resolution_u = RES_U
-    curve.use_fill_caps = True  # solid ends — not a hollow pipe
+    curve.use_fill_caps = not no_caps  # solid ends — not a hollow pipe
+
 
     spline = curve.splines.new('BEZIER')
     spline.bezier_points.add(N_POINTS - 1)  # one point exists already
@@ -231,9 +236,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-caps", action="store_true",
+                   help="falsifier: use_fill_caps=False, still assert caps")
     args = p.parse_args(argv)
 
-    obj = build()
+    obj = build(no_caps=args.no_caps)
+
     code = check(obj)
     if code:
         return code

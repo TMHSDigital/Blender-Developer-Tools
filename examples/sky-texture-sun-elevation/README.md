@@ -54,9 +54,31 @@ props"` rather than enforcing.
 # Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
 blender --background --python sky_texture_sun_elevation.py --
 
+# Falsifier: Sky→Background unlinked. Must exit non-zero (world links).
+blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
+
 # Also render the gallery diptych (Cycles):
 blender --background --python sky_texture_sun_elevation.py -- --output sky.png
 ```
 
-It exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | `sky_type` is not the identifier for this Blender |
+| 4 | `sun_elevation` round-trip failed |
+| 5 | `dust_density` / `aerosol_density` / `NISHITA` / `MULTIPLE_SCATTERING` trap |
+| 6 | Sky → Background → World Output links broken (`--unlink-sky` lands here) |
+| 7 | High-elevation zenith luma below floor |
+| 8 | Zenith luma did not rise with elevation |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--unlink-sky`.

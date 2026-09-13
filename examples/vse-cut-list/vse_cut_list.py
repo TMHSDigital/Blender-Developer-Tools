@@ -31,6 +31,10 @@ Two further hazards surfaced while authoring and are witnessed here:
   The timeline below therefore feeds the cross a dedicated source pair
   (T1/T2) that owns no mosaic cell, on channels directly under GC.
 
+``--swap-inputs`` wires GC as T2 -> T1 and still asserts T1 -> T2. That is
+the falsifier (``--same-axis`` in export-preset-axis). ``--check-pixels``
+remains a second witness, not a falsifier.
+
 The check builds a deterministic cut list, asserts every span against its
 closed form on each version's canonical accessors, then proves the spans,
 wiring, colors, and transforms survive a save/reload round-trip. Pass
@@ -40,6 +44,7 @@ editing bay, and --check-pixels to assert the compositing contract on a
 tiny render (cell colors and input consumption), the way CI does:
 
     blender --background --python vse_cut_list.py --
+    blender --background --python vse_cut_list.py -- --swap-inputs
     blender --background --python vse_cut_list.py -- --check-pixels
     blender --background --python vse_cut_list.py -- --output vse.png
 """
@@ -314,10 +319,15 @@ def check_roundtrip():
     return check(bpy.context.scene)
 
 
-def run_checks():
+def run_checks(swap_inputs=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     build_cut_list(sc)
+    if swap_inputs:
+        coll = strips_coll(sc.sequence_editor)
+        gc = coll.get("GC")
+        gc.input_1 = coll.get("T2")
+        gc.input_2 = coll.get("T1")
     code = check(sc)
     if code != 0:
         return code
@@ -690,9 +700,13 @@ def main():
         "--check-pixels", action="store_true",
         help="also assert the compositing contract on a tiny render",
     )
+    p.add_argument(
+        "--swap-inputs", action="store_true",
+        help="falsifier: GC T2 -> T1, still assert T1 -> T2",
+    )
     args = p.parse_args(argv)
 
-    code = run_checks()
+    code = run_checks(swap_inputs=args.swap_inputs)
     if code != 0:
         return code
     if args.check_pixels:

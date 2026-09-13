@@ -15,11 +15,16 @@ exact format. It also witnesses the depsgraph lifetime hazard: after
 `to_mesh_clear()` the returned Mesh reference is dead and any access raises
 ReferenceError.
 
+``--wrong-body`` assigns a string that is not ``version_string`` and still
+asserts the body is the live version. That is the falsifier (``--same-axis``
+in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
-    blender --background --python text_version_stamp.py --                 # check only
-    blender --background --python text_version_stamp.py -- --output v.png  # + render
+    blender --background --python text_version_stamp.py --                   # check only
+    blender --background --python text_version_stamp.py -- --wrong-body      # must fail
+    blender --background --python text_version_stamp.py -- --output v.png    # + render
 """
 import bpy, sys, os, math, argparse
 
@@ -33,10 +38,10 @@ BEVEL = 0.02
 TOL = 1e-4
 
 
-def build_stamp():
+def build_stamp(wrong_body=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     txt = bpy.data.curves.new("VersionStamp", type='FONT')
-    txt.body = bpy.app.version_string  # the self-documenting payload
+    txt.body = "not-a-version" if wrong_body else bpy.app.version_string
     txt.align_x = 'CENTER'
     txt.align_y = 'CENTER'
     obj = bpy.data.objects.new("VersionStamp", txt)
@@ -285,9 +290,12 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--wrong-body", action="store_true",
+                   help="falsifier: body is not version_string, still assert it is")
     args = p.parse_args(argv)
 
-    obj = build_stamp()
+    obj = build_stamp(wrong_body=args.wrong_body)
+
     code = check(obj)
     if code:
         return code
