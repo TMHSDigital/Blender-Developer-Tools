@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>3 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>5 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 3 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 5 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -78,12 +78,18 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
 <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
 <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" alt="Wooden barrel: a staved barrel with iron hoops on a dark studio floor, warm wedge on the back wall" /></a>
+<a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" alt="Campfire: a stone ring, crossed logs, and ash mound on a dark studio floor, warm wedge on the back wall" /></a>
+<a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" alt="Market stall: a timber frame with a striped awning and counter on a dark studio floor, warm wedge on the back wall" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
 [`stone-well`](showcase/stone-well/) — procedural round stone well, shingled roof, windlass, rope and bucket through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`wooden-barrel`](showcase/wooden-barrel/) — procedural staved barrel with iron hoops through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`campfire`](showcase/campfire/) — procedural cobble ring, logs, and ash through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 ## Examples
 

@@ -76,5 +76,7 @@
   {"name": "mesh-automasking-settings", "script": "examples/mesh-automasking-settings/mesh_automasking_settings.py"},
   {"name": "shipping-crate", "script": "showcase/shipping-crate/shipping_crate.py"},
   {"name": "stone-well", "script": "showcase/stone-well/stone_well.py"},
-  {"name": "wooden-barrel", "script": "showcase/wooden-barrel/wooden_barrel.py"}
+  {"name": "wooden-barrel", "script": "showcase/wooden-barrel/wooden_barrel.py"},
+  {"name": "campfire", "script": "showcase/campfire/campfire.py"},
+  {"name": "market-stall", "script": "showcase/market-stall/market_stall.py"}
 ]
