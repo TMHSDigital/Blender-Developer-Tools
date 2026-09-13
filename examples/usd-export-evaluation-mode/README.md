@@ -41,3 +41,24 @@ true in `--background`, `evaluation_mode` is `{RENDER, VIEWPORT}`. The
 blender --background --python usd_export_evaluation_mode.py --
 blender --background --python usd_export_evaluation_mode.py -- --output u.png
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also base cube verts ≠ 8 |
+| 3 | VIEWPORT TESSELLATE point/face count off closed form |
+| 4 | RENDER TESSELLATE point/face count or scheme off closed form |
+| 5 | BEST_MATCH cage point count or scheme off |
+| 6 | RENDER and VIEWPORT USDA point counts are identical |
+| 10 | Gallery framing violation |
+| 12 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--evaluation-mode`, or `--subdivision`.

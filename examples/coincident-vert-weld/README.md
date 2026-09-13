@@ -33,3 +33,20 @@ blender --background --python coincident_vert_weld.py --
 blender --background --python coincident_vert_weld.py -- --no-duplicate
 blender --background --python coincident_vert_weld.py -- --weld
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also exporter RNA missing expected glTF kwargs |
+| 3 | Pathology missing: coincident shells (`--no-duplicate` lands here) |
+| 4 | glTF export handling failed (`--weld` lands here) |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--no-duplicate` or `--weld`.

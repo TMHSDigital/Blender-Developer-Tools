@@ -40,3 +40,25 @@ blender --background --python gn_zone_iterate.py -- --output zones.png
 
 The `--output` render path measures framing via `examples/gallery_framing.py`
 (exit 10 on violation).
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage; also carrier mesh was rewritten |
+| 3 | Repeat evaluated vert/face count off closed form |
+| 4 | Repeat X-centers off closed form |
+| 5 | For Each evaluated vert/face count off closed form |
+| 6 | For Each Z-centers off closed form |
+| 10 | Gallery framing violation |
+| 12 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--no-offset`, `--unpair-foreach`, or
+`--unpair-repeat`.

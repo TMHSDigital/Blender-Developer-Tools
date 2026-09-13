@@ -83,7 +83,26 @@ blender --background --python modular_kit_snap.py -- --output corridor.png
 blender --background --python modular_kit_snap.py -- --falsify seams.png
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (reported
-under the documented deviation above) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper. `11` is the shared asset-quality
+helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Boundary vert count or end-plane membership |
+| 4 | End rings do not partition evenly, or opposing loops differ |
+| 5 | Tiled instances do not share boundary positions |
+| 6 | Shell or whole-asset bbox off the declared tile |
+| 7 | Boundary edge count, non-manifold edges, or rim off the end planes |
+| 8 | Detail part not watertight |
+| 9 | Detail part reaches a tile boundary; also `--output` produced no file |
+| 11 | Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--falsify`.

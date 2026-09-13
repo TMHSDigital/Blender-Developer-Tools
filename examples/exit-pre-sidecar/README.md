@@ -12,16 +12,10 @@ accessing the handler list.
 
 No gallery still. There is no geometry.
 
-**What failure each check would catch:**
-
-- exit 77 — Blender &lt; 5.1 and not `--force-run`
-- exit 2 — `--force-run` on 4.5 (`exit_pre` missing)
-- harness FAIL missing sidecar — `--silent-handler` / `--no-handler`
-- harness FAIL wrong contents — `--wrong-text` (`nope`), `--write-in-main`
-  (`from-main`), `--atexit-instead` (`atexit-ok`)
-
 The harness checks **contents** (`sidecar_contains=exit_pre-ok`), not
-existence only. A file written from `main` or `atexit` is red.
+existence only. A file written from `main` or `atexit` is red. Several
+falsifiers exit 0 from the script so the **harness** can fail after Blender
+dies.
 
 ## Run
 
@@ -33,3 +27,19 @@ python tests/smoke/run_example.py --name exit-pre-sidecar \
   --series 5.2 --min-version 5.1 \
   --expect-sidecar /tmp/exit-pre.sidecar --sidecar-contains exit_pre-ok
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `77` is the smoke skip protocol, not a product check.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success (including `--silent-handler` / `--no-handler` / `--wrong-text` / `--write-in-main` / `--atexit-instead`, which the harness then fails) |
+| 1 | Uncaught exception (FATAL wrapper); also `$BDT_SMOKE_SIDECAR` unset |
+| 2 | argparse / usage; also `--force-run` on Blender &lt; 5.1 (`exit_pre` missing or unexpectedly present) |
+| 77 | `SMOKE_SKIP:` `exit_pre` requires Blender 5.1+ |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS (5.1 on the
+weekly cron, the `needs-5.1` PR label, or manual dispatch) and skips on 4.5
+LTS. Smoke does not pass the falsifier flags.

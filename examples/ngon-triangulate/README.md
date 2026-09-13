@@ -29,3 +29,20 @@ blender --background --python ngon_triangulate.py --
 blender --background --python ngon_triangulate.py -- --no-dissolve
 blender --background --python ngon_triangulate.py -- --skip-triangulate
 ```
+
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Pathology missing: n-gon count, loops, or face count (`--no-dissolve` lands here) |
+| 4 | `calc_tangents` / triangulate handling (`--skip-triangulate` lands here) |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--no-dissolve` or `--skip-triangulate`.
