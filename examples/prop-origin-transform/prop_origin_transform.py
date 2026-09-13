@@ -7,10 +7,14 @@ to exactly (1,1,1), world bbox unchanged across the bake, and
 `parent-inverse-orrery` (MPI idiom + stale `matrix_world`) without retreading
 orbits — subject is a street utility pedestal with a bolted conduit accessory.
 
+``--skip-mpi`` parents the accessory without MPI and still asserts the restore.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render). Pass --output
 to also render a still:
 
     blender --background --python prop_origin_transform.py --
+    blender --background --python prop_origin_transform.py -- --skip-mpi
     blender --background --python prop_origin_transform.py -- --output o.png
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -257,7 +261,7 @@ def bake_prop(prop):
     return before, after
 
 
-def check(prop, acc):
+def check(prop, acc, skip_mpi=False):
     """Assert origin/scale bake + MPI accessory contract. Exit 3–8 on failure."""
     view_layer = bpy.context.view_layer
 
@@ -341,8 +345,9 @@ def check(prop, acc):
         )
         return 7
 
-    acc.matrix_parent_inverse = prop.matrix_world.inverted()
-    view_layer.update()
+    if not skip_mpi:
+        acc.matrix_parent_inverse = prop.matrix_world.inverted()
+        view_layer.update()
     err = (acc.matrix_world.translation - w0).length
     print(f"mpi_restore_err={err:.3e}")
     if err > MPI_EPS:
@@ -608,11 +613,13 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
+    p.add_argument("--skip-mpi", action="store_true",
+                   help="parent the accessory without MPI (must fail)")
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     sc, prop, acc = build_scene()
-    code = check(prop, acc)
+    code = check(prop, acc, skip_mpi=args.skip_mpi)
     if code:
         return code
 

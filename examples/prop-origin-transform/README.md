@@ -46,11 +46,31 @@ color — carries the proof. Check closed forms are unchanged.
 
 ```bash
 blender --background --python prop_origin_transform.py --
+blender --background --python prop_origin_transform.py -- --skip-mpi
 blender --background --python prop_origin_transform.py -- --output origin.png
 blender --background --python prop_origin_transform.py -- --output origin.png --engine cycles
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
-on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Stale `matrix_world` contract broken |
+| 4 | World bbox moved across bake |
+| 5 | Scale after bake is not (1,1,1) |
+| 6 | Origin not at local base center |
+| 7 | Bare parenting did not jump |
+| 8 | MPI did not restore world location (`--skip-mpi` lands here) |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--skip-mpi`.
+

@@ -26,6 +26,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python attribute_domain_shear.py --                 # check only
+    blender --background --python attribute_domain_shear.py -- --no-overwrite  # must fail
     blender --background --python attribute_domain_shear.py -- --output a.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse, colorsys
@@ -98,13 +99,14 @@ def assign_corner(me, pal):
     return attr
 
 
-def assign_point_naive(me, pal):
+def assign_point_naive(me, pal, overwrite=True):
     """The AI mistake: author per-wedge colors into a POINT-domain attribute.
     Every wedge rewrites the shared hub (and its leading ring vert), so the
     last wedge wins — colors shear across every shared vertex."""
     attr = me.color_attributes.new(ATTR_P, type='FLOAT_COLOR', domain='POINT')
     hub_index = 0  # build_fan creates the hub first
-    for i in range(K):
+    last = K if overwrite else 1
+    for i in range(last):
         # naive per-wedge pass: set the hub and both ring verts to palette[i]
         attr.data[hub_index].color = pal[i]
         attr.data[1 + i].color = pal[i]
@@ -113,7 +115,7 @@ def assign_point_naive(me, pal):
     return attr
 
 
-def check():
+def check(overwrite=True):
     pal = palette()
     expect_shear = closed_form_shear(pal)
     print(f"palette K={K} closed_form_shear={expect_shear:.6f}")
@@ -138,7 +140,7 @@ def check():
 
     # --- POINT: the shear, measured against the closed form ---
     me_p = build_fan()
-    attr_p = assign_point_naive(me_p, pal)
+    attr_p = assign_point_naive(me_p, pal, overwrite=overwrite)
     if len(attr_p.data) != len(me_p.vertices) or len(me_p.vertices) != K + 1:
         print(f"ERROR: POINT attr size {len(attr_p.data)} != verts {len(me_p.vertices)}",
               file=sys.stderr)
@@ -383,11 +385,13 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-overwrite", action="store_true",
+                   help="write only the first POINT wedge (must fail)")
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code = check()
+    code = check(overwrite=not args.no_overwrite)
     if code:
         return code
 

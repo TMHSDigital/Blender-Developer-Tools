@@ -18,6 +18,7 @@ By default it runs only the correctness check (no render) -- the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python color_attribute_wheel.py --                 # check only
+    blender --background --python color_attribute_wheel.py -- --point-domain   # must fail
     blender --background --python color_attribute_wheel.py -- --output w.png  # + render
 """
 import bpy, bmesh, sys, os, math, colorsys, argparse
@@ -56,7 +57,7 @@ def wheel_geometry():
     return coords, hsv
 
 
-def build_wheel():
+def build_wheel(point_domain=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     coords, hsv = wheel_geometry()
     me = bpy.data.meshes.new("ColorWheel")
@@ -80,16 +81,18 @@ def build_wheel():
     # created via color_attributes (not the deprecated vertex_colors alias),
     # sized to loops -- then filled by expanding per-vertex HSV across corners
     # with bulk foreach_get / foreach_set, never a per-loop Python assignment.
-    attr = me.color_attributes.new(ATTR_NAME, type='FLOAT_COLOR', domain='CORNER')
-    n_loops = len(me.loops)
-    loop_vert = array('i', [0]) * n_loops
-    me.loops.foreach_get("vertex_index", loop_vert)
-    flat = array('f', [0.0]) * (n_loops * 4)
-    for i, vi in enumerate(loop_vert):
-        h, s, v = hsv[vi]
-        r, g, b = colorsys.hsv_to_rgb(h, s, v)
-        flat[i * 4], flat[i * 4 + 1], flat[i * 4 + 2], flat[i * 4 + 3] = r, g, b, 1.0
-    attr.data.foreach_set("color", flat)
+    domain = 'POINT' if point_domain else 'CORNER'
+    attr = me.color_attributes.new(ATTR_NAME, type='FLOAT_COLOR', domain=domain)
+    if not point_domain:
+        n_loops = len(me.loops)
+        loop_vert = array('i', [0]) * n_loops
+        me.loops.foreach_get("vertex_index", loop_vert)
+        flat = array('f', [0.0]) * (n_loops * 4)
+        for i, vi in enumerate(loop_vert):
+            h, s, v = hsv[vi]
+            r, g, b = colorsys.hsv_to_rgb(h, s, v)
+            flat[i * 4], flat[i * 4 + 1], flat[i * 4 + 2], flat[i * 4 + 3] = r, g, b, 1.0
+        attr.data.foreach_set("color", flat)
     me.color_attributes.active_color = attr  # the step AI code most often forgets
 
     obj = bpy.data.objects.new("ColorWheel", me)
@@ -283,9 +286,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--point-domain", action="store_true",
+                   help="create a POINT-domain color attribute (must fail)")
     args = p.parse_args(argv)
 
-    obj, hsv = build_wheel()
+    obj, hsv = build_wheel(point_domain=args.point_domain)
     code = check(obj, hsv)
     if code:
         return code

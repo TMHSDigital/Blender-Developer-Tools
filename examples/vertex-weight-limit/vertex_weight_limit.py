@@ -23,10 +23,15 @@ The vertex-group API (``v.groups``, ``VertexGroup.add``/``remove``) is stable
 between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
 is itself the version witness.
 
+``--skip-limit`` leaves the five-influence flex weights in place and still
+asserts the engine cap. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python vertex_weight_limit.py --                 # check only
+    blender --background --python vertex_weight_limit.py -- --skip-limit    # must fail
     blender --background --python vertex_weight_limit.py -- --output a.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -262,7 +267,7 @@ def eval_positions(obj):
         ob_eval.to_mesh_clear()
 
 
-def check(obj, arm, groups, pose_before):
+def check(obj, arm, groups, pose_before, skip_limit=False):
     me = obj.data
 
     # pre-limit witness: the flex cuffs really carry five influences
@@ -274,16 +279,17 @@ def check(obj, arm, groups, pose_before):
 
     # the limit, through the data API: keep top-4, drop the rest, renormalize
     changed = 0
-    for v in me.vertices:
-        gs = sorted(v.groups, key=lambda g: -g.weight)
-        if len(gs) > MAX_INFLUENCES:
-            changed += 1
-        for g in gs[MAX_INFLUENCES:]:
-            groups[BONES[g.group]].remove([v.index])
-        kept = [g for g in v.groups]
-        total = sum(g.weight for g in kept)
-        for g in kept:
-            groups[BONES[g.group]].add([v.index], g.weight / total, 'REPLACE')
+    if not skip_limit:
+        for v in me.vertices:
+            gs = sorted(v.groups, key=lambda g: -g.weight)
+            if len(gs) > MAX_INFLUENCES:
+                changed += 1
+            for g in gs[MAX_INFLUENCES:]:
+                groups[BONES[g.group]].remove([v.index])
+            kept = [g for g in v.groups]
+            total = sum(g.weight for g in kept)
+            for g in kept:
+                groups[BONES[g.group]].add([v.index], g.weight / total, 'REPLACE')
 
     # contract 1: no vertex exceeds the engine limit
     post_max = max(len(v.groups) for v in me.vertices)
@@ -481,6 +487,8 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--skip-limit", action="store_true",
+                   help="skip the 4-influence prune (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -491,7 +499,7 @@ def main():
     arm = build_rig(obj)
     bpy.context.view_layer.update()
     pose_before = eval_positions(obj)
-    code = check(obj, arm, groups, pose_before)
+    code = check(obj, arm, groups, pose_before, skip_limit=args.skip_limit)
     if code:
         return code
 

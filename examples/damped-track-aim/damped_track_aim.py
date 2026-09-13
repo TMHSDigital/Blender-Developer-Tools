@@ -12,10 +12,14 @@ with the world vector toward the core within a tight angular epsilon. If the
 constraint is missing, muted, mistyped as TRACK_TO, or the axis is flipped,
 the dot product fails.
 
+``--mute`` mutes every DAMPED_TRACK and still asserts unmute. That is the
+falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python damped_track_aim.py --                 # check only
+    blender --background --python damped_track_aim.py -- --mute           # must fail
     blender --background --python damped_track_aim.py -- --output aim.png
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -161,7 +165,7 @@ def make_dielectric(name, color, roughness=0.35):
     return mat
 
 
-def build():
+def build(mute=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     col = bpy.context.collection
 
@@ -186,6 +190,8 @@ def build():
         con.name = "AimCore"
         con.target = core
         con.track_axis = "TRACK_Z"
+        if mute:
+            con.mute = True
         needles.append(ob)
 
     bpy.context.view_layer.update()
@@ -376,9 +382,11 @@ def main():
         choices=("eevee", "cycles"),
         help="render engine when --output is set",
     )
+    p.add_argument("--mute", action="store_true",
+                   help="mute every DAMPED_TRACK (must fail)")
     args = p.parse_args(argv)
 
-    core, needles = build()
+    core, needles = build(mute=args.mute)
     code = check(core, needles)
     if code != 0:
         return code

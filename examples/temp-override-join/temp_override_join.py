@@ -8,10 +8,15 @@ cubes are joined into a staircase; the check asserts closed-form topology,
 that only the target remains, and that the local Z span spans all three steps
 (proving every source contributed geometry).
 
+``--no-override`` calls ``object.join`` without ``temp_override``. If the
+operator raises, that is caught and the existing object-count check still
+runs. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python temp_override_join.py --                 # check only
+    blender --background --python temp_override_join.py -- --no-override   # must fail
     blender --background --python temp_override_join.py -- --output j.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -198,12 +203,22 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-override", action="store_true",
+                   help="join without temp_override (must fail)")
     args = p.parse_args(argv)
 
     objs = build_cubes()
     target, sources = objs[0], objs[1:]
     source_names = [s.name for s in sources]
-    joined = join_with_temp_override(target, sources)
+    if args.no_override:
+        try:
+            bpy.ops.object.join()
+        except RuntimeError as exc:
+            print(f"join without override: {type(exc).__name__}: {exc}",
+                  file=sys.stderr)
+        joined = target
+    else:
+        joined = join_with_temp_override(target, sources)
     code = check(joined, source_names)
     if code:
         return code

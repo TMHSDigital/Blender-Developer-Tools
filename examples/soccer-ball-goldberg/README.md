@@ -68,11 +68,37 @@ inverts with it: white pentagons on a black ball, wrong on sight.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python soccer_ball_goldberg.py --
 
+# Falsifier: swap pentagon/hexagon slots. Must exit non-zero.
+blender --background --python soccer_ball_goldberg.py -- --invert-bind
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python soccer_ball_goldberg.py -- --output ball.png
 blender --background --python soccer_ball_goldberg.py -- --output ball.png --engine cycles
 ```
 
-It exits non-zero on failure (topology, census, degree, edge uniformity,
-planarity, circumsphere, or panel binding). The `blender-smoke` workflow runs
-the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Topology ≠ 60/90/32 |
+| 4 | Euler characteristic ≠ 2 |
+| 5 | Face census ≠ 12 pentagons + 20 hexagons |
+| 6 | Vertex degree not uniform 3; also `--output` produced no file |
+| 7 | Non-manifold edges |
+| 8 | Edge lengths not uniform |
+| 9 | Face planarity off |
+| 10 | Centroid off origin |
+| 11 | Circumradius not uniform |
+| 12 | Panel material count ≠ 2 |
+| 13 | Panel binding not by vertex count (`--invert-bind` lands here) |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--invert-bind`.
+

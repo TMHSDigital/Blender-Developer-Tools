@@ -53,11 +53,44 @@ same curl, same glowing stinger — proof the skin rode the format through.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_skin_roundtrip.py --
 
+# Falsifier: export_skins=False. Must exit non-zero.
+blender --background --python gltf_skin_roundtrip.py -- --no-skins
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gltf_skin_roundtrip.py -- --output scorp.png
 blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --engine cycles
 ```
 
-It exits non-zero on failure (missing skin, joint drift, weight-sum drift,
-skeleton drift, weight excursion, or deformation excursion). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Exporter RNA missing expected kwargs |
+| 4 | Vertex group count ≠ bone count |
+| 5 | Disk skins ≠ 1 (`--no-skins` lands here) |
+| 6 | Skin joints ≠ bone names |
+| 7 | Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch |
+| 8 | Disk weight sums off 1.0 |
+| 9 | Disk verts exceed evaluated loops |
+| 10 | Armature count after import ≠ 1 |
+| 11 | Bone count drifted |
+| 12 | Named bone lost |
+| 13 | Bone parent drifted |
+| 14 | Rest matrices drifted |
+| 15 | Skinned mesh count after import ≠ 1 |
+| 16 | Re-import vert count ≠ disk |
+| 17 | Vertex group names drifted |
+| 18 | Weight round-trip drifted |
+| 19 | Deformation round-trip drifted |
+| 20 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-skins`.
+
