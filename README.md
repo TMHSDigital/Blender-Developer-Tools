@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>57 examples</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>58 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 57 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 58 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -203,7 +203,7 @@ Gallery still is a dual-elevation diptych so the contract reads at thumbnail sca
 </details>
 
 <details>
-<summary><strong>Mesh, curves &amp; text</strong> — 12 examples</summary>
+<summary><strong>Mesh, curves &amp; text</strong> — 13 examples</summary>
 
 <table>
 <tr>
@@ -307,6 +307,20 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
 `evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
 modifier-applied geometry (exported vertex count == evaluated > base).
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — no geometry
+</td>
+<td valign="middle">
+
+### [eval-mesh-datablock-name](examples/eval-mesh-datablock-name/)
+
+`evaluated_get().data.name` is generic `Mesh` on 4.5.11 and 5.1.2 and equals
+the source name on 5.2.1. `to_mesh().name` stays the source name on all
+three. `--assume-distinct-names` is red only on 5.2.
 
 </td>
 </tr>

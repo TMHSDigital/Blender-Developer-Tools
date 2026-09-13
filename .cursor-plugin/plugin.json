@@ -93,6 +93,7 @@
     "examples/degenerate-bevel-weld",
     "examples/depsgraph-export",
     "examples/driver-wave",
+    "examples/eval-mesh-datablock-name",
     "examples/exit-pre-sidecar",
     "examples/export-preset-axis",
     "examples/gltf-export-roundtrip",
