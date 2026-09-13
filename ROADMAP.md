@@ -106,6 +106,11 @@ Provider-agnostic GLB-in / engine-ready-out. This repo does not generate meshes.
 
 Not committed; target list for the next content version. (v0.3.0 shipped the smoke-gated `examples/` track.)
 
+- ~~Showcase sibling tree + shipping-crate pilot~~ **SHIPPED** as `showcase/shipping-crate/` — budget-conformance crate composing bake, LOD, collider, Unity glTF; `--skip-decimate` exits 9 on the LOD1 ratio band; DECIMATE COLLAPSE ratios diverge on 5.2 vs 4.5/5.1
+- Procedural terrain or landscape showcase using Geometry Nodes scatter
+- Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece
+- Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)
+
 - ~~Custom ID-property delete witness~~ **SHIPPED** as `examples/cross-version-property-delete/` — IDs built via `bpy.data.objects.new` (not `active_object`); `property_unset` is TypeError and leaves the key; `del` removes it on 4.5 LTS and 5.x
 - ~~USD export evaluation_mode witness~~ **SHIPPED** as `examples/usd-export-evaluation-mode/` — probed `wm.usd_export` on CI Linux portables 5.2.1 (`9e2066aef7ef`) and 4.5.13 (`daeeeca98fb0`); TESSELLATE+VIEWPORT 26/24, TESSELLATE+RENDER 98/96; BEST_MATCH writes the 8-vert catmullClark cage so the mode is silent
 - ~~Repeat Zone / For Each Element pairing witness~~ **SHIPPED** as `examples/gn-zone-iterate/` — `pair_with_output` is load-bearing (unpaired evaluates 0 verts); Repeat `8×(1+N)` with X-centers at `k×STEP`; For Each `8×P` with Z-centers at `i×STEP`; For Each main Geometry is a passthrough (6 verts); count-only is insufficient (`--no-offset` still 32 verts, one X-center)

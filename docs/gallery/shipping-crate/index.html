@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>shipping-crate — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shipping-crate/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="shipping-crate — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shipping-crate/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shipping-crate-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="shipping-crate — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shipping-crate-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>shipping-crate</h1>
+    <p>A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom shipping-crate render">
+      <img src="../assets/shipping-crate-hero.webp" alt="shipping-crate render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 552 tris, two materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.256×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 20 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/shipping-crate/shipping_crate.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A showcase piece, not an example. Procedural crate (beveled body, arrayed slats, metal corner brackets, two materials) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
+<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<h2>Budgets</h2>
+<p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 500–620 | 552 / 552 / 552 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4239 | | LOD2 ratio | 0.10–0.35 of base | 0.2174 / 0.2174 / 0.1558 | | Materials | exactly 2 distinct | 2 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.256, 0.856, 0.748) m ± 0.01 | (1.2560, 0.8560, 0.7480), zmin 0 | | Collider tris | ≤ 48 | 20 | | Export | written, size &gt; 0 | 42092 / 42092 / 42088 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG.</p>
+<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<h2>Run</h2>
+<pre><code>blender --background --python shipping_crate.py --
+blender --background --python shipping_crate.py -- --skip-decimate
+blender --background --python shipping_crate.py -- --output crate.png</code></pre>
+<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<h2>Exit codes</h2>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path (no <code>deviation=</code>).</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/shipping-crate/shipping_crate.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/shipping-crate/shipping_crate.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready shipping crate — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural crate after composing shipped
+pipeline pieces: bmesh construction, UVs, two materials, high-to-low
+normal bake, LOD chain, convex collider, Unity glTF export.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
+DECIMATE stage so the LOD-ratio budget fails.
+
+No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+are not byte-identical across Blender versions — the LOD gate is a
+ratio band, not an exact count.
+
+    blender --background --python shipping_crate.py --
+    blender --background --python shipping_crate.py -- --skip-decimate
+    blender --background --python shipping_crate.py -- --output crate.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
+<span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
+<span class="c"># resolve the repo root so we do not move gallery_framing.py.</span>
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># Body size (meters), sitting on z=0. Side slats sit proud on ±Y; lid</span>
+<span class="c"># slats sit proud on +Z. OUTER_SIZE is the closed-form AABB of that</span>
+<span class="c"># construction, compared against the measured world bbox — not assigned</span>
+<span class="c"># onto the mesh.</span>
+BODY_SIZE = (<span class="n">1.20</span>, <span class="n">0.80</span>, <span class="n">0.72</span>)
+SLAT_THICK = <span class="n">0.028</span>
+OUTER_SIZE = (
+    round(BODY_SIZE[<span class="n">0</span>] + <span class="n">2.0</span> * SLAT_THICK, <span class="n">3</span>),
+    round(BODY_SIZE[<span class="n">1</span>] + <span class="n">2.0</span> * SLAT_THICK, <span class="n">3</span>),
+    round(BODY_SIZE[<span class="n">2</span>] + SLAT_THICK, <span class="n">3</span>),
+)
+BBOX_TOL = <span class="n">0.01</span>
+
+<span class="c"># Measured 4.5.11 / 5.1.2 / 5.2.1 after locking geometry. DECIMATE</span>
+<span class="c"># COLLAPSE ratios diverge across series — bands, not exact counts.</span>
+BASE_TRIS_MIN = <span class="n">500</span>
+BASE_TRIS_MAX = <span class="n">620</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">2</span>
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">48</span>
+BAKE_RES = <span class="n">256</span>
+CAGE_EXTRUSION = <span class="n">0.08</span>
+
+WOOD_IDX = <span class="n">0</span>
+METAL_IDX = <span class="n">1</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    <span class="c"># Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).</span>
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    eval_obj = obj.evaluated_get(depsgraph)
+    eval_mesh = eval_obj.to_mesh()
+    <span class="k">try</span>:
+        eval_mesh.calc_loop_triangles()
+        <span class="k">return</span> len(eval_mesh.loop_triangles)
+    <span class="k">finally</span>:
+        eval_obj.to_mesh_clear()
+
+
+<span class="k">def</span> add_cube(bm, loc, scale, mat_idx):
+    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    verts = geo[<span class="s">&quot;verts&quot;</span>]
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co.x = v.co.x * scale[<span class="n">0</span>] + loc[<span class="n">0</span>]
+        v.co.y = v.co.y * scale[<span class="n">1</span>] + loc[<span class="n">1</span>]
+        v.co.z = v.co.z * scale[<span class="n">2</span>] + loc[<span class="n">2</span>]
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
+    uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+    faces = list(bm.faces)
+    n = len(faces)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(n)))
+    rows = max(<span class="n">1</span>, math.ceil(n / cols))
+    cell_w = <span class="n">1.0</span> / cols
+    cell_h = <span class="n">1.0</span> / rows
+    pad_u = margin * cell_w * <span class="n">0.5</span>
+    pad_v = margin * cell_h * <span class="n">0.5</span>
+    usable_w = cell_w - <span class="n">2.0</span> * pad_u
+    usable_h = cell_h - <span class="n">2.0</span> * pad_v
+    <span class="k">for</span> i, face <span class="k">in</span> enumerate(faces):
+        col = i % cols
+        row = i // cols
+        nrm = face.normal
+        ax = abs(nrm.x)
+        ay = abs(nrm.y)
+        az = abs(nrm.z)
+        coords = []
+        <span class="k">for</span> loop <span class="k">in</span> face.loops:
+            co = loop.vert.co
+            <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                coords.append((co.x, co.y))
+            <span class="k">elif</span> ax &gt;= ay:
+                coords.append((co.y, co.z))
+            <span class="k">else</span>:
+                coords.append((co.x, co.z))
+        xs = [c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> coords]
+        ys = [c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> coords]
+        minx, maxx = min(xs), max(xs)
+        miny, maxy = min(ys), max(ys)
+        dx = max(maxx - minx, <span class="n">1e-8</span>)
+        dy = max(maxy - miny, <span class="n">1e-8</span>)
+        origin_u = col * cell_w + pad_u
+        origin_v = row * cell_h + pad_v
+        <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, coords):
+            loop[uv].uv = (
+                origin_u + (x - minx) / dx * usable_w,
+                origin_v + (y - miny) / dy * usable_h,
+            )
+
+
+<span class="k">def</span> build_crate_mesh(name, bevel_offset, bevel_segments):
+    sx, sy, sz = BODY_SIZE
+    slat_h = SLAT_THICK
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        body = add_cube(
+            bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, sz / <span class="n">2.0</span>), (sx, sy, sz), WOOD_IDX,
+        )
+        body_edges = list({e <span class="k">for</span> v <span class="k">in</span> body <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+            bmesh.ops.bevel(
+                bm,
+                geom=body_edges,
+                offset=bevel_offset,
+                segments=bevel_segments,
+                profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>,
+                clamp_overlap=<span class="k">True</span>,
+            )
+
+        slat_w = <span class="n">0.118</span>
+        n_lid = <span class="n">5</span>
+        gap = (sy - <span class="n">0.04</span> - n_lid * slat_w) / (n_lid + <span class="n">1</span>)
+        y0 = -sy / <span class="n">2.0</span> + <span class="n">0.02</span> + gap + slat_w / <span class="n">2.0</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n_lid):
+            y = y0 + i * (slat_w + gap)
+            add_cube(
+                bm,
+                (<span class="n">0.0</span>, y, sz + slat_h / <span class="n">2.0</span>),
+                (sx - <span class="n">0.06</span>, slat_w, slat_h),
+                WOOD_IDX,
+            )
+
+        n_side = <span class="n">4</span>
+        side_h = <span class="n">0.095</span>
+        z0 = <span class="n">0.08</span> + side_h / <span class="n">2.0</span>
+        z_step = (sz - <span class="n">0.16</span> - side_h) / (n_side - <span class="n">1</span>)
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> i <span class="k">in</span> range(n_side):
+                z = z0 + i * z_step
+                add_cube(
+                    bm,
+                    (<span class="n">0.0</span>, sign * (sy / <span class="n">2.0</span> + slat_h / <span class="n">2.0</span>), z),
+                    (sx - <span class="n">0.10</span>, slat_h, side_h),
+                    WOOD_IDX,
+                )
+                add_cube(
+                    bm,
+                    (sign * (sx / <span class="n">2.0</span> + slat_h / <span class="n">2.0</span>), <span class="n">0.0</span>, z),
+                    (slat_h, sy - <span class="n">0.10</span>, side_h),
+                    WOOD_IDX,
+                )
+
+        plate = <span class="n">0.13</span>
+        thick = <span class="n">0.024</span>
+        hx = sx / <span class="n">2.0</span> + slat_h
+        hy = sy / <span class="n">2.0</span> + slat_h
+        hz = sz
+        <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                <span class="k">for</span> szt <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">1.0</span>):
+                    zc = thick / <span class="n">2.0</span> <span class="k">if</span> szt == <span class="n">0.0</span> <span class="k">else</span> hz - thick / <span class="n">2.0</span>
+                    add_cube(
+                        bm,
+                        (sxn * (hx - plate / <span class="n">2.0</span>), syn * (hy - plate / <span class="n">2.0</span>), zc),
+                        (plate, plate, thick),
+                        METAL_IDX,
+                    )
+                z_bar = hz / <span class="n">2.0</span>
+                add_cube(
+                    bm,
+                    (sxn * (hx - thick / <span class="n">2.0</span>), syn * (hy - plate / <span class="n">2.0</span>), z_bar),
+                    (thick, plate, hz - <span class="n">2.0</span> * thick),
+                    METAL_IDX,
+                )
+                add_cube(
+                    bm,
+                    (sxn * (hx - plate / <span class="n">2.0</span>), syn * (hy - thick / <span class="n">2.0</span>), z_bar),
+                    (plate, thick, hz - <span class="n">2.0</span> * thick),
+                    METAL_IDX,
+                )
+
+        pack_uvs(bm)
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        <span class="k">for</span> face <span class="k">in</span> bm.faces:
+            face.smooth = <span class="k">True</span>
+        <span class="k">for</span> edge <span class="k">in</span> bm.edges:
+            edge.smooth = <span class="k">True</span>
+            <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
+                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">35.0</span>):
+                    edge.smooth = <span class="k">False</span>
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> principled(name, color, metallic, roughness):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> assign_slots(obj, wood, metal):
+    obj.data.materials.clear()
+    obj.data.materials.append(wood)
+    obj.data.materials.append(metal)
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
+    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
+    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0</span>, <span class="n">1.0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    overlap = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(aabbs)):
+        a = aabbs[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(aabbs)):
+            b = aabbs[j]
+            x0 = max(a[<span class="n">0</span>], b[<span class="n">0</span>])
+            y0 = max(a[<span class="n">1</span>], b[<span class="n">1</span>])
+            x1 = min(a[<span class="n">2</span>], b[<span class="n">2</span>])
+            y1 = min(a[<span class="n">3</span>], b[<span class="n">3</span>])
+            overlap += max(<span class="n">0.0</span>, x1 - x0) * max(<span class="n">0.0</span>, y1 - y0)
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> convex_hull_collider(obj, name):
+    <span class="c"># Duplicated from snippets/convex_hull_collider.py (not a package).</span>
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(obj.data)
+        result = bmesh.ops.convex_hull(bm, input=list(bm.verts))
+        interior = result.get(<span class="s">&quot;geom_interior&quot;</span>) <span class="k">or</span> []
+        unused = result.get(<span class="s">&quot;geom_unused&quot;</span>) <span class="k">or</span> []
+        <span class="k">if</span> interior:
+            bmesh.ops.delete(bm, geom=interior, context=<span class="s">&quot;VERTS&quot;</span>)
+        <span class="k">if</span> unused:
+            bmesh.ops.delete(bm, geom=unused, context=<span class="s">&quot;VERTS&quot;</span>)
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    collider = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(collider)
+    collider.matrix_world = obj.matrix_world.copy()
+    <span class="k">return</span> collider
+
+
+<span class="k">def</span> setup_bake_image(obj, wood, size=BAKE_RES):
+    <span class="c"># Adapted from snippets/setup_bake_target_image.py — do not replace slots.</span>
+    <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
+        <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
+    img = bpy.data.images.new(<span class="s">&quot;CrateNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = wood.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = WOOD_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    <span class="c"># Duplicated from snippets/bake_normal_high_to_low.py (not a package).</span>
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>,
+        use_selected_to_active=<span class="k">True</span>,
+        cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>,
+        normal_space=<span class="s">&quot;TANGENT&quot;</span>,
+        margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>,
+        use_clear=<span class="k">True</span>,
+        target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="c"># Duplicated from snippets/export_preset_unity.py (not a package).</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path,
+        use_selection=<span class="k">True</span>,
+        export_yup=<span class="k">True</span>,
+        export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>,
+        export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(skip_decimate):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    low = build_crate_mesh(<span class="s">&quot;CrateLow&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">2</span>)
+    high = build_crate_mesh(<span class="s">&quot;CrateHigh&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">4</span>)
+    wood = principled(<span class="s">&quot;CrateWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>)
+    metal = principled(<span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.58</span>, <span class="n">0.60</span>, <span class="n">0.64</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.22</span>)
+    assign_slots(low, wood, metal)
+    assign_slots(high, wood, metal)
+
+    <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
+        <span class="k">return</span> fail(<span class="s">&quot;crate mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+
+    base_tris = triangle_count(low.data)
+    mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat = len(mats)
+    distinct_mats = len({id(s) <span class="k">for</span> s <span class="k">in</span> mats})
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x = bb[<span class="n">3</span>] - bb[<span class="n">0</span>]
+    size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
+    size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, wood)
+    <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> fail(<span class="s">&quot;crate has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;CrateLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;CrateLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = convex_hull_collider(low, <span class="s">&quot;CrateCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(
+        tempfile.gettempdir(),
+        <span class="s">f&quot;</span><span class="s">bdt_shipping_crate_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>,
+    )
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+
+    print(
+        <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
+    )
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>,
+            <span class="n">4</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct_mats != MATERIAL_COUNT:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>,
+            <span class="n">6</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>,
+            <span class="n">7</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>,
+            <span class="n">8</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>,
+            <span class="n">9</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>,
+            <span class="n">9</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>,
+            <span class="n">11</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>,
+            <span class="n">12</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, wood, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(wood, tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+
+    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
+    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">680.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">48.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.30</span>, -<span class="n">3.20</span>, <span class="n">1.92</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, OUTER_SIZE[<span class="n">2</span>] / <span class="n">2.0</span> + <span class="n">0.06</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = (
+        <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    )
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        strategy=<span class="s">&quot;projection&quot;</span>,
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(
+        <span class="s">&quot;--skip-decimate&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
+    )
+    args = p.parse_args(argv)
+
+    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, wood, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;shipping-crate OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/shipping-crate-hero.webp" alt="shipping-crate render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

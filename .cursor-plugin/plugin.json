@@ -137,5 +137,7 @@
     "examples/vse-linear-modifiers",
     "examples/wave-displace"
   ],
-  "showcase": []
+  "showcase": [
+    "showcase/shipping-crate"
+  ]
 }
