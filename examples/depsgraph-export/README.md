@@ -17,6 +17,9 @@ export) rather than the unmodified base mesh.
 # Cheap correctness check (writes an OBJ to a temp path, asserts the counts) — the CI check:
 blender --background --python depsgraph_export.py --
 
+# Falsifier: apply_modifiers=False. Must exit non-zero (export ≠ evaluated).
+blender --background --python depsgraph_export.py -- --unevaluated
+
 # Also render a still of base vs evaluated (EEVEE on a GPU host; cycles on GPU-less hosts):
 blender --background --python depsgraph_export.py -- --output depsgraph.png
 blender --background --python depsgraph_export.py -- --output depsgraph.png --engine cycles
@@ -25,8 +28,27 @@ blender --background --python depsgraph_export.py -- --output depsgraph.png --en
 blender --background --python depsgraph_export.py -- --obj exported.obj
 ```
 
-It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The
-`blender-smoke` workflow runs this check on Blender 5.2 LTS and 4.5 LTS: base 8 → evaluated/exported
-98 vertices with a 2-level SUBSURF.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Evaluated mesh did not apply the modifier |
+| 4 | No OBJ written |
+| 5 | Export vert count ≠ evaluated (`--unevaluated` lands here) |
+| 6 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+`--obj` is a path selector, not a falsifier.
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output`, `--obj`, or `--unevaluated`.
+
 
 The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.

@@ -25,11 +25,33 @@ Color, not just present in the node tree.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python color_attribute_wheel.py --
 
+# Falsifier: POINT-domain attribute. Must exit non-zero.
+blender --background --python color_attribute_wheel.py -- --point-domain
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python color_attribute_wheel.py -- --output wheel.png
 blender --background --python color_attribute_wheel.py -- --output wheel.png --engine cycles
 ```
 
-It exits non-zero on failure (missing/mis-sized/mis-domained attribute, wrong
-active attribute, a probe color mismatch, or an unlinked Attribute node). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Topology ≠ closed form |
+| 4 | Color attribute missing |
+| 5 | Domain/type ≠ CORNER/FLOAT_COLOR (`--point-domain` lands here) |
+| 6 | Attribute sized to verts, not loops |
+| 7 | `active_color` not set |
+| 8 | Probe loop color off HSV closed form |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--point-domain`.
+

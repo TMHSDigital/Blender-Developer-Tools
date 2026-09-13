@@ -35,11 +35,33 @@ joints are the same weights the LBS check asserts.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python armature_bend.py --
 
+# Falsifier: rest pose. Must exit non-zero (tip deflection).
+blender --background --python armature_bend.py -- --zero-curl
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python armature_bend.py -- --output bend.png
 blender --background --python armature_bend.py -- --output bend.png --engine cycles
 ```
 
-It exits non-zero on failure (edit-bone lifetime violation, LBS deviation, moved root
-ring, or an undeformed tip). The `blender-smoke` workflow runs the check on Blender
-5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | `edit_bones` populated in object mode |
+| 4 | Edit-mode bone chain off closed form |
+| 5 | Evaluated vertex count changed |
+| 6 | Evaluated mesh off closed-form LBS |
+| 7 | Root ring moved |
+| 8 | Tip did not deflect (`--zero-curl` lands here) |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--zero-curl`.
+

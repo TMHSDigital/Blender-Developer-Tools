@@ -49,13 +49,35 @@ limited weights still deform as authored.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python vertex_weight_limit.py --
 
+# Falsifier: skip the 4-influence prune. Must exit non-zero.
+blender --background --python vertex_weight_limit.py -- --skip-limit
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python vertex_weight_limit.py -- --output arm.png
 blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles
 ```
 
-It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken
-weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper; it is also the missing-render
+code.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Pre-limit max influences ≠ 5 |
+| 4 | Vertex over the 4-influence cap (`--skip-limit` lands here) |
+| 5 | Limit changed nothing |
+| 6 | Weight sums off 1.0 after renormalize |
+| 7 | Pose damaged by pruning, or evaluated vert count changed |
+| 8 | Evaluated mesh off LBS over limited weights |
+| 9 | Root-weighted mount moved |
+| 10 | Gallery framing violation; also `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--skip-limit`.
+

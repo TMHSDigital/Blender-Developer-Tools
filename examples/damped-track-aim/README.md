@@ -26,11 +26,34 @@ wired to `examples/gallery_framing.py`, call it with
 # Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
 
+# Falsifier: mute every constraint. Must exit non-zero.
+blender --background --python damped_track_aim.py -- --mute
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python damped_track_aim.py -- --output aim.png
 blender --background --python damped_track_aim.py -- --output aim.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong constraint type/target/axis, or evaluated
-aim outside the angular epsilon). The `blender-smoke` workflow runs the check
-on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Needle count ≠ 12 |
+| 4 | Needle does not carry exactly one DAMPED_TRACK |
+| 5 | Constraint target is not Core |
+| 6 | `track_axis` is not TRACK_Z |
+| 7 | Constraint muted or influence < 1 (`--mute` lands here) |
+| 8 | TRACK_TO still present |
+| 9 | Evaluated aim dot below 0.998 |
+| 10 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--mute`.
+

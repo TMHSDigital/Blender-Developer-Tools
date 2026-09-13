@@ -19,10 +19,14 @@ Witnesses the three contracts AI-generated rigging code most often gets wrong:
 The same API works unchanged on Blender 4.5 LTS and 5.1 — no version gate is
 needed, which this example demonstrates by running identically on both.
 
+``--zero-curl`` leaves every pose bone at rest and still asserts the tip
+deflects. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python armature_bend.py --                 # check only
+    blender --background --python armature_bend.py -- --zero-curl      # must fail
     blender --background --python armature_bend.py -- --output b.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -294,10 +298,13 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--zero-curl", action="store_true",
+                   help="leave pose bones at rest (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    tube, arm = build_rig(CURL_DEG)
+    curl = 0.0 if args.zero_curl else CURL_DEG
+    tube, arm = build_rig(curl)
     code = check(tube, arm)
     if code:
         return code

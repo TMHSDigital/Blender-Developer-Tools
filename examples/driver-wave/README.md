@@ -21,12 +21,30 @@ open. Headless, registering before driver creation (as here) is enough.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python driver_wave.py --
 
+# Falsifier: constant 1.0 expression. Must exit non-zero.
+blender --background --python driver_wave.py -- --flat-expr
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python driver_wave.py -- --output driver.png
 blender --background --python driver_wave.py -- --output driver.png --engine cycles
 ```
 
-It exits non-zero on failure (driven value wrong, or the flush-back disagreed). The
-`blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
 
-The `--output` render path additionally measures framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10 on violation) before writing the still.
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Evaluated Z scale ≠ `wave_scale` (`--flat-expr` lands here) |
+| 4 | Original datablock was not flushed |
+| 6 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--flat-expr`.
+

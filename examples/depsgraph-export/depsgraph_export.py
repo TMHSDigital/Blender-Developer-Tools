@@ -6,10 +6,16 @@ evaluated_get().to_mesh() (paired with to_mesh_clear()), exports through
 wm.obj_export, and asserts the exported vertex count equals the EVALUATED
 (modifier-applied) count and is strictly greater than the base.
 
+``--unevaluated`` exports with ``apply_modifiers=False`` and still asserts
+the OBJ vertex count equals the depsgraph-evaluated mesh. That is the
+falsifier (``--same-axis`` in export-preset-axis). ``--obj`` is a path
+selector, not a falsifier.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python depsgraph_export.py --                 # check only
+    blender --background --python depsgraph_export.py -- --unevaluated   # must fail
     blender --background --python depsgraph_export.py -- --output d.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile
@@ -35,7 +41,7 @@ def build():
     return obj
 
 
-def check(obj, obj_path):
+def check(obj, obj_path, unevaluated=False):
     base = len(obj.data.vertices)
 
     # depsgraph lifetime contract: evaluate, read, then release with to_mesh_clear
@@ -48,7 +54,11 @@ def check(obj, obj_path):
     out = obj_path or os.path.join(tempfile.gettempdir(), "depsgraph_export.obj")
     os.makedirs(os.path.dirname(os.path.abspath(out)) or ".", exist_ok=True)
     # obj_export writes the evaluated (modifier-applied) geometry by default
-    bpy.ops.wm.obj_export(filepath=out, export_selected_objects=False)
+    bpy.ops.wm.obj_export(
+        filepath=out,
+        export_selected_objects=False,
+        apply_modifiers=not unevaluated,
+    )
     if not (os.path.exists(out) and os.path.getsize(out) > 0):
         print("ERROR: no OBJ written", file=sys.stderr)
         return 4
@@ -207,10 +217,12 @@ def main():
                    help="render engine for --output (cycles for GPU-less hosts)")
     p.add_argument("--obj", default=None,
                    help="optional: write the exported OBJ here (else a temp path)")
+    p.add_argument("--unevaluated", action="store_true",
+                   help="export with apply_modifiers=False (must fail)")
     args = p.parse_args(argv)
 
     obj = build()
-    code = check(obj, args.obj)
+    code = check(obj, args.obj, unevaluated=args.unevaluated)
     if code:
         return code
 

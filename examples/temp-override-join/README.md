@@ -19,11 +19,32 @@ leaves only step 0 and the Z span fails.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python temp_override_join.py --
 
+# Falsifier: join without temp_override. Must exit non-zero.
+blender --background --python temp_override_join.py -- --no-override
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python temp_override_join.py -- --output join.png
 blender --background --python temp_override_join.py -- --output join.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong object count, topology mismatch, sources still alive,
-or incomplete Z span). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and
-4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Mesh object count after join ≠ 1 (`--no-override` lands here) |
+| 4 | Joined target is not the sole remaining mesh |
+| 5 | Topology ≠ 24 verts / 18 faces |
+| 6 | Source objects still present |
+| 7 | Local Z span did not cover all steps |
+| 8 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-override`.
+

@@ -15,10 +15,15 @@ transform edit it is stale until `bpy.context.view_layer.update()`. Finally
 every planet and the moon must land on the closed-form orbit position
 (rotation about the column axis, composed per hierarchy level).
 
+``--skip-mpi`` parents without ``matrix_parent_inverse`` and still asserts
+closed-form orbits. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python parent_inverse_orrery.py --                   # check only
+    blender --background --python parent_inverse_orrery.py -- --skip-mpi        # must fail
     blender --background --python parent_inverse_orrery.py -- --output o.png    # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -72,13 +77,14 @@ def empty(name, location):
     return obj
 
 
-def parent_keep_world(child, parent):
+def parent_keep_world(child, parent, skip_mpi=False):
     """The idiom this example witnesses: parent without moving the child."""
     child.parent = parent
-    child.matrix_parent_inverse = parent.matrix_world.inverted()
+    if not skip_mpi:
+        child.matrix_parent_inverse = parent.matrix_world.inverted()
 
 
-def build_orrery():
+def build_orrery(skip_mpi=False):
     """Author the whole hierarchy with bpy.data (no object-mode operators)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
@@ -100,8 +106,8 @@ def build_orrery():
         # everything is placed at its theta=0 WORLD position first, then
         # parented with the keep-world idiom -- nothing may move here
         bpy.context.view_layer.update()
-        parent_keep_world(arm, pivot)
-        parent_keep_world(planet, pivot)
+        parent_keep_world(arm, pivot, skip_mpi=skip_mpi)
+        parent_keep_world(planet, pivot, skip_mpi=skip_mpi)
         rig["planets"][name] = {
             "pivot": pivot, "planet": planet, "angle": math.radians(angle),
             "p0": Vector((radius, 0.0, height)),
@@ -116,9 +122,9 @@ def build_orrery():
     moon = sphere("Moon", MOON_R)
     moon.location = pc0 + Vector((MOON_OFFSET, 0.0, 0.0))
     bpy.context.view_layer.update()
-    parent_keep_world(moon_pivot, host["planet"])
-    parent_keep_world(rod, moon_pivot)
-    parent_keep_world(moon, moon_pivot)
+    parent_keep_world(moon_pivot, host["planet"], skip_mpi=skip_mpi)
+    parent_keep_world(rod, moon_pivot, skip_mpi=skip_mpi)
+    parent_keep_world(moon, moon_pivot, skip_mpi=skip_mpi)
     rig["moon"] = {"pivot": moon_pivot, "moon": moon,
                    "angle": math.radians(MOON_ANGLE), "pc0": pc0,
                    "m0": pc0 + Vector((MOON_OFFSET, 0.0, 0.0))}
@@ -323,9 +329,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--skip-mpi", action="store_true",
+                   help="parent without matrix_parent_inverse (must fail)")
     args = p.parse_args(argv)
 
-    rig = build_orrery()
+    rig = build_orrery(skip_mpi=args.skip_mpi)
     code = check(rig)
     if code:
         return code

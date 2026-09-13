@@ -24,10 +24,14 @@ those maps need are in triangulate-tangents.)
 The skins pipeline is stable between Blender 4.5 LTS and 5.1 (exporter RNA
 is byte-identical, verified on both) — the example runs identically on both.
 
+``--no-skins`` exports with ``export_skins=False`` and still asserts one
+skin on disk. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gltf_skin_roundtrip.py --                 # check only
+    blender --background --python gltf_skin_roundtrip.py -- --no-skins      # must fail
     blender --background --python gltf_skin_roundtrip.py -- --output s.png  # + render
 """
 import bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
@@ -247,7 +251,7 @@ def read_gltf(path):
     return g, accessor_floats, accessor_uints
 
 
-def check(obj, arm, part_of):
+def check(obj, arm, part_of, no_skins=False):
     me = obj.data
     exp_props = {p.identifier for p in bpy.ops.export_scene.gltf.get_rna_type().properties}
     missing = [k for k in EXPORT_KWARGS if k not in exp_props]
@@ -290,7 +294,10 @@ def check(obj, arm, part_of):
     tmp = tempfile.mkdtemp(prefix="gltf_skin_")
     try:
         path = os.path.join(tmp, "scorp.gltf").replace("\\", "/")
-        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+        kw = dict(EXPORT_KWARGS)
+        if no_skins:
+            kw["export_skins"] = False
+        bpy.ops.export_scene.gltf(filepath=path, **kw)
 
         # contract 1 (on disk): the skin carries every bone, joints named
         g, acc_f, acc_u = read_gltf(path)
@@ -556,6 +563,8 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--no-skins", action="store_true",
+                   help="export with export_skins=False (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -565,7 +574,7 @@ def main():
     assign_weights(obj, part_of)
     arm = build_rig(obj)
     bpy.context.view_layer.update()
-    code = check(obj, arm, part_of)
+    code = check(obj, arm, part_of, no_skins=args.no_skins)
     if code:
         return code
 

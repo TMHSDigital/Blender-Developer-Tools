@@ -13,6 +13,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python soccer_ball_goldberg.py --                 # check only
+    blender --background --python soccer_ball_goldberg.py -- --invert-bind   # must fail
     blender --background --python soccer_ball_goldberg.py -- --output b.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -67,7 +68,7 @@ def _fan_edges(bv):
         prev_face, current = face, nxt
 
 
-def build_ball():
+def build_ball(invert_bind=False):
     """Truncate a bmesh icosphere at 1/3 per edge into the Goldberg ball.
 
     The icosphere is the topology source: cut points are computed per edge,
@@ -150,7 +151,8 @@ def build_ball():
     # builder that assigns "first 12 faces black" passes only by luck of
     # bmesh face ordering, and the check below must catch it
     for poly in me.polygons:
-        poly.material_index = 1 if len(poly.vertices) == 5 else 0
+        pent = len(poly.vertices) == 5
+        poly.material_index = (0 if pent else 1) if invert_bind else (1 if pent else 0)
     return obj
 
 
@@ -392,9 +394,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--invert-bind", action="store_true",
+                   help="swap pentagon/hexagon material slots (must fail)")
     args = p.parse_args(argv)
 
-    obj = build_ball()
+    obj = build_ball(invert_bind=args.invert_bind)
     code = check(obj)
     if code:
         return code

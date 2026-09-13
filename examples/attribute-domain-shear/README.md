@@ -50,11 +50,30 @@ per `docs/VISUAL-STYLE.md`.
 
 ```bash
 blender --background --python attribute_domain_shear.py --
+blender --background --python attribute_domain_shear.py -- --no-overwrite
 blender --background --python attribute_domain_shear.py -- --output shear.png
 blender --background --python attribute_domain_shear.py -- --output shear.png --engine cycles
 ```
 
-Exits non-zero on failure. The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS. The `--output` render path additionally measures
-framing against the Layer 1 band via `examples/gallery_framing.py` (exit 10
-on violation) before writing the still.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | CORNER or POINT attribute size wrong |
+| 4 | CORNER hub corners off wedge color |
+| 5 | POINT hub is not last-write (`--no-overwrite` lands here) |
+| 6 | Outer ring verts off last-write order |
+| 7 | Measured shear off palette closed form, or ~0 |
+| 9 | `--output` produced no file |
+| 10 | Gallery framing violation |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-overwrite`.
+

@@ -24,11 +24,32 @@ land exactly on their closed-form orbit positions after the pivots spin.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python parent_inverse_orrery.py --
 
+# Falsifier: parent without MPI. Must exit non-zero (orbit closed form).
+blender --background --python parent_inverse_orrery.py -- --skip-mpi
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python parent_inverse_orrery.py -- --output orrery.png
 blender --background --python parent_inverse_orrery.py -- --output orrery.png --engine cycles
 ```
 
-It exits non-zero on failure (no jump from the trap, keep-world error, stale-matrix
-contract broken, or an orbit off its closed form). The `blender-smoke` workflow runs the
-check on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Bare parenting did not jump |
+| 4 | Keep-world idiom off |
+| 5 | Stale `matrix_world` contract broken |
+| 6 | Planet off closed-form orbit (`--skip-mpi` lands here) |
+| 7 | Moon off closed-form orbit |
+| 8 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--skip-mpi`.
+

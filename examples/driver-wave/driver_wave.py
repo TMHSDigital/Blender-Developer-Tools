@@ -8,10 +8,14 @@ after a view-layer update — from the evaluated copy AND from the original
 for display, so both must agree). Asserts both against the closed-form
 profile. Exits non-zero on failure.
 
+``--flat-expr`` drives Z scale with ``1.0`` and still asserts ``wave_scale``.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python driver_wave.py --                 # check only
+    blender --background --python driver_wave.py -- --flat-expr      # must fail
     blender --background --python driver_wave.py -- --output d.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -31,7 +35,7 @@ def wave_scale(i):
     return 1.4 + math.sin(i * 0.6)
 
 
-def build_columns():
+def build_columns(flat_expr=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     # driver_namespace entries do not persist in .blend files; real add-ons
     # re-register them from a load_post handler. Headless, registering before
@@ -54,7 +58,7 @@ def build_columns():
         obj.scale = (BASE, BASE, 1.0)
         fcu = obj.driver_add("scale", 2)
         fcu.driver.type = 'SCRIPTED'
-        fcu.driver.expression = f"wave_scale({i})"
+        fcu.driver.expression = "1.0" if flat_expr else f"wave_scale({i})"
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     return objs
@@ -191,9 +195,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--flat-expr", action="store_true",
+                   help="drive Z scale with 1.0 (must fail)")
     args = p.parse_args(argv)
 
-    objs = build_columns()
+    objs = build_columns(flat_expr=args.flat_expr)
     code = check(objs)
     if code:
         return code

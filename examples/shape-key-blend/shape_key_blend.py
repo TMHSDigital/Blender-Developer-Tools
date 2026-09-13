@@ -10,10 +10,14 @@ the evaluated mesh.
 The Tall key both lifts and flares the top face, so the silhouette is a
 truncated pyramid — clearly a blend, not a uniformly scaled box.
 
+``--zero-blend`` sets Tall.value to 0 and still asserts the 0.5 closed form.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python shape_key_blend.py --                 # check only
+    blender --background --python shape_key_blend.py -- --zero-blend    # must fail
     blender --background --python shape_key_blend.py -- --output s.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -28,7 +32,7 @@ EXPECT_BOT_Z = -HALF
 EXPECT_TOP_HALF = HALF + BLEND * FLARE  # |x| and |y| of top verts
 
 
-def build():
+def build(zero_blend=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     me = bpy.data.meshes.new("Block")
     bm = bmesh.new()
@@ -51,7 +55,7 @@ def build():
             # flare top face outward so the blend reads as a taper, not a box
             co.x = math.copysign(HALF + FLARE, co.x)
             co.y = math.copysign(HALF + FLARE, co.y)
-    tall.value = BLEND
+    tall.value = 0.0 if zero_blend else BLEND
     return obj
 
 
@@ -245,9 +249,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--zero-blend", action="store_true",
+                   help="set Tall.value to 0 (must fail)")
     args = p.parse_args(argv)
 
-    obj = build()
+    obj = build(zero_blend=args.zero_blend)
     code = check(obj)
     if code:
         return code
