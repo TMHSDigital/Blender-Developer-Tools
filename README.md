@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>8 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>9 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 8 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 9 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -83,6 +83,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
 <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
 <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
+<a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
@@ -99,6 +100,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`treasure-chest`](showcase/treasure-chest/) — procedural slatted chest with iron bands, corner brackets, and an open lid through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`terrain-scatter`](showcase/terrain-scatter/) — Geometry Nodes hill tile with bevelled masonry scatter through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`fence-kit`](showcase/fence-kit/) — procedural post-and-rail fence section through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 ## Examples
 

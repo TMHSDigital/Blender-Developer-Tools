@@ -115,7 +115,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece~~ **SHIPPED** as `showcase/street-lantern/` and `showcase/treasure-chest/` — hanging iron lantern with muntined amber cage; slatted chest with iron bands and an open lid; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece
 - Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece
-- Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)
+- ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
 - ~~Custom ID-property delete witness~~ **SHIPPED** as `examples/cross-version-property-delete/` — IDs built via `bpy.data.objects.new` (not `active_object`); `property_unset` is TypeError and leaves the key; `del` removes it on 4.5 LTS and 5.x
 - ~~USD export evaluation_mode witness~~ **SHIPPED** as `examples/usd-export-evaluation-mode/` — probed `wm.usd_export` on CI Linux portables 5.2.1 (`9e2066aef7ef`) and 4.5.13 (`daeeeca98fb0`); TESSELLATE+VIEWPORT 26/24, TESSELLATE+RENDER 98/96; BEST_MATCH writes the 8-vert catmullClark cage so the mode is silent
