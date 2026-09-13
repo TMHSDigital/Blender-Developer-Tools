@@ -21,7 +21,7 @@ skills/<skill-name>/SKILL.md   - AI workflow definitions, 16 total
 rules/<rule-name>.mdc          - Anti-pattern rules, 9 total
 templates/<template-name>/     - Starter projects, 3 total
 snippets/<snippet-name>.py     - Standalone code patterns, 27 total
-examples/<name>/               - Runnable smoke-gated examples, 55 total (+ gallery.json)
+examples/<name>/               - Runnable smoke-gated examples, 56 total (+ gallery.json)
 scripts/build_gallery.py       - Regenerates docs/gallery/ from gallery.json (stdlib only)
 scripts/site/                  - Vendored landing-page build (Jinja2)
 docs/gallery/                  - Committed generated gallery pages + hero renders
@@ -99,7 +99,7 @@ v0.2.0: Principled BSDF material, driver-with-custom-function via `driver_namesp
 
 AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lod_chain.py` (helper duplicated, not imported), `gltf_draco_export.py`, `export_preset_unity.py`, `export_preset_godot.py`, `export_preset_unreal.py`, `setup_bake_target_image.py`, `bake_normal_high_to_low.py`, `save_baked_image.py`.
 
-## Examples (55)
+## Examples (56)
 
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
