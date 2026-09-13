@@ -108,6 +108,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 
 - ~~Showcase sibling tree + shipping-crate pilot~~ **SHIPPED** as `showcase/shipping-crate/` — budget-conformance crate composing bake, LOD, collider, Unity glTF; `--skip-decimate` exits 9 on the LOD1 ratio band; DECIMATE COLLAPSE ratios diverge on 5.2 vs 4.5/5.1
 - ~~Round stone well showcase~~ **SHIPPED** as `showcase/stone-well/` — running-bond brick well, shingled pyramid roof, windlass/rope/bucket; `--skip-decimate` exits 9 on the LOD1 ratio band
+- ~~Wooden barrel showcase~~ **SHIPPED** as `showcase/wooden-barrel/` — bulged staves, four iron hoops, lid heads; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Procedural terrain or landscape showcase using Geometry Nodes scatter
 - Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece
 - Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)
