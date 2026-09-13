@@ -253,18 +253,18 @@
       <img src="../assets/market-stall-hero.webp" alt="market-stall render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2244 tris, three materials with 48 faces per awning stripe slot, UVs in 0..1 with zero AABB overlap, outer AABB 1.360×0.964×1.743 m, LOD ratios in band, convex collider 28 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 4404 tris, three materials with 48 faces per awning stripe slot, UVs in 0..1 with zero AABB overlap, outer AABB 1.392×0.966×1.743 m, LOD ratios in band, convex collider 46 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/market-stall/market_stall.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber stall (posts, slanted side plates, counter with apron and shelf, backboard, striped awning and valance) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural timber stall (posts with feet, slanted rafters, slatted counter and shelf, back-wall planks, eave fascia, striped awning and valance) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2140–2350 | 2244 / 2244 / 2244 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2193 | | Materials | exactly 3 distinct, ≥16 faces per stripe slot | 3 slots, 48 / 48 stripe faces | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.360, 0.964, 1.743) m ± 0.01 | (1.3600, 0.9639, 1.7430), zmin 0 | | Collider tris | ≤ 80 | 28 | | Export | written, size &gt; 0 | 163992 / 163992 / 163968 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 4280–4550 | 4404 / 4404 / 4404 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 3 distinct, ≥16 faces per stripe slot | 3 slots, 48 / 48 stripe faces | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.392, 0.966, 1.743) m ± 0.01 | (1.3915, 0.9659, 1.7430), zmin 0 | | Collider tris | ≤ 80 | 46 | | Export | written, size &gt; 0 | 316748 / 316748 / 316724 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size differs by a few bytes across series.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
@@ -334,10 +334,10 @@ COUNTER_T = <span class="n">0.070</span>
 BRACE = <span class="n">0.036</span>
 BBOX_TOL = <span class="n">0.01</span>
 <span class="c"># Fitted to the generated AABB after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">1.360</span>, <span class="n">0.964</span>, <span class="n">1.743</span>)
+OUTER_SIZE = (<span class="n">1.392</span>, <span class="n">0.966</span>, <span class="n">1.743</span>)
 
-BASE_TRIS_MIN = <span class="n">2140</span>
-BASE_TRIS_MAX = <span class="n">2350</span>
+BASE_TRIS_MIN = <span class="n">4280</span>
+BASE_TRIS_MAX = <span class="n">4550</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -390,6 +390,27 @@ STRIPE_B_IDX = <span class="n">2</span>
     <span class="k">for</span> v <span class="k">in</span> verts:
         p = Vector((v.co.x * scale[<span class="n">0</span>], v.co.y * scale[<span class="n">1</span>], v.co.z * scale[<span class="n">2</span>]))
         v.co = rot @ p + origin
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    geo = bmesh.ops.create_cone(
+        bm,
+        cap_ends=<span class="k">True</span>,
+        cap_tris=<span class="k">False</span>,
+        segments=segments,
+        radius1=radius1,
+        radius2=radius2,
+        depth=depth,
+    )
+    verts = geo[<span class="s">&quot;verts&quot;</span>]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co = rot @ v.co + origin
     faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
@@ -456,6 +477,9 @@ STRIPE_B_IDX = <span class="n">2</span>
         )
         <span class="k">for</span> x, y, z, h <span class="k">in</span> posts:
             wood_verts.extend(add_box(bm, (x, y, z), (POST, POST, h), WOOD_IDX))
+            wood_verts.extend(
+                add_box(bm, (x, y, <span class="n">0.018</span>), (POST * <span class="n">1.45</span>, POST * <span class="n">1.45</span>, <span class="n">0.036</span>), WOOD_IDX)
+            )
 
         <span class="c"># Front and back header beams (along X).</span>
         wood_verts.extend(
@@ -488,6 +512,18 @@ STRIPE_B_IDX = <span class="n">2</span>
                     euler=(pitch, <span class="n">0.0</span>, <span class="n">0.0</span>),
                 )
             )
+        <span class="c"># Inner rafters under the awning — the empty underside was a slab of air.</span>
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            rx = -hx + POST * <span class="n">2.0</span> + (i + <span class="n">1</span>) * (WIDTH - <span class="n">4.0</span> * POST) / <span class="n">4.0</span>
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (rx, <span class="n">0.0</span>, (FRONT_H + BACK_H) / <span class="n">2.0</span> - POST * <span class="n">0.42</span>),
+                    (POST * <span class="n">0.42</span>, slant_len * <span class="n">0.96</span>, POST * <span class="n">0.42</span>),
+                    WOOD_IDX,
+                    euler=(pitch, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                )
+            )
 
         <span class="c"># Mid rail on the back wall and two diagonal braces at the sides.</span>
         wood_verts.extend(
@@ -515,33 +551,44 @@ STRIPE_B_IDX = <span class="n">2</span>
                 )
             )
 
-        <span class="c"># Counter top, apron, and four legs.</span>
+        <span class="c"># Slatted counter — crate-lid language, not one fat slab.</span>
         cy = -hy + COUNTER_D / <span class="n">2.0</span> + <span class="n">0.04</span>
-        wood_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, cy, COUNTER_Z),
-                (WIDTH - <span class="n">0.04</span>, COUNTER_D, COUNTER_T),
-                WOOD_IDX,
+        n_slats = <span class="n">6</span>
+        slat_gap = <span class="n">0.010</span>
+        slat_d = (COUNTER_D - <span class="n">0.02</span> - (n_slats - <span class="n">1</span>) * slat_gap) / n_slats
+        y0 = cy - COUNTER_D / <span class="n">2.0</span> + <span class="n">0.01</span> + slat_d / <span class="n">2.0</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n_slats):
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (<span class="n">0.0</span>, y0 + i * (slat_d + slat_gap), COUNTER_Z),
+                    (WIDTH - <span class="n">0.06</span>, slat_d, COUNTER_T * <span class="n">0.72</span>),
+                    WOOD_IDX,
+                )
             )
-        )
         wood_verts.extend(
             add_box(
                 bm,
-                (<span class="n">0.0</span>, cy - COUNTER_D / <span class="n">2.0</span> + COUNTER_T / <span class="n">2.0</span>, COUNTER_Z - <span class="n">0.09</span>),
-                (WIDTH - <span class="n">0.08</span>, COUNTER_T * <span class="n">0.7</span>, <span class="n">0.16</span>),
+                (<span class="n">0.0</span>, cy - COUNTER_D / <span class="n">2.0</span> + <span class="n">0.018</span>, COUNTER_Z - <span class="n">0.09</span>),
+                (WIDTH - <span class="n">0.08</span>, <span class="n">0.036</span>, <span class="n">0.16</span>),
                 WOOD_IDX,
             )
         )
         under_shelf_z = <span class="n">0.38</span>
-        wood_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, cy, under_shelf_z),
-                (WIDTH - <span class="n">0.16</span>, COUNTER_D * <span class="n">0.78</span>, <span class="n">0.028</span>),
-                WOOD_IDX,
+        n_shelf = <span class="n">4</span>
+        shelf_d = COUNTER_D * <span class="n">0.78</span>
+        shelf_gap = <span class="n">0.010</span>
+        shelf_slat = (shelf_d - (n_shelf - <span class="n">1</span>) * shelf_gap) / n_shelf
+        sy0 = cy - shelf_d / <span class="n">2.0</span> + shelf_slat / <span class="n">2.0</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n_shelf):
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (<span class="n">0.0</span>, sy0 + i * (shelf_slat + shelf_gap), under_shelf_z),
+                    (WIDTH - <span class="n">0.16</span>, shelf_slat, <span class="n">0.024</span>),
+                    WOOD_IDX,
+                )
             )
-        )
         <span class="k">for</span> lx <span class="k">in</span> (-hx + <span class="n">0.16</span>, hx - <span class="n">0.16</span>):
             <span class="k">for</span> ly <span class="k">in</span> (cy - COUNTER_D * <span class="n">0.32</span>, cy + COUNTER_D * <span class="n">0.32</span>):
                 wood_verts.extend(
@@ -553,12 +600,24 @@ STRIPE_B_IDX = <span class="n">2</span>
                     )
                 )
 
-        <span class="c"># Backboard behind the counter.</span>
+        <span class="c"># Back wall: horizontal planks with gaps, not a felt slab.</span>
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+            z = <span class="n">0.36</span> + i * <span class="n">0.155</span>
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (<span class="n">0.0</span>, hy - inset - <span class="n">0.014</span>, z),
+                    (WIDTH - <span class="n">2.35</span> * POST, <span class="n">0.028</span>, <span class="n">0.122</span>),
+                    WOOD_IDX,
+                )
+            )
+
+        <span class="c"># Front eave fascia under the valance.</span>
         wood_verts.extend(
             add_box(
                 bm,
-                (<span class="n">0.0</span>, hy - inset - <span class="n">0.012</span>, <span class="n">0.95</span>),
-                (WIDTH - <span class="n">2.2</span> * POST, <span class="n">0.022</span>, <span class="n">0.55</span>),
+                (<span class="n">0.0</span>, -hy - <span class="n">0.008</span>, FRONT_H - <span class="n">0.028</span>),
+                (WIDTH - POST * <span class="n">0.4</span>, <span class="n">0.032</span>, <span class="n">0.048</span>),
                 WOOD_IDX,
             )
         )
@@ -947,8 +1006,8 @@ STRIPE_B_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">26.0</span>)
-    low.rotation_euler.x = math.radians(<span class="n">3.0</span>)
+    low.rotation_euler.z = math.radians(-<span class="n">18.0</span>)
+    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -994,10 +1053,10 @@ STRIPE_B_IDX = <span class="n">2</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.51</span>, -<span class="n">5.00</span>, <span class="n">2.42</span>)
+    cam.location = (<span class="n">3.11</span>, -<span class="n">5.10</span>, <span class="n">1.60</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.88</span>)
+    aim.location = (<span class="n">0.0</span>, -<span class="n">0.10</span>, <span class="n">0.92</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

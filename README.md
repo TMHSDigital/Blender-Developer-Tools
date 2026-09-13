@@ -78,8 +78,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
 <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
 <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" alt="Wooden barrel: a staved barrel with iron hoops on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" alt="Campfire: a stone ring, crossed logs, and ash mound on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" alt="Market stall: a timber frame with a striped awning and counter on a dark studio floor, warm wedge on the back wall" /></a>
+<a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" alt="Campfire: a two-course stone fire ring with a tripod of logs on a dark studio floor, warm wedge on the back wall" /></a>
+<a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 

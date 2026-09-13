@@ -1,9 +1,9 @@
 # Campfire
 
-A showcase piece, not an example. Procedural campfire (flattened cobble
-ring, inner stones, ash mound, crossed logs, sticks, charcoal) then the
-shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD
-chain, convex collider, Unity glTF export.
+A showcase piece, not an example. Procedural campfire (two-course
+running-bond stone ring, pit-floor cobbles, ash, a log tripod, and
+charcoal) then the shipped pipeline: unique-cell UVs, Cycles
+high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -21,14 +21,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 7400–7650 | 7528 / 7528 / 7528 |
+| Base triangles | 3500–3750 | 3616 / 3616 / 3616 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 |
-| Materials | exactly 3 distinct, ≥24 wood faces, ≥8 ash faces | 3 slots, 116 wood, 18 ash |
+| LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 |
+| Materials | exactly 3 distinct, ≥24 wood faces, ≥8 ash faces | 3 slots, 100 wood, 48 ash |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.964, 0.950, 0.252) m ± 0.01 | (0.9641, 0.9495, 0.2521), zmin 0 |
-| Collider tris | ≤ 160 | 105 |
-| Export | written, size > 0 | 548944 / 548944 / 548936 bytes |
+| Outer AABB | (0.789, 0.789, 0.410) m ± 0.01 | (0.7891, 0.7891, 0.4094), zmin 0 |
+| Collider tris | ≤ 320 | 254 |
+| Export | written, size > 0 | 273604 / 273604 / 273596 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh happened

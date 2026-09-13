@@ -45,7 +45,7 @@
       "name": "campfire",
       "dir": "showcase/campfire",
       "teaches": "A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 7528 tris, three materials with 116 wood and 18 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.964×0.950×0.252 m, LOD ratios in band, convex collider 105 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 3616 tris, three materials with 100 wood and 48 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.789×0.789×0.410 m, LOD ratios in band, convex collider 254 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/campfire-hero.webp",
       "preview": "showcase/campfire/preview.webp",
       "tags": [
@@ -57,7 +57,7 @@
       "name": "market-stall",
       "dir": "showcase/market-stall",
       "teaches": "A procedural timber market stall through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 2244 tris, three materials with 48 faces per awning stripe slot, UVs in 0..1 with zero AABB overlap, outer AABB 1.360×0.964×1.743 m, LOD ratios in band, convex collider 28 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 4404 tris, three materials with 48 faces per awning stripe slot, UVs in 0..1 with zero AABB overlap, outer AABB 1.392×0.966×1.743 m, LOD ratios in band, convex collider 46 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/market-stall-hero.webp",
       "preview": "showcase/market-stall/preview.webp",
       "tags": [

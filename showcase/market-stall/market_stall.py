@@ -50,10 +50,10 @@ COUNTER_T = 0.070
 BRACE = 0.036
 BBOX_TOL = 0.01
 # Fitted to the generated AABB after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (1.360, 0.964, 1.743)
+OUTER_SIZE = (1.392, 0.966, 1.743)
 
-BASE_TRIS_MIN = 2140
-BASE_TRIS_MAX = 2350
+BASE_TRIS_MIN = 4280
+BASE_TRIS_MAX = 4550
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -106,6 +106,27 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     for v in verts:
         p = Vector((v.co.x * scale[0], v.co.y * scale[1], v.co.z * scale[2]))
         v.co = rot @ p + origin
+    faces = {f for v in verts for f in v.link_faces}
+    for f in faces:
+        f.material_index = mat_idx
+    return verts
+
+
+def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
+    geo = bmesh.ops.create_cone(
+        bm,
+        cap_ends=True,
+        cap_tris=False,
+        segments=segments,
+        radius1=radius1,
+        radius2=radius2,
+        depth=depth,
+    )
+    verts = geo["verts"]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    for v in verts:
+        v.co = rot @ v.co + origin
     faces = {f for v in verts for f in v.link_faces}
     for f in faces:
         f.material_index = mat_idx
@@ -172,6 +193,9 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
         )
         for x, y, z, h in posts:
             wood_verts.extend(add_box(bm, (x, y, z), (POST, POST, h), WOOD_IDX))
+            wood_verts.extend(
+                add_box(bm, (x, y, 0.018), (POST * 1.45, POST * 1.45, 0.036), WOOD_IDX)
+            )
 
         # Front and back header beams (along X).
         wood_verts.extend(
@@ -204,6 +228,18 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
                     euler=(pitch, 0.0, 0.0),
                 )
             )
+        # Inner rafters under the awning — the empty underside was a slab of air.
+        for i in range(3):
+            rx = -hx + POST * 2.0 + (i + 1) * (WIDTH - 4.0 * POST) / 4.0
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (rx, 0.0, (FRONT_H + BACK_H) / 2.0 - POST * 0.42),
+                    (POST * 0.42, slant_len * 0.96, POST * 0.42),
+                    WOOD_IDX,
+                    euler=(pitch, 0.0, 0.0),
+                )
+            )
 
         # Mid rail on the back wall and two diagonal braces at the sides.
         wood_verts.extend(
@@ -231,33 +267,44 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
                 )
             )
 
-        # Counter top, apron, and four legs.
+        # Slatted counter — crate-lid language, not one fat slab.
         cy = -hy + COUNTER_D / 2.0 + 0.04
-        wood_verts.extend(
-            add_box(
-                bm,
-                (0.0, cy, COUNTER_Z),
-                (WIDTH - 0.04, COUNTER_D, COUNTER_T),
-                WOOD_IDX,
+        n_slats = 6
+        slat_gap = 0.010
+        slat_d = (COUNTER_D - 0.02 - (n_slats - 1) * slat_gap) / n_slats
+        y0 = cy - COUNTER_D / 2.0 + 0.01 + slat_d / 2.0
+        for i in range(n_slats):
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (0.0, y0 + i * (slat_d + slat_gap), COUNTER_Z),
+                    (WIDTH - 0.06, slat_d, COUNTER_T * 0.72),
+                    WOOD_IDX,
+                )
             )
-        )
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, cy - COUNTER_D / 2.0 + COUNTER_T / 2.0, COUNTER_Z - 0.09),
-                (WIDTH - 0.08, COUNTER_T * 0.7, 0.16),
+                (0.0, cy - COUNTER_D / 2.0 + 0.018, COUNTER_Z - 0.09),
+                (WIDTH - 0.08, 0.036, 0.16),
                 WOOD_IDX,
             )
         )
         under_shelf_z = 0.38
-        wood_verts.extend(
-            add_box(
-                bm,
-                (0.0, cy, under_shelf_z),
-                (WIDTH - 0.16, COUNTER_D * 0.78, 0.028),
-                WOOD_IDX,
+        n_shelf = 4
+        shelf_d = COUNTER_D * 0.78
+        shelf_gap = 0.010
+        shelf_slat = (shelf_d - (n_shelf - 1) * shelf_gap) / n_shelf
+        sy0 = cy - shelf_d / 2.0 + shelf_slat / 2.0
+        for i in range(n_shelf):
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (0.0, sy0 + i * (shelf_slat + shelf_gap), under_shelf_z),
+                    (WIDTH - 0.16, shelf_slat, 0.024),
+                    WOOD_IDX,
+                )
             )
-        )
         for lx in (-hx + 0.16, hx - 0.16):
             for ly in (cy - COUNTER_D * 0.32, cy + COUNTER_D * 0.32):
                 wood_verts.extend(
@@ -269,12 +316,24 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
                     )
                 )
 
-        # Backboard behind the counter.
+        # Back wall: horizontal planks with gaps, not a felt slab.
+        for i in range(5):
+            z = 0.36 + i * 0.155
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (0.0, hy - inset - 0.014, z),
+                    (WIDTH - 2.35 * POST, 0.028, 0.122),
+                    WOOD_IDX,
+                )
+            )
+
+        # Front eave fascia under the valance.
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, hy - inset - 0.012, 0.95),
-                (WIDTH - 2.2 * POST, 0.022, 0.55),
+                (0.0, -hy - 0.008, FRONT_H - 0.028),
+                (WIDTH - POST * 0.4, 0.032, 0.048),
                 WOOD_IDX,
             )
         )
@@ -663,8 +722,8 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-26.0)
-    low.rotation_euler.x = math.radians(3.0)
+    low.rotation_euler.z = math.radians(-18.0)
+    low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -710,10 +769,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.51, -5.00, 2.42)
+    cam.location = (3.11, -5.10, 1.60)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.88)
+    aim.location = (0.0, -0.10, 0.92)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
