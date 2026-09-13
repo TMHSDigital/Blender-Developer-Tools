@@ -1,0 +1,8 @@
+{
+  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, teaches, witnessesFix, hero, preview, tags?}. dir/hero/preview are repo-root-relative.",
+  "title": "Showcase",
+  "description": "Budget-conformance props that compose shipped Blender Developer Tools skills. Not API-contract examples.",
+  "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
+  "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
+  "pieces": []
+}

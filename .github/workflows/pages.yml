@@ -18,6 +18,7 @@ on:
       - ".cursor-plugin/plugin.json"
       - "assets/**"
       - "examples/**"
+      - "showcase/**"
       - "docs/gallery/**"
       - "scripts/build_gallery.py"
       - "scripts/site/**"
