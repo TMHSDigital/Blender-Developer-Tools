@@ -38,6 +38,18 @@ it is forwarded to `script.py` as `sys.argv`.
 5. Returns explicit exit codes (0 success, 2-4 different failure modes)
    so a CI pipeline can detect failures.
 
+## Exit codes
+
+Same convention as `CONTRIBUTING.md` (file-local sequential checks; `9`
+is legal; argparse usage is `2`). Not a repo-wide table.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 2 | argparse rejected the flags, or no mesh objects in the input `.blend` |
+| 3 | Modifier apply raised `RuntimeError` |
+| 4 | glTF export raised `RuntimeError` |
+
 ## Expected environment
 
 - Blender on the system `PATH` (or invoked by absolute path).
