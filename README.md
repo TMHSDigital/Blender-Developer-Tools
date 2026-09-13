@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>58 examples</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 58 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 59 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -601,7 +601,7 @@ and every orbit lands on its closed form.
 </details>
 
 <details>
-<summary><strong>Context &amp; Grease Pencil</strong> — 4 examples</summary>
+<summary><strong>Context &amp; Grease Pencil</strong> — 5 examples</summary>
 
 <table>
 <tr>
@@ -629,6 +629,21 @@ sources are gone, and local Z spans all three steps.
 Custom ID properties are removed with `del id_block[key]`, not `property_unset`.
 IDs are built with `bpy.data.objects.new` — the snippet `__main__` keys off
 `active_object` and is dark headless. Same `del` on 4.5 LTS and 5.x.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+check-only, no gallery still — no geometry
+</td>
+<td valign="middle">
+
+### [mesh-automasking-settings](examples/mesh-automasking-settings/)
+
+`MeshAutomaskingSettings` is absent on 4.5.11 and 5.1.2, present on 5.2.1.
+Old `Brush` automasking attributes are gone on 5.2; read
+`.mesh_automasking_settings` instead. `--assume-brush-attrs` is red only
+on 5.2.
 
 </td>
 </tr>
