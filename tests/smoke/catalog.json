@@ -73,5 +73,6 @@
   {"name": "vse-linear-modifiers", "script": "examples/vse-linear-modifiers/vse_linear_modifiers.py"},
   {"name": "gn-socket-rename", "script": "examples/gn-socket-rename/gn_socket_rename.py"},
   {"name": "eval-mesh-datablock-name", "script": "examples/eval-mesh-datablock-name/eval_mesh_datablock_name.py"},
-  {"name": "mesh-automasking-settings", "script": "examples/mesh-automasking-settings/mesh_automasking_settings.py"}
+  {"name": "mesh-automasking-settings", "script": "examples/mesh-automasking-settings/mesh_automasking_settings.py"},
+  {"name": "shipping-crate", "script": "showcase/shipping-crate/shipping_crate.py"}
 ]

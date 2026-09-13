@@ -17,8 +17,10 @@ docs/index.html (which scripts/site/build_site.py owns and overwrites). It
 writes ONLY under docs/gallery/ so it never collides with the landing build's
 docs/index.html, docs/fonts/, or docs/assets/.
 
-examples/gallery.json is the source of truth. Run after editing gallery.json,
-an example script, or an example README:
+examples/gallery.json is the source of truth for examples. showcase/gallery.json
+is the source of truth for showcase pieces (``pieces`` key). This script merges
+both into one docs/gallery/ index so each tree owns its JSON. Run after editing
+either file, an example or showcase script, or a README:
 
     python scripts/build_gallery.py
 
@@ -38,10 +40,27 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "examples" / "gallery.json"
+SHOWCASE_DATA = REPO / "showcase" / "gallery.json"
 OUT_DIR = REPO / "docs" / "gallery"
 
 # Soft cap for gallery index card alt text (accessibility + layout).
 _ALT_CAP = 160
+
+
+def load_gallery_entries() -> tuple[dict, list]:
+    """Examples gallery metadata plus concatenated example + showcase cards."""
+    data = json.loads(DATA.read_text(encoding="utf-8"))
+    entries = list(data["examples"])
+    if SHOWCASE_DATA.is_file():
+        show = json.loads(SHOWCASE_DATA.read_text(encoding="utf-8"))
+        for piece in show.get("pieces", []):
+            item = dict(piece)
+            tags = list(item.get("tags") or [])
+            if "showcase" not in tags:
+                tags.append("showcase")
+            item["tags"] = tags
+            entries.append(item)
+    return data, entries
 
 
 def first_sentence(text: str) -> str:
@@ -892,7 +911,9 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
 
 def main() -> int:
-    data = json.loads(DATA.read_text(encoding="utf-8"))
+    data, examples = load_gallery_entries()
+    data = dict(data)
+    data["examples"] = examples
     base = data["repoBaseUrl"].rstrip("/")
     repo_root_url = base.split("/tree/")[0]  # strip /tree/<ref> -> repo home
     site = data.get("siteBaseUrl", "").rstrip("/")

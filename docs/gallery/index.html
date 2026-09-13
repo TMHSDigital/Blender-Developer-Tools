@@ -272,7 +272,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples</span>
+        <span class="count" id="count" role="status" aria-live="polite">52 examples</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -313,6 +313,7 @@
         <button class="chip" data-tag="rendering" type="button">rendering</button>
         <button class="chip" data-tag="sequencer" type="button">sequencer</button>
         <button class="chip" data-tag="shape-keys" type="button">shape-keys</button>
+        <button class="chip" data-tag="showcase" type="button">showcase</button>
         <button class="chip" data-tag="sky" type="button">sky</button>
         <button class="chip" data-tag="transform" type="button">transform</button>
         <button class="chip" data-tag="transforms" type="button">transforms</button>
@@ -882,6 +883,17 @@
           <p class="teaches">Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2</p>
           <p class="witnesses"><span class="tag">witnesses</span> A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts</p>
           <a class="card-link" href="gn-socket-rename/">View example <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
+      <article class="card" data-tags="mesh export showcase">
+        <a class="card-media" href="shipping-crate/" aria-label="shipping-crate example detail page">
+          <img src="assets/shipping-crate-hero.webp" alt="shipping-crate — A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="shipping-crate/">shipping-crate</a></h2>
+          <p class="teaches">A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 552 tris, two materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.256×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 20 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</p>
+          <a class="card-link" href="shipping-crate/">View example <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
     </div>

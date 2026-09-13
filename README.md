@@ -18,13 +18,14 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>1 showcase piece</strong>
 </p>
 
 <p align="center">
   <a href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/">Examples Gallery</a>
   &nbsp;&bull;&nbsp; <a href="#quick-start">Quick start</a>
-  &nbsp;&bull;&nbsp; <a href="#examples">Examples</a>
+  &nbsp;&bull;&nbsp;   <a href="#examples">Examples</a>
+  &nbsp;&bull;&nbsp; <a href="showcase/">Showcase</a>
   &nbsp;&bull;&nbsp; <a href="skills/">Skills</a>
   &nbsp;&bull;&nbsp; <a href="rules/">Rules</a>
   &nbsp;&bull;&nbsp; <a href="templates/">Templates</a>
@@ -36,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 59 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 1 showcase piece** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -45,7 +46,8 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | **Skills** | Guided workflows: scaffolding, operators, panels, properties, mesh and bmesh, headless batch, slotted actions, geometry nodes, procedural materials, depsgraph queries, drivers and handlers, `bl_info` migration, video sequencer, imported-mesh cleanup, engine export presets |
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
-| **Snippets** | 24 small standalone Python files demonstrating canonical patterns |
+| **Snippets** | 27 small standalone Python files demonstrating canonical patterns |
+| **Showcase** | Budget-conformance props under [`showcase/`](showcase/). Not examples. Conventions: [`showcase/README.md`](showcase/README.md) |
 
 ## Quick start
 
@@ -68,6 +70,14 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 | Blender 5.2 LTS | Primary target (current stable; all examples assume 5.2 unless a 4.5 path is shown) |
 | Blender 5.1 | Prior stable (weekly cron; PR via `needs-5.1` or manual dispatch) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
+
+## Showcase
+
+Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
+
+<a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
+
+First piece: [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
 ## Examples
 

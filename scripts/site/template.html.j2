@@ -239,6 +239,7 @@
       <span class="mode-chip" aria-hidden="true">Object Mode &#9662;</span>
       <ul class="topnav">
         {% if examples %}<li><a href="#examples">Examples</a></li>{% endif %}
+        {% if showcase %}<li><a href="#showcase">Showcase</a></li>{% endif %}
         {% if skills %}<li><a href="#skills">Skills</a></li>{% endif %}
         {% if rules %}<li><a href="#rules">Rules</a></li>{% endif %}
         <li class="always"><a href="#install">Install</a></li>
@@ -264,6 +265,7 @@
         {% if snippet_count %}<a href="#snippets">Snippets</a><span class="v" data-count="{{ snippet_count }}">0</span>{% endif %}
         {% if template_count %}<a href="#snippets">Templates</a><span class="v" data-count="{{ template_count }}">0</span>{% endif %}
         {% if example_count %}<a href="#examples">Examples</a><span class="v" data-count="{{ example_count }}">0</span>{% endif %}
+        {% if showcase_count %}<a href="#showcase">Showcase</a><span class="v" data-count="{{ showcase_count }}">0</span>{% endif %}
       </div>
       <div class="hud-corner hud-br hud">
         <span class="ok-dot" aria-hidden="true"></span><span>smoke-gated on 4.5 LTS + 5.1 &middot; exit 0</span>
@@ -314,6 +316,34 @@
         {% endfor %}
       </div>
       <a class="panel-cta" href="gallery/">Open the gallery — code, README, and full-size renders &rarr;</a>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if showcase %}
+  <section class="panel" id="showcase">
+    <div class="panel-head">
+      <span class="caret" aria-hidden="true">&#9662;</span>
+      <span class="hud">Showcase</span>
+      <span class="hud count">{{ showcase_count }} pieces</span>
+    </div>
+    <div class="panel-body">
+      <h2>Budget-conformance props, not API contracts.</h2>
+      <p class="lede">Showcase pieces compose shipped skills into a recognizable asset and assert
+        declared budgets — triangle counts, materials, UVs, LODs, colliders, exports. They are not
+        examples. A still that merely rendered is not an assertion.</p>
+      <p class="cta-row"><a class="btn-cta" href="gallery/">Open the gallery (tag: showcase) &rarr;</a></p>
+      <div class="render-grid">
+        {% for ex in showcase %}
+        <a class="render-card" href="gallery/{{ ex.name }}/">
+          <img src="{{ ex.heroSite }}" alt="{{ ex.name }} render" loading="lazy" width="1280" height="720" />
+          <div class="render-meta">
+            <span class="name">{{ ex.name }}</span>
+            <span class="teach">{{ ex.teaches }}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
     </div>
   </section>
   {% endif %}

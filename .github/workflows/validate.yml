@@ -184,7 +184,7 @@ jobs:
               )
 
           # Every manifest path must exist on disk.
-          for key in ('skills', 'rules', 'snippets', 'templates', 'examples'):
+          for key in ('skills', 'rules', 'snippets', 'templates', 'examples', 'showcase'):
               for path in manifest.get(key, []):
                   if not os.path.exists(path):
                       errors.append(f'{key}: manifest lists missing path {path}')
@@ -199,6 +199,9 @@ jobs:
               ),
               'examples': sorted(
                   d for d in glob.glob('examples/*') if os.path.isdir(d)
+              ),
+              'showcase': sorted(
+                  d for d in glob.glob('showcase/*') if os.path.isdir(d)
               ),
           }
           for key, paths in expected.items():
@@ -252,6 +255,13 @@ jobs:
               if os.path.isdir(os.path.join('examples', d))
               and os.path.exists(os.path.join('examples', d, 'README.md'))
           ])
+          showcase_count = 0
+          if os.path.isdir('showcase'):
+              showcase_count = len([
+                  d for d in os.listdir('showcase')
+                  if os.path.isdir(os.path.join('showcase', d))
+                  and os.path.exists(os.path.join('showcase', d, 'README.md'))
+              ])
 
           readme = open('README.md').read()
           if f'{skill_count} skills' not in readme:
@@ -265,13 +275,19 @@ jobs:
               errors.append(f'README snippet count mismatch (expected "{snippet_count} snippets" substring)')
           if f'{example_count} examples' not in readme:
               errors.append(f'README example count mismatch (expected "{example_count} examples" substring)')
+          showcase_word = 'piece' if showcase_count == 1 else 'pieces'
+          showcase_needle = f'{showcase_count} showcase {showcase_word}'
+          if showcase_needle not in readme:
+              errors.append(
+                  f'README showcase count mismatch (expected "{showcase_needle}" substring)'
+              )
 
           if errors:
               for e in errors:
                   print(f'::error::{e}', file=sys.stderr)
               sys.exit(1)
 
-          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets, {example_count} examples')
+          print(f'Counts verified: {skill_count} skills, {rule_count} rules, {template_count} {template_word}, {snippet_count} snippets, {example_count} examples, {showcase_needle}')
           PYEOF
 
   validate-harness:

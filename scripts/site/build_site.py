@@ -233,21 +233,31 @@ def parse_changelog(repo_root: Path, max_entries: int = 2) -> list[dict]:
     return entries
 
 
-def load_examples(repo_root: Path) -> list[dict]:
-    """Read examples/gallery.json (the gallery source of truth) when present.
+def _hero_site(hero: str) -> str:
+    """Repo-root ``docs/...`` hero path → site-relative path under Pages."""
+    return hero[len("docs/"):] if hero.startswith("docs/") else hero
 
-    Hero paths in gallery.json are repo-root-relative (``docs/gallery/...``);
-    the deployed site serves ``docs/`` as its root, so expose a site-relative
-    ``heroSite`` alongside each entry."""
-    gallery_path = repo_root / "examples" / "gallery.json"
+
+def load_gallery_items(repo_root: Path, relpath: str, key: str) -> list[dict]:
+    """Read a gallery JSON file and attach ``heroSite`` on each entry."""
+    gallery_path = repo_root / relpath
     if not gallery_path.is_file():
         return []
     data = load_json(gallery_path)
-    examples = data.get("examples", []) if isinstance(data, dict) else []
-    for ex in examples:
-        hero = ex.get("hero", "")
-        ex["heroSite"] = hero[len("docs/"):] if hero.startswith("docs/") else hero
-    return examples
+    items = data.get(key, []) if isinstance(data, dict) else []
+    for item in items:
+        item["heroSite"] = _hero_site(item.get("hero", ""))
+    return items
+
+
+def load_examples(repo_root: Path) -> list[dict]:
+    """Read examples/gallery.json (the examples gallery source of truth)."""
+    return load_gallery_items(repo_root, "examples/gallery.json", "examples")
+
+
+def load_showcase(repo_root: Path) -> list[dict]:
+    """Read showcase/gallery.json. Empty or absent is fine — not an error."""
+    return load_gallery_items(repo_root, "showcase/gallery.json", "pieces")
 
 
 def pick_featured(examples: list[dict]) -> list[dict]:
@@ -376,6 +386,7 @@ def main():
     rules = parse_rules(repo_root)
     examples = load_examples(repo_root)
     featured = pick_featured(examples)
+    showcase = load_showcase(repo_root)
     mcp_tools = load_mcp_tools(repo_root)
     mcp_grouped = group_by_category(mcp_tools)
     changelog = parse_changelog(repo_root)
@@ -391,6 +402,8 @@ def main():
         "example_count": len(examples),
         "featured_examples": featured,
         "featured_count": len(featured),
+        "showcase": showcase,
+        "showcase_count": len(showcase),
         "snippet_count": len(plugin.get("snippets", [])),
         "template_count": len(plugin.get("templates", [])),
         # basenames for display: snippets/foo-bar.py -> foo-bar

@@ -35,12 +35,19 @@ templates/
     blender_manifest.toml
     __init__.py
     README.md
+showcase/
+  README.md
+  gallery.json
+  <piece-name>/
+    README.md
 ```
 
 - **`skills/`** - one directory per skill, each containing `SKILL.md` with YAML frontmatter (`name`, `description`, `standards-version`).
 - **`rules/`** - Cursor-style rules as `.mdc` files with YAML frontmatter (`description`, `alwaysApply`, `globs`, `standards-version`).
 - **`snippets/`** - small standalone `.py` files (5 to 50 lines) demonstrating a single canonical pattern.
 - **`templates/`** - copy-paste starting points; one directory per template.
+- **`showcase/`** - budget-conformance props, sibling of `examples/`. Not API
+  contracts. Conventions: [`showcase/README.md`](showcase/README.md).
 
 ## Adding a Skill
 
@@ -85,6 +92,21 @@ templates/
 
 1. Add a directory under `templates/`, e.g. `templates/headless-batch-script-template/`.
 2. Include all files needed for an immediate copy-paste starting point. For add-on templates, include `blender_manifest.toml`, `__init__.py`, and a brief `README.md`.
+
+## Adding a Showcase Piece
+
+Read [`showcase/README.md`](showcase/README.md) first. Showcase asserts
+budget conformance, never an API contract.
+
+1. Add `showcase/<kebab-name>/` with a script, a README that includes an
+   exit-code table, and a falsifier that breaks one pipeline stage so a
+   **named** budget fails.
+2. List the directory in `.cursor-plugin/plugin.json` `"showcase"` and add a
+   `tests/smoke/catalog.json` row. The runner takes opaque script paths.
+3. Add a `showcase/gallery.json` `pieces[]` entry, render a still, and run
+   `python scripts/build_gallery.py`. Do not hand-edit `docs/gallery/` HTML.
+4. Update the README showcase-piece count. `validate-counts` checks it
+   separately from the example total.
 
 ## Blender Version Targeting
 
@@ -169,7 +191,7 @@ The drift-check workflow enforces these on every push and PR.
 
 ## Aggregate Counts
 
-`README.md` declares aggregate counts (e.g. "8 skills, 4 rules, 1 template, and 10 snippets"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. When you add or remove content, update the README counts in the same commit.
+`README.md` declares aggregate counts (e.g. "16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 1 showcase piece"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
 
 ## Pull Request Process
 

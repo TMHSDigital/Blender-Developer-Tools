@@ -1,0 +1,21 @@
+{
+  "_comment": "SOURCE OF TRUTH for showcase gallery cards. scripts/build_gallery.py merges this file's pieces[] into the examples gallery index so each tree owns its JSON. Schema per piece matches examples/gallery.json entries: {name, dir, teaches, witnessesFix, hero, preview, tags?}. dir/hero/preview are repo-root-relative.",
+  "title": "Showcase",
+  "description": "Budget-conformance props that compose shipped Blender Developer Tools skills. Not API-contract examples.",
+  "repoBaseUrl": "https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main",
+  "siteBaseUrl": "https://tmhsdigital.github.io/Blender-Developer-Tools",
+  "pieces": [
+    {
+      "name": "shipping-crate",
+      "dir": "showcase/shipping-crate",
+      "teaches": "A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 552 tris, two materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.256×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 20 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/shipping-crate-hero.webp",
+      "preview": "showcase/shipping-crate/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    }
+  ]
+}

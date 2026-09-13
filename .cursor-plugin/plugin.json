@@ -136,5 +136,8 @@
     "examples/vse-gamma-cross",
     "examples/vse-linear-modifiers",
     "examples/wave-displace"
+  ],
+  "showcase": [
+    "showcase/shipping-crate"
   ]
 }
