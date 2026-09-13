@@ -84,7 +84,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
 <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
 <a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
-<a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" alt="Watchtower: a timber lookout with X-braces, ladder, plank platform, and pyramidal roof on a dark studio floor" /></a>
+<a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" alt="Watchtower: a timber lookout with X-braces, hatch ladder, plank platform, and a coursed shake roof on a dark studio floor" /></a>
 <a href="showcase/cart/"><img src="showcase/cart/preview.webp" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -105,7 +105,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`fence-kit`](showcase/fence-kit/) — procedural post-and-rail fence section through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`watchtower`](showcase/watchtower/) — procedural timber lookout with X-braces, ladder, platform, and pyramidal roof through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`watchtower`](showcase/watchtower/) — procedural timber lookout with X-braces, hatch ladder, platform, and coursed shake roof through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`cart`](showcase/cart/) — procedural two-wheel wooden cart with spoked wheels, slatted bed, and shafts through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
