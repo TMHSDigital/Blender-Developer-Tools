@@ -80,5 +80,7 @@
   {"name": "campfire", "script": "showcase/campfire/campfire.py"},
   {"name": "market-stall", "script": "showcase/market-stall/market_stall.py"},
   {"name": "street-lantern", "script": "showcase/street-lantern/street_lantern.py"},
-  {"name": "treasure-chest", "script": "showcase/treasure-chest/treasure_chest.py"}
+  {"name": "treasure-chest", "script": "showcase/treasure-chest/treasure_chest.py"},
+  {"name": "terrain-scatter", "script": "showcase/terrain-scatter/terrain_scatter.py"},
+  {"name": "fence-kit", "script": "showcase/fence-kit/fence_kit.py"}
 ]

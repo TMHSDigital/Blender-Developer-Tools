@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>campfire — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/campfire/" />
+  <title>terrain-scatter — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="campfire — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/campfire/" />
-  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/campfire-hero.webp" />
+  <meta property="og:title" content="terrain-scatter — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="campfire — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/campfire-hero.webp" />
+  <meta name="twitter:title" content="terrain-scatter — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -245,60 +245,63 @@
     </div>
   </div>
   <header class="hero">
-    <h1>campfire</h1>
-    <p>A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <h1>terrain-scatter</h1>
+    <p>A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom campfire render">
-      <img src="../assets/campfire-hero.webp" alt="campfire render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom terrain-scatter render">
+      <img src="../assets/terrain-scatter-hero.webp" alt="terrain-scatter render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3616 tris, three materials with 100 wood and 48 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.789×0.789×0.410 m, LOD ratios in band, convex collider 254 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1194 tris, two materials with 486 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.655 m, LOD ratios in band, convex collider 52 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/campfire/campfire.py --</pre>
+      <pre id="runCmd">blender --background --python showcase/terrain-scatter/terrain_scatter.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural campfire (two-course running-bond stone ring, pit-floor cobbles, ash, a log tripod, and charcoal) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid with an Index-jittered Instance-on-Points scatter, realized cubes replaced by bevelled masonry, then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<p><strong>Composes</strong> skills <code>geometry-nodes-python</code>, <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3500–3750 | 3616 / 3616 / 3616 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 | | Materials | exactly 3 distinct, ≥24 wood faces, ≥8 ash faces | 3 slots, 100 wood, 48 ash | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.789, 0.789, 0.410) m ± 0.01 | (0.7891, 0.7891, 0.4094), zmin 0 | | Collider tris | ≤ 320 | 254 | | Export | written, size &gt; 0 | 273604 / 273604 / 273596 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size differs by a few bytes across series.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1150–1250 | 1194 / 1194 / 1194 | | LOD1 ratio | 0.32–0.62 of base | 0.4992 / 0.4992 / 0.4992 | | LOD2 ratio | 0.10–0.35 of base | 0.2194 / 0.2194 / 0.2194 | | Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 486 stone | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.800, 1.800, 0.655) m ± 0.01 | (1.8000, 1.8000, 0.6554), zmin 0 | | Collider tris | ≤ 80 | 52 | | Export | written, size &gt; 0 | 90704 / 90704 / 90696 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size may differ by a few bytes across series.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
-<pre><code>blender --background --python campfire.py --
-blender --background --python campfire.py -- --skip-decimate
-blender --background --python campfire.py -- --output campfire.png</code></pre>
+<pre><code>blender --background --python terrain_scatter.py --
+blender --background --python terrain_scatter.py -- --skip-decimate
+blender --background --python terrain_scatter.py -- --output terrain.png</code></pre>
 <p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or wood/ash faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or stone faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
       <div class="src-meta">
-        <code>showcase/campfire/campfire.py</code>
-        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/campfire/campfire.py">View on GitHub &rarr;</a>
+        <code>showcase/terrain-scatter/terrain_scatter.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/terrain-scatter/terrain_scatter.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;Game-ready campfire — a showcase piece, not an example.
+      <pre><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural campfire after composing
-shipped pipeline pieces: bmesh construction, UVs, three materials,
-high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a Geometry Nodes hill grid with instanced
+masonry rocks after composing shipped pipeline pieces: GN construction,
+UVs, two materials, high-to-low normal bake, LOD chain, convex collider,
+Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+No RNG. Hills are a closed-form sine product; scatter is an Index-jittered
+instance grid. Realized cubes are replaced with bevelled lumped boxes
+(campfire/well masonry, not icospheres). DECIMATE COLLAPSE triangle
+counts are not byte-identical across Blender versions — the LOD gate is
+a ratio band, not an exact count.
 
-    blender --background --python campfire.py --
-    blender --background --python campfire.py -- --skip-decimate
-    blender --background --python campfire.py -- --output campfire.png
+    blender --background --python terrain_scatter.py --
+    blender --background --python terrain_scatter.py -- --skip-decimate
+    blender --background --python terrain_scatter.py -- --output terrain.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
 <span class="k">import</span> math
@@ -311,9 +314,6 @@ ratio band, not an exact count.
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
 
-<span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
-<span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
-<span class="c"># resolve the repo root so we do not move gallery_framing.py.</span>
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -321,44 +321,34 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-N_AROUND = <span class="n">12</span>
-N_ROWS = <span class="n">2</span>
-R_INNER = <span class="n">0.28</span>
-STONE_D = <span class="n">0.11</span>
-R_OUTER = R_INNER + STONE_D
-R_MID = (R_INNER + R_OUTER) / <span class="n">2.0</span>
-WALL_H = <span class="n">0.155</span>
-STONE_H = WALL_H / N_ROWS
-N_FLOOR = <span class="n">6</span>
-N_ASH = <span class="n">7</span>
-N_LOGS = <span class="n">2</span>
-LOG_LEN = <span class="n">0.34</span>
-LOG_R = <span class="n">0.032</span>
-N_STICKS = <span class="n">3</span>
-STICK_R = <span class="n">0.030</span>
-N_COALS = <span class="n">5</span>
-BBOX_TOL = <span class="n">0.01</span>
-<span class="c"># Fitted to the generated AABB after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.789</span>, <span class="n">0.789</span>, <span class="n">0.410</span>)
+PATCH = <span class="n">1.80</span>
+FREQ = <span class="n">2.2</span>
+AMP = <span class="n">0.16</span>
+ROCK_SIZE = (<span class="n">0.22</span>, <span class="n">0.17</span>, <span class="n">0.13</span>)
+ROCK_GRID = <span class="n">3</span>
+ROCK_SPAN = <span class="n">1.15</span>
+SLAB_LIFT = <span class="n">0.10</span>
 
-BASE_TRIS_MIN = <span class="n">3500</span>
-BASE_TRIS_MAX = <span class="n">3750</span>
+BBOX_TOL = <span class="n">0.01</span>
+OUTER_SIZE = (<span class="n">1.800</span>, <span class="n">1.800</span>, <span class="n">0.655</span>)
+BASE_TRIS_MIN = <span class="n">1150</span>
+BASE_TRIS_MAX = <span class="n">1250</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
 LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
-MATERIAL_COUNT = <span class="n">3</span>
+MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">320</span>
+COLLIDER_TRIS_MAX = <span class="n">80</span>
 BAKE_RES = <span class="n">256</span>
-CAGE_EXTRUSION = <span class="n">0.06</span>
+CAGE_EXTRUSION = <span class="n">0.08</span>
+STONE_FACES_MIN = <span class="n">24</span>
 
-STONE_IDX = <span class="n">0</span>
-WOOD_IDX = <span class="n">1</span>
-ASH_IDX = <span class="n">2</span>
+DIRT_IDX = <span class="n">0</span>
+STONE_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -376,7 +366,6 @@ ASH_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> evaluated_triangle_count(obj):
-    <span class="c"># Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).</span>
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -385,6 +374,13 @@ ASH_IDX = <span class="n">2</span>
         <span class="k">return</span> len(eval_mesh.loop_triangles)
     <span class="k">finally</span>:
         eval_obj.to_mesh_clear()
+
+
+<span class="k">def</span> deselect_all():
+    <span class="k">for</span> ob <span class="k">in</span> list(bpy.context.view_layer.objects):
+        <span class="k">if</span> ob <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        ob.select_set(<span class="k">False</span>)
 
 
 <span class="k">def</span> add_box(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
@@ -399,54 +395,6 @@ ASH_IDX = <span class="n">2</span>
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
     <span class="k">return</span> verts
-
-
-<span class="k">def</span> add_rock(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), lump=<span class="n">0.0</span>):
-    <span class="c"># Bevelled boxes, same language as stone-well masonry — not icospheres.</span>
-    <span class="c"># Subdiv-1 icos read as d20s at thumbnail regardless of smooth shading.</span>
-    verts = add_box(bm, loc, scale, mat_idx, euler)
-    <span class="k">if</span> lump &lt;= <span class="n">0.0</span>:
-        <span class="k">return</span> verts
-    origin = Vector(loc)
-    rot = Euler(euler).to_matrix()
-    inv = rot.inverted()
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        local = inv @ (v.co - origin)
-        h = math.sin(local.x * <span class="n">15.7</span> + local.y * <span class="n">11.3</span> + local.z * <span class="n">9.1</span>)
-        h += <span class="n">0.35</span> * math.cos(local.y * <span class="n">21.0</span> + local.x * <span class="n">8.0</span>)
-        h = max(-<span class="n">0.85</span>, min(<span class="n">0.85</span>, h))
-        local = Vector((
-            local.x * (<span class="n">1.0</span> + lump * h),
-            local.y * (<span class="n">1.0</span> + lump * <span class="n">0.65</span> * math.sin(local.z * <span class="n">13.0</span> + <span class="n">1.2</span>)),
-            local.z * (<span class="n">1.0</span> + lump * <span class="n">0.40</span> * h),
-        ))
-        v.co = rot @ local + origin
-    <span class="k">return</span> verts
-
-
-<span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cone(
-        bm,
-        cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">False</span>,
-        segments=segments,
-        radius1=radius1,
-        radius2=radius2,
-        depth=depth,
-    )
-    verts = geo[<span class="s">&quot;verts&quot;</span>]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
-    <span class="k">return</span> verts
-
-
-<span class="k">def</span> add_cylinder(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    <span class="k">return</span> add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -492,164 +440,323 @@ ASH_IDX = <span class="n">2</span>
             )
 
 
-<span class="k">def</span> build_campfire_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> hill_z_socket(tree, freq, amp):
+    pos = tree.nodes.new(<span class="s">&quot;GeometryNodeInputPosition&quot;</span>)
+    sep = tree.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    tree.links.new(pos.outputs[<span class="s">&quot;Position&quot;</span>], sep.inputs[<span class="n">0</span>])
+    mx = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    mx.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    mx.inputs[<span class="n">1</span>].default_value = freq
+    my = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    my.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    my.inputs[<span class="n">1</span>].default_value = freq
+    tree.links.new(sep.outputs[<span class="s">&quot;X&quot;</span>], mx.inputs[<span class="n">0</span>])
+    tree.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], my.inputs[<span class="n">0</span>])
+    sine = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    sine.operation = <span class="s">&quot;SINE&quot;</span>
+    cose = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    cose.operation = <span class="s">&quot;COSINE&quot;</span>
+    tree.links.new(mx.outputs[<span class="n">0</span>], sine.inputs[<span class="n">0</span>])
+    tree.links.new(my.outputs[<span class="n">0</span>], cose.inputs[<span class="n">0</span>])
+    prod = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    prod.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    tree.links.new(sine.outputs[<span class="n">0</span>], prod.inputs[<span class="n">0</span>])
+    tree.links.new(cose.outputs[<span class="n">0</span>], prod.inputs[<span class="n">1</span>])
+    add1 = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    add1.operation = <span class="s">&quot;ADD&quot;</span>
+    add1.inputs[<span class="n">1</span>].default_value = <span class="n">1.0</span>
+    tree.links.new(prod.outputs[<span class="n">0</span>], add1.inputs[<span class="n">0</span>])
+    sc = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    sc.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    sc.inputs[<span class="n">1</span>].default_value = amp
+    tree.links.new(add1.outputs[<span class="n">0</span>], sc.inputs[<span class="n">0</span>])
+    <span class="k">return</span> sc.outputs[<span class="n">0</span>]
+
+
+<span class="k">def</span> build_scatter_tree(verts, dirt, stone):
+    tree = bpy.data.node_groups.new(<span class="s">&quot;TerrainScatter&quot;</span>, <span class="s">&quot;GeometryNodeTree&quot;</span>)
+    tree.interface.new_socket(
+        name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&quot;OUTPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketGeometry&quot;</span>,
+    )
+    go = tree.nodes.new(<span class="s">&quot;NodeGroupOutput&quot;</span>)
+
+    hill = hill_z_socket(tree, FREQ, AMP)
+    off = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    tree.links.new(hill, off.inputs[<span class="s">&quot;Z&quot;</span>])
+
+    grid = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshGrid&quot;</span>)
+    grid.inputs[<span class="s">&quot;Size X&quot;</span>].default_value = PATCH
+    grid.inputs[<span class="s">&quot;Size Y&quot;</span>].default_value = PATCH
+    grid.inputs[<span class="s">&quot;Vertices X&quot;</span>].default_value = verts
+    grid.inputs[<span class="s">&quot;Vertices Y&quot;</span>].default_value = verts
+    set_pos = tree.nodes.new(<span class="s">&quot;GeometryNodeSetPosition&quot;</span>)
+    tree.links.new(grid.outputs[<span class="s">&quot;Mesh&quot;</span>], set_pos.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(off.outputs[<span class="s">&quot;Vector&quot;</span>], set_pos.inputs[<span class="s">&quot;Offset&quot;</span>])
+    lift = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
+    lift.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, SLAB_LIFT)
+    tree.links.new(set_pos.outputs[<span class="s">&quot;Geometry&quot;</span>], lift.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    shade_t = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
+    shade_t.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+    tree.links.new(lift.outputs[<span class="s">&quot;Geometry&quot;</span>], shade_t.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    sm_d = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
+    sm_d.inputs[<span class="s">&quot;Material&quot;</span>].default_value = dirt
+    tree.links.new(shade_t.outputs[<span class="s">&quot;Geometry&quot;</span>], sm_d.inputs[<span class="s">&quot;Geometry&quot;</span>])
+
+    pts = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshGrid&quot;</span>)
+    pts.inputs[<span class="s">&quot;Size X&quot;</span>].default_value = ROCK_SPAN
+    pts.inputs[<span class="s">&quot;Size Y&quot;</span>].default_value = ROCK_SPAN
+    pts.inputs[<span class="s">&quot;Vertices X&quot;</span>].default_value = ROCK_GRID
+    pts.inputs[<span class="s">&quot;Vertices Y&quot;</span>].default_value = ROCK_GRID
+    idx = tree.nodes.new(<span class="s">&quot;GeometryNodeInputIndex&quot;</span>)
+    jx = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jx.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    jx.inputs[<span class="n">1</span>].default_value = <span class="n">1.73</span>
+    tree.links.new(idx.outputs[<span class="s">&quot;Index&quot;</span>], jx.inputs[<span class="n">0</span>])
+    jxs = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jxs.operation = <span class="s">&quot;SINE&quot;</span>
+    tree.links.new(jx.outputs[<span class="n">0</span>], jxs.inputs[<span class="n">0</span>])
+    jxm = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jxm.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    jxm.inputs[<span class="n">1</span>].default_value = <span class="n">0.09</span>
+    tree.links.new(jxs.outputs[<span class="n">0</span>], jxm.inputs[<span class="n">0</span>])
+    jy = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jy.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    jy.inputs[<span class="n">1</span>].default_value = <span class="n">2.19</span>
+    tree.links.new(idx.outputs[<span class="s">&quot;Index&quot;</span>], jy.inputs[<span class="n">0</span>])
+    jyc = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jyc.operation = <span class="s">&quot;COSINE&quot;</span>
+    tree.links.new(jy.outputs[<span class="n">0</span>], jyc.inputs[<span class="n">0</span>])
+    jym = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jym.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    jym.inputs[<span class="n">1</span>].default_value = <span class="n">0.09</span>
+    tree.links.new(jyc.outputs[<span class="n">0</span>], jym.inputs[<span class="n">0</span>])
+    extra = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    extra.operation = <span class="s">&quot;ADD&quot;</span>
+    extra.inputs[<span class="n">1</span>].default_value = SLAB_LIFT
+    tree.links.new(hill, extra.inputs[<span class="n">0</span>])
+    jitter = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    tree.links.new(jxm.outputs[<span class="n">0</span>], jitter.inputs[<span class="s">&quot;X&quot;</span>])
+    tree.links.new(jym.outputs[<span class="n">0</span>], jitter.inputs[<span class="s">&quot;Y&quot;</span>])
+    tree.links.new(extra.outputs[<span class="n">0</span>], jitter.inputs[<span class="s">&quot;Z&quot;</span>])
+    set_pts = tree.nodes.new(<span class="s">&quot;GeometryNodeSetPosition&quot;</span>)
+    tree.links.new(pts.outputs[<span class="s">&quot;Mesh&quot;</span>], set_pts.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(jitter.outputs[<span class="s">&quot;Vector&quot;</span>], set_pts.inputs[<span class="s">&quot;Offset&quot;</span>])
+
+    cube = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshCube&quot;</span>)
+    cube.inputs[<span class="s">&quot;Size&quot;</span>].default_value = ROCK_SIZE
+    iop = tree.nodes.new(<span class="s">&quot;GeometryNodeInstanceOnPoints&quot;</span>)
+    tree.links.new(set_pts.outputs[<span class="s">&quot;Geometry&quot;</span>], iop.inputs[<span class="s">&quot;Points&quot;</span>])
+    tree.links.new(cube.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Instance&quot;</span>])
+
+    ang = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    ang.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    ang.inputs[<span class="n">1</span>].default_value = <span class="n">0.67</span>
+    tree.links.new(idx.outputs[<span class="s">&quot;Index&quot;</span>], ang.inputs[<span class="n">0</span>])
+    rot = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    tree.links.new(ang.outputs[<span class="n">0</span>], rot.inputs[<span class="s">&quot;Z&quot;</span>])
+    tree.links.new(rot.outputs[<span class="s">&quot;Vector&quot;</span>], iop.inputs[<span class="s">&quot;Rotation&quot;</span>])
+
+    mod = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    mod.operation = <span class="s">&quot;MODULO&quot;</span>
+    mod.inputs[<span class="n">1</span>].default_value = <span class="n">3.0</span>
+    tree.links.new(idx.outputs[<span class="s">&quot;Index&quot;</span>], mod.inputs[<span class="n">0</span>])
+    div = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    div.operation = <span class="s">&quot;DIVIDE&quot;</span>
+    div.inputs[<span class="n">1</span>].default_value = <span class="n">3.0</span>
+    tree.links.new(mod.outputs[<span class="n">0</span>], div.inputs[<span class="n">0</span>])
+    mul_s = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    mul_s.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    mul_s.inputs[<span class="n">1</span>].default_value = <span class="n">0.22</span>
+    tree.links.new(div.outputs[<span class="n">0</span>], mul_s.inputs[<span class="n">0</span>])
+    add_s = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    add_s.operation = <span class="s">&quot;ADD&quot;</span>
+    add_s.inputs[<span class="n">1</span>].default_value = <span class="n">0.84</span>
+    tree.links.new(mul_s.outputs[<span class="n">0</span>], add_s.inputs[<span class="n">0</span>])
+    scl = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    tree.links.new(add_s.outputs[<span class="n">0</span>], scl.inputs[<span class="s">&quot;X&quot;</span>])
+    tree.links.new(add_s.outputs[<span class="n">0</span>], scl.inputs[<span class="s">&quot;Y&quot;</span>])
+    tree.links.new(add_s.outputs[<span class="n">0</span>], scl.inputs[<span class="s">&quot;Z&quot;</span>])
+    tree.links.new(scl.outputs[<span class="s">&quot;Vector&quot;</span>], iop.inputs[<span class="s">&quot;Scale&quot;</span>])
+
+    realize = tree.nodes.new(<span class="s">&quot;GeometryNodeRealizeInstances&quot;</span>)
+    tree.links.new(iop.outputs[<span class="s">&quot;Instances&quot;</span>], realize.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    sm_s = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
+    sm_s.inputs[<span class="s">&quot;Material&quot;</span>].default_value = stone
+    tree.links.new(realize.outputs[<span class="s">&quot;Geometry&quot;</span>], sm_s.inputs[<span class="s">&quot;Geometry&quot;</span>])
+
+    join = tree.nodes.new(<span class="s">&quot;GeometryNodeJoinGeometry&quot;</span>)
+    tree.links.new(sm_d.outputs[<span class="s">&quot;Geometry&quot;</span>], join.inputs[<span class="n">0</span>])
+    tree.links.new(sm_s.outputs[<span class="s">&quot;Geometry&quot;</span>], join.inputs[<span class="n">0</span>])
+    shade = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
+    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+    tree.links.new(join.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(shade.outputs[<span class="s">&quot;Geometry&quot;</span>], go.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="k">return</span> tree
+
+
+<span class="k">def</span> eval_to_mesh(obj, name):
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    em = ev.to_mesh()
+    <span class="k">try</span>:
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(
+            [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> em.vertices],
+            [],
+            [tuple(p.vertices) <span class="k">for</span> p <span class="k">in</span> em.polygons],
+        )
+        src_idx = [p.material_index <span class="k">for</span> p <span class="k">in</span> em.polygons]
+        me.update()
+        <span class="k">for</span> poly, idx <span class="k">in</span> zip(me.polygons, src_idx):
+            poly.material_index = idx
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> slabify(bm, floor_z=<span class="n">0.0</span>):
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    boundary = [e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> e.is_boundary]
+    <span class="k">if</span> <span class="k">not</span> boundary:
+        <span class="k">return</span>
+    ret = bmesh.ops.extrude_edge_only(bm, edges=boundary)
+    verts = [g <span class="k">for</span> g <span class="k">in</span> ret[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(g, bmesh.types.BMVert)]
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co.z = floor_z
+    bottom = [
+        e <span class="k">for</span> e <span class="k">in</span> bm.edges
+        <span class="k">if</span> e.is_boundary
+        <span class="k">and</span> abs(e.verts[<span class="n">0</span>].co.z - floor_z) &lt; <span class="n">1e-5</span>
+        <span class="k">and</span> abs(e.verts[<span class="n">1</span>].co.z - floor_z) &lt; <span class="n">1e-5</span>
+    ]
+    <span class="k">if</span> bottom:
+        <span class="k">try</span>:
+            bmesh.ops.edgeloop_fill(bm, edges=bottom)
+        <span class="k">except</span> Exception:
+            bmesh.ops.contextual_create(bm, geom=bottom)
+    <span class="k">for</span> f <span class="k">in</span> bm.faces:
+        <span class="k">if</span> f.material_index <span class="k">not</span> <span class="k">in</span> (DIRT_IDX, STONE_IDX):
+            f.material_index = DIRT_IDX
+
+
+<span class="k">def</span> masonry_from_cubes(bm, lump, bevel_offset, bevel_segments):
+    stone_faces = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> f.material_index == STONE_IDX]
+    visited = set()
+    islands = []
+    <span class="k">for</span> face <span class="k">in</span> stone_faces:
+        <span class="k">if</span> face <span class="k">in</span> visited:
+            <span class="k">continue</span>
+        stack = [face]
+        island = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            <span class="k">if</span> cur <span class="k">in</span> visited:
+                <span class="k">continue</span>
+            visited.add(cur)
+            island.append(cur)
+            <span class="k">for</span> edge <span class="k">in</span> cur.edges:
+                <span class="k">for</span> other <span class="k">in</span> edge.link_faces:
+                    <span class="k">if</span> other.material_index == STONE_IDX <span class="k">and</span> other <span class="k">not</span> <span class="k">in</span> visited:
+                        stack.append(other)
+        islands.append(island)
+
+    specs = []
+    <span class="k">for</span> island <span class="k">in</span> islands:
+        verts = {v <span class="k">for</span> f <span class="k">in</span> island <span class="k">for</span> v <span class="k">in</span> f.verts}
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> verts]
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> verts]
+        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> verts]
+        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
+        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        cz = <span class="n">0.5</span> * (min(zs) + max(zs))
+        z0 = min(zs)
+        sx = <span class="n">0.17</span> + <span class="n">0.04</span> * math.sin(cx * <span class="n">8.1</span>)
+        sy = <span class="n">0.15</span> + <span class="n">0.03</span> * math.cos(cy * <span class="n">6.4</span>)
+        sz = <span class="n">0.20</span> + <span class="n">0.05</span> * math.sin(cx * <span class="n">4.2</span> + cy * <span class="n">3.1</span>)
+        ex = <span class="n">0.38</span> * math.sin(cx * <span class="n">5.1</span>)
+        ey = <span class="n">0.30</span> * math.cos(cy * <span class="n">4.3</span>)
+        ez = cx * <span class="n">3.7</span> + cy * <span class="n">2.1</span>
+        cz = z0 + sz * <span class="n">0.30</span>
+        specs.append((cx, cy, cz, sx, sy, sz, ex, ey, ez))
+
+    <span class="k">if</span> stone_faces:
+        bmesh.ops.delete(bm, geom=stone_faces, context=<span class="s">&quot;FACES&quot;</span>)
+        loose = [v <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> <span class="k">not</span> v.link_faces]
+        <span class="k">if</span> loose:
+            bmesh.ops.delete(bm, geom=loose, context=<span class="s">&quot;VERTS&quot;</span>)
+
+    <span class="k">for</span> cx, cy, cz, sx, sy, sz, ex, ey, ez <span class="k">in</span> specs:
+        verts = add_box(
+            bm,
+            (cx, cy, cz),
+            (sx, sy, sz),
+            STONE_IDX,
+            euler=(ex, ey, ez),
+        )
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+            edges = list({e <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="k">if</span> edges:
+                ret = bmesh.ops.bevel(
+                    bm,
+                    geom=edges,
+                    offset=bevel_offset,
+                    segments=bevel_segments,
+                    profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&quot;EDGES&quot;</span>,
+                    clamp_overlap=<span class="k">True</span>,
+                )
+                <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
+                    f.material_index = STONE_IDX
+
+
+<span class="k">def</span> build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dirt, stone):
+    carrier = bpy.data.meshes.new(name + <span class="s">&quot;Carrier&quot;</span>)
+    carrier.vertices.add(<span class="n">1</span>)
+    obj = bpy.data.objects.new(name + <span class="s">&quot;GN&quot;</span>, carrier)
+    bpy.context.collection.objects.link(obj)
+    tree = build_scatter_tree(grid_verts, dirt, stone)
+    mod = obj.modifiers.new(<span class="s">&quot;terrain_scatter&quot;</span>, <span class="s">&quot;NODES&quot;</span>)
+    mod.node_group = tree
+    realized = eval_to_mesh(obj, name + <span class="s">&quot;Eval&quot;</span>)
+    bpy.data.objects.remove(obj, do_unlink=<span class="k">True</span>)
+
     bm = bmesh.new()
     <span class="k">try</span>:
-        <span class="c"># Two-course running-bond ring — same masonry as stone-well, not a</span>
-        <span class="c"># circle of cubes or icos. Bevel stone edges only; logs go on after.</span>
-        stone_verts = []
-        stone_w = <span class="n">2.0</span> * R_MID * math.tan(math.pi / N_AROUND) * <span class="n">0.88</span>
-        actual_h = STONE_H * <span class="n">0.90</span>
-        <span class="k">for</span> row <span class="k">in</span> range(N_ROWS):
-            z = actual_h / <span class="n">2.0</span> + row * STONE_H
-            rot_off = (row % <span class="n">2</span>) * (math.pi / N_AROUND)
-            <span class="k">for</span> i <span class="k">in</span> range(N_AROUND):
-                ang = <span class="n">2.0</span> * math.pi * i / N_AROUND + rot_off
-                loc = (R_MID * math.cos(ang), R_MID * math.sin(ang), z)
-                stone_verts.extend(
-                    add_box(
-                        bm,
-                        loc,
-                        (STONE_D, stone_w, actual_h),
-                        STONE_IDX,
-                        euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, ang),
-                    )
-                )
-
-        <span class="k">for</span> i <span class="k">in</span> range(N_FLOOR):
-            ang = <span class="n">2.0</span> * math.pi * i / N_FLOOR + <span class="n">0.22</span>
-            r = <span class="n">0.11</span> + <span class="n">0.02</span> * (i % <span class="n">2</span>)
-            sz = <span class="n">0.032</span> + <span class="n">0.008</span> * (i % <span class="n">3</span>)
-            loc = (r * math.cos(ang), r * math.sin(ang), sz * <span class="n">0.50</span>)
-            stone_verts.extend(
-                add_box(
-                    bm,
-                    loc,
-                    (<span class="n">0.078</span>, <span class="n">0.058</span>, sz),
-                    STONE_IDX,
-                    euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, ang),
-                )
-            )
-
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> stone_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
-            bmesh.ops.bevel(
-                bm,
-                geom=edges,
-                offset=bevel_offset,
-                segments=bevel_segments,
-                profile=<span class="n">0.5</span>,
-                affect=<span class="s">&quot;EDGES&quot;</span>,
-                clamp_overlap=<span class="k">True</span>,
-            )
-
-        add_rock(
-            bm,
-            (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.014</span>),
-            (<span class="n">0.10</span>, <span class="n">0.09</span>, <span class="n">0.024</span>),
-            ASH_IDX,
-            lump=<span class="n">0.14</span>,
-        )
-        <span class="k">for</span> i <span class="k">in</span> range(N_ASH):
-            ang = <span class="n">2.0</span> * math.pi * i / N_ASH + <span class="n">0.18</span>
-            r = <span class="n">0.022</span> + <span class="n">0.040</span> * ((i % <span class="n">4</span>) / <span class="n">3.0</span>)
-            sz = <span class="n">0.016</span> + <span class="n">0.010</span> * abs(math.sin(i * <span class="n">1.7</span>))
-            loc = (r * math.cos(ang), r * math.sin(ang), sz * <span class="n">0.50</span>)
-            add_rock(
-                bm,
-                loc,
-                (<span class="n">0.032</span> + <span class="n">0.006</span> * (i % <span class="n">3</span>), <span class="n">0.026</span>, sz),
-                ASH_IDX,
-                euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, ang),
-                lump=<span class="n">0.16</span>,
-            )
-
-        <span class="k">for</span> i <span class="k">in</span> range(N_LOGS):
-            yaw = i * (math.pi / <span class="n">2.0</span>) + math.radians(<span class="n">18.0</span>)
-            loc = (
-                <span class="n">0.04</span> * math.cos(yaw + math.pi / <span class="n">2.0</span>),
-                <span class="n">0.04</span> * math.sin(yaw + math.pi / <span class="n">2.0</span>),
-                LOG_R + <span class="n">0.018</span> + <span class="n">0.012</span> * i,
-            )
-            add_cone(
-                bm,
-                loc,
-                LOG_R * (<span class="n">1.0</span> - <span class="n">0.04</span> * i),
-                LOG_R * <span class="n">0.88</span>,
-                LOG_LEN,
-                <span class="n">12</span>,
-                WOOD_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, yaw),
-            )
-
-        <span class="c"># Teepee aimed at a shared apex so the sticks read as one fire, not</span>
-        <span class="c"># four independent posts. Cone local +Z tracks base -&gt; apex.</span>
-        z_apex = WALL_H + <span class="n">0.24</span>
-        z_base = <span class="n">0.040</span>
-        r_base = R_INNER - <span class="n">0.05</span>
-        <span class="k">for</span> i <span class="k">in</span> range(N_STICKS):
-            yaw = i * (<span class="n">2.0</span> * math.pi / N_STICKS) + math.pi / <span class="n">2.0</span>
-            base = Vector((
-                r_base * math.cos(yaw),
-                r_base * math.sin(yaw),
-                z_base,
-            ))
-            apex = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, z_apex))
-            delta = apex - base
-            mid = (base + apex) * <span class="n">0.5</span>
-            rot = delta.to_track_quat(<span class="s">&quot;Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
-            add_cone(
-                bm,
-                (mid.x, mid.y, mid.z),
-                STICK_R,
-                STICK_R * <span class="n">0.88</span>,
-                delta.length,
-                <span class="n">12</span>,
-                WOOD_IDX,
-                euler=(rot.x, rot.y, rot.z),
-            )
-
-        <span class="k">for</span> i <span class="k">in</span> range(N_COALS):
-            ang = <span class="n">2.0</span> * math.pi * i / N_COALS + <span class="n">0.11</span>
-            r = <span class="n">0.030</span> + <span class="n">0.022</span> * (i % <span class="n">3</span>)
-            sz = <span class="n">0.014</span> + <span class="n">0.008</span> * abs(math.sin(i * <span class="n">2.2</span>))
-            loc = (r * math.cos(ang), r * math.sin(ang), <span class="n">0.022</span> + sz / <span class="n">2.0</span>)
-            add_rock(
-                bm,
-                loc,
-                (<span class="n">0.026</span>, <span class="n">0.020</span>, sz),
-                WOOD_IDX,
-                euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, ang),
-                lump=<span class="n">0.18</span>,
-            )
-
+        bm.from_mesh(realized)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        bm.faces.ensure_lookup_table()
+        slabify(bm, floor_z=<span class="n">0.0</span>)
+        bm.verts.ensure_lookup_table()
+        bm.faces.ensure_lookup_table()
+        masonry_from_cubes(bm, lump, bevel_offset, bevel_segments)
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
+        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        zmin = min(zs)
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x -= cx
+            v.co.y -= cy
+            v.co.z -= zmin
             <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
                 v.co.z = <span class="n">0.0</span>
-
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = face.material_index == WOOD_IDX
-        <span class="k">for</span> edge <span class="k">in</span> bm.edges:
-            mats = {f.material_index <span class="k">for</span> f <span class="k">in</span> edge.link_faces}
-            <span class="k">if</span> WOOD_IDX <span class="k">in</span> mats <span class="k">and</span> STONE_IDX <span class="k">not</span> <span class="k">in</span> mats <span class="k">and</span> ASH_IDX <span class="k">not</span> <span class="k">in</span> mats:
-                edge.smooth = <span class="k">True</span>
-                <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
-                    <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">38.0</span>):
-                        edge.smooth = <span class="k">False</span>
-            <span class="k">else</span>:
-                edge.smooth = <span class="k">False</span>
+            face.smooth = <span class="k">False</span>
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = poly.material_index == WOOD_IDX
+            poly.use_smooth = <span class="k">False</span>
     <span class="k">finally</span>:
         bm.free()
-    obj = bpy.data.objects.new(name, me)
-    bpy.context.collection.objects.link(obj)
-    <span class="k">return</span> obj
+    out = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(out)
+    <span class="k">return</span> out
 
 
 <span class="k">def</span> principled(name, color, metallic, roughness):
@@ -662,11 +769,11 @@ ASH_IDX = <span class="n">2</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> assign_slots(obj, stone, wood, ash):
+<span class="k">def</span> assign_slots(obj, dirt, stone):
     <span class="c"># Do not materials.clear() — that resets polygon material_index to 0</span>
-    <span class="c"># on this Blender, which would drop wood/ash faces onto stone.</span>
+    <span class="c"># on this Blender, which would drop stone faces onto dirt.</span>
     mats = obj.data.materials
-    wanted = (stone, wood, ash)
+    wanted = (dirt, stone)
     <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
         <span class="k">if</span> i &lt; len(mats):
             mats[i] = mat
@@ -720,7 +827,6 @@ ASH_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> convex_hull_collider(obj, name):
-    <span class="c"># Duplicated from snippets/convex_hull_collider.py (not a package).</span>
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -743,29 +849,26 @@ ASH_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
-    <span class="c"># Adapted from snippets/setup_bake_target_image.py — do not replace slots.</span>
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
-    img = bpy.data.images.new(<span class="s">&quot;CampfireNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img = bpy.data.images.new(<span class="s">&quot;TerrainNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
     img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
     nodes = target_mat.node_tree.nodes
     tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
     tex.image = img
     nodes.active = tex
     tex.select = <span class="k">True</span>
-    obj.active_material_index = STONE_IDX
+    obj.active_material_index = DIRT_IDX
     <span class="k">return</span> img, tex
 
 
 <span class="k">def</span> bake_normal(high, low):
-    <span class="c"># Duplicated from snippets/bake_normal_high_to_low.py (not a package).</span>
     scene = bpy.context.scene
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
     scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
     scene.cycles.samples = <span class="n">1</span>
     scene.cycles.use_denoising = <span class="k">False</span>
-    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
-        ob.select_set(<span class="k">False</span>)
+    deselect_all()
     high.select_set(<span class="k">True</span>)
     low.select_set(<span class="k">True</span>)
     bpy.context.view_layer.objects.active = low
@@ -783,9 +886,7 @@ ASH_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> export_unity(path, objects):
-    <span class="c"># Duplicated from snippets/export_preset_unity.py (not a package).</span>
-    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
-        ob.select_set(<span class="k">False</span>)
+    deselect_all()
     <span class="k">for</span> ob <span class="k">in</span> objects:
         ob.select_set(<span class="k">True</span>)
     bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
@@ -801,16 +902,15 @@ ASH_IDX = <span class="n">2</span>
 
 <span class="k">def</span> check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_campfire_mesh(<span class="s">&quot;CampfireLow&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">2</span>)
-    high = build_campfire_mesh(<span class="s">&quot;CampfireHigh&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">4</span>)
-    stone = principled(<span class="s">&quot;CampfireStone&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.42</span>, <span class="n">0.46</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.84</span>)
-    wood = principled(<span class="s">&quot;CampfireWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>)
-    ash = principled(<span class="s">&quot;CampfireAsh&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.11</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.94</span>)
-    assign_slots(low, stone, wood, ash)
-    assign_slots(high, stone, wood, ash)
+    dirt = principled(<span class="s">&quot;TerrainDirt&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.17</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.90</span>)
+    stone = principled(<span class="s">&quot;TerrainStone&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.53</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.76</span>)
+    low = build_terrain_mesh(<span class="s">&quot;TerrainLow&quot;</span>, <span class="n">9</span>, <span class="n">0.10</span>, <span class="n">0.022</span>, <span class="n">2</span>, dirt, stone)
+    high = build_terrain_mesh(<span class="s">&quot;TerrainHigh&quot;</span>, <span class="n">13</span>, <span class="n">0.10</span>, <span class="n">0.022</span>, <span class="n">4</span>, dirt, stone)
+    assign_slots(low, dirt, stone)
+    assign_slots(high, dirt, stone)
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;campfire mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> fail(<span class="s">&quot;terrain mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
 
     base_tris = triangle_count(low.data)
     mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
@@ -826,38 +926,36 @@ ASH_IDX = <span class="n">2</span>
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
 
-    img, tex = setup_bake_image(low, stone)
+    img, tex = setup_bake_image(low, dirt)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;campfire has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> fail(<span class="s">&quot;terrain has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     bake_result = bake_normal(high, low)
 
-    lod1 = make_lod(low, <span class="s">&quot;CampfireLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
-    lod2 = make_lod(low, <span class="s">&quot;CampfireLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    lod1 = make_lod(low, <span class="s">&quot;TerrainLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;TerrainLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
     bpy.context.view_layer.update()
     lod1_tris = evaluated_triangle_count(lod1)
     lod2_tris = evaluated_triangle_count(lod2)
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_campfire_mesh(
-        <span class="s">&quot;CampfireColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>
+    collider_src = build_terrain_mesh(
+        <span class="s">&quot;TerrainColSrc&quot;</span>, <span class="n">9</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1</span>, dirt, stone
     )
-    collider = convex_hull_collider(collider_src, <span class="s">&quot;CampfireCollider&quot;</span>)
+    collider = convex_hull_collider(collider_src, <span class="s">&quot;TerrainCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
 
     export_path = os.path.join(
         tempfile.gettempdir(),
-        <span class="s">f&quot;</span><span class="s">bdt_campfire_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>,
+        <span class="s">f&quot;</span><span class="s">bdt_terrain_scatter_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>,
     )
     <span class="k">if</span> os.path.exists(export_path):
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
 
-    print(
-        <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
-    )
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
         <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
@@ -885,14 +983,9 @@ ASH_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
-    <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; <span class="n">24</span>:
+    <span class="k">if</span> idx_counts.get(STONE_IDX, <span class="n">0</span>) &lt; STONE_FACES_MIN:
         <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">wood log faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; 24</span><span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
-    <span class="k">if</span> idx_counts.get(ASH_IDX, <span class="n">0</span>) &lt; <span class="n">8</span>:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">ash faces </span>{idx_counts.get(ASH_IDX, <span class="n">0</span>)}<span class="s"> &lt; 8</span><span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">stone faces </span>{idx_counts.get(STONE_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{STONE_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -938,7 +1031,7 @@ ASH_IDX = <span class="n">2</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
-    <span class="k">return</span> <span class="n">0</span>, low, high, stone, tex, collider
+    <span class="k">return</span> <span class="n">0</span>, low, high, dirt, tex, collider
 
 
 <span class="k">def</span> wire_normal(mat, tex):
@@ -950,9 +1043,9 @@ ASH_IDX = <span class="n">2</span>
     nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
-<span class="k">def</span> render_still(low, stone, tex, path, engine):
+<span class="k">def</span> render_still(low, dirt, tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(stone, tex)
+    wire_normal(dirt, tex)
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
         <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
             ob.hide_render = <span class="k">True</span>
@@ -1005,10 +1098,10 @@ ASH_IDX = <span class="n">2</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.99</span>, -<span class="n">1.42</span>, <span class="n">0.93</span>)
+    cam.location = (<span class="n">2.57</span>, -<span class="n">3.51</span>, <span class="n">2.24</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.16</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.24</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -1058,15 +1151,15 @@ ASH_IDX = <span class="n">2</span>
     )
     args = p.parse_args(argv)
 
-    code, low, _high, stone, tex, _col = check(args.skip_decimate)
+    code, low, _high, dirt, tex, _col = check(args.skip_decimate)
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
-        rcode = render_still(low, stone, tex, os.path.abspath(args.output), args.engine)
+        rcode = render_still(low, dirt, tex, os.path.abspath(args.output), args.engine)
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
-    print(<span class="s">&quot;campfire OK&quot;</span>)
+    print(<span class="s">&quot;terrain-scatter OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -1081,7 +1174,7 @@ ASH_IDX = <span class="n">2</span>
     </section>
   </main>
   <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
-    <img src="../assets/campfire-hero.webp" alt="campfire render, full size" />
+    <img src="../assets/terrain-scatter-hero.webp" alt="terrain-scatter render, full size" />
   </div>
   <footer>
     <div class="statusbar">

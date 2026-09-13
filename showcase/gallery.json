@@ -88,6 +88,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "terrain-scatter",
+      "dir": "showcase/terrain-scatter",
+      "teaches": "A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1194 tris, two materials with 486 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.655 m, LOD ratios in band, convex collider 52 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/terrain-scatter-hero.webp",
+      "preview": "showcase/terrain-scatter/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "fence-kit",
+      "dir": "showcase/fence-kit",
+      "teaches": "A procedural post-and-rail fence section through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1212 tris, two materials with 120 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.642×0.157×1.235 m, LOD ratios in band, convex collider 62 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/fence-kit-hero.webp",
+      "preview": "showcase/fence-kit/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
