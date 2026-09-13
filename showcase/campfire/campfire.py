@@ -37,25 +37,28 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-N_RING = 12
-RING_R = 0.40
-N_INNER = 7
-INNER_R = 0.22
-ASH_R = 0.26
-ASH_H = 0.055
-N_LOGS = 4
-LOG_LEN = 0.50
-LOG_R = 0.040
+N_AROUND = 12
+N_ROWS = 2
+R_INNER = 0.28
+STONE_D = 0.11
+R_OUTER = R_INNER + STONE_D
+R_MID = (R_INNER + R_OUTER) / 2.0
+WALL_H = 0.155
+STONE_H = WALL_H / N_ROWS
+N_FLOOR = 6
+N_ASH = 7
+N_LOGS = 2
+LOG_LEN = 0.34
+LOG_R = 0.032
 N_STICKS = 3
-STICK_LEN = 0.38
-STICK_R = 0.016
+STICK_R = 0.030
 N_COALS = 5
 BBOX_TOL = 0.01
 # Fitted to the generated AABB after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.964, 0.950, 0.252)
+OUTER_SIZE = (0.789, 0.789, 0.410)
 
-BASE_TRIS_MIN = 7400
-BASE_TRIS_MAX = 7650
+BASE_TRIS_MIN = 3500
+BASE_TRIS_MAX = 3750
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -65,7 +68,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 160
+COLLIDER_TRIS_MAX = 320
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
 
@@ -114,21 +117,26 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
-def add_cobble(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0), lump=0.22):
-    geo = bmesh.ops.create_icosphere(bm, subdivisions=1, radius=0.5)
-    verts = list(geo["verts"])
-    rot = Euler(euler).to_matrix()
+def add_rock(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0), lump=0.0):
+    # Bevelled boxes, same language as stone-well masonry — not icospheres.
+    # Subdiv-1 icos read as d20s at thumbnail regardless of smooth shading.
+    verts = add_box(bm, loc, scale, mat_idx, euler)
+    if lump <= 0.0:
+        return verts
     origin = Vector(loc)
+    rot = Euler(euler).to_matrix()
+    inv = rot.inverted()
     for v in verts:
-        p = Vector((v.co.x * scale[0], v.co.y * scale[1], v.co.z * scale[2]))
-        h = math.sin(p.x * 19.7 + p.y * 13.3) * math.cos(p.z * 17.1 + p.x * 7.9)
-        h += 0.40 * math.sin(p.y * 31.0 + p.z * 23.0)
-        h = max(-0.80, min(0.80, h))
-        p = p * (1.0 + lump * h)
-        v.co = rot @ p + origin
-    faces = {f for v in verts for f in v.link_faces}
-    for f in faces:
-        f.material_index = mat_idx
+        local = inv @ (v.co - origin)
+        h = math.sin(local.x * 15.7 + local.y * 11.3 + local.z * 9.1)
+        h += 0.35 * math.cos(local.y * 21.0 + local.x * 8.0)
+        h = max(-0.85, min(0.85, h))
+        local = Vector((
+            local.x * (1.0 + lump * h),
+            local.y * (1.0 + lump * 0.65 * math.sin(local.z * 13.0 + 1.2)),
+            local.z * (1.0 + lump * 0.40 * h),
+        ))
+        v.co = rot @ local + origin
     return verts
 
 
@@ -200,118 +208,47 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def _stone_size(i, base_xy, base_z, k):
-    sx = base_xy[0] + 0.035 * abs(math.sin(i * 2.17 + k))
-    sy = base_xy[1] + 0.028 * abs(math.cos(i * 1.73 + k * 0.7))
-    sz = base_z + 0.038 * abs(math.sin(i * 1.11 + k * 1.3))
-    return sx, sy, sz
-
-
 def build_campfire_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
-    bevel_verts = []
-    ash_faces = set()
-    wood_faces = set()
     try:
-        for i in range(N_RING):
-            ang = 2.0 * math.pi * i / N_RING
-            sx, sy, sz = _stone_size(i, (0.175, 0.138), 0.070, 0.2)
-            r = RING_R + 0.028 * math.sin(i * 1.9)
-            loc = (r * math.cos(ang), r * math.sin(ang), sz / 2.0)
-            tilt = (
-                math.radians(18.0 * math.sin(i * 0.7)),
-                math.radians(14.0 * math.cos(i * 1.3)),
-                ang + math.radians(22.0 * math.sin(i * 1.1)),
-            )
-            bevel_verts.extend(
-                add_cobble(bm, loc, (sx, sy, sz), STONE_IDX, euler=tilt, lump=0.24)
-            )
+        # Two-course running-bond ring — same masonry as stone-well, not a
+        # circle of cubes or icos. Bevel stone edges only; logs go on after.
+        stone_verts = []
+        stone_w = 2.0 * R_MID * math.tan(math.pi / N_AROUND) * 0.88
+        actual_h = STONE_H * 0.90
+        for row in range(N_ROWS):
+            z = actual_h / 2.0 + row * STONE_H
+            rot_off = (row % 2) * (math.pi / N_AROUND)
+            for i in range(N_AROUND):
+                ang = 2.0 * math.pi * i / N_AROUND + rot_off
+                loc = (R_MID * math.cos(ang), R_MID * math.sin(ang), z)
+                stone_verts.extend(
+                    add_box(
+                        bm,
+                        loc,
+                        (STONE_D, stone_w, actual_h),
+                        STONE_IDX,
+                        euler=(0.0, 0.0, ang),
+                    )
+                )
 
-        for i in range(N_INNER):
-            ang = 2.0 * math.pi * i / N_INNER + 0.31
-            sx, sy, sz = _stone_size(i, (0.100, 0.082), 0.048, 1.4)
-            r = INNER_R + 0.018 * math.cos(i * 1.4)
-            loc = (r * math.cos(ang), r * math.sin(ang), sz / 2.0)
-            tilt = (
-                math.radians(12.0 * math.cos(i * 0.9)),
-                math.radians(10.0 * math.sin(i * 1.5)),
-                ang + 0.4,
+        for i in range(N_FLOOR):
+            ang = 2.0 * math.pi * i / N_FLOOR + 0.22
+            r = 0.11 + 0.02 * (i % 2)
+            sz = 0.032 + 0.008 * (i % 3)
+            loc = (r * math.cos(ang), r * math.sin(ang), sz * 0.50)
+            stone_verts.extend(
+                add_box(
+                    bm,
+                    loc,
+                    (0.078, 0.058, sz),
+                    STONE_IDX,
+                    euler=(0.0, 0.0, ang),
+                )
             )
-            bevel_verts.extend(
-                add_cobble(bm, loc, (sx, sy, sz), STONE_IDX, euler=tilt, lump=0.20)
-            )
-
-        before = set(bm.faces)
-        add_cone(
-            bm,
-            (0.0, 0.0, ASH_H / 2.0),
-            ASH_R,
-            0.055,
-            ASH_H,
-            16,
-            ASH_IDX,
-        )
-        ash_faces.update(set(bm.faces) - before)
-
-        for i in range(N_LOGS):
-            yaw = i * (math.pi / 2.0) + math.radians(18.0)
-            loc = (
-                0.045 * math.cos(yaw + math.pi / 4.0),
-                0.045 * math.sin(yaw + math.pi / 4.0),
-                LOG_R + 0.020 + 0.012 * (i % 2),
-            )
-            before = set(bm.faces)
-            verts = add_cylinder(
-                bm,
-                loc,
-                LOG_R * (1.0 - 0.08 * (i % 2)),
-                LOG_LEN,
-                12,
-                WOOD_IDX,
-                euler=(math.pi / 2.0, 0.0, yaw),
-            )
-            bevel_verts.extend(verts)
-            wood_faces.update(set(bm.faces) - before)
-
-        for i in range(N_STICKS):
-            yaw = i * (2.0 * math.pi / N_STICKS) + 0.55
-            pitch = math.radians(32.0 + 6.0 * math.sin(i * 1.7))
-            loc = (
-                0.07 * math.cos(yaw),
-                0.07 * math.sin(yaw),
-                0.055 + STICK_R,
-            )
-            before = set(bm.faces)
-            verts = add_cylinder(
-                bm,
-                loc,
-                STICK_R,
-                STICK_LEN,
-                8,
-                WOOD_IDX,
-                euler=(math.pi / 2.0 - pitch, 0.0, yaw),
-            )
-            bevel_verts.extend(verts)
-            wood_faces.update(set(bm.faces) - before)
-
-        for i in range(N_COALS):
-            ang = 2.0 * math.pi * i / N_COALS + 0.2
-            r = 0.07 + 0.025 * (i % 2)
-            sz = 0.028 + 0.010 * abs(math.sin(i * 2.2))
-            loc = (r * math.cos(ang), r * math.sin(ang), ASH_H * 0.55 + sz / 2.0)
-            before = set(bm.faces)
-            verts = add_box(
-                bm,
-                loc,
-                (0.040, 0.028, sz),
-                WOOD_IDX,
-                euler=(0.0, 0.0, ang),
-            )
-            bevel_verts.extend(verts)
-            wood_faces.update(set(bm.faces) - before)
 
         if bevel_offset > 0.0:
-            edges = list({e for v in bevel_verts for e in v.link_edges})
+            edges = list({e for v in stone_verts for e in v.link_edges})
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -322,29 +259,108 @@ def build_campfire_mesh(name, bevel_offset, bevel_segments):
                 clamp_overlap=True,
             )
 
-        zmin = min(v.co.z for v in bm.verts)
-        if zmin != 0.0:
-            for v in bm.verts:
-                v.co.z -= zmin
+        add_rock(
+            bm,
+            (0.0, 0.0, 0.014),
+            (0.10, 0.09, 0.024),
+            ASH_IDX,
+            lump=0.14,
+        )
+        for i in range(N_ASH):
+            ang = 2.0 * math.pi * i / N_ASH + 0.18
+            r = 0.022 + 0.040 * ((i % 4) / 3.0)
+            sz = 0.016 + 0.010 * abs(math.sin(i * 1.7))
+            loc = (r * math.cos(ang), r * math.sin(ang), sz * 0.50)
+            add_rock(
+                bm,
+                loc,
+                (0.032 + 0.006 * (i % 3), 0.026, sz),
+                ASH_IDX,
+                euler=(0.0, 0.0, ang),
+                lump=0.16,
+            )
+
+        for i in range(N_LOGS):
+            yaw = i * (math.pi / 2.0) + math.radians(18.0)
+            loc = (
+                0.04 * math.cos(yaw + math.pi / 2.0),
+                0.04 * math.sin(yaw + math.pi / 2.0),
+                LOG_R + 0.018 + 0.012 * i,
+            )
+            add_cone(
+                bm,
+                loc,
+                LOG_R * (1.0 - 0.04 * i),
+                LOG_R * 0.88,
+                LOG_LEN,
+                12,
+                WOOD_IDX,
+                euler=(math.pi / 2.0, 0.0, yaw),
+            )
+
+        # Teepee aimed at a shared apex so the sticks read as one fire, not
+        # four independent posts. Cone local +Z tracks base -> apex.
+        z_apex = WALL_H + 0.24
+        z_base = 0.040
+        r_base = R_INNER - 0.05
+        for i in range(N_STICKS):
+            yaw = i * (2.0 * math.pi / N_STICKS) + math.pi / 2.0
+            base = Vector((
+                r_base * math.cos(yaw),
+                r_base * math.sin(yaw),
+                z_base,
+            ))
+            apex = Vector((0.0, 0.0, z_apex))
+            delta = apex - base
+            mid = (base + apex) * 0.5
+            rot = delta.to_track_quat("Z", "Y").to_euler()
+            add_cone(
+                bm,
+                (mid.x, mid.y, mid.z),
+                STICK_R,
+                STICK_R * 0.88,
+                delta.length,
+                12,
+                WOOD_IDX,
+                euler=(rot.x, rot.y, rot.z),
+            )
+
+        for i in range(N_COALS):
+            ang = 2.0 * math.pi * i / N_COALS + 0.11
+            r = 0.030 + 0.022 * (i % 3)
+            sz = 0.014 + 0.008 * abs(math.sin(i * 2.2))
+            loc = (r * math.cos(ang), r * math.sin(ang), 0.022 + sz / 2.0)
+            add_rock(
+                bm,
+                loc,
+                (0.026, 0.020, sz),
+                WOOD_IDX,
+                euler=(0.0, 0.0, ang),
+                lump=0.18,
+            )
+
+        for v in bm.verts:
+            if v.co.z < 0.0:
+                v.co.z = 0.0
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = True
+            face.smooth = face.material_index == WOOD_IDX
         for edge in bm.edges:
-            edge.smooth = True
-            if edge.is_manifold and len(edge.link_faces) == 2:
-                if edge.calc_face_angle() > math.radians(35.0):
-                    edge.smooth = False
-        for f in ash_faces:
-            if f.is_valid:
-                f.material_index = ASH_IDX
-        for f in wood_faces:
-            if f.is_valid:
-                f.material_index = WOOD_IDX
+            mats = {f.material_index for f in edge.link_faces}
+            if WOOD_IDX in mats and STONE_IDX not in mats and ASH_IDX not in mats:
+                edge.smooth = True
+                if edge.is_manifold and len(edge.link_faces) == 2:
+                    if edge.calc_face_angle() > math.radians(38.0):
+                        edge.smooth = False
+            else:
+                edge.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
+        for poly in me.polygons:
+            poly.use_smooth = poly.material_index == WOOD_IDX
     finally:
         bm.free()
     obj = bpy.data.objects.new(name, me)
@@ -501,11 +517,11 @@ def export_unity(path, objects):
 
 def check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_campfire_mesh("CampfireLow", bevel_offset=0.006, bevel_segments=2)
-    high = build_campfire_mesh("CampfireHigh", bevel_offset=0.006, bevel_segments=4)
-    stone = principled("CampfireStone", (0.46, 0.40, 0.34, 1.0), 0.0, 0.72)
-    wood = principled("CampfireWood", (0.14, 0.075, 0.040, 1.0), 0.0, 0.78)
-    ash = principled("CampfireAsh", (0.28, 0.26, 0.24, 1.0), 0.0, 0.90)
+    low = build_campfire_mesh("CampfireLow", bevel_offset=0.010, bevel_segments=2)
+    high = build_campfire_mesh("CampfireHigh", bevel_offset=0.010, bevel_segments=4)
+    stone = principled("CampfireStone", (0.40, 0.42, 0.46, 1.0), 0.0, 0.84)
+    wood = principled("CampfireWood", (0.48, 0.22, 0.07, 1.0), 0.0, 0.50)
+    ash = principled("CampfireAsh", (0.12, 0.11, 0.10, 1.0), 0.0, 0.94)
     assign_slots(low, stone, wood, ash)
     assign_slots(high, stone, wood, ash)
 
@@ -658,8 +674,8 @@ def render_still(low, stone, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-36.0)
-    low.rotation_euler.x = math.radians(4.0)
+    low.rotation_euler.z = math.radians(-28.0)
+    low.rotation_euler.x = math.radians(0.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -705,10 +721,10 @@ def render_still(low, stone, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.96, -1.33, 0.69)
+    cam.location = (0.99, -1.42, 0.93)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.10)
+    aim.location = (0.0, 0.0, 0.16)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

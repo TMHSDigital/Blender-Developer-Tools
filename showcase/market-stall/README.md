@@ -1,9 +1,10 @@
 # Market stall
 
-A showcase piece, not an example. Procedural timber stall (posts, slanted
-side plates, counter with apron and shelf, backboard, striped awning and
-valance) then the shipped pipeline: unique-cell UVs, Cycles high-to-low
-normal bake, LOD chain, convex collider, Unity glTF export.
+A showcase piece, not an example. Procedural timber stall (posts with feet,
+slanted rafters, slatted counter and shelf, back-wall planks, eave fascia,
+striped awning and valance) then the shipped pipeline: unique-cell UVs,
+Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF
+export.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -21,14 +22,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2140–2350 | 2244 / 2244 / 2244 |
+| Base triangles | 4280–4550 | 4404 / 4404 / 4404 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2193 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
 | Materials | exactly 3 distinct, ≥16 faces per stripe slot | 3 slots, 48 / 48 stripe faces |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.360, 0.964, 1.743) m ± 0.01 | (1.3600, 0.9639, 1.7430), zmin 0 |
-| Collider tris | ≤ 80 | 28 |
-| Export | written, size > 0 | 163992 / 163992 / 163968 bytes |
+| Outer AABB | (1.392, 0.966, 1.743) m ± 0.01 | (1.3915, 0.9659, 1.7430), zmin 0 |
+| Collider tris | ≤ 80 | 46 |
+| Export | written, size > 0 | 316748 / 316748 / 316724 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh happened
