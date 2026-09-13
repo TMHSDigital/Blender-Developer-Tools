@@ -39,6 +39,7 @@ check. Pass --output to also render a still:
     blender --background --python modular_kit_snap.py --                 # check only
     blender --background --python modular_kit_snap.py -- --output k.png  # + render
     blender --background --python modular_kit_snap.py -- --falsify f.png # seam variant
+    blender --background --python modular_kit_snap.py -- --output c.png --close-camera  # framing 10
 """
 import bpy, bmesh, sys, os, math, argparse
 
@@ -61,6 +62,12 @@ EXPECT_BOUNDARY_EDGES = 16   # 8 per open end
 EXPECT_PARTS = 21            # shell + 20 detail parts; asserted before the
                              # per-part loops below, which assert nothing on
                              # an empty dict
+# Projection-space Layer 1 deviation cap. The corridor is supposed to bleed
+# (measured fill_over ~5.06 on the gallery camera). --close-camera pushes
+# fill_over to ~30. Helper measures; this example enforces.
+FRAME_DEV_MAX = 8.0
+CLOSE_CAM_LOC = (-0.15, -0.08, 1.50)
+CLOSE_CAM_LENS = 16.0
 
 # Hollow-rectangle profile (y, z): outer shell corners then inner bore corners,
 # ordered as one continuous ring so the extrusion's side faces come out quads.
@@ -547,7 +554,7 @@ def build_bulkhead(sc):
     return parts
 
 
-def render_still(path, engine, falsify=False):
+def render_still(path, engine, falsify=False, close_camera=False):
     """A four-segment run. Snapped: joints vanish. Falsified: each segment
     accumulates a 120 mm x gap, alternating 50 mm y jogs, and 40 mm floor
     steps, so every joint reads as a seam — the render-scale exaggeration of
@@ -572,9 +579,9 @@ def render_still(path, engine, falsify=False):
     bulkhead = build_bulkhead(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 25.0
+    cam_data.lens = CLOSE_CAM_LENS if close_camera else 25.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (-0.7, -0.42, 1.58)
+    cam.location = CLOSE_CAM_LOC if close_camera else (-0.7, -0.42, 1.58)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (10.0, 0.35, 1.25)
@@ -601,19 +608,25 @@ def render_still(path, engine, falsify=False):
     sc.render.filepath = path
     # Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)
     sc.view_settings.view_transform = "Standard"
-    # Layer 1 framing gate. The corridor surrounds the camera on five sides
-    # and reads as extending past the frame — a documented deviation class
-    # (radiating architecture), measured and reported by the helper.
-    fcode = gallery_framing.check_framing(
+    # The corridor surrounds the camera — Layer 1 fill/margin will fail, and
+    # that is the design. The helper only measures; this example owns the
+    # cap. Projection so the bleed can grow past 1.0 (silhouette saturates).
+    res, score = gallery_framing.measure_framing_deviation(
         sc, cam,
         hero=all_parts,
         elements=all_parts + bulkhead,
         stage=[floor, wall],
-        deviation="interior corridor run: the envelope surrounds the camera "
-                  "and the tiling joints are the proof; edge bleed is the design",
+        strategy="projection",
     )
-    if fcode:
-        return fcode
+    print(res.report())
+    print(f"framing_deviation score={score:.4f} cap={FRAME_DEV_MAX:.4f}")
+    if score > FRAME_DEV_MAX:
+        print(
+            f"ERROR: framing deviation {score:.4f} exceeds cap {FRAME_DEV_MAX:.4f} "
+            "(--close-camera is the designed fail)",
+            file=sys.stderr,
+        )
+        return 10
     aqcode = gallery_asset_quality.check_asset_quality(
         sc, cam, hero=aq_hero, stage=[floor, wall])
     if aqcode:
@@ -631,6 +644,9 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--falsify", default=None,
                    help="optional: render the unsnapped-joint seam variant here")
+    p.add_argument("--close-camera", action="store_true",
+                   help="falsification: push the camera into the corridor so "
+                        "framing deviation exceeds the cap (needs --output)")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output/--falsify (cycles for GPU-less hosts)")
     args = p.parse_args(argv)
@@ -642,7 +658,10 @@ def main():
         return code
 
     if args.output:
-        rcode = render_still(os.path.abspath(args.output), args.engine)
+        rcode = render_still(
+            os.path.abspath(args.output), args.engine,
+            close_camera=args.close_camera,
+        )
         if rcode:
             return rcode
         print(f"rendered still {args.output}")

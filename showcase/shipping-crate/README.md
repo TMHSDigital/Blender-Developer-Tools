@@ -51,7 +51,7 @@ Smoke does not pass `--output` or `--skip-decimate`.
 ## Exit codes
 
 File-local. `9` is a valid check code. `10` is reserved for
-`gallery_framing.check_framing` on the `--output` path (no `deviation=`).
+`gallery_framing.check_framing` on the `--output` path.
 
 | Code | Meaning |
 | --- | --- |

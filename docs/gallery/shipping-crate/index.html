@@ -273,7 +273,7 @@ blender --background --python shipping_crate.py -- --skip-decimate
 blender --background --python shipping_crate.py -- --output crate.png</code></pre>
 <p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path (no <code>deviation=</code>).</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
 <p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
     </section>
     <section class="detail-section src">

@@ -127,9 +127,10 @@ The `--output` render path additionally gates framing via
 `examples/gallery_framing.py` (fill **0.881x**, margins
 **0.066/0.053/0.122/0.106**, no edge touched) and the asset floors via
 `examples/gallery_asset_quality.py` (32 materials, `edge90` **0.027**, no
-default names). The `--falsify` render is a diagnostic, not a gallery hero, so
-it takes a documented framing deviation — its whole point is that the modules
-leave the frame.
+default names). `--falsify` is a diagnostic, not a gallery hero: it
+measures and prints framing but does not enforce the Layer 1 band —
+modules leave the frame on purpose. `--falsify` and `--probe` still
+exit 0.
 
 ## Exit codes
 

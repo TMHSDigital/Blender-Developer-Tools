@@ -267,15 +267,16 @@
 <p><strong>What each check catches on failure</strong> (probed with an unsnapped variant built by the same code minus the snap pass — 3 mm end-ring skew, 2 mm y-nudge on two verts): boundary verts off the end planes, worst <strong>3.000e-03 m</strong> (exit 3); opposing rings displaced <strong>2.000e-03</strong> (exit 4); tiled joint gap/overlap (exit 5); bbox off the declared tile by <strong>3.000e-03</strong> (exit 6); boundary edges torn off the rim (exit 7); non-watertight detail (exit 8); detail escaping the tile (exit 9); unapplied transforms, default names, or wandering origins (exit 11).</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same zero measured deviations.</p>
 <p><strong>Render as proof:</strong> a four-segment run — the joints vanish. The falsification variant (<code>--falsify</code>) accumulates a 120 mm gap, 50 mm lateral jogs, and 40 mm floor steps at each joint: floor plates split with dark seams and the trim rails visibly break. The check measures the same failure class at 3 mm; the render exaggerates it to read at frame scale. The render path also gates the asset through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11). An earlier revision shipped flat grey wall panels and was remodeled under that gate: each panel is now an assembly (backing plate + inset panel + four bolt heads), the palette shifted teal-slate so the card does not twin with <code>lightmap-uv-channel</code>&#x27;s warm cart, and mean luminance was brought into the calibration range (82.7 → 66.1, ceiling 77.7) — no luminance deviation needed.</p>
-<p><strong>Framing deviation:</strong> the still is an interior corridor run — the envelope surrounds the camera on five sides and the tiling joints are the proof, so the subject reads as extending past the frame (the radiating-architecture class of VISUAL-STYLE Layer 1). <code>check_framing</code> measures and reports (fill 1.000/1.000, all-edge bleed) without enforcing, with the reason string at the call site.</p>
+<p><strong>Framing deviation:</strong> the still is an interior corridor run — the envelope surrounds the camera on five sides and the tiling joints are the proof, so the subject reads as extending past the frame. The helper measures; this example enforces a projection-space fill-over cap (<code>FRAME_DEV_MAX = 8.0</code>). Gallery camera scores ~5.06 (pass). <code>--close-camera</code> scores ~30.9 and exits 10. Silhouette saturates at fill 1.0, so the cap is measured with <code>strategy=&quot;projection&quot;</code>.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python modular_kit_snap.py --
 blender --background --python modular_kit_snap.py -- --output corridor.png
-blender --background --python modular_kit_snap.py -- --falsify seams.png</code></pre>
+blender --background --python modular_kit_snap.py -- --falsify seams.png
+blender --background --python modular_kit_snap.py -- --output close.png --close-camera</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Boundary vert count or end-plane membership | | 4 | End rings do not partition evenly, or opposing loops differ | | 5 | Tiled instances do not share boundary positions | | 6 | Shell or whole-asset bbox off the declared tile | | 7 | Boundary edge count, non-manifold edges, or rim off the end planes | | 8 | Detail part not watertight | | 9 | Detail part reaches a tile boundary; also <code>--output</code> produced no file | | 11 | Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation |</p>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>.</p>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is this example&#x27;s framing-deviation cap (call site, not the shared Layer 1 helper). <code>11</code> is the shared asset-quality helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Boundary vert count or end-plane membership | | 4 | End rings do not partition evenly, or opposing loops differ | | 5 | Tiled instances do not share boundary positions | | 6 | Shell or whole-asset bbox off the declared tile | | 7 | Boundary edge count, non-manifold edges, or rim off the end planes | | 8 | Detail part not watertight | | 9 | Detail part reaches a tile boundary; also <code>--output</code> produced no file | | 10 | Framing deviation score exceeds cap (<code>--close-camera</code>) | | 11 | Kit part count, unapplied scale, namespace, or origin; also gallery asset-quality violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--falsify</code>, or <code>--close-camera</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -324,6 +325,7 @@ check. Pass --output to also render a still:
     blender --background --python modular_kit_snap.py --                 # check only
     blender --background --python modular_kit_snap.py -- --output k.png  # + render
     blender --background --python modular_kit_snap.py -- --falsify f.png # seam variant
+    blender --background --python modular_kit_snap.py -- --output c.png --close-camera  # framing 10
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
@@ -346,6 +348,12 @@ EXPECT_BOUNDARY_EDGES = <span class="n">16</span>   <span class="c"># 8 per open
 EXPECT_PARTS = <span class="n">21</span>            <span class="c"># shell + 20 detail parts; asserted before the</span>
                              <span class="c"># per-part loops below, which assert nothing on</span>
                              <span class="c"># an empty dict</span>
+<span class="c"># Projection-space Layer 1 deviation cap. The corridor is supposed to bleed</span>
+<span class="c"># (measured fill_over ~5.06 on the gallery camera). --close-camera pushes</span>
+<span class="c"># fill_over to ~30. Helper measures; this example enforces.</span>
+FRAME_DEV_MAX = <span class="n">8.0</span>
+CLOSE_CAM_LOC = (-<span class="n">0.15</span>, -<span class="n">0.08</span>, <span class="n">1.50</span>)
+CLOSE_CAM_LENS = <span class="n">16.0</span>
 
 <span class="c"># Hollow-rectangle profile (y, z): outer shell corners then inner bore corners,</span>
 <span class="c"># ordered as one continuous ring so the extrusion&#x27;s side faces come out quads.</span>
@@ -832,7 +840,7 @@ _mat_cache = {}
     <span class="k">return</span> parts
 
 
-<span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>):
+<span class="k">def</span> render_still(path, engine, falsify=<span class="k">False</span>, close_camera=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;A four-segment run. Snapped: joints vanish. Falsified: each segment
     accumulates a 120 mm x gap, alternating 50 mm y jogs, and 40 mm floor
     steps, so every joint reads as a seam — the render-scale exaggeration of
@@ -857,9 +865,9 @@ _mat_cache = {}
     bulkhead = build_bulkhead(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">25.0</span>
+    cam_data.lens = CLOSE_CAM_LENS <span class="k">if</span> close_camera <span class="k">else</span> <span class="n">25.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (-<span class="n">0.7</span>, -<span class="n">0.42</span>, <span class="n">1.58</span>)
+    cam.location = CLOSE_CAM_LOC <span class="k">if</span> close_camera <span class="k">else</span> (-<span class="n">0.7</span>, -<span class="n">0.42</span>, <span class="n">1.58</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">10.0</span>, <span class="n">0.35</span>, <span class="n">1.25</span>)
@@ -886,19 +894,25 @@ _mat_cache = {}
     sc.render.filepath = path
     <span class="c"># Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
-    <span class="c"># Layer 1 framing gate. The corridor surrounds the camera on five sides</span>
-    <span class="c"># and reads as extending past the frame — a documented deviation class</span>
-    <span class="c"># (radiating architecture), measured and reported by the helper.</span>
-    fcode = gallery_framing.check_framing(
+    <span class="c"># The corridor surrounds the camera — Layer 1 fill/margin will fail, and</span>
+    <span class="c"># that is the design. The helper only measures; this example owns the</span>
+    <span class="c"># cap. Projection so the bleed can grow past 1.0 (silhouette saturates).</span>
+    res, score = gallery_framing.measure_framing_deviation(
         sc, cam,
         hero=all_parts,
         elements=all_parts + bulkhead,
         stage=[floor, wall],
-        deviation=<span class="s">&quot;interior corridor run: the envelope surrounds the camera &quot;</span>
-                  <span class="s">&quot;and the tiling joints are the proof; edge bleed is the design&quot;</span>,
+        strategy=<span class="s">&quot;projection&quot;</span>,
     )
-    <span class="k">if</span> fcode:
-        <span class="k">return</span> fcode
+    print(res.report())
+    print(<span class="s">f&quot;</span><span class="s">framing_deviation score=</span>{score:<span class="s">.4f</span>}<span class="s"> cap=</span>{FRAME_DEV_MAX:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> score &gt; FRAME_DEV_MAX:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: framing deviation </span>{score:<span class="s">.4f</span>}<span class="s"> exceeds cap </span>{FRAME_DEV_MAX:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--close-camera is the designed fail)&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">10</span>
     aqcode = gallery_asset_quality.check_asset_quality(
         sc, cam, hero=aq_hero, stage=[floor, wall])
     <span class="k">if</span> aqcode:
@@ -916,6 +930,9 @@ _mat_cache = {}
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--falsify&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: render the unsnapped-joint seam variant here&quot;</span>)
+    p.add_argument(<span class="s">&quot;--close-camera&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsification: push the camera into the corridor so &quot;</span>
+                        <span class="s">&quot;framing deviation exceeds the cap (needs --output)&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output/--falsify (cycles for GPU-less hosts)&quot;</span>)
     args = p.parse_args(argv)
@@ -927,7 +944,10 @@ _mat_cache = {}
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        rcode = render_still(os.path.abspath(args.output), args.engine)
+        rcode = render_still(
+            os.path.abspath(args.output), args.engine,
+            close_camera=args.close_camera,
+        )
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)

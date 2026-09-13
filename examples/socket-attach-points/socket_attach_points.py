@@ -1067,17 +1067,19 @@ def render_still(path, engine, falsify=False):
     sc.view_settings.view_transform = "Standard"
     bpy.context.view_layer.update()
 
-    # The gallery still is gated; the --falsify diagnostic is not. Its whole
-    # point is that the modules fly off the airframe, so measuring it against
-    # the Layer 1 band would only ever report the breakage as a framing
-    # violation. The numbers are still printed under an explicit reason.
-    fcode = gallery_framing.check_framing(
-        sc, cam, hero=hero, elements=hero, stage=[floor, wall],
-        deviation=("falsification diagnostic: the sockets are deliberately "
-                   "unparented, so modules leave the frame — this render is "
-                   "evidence, not a gallery hero") if falsify else None)
-    if fcode:
-        return fcode
+    # The gallery still is gated by Layer 1. The --falsify diagnostic is not:
+    # modules leave the frame on purpose, so enforcing the band would report
+    # the breakage as a framing violation. Measure and print either way;
+    # enforce only on the gallery path.
+    if falsify:
+        res = gallery_framing.measure_framing(
+            sc, cam, hero=hero, elements=hero, stage=[floor, wall])
+        print(res.report())
+    else:
+        fcode = gallery_framing.check_framing(
+            sc, cam, hero=hero, elements=hero, stage=[floor, wall])
+        if fcode:
+            return fcode
     aqcode = gallery_asset_quality.check_asset_quality(sc, cam, hero=hero,
                                                        stage=[floor, wall])
     if aqcode:
