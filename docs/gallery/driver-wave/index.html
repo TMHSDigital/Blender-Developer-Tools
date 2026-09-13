@@ -266,11 +266,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python driver_wave.py --
 
+# Falsifier: constant 1.0 expression. Must exit non-zero.
+blender --background --python driver_wave.py -- --flat-expr
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python driver_wave.py -- --output driver.png
 blender --background --python driver_wave.py -- --output driver.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (driven value wrong, or the flush-back disagreed). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Evaluated Z scale ≠ <code>wave_scale</code> (<code>--flat-expr</code> lands here) | | 4 | Original datablock was not flushed | | 6 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--flat-expr</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -288,10 +293,14 @@ after a view-layer update — from the evaluated copy AND from the original
 for display, so both must agree). Asserts both against the closed-form
 profile. Exits non-zero on failure.
 
+``--flat-expr`` drives Z scale with ``1.0`` and still asserts ``wave_scale``.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python driver_wave.py --                 # check only
+    blender --background --python driver_wave.py -- --flat-expr      # must fail
     blender --background --python driver_wave.py -- --output d.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -311,7 +320,7 @@ BASE = <span class="n">0.28</span>
     <span class="k">return</span> <span class="n">1.4</span> + math.sin(i * <span class="n">0.6</span>)
 
 
-<span class="k">def</span> build_columns():
+<span class="k">def</span> build_columns(flat_expr=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     <span class="c"># driver_namespace entries do not persist in .blend files; real add-ons</span>
     <span class="c"># re-register them from a load_post handler. Headless, registering before</span>
@@ -334,7 +343,7 @@ BASE = <span class="n">0.28</span>
         obj.scale = (BASE, BASE, <span class="n">1.0</span>)
         fcu = obj.driver_add(<span class="s">&quot;scale&quot;</span>, <span class="n">2</span>)
         fcu.driver.type = <span class="s">&#x27;SCRIPTED&#x27;</span>
-        fcu.driver.expression = <span class="s">f&quot;</span><span class="s">wave_scale(</span>{i}<span class="s">)</span><span class="s">&quot;</span>
+        fcu.driver.expression = <span class="s">&quot;1.0&quot;</span> <span class="k">if</span> flat_expr <span class="k">else</span> <span class="s">f&quot;</span><span class="s">wave_scale(</span>{i}<span class="s">)</span><span class="s">&quot;</span>
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     <span class="k">return</span> objs
@@ -471,9 +480,11 @@ BASE = <span class="n">0.28</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--flat-expr&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;drive Z scale with 1.0 (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    objs = build_columns()
+    objs = build_columns(flat_expr=args.flat_expr)
     code = check(objs)
     <span class="k">if</span> code:
         <span class="k">return</span> code

@@ -269,6 +269,10 @@
 blender --background --python cross_version_property_delete.py -- --output tags.png</code></pre>
 <p><code>--skip-delete</code> and <code>--unset-instead</code> are falsification switches: both leave the Clear plate tagged and exit 7.</p>
 <p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also an active object existed after the data-API build | | 3 | Custom ID property did not land | | 4 | <code>property_unset</code> on a custom ID key did not TypeError, or it deleted the key | | 5 | <code>del</code> did not report removal | | 6 | Keep plate lost the ID property | | 7 | Clear plate still has the ID property (<code>--skip-delete</code> / <code>--unset-instead</code> land here) | | 10 | Gallery framing violation | | 12 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--skip-delete</code>, or <code>--unset-instead</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

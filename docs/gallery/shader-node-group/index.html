@@ -265,11 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shader_node_group.py --
 
+# Falsifier: identical instance Tints. Must exit non-zero.
+blender --background --python shader_node_group.py -- --same-tint
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python shader_node_group.py -- --output spheres.png
 blender --background --python shader_node_group.py -- --output spheres.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing interface sockets, unshared group, or identical instance parameters). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Interface sockets missing Tint / Roughness / Shader | | 4 | Group datablock <code>users</code> ≠ 2 | | 5 | Instance points at a different node tree | | 6 | Instance Tint values identical (<code>--same-tint</code> lands here) | | 7 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-tint</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -287,10 +292,15 @@ interface carries the declared sockets, both materials share the same group
 datablock (users == 2), and their instance-level Tint values differ — the
 whole point of grouping.
 
+``--same-tint`` copies SphereA&#x27;s Tint onto both instances and still asserts
+the values differ. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python shader_node_group.py --                 # check only
+    blender --background --python shader_node_group.py -- --same-tint     # must fail
     blender --background --python shader_node_group.py -- --output s.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -338,7 +348,7 @@ TINTS = {
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> build_scene():
+<span class="k">def</span> build_scene(same_tint=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     tree = build_group()
     objs = []
@@ -354,7 +364,8 @@ TINTS = {
         obj.location = (-<span class="n">1.35</span> + i * <span class="n">2.7</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
         <span class="k">for</span> poly <span class="k">in</span> me.polygons:
             poly.use_smooth = <span class="k">True</span>
-        me.materials.append(material_from_group(<span class="s">f&quot;</span><span class="s">Mat.</span>{name}<span class="s">&quot;</span>, tree, tint))
+        inst_tint = TINTS[<span class="s">&quot;SphereA&quot;</span>] <span class="k">if</span> same_tint <span class="k">else</span> tint
+        me.materials.append(material_from_group(<span class="s">f&quot;</span><span class="s">Mat.</span>{name}<span class="s">&quot;</span>, tree, inst_tint))
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     <span class="k">return</span> tree, objs
@@ -478,9 +489,12 @@ TINTS = {
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--same-tint&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: identical instance Tints, still assert they differ&quot;</span>)
     args = p.parse_args(argv)
 
-    tree, objs = build_scene()
+    tree, objs = build_scene(same_tint=args.same_tint)
+
     code = check(tree, objs)
     <span class="k">if</span> code:
         <span class="k">return</span> code

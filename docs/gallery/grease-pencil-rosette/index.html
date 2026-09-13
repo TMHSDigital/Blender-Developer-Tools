@@ -267,10 +267,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python grease_pencil_rosette.py --
 
+# Falsifier: open strokes. Must exit non-zero (cyclic).
+blender --background --python grease_pencil_rosette.py -- --open-strokes
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python grease_pencil_rosette.py -- --output rosette.png
 blender --background --python grease_pencil_rosette.py -- --output rosette.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong version gate, structural mismatch, missing attribute layers, or attribute-buffer deviation from the closed form). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | GPv3 address / legacy trap for this Blender | | 4 | Object type, layer count, or frame number | | 5 | Stroke topology or cyclic (<code>--open-strokes</code> lands here) | | 6 | Lazy attribute layers missing or wrong domain/type | | 7 | Position buffer length or closed-form round-trip | | 8 | Grease Pencil material missing gpencil settings | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--open-strokes</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -299,11 +305,16 @@ the legacy trap on 4.5, the structural contract, lazy attribute
 materialization, and a closed-form round-trip of every position through the
 raw POINT attribute buffer.
 
+``--open-strokes`` leaves every stroke non-cyclic and still asserts they
+are cyclic. That is the falsifier (``--same-axis`` in export-preset-axis).
+The GPv3 address shim is untouched.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
-    blender --background --python grease_pencil_rosette.py --                # check only
-    blender --background --python grease_pencil_rosette.py -- --output r.png # + render
+    blender --background --python grease_pencil_rosette.py --                  # check only
+    blender --background --python grease_pencil_rosette.py -- --open-strokes   # must fail
+    blender --background --python grease_pencil_rosette.py -- --output r.png   # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, colorsys
 
@@ -346,7 +357,7 @@ TOL = <span class="n">1e-4</span>
     <span class="k">return</span> bpy.data.grease_pencils_v3.new(name)       <span class="c"># 4.5 LTS: GPv3 lives at _v3</span>
 
 
-<span class="k">def</span> build_rosette():
+<span class="k">def</span> build_rosette(open_strokes=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     gp = gp_data_new(<span class="s">&quot;Rosette&quot;</span>)
     layer = gp.layers.new(<span class="s">&quot;Ink&quot;</span>)
@@ -355,8 +366,9 @@ TOL = <span class="n">1e-4</span>
 
     drawing.add_strokes([POINTS] * RINGS)
     <span class="k">for</span> ring, stroke <span class="k">in</span> enumerate(drawing.strokes):
-        stroke.cyclic = <span class="k">True</span>
+        stroke.cyclic = <span class="k">not</span> open_strokes
         <span class="k">for</span> i, pt <span class="k">in</span> enumerate(stroke.points):
+
             pt.position = rose_point(ring, i)
             pt.radius = point_radius(ring, i)
             pt.opacity = <span class="n">1.0</span>
@@ -547,9 +559,12 @@ TOL = <span class="n">1e-4</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--open-strokes&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: strokes not cyclic, still assert cyclic&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build_rosette()
+    obj = build_rosette(open_strokes=args.open_strokes)
+
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

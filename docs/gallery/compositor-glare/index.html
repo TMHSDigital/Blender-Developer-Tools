@@ -266,10 +266,16 @@
 <pre><code># Cheap correctness check (two tiny renders) — the CI check:
 blender --background --python compositor_glare.py --
 
+# Falsifier: Threshold=10.0. Must exit non-zero (Threshold==1.0).
+blender --background --python compositor_glare.py -- --threshold-high
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python compositor_glare.py -- --output rings.png
 blender --background --python compositor_glare.py -- --output rings.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong tree plumbing, wrong Glare configuration, a missing or non-falling halo, or halo pixels that appear without the compositor). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Compositor tree / Glare / Threshold / link-chain contract (<code>--threshold-high</code> lands here) | | 4 | Check render missing, tube dark, no halo, or halo does not fall off | | 5 | Halo present with compositing off | | 6 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--threshold-high</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -296,12 +302,17 @@ constantly:
   the ring silhouette, falls off strictly with distance, and vanishes entirely
   when `scene.render.use_compositing` is off.
 
+``--threshold-high`` sets the shared ``Threshold`` input to 10.0 and still
+asserts it equals 1.0. That is the falsifier (``--same-axis`` in
+export-preset-axis). The 4.x/5.x Type-menu shim is untouched.
+
 By default it runs only the correctness check (two 96x54 single-sample Cycles
 renders, compositor on vs off) — the CI smoke check. Pass --output to also
 render a still:
 
-    blender --background --python compositor_glare.py --                 # check only
-    blender --background --python compositor_glare.py -- --output n.png  # + render
+    blender --background --python compositor_glare.py --                   # check only
+    blender --background --python compositor_glare.py -- --threshold-high   # must fail
+    blender --background --python compositor_glare.py -- --output n.png    # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy
 <span class="k">import</span> sys
@@ -616,9 +627,14 @@ CHECK_W, CHECK_H = <span class="n">96</span>, <span class="n">54</span>    <span
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
     p.add_argument(<span class="s">&quot;--samples&quot;</span>, type=int, default=<span class="n">32</span>, help=<span class="s">&quot;--output sample count&quot;</span>)
     p.add_argument(<span class="s">&quot;--width&quot;</span>, type=int, default=<span class="n">1280</span>, help=<span class="s">&quot;--output width; height is width*9/16&quot;</span>)
+    p.add_argument(<span class="s">&quot;--threshold-high&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: Threshold=10.0, still assert Threshold==1.0&quot;</span>)
     args = p.parse_args(argv)
 
     scene, tree, glare = build_scene()
+    <span class="k">if</span> args.threshold_high:
+        glare.inputs[<span class="s">&#x27;Threshold&#x27;</span>].default_value = <span class="n">10.0</span>
+
     code = check_structure(scene, tree, glare)
     <span class="k">if</span> code:
         <span class="k">return</span> code

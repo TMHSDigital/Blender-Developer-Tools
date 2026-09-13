@@ -266,11 +266,17 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python text_version_stamp.py --
 
+# Falsifier: body is not version_string. Must exit non-zero.
+blender --background --python text_version_stamp.py -- --wrong-body
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python text_version_stamp.py -- --output stamp.png
 blender --background --python text_version_stamp.py -- --output stamp.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong subclass, missing font, body/version mismatch, non-planar flat text, extrude/bevel closed form off, geometry not regenerating, or a <code>to_mesh_clear()</code> reference surviving). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The render scales the stamp to a constant width, so the frame holds for any version-string length.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<p>The render scales the stamp to a constant width, so the frame holds for any version-string length.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Not a FONT <code>TextCurve</code> with the built-in Bfont | | 4 | <code>body</code> is not the live <code>version_string</code> (<code>--wrong-body</code> lands here) | | 5 | Flat text is not a filled planar mesh | | 6 | Extrude / bevel closed form failed | | 7 | Appending characters did not widen the text | | 8 | Mesh survived <code>to_mesh_clear()</code> | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--wrong-body</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -295,11 +301,16 @@ exact format. It also witnesses the depsgraph lifetime hazard: after
 `to_mesh_clear()` the returned Mesh reference is dead and any access raises
 ReferenceError.
 
+``--wrong-body`` assigns a string that is not ``version_string`` and still
+asserts the body is the live version. That is the falsifier (``--same-axis``
+in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
-    blender --background --python text_version_stamp.py --                 # check only
-    blender --background --python text_version_stamp.py -- --output v.png  # + render
+    blender --background --python text_version_stamp.py --                   # check only
+    blender --background --python text_version_stamp.py -- --wrong-body      # must fail
+    blender --background --python text_version_stamp.py -- --output v.png    # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse
 
@@ -313,10 +324,10 @@ BEVEL = <span class="n">0.02</span>
 TOL = <span class="n">1e-4</span>
 
 
-<span class="k">def</span> build_stamp():
+<span class="k">def</span> build_stamp(wrong_body=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     txt = bpy.data.curves.new(<span class="s">&quot;VersionStamp&quot;</span>, type=<span class="s">&#x27;FONT&#x27;</span>)
-    txt.body = bpy.app.version_string  <span class="c"># the self-documenting payload</span>
+    txt.body = <span class="s">&quot;not-a-version&quot;</span> <span class="k">if</span> wrong_body <span class="k">else</span> bpy.app.version_string
     txt.align_x = <span class="s">&#x27;CENTER&#x27;</span>
     txt.align_y = <span class="s">&#x27;CENTER&#x27;</span>
     obj = bpy.data.objects.new(<span class="s">&quot;VersionStamp&quot;</span>, txt)
@@ -565,9 +576,12 @@ TOL = <span class="n">1e-4</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--wrong-body&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: body is not version_string, still assert it is&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build_stamp()
+    obj = build_stamp(wrong_body=args.wrong_body)
+
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

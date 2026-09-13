@@ -266,10 +266,16 @@
 <pre><code># Cheap correctness check only (no render) — the CI smoke check:
 blender --background --python gn_sdf_remesh.py --
 
+# Falsifier: no SDF modifier. Must exit non-zero (evaluated == base).
+blender --background --python gn_sdf_remesh.py -- --no-sdf
+
 # Also render the remeshed result (EEVEE on a GPU host; --engine cycles on GPU-less hosts):
 blender --background --python gn_sdf_remesh.py -- --output remesh.png
 blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine cycles</code></pre>
-<p>By default it runs only the <strong>frame-independent correctness check</strong>: the depsgraph-evaluated vertex count must be &gt; 0 AND differ from the base mesh (the remesh produced geometry). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | SDF remesh produced no/unchanged geometry (<code>--no-sdf</code> lands here) | | 4 | <code>--output</code> produced no file | | 5 | Wrong-era EEVEE engine id was accepted | | 6 | Input material dropped by remesh |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-sdf</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -290,6 +296,7 @@ produced geometry. Exits non-zero on failure. This is the check the CI smoke gat
 both builds.
 
     blender --background --python gn_sdf_remesh.py --                  # correctness check only
+    blender --background --python gn_sdf_remesh.py -- --no-sdf         # must fail
     blender --background --python gn_sdf_remesh.py -- --output r.png   # also render the result
     blender --background --python gn_sdf_remesh.py -- --output r.png --engine cycles  # GPU-less
 &quot;&quot;&quot;</span>
@@ -387,6 +394,8 @@ both builds.
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render the remeshed result to this PNG&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-sdf&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;skip attaching the SDF remesh modifier (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     <span class="c"># EEVEE-id inversion witnessed for real: the OTHER era&#x27;s id must be</span>
@@ -404,7 +413,8 @@ both builds.
     base = len(obj.data.vertices)
     src_mat = obj.data.materials[<span class="n">0</span>] <span class="k">if</span> obj.data.materials <span class="k">else</span> <span class="k">None</span>
     tree, link_valid = build_remesh_via_sdf(material=src_mat)
-    obj.modifiers.new(<span class="s">&quot;sdf&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>).node_group = tree
+    <span class="k">if</span> <span class="k">not</span> args.no_sdf:
+        obj.modifiers.new(<span class="s">&quot;sdf&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>).node_group = tree
     dg = bpy.context.evaluated_depsgraph_get(); ev = obj.evaluated_get(dg)
     m = ev.to_mesh(); evc = len(m.vertices)
     mat_names = [mm.name <span class="k">for</span> mm <span class="k">in</span> m.materials <span class="k">if</span> mm <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]

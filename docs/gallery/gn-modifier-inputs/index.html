@@ -266,14 +266,20 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_modifier_inputs.py --
 
-# Force one side of the split (must fail on the other series):
+# Portable falsifier: write 1.0 to every modifier. Must exit non-zero.
+blender --background --python gn_modifier_inputs.py -- --same-scale
+
+# Force one side of the split (must fail on the other series, not all three):
 blender --background --python gn_modifier_inputs.py -- --api dict
 blender --background --python gn_modifier_inputs.py -- --api rna
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gn_modifier_inputs.py -- --output stairs.png
 blender --background --python gn_modifier_inputs.py -- --output stairs.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing identifier, write/read raise, readback mismatch, evaluated Z-extent ≠ scale, or three extents not distinct). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron).</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Scale input identifier missing on the tree interface | | 4 | Modifiers do not share one node_group | | 5 | Version-path write raised (<code>--api dict</code> on 5.2, <code>--api rna</code> on 4.5) | | 6 | Version-path read raised | | 7 | Readback ≠ intended scale (<code>--same-scale</code> lands here) | | 8 | Evaluated Z-extent ≠ intended scale | | 9 | Evaluated mesh not sitting on z=0 | | 10 | Gallery framing violation | | 11 | Evaluated extents not distinct | | 12 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--same-scale</code>, or <code>--api dict</code>/<code>rna</code>.</p>
 <h2>Falsification</h2>
 <p>| Probe | Binary | Result | | --- | --- | --- | | <code>--api dict</code> | 5.2.1 LTS | exit 5, <code>TypeError: id properties not supported for this type</code> | | <code>--api rna</code> | 4.5.11 LTS | exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code> | | <code>--api auto</code> | 5.2.1, 5.1.2, 4.5.11 | exit 0, extents 1.000 / 2.000 / 3.000 |</p>
     </section>
@@ -295,10 +301,14 @@ back, and asserts the evaluated Z-extent equals the written scale
 4.5 LTS and 5.1 write ``mod[identifier] = value``. 5.2+ removed ID
 properties on NodesModifier — that assignment raises TypeError — and
 the replacement is ``mod.properties.inputs.&lt;identifier&gt;.value``.
-``--api dict`` / ``--api rna`` force one side so the witness can fail
-on purpose.
+``--api dict`` / ``--api rna`` force one side of the 5.1/5.2 split — they
+fail on the *other* series, not on every binary. ``--same-scale`` writes
+1.0 to every modifier and still asserts 1 / 2 / 3, so the second cube&#x27;s
+readback fails on all three. That is the portable falsifier
+(``--same-axis`` in export-preset-axis).
 
     blender --background --python gn_modifier_inputs.py --
+    blender --background --python gn_modifier_inputs.py -- --same-scale
     blender --background --python gn_modifier_inputs.py -- --api dict
     blender --background --python gn_modifier_inputs.py -- --output s.png
 &quot;&quot;&quot;</span>
@@ -463,7 +473,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         ev.to_mesh_clear()
 
 
-<span class="k">def</span> check(tree, objs, mods, api):
+<span class="k">def</span> check(tree, objs, mods, api, same_scale=<span class="k">False</span>):
     ident = scale_identifier(tree)
     <span class="k">if</span> <span class="k">not</span> ident:
         print(<span class="s">&quot;ERROR: Scale input identifier missing on the tree interface&quot;</span>,
@@ -476,8 +486,9 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         <span class="k">return</span> <span class="n">4</span>
 
     <span class="k">for</span> obj, mod, scale <span class="k">in</span> zip(objs, mods, SCALES):
+        written = SCALES[<span class="n">0</span>] <span class="k">if</span> same_scale <span class="k">else</span> scale
         <span class="k">try</span>:
-            set_mod_input(mod, ident, scale, api)
+            set_mod_input(mod, ident, written, api)
         <span class="k">except</span> Exception <span class="k">as</span> e:
             print(
                 <span class="s">f&quot;</span><span class="s">ERROR: </span>{api}<span class="s"> write of </span>{scale}<span class="s"> on </span>{obj.name}<span class="s"> raised </span><span class="s">&quot;</span>
@@ -653,11 +664,15 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         <span class="s">&quot;--api&quot;</span>, default=<span class="s">&quot;auto&quot;</span>, choices=(<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;dict&quot;</span>, <span class="s">&quot;rna&quot;</span>),
         help=<span class="s">&quot;force the 5.1 dict path, the 5.2 RNA path, or pick from bpy.app.version&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--same-scale&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;write 1.0 to every modifier (must fail)&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     tree, objs, mods = build()
     api = _api_choice(args.api)
-    code = check(tree, objs, mods, api)
+    code = check(tree, objs, mods, api, same_scale=args.same_scale)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

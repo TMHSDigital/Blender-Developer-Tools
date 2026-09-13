@@ -269,10 +269,16 @@
 <pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
 
+# Falsifier: GC T2 -&gt; T1. Must exit non-zero (inputs).
+blender --background --python vse_gamma_cross.py -- --swap-inputs
+
 # Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (span drift, wrong inputs, t-convention drift, a sample off the closed form, or a missing gamma dip). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | GC span off closed form | | 4 | GC inputs are not T1 → T2 (<code>--swap-inputs</code> lands here) | | 5 | Sample <code>t</code> convention drifted | | 6 | Cross sample off the gamma-0.5 closed form | | 7 | Mid-cross lerp deviation missing (naive mix) | | 8 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--swap-inputs</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -303,11 +309,15 @@ with ``length=`` on 5.x, ``frame_end=`` on 4.5.
 The blend math is identical on Blender 4.5 LTS and 5.1 (every sample matches
 to the quantization step).
 
+``--swap-inputs`` wires GC as T2 -&gt; T1 and still asserts T1 -&gt; T2. That is
+the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no gallery render) — the CI
 smoke check. Pass --output to also render a still:
 
-    blender --background --python vse_gamma_cross.py --                 # check only
-    blender --background --python vse_gamma_cross.py -- --output g.png  # + render
+    blender --background --python vse_gamma_cross.py --                   # check only
+    blender --background --python vse_gamma_cross.py -- --swap-inputs     # must fail
+    blender --background --python vse_gamma_cross.py -- --output g.png    # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, tempfile, shutil
 
@@ -351,7 +361,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     <span class="k">return</span> s.frame_final_start, s.frame_final_end, s.frame_final_duration
 
 
-<span class="k">def</span> build_cross(sc):
+<span class="k">def</span> build_cross(sc, swap_inputs=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;The two-strip cross: T1/T2 consumed by the GAMMA_CROSS above them
     (effect strips consume inputs only from below — vse-cut-list&#x27;s wiring).&quot;&quot;&quot;</span>
     sc.frame_start = SPAN[<span class="n">0</span>]
@@ -362,7 +372,8 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     t1.color = A_RGB
     t2 = new_effect(coll, <span class="s">&quot;T2&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, <span class="n">2</span>, SPAN)
     t2.color = B_RGB
-    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, <span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">3</span>, SPAN, input1=t1, input2=t2)
+    src1, src2 = (t2, t1) <span class="k">if</span> swap_inputs <span class="k">else</span> (t1, t2)
+    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, <span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">3</span>, SPAN, input1=src1, input2=src2)
     <span class="k">return</span> gc
 
 
@@ -693,11 +704,13 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--swap-inputs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: GC T2 -&gt; T1, still assert T1 -&gt; T2&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
-    gc = build_cross(sc)
+    gc = build_cross(sc, swap_inputs=args.swap_inputs)
     code = check(sc, gc)
     <span class="k">if</span> code:
         <span class="k">return</span> code

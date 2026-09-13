@@ -270,10 +270,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_export_roundtrip.py --
 
+# Falsifier: export_yup=False. Must exit non-zero (bbox is Z-up on disk).
+blender --background --python gltf_export_roundtrip.py -- --no-yup
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gltf_export_roundtrip.py -- --output crate.png
 blender --background --python gltf_export_roundtrip.py -- --output crate.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (RNA kwarg drift, cage drift, missing on-disk conversion, vertex-split drift, or any round-trip excursion beyond tolerance). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Exporter/importer RNA kwargs drifted | | 4 | Base cage drifted from its closed form | | 5 | Authored UVs drifted from the box-map closed form | | 6 | Bevel produced no evaluated geometry | | 7 | On-disk node/mesh/generator contract drifted | | 8 | On-disk primitive/material binding count drifted | | 9 | On-disk POSITION bounds ≠ axis-converted bbox (<code>--no-yup</code> lands here) | | 10 | On-disk POSITION count ≠ evaluated loop count | | 11 | On-disk UV V-flip failed | | 12 | Re-import did not produce exactly one mesh | | 13 | Re-imported object carries a transform | | 14 | Material names drifted on re-import | | 15 | Re-import vert count ≠ evaluated loop count | | 16 | Round-trip position drift | | 17 | Round-trip normal drift | | 18 | Round-trip UV drift | | 19 | Re-import triangle count drifted | | 20 | Per-triangle material bindings drifted | | 21 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-yup</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -291,8 +297,11 @@ code most often gets silently wrong:
    data itself — (x, y, z) -&gt; (x, z, -y) on disk — with no node rotation.
    The check parses the exported .gltf JSON and asserts the POSITION accessor
    bounds equal the axis-converted evaluated bounding box, and that the node
-   carries neither rotation nor scale. Exporting with ``export_yup=False``
-   writes raw Z-up data that every engine will display lying on its back.
+   carries neither rotation nor scale. ``--no-yup`` exports with
+   ``export_yup=False`` and still runs that bbox check, so the +Y-up
+   conversion fails. That is the falsifier (``--same-axis`` in
+   export-preset-axis). Exporting with ``export_yup=False`` writes raw Z-up
+   data that every engine will display lying on its back.
 2. Modifiers ship evaluated geometry. ``export_apply=True`` applies the
    crate&#x27;s bevel modifier: the re-imported mesh matches the
    depsgraph-evaluated mesh, not the base cage. With ``export_apply=False``
@@ -315,6 +324,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gltf_export_roundtrip.py --                 # check only
+    blender --background --python gltf_export_roundtrip.py -- --no-yup        # must fail
     blender --background --python gltf_export_roundtrip.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
@@ -527,7 +537,7 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
 <span class="c"># ---------------------------------------------------------------------------</span>
 <span class="c"># The check. Distinct exit codes per contract; measured maxima printed on success.</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
-<span class="k">def</span> check(crate):
+<span class="k">def</span> check(crate, export_kwargs):
     <span class="c"># contract 0 (version guard): every kwarg we rely on still exists.</span>
     exp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.export_scene.gltf.get_rna_type().properties}
     imp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.import_scene.gltf.get_rna_type().properties}
@@ -568,7 +578,7 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
     tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;gltf_roundtrip_&quot;</span>)
     <span class="k">try</span>:
         path = os.path.join(tmp, <span class="s">&quot;crate.gltf&quot;</span>).replace(<span class="s">&quot;\\&quot;</span>, <span class="s">&quot;/&quot;</span>)
-        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+        bpy.ops.export_scene.gltf(filepath=path, **export_kwargs)
 
         <span class="c"># contract 1 (on disk): +Y-up is baked into vertex data, no node transform</span>
         g, acc_floats = read_gltf(path)
@@ -875,13 +885,18 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-yup&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;export with export_yup=False (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     crate = build_crate()
     <span class="k">for</span> m <span class="k">in</span> make_materials():
         crate.data.materials.append(m)
-    code = check(crate)
+    kwargs = dict(EXPORT_KWARGS)
+    <span class="k">if</span> args.no_yup:
+        kwargs[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">False</span>
+    code = check(crate, kwargs)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

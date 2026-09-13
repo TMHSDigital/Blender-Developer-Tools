@@ -265,10 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python bmesh_gear.py --
 
+# Falsifier: skip the extrude. Must exit non-zero (topology).
+blender --background --python bmesh_gear.py -- --no-extrude
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python bmesh_gear.py -- --output gear.png
 blender --background --python bmesh_gear.py -- --output gear.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (topology mismatch or non-manifold edges). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Topology ≠ closed form (<code>--no-extrude</code> lands here) | | 4 | Non-manifold edges | | 6 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-extrude</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -285,10 +291,15 @@ topology is exactly predictable. The check asserts the closed-form counts —
 verts = 2 x (4 x teeth), faces = sides + 2 caps, edges = 3 x profile — and
 that the mesh is watertight (every edge borders exactly 2 faces).
 
+``--no-extrude`` skips the face-region extrude and still runs the closed-form
+count check, so verts stay at one ring. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python bmesh_gear.py --                 # check only
+    blender --background --python bmesh_gear.py -- --no-extrude    # must fail
     blender --background --python bmesh_gear.py -- --output g.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -317,16 +328,17 @@ TOOTH_DUTY = <span class="n">0.45</span>
     <span class="k">return</span> [(r * math.cos(a), r * math.sin(a), <span class="n">0.0</span>) <span class="k">for</span> a, r <span class="k">in</span> coords]
 
 
-<span class="k">def</span> build_gear():
+<span class="k">def</span> build_gear(no_extrude=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     me = bpy.data.meshes.new(<span class="s">&quot;Gear&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
         verts = [bm.verts.new(co) <span class="k">for</span> co <span class="k">in</span> gear_profile()]
         face = bm.faces.new(verts)
-        ext = bmesh.ops.extrude_face_region(bm, geom=[face])
-        top_verts = [e <span class="k">for</span> e <span class="k">in</span> ext[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(e, bmesh.types.BMVert)]
-        bmesh.ops.translate(bm, verts=top_verts, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, DEPTH))
+        <span class="k">if</span> <span class="k">not</span> no_extrude:
+            ext = bmesh.ops.extrude_face_region(bm, geom=[face])
+            top_verts = [e <span class="k">for</span> e <span class="k">in</span> ext[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(e, bmesh.types.BMVert)]
+            bmesh.ops.translate(bm, verts=top_verts, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, DEPTH))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(me)
     <span class="k">finally</span>:
@@ -471,9 +483,11 @@ TOOTH_DUTY = <span class="n">0.45</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-extrude&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;skip the face-region extrude (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build_gear()
+    obj = build_gear(no_extrude=args.no_extrude)
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

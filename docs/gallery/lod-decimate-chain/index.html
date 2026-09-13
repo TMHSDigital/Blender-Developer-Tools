@@ -269,10 +269,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python lod_decimate_chain.py --
 
+# Falsifier: no Decimate on the LOD copies. Must exit non-zero (no reduction).
+blender --background --python lod_decimate_chain.py -- --no-decimate
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python lod_decimate_chain.py -- --output rocket.png
 blender --background --python lod_decimate_chain.py -- --output rocket.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (base-topology drift, no reduction, a mutated original datablock, a ratio-bounds excursion, or silhouette loss). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Base topology ≠ closed form | | 4 | Base bbox ≠ closed form | | 5 | LOD0 evaluated counts ≠ base | | 6 | Evaluated tris ≥ base (<code>--no-decimate</code> lands here) | | 7 | Original datablock mutated after evaluation | | 8 | LOD tris outside ratio bounds | | 9 | LOD bbox lost silhouette-critical dimensions | | 10 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-decimate</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -305,10 +311,15 @@ The Decimate modifier API (``decimate_type=&#x27;COLLAPSE&#x27;``, ``ratio``) is
 between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
 is itself the version witness.
 
+``--no-decimate`` leaves the LOD copies without a Decimate modifier and
+still runs the reduction check, so evaluated tris equal the base. That is
+the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python lod_decimate_chain.py --                 # check only
+    blender --background --python lod_decimate_chain.py -- --no-decimate   # must fail
     blender --background --python lod_decimate_chain.py -- --output r.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -477,7 +488,7 @@ PORT_DEPTH = <span class="n">0.09</span>
     <span class="k">return</span> mod
 
 
-<span class="k">def</span> check(rocket, lod1, lod2):
+<span class="k">def</span> check(rocket, lod1, lod2, no_decimate=<span class="k">False</span>):
     me = rocket.data
     want_v, want_f, want_t = closed_form_counts()
     got = (len(me.vertices), len(me.polygons))
@@ -507,7 +518,8 @@ PORT_DEPTH = <span class="n">0.09</span>
 
     measured = []
     <span class="k">for</span> lod, ratio <span class="k">in</span> ((lod1, LODS[<span class="n">0</span>]), (lod2, LODS[<span class="n">1</span>])):
-        add_decimate(lod, ratio)
+        <span class="k">if</span> <span class="k">not</span> no_decimate:
+            add_decimate(lod, ratio)
         snap = eval_mesh(lod)
         <span class="c"># contract 2: triangle count lands near ratio * base, within bounds</span>
         target = ratio * want_t
@@ -678,6 +690,8 @@ PORT_DEPTH = <span class="n">0.09</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;skip adding Decimate to the LOD copies (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
@@ -688,7 +702,8 @@ PORT_DEPTH = <span class="n">0.09</span>
         <span class="k">for</span> m <span class="k">in</span> mats:
             r.data.materials.append(m)
         rockets.append(r)
-    code = check(rockets[<span class="n">0</span>], rockets[<span class="n">1</span>], rockets[<span class="n">2</span>])
+    code = check(rockets[<span class="n">0</span>], rockets[<span class="n">1</span>], rockets[<span class="n">2</span>],
+                 no_decimate=args.no_decimate)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

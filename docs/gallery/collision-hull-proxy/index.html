@@ -271,10 +271,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python collision_hull_proxy.py --
 
+# Falsifier: shrink hull vertices. Must exit non-zero (containment).
+blender --background --python collision_hull_proxy.py -- --shrink-hull
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python collision_hull_proxy.py -- --output hydrant.png
 blender --background --python collision_hull_proxy.py -- --output hydrant.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (render geometry escaping a hull, inverted winding, a non-watertight or non-convex piece, Euler drift, or a piece over the 255-face budget). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Render vertex escapes its hull (<code>--shrink-hull</code> lands here) | | 4 | Hull edge does not border exactly two faces | | 5 | Signed volume ≤ 0 (inverted winding) | | 6 | Hull vertex off its own face plane | | 7 | Euler characteristic ≠ 2 | | 8 | Piece over the 255-face collision budget | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--shrink-hull</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -308,10 +314,15 @@ containment holds with a measured margin of ~0 instead of by luck. Concave
 details (grooves) never touch the hull; proud details cost hull faces. That
 trade-off IS the collision-authoring lesson.
 
+``--shrink-hull`` scales each hull&#x27;s vertices by 0.5 and still runs the
+containment plane test, so render verts escape. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python collision_hull_proxy.py --                 # check only
+    blender --background --python collision_hull_proxy.py -- --shrink-hull   # must fail
     blender --background --python collision_hull_proxy.py -- --output h.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -769,12 +780,18 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--shrink-hull&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;scale hull vertices by 0.5 (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     groups = build_hydrant()
     pieces = []
     <span class="k">for</span> g <span class="k">in</span> groups:
         hull = build_hull(<span class="s">f&quot;</span>{g[<span class="s">&#x27;name&#x27;</span>]}<span class="s">Hull</span><span class="s">&quot;</span>, collect_points(g[<span class="s">&quot;cage&quot;</span>]))
+        <span class="k">if</span> args.shrink_hull:
+            <span class="k">for</span> v <span class="k">in</span> hull.data.vertices:
+                v.co *= <span class="n">0.5</span>
+            hull.data.update()
         pieces.append((g[<span class="s">&quot;name&quot;</span>], hull, collect_points(g[<span class="s">&quot;render&quot;</span>])))
     code = check(pieces)
     <span class="k">if</span> code:

@@ -265,13 +265,20 @@
 <pre><code># Cheap correctness check (writes an OBJ to a temp path, asserts the counts) — the CI check:
 blender --background --python depsgraph_export.py --
 
+# Falsifier: apply_modifiers=False. Must exit non-zero (export ≠ evaluated).
+blender --background --python depsgraph_export.py -- --unevaluated
+
 # Also render a still of base vs evaluated (EEVEE on a GPU host; cycles on GPU-less hosts):
 blender --background --python depsgraph_export.py -- --output depsgraph.png
 blender --background --python depsgraph_export.py -- --output depsgraph.png --engine cycles
 
 # Write the exported OBJ to a specific path:
 blender --background --python depsgraph_export.py -- --obj exported.obj</code></pre>
-<p>It exits non-zero on failure (modifier not applied, or exported count ≠ evaluated count). The <code>blender-smoke</code> workflow runs this check on Blender 5.2 LTS and 4.5 LTS: base 8 → evaluated/exported 98 vertices with a 2-level SUBSURF.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Evaluated mesh did not apply the modifier | | 4 | No OBJ written | | 5 | Export vert count ≠ evaluated (<code>--unevaluated</code> lands here) | | 6 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p><code>--obj</code> is a path selector, not a falsifier.</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--obj</code>, or <code>--unevaluated</code>.</p>
 <p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
     <section class="detail-section src">
@@ -288,10 +295,16 @@ evaluated_get().to_mesh() (paired with to_mesh_clear()), exports through
 wm.obj_export, and asserts the exported vertex count equals the EVALUATED
 (modifier-applied) count and is strictly greater than the base.
 
+``--unevaluated`` exports with ``apply_modifiers=False`` and still asserts
+the OBJ vertex count equals the depsgraph-evaluated mesh. That is the
+falsifier (``--same-axis`` in export-preset-axis). ``--obj`` is a path
+selector, not a falsifier.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python depsgraph_export.py --                 # check only
+    blender --background --python depsgraph_export.py -- --unevaluated   # must fail
     blender --background --python depsgraph_export.py -- --output d.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile
@@ -317,7 +330,7 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> check(obj, obj_path):
+<span class="k">def</span> check(obj, obj_path, unevaluated=<span class="k">False</span>):
     base = len(obj.data.vertices)
 
     <span class="c"># depsgraph lifetime contract: evaluate, read, then release with to_mesh_clear</span>
@@ -330,7 +343,11 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
     out = obj_path <span class="k">or</span> os.path.join(tempfile.gettempdir(), <span class="s">&quot;depsgraph_export.obj&quot;</span>)
     os.makedirs(os.path.dirname(os.path.abspath(out)) <span class="k">or</span> <span class="s">&quot;.&quot;</span>, exist_ok=<span class="k">True</span>)
     <span class="c"># obj_export writes the evaluated (modifier-applied) geometry by default</span>
-    bpy.ops.wm.obj_export(filepath=out, export_selected_objects=<span class="k">False</span>)
+    bpy.ops.wm.obj_export(
+        filepath=out,
+        export_selected_objects=<span class="k">False</span>,
+        apply_modifiers=<span class="k">not</span> unevaluated,
+    )
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(out) <span class="k">and</span> os.path.getsize(out) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: no OBJ written&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
@@ -489,10 +506,12 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
     p.add_argument(<span class="s">&quot;--obj&quot;</span>, default=<span class="k">None</span>,
                    help=<span class="s">&quot;optional: write the exported OBJ here (else a temp path)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--unevaluated&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;export with apply_modifiers=False (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     obj = build()
-    code = check(obj, args.obj)
+    code = check(obj, args.obj, unevaluated=args.unevaluated)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

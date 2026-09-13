@@ -272,9 +272,15 @@
 <pre><code># Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
 blender --background --python sky_texture_sun_elevation.py --
 
+# Falsifier: Sky→Background unlinked. Must exit non-zero (world links).
+blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
+
 # Also render the gallery diptych (Cycles):
 blender --background --python sky_texture_sun_elevation.py -- --output sky.png</code></pre>
-<p>It exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | <code>sky_type</code> is not the identifier for this Blender | | 4 | <code>sun_elevation</code> round-trip failed | | 5 | <code>dust_density</code> / <code>aerosol_density</code> / <code>NISHITA</code> / <code>MULTIPLE_SCATTERING</code> trap | | 6 | Sky → Background → World Output links broken (<code>--unlink-sky</code> lands here) | | 7 | High-elevation zenith luma below floor | | 8 | Zenith luma did not rise with elevation | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--unlink-sky</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -296,10 +302,15 @@ gets wrong across the 4.5 LTS → 5.1 window:
 4. ``sun_elevation`` is load-bearing: raising it brightens zenith luminance
    — proven with two tiny Cycles EXR probes (straight-up camera) in one check.
 
+``--unlink-sky`` drops the Sky → Background Color link and still asserts
+the chain. That is the falsifier (``--same-axis`` in export-preset-axis).
+The sky_type / dust_density version traps are untouched.
+
 By default it runs the correctness check (tiny Cycles CPU renders, no gallery
 still). Pass --output to also render a still:
 
     blender --background --python sky_texture_sun_elevation.py --
+    blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
     blender --background --python sky_texture_sun_elevation.py -- --output s.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile, shutil
@@ -588,7 +599,12 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
     <span class="k">return</span> <span class="n">0</span>
 
 
-<span class="k">def</span> check(sc, world, sky, bg):
+<span class="k">def</span> check(sc, world, sky, bg, unlink_sky=<span class="k">False</span>):
+    <span class="k">if</span> unlink_sky:
+        nt = world.node_tree
+        <span class="k">for</span> link <span class="k">in</span> list(nt.links):
+            <span class="k">if</span> link.from_node == sky <span class="k">and</span> link.to_node.name == <span class="s">&quot;Background&quot;</span>:
+                nt.links.remove(link)
     code = check_links(world)
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -786,11 +802,16 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
         choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine for --output (cycles default: sky is a Cycles strength)&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--unlink-sky&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsifier: drop Sky→Background link, still assert the chain&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     sc, world, sky, bg = build_scene()
-    code = check(sc, world, sky, bg)
+    code = check(sc, world, sky, bg, unlink_sky=args.unlink_sky)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

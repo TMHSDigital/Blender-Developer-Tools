@@ -268,10 +268,15 @@
 <pre><code># Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
 
+# Falsifier: use_contour off. Must exit non-zero.
+blender --background --python gp_lineart_contour.py -- --no-contour
+
 # Also render the gallery still:
 blender --background --python gp_lineart_contour.py -- --output lineart.png</code></pre>
-<p>It exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also GPv3 collection address contract | | 3 | LINEART <code>thickness</code> / <code>radius</code> trap for this Blender | | 4 | LINEART type, source, or <code>use_contour</code> (<code>--no-contour</code> lands here) | | 5 | Evaluated contour too thin | | 6 | Cleared <code>source_object</code> still produced strokes | | 7 | Contour+crease off still produced strokes, or restore failed | | 8 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-contour</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -298,9 +303,15 @@ gets wrong across the 4.5 LTS → 5.1 window:
 The check evaluates the modifier through the depsgraph (no bake required)
 and asserts stroke/point lower bounds against the known failure modes above.
 
+``--no-contour`` clears ``use_contour`` after the modifier is built and
+still asserts it is True. That is the falsifier (``--same-axis`` in
+export-preset-axis). The GPv3 address shim and the thickness/radius trap
+are untouched.
+
 By default it runs the correctness check only. Pass --output to render:
 
     blender --background --python gp_lineart_contour.py --
+    blender --background --python gp_lineart_contour.py -- --no-contour
     blender --background --python gp_lineart_contour.py -- --output l.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -696,10 +707,18 @@ RADIUS = <span class="n">0.028</span>
         choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine for --output&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--no-contour&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsifier: use_contour=False, still assert True&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     sc, crystal, la_ob, mod = build_scene()
+    <span class="k">if</span> args.no_contour:
+        mod.use_contour = <span class="k">False</span>
+
     code = check(sc, crystal, la_ob, mod)
     <span class="k">if</span> code:
         <span class="k">return</span> code

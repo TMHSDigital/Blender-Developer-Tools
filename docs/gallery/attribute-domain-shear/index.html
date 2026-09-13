@@ -268,9 +268,13 @@
 <p><strong>Render as proof:</strong> dual pinwheel from the same closed-form palette the check asserts. CORNER (left) holds eight crisp petals to the hub; naive POINT (right) smears — petal colors bleed across the shared hub and ring verts into a swirl. The broken state is in-frame by design: the right fan *is* the falsification variant. Fully matte petal materials (<code>Specular IOR Level = 0</code>) so the flat color data carries no specular line, per <code>docs/VISUAL-STYLE.md</code>.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python attribute_domain_shear.py --
+blender --background --python attribute_domain_shear.py -- --no-overwrite
 blender --background --python attribute_domain_shear.py -- --output shear.png
 blender --background --python attribute_domain_shear.py -- --output shear.png --engine cycles</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | CORNER or POINT attribute size wrong | | 4 | CORNER hub corners off wedge color | | 5 | POINT hub is not last-write (<code>--no-overwrite</code> lands here) | | 6 | Outer ring verts off last-write order | | 7 | Measured shear off palette closed form, or ~0 | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-overwrite</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -306,6 +310,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python attribute_domain_shear.py --                 # check only
+    blender --background --python attribute_domain_shear.py -- --no-overwrite  # must fail
     blender --background --python attribute_domain_shear.py -- --output a.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, colorsys
@@ -378,13 +383,14 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> attr
 
 
-<span class="k">def</span> assign_point_naive(me, pal):
+<span class="k">def</span> assign_point_naive(me, pal, overwrite=<span class="k">True</span>):
     <span class="s">&quot;&quot;&quot;The AI mistake: author per-wedge colors into a POINT-domain attribute.
     Every wedge rewrites the shared hub (and its leading ring vert), so the
     last wedge wins — colors shear across every shared vertex.&quot;&quot;&quot;</span>
     attr = me.color_attributes.new(ATTR_P, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=<span class="s">&#x27;POINT&#x27;</span>)
     hub_index = <span class="n">0</span>  <span class="c"># build_fan creates the hub first</span>
-    <span class="k">for</span> i <span class="k">in</span> range(K):
+    last = K <span class="k">if</span> overwrite <span class="k">else</span> <span class="n">1</span>
+    <span class="k">for</span> i <span class="k">in</span> range(last):
         <span class="c"># naive per-wedge pass: set the hub and both ring verts to palette[i]</span>
         attr.data[hub_index].color = pal[i]
         attr.data[<span class="n">1</span> + i].color = pal[i]
@@ -393,7 +399,7 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> attr
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(overwrite=<span class="k">True</span>):
     pal = palette()
     expect_shear = closed_form_shear(pal)
     print(<span class="s">f&quot;</span><span class="s">palette K=</span>{K}<span class="s"> closed_form_shear=</span>{expect_shear:<span class="s">.6f</span>}<span class="s">&quot;</span>)
@@ -418,7 +424,7 @@ COLOR_EPS = <span class="n">1e-6</span>
 
     <span class="c"># --- POINT: the shear, measured against the closed form ---</span>
     me_p = build_fan()
-    attr_p = assign_point_naive(me_p, pal)
+    attr_p = assign_point_naive(me_p, pal, overwrite=overwrite)
     <span class="k">if</span> len(attr_p.data) != len(me_p.vertices) <span class="k">or</span> len(me_p.vertices) != K + <span class="n">1</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: POINT attr size </span>{len(attr_p.data)}<span class="s"> != verts </span>{len(me_p.vertices)}<span class="s">&quot;</span>,
               file=sys.stderr)
@@ -663,11 +669,13 @@ COLOR_EPS = <span class="n">1e-6</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-overwrite&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;write only the first POINT wedge (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    code = check()
+    code = check(overwrite=<span class="k">not</span> args.no_overwrite)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

@@ -265,10 +265,17 @@
 <pre><code># Cheap correctness check only (no render) — the CI smoke check:
 blender --background --python turntable.py --
 
+# Falsifier: no rotation keys. Must exit non-zero (keys drive playback).
+blender --background --python turntable.py -- --no-keys
+
 # Also render one still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python turntable.py -- --output turntable.png
 blender --background --python turntable.py -- --output turntable.png --engine cycles</code></pre>
-<p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). It exits non-zero on failure — the same check the <code>blender-smoke</code> workflow runs on Blender 5.2 LTS and 4.5 LTS. <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
+<p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Rotation keys do not drive playback (<code>--no-keys</code> lands here) | | 4 | <code>--output</code> produced no file | | 5 | Wrong-era EEVEE engine id was accepted |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-keys</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -288,7 +295,12 @@ the rotation keys, sample the object&#x27;s Z rotation at frame 1 vs a later fra
 they DIFFER -- proving the keys drive playback. Exits non-zero on failure. This is the check
 the CI smoke gate runs on both builds.
 
+``--no-keys`` skips inserting the rotation keys and still asserts they drive playback.
+That is the falsifier (``--same-axis`` in export-preset-axis). The EEVEE-id
+era check is untouched.
+
     blender --background --python turntable.py --                 # correctness check only
+    blender --background --python turntable.py -- --no-keys       # must fail
     blender --background --python turntable.py -- --output t.png  # also render one still
     blender --background --python turntable.py -- --output t.png --engine cycles  # GPU-less
 &quot;&quot;&quot;</span>
@@ -307,7 +319,7 @@ FRAMES = <span class="n">36</span>
     strip = layer.strips[<span class="n">0</span>] <span class="k">if</span> layer.strips <span class="k">else</span> layer.strips.new(type=<span class="s">&#x27;KEYFRAME&#x27;</span>)
     <span class="k">return</span> strip.channelbag(slot, ensure=<span class="k">True</span>)
 
-<span class="k">def</span> build():
+<span class="k">def</span> build(no_keys=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     bpy.ops.mesh.primitive_monkey_add(location=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>))
     obj = bpy.context.active_object
@@ -326,11 +338,12 @@ FRAMES = <span class="n">36</span>
         slot = act.slots.new(id_type=<span class="s">&#x27;OBJECT&#x27;</span>, name=obj.name); obj.animation_data.action_slot = slot
     cbag = get_channelbag_for_slot(act, slot)
     fc = cbag.fcurves.new(<span class="s">&quot;rotation_euler&quot;</span>, index=<span class="n">2</span>)
-    fc.keyframe_points.insert(<span class="n">1</span>, <span class="n">0.0</span>)
-    fc.keyframe_points.insert(FRAMES, math.radians(<span class="n">360</span>))
-    <span class="k">for</span> kp <span class="k">in</span> fc.keyframe_points:
-        kp.interpolation = <span class="s">&#x27;LINEAR&#x27;</span>
-    fc.update()
+    <span class="k">if</span> <span class="k">not</span> no_keys:
+        fc.keyframe_points.insert(<span class="n">1</span>, <span class="n">0.0</span>)
+        fc.keyframe_points.insert(FRAMES, math.radians(<span class="n">360</span>))
+        <span class="k">for</span> kp <span class="k">in</span> fc.keyframe_points:
+            kp.interpolation = <span class="s">&#x27;LINEAR&#x27;</span>
+        fc.update()
     <span class="k">return</span> obj
 
 <span class="k">def</span> correctness(obj):
@@ -400,6 +413,8 @@ FRAMES = <span class="n">36</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render one still to this PNG&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, choices=[<span class="s">&quot;auto&quot;</span>, <span class="s">&quot;cycles&quot;</span>], default=<span class="s">&quot;auto&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-keys&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: skip rotation keys, still assert they drive playback&quot;</span>)
     args = p.parse_args(argv)
 
     <span class="c"># the EEVEE-id mapping is asserted regardless of whether we render: the</span>
@@ -413,7 +428,7 @@ FRAMES = <span class="n">36</span>
         <span class="k">pass</span>  <span class="c"># correctly rejected</span>
     bpy.context.scene.render.engine = eid  <span class="c"># raises TypeError if the helper&#x27;s id is invalid</span>
 
-    obj = build()
+    obj = build(no_keys=args.no_keys)
     <span class="k">if</span> <span class="k">not</span> correctness(obj):
         print(<span class="s">&quot;ERROR: rotation keys do not drive playback&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">3</span>
 

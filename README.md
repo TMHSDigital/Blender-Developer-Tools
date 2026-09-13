@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>56 examples</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>57 examples</strong>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 56 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, and 57 examples** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -391,7 +391,7 @@ exits 0 on all three. `--assume-present` is red only on 5.2.
 </details>
 
 <details>
-<summary><strong>Geometry Nodes</strong> — 5 examples</summary>
+<summary><strong>Geometry Nodes</strong> — 6 examples</summary>
 
 <table>
 <tr>
@@ -449,6 +449,21 @@ evaluated cubes against closed forms — Repeat `8×(1+N)` with X-centers at
 `k×1.2`, For Each `8×P` with Z-centers at `i×0.6+0.21` — not that the zone
 nodes exist. Unpaired evaluates empty; For Each's main Geometry socket is a
 passthrough.
+
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
+<a href="examples/gn-socket-rename/"><img src="examples/gn-socket-rename/preview.webp" alt="GN socket rename: a copper jo-block column on a steel plinth in a dark studio, the column switched in by Compare and tagged by Random Value, warm wedge on the back wall" /></a>
+</td>
+<td valign="middle">
+
+### [gn-socket-rename](examples/gn-socket-rename/)
+
+Compare INT and Random Value FLOAT socket identifiers collapsed in 5.2
+(`A_INT` / `Min_001` gone; `A` / `Min` reused). Enabled-name lookup wires
+on 4.5, 5.1, and 5.2. Asserts 16 verts and POINT `gauge_h=1.80` on eight
+column verts. `--legacy-ids` is red only on 5.2.
 
 </td>
 </tr>

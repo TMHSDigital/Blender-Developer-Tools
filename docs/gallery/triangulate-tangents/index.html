@@ -270,11 +270,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python triangulate_tangents.py --
 
+# Falsifier: every UV at (0, 0). Must exit non-zero (authored UV closed form).
+blender --background --python triangulate_tangents.py -- --zero-uv
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python triangulate_tangents.py -- --output buckler.png
 blender --background --python triangulate_tangents.py -- --output buckler.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (topology drift, reallocated UV layer, non-orthonormal basis, bitangent-convention drift, formula excursion, or a flip inside a smooth field). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Loop-triangle count ≠ closed form | | 4 | Re-fetched UV layer drifted from the polar field (<code>--zero-uv</code> lands here) | | 5 | Tangent basis not orthonormal | | 6 | Bitangent ≠ sign × (n × t) | | 7 | Tangents deviate from the edge/UV closed form | | 8 | Flipped tangent inside a clean triangle | | 10 | Gallery framing violation; also <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-uv</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -315,6 +320,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python triangulate_tangents.py --                 # check only
+    blender --background --python triangulate_tangents.py -- --zero-uv       # must fail
     blender --background --python triangulate_tangents.py -- --output s.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -712,10 +718,16 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--zero-uv&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;write every UV to (0, 0) (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     obj, n_dome = build_buckler()
+    <span class="k">if</span> args.zero_uv:
+        uv = obj.data.uv_layers[<span class="s">&quot;UVMap&quot;</span>]
+        <span class="k">for</span> loop <span class="k">in</span> uv.data:
+            loop.uv = (<span class="n">0.0</span>, <span class="n">0.0</span>)
     code = check(obj, n_dome)
     <span class="k">if</span> code:
         <span class="k">return</span> code

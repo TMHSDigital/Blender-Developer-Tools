@@ -269,10 +269,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python car_mirror_symmetry.py --
 
+# Falsifier: Mirror X off. Must exit non-zero (evaluated verts stay at n).
+blender --background --python car_mirror_symmetry.py -- --no-mirror
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python car_mirror_symmetry.py -- --output car.png
 blender --background --python car_mirror_symmetry.py -- --output car.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (applied mirror, doubled centerline, unwelded seam, broken symmetry, or a mirrored part off its plane origin). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Body datablock is not the authored half | | 4 | Authored centerline vert count ≠ 28 | | 5 | Evaluated verts ≠ <code>2n − c</code> (<code>--no-mirror</code> lands here) | | 6 | Evaluated on-plane verts ≠ centerline; also <code>--output</code> produced no file | | 7 | Evaluated Euler characteristic ≠ 2 | | 8 | Non-manifold edges in the evaluated shell | | 9 | Evaluated verts lack a mirrored partner | | 10 | Mirror partner deviation above tolerance | | 11 | Evaluated bbox not symmetric about X | | 12 | Mirrored-part origin off the plane | | 13 | Mirrored-part datablock is not the authored half | | 14 | Mirrored-part evaluated counts did not double | | 15 | Mirrored-part partner check failed | | 16 | Mirrored-part evaluated mesh stayed on one side |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-mirror</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -292,10 +298,15 @@ centerline), the evaluated shell is watertight with Euler characteristic 2,
 and the wheels mirror about their object origins sitting ON the symmetry
 plane. Failure is dramatically visible: a car with one side missing.
 
+``--no-mirror`` turns off the Mirror X axis on every mirrored object and
+still runs the evaluated-count check, so the half-car fails ``2n − c``.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python car_mirror_symmetry.py --                 # check only
+    blender --background --python car_mirror_symmetry.py -- --no-mirror     # must fail
     blender --background --python car_mirror_symmetry.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -551,7 +562,13 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
     <span class="k">return</span> dev, lone
 
 
-<span class="k">def</span> check(objs):
+<span class="k">def</span> check(objs, no_mirror=<span class="k">False</span>):
+    <span class="k">if</span> no_mirror:
+        <span class="k">for</span> ob <span class="k">in</span> [objs[<span class="s">&quot;body&quot;</span>]] + [w <span class="k">for</span> w, *_ <span class="k">in</span> objs[<span class="s">&quot;mirrored&quot;</span>]]:
+            <span class="k">for</span> mod <span class="k">in</span> ob.modifiers:
+                <span class="k">if</span> mod.type == <span class="s">&#x27;MIRROR&#x27;</span>:
+                    mod.use_axis[<span class="n">0</span>] = <span class="k">False</span>
+
     body = objs[<span class="s">&quot;body&quot;</span>]
     me = body.data
 
@@ -784,10 +801,12 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-mirror&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;turn off Mirror X (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     objs = build_car()
-    code = check(objs)
+    code = check(objs, no_mirror=args.no_mirror)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

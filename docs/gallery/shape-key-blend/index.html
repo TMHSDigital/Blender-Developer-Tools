@@ -265,10 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shape_key_blend.py --
 
+# Falsifier: Tall.value = 0. Must exit non-zero.
+blender --background --python shape_key_blend.py -- --zero-blend
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python shape_key_blend.py -- --output blend.png
 blender --background --python shape_key_blend.py -- --output blend.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing keys, wrong value, per-vert blend mismatch, or flare miss). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | No shape keys on mesh | | 4 | Key names ≠ Basis, Tall | | 5 | Tall.value ≠ 0.5 (<code>--zero-blend</code> lands here) | | 6 | Undeformed <code>mesh.vertices</code> not at Basis | | 7 | Evaluated vert off closed-form blend | | 8 | Evaluated Z span off closed form | | 9 | Top flare off closed form | | 10 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-blend</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -288,10 +294,14 @@ the evaluated mesh.
 The Tall key both lifts and flares the top face, so the silhouette is a
 truncated pyramid — clearly a blend, not a uniformly scaled box.
 
+``--zero-blend`` sets Tall.value to 0 and still asserts the 0.5 closed form.
+That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python shape_key_blend.py --                 # check only
+    blender --background --python shape_key_blend.py -- --zero-blend    # must fail
     blender --background --python shape_key_blend.py -- --output s.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -306,7 +316,7 @@ EXPECT_BOT_Z = -HALF
 EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top verts</span>
 
 
-<span class="k">def</span> build():
+<span class="k">def</span> build(zero_blend=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     me = bpy.data.meshes.new(<span class="s">&quot;Block&quot;</span>)
     bm = bmesh.new()
@@ -329,7 +339,7 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
             <span class="c"># flare top face outward so the blend reads as a taper, not a box</span>
             co.x = math.copysign(HALF + FLARE, co.x)
             co.y = math.copysign(HALF + FLARE, co.y)
-    tall.value = BLEND
+    tall.value = <span class="n">0.0</span> <span class="k">if</span> zero_blend <span class="k">else</span> BLEND
     <span class="k">return</span> obj
 
 
@@ -523,9 +533,11 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--zero-blend&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;set Tall.value to 0 (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build()
+    obj = build(zero_blend=args.zero_blend)
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code
