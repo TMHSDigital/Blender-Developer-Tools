@@ -83,5 +83,6 @@
   {"name": "treasure-chest", "script": "showcase/treasure-chest/treasure_chest.py"},
   {"name": "terrain-scatter", "script": "showcase/terrain-scatter/terrain_scatter.py"},
   {"name": "fence-kit", "script": "showcase/fence-kit/fence_kit.py"},
-  {"name": "watchtower", "script": "showcase/watchtower/watchtower.py"}
+  {"name": "watchtower", "script": "showcase/watchtower/watchtower.py"},
+  {"name": "cart", "script": "showcase/cart/cart.py"}
 ]
