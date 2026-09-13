@@ -271,6 +271,10 @@
 <pre><code>blender --background --python gn_zone_iterate.py --
 blender --background --python gn_zone_iterate.py -- --output zones.png</code></pre>
 <p>The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also carrier mesh was rewritten | | 3 | Repeat evaluated vert/face count off closed form | | 4 | Repeat X-centers off closed form | | 5 | For Each evaluated vert/face count off closed form | | 6 | For Each Z-centers off closed form | | 10 | Gallery framing violation | | 12 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--no-offset</code>, <code>--unpair-foreach</code>, or <code>--unpair-repeat</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

@@ -267,10 +267,16 @@ child.matrix_parent_inverse = pivot.matrix_world.inverted()</code></pre>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python parent_inverse_orrery.py --
 
+# Falsifier: parent without MPI. Must exit non-zero (orbit closed form).
+blender --background --python parent_inverse_orrery.py -- --skip-mpi
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python parent_inverse_orrery.py -- --output orrery.png
 blender --background --python parent_inverse_orrery.py -- --output orrery.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (no jump from the trap, keep-world error, stale-matrix contract broken, or an orbit off its closed form). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Bare parenting did not jump | | 4 | Keep-world idiom off | | 5 | Stale <code>matrix_world</code> contract broken | | 6 | Planet off closed-form orbit (<code>--skip-mpi</code> lands here) | | 7 | Moon off closed-form orbit | | 8 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--skip-mpi</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -295,10 +301,15 @@ transform edit it is stale until `bpy.context.view_layer.update()`. Finally
 every planet and the moon must land on the closed-form orbit position
 (rotation about the column axis, composed per hierarchy level).
 
+``--skip-mpi`` parents without ``matrix_parent_inverse`` and still asserts
+closed-form orbits. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python parent_inverse_orrery.py --                   # check only
+    blender --background --python parent_inverse_orrery.py -- --skip-mpi        # must fail
     blender --background --python parent_inverse_orrery.py -- --output o.png    # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -352,13 +363,14 @@ EPS = <span class="n">1e-5</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> parent_keep_world(child, parent):
+<span class="k">def</span> parent_keep_world(child, parent, skip_mpi=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;The idiom this example witnesses: parent without moving the child.&quot;&quot;&quot;</span>
     child.parent = parent
-    child.matrix_parent_inverse = parent.matrix_world.inverted()
+    <span class="k">if</span> <span class="k">not</span> skip_mpi:
+        child.matrix_parent_inverse = parent.matrix_world.inverted()
 
 
-<span class="k">def</span> build_orrery():
+<span class="k">def</span> build_orrery(skip_mpi=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;Author the whole hierarchy with bpy.data (no object-mode operators).&quot;&quot;&quot;</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
 
@@ -380,8 +392,8 @@ EPS = <span class="n">1e-5</span>
         <span class="c"># everything is placed at its theta=0 WORLD position first, then</span>
         <span class="c"># parented with the keep-world idiom -- nothing may move here</span>
         bpy.context.view_layer.update()
-        parent_keep_world(arm, pivot)
-        parent_keep_world(planet, pivot)
+        parent_keep_world(arm, pivot, skip_mpi=skip_mpi)
+        parent_keep_world(planet, pivot, skip_mpi=skip_mpi)
         rig[<span class="s">&quot;planets&quot;</span>][name] = {
             <span class="s">&quot;pivot&quot;</span>: pivot, <span class="s">&quot;planet&quot;</span>: planet, <span class="s">&quot;angle&quot;</span>: math.radians(angle),
             <span class="s">&quot;p0&quot;</span>: Vector((radius, <span class="n">0.0</span>, height)),
@@ -396,9 +408,9 @@ EPS = <span class="n">1e-5</span>
     moon = sphere(<span class="s">&quot;Moon&quot;</span>, MOON_R)
     moon.location = pc0 + Vector((MOON_OFFSET, <span class="n">0.0</span>, <span class="n">0.0</span>))
     bpy.context.view_layer.update()
-    parent_keep_world(moon_pivot, host[<span class="s">&quot;planet&quot;</span>])
-    parent_keep_world(rod, moon_pivot)
-    parent_keep_world(moon, moon_pivot)
+    parent_keep_world(moon_pivot, host[<span class="s">&quot;planet&quot;</span>], skip_mpi=skip_mpi)
+    parent_keep_world(rod, moon_pivot, skip_mpi=skip_mpi)
+    parent_keep_world(moon, moon_pivot, skip_mpi=skip_mpi)
     rig[<span class="s">&quot;moon&quot;</span>] = {<span class="s">&quot;pivot&quot;</span>: moon_pivot, <span class="s">&quot;moon&quot;</span>: moon,
                    <span class="s">&quot;angle&quot;</span>: math.radians(MOON_ANGLE), <span class="s">&quot;pc0&quot;</span>: pc0,
                    <span class="s">&quot;m0&quot;</span>: pc0 + Vector((MOON_OFFSET, <span class="n">0.0</span>, <span class="n">0.0</span>))}
@@ -603,9 +615,11 @@ EPS = <span class="n">1e-5</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--skip-mpi&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;parent without matrix_parent_inverse (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    rig = build_orrery()
+    rig = build_orrery(skip_mpi=args.skip_mpi)
     code = check(rig)
     <span class="k">if</span> code:
         <span class="k">return</span> code

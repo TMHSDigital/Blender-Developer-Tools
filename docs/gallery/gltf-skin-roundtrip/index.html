@@ -270,10 +270,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_skin_roundtrip.py --
 
+# Falsifier: export_skins=False. Must exit non-zero.
+blender --background --python gltf_skin_roundtrip.py -- --no-skins
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gltf_skin_roundtrip.py -- --output scorp.png
 blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing skin, joint drift, weight-sum drift, skeleton drift, weight excursion, or deformation excursion). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Exporter RNA missing expected kwargs | | 4 | Vertex group count ≠ bone count | | 5 | Disk skins ≠ 1 (<code>--no-skins</code> lands here) | | 6 | Skin joints ≠ bone names | | 7 | Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch | | 8 | Disk weight sums off 1.0 | | 9 | Disk verts exceed evaluated loops | | 10 | Armature count after import ≠ 1 | | 11 | Bone count drifted | | 12 | Named bone lost | | 13 | Bone parent drifted | | 14 | Rest matrices drifted | | 15 | Skinned mesh count after import ≠ 1 | | 16 | Re-import vert count ≠ disk | | 17 | Vertex group names drifted | | 18 | Weight round-trip drifted | | 19 | Deformation round-trip drifted | | 20 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-skins</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -307,10 +313,14 @@ those maps need are in triangulate-tangents.)
 The skins pipeline is stable between Blender 4.5 LTS and 5.1 (exporter RNA
 is byte-identical, verified on both) — the example runs identically on both.
 
+``--no-skins`` exports with ``export_skins=False`` and still asserts one
+skin on disk. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gltf_skin_roundtrip.py --                 # check only
+    blender --background --python gltf_skin_roundtrip.py -- --no-skins      # must fail
     blender --background --python gltf_skin_roundtrip.py -- --output s.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
@@ -530,7 +540,7 @@ EXPORT_KWARGS = dict(
     <span class="k">return</span> g, accessor_floats, accessor_uints
 
 
-<span class="k">def</span> check(obj, arm, part_of):
+<span class="k">def</span> check(obj, arm, part_of, no_skins=<span class="k">False</span>):
     me = obj.data
     exp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.export_scene.gltf.get_rna_type().properties}
     missing = [k <span class="k">for</span> k <span class="k">in</span> EXPORT_KWARGS <span class="k">if</span> k <span class="k">not</span> <span class="k">in</span> exp_props]
@@ -573,7 +583,10 @@ EXPORT_KWARGS = dict(
     tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;gltf_skin_&quot;</span>)
     <span class="k">try</span>:
         path = os.path.join(tmp, <span class="s">&quot;scorp.gltf&quot;</span>).replace(<span class="s">&quot;\\&quot;</span>, <span class="s">&quot;/&quot;</span>)
-        bpy.ops.export_scene.gltf(filepath=path, **EXPORT_KWARGS)
+        kw = dict(EXPORT_KWARGS)
+        <span class="k">if</span> no_skins:
+            kw[<span class="s">&quot;export_skins&quot;</span>] = <span class="k">False</span>
+        bpy.ops.export_scene.gltf(filepath=path, **kw)
 
         <span class="c"># contract 1 (on disk): the skin carries every bone, joints named</span>
         g, acc_f, acc_u = read_gltf(path)
@@ -839,6 +852,8 @@ EXPORT_KWARGS = dict(
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-skins&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;export with export_skins=False (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
@@ -848,7 +863,7 @@ EXPORT_KWARGS = dict(
     assign_weights(obj, part_of)
     arm = build_rig(obj)
     bpy.context.view_layer.update()
-    code = check(obj, arm, part_of)
+    code = check(obj, arm, part_of, no_skins=args.no_skins)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

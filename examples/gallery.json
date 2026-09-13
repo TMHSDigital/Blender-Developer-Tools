@@ -627,6 +627,17 @@
       "tags": [
         "mesh"
       ]
+    },
+    {
+      "name": "gn-socket-rename",
+      "dir": "examples/gn-socket-rename",
+      "teaches": "Compare and Random Value socket identifiers collapsed onto reused names in 5.2; enabled-name lookup wires on 4.5, 5.1, and 5.2",
+      "witnessesFix": "A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts",
+      "hero": "docs/gallery/assets/gn-socket-rename-hero.webp",
+      "preview": "examples/gn-socket-rename/preview.webp",
+      "tags": [
+        "geometry-nodes"
+      ]
     }
   ]
 }

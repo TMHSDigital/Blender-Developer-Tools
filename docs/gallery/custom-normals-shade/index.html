@@ -271,10 +271,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python custom_normals_shade.py --
 
+# Falsifier: mark sharp at 20° while auditing 30°. Must exit non-zero.
+blender --background --python custom_normals_shade.py -- --mismatch-angle
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python custom_normals_shade.py -- --output cans.png
 blender --background --python custom_normals_shade.py -- --output cans.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (legacy API resurrected, sharp-set/dihedral mismatch, broken normal welds, custom normals lost or dequantized in evaluation, or legacy-operator divergence drift). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Legacy shading API present, or modern path missing | | 4 | Non-manifold edges (dihedral test undefined) | | 5 | Sharp set ≠ independent dihedral (<code>--mismatch-angle</code> lands here) | | 6 | Evaluated loop normals not welded/split as the sharp set promises | | 7 | Custom split normals lost or dequantized in evaluation | | 8 | <code>shade_auto_smooth</code> operator behavior drifted from the version split | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--mismatch-angle</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -310,11 +316,16 @@ this example asserts what the supported versions actually expose:
                   that ignores the return set; on 5.1 it FINISHES and adds
                   the NODES modifier. The portable path is the data API.
 
+``--mismatch-angle`` marks sharp at 20° and still audits against the 30°
+dihedral set, so the sharp-set match fails. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still (the same can shaded flat /
 smooth-everywhere / by-angle, so a broken path reads as faceting or smear):
 
     blender --background --python custom_normals_shade.py --                 # check only
+    blender --background --python custom_normals_shade.py -- --mismatch-angle
     blender --background --python custom_normals_shade.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -528,15 +539,16 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     <span class="k">return</span> <span class="n">0</span>
 
 
-<span class="k">def</span> check_by_angle(objs):
+<span class="k">def</span> check_by_angle(objs, mismatch_angle=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;set_sharp_from_angle must mark exactly the edges whose independently
     recomputed dihedral crosses the threshold — on every checked mesh.&quot;&quot;&quot;</span>
+    mark = math.radians(<span class="n">20.0</span>) <span class="k">if</span> mismatch_angle <span class="k">else</span> ANGLE
     total_sharp = total_manifold = <span class="n">0</span>
     <span class="k">for</span> obj <span class="k">in</span> objs:
         me = obj.data
         <span class="k">for</span> p <span class="k">in</span> me.polygons:
             p.use_smooth = <span class="k">True</span>
-        me.set_sharp_from_angle(angle=ANGLE)
+        me.set_sharp_from_angle(angle=mark)
         dih, nonmanifold = manifold_dihedrals(me)
         <span class="k">if</span> nonmanifold:
             print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{obj.name}<span class="s">: </span>{nonmanifold}<span class="s"> non-manifold edge(s) — the </span><span class="s">&quot;</span>
@@ -841,13 +853,17 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--mismatch-angle&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;mark sharp at 20° while auditing 30° (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     can = build_jerry_can()
 
     <span class="k">for</span> step <span class="k">in</span> (<span class="k">lambda</span>: check_api_surface(can[<span class="s">&quot;shell&quot;</span>].data),
-                 <span class="k">lambda</span>: check_by_angle([can[<span class="s">&quot;shell&quot;</span>], can[<span class="s">&quot;rib&quot;</span>], can[<span class="s">&quot;neck&quot;</span>]]),
+                 <span class="k">lambda</span>: check_by_angle(
+                     [can[<span class="s">&quot;shell&quot;</span>], can[<span class="s">&quot;rib&quot;</span>], can[<span class="s">&quot;neck&quot;</span>]],
+                     mismatch_angle=args.mismatch_angle),
                  <span class="k">lambda</span>: check_normal_welds(can[<span class="s">&quot;shell&quot;</span>]),
                  <span class="k">lambda</span>: check_custom_normals_roundtrip(can[<span class="s">&quot;shell&quot;</span>]),
                  check_legacy_operator):

@@ -268,10 +268,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python armature_bend.py --
 
+# Falsifier: rest pose. Must exit non-zero (tip deflection).
+blender --background --python armature_bend.py -- --zero-curl
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python armature_bend.py -- --output bend.png
 blender --background --python armature_bend.py -- --output bend.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (edit-bone lifetime violation, LBS deviation, moved root ring, or an undeformed tip). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | <code>edit_bones</code> populated in object mode | | 4 | Edit-mode bone chain off closed form | | 5 | Evaluated vertex count changed | | 6 | Evaluated mesh off closed-form LBS | | 7 | Root ring moved | | 8 | Tip did not deflect (<code>--zero-curl</code> lands here) | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-curl</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -300,10 +306,14 @@ Witnesses the three contracts AI-generated rigging code most often gets wrong:
 The same API works unchanged on Blender 4.5 LTS and 5.1 — no version gate is
 needed, which this example demonstrates by running identically on both.
 
+``--zero-curl`` leaves every pose bone at rest and still asserts the tip
+deflects. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python armature_bend.py --                 # check only
+    blender --background --python armature_bend.py -- --zero-curl      # must fail
     blender --background --python armature_bend.py -- --output b.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -575,10 +585,13 @@ BONE_NAMES = [<span class="s">f&quot;</span><span class="s">Seg_</span>{i}<span 
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--zero-curl&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;leave pose bones at rest (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    tube, arm = build_rig(CURL_DEG)
+    curl = <span class="n">0.0</span> <span class="k">if</span> args.zero_curl <span class="k">else</span> CURL_DEG
+    tube, arm = build_rig(curl)
     code = check(tube, arm)
     <span class="k">if</span> code:
         <span class="k">return</span> code

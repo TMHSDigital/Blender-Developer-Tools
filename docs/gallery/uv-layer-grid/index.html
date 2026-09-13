@@ -271,10 +271,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python uv_layer_grid.py --
 
+# Falsifier: pre-create a UV layer on the silent-no-op probe. Must exit non-zero.
+blender --background --python uv_layer_grid.py -- --precreate-on-hazard
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python uv_layer_grid.py -- --output uv.png
 blender --background --python uv_layer_grid.py -- --output uv.png --engine cycles</code></pre>
-<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. This example does not call the gallery framing helper; <code>10</code> is the missing-render-file check.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Silent-no-op hazard gone (<code>--precreate-on-hazard</code> lands here) | | 4 | Grid topology drifted | | 5 | Pre-create + calc_uvs did not persist one UV layer | | 6 | calc_uvs closed-form error | | 7 | Mesh UV round-trip error | | 8 | calc_uvs=False unexpectedly created a UV layer | | 9 | Explicit UV assignment error | | 10 | <code>--output</code> produced no file | | 11 | Broken panel is not flat | | 12 | Broken panel is not texel-(0,0) teal | | 13 | Repaired panel is not a checker | | 14 | Broken and repaired panels render identically |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--precreate-on-hazard</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -292,14 +298,14 @@ flat color.
 
 The check proves the silent no-op, then the pre-create + `calc_uvs=True`
 repair path against a closed-form UV grid, and an explicit loop-assignment
-fallback that does not depend on `calc_uvs` at all. Pass --output to also
-render a still that stages the broken (flat) panel beside the repaired
-(checker) panel — and then *witnesses the render itself*: the saved PNG is
-read back and probed at each panel&#x27;s projected center, asserting the broken
-panel is one flat teal (texel (0,0)) while the repaired panel carries both
-checker colors. If the UV contract failed, the pixels would say so:
+fallback that does not depend on `calc_uvs` at all.
+
+``--precreate-on-hazard`` creates the UV layer on the silent-no-op probe
+and still asserts zero layers, so the hazard check fails. That is the
+falsifier (``--same-axis`` in export-preset-axis).
 
     blender --background --python uv_layer_grid.py --
+    blender --background --python uv_layer_grid.py -- --precreate-on-hazard
     blender --background --python uv_layer_grid.py -- --output uv.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -330,13 +336,15 @@ UV_TOL = <span class="n">1e-6</span>
     <span class="k">return</span> err
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(precreate_on_hazard=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
 
     <span class="c"># --- 1. The hazard: calc_uvs=True is a silent no-op without a UV layer ---</span>
     me_bad = bpy.data.meshes.new(<span class="s">&quot;NoPreUV&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
+        <span class="k">if</span> precreate_on_hazard:
+            bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
         bmesh.ops.create_grid(
             bm, x_segments=SEG, y_segments=SEG, size=SIZE, calc_uvs=<span class="k">True</span>,
         )
@@ -790,9 +798,11 @@ UV_TOL = <span class="n">1e-6</span>
         <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>,
     )
+    p.add_argument(<span class="s">&quot;--precreate-on-hazard&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;pre-create a UV layer on the silent-no-op probe (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(precreate_on_hazard=args.precreate_on_hazard)
     <span class="k">if</span> code != <span class="n">0</span>:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:

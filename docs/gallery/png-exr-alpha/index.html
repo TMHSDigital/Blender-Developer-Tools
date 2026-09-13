@@ -271,11 +271,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python png_exr_alpha.py --
 
+# Falsifier: opaque authored alpha. Must exit non-zero (float→PNG error floor).
+blender --background --python png_exr_alpha.py -- --opaque-alpha
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python png_exr_alpha.py -- --output alpha.png
 blender --background --python png_exr_alpha.py -- --output alpha.png --engine cycles</code></pre>
-<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is also the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also closed-form palette no longer stresses unpremul | | 3 | <code>float_buffer=True</code> image reports <code>is_float=False</code> | | 4 | Float→PNG IHDR is not RGBA16 | | 5 | Float→PNG RGB error below floor (<code>--opaque-alpha</code> lands here) | | 6 | Float→PNG disagrees with closed-form false-unpremul model | | 7 | Float→EXR round-trip above tolerance | | 8 | <code>float_buffer=False</code> image reports <code>is_float=True</code> | | 9 | Byte→PNG IHDR is not RGBA8 | | 10 | Byte→PNG disagrees with straight-alpha 8-bit model; also gallery framing violation | | 11 | Byte→PNG stress cell looks false-unpremul-mangled | | 12 | EXR <code>color_mode=RGB</code> alpha-drop contract | | 13 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--opaque-alpha</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -295,11 +300,14 @@ float precision. A byte image (`float_buffer=False`) writes **8-bit** PNG
 with straight alpha and only pays ordinary quantization.
 
 AI-generated Blender code commonly trusts `Image.save()` to PNG for float
-RGBA scratch buffers (masks, ID mattes, AOVs). Pass --output to also render
-a staged still of two framed verification displays: left is the PNG-mangled
-reload, right is the EXR-clean reload.
+RGBA scratch buffers (masks, ID mattes, AOVs). ``--opaque-alpha`` authors
+every pixel at alpha 1.0 and still asserts the float→PNG error floor.
+That is the falsifier (``--same-axis`` in export-preset-axis). Pass --output
+to also render a staged still of two framed verification displays: left is
+the PNG-mangled reload, right is the EXR-clean reload.
 
     blender --background --python png_exr_alpha.py --
+    blender --background --python png_exr_alpha.py -- --opaque-alpha
     blender --background --python png_exr_alpha.py -- --output alpha.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy
@@ -371,11 +379,12 @@ EXR_TOL = <span class="n">1e-5</span>
     <span class="k">return</span> (q8(r), q8(g), q8(b), q8(a))
 
 
-<span class="k">def</span> fill_pattern(img):
+<span class="k">def</span> fill_pattern(img, opaque_alpha=<span class="k">False</span>):
     buf = [<span class="n">0.0</span>] * (W * H * <span class="n">4</span>)
+    alphas = [<span class="n">1.0</span>] * W <span class="k">if</span> opaque_alpha <span class="k">else</span> ALPHAS
     <span class="k">for</span> y, rgb <span class="k">in</span> enumerate(COLORS):
         r, g, b = rgb
-        <span class="k">for</span> x, a <span class="k">in</span> enumerate(ALPHAS):
+        <span class="k">for</span> x, a <span class="k">in</span> enumerate(alphas):
             i = (y * W + x) * <span class="n">4</span>
             buf[i : i + <span class="n">4</span>] = [r, g, b, a]
     img.pixels.foreach_set(buf)
@@ -454,7 +463,7 @@ EXR_TOL = <span class="n">1e-5</span>
     <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(opaque_alpha=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
 
     <span class="c"># --- Closed-form worst case on this palette (independent of Blender) ---</span>
@@ -483,7 +492,7 @@ EXR_TOL = <span class="n">1e-5</span>
     img_f = new_float_image(<span class="s">&quot;FloatSrc&quot;</span>)
     <span class="k">if</span> <span class="k">not</span> img_f.is_float:
         <span class="k">return</span> fail(<span class="s">&quot;float_buffer=True image reports is_float=False&quot;</span>, <span class="n">3</span>)
-    orig = fill_pattern(img_f)
+    orig = fill_pattern(img_f, opaque_alpha=opaque_alpha)
     png_got, png_path = save_and_reload(img_f, <span class="s">&quot;PNG&quot;</span>, <span class="s">&quot;png&quot;</span>)
 
     bit, color = png_bit_depth(png_path)
@@ -936,9 +945,13 @@ EXR_TOL = <span class="n">1e-5</span>
         <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--opaque-alpha&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsifier: author alpha=1.0, still assert the float→PNG error floor&quot;</span>,
+    )
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(opaque_alpha=args.opaque_alpha)
     <span class="k">if</span> code != <span class="n">0</span>:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:

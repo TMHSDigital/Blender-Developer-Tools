@@ -265,10 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python color_attribute_wheel.py --
 
+# Falsifier: POINT-domain attribute. Must exit non-zero.
+blender --background --python color_attribute_wheel.py -- --point-domain
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python color_attribute_wheel.py -- --output wheel.png
 blender --background --python color_attribute_wheel.py -- --output wheel.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (missing/mis-sized/mis-domained attribute, wrong active attribute, a probe color mismatch, or an unlinked Attribute node). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Topology ≠ closed form | | 4 | Color attribute missing | | 5 | Domain/type ≠ CORNER/FLOAT_COLOR (<code>--point-domain</code> lands here) | | 6 | Attribute sized to verts, not loops | | 7 | <code>active_color</code> not set | | 8 | Probe loop color off HSV closed form | | 9 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--point-domain</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -296,6 +302,7 @@ By default it runs only the correctness check (no render) -- the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python color_attribute_wheel.py --                 # check only
+    blender --background --python color_attribute_wheel.py -- --point-domain   # must fail
     blender --background --python color_attribute_wheel.py -- --output w.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, colorsys, argparse
@@ -334,7 +341,7 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="k">return</span> coords, hsv
 
 
-<span class="k">def</span> build_wheel():
+<span class="k">def</span> build_wheel(point_domain=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     coords, hsv = wheel_geometry()
     me = bpy.data.meshes.new(<span class="s">&quot;ColorWheel&quot;</span>)
@@ -358,16 +365,18 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="c"># created via color_attributes (not the deprecated vertex_colors alias),</span>
     <span class="c"># sized to loops -- then filled by expanding per-vertex HSV across corners</span>
     <span class="c"># with bulk foreach_get / foreach_set, never a per-loop Python assignment.</span>
-    attr = me.color_attributes.new(ATTR_NAME, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=<span class="s">&#x27;CORNER&#x27;</span>)
-    n_loops = len(me.loops)
-    loop_vert = array(<span class="s">&#x27;i&#x27;</span>, [<span class="n">0</span>]) * n_loops
-    me.loops.foreach_get(<span class="s">&quot;vertex_index&quot;</span>, loop_vert)
-    flat = array(<span class="s">&#x27;f&#x27;</span>, [<span class="n">0.0</span>]) * (n_loops * <span class="n">4</span>)
-    <span class="k">for</span> i, vi <span class="k">in</span> enumerate(loop_vert):
-        h, s, v = hsv[vi]
-        r, g, b = colorsys.hsv_to_rgb(h, s, v)
-        flat[i * <span class="n">4</span>], flat[i * <span class="n">4</span> + <span class="n">1</span>], flat[i * <span class="n">4</span> + <span class="n">2</span>], flat[i * <span class="n">4</span> + <span class="n">3</span>] = r, g, b, <span class="n">1.0</span>
-    attr.data.foreach_set(<span class="s">&quot;color&quot;</span>, flat)
+    domain = <span class="s">&#x27;POINT&#x27;</span> <span class="k">if</span> point_domain <span class="k">else</span> <span class="s">&#x27;CORNER&#x27;</span>
+    attr = me.color_attributes.new(ATTR_NAME, type=<span class="s">&#x27;FLOAT_COLOR&#x27;</span>, domain=domain)
+    <span class="k">if</span> <span class="k">not</span> point_domain:
+        n_loops = len(me.loops)
+        loop_vert = array(<span class="s">&#x27;i&#x27;</span>, [<span class="n">0</span>]) * n_loops
+        me.loops.foreach_get(<span class="s">&quot;vertex_index&quot;</span>, loop_vert)
+        flat = array(<span class="s">&#x27;f&#x27;</span>, [<span class="n">0.0</span>]) * (n_loops * <span class="n">4</span>)
+        <span class="k">for</span> i, vi <span class="k">in</span> enumerate(loop_vert):
+            h, s, v = hsv[vi]
+            r, g, b = colorsys.hsv_to_rgb(h, s, v)
+            flat[i * <span class="n">4</span>], flat[i * <span class="n">4</span> + <span class="n">1</span>], flat[i * <span class="n">4</span> + <span class="n">2</span>], flat[i * <span class="n">4</span> + <span class="n">3</span>] = r, g, b, <span class="n">1.0</span>
+        attr.data.foreach_set(<span class="s">&quot;color&quot;</span>, flat)
     me.color_attributes.active_color = attr  <span class="c"># the step AI code most often forgets</span>
 
     obj = bpy.data.objects.new(<span class="s">&quot;ColorWheel&quot;</span>, me)
@@ -561,9 +570,11 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--point-domain&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;create a POINT-domain color attribute (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj, hsv = build_wheel()
+    obj, hsv = build_wheel(point_domain=args.point_domain)
     code = check(obj, hsv)
     <span class="k">if</span> code:
         <span class="k">return</span> code

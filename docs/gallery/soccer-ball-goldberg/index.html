@@ -270,10 +270,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python soccer_ball_goldberg.py --
 
+# Falsifier: swap pentagon/hexagon slots. Must exit non-zero.
+blender --background --python soccer_ball_goldberg.py -- --invert-bind
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python soccer_ball_goldberg.py -- --output ball.png
 blender --background --python soccer_ball_goldberg.py -- --output ball.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (topology, census, degree, edge uniformity, planarity, circumsphere, or panel binding). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Topology ≠ 60/90/32 | | 4 | Euler characteristic ≠ 2 | | 5 | Face census ≠ 12 pentagons + 20 hexagons | | 6 | Vertex degree not uniform 3; also <code>--output</code> produced no file | | 7 | Non-manifold edges | | 8 | Edge lengths not uniform | | 9 | Face planarity off | | 10 | Centroid off origin | | 11 | Circumradius not uniform | | 12 | Panel material count ≠ 2 | | 13 | Panel binding not by vertex count (<code>--invert-bind</code> lands here) |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--invert-bind</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -296,6 +302,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python soccer_ball_goldberg.py --                 # check only
+    blender --background --python soccer_ball_goldberg.py -- --invert-bind   # must fail
     blender --background --python soccer_ball_goldberg.py -- --output b.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -350,7 +357,7 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
         prev_face, current = face, nxt
 
 
-<span class="k">def</span> build_ball():
+<span class="k">def</span> build_ball(invert_bind=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;Truncate a bmesh icosphere at 1/3 per edge into the Goldberg ball.
 
     The icosphere is the topology source: cut points are computed per edge,
@@ -433,7 +440,8 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
     <span class="c"># builder that assigns &quot;first 12 faces black&quot; passes only by luck of</span>
     <span class="c"># bmesh face ordering, and the check below must catch it</span>
     <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.material_index = <span class="n">1</span> <span class="k">if</span> len(poly.vertices) == <span class="n">5</span> <span class="k">else</span> <span class="n">0</span>
+        pent = len(poly.vertices) == <span class="n">5</span>
+        poly.material_index = (<span class="n">0</span> <span class="k">if</span> pent <span class="k">else</span> <span class="n">1</span>) <span class="k">if</span> invert_bind <span class="k">else</span> (<span class="n">1</span> <span class="k">if</span> pent <span class="k">else</span> <span class="n">0</span>)
     <span class="k">return</span> obj
 
 
@@ -675,9 +683,11 @@ EXPECT_DEGREE = <span class="n">3</span>           <span class="c"># every verte
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--invert-bind&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;swap pentagon/hexagon material slots (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build_ball()
+    obj = build_ball(invert_bind=args.invert_bind)
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

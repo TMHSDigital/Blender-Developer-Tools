@@ -269,6 +269,10 @@
 <h2>Run</h2>
 <pre><code>blender --background --python usd_export_evaluation_mode.py --
 blender --background --python usd_export_evaluation_mode.py -- --output u.png</code></pre>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also base cube verts ≠ 8 | | 3 | VIEWPORT TESSELLATE point/face count off closed form | | 4 | RENDER TESSELLATE point/face count or scheme off closed form | | 5 | BEST_MATCH cage point count or scheme off | | 6 | RENDER and VIEWPORT USDA point counts are identical | | 10 | Gallery framing violation | | 12 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--evaluation-mode</code>, or <code>--subdivision</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

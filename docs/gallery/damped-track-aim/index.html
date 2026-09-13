@@ -267,10 +267,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python damped_track_aim.py --
 
+# Falsifier: mute every constraint. Must exit non-zero.
+blender --background --python damped_track_aim.py -- --mute
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python damped_track_aim.py -- --output aim.png
 blender --background --python damped_track_aim.py -- --output aim.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong constraint type/target/axis, or evaluated aim outside the angular epsilon). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Needle count ≠ 12 | | 4 | Needle does not carry exactly one DAMPED_TRACK | | 5 | Constraint target is not Core | | 6 | <code>track_axis</code> is not TRACK_Z | | 7 | Constraint muted or influence &lt; 1 (<code>--mute</code> lands here) | | 8 | TRACK_TO still present | | 9 | Evaluated aim dot below 0.998 | | 10 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--mute</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -292,10 +298,14 @@ with the world vector toward the core within a tight angular epsilon. If the
 constraint is missing, muted, mistyped as TRACK_TO, or the axis is flipped,
 the dot product fails.
 
+``--mute`` mutes every DAMPED_TRACK and still asserts unmute. That is the
+falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python damped_track_aim.py --                 # check only
+    blender --background --python damped_track_aim.py -- --mute           # must fail
     blender --background --python damped_track_aim.py -- --output aim.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -441,7 +451,7 @@ LIFT = <span class="n">1.55</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> build():
+<span class="k">def</span> build(mute=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     col = bpy.context.collection
 
@@ -466,6 +476,8 @@ LIFT = <span class="n">1.55</span>
         con.name = <span class="s">&quot;AimCore&quot;</span>
         con.target = core
         con.track_axis = <span class="s">&quot;TRACK_Z&quot;</span>
+        <span class="k">if</span> mute:
+            con.mute = <span class="k">True</span>
         needles.append(ob)
 
     bpy.context.view_layer.update()
@@ -656,9 +668,11 @@ LIFT = <span class="n">1.55</span>
         choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine when --output is set&quot;</span>,
     )
+    p.add_argument(<span class="s">&quot;--mute&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;mute every DAMPED_TRACK (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    core, needles = build()
+    core, needles = build(mute=args.mute)
     code = check(core, needles)
     <span class="k">if</span> code != <span class="n">0</span>:
         <span class="k">return</span> code

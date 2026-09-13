@@ -270,10 +270,17 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python image_pixels_testcard.py --
 
+# Falsifier: write the card top-down. Must exit non-zero (byte round-trip).
+blender --background --python image_pixels_testcard.py -- --wrong-origin
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python image_pixels_testcard.py -- --output card.png
 blender --background --python image_pixels_testcard.py -- --output card.png --engine cycles</code></pre>
-<p>It exits non-zero on failure and prints every measured error and tolerance on success, so CI logs carry the numbers. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. In the render, <code>Closest</code> interpolation keeps the pixel grid honest — the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The monitor is staged as a designed object — beveled dark-polymer case, machined metal stand, teal power LED — on the dark studio stage from <code>docs/VISUAL-STYLE.md</code> (Standard view transform; warm key, cool fill and rim; a warm pool raking the back wall). The screen stays emissive and matte — specular off, emission strength 1.0 — so the card&#x27;s values read exactly.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Pixel buffer is not always RGBA | | 4 | Byte round-trip vs closed-form card (<code>--wrong-origin</code> lands here) | | 5 | Float-buffer round-trip failed | | 6 | <code>scale()</code> did not reallocate, or stale-size read succeeded | | 7 | <code>save()</code> source/buffer-drop contract drifted | | 8 | <code>save_render()</code> flipped source or disturbed the buffer | | 9 | Byte PNG save/reload error | | 10 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--wrong-origin</code>.</p>
+<p>In the render, <code>Closest</code> interpolation keeps the pixel grid honest — the jagged circle edge is the 512 × 288 buffer itself, and the white marker in the PLUGE row sits at the bottom-left because that is where pixel (0, 0) lives. The monitor is staged as a designed object — beveled dark-polymer case, machined metal stand, teal power LED — on the dark studio stage from <code>docs/VISUAL-STYLE.md</code> (Standard view transform; warm key, cool fill and rim; a warm pool raking the back wall). The screen stays emissive and matte — specular off, emission strength 1.0 — so the card&#x27;s values read exactly.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -301,10 +308,15 @@ with a different image and reading the imposter&#x27;s pixels back through the
 original datablock. `save_render()` writes the same PNG but leaves
 `source` == &#x27;GENERATED&#x27; and the buffer intact and exact.
 
+``--wrong-origin`` writes the card top-down and still compares against
+the bottom-left closed form, so the byte round-trip fails. That is the
+falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python image_pixels_testcard.py --                 # check only
+    blender --background --python image_pixels_testcard.py -- --wrong-origin  # must fail
     blender --background --python image_pixels_testcard.py -- --output t.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, tempfile
@@ -349,14 +361,15 @@ BARS = [
     <span class="k">return</span> r, g, b, <span class="n">1.0</span>
 
 
-<span class="k">def</span> flat_pattern():
+<span class="k">def</span> flat_pattern(flip_origin=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;The whole card as one flat RGBA buffer in pixel-buffer order:
     row-major from the BOTTOM row up, 4 floats per pixel.&quot;&quot;&quot;</span>
     buf = [<span class="n">0.0</span>] * (W * H * <span class="n">4</span>)
     i = <span class="n">0</span>
     <span class="k">for</span> y <span class="k">in</span> range(H):
+        y_src = (H - <span class="n">1</span> - y) <span class="k">if</span> flip_origin <span class="k">else</span> y
         <span class="k">for</span> x <span class="k">in</span> range(W):
-            buf[i:i + <span class="n">4</span>] = pattern(x, y)
+            buf[i:i + <span class="n">4</span>] = pattern(x, y_src)
             i += <span class="n">4</span>
     <span class="k">return</span> buf
 
@@ -366,9 +379,10 @@ BARS = [
     <span class="k">return</span> code
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(wrong_origin=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     expected = flat_pattern()
+    written = flat_pattern(flip_origin=<span class="k">True</span>) <span class="k">if</span> wrong_origin <span class="k">else</span> expected
 
     <span class="c"># -- buffer geometry: always RGBA, even with alpha=False ----------------</span>
     img = bpy.data.images.new(<span class="s">&quot;TestCard&quot;</span>, W, H, alpha=<span class="k">False</span>)
@@ -382,7 +396,7 @@ BARS = [
         <span class="k">pass</span>
 
     <span class="c"># -- byte image: one bulk write, quantized round-trip --------------------</span>
-    img.pixels.foreach_set(expected)
+    img.pixels.foreach_set(written)
     got = [<span class="n">0.0</span>] * (W * H * <span class="n">4</span>)
     img.pixels.foreach_get(got)
     byte_err = max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(expected, got))
@@ -653,9 +667,11 @@ BARS = [
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--wrong-origin&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;write the card top-down (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(wrong_origin=args.wrong_origin)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

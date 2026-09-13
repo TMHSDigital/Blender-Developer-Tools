@@ -274,7 +274,10 @@ blender --background --python export_preset_axis.py -- --same-axis
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python export_preset_axis.py -- --output beacon.png
 blender --background --python export_preset_axis.py -- --output beacon.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (RNA drift, source not Z-dominant, Unity disk not converted, Godot disk not Z-up, Unity not standing, Godot not lying, orientations equal). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron).</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also exporter RNA missing expected glTF kwargs | | 3 | Source mast is not Z-dominant, or tip drifted | | 4 | glTF reimport produced no mesh | | 5 | Unity disk POSITION is not <code>(x, z, -y)</code>, or Unity node has rotation | | 6 | Godot disk POSITION is not raw Z-up; also <code>--output</code> produced no file | | 7 | Unity reimport is not standing | | 8 | Godot reimport is not lying along Y, or reimported tip mismatch | | 9 | Reimported orientations did not differ (<code>--same-axis</code> lands here) | | 10 | Gallery framing violation | | 11 | <code>--same-axis</code> did not collapse the axis difference |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-axis</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

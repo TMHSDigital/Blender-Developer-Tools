@@ -269,11 +269,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vertex_weight_limit.py --
 
+# Falsifier: skip the 4-influence prune. Must exit non-zero.
+blender --background --python vertex_weight_limit.py -- --skip-limit
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python vertex_weight_limit.py -- --output arm.png
 blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (vacuous authoring, a vertex over the cap, broken weight sums, pose damaged by pruning, LBS drift, or a moved Root mount). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper; it is also the missing-render code.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Pre-limit max influences ≠ 5 | | 4 | Vertex over the 4-influence cap (<code>--skip-limit</code> lands here) | | 5 | Limit changed nothing | | 6 | Weight sums off 1.0 after renormalize | | 7 | Pose damaged by pruning, or evaluated vert count changed | | 8 | Evaluated mesh off LBS over limited weights | | 9 | Root-weighted mount moved | | 10 | Gallery framing violation; also <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--skip-limit</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -306,10 +311,15 @@ The vertex-group API (``v.groups``, ``VertexGroup.add``/``remove``) is stable
 between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
 is itself the version witness.
 
+``--skip-limit`` leaves the five-influence flex weights in place and still
+asserts the engine cap. That is the falsifier (``--same-axis`` in
+export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python vertex_weight_limit.py --                 # check only
+    blender --background --python vertex_weight_limit.py -- --skip-limit    # must fail
     blender --background --python vertex_weight_limit.py -- --output a.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -545,7 +555,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
         ob_eval.to_mesh_clear()
 
 
-<span class="k">def</span> check(obj, arm, groups, pose_before):
+<span class="k">def</span> check(obj, arm, groups, pose_before, skip_limit=<span class="k">False</span>):
     me = obj.data
 
     <span class="c"># pre-limit witness: the flex cuffs really carry five influences</span>
@@ -557,16 +567,17 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
 
     <span class="c"># the limit, through the data API: keep top-4, drop the rest, renormalize</span>
     changed = <span class="n">0</span>
-    <span class="k">for</span> v <span class="k">in</span> me.vertices:
-        gs = sorted(v.groups, key=<span class="k">lambda</span> g: -g.weight)
-        <span class="k">if</span> len(gs) &gt; MAX_INFLUENCES:
-            changed += <span class="n">1</span>
-        <span class="k">for</span> g <span class="k">in</span> gs[MAX_INFLUENCES:]:
-            groups[BONES[g.group]].remove([v.index])
-        kept = [g <span class="k">for</span> g <span class="k">in</span> v.groups]
-        total = sum(g.weight <span class="k">for</span> g <span class="k">in</span> kept)
-        <span class="k">for</span> g <span class="k">in</span> kept:
-            groups[BONES[g.group]].add([v.index], g.weight / total, <span class="s">&#x27;REPLACE&#x27;</span>)
+    <span class="k">if</span> <span class="k">not</span> skip_limit:
+        <span class="k">for</span> v <span class="k">in</span> me.vertices:
+            gs = sorted(v.groups, key=<span class="k">lambda</span> g: -g.weight)
+            <span class="k">if</span> len(gs) &gt; MAX_INFLUENCES:
+                changed += <span class="n">1</span>
+            <span class="k">for</span> g <span class="k">in</span> gs[MAX_INFLUENCES:]:
+                groups[BONES[g.group]].remove([v.index])
+            kept = [g <span class="k">for</span> g <span class="k">in</span> v.groups]
+            total = sum(g.weight <span class="k">for</span> g <span class="k">in</span> kept)
+            <span class="k">for</span> g <span class="k">in</span> kept:
+                groups[BONES[g.group]].add([v.index], g.weight / total, <span class="s">&#x27;REPLACE&#x27;</span>)
 
     <span class="c"># contract 1: no vertex exceeds the engine limit</span>
     post_max = max(len(v.groups) <span class="k">for</span> v <span class="k">in</span> me.vertices)
@@ -764,6 +775,8 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--skip-limit&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;skip the 4-influence prune (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
@@ -774,7 +787,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     arm = build_rig(obj)
     bpy.context.view_layer.update()
     pose_before = eval_positions(obj)
-    code = check(obj, arm, groups, pose_before)
+    code = check(obj, arm, groups, pose_before, skip_limit=args.skip_limit)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

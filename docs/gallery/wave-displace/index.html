@@ -267,10 +267,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python wave_displace.py --
 
+# Falsifier: skip the foreach_set displacement. Must exit non-zero (z-span).
+blender --background --python wave_displace.py -- --flat
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python wave_displace.py -- --output wave.png
 blender --background --python wave_displace.py -- --output wave.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (span wrong, or any vertex off the closed form). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 4 | Z-span not in the closed-form band (<code>--flat</code> lands here) | | 5 | A vertex is off the closed-form wave | | 6 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--flat</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -292,6 +298,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python wave_displace.py --                 # check only
+    blender --background --python wave_displace.py -- --flat          # must fail
     blender --background --python wave_displace.py -- --output w.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -413,10 +420,12 @@ FREQ = <span class="n">1.6</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--flat&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;skip the foreach_set displacement (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     obj = build_grid()
-    n = displace(obj.data)
+    n = len(obj.data.vertices) <span class="k">if</span> args.flat <span class="k">else</span> displace(obj.data)
     code = check(obj, n)
     <span class="k">if</span> code:
         <span class="k">return</span> code

@@ -265,10 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_instance_grid.py --
 
+# Falsifier: 1×1 grid. Must exit non-zero (corner instance missing).
+blender --background --python gn_instance_grid.py -- --one-cell
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gn_instance_grid.py -- --output grid.png
 blender --background --python gn_instance_grid.py -- --output grid.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong carrier, topology mismatch, missing material, or misplaced corner). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Carrier vertex count ≠ 1 | | 4 | Corner instance vert count ≠ 8 (<code>--one-cell</code> lands here) | | 5 | Evaluated topology ≠ 72 verts / 54 faces | | 6 | Set Material did not carry Lime | | 7 | Corner instance center off the closed-form grid point | | 8 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--one-cell</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -286,10 +292,15 @@ verts = grid_points × cube_verts — proving instances were realized, not
 left as empty instance geometry, and that a corner instance sits at its
 closed-form grid coordinate.
 
+``--one-cell`` builds a 1x1 grid and still asserts 3x3 realized topology,
+so the corner instance is missing. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gn_instance_grid.py --                 # check only
+    blender --background --python gn_instance_grid.py -- --one-cell      # must fail
     blender --background --python gn_instance_grid.py -- --output g.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -309,7 +320,7 @@ GRID_HALF = GRID_SIZE / <span class="n">2</span>
 CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
 
 
-<span class="k">def</span> build_instance_grid_tree(material=<span class="k">None</span>):
+<span class="k">def</span> build_instance_grid_tree(material=<span class="k">None</span>, grid_x=GRID_X, grid_y=GRID_Y):
     tree = bpy.data.node_groups.new(<span class="s">&quot;InstanceGrid&quot;</span>, <span class="s">&#x27;GeometryNodeTree&#x27;</span>)
     <span class="c"># generative: no Group Input — the tree owns the geometry</span>
     tree.interface.new_socket(
@@ -320,8 +331,8 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     grid = tree.nodes.new(<span class="s">&#x27;GeometryNodeMeshGrid&#x27;</span>)
     grid.inputs[<span class="s">&quot;Size X&quot;</span>].default_value = GRID_SIZE
     grid.inputs[<span class="s">&quot;Size Y&quot;</span>].default_value = GRID_SIZE
-    grid.inputs[<span class="s">&quot;Vertices X&quot;</span>].default_value = GRID_X
-    grid.inputs[<span class="s">&quot;Vertices Y&quot;</span>].default_value = GRID_Y
+    grid.inputs[<span class="s">&quot;Vertices X&quot;</span>].default_value = grid_x
+    grid.inputs[<span class="s">&quot;Vertices Y&quot;</span>].default_value = grid_y
 
     cube = tree.nodes.new(<span class="s">&#x27;GeometryNodeMeshCube&#x27;</span>)
     cube.inputs[<span class="s">&quot;Size&quot;</span>].default_value = (CUBE_SIZE, CUBE_SIZE, CUBE_SIZE)
@@ -353,7 +364,7 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     <span class="k">return</span> tree
 
 
-<span class="k">def</span> build():
+<span class="k">def</span> build(one_cell=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     <span class="c"># carrier mesh is unused by the generative tree; one vertex is enough</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Carrier&quot;</span>)
@@ -367,7 +378,8 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.22</span>, <span class="n">0.95</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)  <span class="c"># lime</span>
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
 
-    tree = build_instance_grid_tree(material=mat)
+    gx = gy = <span class="n">1</span> <span class="k">if</span> one_cell <span class="k">else</span> GRID_X
+    tree = build_instance_grid_tree(material=mat, grid_x=gx, grid_y=gy)
     mod = obj.modifiers.new(<span class="s">&quot;instance_grid&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>)
     mod.node_group = tree
     <span class="k">return</span> obj, mat
@@ -524,9 +536,11 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--one-cell&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;instance a 1x1 grid (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj, _mat = build()
+    obj, _mat = build(one_cell=args.one_cell)
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

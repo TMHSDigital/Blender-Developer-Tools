@@ -266,13 +266,20 @@
 <pre><code># Cheap correctness check (materials + engine-id witness, no render):
 blender --background --python swatch_grid.py --
 
+# Falsifier: same RGB on every swatch. Must exit non-zero.
+blender --background --python swatch_grid.py -- --same-base
+
 # Render and pixel-verify with the build&#x27;s EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
 
 # GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still
 # asserted; only the final pixels use Cycles.
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
-<p>The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no network). It <strong>exits non-zero</strong> on any failure, including a render that comes out uniformly black or without the expected six distinct swatch regions — the same honest check the CI smoke gate runs on Blender 5.2 LTS and 4.5 LTS.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Distinct swatch colors ≠ 6 (<code>--same-base</code> lands here); also render not six distinct regions | | 4 | <code>--output</code> produced no file | | 5 | Wrong-era EEVEE engine id was accepted | | 10 | Gallery framing violation |</p>
+<p><code>--no-verify</code> was a skip-flag and has been removed. Pixel verification always runs when <code>--output</code> is passed.</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-base</code>.</p>
 <h2>Verified</h2>
 <p>Runs headless on <strong>Blender 4.5.10 LTS</strong> and <strong>5.1.1</strong>; exercised on both by the <code>blender-smoke</code> workflow on every PR and weekly schedule. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
     </section>
@@ -292,9 +299,12 @@ the version-branch helper resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_E
 on 4.2-4.5, and the chosen id is asserted against the build before rendering.
 
 By default it runs only the correctness check (no render) — the CI smoke check.
-Pass --output to also render and pixel-verify a still:
+Pass --output to also render and pixel-verify a still. ``--same-base`` writes
+the same RGB to every swatch and still asserts six distinct colors, so the
+count fails. That is the falsifier (``--same-axis`` in export-preset-axis).
 
     blender --background --python swatch_grid.py --                       # check only
+    blender --background --python swatch_grid.py -- --same-base            # must fail
     blender --background --python swatch_grid.py -- --output swatch.png
     blender --background --python swatch_grid.py -- --output s.png --engine cycles --samples 8 --width 640
 
@@ -467,6 +477,39 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     bpy.context.scene.world = world
 
 
+<span class="k">def</span> swatch_rgb(mat):
+    <span class="k">for</span> node <span class="k">in</span> mat.node_tree.nodes:
+        <span class="k">if</span> node.type == <span class="s">&quot;BSDF_PRINCIPLED&quot;</span>:
+            c = node.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value
+            <span class="k">return</span> (round(c[<span class="n">0</span>], <span class="n">4</span>), round(c[<span class="n">1</span>], <span class="n">4</span>), round(c[<span class="n">2</span>], <span class="n">4</span>))
+        <span class="k">if</span> node.type == <span class="s">&quot;EMISSION&quot;</span>:
+            c = node.inputs[<span class="s">&quot;Color&quot;</span>].default_value
+            <span class="k">return</span> (round(c[<span class="n">0</span>], <span class="n">4</span>), round(c[<span class="n">1</span>], <span class="n">4</span>), round(c[<span class="n">2</span>], <span class="n">4</span>))
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> flatten_swatch_colors(mats):
+    gray = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class="n">0.5</span>, <span class="n">1.0</span>)
+    <span class="k">for</span> mat <span class="k">in</span> mats:
+        <span class="k">for</span> node <span class="k">in</span> mat.node_tree.nodes:
+            <span class="k">if</span> node.type == <span class="s">&quot;BSDF_PRINCIPLED&quot;</span>:
+                node.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = gray
+            <span class="k">elif</span> node.type == <span class="s">&quot;EMISSION&quot;</span>:
+                node.inputs[<span class="s">&quot;Color&quot;</span>].default_value = gray
+
+
+<span class="k">def</span> check_distinct_swatches(mats):
+    colors = [swatch_rgb(m) <span class="k">for</span> m <span class="k">in</span> mats]
+    <span class="k">if</span> len(set(colors)) != MATERIAL_COUNT:
+        print(
+            <span class="s">f&quot;</span><span class="s">ERROR: distinct swatch colors </span>{len(set(colors))}<span class="s"> != </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{MATERIAL_COUNT}<span class="s"> (got </span>{colors}<span class="s">)</span><span class="s">&quot;</span>,
+            file=sys.stderr,
+        )
+        <span class="k">return</span> <span class="n">3</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
 <span class="k">def</span> verify_png(path):
     <span class="s">&quot;&quot;&quot;Honest capture: not uniformly black AND distinct swatch regions == MATERIAL_COUNT.&quot;&quot;&quot;</span>
     img = bpy.data.images.load(path)
@@ -494,12 +537,18 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
                    help=<span class="s">&quot;auto/eevee use the version-correct EEVEE id; cycles for GPU-less hosts&quot;</span>)
     p.add_argument(<span class="s">&quot;--samples&quot;</span>, type=int, default=<span class="n">32</span>)
     p.add_argument(<span class="s">&quot;--width&quot;</span>, type=int, default=<span class="n">1280</span>)
-    p.add_argument(<span class="s">&quot;--no-verify&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--same-base&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;write the same RGB to every swatch (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     <span class="c"># Empty the factory file FIRST so the materials we create below survive.</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     mats, specular_socket = build_materials()
+    <span class="k">if</span> args.same_base:
+        flatten_swatch_colors(mats)
+    dcode = check_distinct_swatches(mats)
+    <span class="k">if</span> dcode:
+        <span class="k">return</span> dcode
     build_scene(mats)
 
     sc = bpy.context.scene
@@ -555,15 +604,14 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
         <span class="k">return</span> <span class="n">4</span>
     print(<span class="s">f&quot;</span><span class="s">rendered </span>{args.output}<span class="s"> with </span>{render_engine}<span class="s"> (</span>{os.path.getsize(args.output)}<span class="s"> bytes)</span><span class="s">&quot;</span>)
 
-    <span class="k">if</span> <span class="k">not</span> args.no_verify:
-        gmax, regions = verify_png(args.output)
-        non_black = gmax &gt; <span class="n">0.05</span>
-        regions_ok = regions == MATERIAL_COUNT
-        print(<span class="s">f&quot;</span><span class="s">verify: max_pixel=</span>{gmax:<span class="s">.3f</span>}<span class="s"> non_black=</span>{non_black}<span class="s"> </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">distinct_regions=</span>{regions}<span class="s"> materials=</span>{MATERIAL_COUNT}<span class="s"> ok=</span>{regions_ok}<span class="s">&quot;</span>)
-        <span class="k">if</span> <span class="k">not</span> (non_black <span class="k">and</span> regions_ok):
-            print(<span class="s">&quot;ERROR: render failed verification (black or wrong region count)&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">3</span>
+    gmax, regions = verify_png(args.output)
+    non_black = gmax &gt; <span class="n">0.05</span>
+    regions_ok = regions == MATERIAL_COUNT
+    print(<span class="s">f&quot;</span><span class="s">verify: max_pixel=</span>{gmax:<span class="s">.3f</span>}<span class="s"> non_black=</span>{non_black}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">distinct_regions=</span>{regions}<span class="s"> materials=</span>{MATERIAL_COUNT}<span class="s"> ok=</span>{regions_ok}<span class="s">&quot;</span>)
+    <span class="k">if</span> <span class="k">not</span> (non_black <span class="k">and</span> regions_ok):
+        print(<span class="s">&quot;ERROR: render failed verification (black or wrong region count)&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">3</span>
     print(<span class="s">&quot;swatch-grid OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 

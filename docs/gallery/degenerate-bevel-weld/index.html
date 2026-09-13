@@ -268,9 +268,13 @@
 <p><strong>Render as proof:</strong> dual tray from the same <code>DIMS</code>/offsets the check asserts. Left keeps a soft rounded bevel; right collapses to a knife edge, with an emissive seam marker at every zero-area face centroid — the markers are placed from live mesh data, so a change in the data moves them. The broken state is in-frame by design.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python degenerate_bevel_weld.py --
+blender --background --python degenerate_bevel_weld.py -- --both-safe
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png
 blender --background --python degenerate_bevel_weld.py -- --output bevel.png --engine cycles</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Safe bevel produced zero-area faces | | 4 | Degenerate bevel zero-area count ≠ closed form (<code>--both-safe</code> lands here) | | 5 | min_area collapse under 1e5× | | 6 | Coincident-position count off the closed form | | 7 | Safe GLB carries degenerate triangles | | 8 | Degenerate GLB triangle or position count drifted | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--both-safe</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -430,10 +434,10 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
     <span class="k">return</span> path
 
 
-<span class="k">def</span> check():
+<span class="k">def</span> check(both_safe=<span class="k">False</span>):
     tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;bevelweld_&quot;</span>)
     safe = beveled_box(DIMS, SAFE_OFFSET)
-    degen = beveled_box(DIMS, DEGEN_OFFSET)
+    degen = beveled_box(DIMS, SAFE_OFFSET <span class="k">if</span> both_safe <span class="k">else</span> DEGEN_OFFSET)
 
     <span class="c"># --- 1. threshold: zero-area faces flip on at offset == half min dim ---</span>
     safe_za = zero_area_count(safe)
@@ -671,11 +675,13 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--both-safe&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;bevel the degenerate box at the safe offset (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    code = check()
+    code = check(both_safe=args.both_safe)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 

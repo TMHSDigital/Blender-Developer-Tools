@@ -265,11 +265,16 @@
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python curve_bevel_arc.py --
 
+# Falsifier: uncapped tube. Must exit non-zero (use_fill_caps).
+blender --background --python curve_bevel_arc.py -- --no-caps
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python curve_bevel_arc.py -- --output arc.png
 blender --background --python curve_bevel_arc.py -- --output arc.png --engine cycles</code></pre>
-<p>It exits non-zero on failure (wrong point count, bevel, caps, topology, or span). The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS.</p>
-<p>The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is also the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Spline type is not BEZIER | | 4 | Bezier point count ≠ 8 | | 5 | <code>bevel_depth</code> ≠ 0.15 | | 6 | <code>use_fill_caps</code> is False (<code>--no-caps</code> lands here) | | 7 | Evaluated vert/face count off measured tessellation | | 8 | Tube does not rest on the floor | | 9 | Tube height ≠ 2 × bevel | | 10 | X span off closed form; also gallery framing violation | | 11 | <code>--output</code> produced no file |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-caps</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -288,10 +293,14 @@ evaluated vert/face counts as a MEASURED regression gate — curve tessellation
 has no simple closed form, so those two constants pin today&#x27;s behavior (see
 EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 
+``--no-caps`` leaves ``use_fill_caps`` False and still asserts the ends are
+capped. That is the falsifier (``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python curve_bevel_arc.py --                 # check only
+    blender --background --python curve_bevel_arc.py -- --no-caps       # must fail
     blender --background --python curve_bevel_arc.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -314,14 +323,15 @@ EXPECT_VERTS = <span class="n">1044</span>
 EXPECT_FACES = <span class="n">1028</span>
 
 
-<span class="k">def</span> build():
+<span class="k">def</span> build(no_caps=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     curve = bpy.data.curves.new(<span class="s">&quot;Arc&quot;</span>, <span class="s">&#x27;CURVE&#x27;</span>)
     curve.dimensions = <span class="s">&#x27;3D&#x27;</span>
     curve.bevel_depth = BEVEL
     curve.bevel_resolution = BEVEL_RES
     curve.resolution_u = RES_U
-    curve.use_fill_caps = <span class="k">True</span>  <span class="c"># solid ends — not a hollow pipe</span>
+    curve.use_fill_caps = <span class="k">not</span> no_caps  <span class="c"># solid ends — not a hollow pipe</span>
+
 
     spline = curve.splines.new(<span class="s">&#x27;BEZIER&#x27;</span>)
     spline.bezier_points.add(N_POINTS - <span class="n">1</span>)  <span class="c"># one point exists already</span>
@@ -510,9 +520,12 @@ EXPECT_FACES = <span class="n">1028</span>
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
                    help=<span class="s">&quot;render engine for --output (cycles for GPU-less hosts)&quot;</span>)
+    p.add_argument(<span class="s">&quot;--no-caps&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;falsifier: use_fill_caps=False, still assert caps&quot;</span>)
     args = p.parse_args(argv)
 
-    obj = build()
+    obj = build(no_caps=args.no_caps)
+
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code

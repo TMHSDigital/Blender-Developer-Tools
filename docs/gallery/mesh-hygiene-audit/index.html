@@ -270,9 +270,13 @@
 <p><strong>Not depicted in the still (check-proven only):</strong> ngon dissolve, zero-area collapse, and full-mesh winding invert — they do not read as geometry at thumbnail scale without faking annotation.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python mesh_hygiene_audit.py --
+blender --background --python mesh_hygiene_audit.py -- --inject-ngon
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --engine cycles</code></pre>
-<p>Exits non-zero on failure. The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS. The <code>--output</code> render path additionally measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Exit codes</h2>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Ngon present (<code>--inject-ngon</code> lands here) | | 4 | Loose vertices | | 5 | Non-manifold or boundary edges | | 6 | Zero-area faces | | 7 | Signed volume ≤ 0 | | 8 | Euler characteristic ≠ 2 | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--inject-ngon</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -297,6 +301,7 @@ By default it runs only the correctness check (no render). Pass --output
 to also render a still:
 
     blender --background --python mesh_hygiene_audit.py --
+    blender --background --python mesh_hygiene_audit.py -- --inject-ngon
     blender --background --python mesh_hygiene_audit.py -- --output h.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
@@ -859,10 +864,14 @@ VOL_EPS = <span class="n">1e-8</span>
         <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
         help=<span class="s">&quot;render engine for --output&quot;</span>,
     )
+    p.add_argument(<span class="s">&quot;--inject-ngon&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+                   help=<span class="s">&quot;dissolve one edge into an ngon (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     sc, ob = build_scene()
+    <span class="k">if</span> args.inject_ngon:
+        inject_defect(ob.data, <span class="s">&quot;ngon&quot;</span>)
     code = check(ob.data)
     <span class="k">if</span> code:
         <span class="k">return</span> code
