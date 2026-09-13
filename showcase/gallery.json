@@ -64,6 +64,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "street-lantern",
+      "dir": "showcase/street-lantern",
+      "teaches": "A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 3520 tris, three materials with 24 glass and 94 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.403×0.892×1.404 m, LOD ratios in band, convex collider 84 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/street-lantern-hero.webp",
+      "preview": "showcase/street-lantern/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "treasure-chest",
+      "dir": "showcase/treasure-chest",
+      "teaches": "A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 5724 tris, two materials with 180 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.776×0.549×0.631 m, LOD ratios in band, convex collider 138 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/treasure-chest-hero.webp",
+      "preview": "showcase/treasure-chest/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

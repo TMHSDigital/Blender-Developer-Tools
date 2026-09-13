@@ -78,5 +78,7 @@
   {"name": "stone-well", "script": "showcase/stone-well/stone_well.py"},
   {"name": "wooden-barrel", "script": "showcase/wooden-barrel/wooden_barrel.py"},
   {"name": "campfire", "script": "showcase/campfire/campfire.py"},
-  {"name": "market-stall", "script": "showcase/market-stall/market_stall.py"}
+  {"name": "market-stall", "script": "showcase/market-stall/market_stall.py"},
+  {"name": "street-lantern", "script": "showcase/street-lantern/street_lantern.py"},
+  {"name": "treasure-chest", "script": "showcase/treasure-chest/treasure_chest.py"}
 ]
