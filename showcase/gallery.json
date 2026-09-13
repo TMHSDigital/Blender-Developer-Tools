@@ -112,6 +112,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "watchtower",
+      "dir": "showcase/watchtower",
+      "teaches": "A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 4656 tris, two materials with 60 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.910×0.927×1.822 m, LOD ratios in band, convex collider 64 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/watchtower-hero.webp",
+      "preview": "showcase/watchtower/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
