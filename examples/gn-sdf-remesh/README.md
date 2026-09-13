@@ -22,12 +22,29 @@ output — this example does that and asserts the material survives onto the eva
 # Cheap correctness check only (no render) — the CI smoke check:
 blender --background --python gn_sdf_remesh.py --
 
+# Falsifier: no SDF modifier. Must exit non-zero (evaluated == base).
+blender --background --python gn_sdf_remesh.py -- --no-sdf
+
 # Also render the remeshed result (EEVEE on a GPU host; --engine cycles on GPU-less hosts):
 blender --background --python gn_sdf_remesh.py -- --output remesh.png
 blender --background --python gn_sdf_remesh.py -- --output remesh.png --engine cycles
 ```
 
-By default it runs only the **frame-independent correctness check**: the depsgraph-evaluated
-vertex count must be > 0 AND differ from the base mesh (the remesh produced geometry). It
-exits non-zero on failure — the same check the `blender-smoke` workflow runs on Blender 5.2 LTS and
-4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | SDF remesh produced no/unchanged geometry (`--no-sdf` lands here) |
+| 4 | `--output` produced no file |
+| 5 | Wrong-era EEVEE engine id was accepted |
+| 6 | Input material dropped by remesh |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--no-sdf`.

@@ -11,6 +11,7 @@ produced geometry. Exits non-zero on failure. This is the check the CI smoke gat
 both builds.
 
     blender --background --python gn_sdf_remesh.py --                  # correctness check only
+    blender --background --python gn_sdf_remesh.py -- --no-sdf         # must fail
     blender --background --python gn_sdf_remesh.py -- --output r.png   # also render the result
     blender --background --python gn_sdf_remesh.py -- --output r.png --engine cycles  # GPU-less
 """
@@ -108,6 +109,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None, help="optional: render the remeshed result to this PNG")
     p.add_argument("--engine", choices=["auto", "cycles"], default="auto")
+    p.add_argument("--no-sdf", action="store_true",
+                   help="skip attaching the SDF remesh modifier (must fail)")
     args = p.parse_args(argv)
 
     # EEVEE-id inversion witnessed for real: the OTHER era's id must be
@@ -125,7 +128,8 @@ def main():
     base = len(obj.data.vertices)
     src_mat = obj.data.materials[0] if obj.data.materials else None
     tree, link_valid = build_remesh_via_sdf(material=src_mat)
-    obj.modifiers.new("sdf", 'NODES').node_group = tree
+    if not args.no_sdf:
+        obj.modifiers.new("sdf", 'NODES').node_group = tree
     dg = bpy.context.evaluated_depsgraph_get(); ev = obj.evaluated_get(dg)
     m = ev.to_mesh(); evc = len(m.vertices)
     mat_names = [mm.name for mm in m.materials if mm is not None]

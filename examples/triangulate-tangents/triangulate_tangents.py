@@ -31,6 +31,7 @@ By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python triangulate_tangents.py --                 # check only
+    blender --background --python triangulate_tangents.py -- --zero-uv       # must fail
     blender --background --python triangulate_tangents.py -- --output s.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -428,10 +429,16 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--zero-uv", action="store_true",
+                   help="write every UV to (0, 0) (must fail)")
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     obj, n_dome = build_buckler()
+    if args.zero_uv:
+        uv = obj.data.uv_layers["UVMap"]
+        for loop in uv.data:
+            loop.uv = (0.0, 0.0)
     code = check(obj, n_dome)
     if code:
         return code

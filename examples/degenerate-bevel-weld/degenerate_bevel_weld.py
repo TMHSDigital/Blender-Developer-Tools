@@ -150,10 +150,10 @@ def export_glb(ob, path):
     return path
 
 
-def check():
+def check(both_safe=False):
     tmp = tempfile.mkdtemp(prefix="bevelweld_")
     safe = beveled_box(DIMS, SAFE_OFFSET)
-    degen = beveled_box(DIMS, DEGEN_OFFSET)
+    degen = beveled_box(DIMS, SAFE_OFFSET if both_safe else DEGEN_OFFSET)
 
     # --- 1. threshold: zero-area faces flip on at offset == half min dim ---
     safe_za = zero_area_count(safe)
@@ -391,11 +391,13 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--both-safe", action="store_true",
+                   help="bevel the degenerate box at the safe offset (must fail)")
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    code = check()
+    code = check(both_safe=args.both_safe)
     if code:
         return code
 

@@ -8,14 +8,14 @@ flat color.
 
 The check proves the silent no-op, then the pre-create + `calc_uvs=True`
 repair path against a closed-form UV grid, and an explicit loop-assignment
-fallback that does not depend on `calc_uvs` at all. Pass --output to also
-render a still that stages the broken (flat) panel beside the repaired
-(checker) panel — and then *witnesses the render itself*: the saved PNG is
-read back and probed at each panel's projected center, asserting the broken
-panel is one flat teal (texel (0,0)) while the repaired panel carries both
-checker colors. If the UV contract failed, the pixels would say so:
+fallback that does not depend on `calc_uvs` at all.
+
+``--precreate-on-hazard`` creates the UV layer on the silent-no-op probe
+and still asserts zero layers, so the hazard check fails. That is the
+falsifier (``--same-axis`` in export-preset-axis).
 
     blender --background --python uv_layer_grid.py --
+    blender --background --python uv_layer_grid.py -- --precreate-on-hazard
     blender --background --python uv_layer_grid.py -- --output uv.png
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -46,13 +46,15 @@ def max_uv_err(bm, uv_layer):
     return err
 
 
-def check():
+def check(precreate_on_hazard=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
     # --- 1. The hazard: calc_uvs=True is a silent no-op without a UV layer ---
     me_bad = bpy.data.meshes.new("NoPreUV")
     bm = bmesh.new()
     try:
+        if precreate_on_hazard:
+            bm.loops.layers.uv.new("UVMap")
         bmesh.ops.create_grid(
             bm, x_segments=SEG, y_segments=SEG, size=SIZE, calc_uvs=True,
         )
@@ -506,9 +508,11 @@ def main():
         "--engine", default="eevee", choices=("eevee", "cycles"),
         help="render engine for --output (cycles for GPU-less hosts)",
     )
+    p.add_argument("--precreate-on-hazard", action="store_true",
+                   help="pre-create a UV layer on the silent-no-op probe (must fail)")
     args = p.parse_args(argv)
 
-    code = check()
+    code = check(precreate_on_hazard=args.precreate_on_hazard)
     if code != 0:
         return code
     if args.output:

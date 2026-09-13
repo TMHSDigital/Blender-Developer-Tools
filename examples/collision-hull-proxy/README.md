@@ -61,12 +61,32 @@ through the shell in frame.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python collision_hull_proxy.py --
 
+# Falsifier: shrink hull vertices. Must exit non-zero (containment).
+blender --background --python collision_hull_proxy.py -- --shrink-hull
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python collision_hull_proxy.py -- --output hydrant.png
 blender --background --python collision_hull_proxy.py -- --output hydrant.png --engine cycles
 ```
 
-It exits non-zero on failure (render geometry escaping a hull, inverted
-winding, a non-watertight or non-convex piece, Euler drift, or a piece over
-the 255-face budget). The `blender-smoke` workflow runs the check on
-Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Render vertex escapes its hull (`--shrink-hull` lands here) |
+| 4 | Hull edge does not border exactly two faces |
+| 5 | Signed volume ≤ 0 (inverted winding) |
+| 6 | Hull vertex off its own face plane |
+| 7 | Euler characteristic ≠ 2 |
+| 8 | Piece over the 255-face collision budget |
+| 9 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--shrink-hull`.

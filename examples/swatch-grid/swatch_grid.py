@@ -8,9 +8,12 @@ the version-branch helper resolves `BLENDER_EEVEE` on Blender 5.x and `BLENDER_E
 on 4.2-4.5, and the chosen id is asserted against the build before rendering.
 
 By default it runs only the correctness check (no render) — the CI smoke check.
-Pass --output to also render and pixel-verify a still:
+Pass --output to also render and pixel-verify a still. ``--same-base`` writes
+the same RGB to every swatch and still asserts six distinct colors, so the
+count fails. That is the falsifier (``--same-axis`` in export-preset-axis).
 
     blender --background --python swatch_grid.py --                       # check only
+    blender --background --python swatch_grid.py -- --same-base            # must fail
     blender --background --python swatch_grid.py -- --output swatch.png
     blender --background --python swatch_grid.py -- --output s.png --engine cycles --samples 8 --width 640
 
@@ -183,6 +186,39 @@ def build_scene(mats):
     bpy.context.scene.world = world
 
 
+def swatch_rgb(mat):
+    for node in mat.node_tree.nodes:
+        if node.type == "BSDF_PRINCIPLED":
+            c = node.inputs["Base Color"].default_value
+            return (round(c[0], 4), round(c[1], 4), round(c[2], 4))
+        if node.type == "EMISSION":
+            c = node.inputs["Color"].default_value
+            return (round(c[0], 4), round(c[1], 4), round(c[2], 4))
+    return None
+
+
+def flatten_swatch_colors(mats):
+    gray = (0.5, 0.5, 0.5, 1.0)
+    for mat in mats:
+        for node in mat.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                node.inputs["Base Color"].default_value = gray
+            elif node.type == "EMISSION":
+                node.inputs["Color"].default_value = gray
+
+
+def check_distinct_swatches(mats):
+    colors = [swatch_rgb(m) for m in mats]
+    if len(set(colors)) != MATERIAL_COUNT:
+        print(
+            f"ERROR: distinct swatch colors {len(set(colors))} != "
+            f"{MATERIAL_COUNT} (got {colors})",
+            file=sys.stderr,
+        )
+        return 3
+    return 0
+
+
 def verify_png(path):
     """Honest capture: not uniformly black AND distinct swatch regions == MATERIAL_COUNT."""
     img = bpy.data.images.load(path)
@@ -210,12 +246,18 @@ def main():
                    help="auto/eevee use the version-correct EEVEE id; cycles for GPU-less hosts")
     p.add_argument("--samples", type=int, default=32)
     p.add_argument("--width", type=int, default=1280)
-    p.add_argument("--no-verify", action="store_true")
+    p.add_argument("--same-base", action="store_true",
+                   help="write the same RGB to every swatch (must fail)")
     args = p.parse_args(argv)
 
     # Empty the factory file FIRST so the materials we create below survive.
     bpy.ops.wm.read_factory_settings(use_empty=True)
     mats, specular_socket = build_materials()
+    if args.same_base:
+        flatten_swatch_colors(mats)
+    dcode = check_distinct_swatches(mats)
+    if dcode:
+        return dcode
     build_scene(mats)
 
     sc = bpy.context.scene
@@ -271,15 +313,14 @@ def main():
         return 4
     print(f"rendered {args.output} with {render_engine} ({os.path.getsize(args.output)} bytes)")
 
-    if not args.no_verify:
-        gmax, regions = verify_png(args.output)
-        non_black = gmax > 0.05
-        regions_ok = regions == MATERIAL_COUNT
-        print(f"verify: max_pixel={gmax:.3f} non_black={non_black} "
-              f"distinct_regions={regions} materials={MATERIAL_COUNT} ok={regions_ok}")
-        if not (non_black and regions_ok):
-            print("ERROR: render failed verification (black or wrong region count)", file=sys.stderr)
-            return 3
+    gmax, regions = verify_png(args.output)
+    non_black = gmax > 0.05
+    regions_ok = regions == MATERIAL_COUNT
+    print(f"verify: max_pixel={gmax:.3f} non_black={non_black} "
+          f"distinct_regions={regions} materials={MATERIAL_COUNT} ok={regions_ok}")
+    if not (non_black and regions_ok):
+        print("ERROR: render failed verification (black or wrong region count)", file=sys.stderr)
+        return 3
     print("swatch-grid OK")
     return 0
 

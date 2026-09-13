@@ -23,6 +23,9 @@ that mapping fails the example, not just the docs.
 # Cheap correctness check (materials + engine-id witness, no render):
 blender --background --python swatch_grid.py --
 
+# Falsifier: same RGB on every swatch. Must exit non-zero.
+blender --background --python swatch_grid.py -- --same-base
+
 # Render and pixel-verify with the build's EEVEE engine (needs a GPU/display):
 blender --background --python swatch_grid.py -- --output swatch.png
 
@@ -31,10 +34,27 @@ blender --background --python swatch_grid.py -- --output swatch.png
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960
 ```
 
-The script is deterministic and dependency-light (fixed camera and layout, no HDRI, no
-network). It **exits non-zero** on any failure, including a render that comes out uniformly
-black or without the expected six distinct swatch regions — the same honest check the CI
-smoke gate runs on Blender 5.2 LTS and 4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it. `10` is the shared framing helper.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Distinct swatch colors ≠ 6 (`--same-base` lands here); also render not six distinct regions |
+| 4 | `--output` produced no file |
+| 5 | Wrong-era EEVEE engine id was accepted |
+| 10 | Gallery framing violation |
+
+`--no-verify` was a skip-flag and has been removed. Pixel verification always
+runs when `--output` is passed.
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--same-base`.
 
 ## Verified
 

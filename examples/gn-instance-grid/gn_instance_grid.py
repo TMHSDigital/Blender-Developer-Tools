@@ -8,10 +8,15 @@ verts = grid_points × cube_verts — proving instances were realized, not
 left as empty instance geometry, and that a corner instance sits at its
 closed-form grid coordinate.
 
+``--one-cell`` builds a 1x1 grid and still asserts 3x3 realized topology,
+so the corner instance is missing. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python gn_instance_grid.py --                 # check only
+    blender --background --python gn_instance_grid.py -- --one-cell      # must fail
     blender --background --python gn_instance_grid.py -- --output g.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -31,7 +36,7 @@ GRID_HALF = GRID_SIZE / 2
 CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / 2)
 
 
-def build_instance_grid_tree(material=None):
+def build_instance_grid_tree(material=None, grid_x=GRID_X, grid_y=GRID_Y):
     tree = bpy.data.node_groups.new("InstanceGrid", 'GeometryNodeTree')
     # generative: no Group Input — the tree owns the geometry
     tree.interface.new_socket(
@@ -42,8 +47,8 @@ def build_instance_grid_tree(material=None):
     grid = tree.nodes.new('GeometryNodeMeshGrid')
     grid.inputs["Size X"].default_value = GRID_SIZE
     grid.inputs["Size Y"].default_value = GRID_SIZE
-    grid.inputs["Vertices X"].default_value = GRID_X
-    grid.inputs["Vertices Y"].default_value = GRID_Y
+    grid.inputs["Vertices X"].default_value = grid_x
+    grid.inputs["Vertices Y"].default_value = grid_y
 
     cube = tree.nodes.new('GeometryNodeMeshCube')
     cube.inputs["Size"].default_value = (CUBE_SIZE, CUBE_SIZE, CUBE_SIZE)
@@ -75,7 +80,7 @@ def build_instance_grid_tree(material=None):
     return tree
 
 
-def build():
+def build(one_cell=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     # carrier mesh is unused by the generative tree; one vertex is enough
     me = bpy.data.meshes.new("Carrier")
@@ -89,7 +94,8 @@ def build():
     bsdf.inputs["Base Color"].default_value = (0.22, 0.95, 0.06, 1.0)  # lime
     bsdf.inputs["Roughness"].default_value = 0.22
 
-    tree = build_instance_grid_tree(material=mat)
+    gx = gy = 1 if one_cell else GRID_X
+    tree = build_instance_grid_tree(material=mat, grid_x=gx, grid_y=gy)
     mod = obj.modifiers.new("instance_grid", 'NODES')
     mod.node_group = tree
     return obj, mat
@@ -246,9 +252,11 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--one-cell", action="store_true",
+                   help="instance a 1x1 grid (must fail)")
     args = p.parse_args(argv)
 
-    obj, _mat = build()
+    obj, _mat = build(one_cell=args.one_cell)
     code = check(obj)
     if code:
         return code

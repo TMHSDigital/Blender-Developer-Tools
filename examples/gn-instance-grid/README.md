@@ -19,11 +19,31 @@ counts fail.
 # Cheap correctness check (no render) — the CI check:
 blender --background --python gn_instance_grid.py --
 
+# Falsifier: 1×1 grid. Must exit non-zero (corner instance missing).
+blender --background --python gn_instance_grid.py -- --one-cell
+
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python gn_instance_grid.py -- --output grid.png
 blender --background --python gn_instance_grid.py -- --output grid.png --engine cycles
 ```
 
-It exits non-zero on failure (wrong carrier, topology mismatch, missing material, or
-misplaced corner). The `blender-smoke` workflow runs the check on Blender 5.2 LTS and
-4.5 LTS.
+## Exit codes
+
+Per-script sequential checks. `9` is a valid check code; there is no rule
+against it.
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Uncaught exception (FATAL wrapper) |
+| 2 | argparse / usage |
+| 3 | Carrier vertex count ≠ 1 |
+| 4 | Corner instance vert count ≠ 8 (`--one-cell` lands here) |
+| 5 | Evaluated topology ≠ 72 verts / 54 faces |
+| 6 | Set Material did not carry Lime |
+| 7 | Corner instance center off the closed-form grid point |
+| 8 | `--output` produced no file |
+
+The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
+(5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
+Smoke does not pass `--output` or `--one-cell`.

@@ -24,10 +24,15 @@ containment holds with a measured margin of ~0 instead of by luck. Concave
 details (grooves) never touch the hull; proud details cost hull faces. That
 trade-off IS the collision-authoring lesson.
 
+``--shrink-hull`` scales each hull's vertices by 0.5 and still runs the
+containment plane test, so render verts escape. That is the falsifier
+(``--same-axis`` in export-preset-axis).
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
     blender --background --python collision_hull_proxy.py --                 # check only
+    blender --background --python collision_hull_proxy.py -- --shrink-hull   # must fail
     blender --background --python collision_hull_proxy.py -- --output h.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
@@ -485,12 +490,18 @@ def main():
     p.add_argument("--output", default=None, help="optional: render a still PNG here")
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"),
                    help="render engine for --output (cycles for GPU-less hosts)")
+    p.add_argument("--shrink-hull", action="store_true",
+                   help="scale hull vertices by 0.5 (must fail)")
     args = p.parse_args(argv)
 
     groups = build_hydrant()
     pieces = []
     for g in groups:
         hull = build_hull(f"{g['name']}Hull", collect_points(g["cage"]))
+        if args.shrink_hull:
+            for v in hull.data.vertices:
+                v.co *= 0.5
+            hull.data.update()
         pieces.append((g["name"], hull, collect_points(g["render"])))
     code = check(pieces)
     if code:
