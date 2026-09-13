@@ -112,7 +112,9 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Campfire showcase~~ **SHIPPED** as `showcase/campfire/` — two-course fire ring, log tripod; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Market stall showcase~~ **SHIPPED** as `showcase/market-stall/` — timber frame, slatted counter, striped awning; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Procedural terrain or landscape showcase using Geometry Nodes scatter
-- Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece
+- ~~Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece~~ **SHIPPED** as `showcase/street-lantern/` and `showcase/treasure-chest/` — hanging iron lantern with muntined amber cage; slatted chest with iron bands and an open lid; `--skip-decimate` exits 9 on the LOD1 ratio band
+- Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece
+- Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece
 - Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)
 
 - ~~Custom ID-property delete witness~~ **SHIPPED** as `examples/cross-version-property-delete/` — IDs built via `bpy.data.objects.new` (not `active_object`); `property_unset` is TypeError and leaves the key; `del` removes it on 4.5 LTS and 5.x
