@@ -91,5 +91,6 @@
   {"name": "water-trough", "script": "showcase/water-trough/water_trough.py"},
   {"name": "hitching-post", "script": "showcase/hitching-post/hitching_post.py"},
   {"name": "grindstone", "script": "showcase/grindstone/grindstone.py"},
-  {"name": "hand-pump", "script": "showcase/hand-pump/hand_pump.py"}
+  {"name": "hand-pump", "script": "showcase/hand-pump/hand_pump.py"},
+  {"name": "signpost", "script": "showcase/signpost/signpost.py"}
 ]
