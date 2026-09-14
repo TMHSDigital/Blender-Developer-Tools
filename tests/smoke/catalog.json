@@ -88,5 +88,7 @@
   {"name": "park-bench", "script": "showcase/park-bench/park_bench.py"},
   {"name": "wheelbarrow", "script": "showcase/wheelbarrow/wheelbarrow.py"},
   {"name": "anvil", "script": "showcase/anvil/anvil.py"},
-  {"name": "water-trough", "script": "showcase/water-trough/water_trough.py"}
+  {"name": "water-trough", "script": "showcase/water-trough/water_trough.py"},
+  {"name": "hitching-post", "script": "showcase/hitching-post/hitching_post.py"},
+  {"name": "grindstone", "script": "showcase/grindstone/grindstone.py"}
 ]

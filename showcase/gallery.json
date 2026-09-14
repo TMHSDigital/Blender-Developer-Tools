@@ -184,6 +184,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "hitching-post",
+      "dir": "showcase/hitching-post",
+      "teaches": "A procedural hitching post through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 848 tris, two materials with 262 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.460×0.194×1.260 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 144 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/hitching-post-hero.webp",
+      "preview": "showcase/hitching-post/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "grindstone",
+      "dir": "showcase/grindstone",
+      "teaches": "A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1604 tris, three materials with 80 metal and 26 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.630×0.615×0.575 m, LOD ratios in band, convex collider 130 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/grindstone-hero.webp",
+      "preview": "showcase/grindstone/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
