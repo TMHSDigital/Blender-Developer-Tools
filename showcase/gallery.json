@@ -208,6 +208,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "hand-pump",
+      "dir": "showcase/hand-pump",
+      "teaches": "A procedural village hand pump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 616 tris, two materials with 96 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.567×0.366×1.027 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 118 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/hand-pump-hero.webp",
+      "preview": "showcase/hand-pump/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
