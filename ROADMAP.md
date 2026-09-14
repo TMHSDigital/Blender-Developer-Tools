@@ -124,7 +124,9 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Cast-iron village hand pump as a game-prop showcase piece~~ **SHIPPED** as `showcase/hand-pump/` — wooden plinth, column, spout, handle, wooden grip; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Timber fingerboard signpost as a game-prop showcase piece~~ **SHIPPED** as `showcase/signpost/` — square post, pyramidal cap, two painted boards, iron shoe and straps; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Blacksmith bellows as a game-prop showcase piece~~ **SHIPPED** as `showcase/bellows/` — hinged timber paddles, leather bag, iron nozzle; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Chopping block with embedded axe as a game-prop showcase piece
+- ~~Chopping block with embedded axe as a game-prop showcase piece~~ **SHIPPED** as `showcase/chopping-block/` — hooped timber stump, kerf, embedded axe; `--skip-decimate` exits 9 on the LOD1 ratio band
+- Wooden bucket with iron bands and a rope bail as a game-prop showcase piece
+- Wall-mounted torch sconce as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
 - ~~Custom ID-property delete witness~~ **SHIPPED** as `examples/cross-version-property-delete/` — IDs built via `bpy.data.objects.new` (not `active_object`); `property_unset` is TypeError and leaves the key; `del` removes it on 4.5 LTS and 5.x
