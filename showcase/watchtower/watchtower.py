@@ -1,8 +1,8 @@
 """Game-ready timber watchtower — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural lookout (posts, braces,
-platform, ladder, pyramidal roof) after composing shipped pipeline
-pieces: bmesh construction, UVs, two materials, high-to-low normal
+platform, hatch ladder, coursed shake roof) after composing shipped pipeline
+pieces: bmesh construction, UVs, three materials, high-to-low normal
 bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
@@ -35,37 +35,46 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-HALF = 0.40
-POST = 0.080
-POST_H = 1.48
-PLAT_Z = 1.18
-RAIL_H = 0.36
-ROOF_H = 0.52
-BRACE_T = 0.038
-PLANK_T = 0.042
+HALF = 0.46
+POST = 0.090
+POST_H = 1.58
+PLAT_Z = 1.04
+RAIL_H = 0.40
+GIRT_Z = 0.52
+KICK_H = 0.18
+BRACE_T = 0.042
+PLANK_T = 0.038
 IRON_T = 0.014
-SHOE_H = 0.032
+SHOE_H = 0.034
+EAVE_HALF = 0.70
+ROOF_RISE = 0.40
+SHINGLE_T = 0.016
+N_SHINGLE = 5
+N_PLANK = 6
+HATCH_PLANKS = 1
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (0.910, 0.927, 1.822)
-BASE_TRIS_MIN = 4550
-BASE_TRIS_MAX = 4760
+OUTER_SIZE = (1.434, 1.434, 1.982)
+BASE_TRIS_MIN = 5110
+BASE_TRIS_MAX = 5330
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 2
+MATERIAL_COUNT = 3
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 96
+COLLIDER_TRIS_MAX = 80
 BAKE_RES = 256
-CAGE_EXTRUSION = 0.08
+CAGE_EXTRUSION = 0.10
 METAL_FACES_MIN = 24
+ROOF_FACES_MIN = 40
 
 WOOD_IDX = 0
-METAL_IDX = 1
+ROOF_IDX = 1
+METAL_IDX = 2
 
 
 def eevee_engine_id():
@@ -98,6 +107,24 @@ def deselect_all():
         if ob is None:
             continue
         ob.select_set(False)
+
+
+def add_oriented_box(bm, a, b, scale_xy, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    if length < 1e-8:
+        return []
+    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
+    eul = quat.to_euler("XYZ")
+    return add_box(
+        bm,
+        ((a + b) * 0.5),
+        (scale_xy[0], scale_xy[1], length),
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
 
 
 def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
@@ -178,6 +205,60 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
+def add_shingle_roof(bm, eave_z, peak_z):
+    """Well-style coursed shakes on a square pyramid, plus a cone underside."""
+    add_cone(
+        bm,
+        (0.0, 0.0, (eave_z + peak_z) / 2.0),
+        EAVE_HALF * math.sqrt(2.0),
+        0.03,
+        ROOF_RISE,
+        4,
+        ROOF_IDX,
+        euler=(0.0, 0.0, math.pi / 4.0),
+    )
+    nrm_local = Vector((0.0, ROOF_RISE, EAVE_HALF)).normalized()
+
+    def add_course(yaw, t0, t1):
+        rot = Euler((0.0, 0.0, yaw)).to_matrix()
+        nrm = rot @ nrm_local
+
+        def pt(t, s):
+            w = EAVE_HALF * t
+            y = t * EAVE_HALF
+            z = peak_z - t * ROOF_RISE
+            return rot @ Vector((s * w, y, z))
+
+        inner = SHINGLE_T * 0.12
+        outer = SHINGLE_T * 1.05
+        corners = (
+            pt(t0, -1.0),
+            pt(t0, 1.0),
+            pt(t1, 1.0),
+            pt(t1, -1.0),
+        )
+        vs = [bm.verts.new(c + nrm * inner) for c in corners]
+        vs.extend(bm.verts.new(c + nrm * outer) for c in corners)
+        idx = (
+            (0, 1, 2, 3),
+            (4, 7, 6, 5),
+            (0, 4, 5, 1),
+            (1, 5, 6, 2),
+            (2, 6, 7, 3),
+            (3, 7, 4, 0),
+        )
+        for a, b, c, d in idx:
+            face = bm.faces.new((vs[a], vs[b], vs[c], vs[d]))
+            face.material_index = ROOF_IDX
+
+    for side in range(4):
+        yaw = side * (math.pi / 2.0)
+        for row in range(N_SHINGLE):
+            t0 = (row + 0.16) / N_SHINGLE
+            t1 = min(1.0, (row + 1.08) / N_SHINGLE)
+            add_course(yaw, t0, t1)
+
+
 def build_tower_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
     try:
@@ -193,41 +274,77 @@ def build_tower_mesh(name, bevel_offset, bevel_segments):
                 add_box(bm, (px, py, POST_H / 2.0), (POST, POST, POST_H), WOOD_IDX)
             )
 
-        span = 2.0 * HALF + POST * 0.15
+        bay = 2.0 * HALF - POST
+        sill_h = 0.085
+        girt_h = 0.075
         for sign in (-1.0, 1.0):
-            wood.extend(
-                add_box(bm, (0.0, sign * HALF, 0.04), (span, POST * 0.92, 0.08), WOOD_IDX)
-            )
-            wood.extend(
-                add_box(bm, (sign * HALF, 0.0, 0.04), (POST * 0.92, span, 0.08), WOOD_IDX)
-            )
             wood.extend(
                 add_box(
                     bm,
-                    (0.0, sign * HALF, POST_H - 0.04),
-                    (span, POST * 0.85, 0.08),
+                    (0.0, sign * HALF, sill_h / 2.0),
+                    (bay, POST * 0.82, sill_h),
                     WOOD_IDX,
                 )
             )
             wood.extend(
                 add_box(
                     bm,
-                    (sign * HALF, 0.0, POST_H - 0.04),
-                    (POST * 0.85, span, 0.08),
+                    (sign * HALF, 0.0, sill_h / 2.0),
+                    (POST * 0.82, bay, sill_h),
+                    WOOD_IDX,
+                )
+            )
+            wood.extend(
+                add_box(
+                    bm,
+                    (0.0, sign * HALF, GIRT_Z),
+                    (bay, POST * 0.78, girt_h),
+                    WOOD_IDX,
+                )
+            )
+            wood.extend(
+                add_box(
+                    bm,
+                    (sign * HALF, 0.0, GIRT_Z),
+                    (POST * 0.78, bay, girt_h),
                     WOOD_IDX,
                 )
             )
 
-        rise = 0.72
-        run = 2.0 * HALF - POST
+        for ysign in (-1.0, 1.0):
+            if ysign < 0.0:
+                continue
+            wood.extend(
+                add_box(
+                    bm,
+                    (0.0, ysign * HALF, KICK_H / 2.0 + 0.01),
+                    (bay * 0.92, POST * 0.55, KICK_H),
+                    WOOD_IDX,
+                )
+            )
+        for xsign in (-1.0, 1.0):
+            wood.extend(
+                add_box(
+                    bm,
+                    (xsign * HALF, 0.0, KICK_H / 2.0 + 0.01),
+                    (POST * 0.55, bay * 0.92, KICK_H),
+                    WOOD_IDX,
+                )
+            )
+
+        rise = GIRT_Z - sill_h
+        run = bay
         blen = math.hypot(run, rise)
         bang = math.atan2(rise, run)
+        brace_z = (sill_h + GIRT_Z) / 2.0
         for ysign in (-1.0, 1.0):
+            if ysign < 0.0:
+                continue
             for bang_sign in (-1.0, 1.0):
                 wood.extend(
                     add_box(
                         bm,
-                        (0.0, ysign * (HALF + POST * 0.15), 0.52),
+                        (0.0, ysign * HALF, brace_z),
                         (blen, BRACE_T, BRACE_T),
                         WOOD_IDX,
                         euler=(0.0, bang_sign * bang, 0.0),
@@ -238,99 +355,86 @@ def build_tower_mesh(name, bevel_offset, bevel_segments):
                 wood.extend(
                     add_box(
                         bm,
-                        (xsign * (HALF + POST * 0.15), 0.0, 0.52),
+                        (xsign * HALF, 0.0, brace_z),
                         (BRACE_T, blen, BRACE_T),
                         WOOD_IDX,
                         euler=(bang_sign * bang, 0.0, 0.0),
                     )
                 )
 
-        n_plank = 5
-        plank_w = (2.0 * HALF - 0.04) / n_plank
-        y0 = -HALF + 0.02 + plank_w / 2.0
-        for i in range(n_plank):
+        plank_span_x = 2.0 * HALF + POST * 0.15
+        usable_y = 2.0 * HALF - 0.06
+        plank_w = usable_y / N_PLANK
+        y0 = -HALF + 0.03 + plank_w / 2.0
+        for i in range(HATCH_PLANKS, N_PLANK):
             y = y0 + i * plank_w
             wood.extend(
                 add_box(
                     bm,
                     (0.0, y, PLAT_Z + PLANK_T / 2.0),
-                    (2.0 * HALF + POST * 0.4, plank_w * 0.88, PLANK_T),
+                    (plank_span_x, plank_w * 0.86, PLANK_T),
+                    WOOD_IDX,
+                )
+            )
+        for xj in (-HALF * 0.42, HALF * 0.42):
+            wood.extend(
+                add_box(
+                    bm,
+                    (xj, 0.06, PLAT_Z - 0.022),
+                    (POST * 0.62, 2.0 * HALF * 0.88, 0.044),
                     WOOD_IDX,
                 )
             )
 
-        rail_z = PLAT_Z + PLANK_T + RAIL_H * 0.55
-        for px, py in ((-HALF, HALF), (HALF, HALF), (HALF, -HALF), (-HALF, -HALF)):
+        rail_z_lo = PLAT_Z + PLANK_T + 0.12
+        rail_z_hi = PLAT_Z + PLANK_T + RAIL_H - 0.04
+        rail_t = POST * 0.42
+        wood.extend(
+            add_box(bm, (0.0, HALF, rail_z_lo), (bay, rail_t, 0.048), WOOD_IDX)
+        )
+        wood.extend(
+            add_box(bm, (0.0, HALF, rail_z_hi), (bay, rail_t, 0.048), WOOD_IDX)
+        )
+        for xsign in (-1.0, 1.0):
             wood.extend(
                 add_box(
                     bm,
-                    (px, py, PLAT_Z + PLANK_T + RAIL_H / 2.0),
-                    (POST * 0.62, POST * 0.62, RAIL_H),
+                    (xsign * HALF, 0.08, rail_z_lo),
+                    (rail_t, bay * 0.78, 0.048),
                     WOOD_IDX,
                 )
             )
-        wood.extend(
-            add_box(
-                bm,
-                (0.0, HALF, rail_z),
-                (2.0 * HALF, POST * 0.42, 0.045),
-                WOOD_IDX,
+            wood.extend(
+                add_box(
+                    bm,
+                    (xsign * HALF, 0.08, rail_z_hi),
+                    (rail_t, bay * 0.78, 0.048),
+                    WOOD_IDX,
+                )
             )
-        )
-        wood.extend(
-            add_box(
-                bm,
-                (HALF, 0.12, rail_z),
-                (POST * 0.42, 2.0 * HALF * 0.72, 0.045),
-                WOOD_IDX,
-            )
-        )
-        wood.extend(
-            add_box(
-                bm,
-                (-HALF, 0.12, rail_z),
-                (POST * 0.42, 2.0 * HALF * 0.72, 0.045),
-                WOOD_IDX,
-            )
-        )
 
-        stile_y = -HALF - POST * 0.55
-        for sx in (-0.13, 0.13):
+        lean = 0.20
+        bot_y = -HALF - lean
+        top_y = -HALF + 0.02
+        top_z = PLAT_Z + 0.18
+        for sx in (-0.12, 0.12):
             wood.extend(
-                add_box(
+                add_oriented_box(
                     bm,
-                    (sx, stile_y, PLAT_Z / 2.0),
-                    (0.038, 0.042, PLAT_Z + 0.06),
+                    (sx, bot_y, 0.03),
+                    (sx, top_y, top_z),
+                    (0.040, 0.044),
                     WOOD_IDX,
                 )
             )
-        n_rung = 6
+        n_rung = 8
         for i in range(n_rung):
-            z = 0.16 + i * (PLAT_Z - 0.22) / (n_rung - 1)
+            t = (i + 1) / (n_rung + 1)
+            z = 0.08 + t * (PLAT_Z - 0.14)
+            y = bot_y + (top_y - bot_y) * ((z - 0.03) / (top_z - 0.03))
             wood.extend(
-                add_box(bm, (0.0, stile_y, z), (0.28, 0.032, 0.032), WOOD_IDX)
+                add_box(bm, (0.0, y, z), (0.26, 0.034, 0.032), WOOD_IDX)
             )
-
-        wood.extend(
-            add_box(
-                bm,
-                (0.0, 0.0, PLAT_Z + PLANK_T + 0.03),
-                (2.0 * HALF + POST * 1.15, 2.0 * HALF + POST * 1.15, 0.05),
-                WOOD_IDX,
-            )
-        )
-        wood.extend(
-            add_cone(
-                bm,
-                (0.0, 0.0, PLAT_Z + PLANK_T + 0.05 + ROOF_H / 2.0),
-                HALF + POST * 0.95,
-                0.018,
-                ROOF_H,
-                4,
-                WOOD_IDX,
-                euler=(0.0, 0.0, math.pi / 4.0),
-            )
-        )
 
         if bevel_offset > 0.0:
             edges = list({e for v in wood for e in v.link_edges})
@@ -346,6 +450,30 @@ def build_tower_mesh(name, bevel_offset, bevel_segments):
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
+        eave_z = POST_H
+        peak_z = POST_H + ROOF_RISE
+        add_shingle_roof(bm, eave_z, peak_z)
+        fascia_h = 0.048
+        fascia_t = 0.034
+        for side in range(4):
+            yaw = side * (math.pi / 2.0)
+            fx = EAVE_HALF * math.sin(yaw)
+            fy = EAVE_HALF * math.cos(yaw)
+            if side % 2 == 0:
+                add_box(
+                    bm,
+                    (0.0, fy, eave_z - fascia_h / 2.0),
+                    (2.0 * EAVE_HALF + fascia_t, fascia_t, fascia_h),
+                    WOOD_IDX,
+                )
+            else:
+                add_box(
+                    bm,
+                    (fx, 0.0, eave_z - fascia_h / 2.0),
+                    (fascia_t, 2.0 * EAVE_HALF + fascia_t, fascia_h),
+                    WOOD_IDX,
+                )
+
         for px, py in posts:
             add_box(
                 bm,
@@ -355,15 +483,21 @@ def build_tower_mesh(name, bevel_offset, bevel_segments):
             )
             add_box(
                 bm,
-                (px, py, PLAT_Z + PLANK_T + IRON_T / 2.0),
-                (POST * 1.15, POST * 1.15, IRON_T),
+                (px, py, GIRT_Z),
+                (POST * 1.12, POST * 1.12, IRON_T),
                 METAL_IDX,
             )
-        for sx in (-0.13, 0.13):
             add_box(
                 bm,
-                (sx, stile_y, PLAT_Z + 0.02),
-                (0.05, 0.055, IRON_T),
+                (px, py, PLAT_Z + PLANK_T + IRON_T / 2.0),
+                (POST * 1.18, POST * 1.18, IRON_T),
+                METAL_IDX,
+            )
+        for sx in (-0.12, 0.12):
+            add_box(
+                bm,
+                (sx, -HALF - 0.02, PLAT_Z + 0.02),
+                (0.055, 0.06, IRON_T),
                 METAL_IDX,
             )
 
@@ -406,9 +540,9 @@ def principled(name, color, metallic, roughness):
     return mat
 
 
-def assign_slots(obj, wood, metal):
+def assign_slots(obj, wood, roof, metal):
     mats = obj.data.materials
-    wanted = (wood, metal)
+    wanted = (wood, roof, metal)
     for i, mat in enumerate(wanted):
         if i < len(mats):
             mats[i] = mat
@@ -539,10 +673,11 @@ def check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_tower_mesh("TowerLow", bevel_offset=0.006, bevel_segments=2)
     high = build_tower_mesh("TowerHigh", bevel_offset=0.006, bevel_segments=4)
-    wood = principled("TowerWood", (0.44, 0.23, 0.08, 1.0), 0.0, 0.56)
+    wood = principled("TowerWood", (0.42, 0.22, 0.08, 1.0), 0.0, 0.56)
+    roof = principled("TowerShake", (0.30, 0.28, 0.26, 1.0), 0.0, 0.74)
     metal = principled("TowerIron", (0.12, 0.125, 0.14, 1.0), 1.0, 0.30)
-    assign_slots(low, wood, metal)
-    assign_slots(high, wood, metal)
+    assign_slots(low, wood, roof, metal)
+    assign_slots(high, wood, roof, metal)
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("tower mesh did not build", 3), None, None, None, None, None
@@ -621,6 +756,11 @@ def check(skip_decimate):
             f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
             5,
         ), None, None, None, None, None
+    if idx_counts.get(ROOF_IDX, 0) < ROOF_FACES_MIN:
+        return fail(
+            f"roof faces {idx_counts.get(ROOF_IDX, 0)} < {ROOF_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
         return fail(
             f"UVs outside 0..1: ({u0:.4f},{v0:.4f})-({u1:.4f},{v1:.4f})",
@@ -684,7 +824,7 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-22.0)
+    low.rotation_euler.z = math.radians(-28.0)
     low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
@@ -731,10 +871,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.85, -5.15, 2.55)
+    cam.location = (4.25, -5.80, 2.55)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.88)
+    aim.location = (0.0, 0.0, 0.98)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
