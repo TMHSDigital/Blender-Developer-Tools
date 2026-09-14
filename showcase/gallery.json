@@ -160,6 +160,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "anvil",
+      "dir": "showcase/anvil",
+      "teaches": "A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1052 tris, two materials with 102 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.750×0.406×0.690 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 134 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/anvil-hero.webp",
+      "preview": "showcase/anvil/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "water-trough",
+      "dir": "showcase/water-trough",
+      "teaches": "A procedural staved water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 4008 tris, two materials with 168 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.136×0.482×0.470 m, LOD ratios in band, convex collider 108 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/water-trough-hero.webp",
+      "preview": "showcase/water-trough/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
