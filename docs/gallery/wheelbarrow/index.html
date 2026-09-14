@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>watchtower — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/watchtower/" />
+  <title>wheelbarrow — Examples — Blender Developer Tools</title>
+  <meta name="description" content="A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wheelbarrow/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="watchtower — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/watchtower/" />
-  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
+  <meta property="og:title" content="wheelbarrow — Examples — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wheelbarrow/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wheelbarrow-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="watchtower — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
-  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
+  <meta name="twitter:title" content="wheelbarrow — Examples — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wheelbarrow-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -245,49 +245,49 @@
     </div>
   </div>
   <header class="hero">
-    <h1>watchtower</h1>
-    <p>A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <h1>wheelbarrow</h1>
+    <p>A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom watchtower render">
-      <img src="../assets/watchtower-hero.webp" alt="watchtower render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom wheelbarrow render">
+      <img src="../assets/wheelbarrow-hero.webp" alt="wheelbarrow render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 5220 tris, three materials with 84 metal and 126 roof faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.434×1.434×1.982 m, LOD ratios in band, convex collider 56 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3088 tris, two materials with 308 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.418×0.463×0.594 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 106 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
-      <pre id="runCmd">blender --background --python showcase/watchtower/watchtower.py --</pre>
+      <pre id="runCmd">blender --background --python showcase/wheelbarrow/wheelbarrow.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber lookout (corner posts through a plank platform, lower-bay X-braces, hatch and ladder, coursed shake roof with eaves) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural wooden wheelbarrow (staved U-tray, iron straps, single spoked wheel, rear legs, handles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 5110–5330 | 5220 / 5220 / 5220 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2199 / 0.2199 / 0.2199 | | Materials | exactly 3 distinct, ≥24 metal, ≥40 roof | 3 slots, 84 metal, 126 roof | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.434, 1.434, 1.982) m ± 0.01 | (1.4340, 1.4340, 1.9818), zmin 0 | | Collider tris | ≤ 80 | 56 | | Export | written, size &gt; 0 | 374376 / 374376 / 374360 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> required to match across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2980–3200 | 3088 / 3088 / 3088 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2014 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 308 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.418, 0.463, 0.594) m ± 0.01 | (1.4176, 0.4627, 0.5937), zmin 0 | | Collider tris | ≤ 140 | 106 | | Export | written, size &gt; 0 | 227404 / 227404 / 227388 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
-<pre><code>blender --background --python watchtower.py --
-blender --background --python watchtower.py -- --skip-decimate
-blender --background --python watchtower.py -- --output tower.png</code></pre>
+<pre><code>blender --background --python wheelbarrow.py --
+blender --background --python wheelbarrow.py -- --skip-decimate
+blender --background --python wheelbarrow.py -- --output barrow.png</code></pre>
 <p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or metal/roof faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
       <div class="src-meta">
-        <code>showcase/watchtower/watchtower.py</code>
-        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/watchtower/watchtower.py">View on GitHub &rarr;</a>
+        <code>showcase/wheelbarrow/wheelbarrow.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/wheelbarrow/wheelbarrow.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;Game-ready timber watchtower — a showcase piece, not an example.
+      <pre><span class="s">&quot;&quot;&quot;Game-ready wooden wheelbarrow — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural lookout (posts, braces,
-platform, hatch ladder, coursed shake roof) after composing shipped pipeline
-pieces: bmesh construction, UVs, three materials, high-to-low normal
-bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a procedural wheelbarrow (staved U-tray,
+iron straps, single spoked wheel, rear legs, handles) after composing
+shipped pipeline pieces: bmesh construction, UVs, two materials,
+high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
@@ -297,9 +297,9 @@ No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
-    blender --background --python watchtower.py --
-    blender --background --python watchtower.py -- --skip-decimate
-    blender --background --python watchtower.py -- --output tower.png
+    blender --background --python wheelbarrow.py --
+    blender --background --python wheelbarrow.py -- --skip-decimate
+    blender --background --python wheelbarrow.py -- --output barrow.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
 <span class="k">import</span> math
@@ -319,46 +319,41 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-HALF = <span class="n">0.46</span>
-POST = <span class="n">0.090</span>
-POST_H = <span class="n">1.58</span>
-PLAT_Z = <span class="n">1.04</span>
-RAIL_H = <span class="n">0.40</span>
-GIRT_Z = <span class="n">0.52</span>
-KICK_H = <span class="n">0.18</span>
-BRACE_T = <span class="n">0.042</span>
-PLANK_T = <span class="n">0.038</span>
+RIM_MAJOR = <span class="n">0.155</span>
+RIM_MINOR = <span class="n">0.020</span>
+HUB_R = <span class="n">0.028</span>
+HUB_W = <span class="n">0.038</span>
+N_SPOKES = <span class="n">8</span>
+SPOKE_T = <span class="n">0.014</span>
+TRAY_L = <span class="n">0.70</span>
+TRAY_R = <span class="n">0.205</span>
+STAVE_T = <span class="n">0.028</span>
+N_STAVES = <span class="n">7</span>
+A_SPAN = <span class="n">1.38</span>
+HANDLE_L = <span class="n">0.50</span>
 IRON_T = <span class="n">0.014</span>
-SHOE_H = <span class="n">0.034</span>
-EAVE_HALF = <span class="n">0.70</span>
-ROOF_RISE = <span class="n">0.40</span>
-SHINGLE_T = <span class="n">0.016</span>
-N_SHINGLE = <span class="n">5</span>
-N_PLANK = <span class="n">6</span>
-HATCH_PLANKS = <span class="n">1</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.434</span>, <span class="n">1.434</span>, <span class="n">1.982</span>)
-BASE_TRIS_MIN = <span class="n">5110</span>
-BASE_TRIS_MAX = <span class="n">5330</span>
+OUTER_SIZE = (<span class="n">1.418</span>, <span class="n">0.463</span>, <span class="n">0.594</span>)
+BASE_TRIS_MIN = <span class="n">2980</span>
+BASE_TRIS_MAX = <span class="n">3200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
 LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
-MATERIAL_COUNT = <span class="n">3</span>
+MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">80</span>
+COLLIDER_TRIS_MAX = <span class="n">140</span>
 BAKE_RES = <span class="n">256</span>
-CAGE_EXTRUSION = <span class="n">0.10</span>
+CAGE_EXTRUSION = <span class="n">0.08</span>
 METAL_FACES_MIN = <span class="n">24</span>
-ROOF_FACES_MIN = <span class="n">40</span>
+WOOD_FACES_MIN = <span class="n">24</span>
 
 WOOD_IDX = <span class="n">0</span>
-ROOF_IDX = <span class="n">1</span>
-METAL_IDX = <span class="n">2</span>
+METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -393,6 +388,20 @@ METAL_IDX = <span class="n">2</span>
         ob.select_set(<span class="k">False</span>)
 
 
+<span class="k">def</span> add_box(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    verts = geo[<span class="s">&quot;verts&quot;</span>]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        p = Vector((v.co.x * scale[<span class="n">0</span>], v.co.y * scale[<span class="n">1</span>], v.co.z * scale[<span class="n">2</span>]))
+        v.co = rot @ p + origin
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> verts
+
+
 <span class="k">def</span> add_oriented_box(bm, a, b, scale_xy, mat_idx):
     a = Vector(a)
     b = Vector(b)
@@ -411,28 +420,14 @@ METAL_IDX = <span class="n">2</span>
     )
 
 
-<span class="k">def</span> add_box(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-    verts = geo[<span class="s">&quot;verts&quot;</span>]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        p = Vector((v.co.x * scale[<span class="n">0</span>], v.co.y * scale[<span class="n">1</span>], v.co.z * scale[<span class="n">2</span>]))
-        v.co = rot @ p + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
-    <span class="k">return</span> verts
-
-
-<span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+<span class="k">def</span> add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=<span class="k">True</span>,
         cap_tris=<span class="k">False</span>,
         segments=segments,
-        radius1=radius1,
-        radius2=radius2,
+        radius1=radius,
+        radius2=radius,
         depth=depth,
     )
     verts = geo[<span class="s">&quot;verts&quot;</span>]
@@ -444,6 +439,109 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
     <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_rim(bm, loc, major, minor, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    n_major = <span class="n">16</span>
+    n_minor = <span class="n">8</span>
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(n_major):
+        u = i * (<span class="n">2.0</span> * math.pi / n_major)
+        ring = []
+        <span class="k">for</span> j <span class="k">in</span> range(n_minor):
+            v = j * (<span class="n">2.0</span> * math.pi / n_minor)
+            x = (major + minor * math.cos(v)) * math.cos(u)
+            y = (major + minor * math.cos(v)) * math.sin(u)
+            z = minor * math.sin(v)
+            ring.append(bm.verts.new((x, y, z)))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+    <span class="k">for</span> i <span class="k">in</span> range(n_major):
+        i2 = (i + <span class="n">1</span>) % n_major
+        <span class="k">for</span> j <span class="k">in</span> range(n_minor):
+            j2 = (j + <span class="n">1</span>) % n_minor
+            face = bm.faces.new(
+                (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
+            )
+            face.material_index = mat_idx
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co = rot @ v.co + origin
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_wheel_wood(bm, loc, wood):
+    wood.extend(
+        add_rim(bm, loc, RIM_MAJOR, RIM_MINOR, WOOD_IDX, euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    )
+    wood.extend(
+        add_cyl(
+            bm,
+            loc,
+            HUB_R,
+            HUB_W,
+            <span class="n">12</span>,
+            WOOD_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        )
+    )
+    inner = HUB_R + <span class="n">0.008</span>
+    outer = RIM_MAJOR - RIM_MINOR * <span class="n">0.55</span>
+    mid_r = <span class="n">0.5</span> * (inner + outer)
+    slen = outer - inner
+    <span class="k">for</span> i <span class="k">in</span> range(N_SPOKES):
+        a = i * (<span class="n">2.0</span> * math.pi / N_SPOKES)
+        dx = math.cos(a)
+        dz = math.sin(a)
+        cx = loc[<span class="n">0</span>] + dx * mid_r
+        cy = loc[<span class="n">1</span>]
+        cz = loc[<span class="n">2</span>] + dz * mid_r
+        wood.extend(
+            add_box(
+                bm,
+                (cx, cy, cz),
+                (slen, SPOKE_T * <span class="n">0.85</span>, SPOKE_T),
+                WOOD_IDX,
+                euler=(<span class="n">0.0</span>, -a, <span class="n">0.0</span>),
+            )
+        )
+
+
+<span class="k">def</span> add_wheel_metal(bm, loc, metal):
+    metal.extend(
+        add_rim(
+            bm,
+            loc,
+            RIM_MAJOR + <span class="n">0.004</span>,
+            RIM_MINOR * <span class="n">0.45</span>,
+            METAL_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        )
+    )
+    metal.extend(
+        add_cyl(
+            bm,
+            loc,
+            HUB_R + <span class="n">0.010</span>,
+            <span class="n">0.016</span>,
+            <span class="n">12</span>,
+            METAL_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        )
+    )
+    metal.extend(
+        add_cyl(
+            bm,
+            loc,
+            <span class="n">0.014</span>,
+            <span class="n">0.10</span>,
+            <span class="n">8</span>,
+            METAL_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        )
+    )
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -489,236 +587,79 @@ METAL_IDX = <span class="n">2</span>
             )
 
 
-<span class="k">def</span> add_shingle_roof(bm, eave_z, peak_z):
-    <span class="s">&quot;&quot;&quot;Well-style coursed shakes on a square pyramid, plus a cone underside.&quot;&quot;&quot;</span>
-    add_cone(
-        bm,
-        (<span class="n">0.0</span>, <span class="n">0.0</span>, (eave_z + peak_z) / <span class="n">2.0</span>),
-        EAVE_HALF * math.sqrt(<span class="n">2.0</span>),
-        <span class="n">0.03</span>,
-        ROOF_RISE,
-        <span class="n">4</span>,
-        ROOF_IDX,
-        euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, math.pi / <span class="n">4.0</span>),
-    )
-    nrm_local = Vector((<span class="n">0.0</span>, ROOF_RISE, EAVE_HALF)).normalized()
-
-    <span class="k">def</span> add_course(yaw, t0, t1):
-        rot = Euler((<span class="n">0.0</span>, <span class="n">0.0</span>, yaw)).to_matrix()
-        nrm = rot @ nrm_local
-
-        <span class="k">def</span> pt(t, s):
-            w = EAVE_HALF * t
-            y = t * EAVE_HALF
-            z = peak_z - t * ROOF_RISE
-            <span class="k">return</span> rot @ Vector((s * w, y, z))
-
-        inner = SHINGLE_T * <span class="n">0.12</span>
-        outer = SHINGLE_T * <span class="n">1.05</span>
-        corners = (
-            pt(t0, -<span class="n">1.0</span>),
-            pt(t0, <span class="n">1.0</span>),
-            pt(t1, <span class="n">1.0</span>),
-            pt(t1, -<span class="n">1.0</span>),
-        )
-        vs = [bm.verts.new(c + nrm * inner) <span class="k">for</span> c <span class="k">in</span> corners]
-        vs.extend(bm.verts.new(c + nrm * outer) <span class="k">for</span> c <span class="k">in</span> corners)
-        idx = (
-            (<span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>),
-            (<span class="n">4</span>, <span class="n">7</span>, <span class="n">6</span>, <span class="n">5</span>),
-            (<span class="n">0</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">1</span>),
-            (<span class="n">1</span>, <span class="n">5</span>, <span class="n">6</span>, <span class="n">2</span>),
-            (<span class="n">2</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">3</span>),
-            (<span class="n">3</span>, <span class="n">7</span>, <span class="n">4</span>, <span class="n">0</span>),
-        )
-        <span class="k">for</span> a, b, c, d <span class="k">in</span> idx:
-            face = bm.faces.new((vs[a], vs[b], vs[c], vs[d]))
-            face.material_index = ROOF_IDX
-
-    <span class="k">for</span> side <span class="k">in</span> range(<span class="n">4</span>):
-        yaw = side * (math.pi / <span class="n">2.0</span>)
-        <span class="k">for</span> row <span class="k">in</span> range(N_SHINGLE):
-            t0 = (row + <span class="n">0.16</span>) / N_SHINGLE
-            t1 = min(<span class="n">1.0</span>, (row + <span class="n">1.08</span>) / N_SHINGLE)
-            add_course(yaw, t0, t1)
-
-
-<span class="k">def</span> build_tower_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_barrow_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
     <span class="k">try</span>:
         wood = []
-        posts = (
-            (-HALF, -HALF),
-            (HALF, -HALF),
-            (-HALF, HALF),
-            (HALF, HALF),
-        )
-        <span class="k">for</span> px, py <span class="k">in</span> posts:
-            wood.extend(
-                add_box(bm, (px, py, POST_H / <span class="n">2.0</span>), (POST, POST, POST_H), WOOD_IDX)
+        metal = []
+        zc = <span class="n">0.26</span> + TRAY_R
+        cx = <span class="n">0.0</span>
+
+        <span class="k">def</span> pt(a, x):
+            <span class="k">return</span> (
+                x,
+                TRAY_R * math.sin(a),
+                zc - TRAY_R * math.cos(a),
             )
 
-        bay = <span class="n">2.0</span> * HALF - POST
-        sill_h = <span class="n">0.085</span>
-        girt_h = <span class="n">0.075</span>
-        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        gap = <span class="n">0.12</span>
+        <span class="k">for</span> i <span class="k">in</span> range(N_STAVES):
+            t0 = i / N_STAVES
+            t1 = (i + (<span class="n">1.0</span> - gap)) / N_STAVES
+            a0 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t0
+            a1 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t1
+            mid = <span class="n">0.5</span> * (a0 + a1)
+            chord = TRAY_R * abs(a1 - a0) * <span class="n">0.95</span>
             wood.extend(
                 add_box(
                     bm,
-                    (<span class="n">0.0</span>, sign * HALF, sill_h / <span class="n">2.0</span>),
-                    (bay, POST * <span class="n">0.82</span>, sill_h),
+                    pt(mid, cx),
+                    (TRAY_L, chord, STAVE_T),
                     WOOD_IDX,
+                    euler=(mid, <span class="n">0.0</span>, <span class="n">0.0</span>),
                 )
             )
             wood.extend(
                 add_box(
                     bm,
-                    (sign * HALF, <span class="n">0.0</span>, sill_h / <span class="n">2.0</span>),
-                    (POST * <span class="n">0.82</span>, bay, sill_h),
+                    pt(mid, cx + TRAY_L / <span class="n">2.0</span> + <span class="n">0.014</span>),
+                    (<span class="n">0.028</span>, chord * <span class="n">1.02</span>, STAVE_T * <span class="n">1.05</span>),
                     WOOD_IDX,
-                )
-            )
-            wood.extend(
-                add_box(
-                    bm,
-                    (<span class="n">0.0</span>, sign * HALF, GIRT_Z),
-                    (bay, POST * <span class="n">0.78</span>, girt_h),
-                    WOOD_IDX,
-                )
-            )
-            wood.extend(
-                add_box(
-                    bm,
-                    (sign * HALF, <span class="n">0.0</span>, GIRT_Z),
-                    (POST * <span class="n">0.78</span>, bay, girt_h),
-                    WOOD_IDX,
+                    euler=(mid, <span class="n">0.0</span>, <span class="n">0.0</span>),
                 )
             )
 
+        rim_y = TRAY_R * math.sin(A_SPAN)
+        rim_z = zc - TRAY_R * math.cos(A_SPAN)
         <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            <span class="k">if</span> ysign &lt; <span class="n">0.0</span>:
-                <span class="k">continue</span>
-            wood.extend(
-                add_box(
-                    bm,
-                    (<span class="n">0.0</span>, ysign * HALF, KICK_H / <span class="n">2.0</span> + <span class="n">0.01</span>),
-                    (bay * <span class="n">0.92</span>, POST * <span class="n">0.55</span>, KICK_H),
-                    WOOD_IDX,
-                )
+            start = (
+                cx - TRAY_L / <span class="n">2.0</span> + <span class="n">0.05</span>,
+                ysign * rim_y,
+                rim_z,
             )
-        <span class="k">for</span> xsign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            end = (
+                cx - TRAY_L / <span class="n">2.0</span> - HANDLE_L,
+                ysign * (rim_y + <span class="n">0.015</span>),
+                <span class="n">0.56</span>,
+            )
             wood.extend(
-                add_box(
-                    bm,
-                    (xsign * HALF, <span class="n">0.0</span>, KICK_H / <span class="n">2.0</span> + <span class="n">0.01</span>),
-                    (POST * <span class="n">0.55</span>, bay * <span class="n">0.92</span>, KICK_H),
-                    WOOD_IDX,
-                )
+                add_oriented_box(bm, start, end, (<span class="n">0.030</span>, <span class="n">0.030</span>), WOOD_IDX)
             )
 
-        rise = GIRT_Z - sill_h
-        run = bay
-        blen = math.hypot(run, rise)
-        bang = math.atan2(rise, run)
-        brace_z = (sill_h + GIRT_Z) / <span class="n">2.0</span>
+        lx = cx - TRAY_L * <span class="n">0.30</span>
         <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            <span class="k">if</span> ysign &lt; <span class="n">0.0</span>:
-                <span class="k">continue</span>
-            <span class="k">for</span> bang_sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                wood.extend(
-                    add_box(
-                        bm,
-                        (<span class="n">0.0</span>, ysign * HALF, brace_z),
-                        (blen, BRACE_T, BRACE_T),
-                        WOOD_IDX,
-                        euler=(<span class="n">0.0</span>, bang_sign * bang, <span class="n">0.0</span>),
-                    )
-                )
-        <span class="k">for</span> xsign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            <span class="k">for</span> bang_sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                wood.extend(
-                    add_box(
-                        bm,
-                        (xsign * HALF, <span class="n">0.0</span>, brace_z),
-                        (BRACE_T, blen, BRACE_T),
-                        WOOD_IDX,
-                        euler=(bang_sign * bang, <span class="n">0.0</span>, <span class="n">0.0</span>),
-                    )
-                )
-
-        plank_span_x = <span class="n">2.0</span> * HALF + POST * <span class="n">0.15</span>
-        usable_y = <span class="n">2.0</span> * HALF - <span class="n">0.06</span>
-        plank_w = usable_y / N_PLANK
-        y0 = -HALF + <span class="n">0.03</span> + plank_w / <span class="n">2.0</span>
-        <span class="k">for</span> i <span class="k">in</span> range(HATCH_PLANKS, N_PLANK):
-            y = y0 + i * plank_w
-            wood.extend(
-                add_box(
-                    bm,
-                    (<span class="n">0.0</span>, y, PLAT_Z + PLANK_T / <span class="n">2.0</span>),
-                    (plank_span_x, plank_w * <span class="n">0.86</span>, PLANK_T),
-                    WOOD_IDX,
-                )
-            )
-        <span class="k">for</span> xj <span class="k">in</span> (-HALF * <span class="n">0.42</span>, HALF * <span class="n">0.42</span>):
-            wood.extend(
-                add_box(
-                    bm,
-                    (xj, <span class="n">0.06</span>, PLAT_Z - <span class="n">0.022</span>),
-                    (POST * <span class="n">0.62</span>, <span class="n">2.0</span> * HALF * <span class="n">0.88</span>, <span class="n">0.044</span>),
-                    WOOD_IDX,
-                )
-            )
-
-        rail_z_lo = PLAT_Z + PLANK_T + <span class="n">0.12</span>
-        rail_z_hi = PLAT_Z + PLANK_T + RAIL_H - <span class="n">0.04</span>
-        rail_t = POST * <span class="n">0.42</span>
+            top = (lx, ysign * <span class="n">0.11</span>, zc - TRAY_R * <span class="n">0.35</span>)
+            bot = (lx - <span class="n">0.03</span>, ysign * <span class="n">0.18</span>, <span class="n">0.02</span>)
+            wood.extend(add_oriented_box(bm, top, bot, (<span class="n">0.034</span>, <span class="n">0.034</span>), WOOD_IDX))
         wood.extend(
-            add_box(bm, (<span class="n">0.0</span>, HALF, rail_z_lo), (bay, rail_t, <span class="n">0.048</span>), WOOD_IDX)
+            add_oriented_box(
+                bm,
+                (lx, -<span class="n">0.15</span>, <span class="n">0.13</span>),
+                (lx, <span class="n">0.15</span>, <span class="n">0.13</span>),
+                (<span class="n">0.026</span>, <span class="n">0.026</span>),
+                WOOD_IDX,
+            )
         )
-        wood.extend(
-            add_box(bm, (<span class="n">0.0</span>, HALF, rail_z_hi), (bay, rail_t, <span class="n">0.048</span>), WOOD_IDX)
-        )
-        <span class="k">for</span> xsign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            wood.extend(
-                add_box(
-                    bm,
-                    (xsign * HALF, <span class="n">0.08</span>, rail_z_lo),
-                    (rail_t, bay * <span class="n">0.78</span>, <span class="n">0.048</span>),
-                    WOOD_IDX,
-                )
-            )
-            wood.extend(
-                add_box(
-                    bm,
-                    (xsign * HALF, <span class="n">0.08</span>, rail_z_hi),
-                    (rail_t, bay * <span class="n">0.78</span>, <span class="n">0.048</span>),
-                    WOOD_IDX,
-                )
-            )
-
-        lean = <span class="n">0.20</span>
-        bot_y = -HALF - lean
-        top_y = -HALF + <span class="n">0.02</span>
-        top_z = PLAT_Z + <span class="n">0.18</span>
-        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">0.12</span>, <span class="n">0.12</span>):
-            wood.extend(
-                add_oriented_box(
-                    bm,
-                    (sx, bot_y, <span class="n">0.03</span>),
-                    (sx, top_y, top_z),
-                    (<span class="n">0.040</span>, <span class="n">0.044</span>),
-                    WOOD_IDX,
-                )
-            )
-        n_rung = <span class="n">8</span>
-        <span class="k">for</span> i <span class="k">in</span> range(n_rung):
-            t = (i + <span class="n">1</span>) / (n_rung + <span class="n">1</span>)
-            z = <span class="n">0.08</span> + t * (PLAT_Z - <span class="n">0.14</span>)
-            y = bot_y + (top_y - bot_y) * ((z - <span class="n">0.03</span>) / (top_z - <span class="n">0.03</span>))
-            wood.extend(
-                add_box(bm, (<span class="n">0.0</span>, y, z), (<span class="n">0.26</span>, <span class="n">0.034</span>, <span class="n">0.032</span>), WOOD_IDX)
-            )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
             edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges})
@@ -734,66 +675,58 @@ METAL_IDX = <span class="n">2</span>
             <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
                 f.material_index = WOOD_IDX
 
-        eave_z = POST_H
-        peak_z = POST_H + ROOF_RISE
-        add_shingle_roof(bm, eave_z, peak_z)
-        fascia_h = <span class="n">0.048</span>
-        fascia_t = <span class="n">0.034</span>
-        <span class="k">for</span> side <span class="k">in</span> range(<span class="n">4</span>):
-            yaw = side * (math.pi / <span class="n">2.0</span>)
-            fx = EAVE_HALF * math.sin(yaw)
-            fy = EAVE_HALF * math.cos(yaw)
-            <span class="k">if</span> side % <span class="n">2</span> == <span class="n">0</span>:
-                add_box(
-                    bm,
-                    (<span class="n">0.0</span>, fy, eave_z - fascia_h / <span class="n">2.0</span>),
-                    (<span class="n">2.0</span> * EAVE_HALF + fascia_t, fascia_t, fascia_h),
-                    WOOD_IDX,
+        wx = cx + TRAY_L / <span class="n">2.0</span> + <span class="n">0.04</span>
+        wz = RIM_MAJOR
+        add_wheel_wood(bm, (wx, <span class="n">0.0</span>, wz), wood)
+        add_wheel_metal(bm, (wx, <span class="n">0.0</span>, wz), metal)
+
+        r_strap = TRAY_R + STAVE_T * <span class="n">0.55</span> + <span class="n">0.004</span>
+        <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.28</span>, TRAY_L * <span class="n">0.22</span>):
+            n = <span class="n">11</span>
+            pts = []
+            <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>):
+                a = -A_SPAN + <span class="n">2.0</span> * A_SPAN * k / n
+                pts.append(
+                    (
+                        cx + sx,
+                        r_strap * math.sin(a),
+                        zc - r_strap * math.cos(a),
+                    )
                 )
-            <span class="k">else</span>:
-                add_box(
-                    bm,
-                    (fx, <span class="n">0.0</span>, eave_z - fascia_h / <span class="n">2.0</span>),
-                    (fascia_t, <span class="n">2.0</span> * EAVE_HALF + fascia_t, fascia_h),
-                    WOOD_IDX,
+            <span class="k">for</span> p0, p1 <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
+                metal.extend(
+                    add_oriented_box(bm, p0, p1, (<span class="n">0.018</span>, <span class="n">0.010</span>), METAL_IDX)
                 )
 
-        <span class="k">for</span> px, py <span class="k">in</span> posts:
-            add_box(
-                bm,
-                (px, py, SHOE_H / <span class="n">2.0</span>),
-                (POST * <span class="n">1.38</span>, POST * <span class="n">1.38</span>, SHOE_H),
-                METAL_IDX,
+        fy = <span class="n">0.045</span>
+        <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            metal.extend(
+                add_oriented_box(
+                    bm,
+                    (cx + TRAY_L / <span class="n">2.0</span> - <span class="n">0.05</span>, ysign * fy, zc - TRAY_R * <span class="n">0.55</span>),
+                    (wx, ysign * fy, wz),
+                    (<span class="n">0.016</span>, <span class="n">0.016</span>),
+                    METAL_IDX,
+                )
             )
-            add_box(
-                bm,
-                (px, py, GIRT_Z),
-                (POST * <span class="n">1.12</span>, POST * <span class="n">1.12</span>, IRON_T),
-                METAL_IDX,
-            )
-            add_box(
-                bm,
-                (px, py, PLAT_Z + PLANK_T + IRON_T / <span class="n">2.0</span>),
-                (POST * <span class="n">1.18</span>, POST * <span class="n">1.18</span>, IRON_T),
-                METAL_IDX,
-            )
-        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">0.12</span>, <span class="n">0.12</span>):
-            add_box(
-                bm,
-                (sx, -HALF - <span class="n">0.02</span>, PLAT_Z + <span class="n">0.02</span>),
-                (<span class="n">0.055</span>, <span class="n">0.06</span>, IRON_T),
-                METAL_IDX,
+            metal.extend(
+                add_box(
+                    bm,
+                    (lx - <span class="n">0.03</span>, ysign * <span class="n">0.18</span>, <span class="n">0.012</span>),
+                    (<span class="n">0.055</span>, <span class="n">0.042</span>, <span class="n">0.022</span>),
+                    METAL_IDX,
+                )
             )
 
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
-        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        rcx = <span class="n">0.5</span> * (min(xs) + max(xs))
+        rcy = <span class="n">0.5</span> * (min(ys) + max(ys))
         zmin = min(zs)
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            v.co.x -= cx
-            v.co.y -= cy
+            v.co.x -= rcx
+            v.co.y -= rcy
             v.co.z -= zmin
             <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
                 v.co.z = <span class="n">0.0</span>
@@ -824,9 +757,9 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> assign_slots(obj, wood, roof, metal):
+<span class="k">def</span> assign_slots(obj, wood, metal):
     mats = obj.data.materials
-    wanted = (wood, roof, metal)
+    wanted = (wood, metal)
     <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
         <span class="k">if</span> i &lt; len(mats):
             mats[i] = mat
@@ -904,7 +837,7 @@ METAL_IDX = <span class="n">2</span>
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
-    img = bpy.data.images.new(<span class="s">&quot;TowerNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img = bpy.data.images.new(<span class="s">&quot;BarrowNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
     img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
     nodes = target_mat.node_tree.nodes
     tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
@@ -955,16 +888,15 @@ METAL_IDX = <span class="n">2</span>
 
 <span class="k">def</span> check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_tower_mesh(<span class="s">&quot;TowerLow&quot;</span>, bevel_offset=<span class="n">0.006</span>, bevel_segments=<span class="n">2</span>)
-    high = build_tower_mesh(<span class="s">&quot;TowerHigh&quot;</span>, bevel_offset=<span class="n">0.006</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(<span class="s">&quot;TowerWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.56</span>)
-    roof = principled(<span class="s">&quot;TowerShake&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.28</span>, <span class="n">0.26</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.74</span>)
-    metal = principled(<span class="s">&quot;TowerIron&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.125</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
-    assign_slots(low, wood, roof, metal)
-    assign_slots(high, wood, roof, metal)
+    low = build_barrow_mesh(<span class="s">&quot;BarrowLow&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">2</span>)
+    high = build_barrow_mesh(<span class="s">&quot;BarrowHigh&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">4</span>)
+    wood = principled(<span class="s">&quot;BarrowWood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.21</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>)
+    metal = principled(<span class="s">&quot;BarrowIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    assign_slots(low, wood, metal)
+    assign_slots(high, wood, metal)
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;tower mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> fail(<span class="s">&quot;barrow mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
 
     base_tris = triangle_count(low.data)
     mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
@@ -982,25 +914,25 @@ METAL_IDX = <span class="n">2</span>
 
     img, tex = setup_bake_image(low, wood)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;tower has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> fail(<span class="s">&quot;barrow has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     bake_result = bake_normal(high, low)
 
-    lod1 = make_lod(low, <span class="s">&quot;TowerLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
-    lod2 = make_lod(low, <span class="s">&quot;TowerLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    lod1 = make_lod(low, <span class="s">&quot;BarrowLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;BarrowLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
     bpy.context.view_layer.update()
     lod1_tris = evaluated_triangle_count(lod1)
     lod2_tris = evaluated_triangle_count(lod2)
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_tower_mesh(<span class="s">&quot;TowerColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>)
-    collider = convex_hull_collider(collider_src, <span class="s">&quot;TowerCollider&quot;</span>)
+    collider_src = build_barrow_mesh(<span class="s">&quot;BarrowColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>)
+    collider = convex_hull_collider(collider_src, <span class="s">&quot;BarrowCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
 
     export_path = os.path.join(
         tempfile.gettempdir(),
-        <span class="s">f&quot;</span><span class="s">bdt_watchtower_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>,
+        <span class="s">f&quot;</span><span class="s">bdt_wheelbarrow_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>,
     )
     <span class="k">if</span> os.path.exists(export_path):
         os.remove(export_path)
@@ -1040,9 +972,9 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
-    <span class="k">if</span> idx_counts.get(ROOF_IDX, <span class="n">0</span>) &lt; ROOF_FACES_MIN:
+    <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
         <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">roof faces </span>{idx_counts.get(ROOF_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{ROOF_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -1108,8 +1040,8 @@ METAL_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
-    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
+    low.rotation_euler.z = math.radians(-<span class="n">32.0</span>)
+    low.rotation_euler.x = math.radians(<span class="n">0.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1148,17 +1080,17 @@ METAL_IDX = <span class="n">2</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.8</span>), <span class="n">680.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.6</span>, <span class="n">2.6</span>), <span class="n">48.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.4</span>, <span class="n">4.2</span>, <span class="n">4.1</span>), <span class="n">640.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">660.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">46.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">600.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">4.25</span>, -<span class="n">5.80</span>, <span class="n">2.55</span>)
+    cam.location = (<span class="n">1.82</span>, -<span class="n">2.22</span>, <span class="n">1.12</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.98</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.34</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -1216,7 +1148,7 @@ METAL_IDX = <span class="n">2</span>
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
-    print(<span class="s">&quot;watchtower OK&quot;</span>)
+    print(<span class="s">&quot;wheelbarrow OK&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -1231,7 +1163,7 @@ METAL_IDX = <span class="n">2</span>
     </section>
   </main>
   <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
-    <img src="../assets/watchtower-hero.webp" alt="watchtower render, full size" />
+    <img src="../assets/wheelbarrow-hero.webp" alt="wheelbarrow render, full size" />
   </div>
   <footer>
     <div class="statusbar">

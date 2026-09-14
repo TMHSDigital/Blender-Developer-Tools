@@ -136,6 +136,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "park-bench",
+      "dir": "showcase/park-bench",
+      "teaches": "A procedural wrought-iron park bench through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 2100 tris, two materials with 510 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.080×0.566×0.853 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 106 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/park-bench-hero.webp",
+      "preview": "showcase/park-bench/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "wheelbarrow",
+      "dir": "showcase/wheelbarrow",
+      "teaches": "A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 3088 tris, two materials with 308 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.418×0.463×0.594 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 106 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/wheelbarrow-hero.webp",
+      "preview": "showcase/wheelbarrow/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
