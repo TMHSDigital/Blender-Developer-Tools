@@ -35,19 +35,18 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-PLINTH_XY = 0.30
-PLINTH_H = 0.072
+PLINTH_XY = 0.34
+PLINTH_H = 0.090
 COL_R = 0.050
 COL_H = 0.78
-COL_SEGS = 12
-SPOUT_Z = 0.42
-SPOUT_L = 0.16
-HANDLE_LIFT = 0.20
+COL_SEGS = 16
+SPOUT_Z = 0.46
+HANDLE_LIFT = 0.18
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (0.567, 0.366, 1.027)
-BASE_TRIS_MIN = 540
-BASE_TRIS_MAX = 700
+OUTER_SIZE = (0.610, 0.364, 1.049)
+BASE_TRIS_MIN = 1080
+BASE_TRIS_MAX = 1240
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -126,6 +125,26 @@ def add_oriented_box(bm, a, b, scale_xy, mat_idx):
         bm,
         ((a + b) * 0.5),
         (scale_xy[0], scale_xy[1], length),
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
+
+
+def add_cyl_between(bm, a, b, radius, segments, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    if length < 1e-8:
+        return []
+    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
+    eul = quat.to_euler("XYZ")
+    return add_cyl(
+        bm,
+        ((a + b) * 0.5),
+        radius,
+        length,
+        segments,
         mat_idx,
         euler=(eul.x, eul.y, eul.z),
     )
@@ -261,27 +280,37 @@ def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
     try:
         wood = []
         metal = []
-        col_z = PLINTH_H + COL_H / 2.0
-        top_z = PLINTH_H + COL_H
+        slab_h = 0.050
+        cap_h = 0.040
+        top_z = slab_h + cap_h + COL_H
 
         wood.extend(
             add_box(
                 bm,
-                (0.0, 0.0, PLINTH_H / 2.0),
-                (PLINTH_XY, PLINTH_XY, PLINTH_H),
+                (0.0, 0.0, slab_h / 2.0),
+                (PLINTH_XY, PLINTH_XY, slab_h),
                 WOOD_IDX,
             )
         )
-        grip_end = Vector((-0.36, 0.10, top_z - 0.04 + HANDLE_LIFT))
+        wood.extend(
+            add_box(
+                bm,
+                (0.0, 0.0, slab_h + cap_h / 2.0),
+                (0.26, 0.26, cap_h),
+                WOOD_IDX,
+            )
+        )
+        pivot = Vector((0.0, COL_R + 0.030, top_z - 0.018))
+        grip_end = Vector((-0.38, pivot.y + 0.02, pivot.z + HANDLE_LIFT))
         wood.extend(
             add_cyl(
                 bm,
                 (grip_end.x, grip_end.y, grip_end.z),
-                0.016,
-                0.11,
-                8,
+                0.018,
+                0.12,
+                10,
                 WOOD_IDX,
-                euler=(0.0, math.pi / 2.0, 0.25),
+                euler=(0.0, math.pi / 2.0, 0.0),
             )
         )
 
@@ -299,87 +328,133 @@ def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
+        plinth_top = slab_h + cap_h
         metal.extend(
             add_cyl(
                 bm,
-                (0.0, 0.0, PLINTH_H + 0.014),
-                0.092,
-                0.028,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, col_z),
-                COL_R,
-                COL_H,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, PLINTH_H + COL_H * 0.42),
-                COL_R + 0.010,
+                (0.0, 0.0, plinth_top + 0.016),
+                0.095,
                 0.032,
                 COL_SEGS,
                 METAL_IDX,
             )
         )
+        lower_h = 0.40
         metal.extend(
-            add_cone(
+            add_cyl(
                 bm,
-                (0.0, 0.0, top_z + 0.028),
-                0.058,
-                0.018,
-                0.056,
+                (0.0, 0.0, plinth_top + lower_h / 2.0),
+                0.062,
+                lower_h,
                 COL_SEGS,
                 METAL_IDX,
             )
         )
-        spout_y = -(COL_R + SPOUT_L / 2.0)
+        joint_z = plinth_top + lower_h
         metal.extend(
             add_cyl(
                 bm,
-                (0.0, spout_y, SPOUT_Z),
-                0.022,
-                SPOUT_L,
-                10,
+                (0.0, 0.0, joint_z),
+                0.078,
+                0.026,
+                COL_SEGS,
                 METAL_IDX,
-                euler=(math.pi / 2.0, 0.0, 0.0),
+            )
+        )
+        upper_h = 0.36
+        metal.extend(
+            add_cyl(
+                bm,
+                (0.0, 0.0, joint_z + upper_h / 2.0),
+                0.046,
+                upper_h,
+                COL_SEGS,
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_box(
+                bm,
+                (0.0, 0.0, top_z + 0.012),
+                (0.10, 0.10, 0.085),
+                METAL_IDX,
             )
         )
         metal.extend(
             add_cyl(
                 bm,
-                (0.0, spout_y - SPOUT_L / 2.0 + 0.012, SPOUT_Z - 0.045),
-                0.018,
-                0.090,
-                10,
+                (0.0, 0.0, top_z + 0.068),
+                0.034,
+                0.036,
+                COL_SEGS,
                 METAL_IDX,
             )
         )
-        pivot = Vector((0.0, COL_R + 0.018, top_z - 0.055))
+
+        arc_r = 0.13
+        origin_y = -(0.046)
+        origin_z = SPOUT_Z
+        n_arc = 7
+        last = None
+        for i in range(n_arc):
+            t0 = (i / n_arc) * (math.pi / 2.0)
+            t1 = ((i + 1) / n_arc) * (math.pi / 2.0)
+            p0 = (
+                0.0,
+                origin_y - arc_r * math.sin(t0),
+                origin_z - arc_r * (1.0 - math.cos(t0)),
+            )
+            p1 = (
+                0.0,
+                origin_y - arc_r * math.sin(t1),
+                origin_z - arc_r * (1.0 - math.cos(t1)),
+            )
+            metal.extend(add_cyl_between(bm, p0, p1, 0.018, 10, METAL_IDX))
+            last = p1
         metal.extend(
             add_cyl(
                 bm,
-                (pivot.x, pivot.y, pivot.z),
+                (0.0, last[1], last[2] - 0.028),
                 0.016,
-                0.055,
-                8,
+                0.056,
+                10,
                 METAL_IDX,
-                euler=(math.pi / 2.0, 0.0, 0.0),
+            )
+        )
+
+        metal.extend(
+            add_box(
+                bm,
+                (0.028, pivot.y, pivot.z),
+                (0.022, 0.048, 0.050),
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_box(
+                bm,
+                (-0.028, pivot.y, pivot.z),
+                (0.022, 0.048, 0.050),
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_cyl(
+                bm,
+                (0.0, pivot.y, pivot.z),
+                0.012,
+                0.072,
+                10,
+                METAL_IDX,
+                euler=(0.0, math.pi / 2.0, 0.0),
             )
         )
         metal.extend(
             add_oriented_box(
                 bm,
                 (pivot.x, pivot.y, pivot.z),
-                (grip_end.x + 0.04, grip_end.y, grip_end.z),
-                (0.022, 0.018),
+                (grip_end.x + 0.03, grip_end.y, grip_end.z),
+                (0.020, 0.016),
                 METAL_IDX,
             )
         )
@@ -557,7 +632,7 @@ def check(skip_decimate):
     low = build_hand_pump_mesh("HandPumpLow", bevel_offset=0.004, bevel_segments=2)
     high = build_hand_pump_mesh("HandPumpHigh", bevel_offset=0.004, bevel_segments=4)
     wood = principled("HandPumpWood", (0.36, 0.19, 0.07, 1.0), 0.0, 0.60)
-    metal = principled("HandPumpIron", (0.16, 0.155, 0.15, 1.0), 1.0, 0.42)
+    metal = principled("HandPumpIron", (0.22, 0.21, 0.20, 1.0), 1.0, 0.35)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -708,7 +783,7 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-28.0)
+    low.rotation_euler.z = math.radians(-36.0)
     low.rotation_euler.x = math.radians(0.0)
 
     floor_me = bpy.data.meshes.new("Floor")
@@ -755,10 +830,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.05, -2.54, 0.97)
+    cam.location = (2.15, -2.35, 1.08)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.42)
+    aim.location = (0.0, 0.0, 0.52)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
