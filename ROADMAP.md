@@ -117,7 +117,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Two-wheel wooden cart showcase~~ **SHIPPED** as `showcase/cart/` — slatted bed, shafts, spoked wheels, iron hubs and axle; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece~~ **SHIPPED** as `showcase/park-bench/` — scrolled iron legs, slatted seat and back; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece~~ **SHIPPED** as `showcase/wheelbarrow/` — staved U-tray, iron straps, spoked wheel, rear legs; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Blacksmith anvil on a timber stump as a game-prop showcase piece
+- ~~Blacksmith anvil on a timber stump as a game-prop showcase piece~~ **SHIPPED** as `showcase/anvil/` — London-pattern horn, face, heel, waist, hooped stump; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Staved wooden water trough on a stand as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
