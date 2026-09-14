@@ -85,5 +85,6 @@
   {"name": "fence-kit", "script": "showcase/fence-kit/fence_kit.py"},
   {"name": "watchtower", "script": "showcase/watchtower/watchtower.py"},
   {"name": "cart", "script": "showcase/cart/cart.py"},
-  {"name": "park-bench", "script": "showcase/park-bench/park_bench.py"}
+  {"name": "park-bench", "script": "showcase/park-bench/park_bench.py"},
+  {"name": "wheelbarrow", "script": "showcase/wheelbarrow/wheelbarrow.py"}
 ]
