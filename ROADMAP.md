@@ -119,7 +119,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece~~ **SHIPPED** as `showcase/wheelbarrow/` — staved U-tray, iron straps, spoked wheel, rear legs; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Blacksmith anvil on a timber stump as a game-prop showcase piece~~ **SHIPPED** as `showcase/anvil/` — London-pattern horn, face, heel, waist, hooped stump; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Staved wooden water trough on a stand as a game-prop showcase piece~~ **SHIPPED** as `showcase/water-trough/` — U-staves, end boards, iron straps, trestle legs; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Hitching post with iron ring as a game-prop showcase piece
+- ~~Hitching post with iron ring as a game-prop showcase piece~~ **SHIPPED** as `showcase/hitching-post/` — square post, pyramidal cap, cross-arm, iron shoe, bands, two rings; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Grindstone on a timber trestle as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
