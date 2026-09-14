@@ -115,7 +115,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Hero prop with a more complex silhouette (lantern or treasure chest) as a second showcase piece~~ **SHIPPED** as `showcase/street-lantern/` and `showcase/treasure-chest/` — hanging iron lantern with muntined amber cage; slatted chest with iron bands and an open lid; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Timber watchtower showcase~~ **SHIPPED** as `showcase/watchtower/` — corner posts through a plank platform, lower-bay X-braces, hatch ladder, coursed shake roof; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Two-wheel wooden cart showcase~~ **SHIPPED** as `showcase/cart/` — slatted bed, shafts, spoked wheels, iron hubs and axle; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece
+- ~~Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece~~ **SHIPPED** as `showcase/park-bench/` — scrolled iron legs, slatted seat and back; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
