@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>14 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>15 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 14 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 15 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -89,6 +89,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
 <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" alt="Wheelbarrow: a staved wooden tray with iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
 <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
+<a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" alt="Water trough: a staved wooden trough on trestle legs with iron straps on a dark studio floor" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
@@ -117,6 +118,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`wheelbarrow`](showcase/wheelbarrow/) — procedural staved wheelbarrow with a spoked wheel, iron straps, legs, and handles through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`anvil`](showcase/anvil/) — procedural London-pattern anvil on a timber stump through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`water-trough`](showcase/water-trough/) — procedural staved water trough on a timber stand through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 ## Examples
 
