@@ -35,20 +35,20 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-POST_W = 0.110
+POST_W = 0.118
 POST_H = 1.48
-CAP_H = 0.095
+CAP_H = 0.058
 SHOE_H = 0.048
 SHOE_SCALE = 1.34
-BOARD_Y = 0.072
-BOARD_ZTH = 0.046
-BOARD_A = (1.24, 0.52, 1.0)
-BOARD_B = (1.02, 0.44, -1.0)
+BOARD_T = 0.028
+BOARD_H = 0.112
+BOARD_A = (1.24, 0.62, 1.0, 0.12)
+BOARD_B = (1.00, 0.54, -1.0, -0.18)
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (1.162, 0.147, 1.575)
-BASE_TRIS_MIN = 320
-BASE_TRIS_MAX = 460
+OUTER_SIZE = (1.368, 0.201, 1.566)
+BASE_TRIS_MIN = 430
+BASE_TRIS_MAX = 580
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -276,11 +276,19 @@ def build_signpost_mesh(name, bevel_offset, bevel_segments):
             )
         )
         wood.extend(
+            add_box(
+                bm,
+                (0.0, 0.0, POST_H + 0.014),
+                (POST_W * 1.16, POST_W * 1.16, 0.028),
+                WOOD_IDX,
+            )
+        )
+        wood.extend(
             add_cone(
                 bm,
-                (0.0, 0.0, POST_H + CAP_H / 2.0),
-                POST_W * 0.78,
-                0.012,
+                (0.0, 0.0, POST_H + 0.028 + CAP_H / 2.0),
+                POST_W * 0.72,
+                0.008,
                 CAP_H,
                 4,
                 WOOD_IDX,
@@ -302,50 +310,53 @@ def build_signpost_mesh(name, bevel_offset, bevel_segments):
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
-        for z, length, sign in (BOARD_A, BOARD_B):
-            cx = sign * (half + length / 2.0 - 0.018)
+        for z, length, sign, yaw in (BOARD_A, BOARD_B):
+            eul = Euler((0.0, 0.0, yaw))
+            rot = eul.to_matrix()
+            inner = Vector((sign * (half - 0.016), 0.0, z))
+            center = inner + rot @ Vector((sign * length / 2.0, 0.0, 0.0))
             boards.extend(
                 add_box(
                     bm,
-                    (cx, 0.0, z),
-                    (length, BOARD_Y, BOARD_ZTH),
+                    (center.x, center.y, center.z),
+                    (length, BOARD_T, BOARD_H),
                     BOARD_IDX,
+                    euler=(0.0, 0.0, yaw),
                 )
             )
-            tip_x = cx + sign * (length / 2.0 + 0.028)
+            tip = inner + rot @ Vector((sign * (length + 0.004), 0.0, 0.0))
             boards.extend(
-                add_cone(
+                add_box(
                     bm,
-                    (tip_x, 0.0, z),
-                    0.052,
-                    0.004,
-                    0.072,
-                    3,
+                    (tip.x, tip.y, tip.z),
+                    (0.088, BOARD_T, 0.088),
                     BOARD_IDX,
-                    euler=(0.0, sign * math.pi / 2.0, 0.0),
+                    euler=(0.0, math.pi / 4.0, yaw),
                 )
             )
+            t = 0.012
+            h = BOARD_H + 0.024
             metal.extend(
                 add_box(
                     bm,
-                    (sign * (half + 0.010), 0.0, z),
-                    (0.020, BOARD_Y + 0.016, BOARD_ZTH + 0.018),
+                    (sign * (half + t / 2.0), 0.0, z),
+                    (t, POST_W * 0.94, h),
                     METAL_IDX,
                 )
             )
             metal.extend(
                 add_box(
                     bm,
-                    (0.0, half + 0.010, z),
-                    (POST_W * 0.92, 0.014, BOARD_ZTH * 1.15),
+                    (0.0, half + t / 2.0, z),
+                    (POST_W * 0.94, t, h),
                     METAL_IDX,
                 )
             )
             metal.extend(
                 add_box(
                     bm,
-                    (0.0, -(half + 0.010), z),
-                    (POST_W * 0.92, 0.014, BOARD_ZTH * 1.15),
+                    (0.0, -(half + t / 2.0), z),
+                    (POST_W * 0.94, t, h),
                     METAL_IDX,
                 )
             )
@@ -533,7 +544,7 @@ def check(skip_decimate):
     low = build_signpost_mesh("SignpostLow", bevel_offset=0.004, bevel_segments=2)
     high = build_signpost_mesh("SignpostHigh", bevel_offset=0.004, bevel_segments=4)
     wood = principled("SignpostWood", (0.34, 0.18, 0.07, 1.0), 0.0, 0.62)
-    board = principled("SignpostBoard", (0.72, 0.58, 0.28, 1.0), 0.0, 0.55)
+    board = principled("SignpostBoard", (0.76, 0.58, 0.22, 1.0), 0.0, 0.52)
     metal = principled("SignpostIron", (0.14, 0.145, 0.155, 1.0), 1.0, 0.38)
     assign_slots(low, wood, board, metal)
     assign_slots(high, wood, board, metal)
@@ -690,7 +701,7 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-18.0)
+    low.rotation_euler.z = math.radians(-12.0)
     low.rotation_euler.x = math.radians(0.0)
 
     floor_me = bpy.data.meshes.new("Floor")
@@ -737,10 +748,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.06, -4.02, 1.38)
+    cam.location = (2.80, -3.40, 1.35)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.78)
+    aim.location = (0.0, 0.0, 0.82)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
