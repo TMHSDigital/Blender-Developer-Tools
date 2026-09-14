@@ -196,6 +196,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "grindstone",
+      "dir": "showcase/grindstone",
+      "teaches": "A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1604 tris, three materials with 80 metal and 26 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.630×0.615×0.575 m, LOD ratios in band, convex collider 130 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/grindstone-hero.webp",
+      "preview": "showcase/grindstone/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
