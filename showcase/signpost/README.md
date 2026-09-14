@@ -1,9 +1,10 @@
 # Signpost
 
 A showcase piece, not an example. Procedural timber fingerboard
-signpost (square post, pyramidal cap, two painted boards, iron shoe
-and straps) then the shipped pipeline: unique-cell UVs, Cycles
-high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
+signpost (square post, collar and pyramidal cap, two painted planks
+with diamond tips, iron shoe and straps) then the shipped pipeline:
+unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex
+collider, Unity glTF export.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -21,14 +22,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 320–460 | 388 / 388 / 388 |
+| Base triangles | 430–580 | 504 / 504 / 504 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2165 / 0.2165 / 0.1804 |
-| Materials | exactly 3 distinct, ≥24 metal and ≥12 board faces | 3 slots, 66 metal, 22 board |
+| LOD2 ratio | 0.10–0.35 of base | 0.2183 / 0.2183 / 0.1746 |
+| Materials | exactly 3 distinct, ≥24 metal and ≥12 board faces | 3 slots, 66 metal, 24 board |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.162, 0.147, 1.575) m ± 0.01 | (1.1620, 0.1474, 1.5750), zmin 0 |
-| Collider tris | ≤ 140 | 92 |
-| Export | written, size > 0 | 40124 / 40124 / 40112 bytes |
+| Outer AABB | (1.368, 0.201, 1.566) m ± 0.01 | (1.3679, 0.2014, 1.5660), zmin 0 |
+| Collider tris | ≤ 140 | 56 |
+| Export | written, size > 0 | 45164 / 45164 / 45152 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an

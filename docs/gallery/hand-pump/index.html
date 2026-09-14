@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>hand-pump — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural village hand pump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural village hand pump with a gooseneck through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/hand-pump/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="hand-pump — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural village hand pump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural village hand pump with a gooseneck through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/hand-pump/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hand-pump-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hand-pump — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural village hand pump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural village hand pump with a gooseneck through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hand-pump-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,25 +246,25 @@
   </div>
   <header class="hero">
     <h1>hand-pump</h1>
-    <p>A procedural village hand pump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural village hand pump with a gooseneck through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom hand-pump render">
       <img src="../assets/hand-pump-hero.webp" alt="hand-pump render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 616 tris, two materials with 96 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.567×0.366×1.027 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 118 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1164 tris, two materials with 222 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.364×1.049 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 110 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/hand-pump/hand_pump.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural cast-iron village hand pump (wooden plinth, column, spout, handle, wooden grip) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural cast-iron village hand pump (stacked wooden plinth, two-diameter column, gooseneck spout, pump head, forked handle, wooden grip) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 540–700 | 616 / 616 / 616 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2175 / 0.2175 / 0.2143 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 96 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.567, 0.366, 1.027) m ± 0.01 | (0.5668, 0.3660, 1.0271), zmin 0 | | Collider tris | ≤ 160 | 118 | | Export | written, size &gt; 0 | 52764 / 52764 / 52756 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1080–1240 | 1164 / 1164 / 1164 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2199 / 0.2199 / 0.2148 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 222 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.610, 0.364, 1.049) m ± 0.01 | (0.6100, 0.3639, 1.0491), zmin 0 | | Collider tris | ≤ 160 | 110 | | Export | written, size &gt; 0 | 85944 / 85944 / 85936 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
@@ -319,19 +319,18 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-PLINTH_XY = <span class="n">0.30</span>
-PLINTH_H = <span class="n">0.072</span>
+PLINTH_XY = <span class="n">0.34</span>
+PLINTH_H = <span class="n">0.090</span>
 COL_R = <span class="n">0.050</span>
 COL_H = <span class="n">0.78</span>
-COL_SEGS = <span class="n">12</span>
-SPOUT_Z = <span class="n">0.42</span>
-SPOUT_L = <span class="n">0.16</span>
-HANDLE_LIFT = <span class="n">0.20</span>
+COL_SEGS = <span class="n">16</span>
+SPOUT_Z = <span class="n">0.46</span>
+HANDLE_LIFT = <span class="n">0.18</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">0.567</span>, <span class="n">0.366</span>, <span class="n">1.027</span>)
-BASE_TRIS_MIN = <span class="n">540</span>
-BASE_TRIS_MAX = <span class="n">700</span>
+OUTER_SIZE = (<span class="n">0.610</span>, <span class="n">0.364</span>, <span class="n">1.049</span>)
+BASE_TRIS_MIN = <span class="n">1080</span>
+BASE_TRIS_MAX = <span class="n">1240</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -410,6 +409,26 @@ METAL_IDX = <span class="n">1</span>
         bm,
         ((a + b) * <span class="n">0.5</span>),
         (scale_xy[<span class="n">0</span>], scale_xy[<span class="n">1</span>], length),
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
+
+
+<span class="k">def</span> add_cyl_between(bm, a, b, radius, segments, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    <span class="k">if</span> length &lt; <span class="n">1e-8</span>:
+        <span class="k">return</span> []
+    quat = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(delta.normalized())
+    eul = quat.to_euler(<span class="s">&quot;XYZ&quot;</span>)
+    <span class="k">return</span> add_cyl(
+        bm,
+        ((a + b) * <span class="n">0.5</span>),
+        radius,
+        length,
+        segments,
         mat_idx,
         euler=(eul.x, eul.y, eul.z),
     )
@@ -545,27 +564,37 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">try</span>:
         wood = []
         metal = []
-        col_z = PLINTH_H + COL_H / <span class="n">2.0</span>
-        top_z = PLINTH_H + COL_H
+        slab_h = <span class="n">0.050</span>
+        cap_h = <span class="n">0.040</span>
+        top_z = slab_h + cap_h + COL_H
 
         wood.extend(
             add_box(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, PLINTH_H / <span class="n">2.0</span>),
-                (PLINTH_XY, PLINTH_XY, PLINTH_H),
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, slab_h / <span class="n">2.0</span>),
+                (PLINTH_XY, PLINTH_XY, slab_h),
                 WOOD_IDX,
             )
         )
-        grip_end = Vector((-<span class="n">0.36</span>, <span class="n">0.10</span>, top_z - <span class="n">0.04</span> + HANDLE_LIFT))
+        wood.extend(
+            add_box(
+                bm,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, slab_h + cap_h / <span class="n">2.0</span>),
+                (<span class="n">0.26</span>, <span class="n">0.26</span>, cap_h),
+                WOOD_IDX,
+            )
+        )
+        pivot = Vector((<span class="n">0.0</span>, COL_R + <span class="n">0.030</span>, top_z - <span class="n">0.018</span>))
+        grip_end = Vector((-<span class="n">0.38</span>, pivot.y + <span class="n">0.02</span>, pivot.z + HANDLE_LIFT))
         wood.extend(
             add_cyl(
                 bm,
                 (grip_end.x, grip_end.y, grip_end.z),
-                <span class="n">0.016</span>,
-                <span class="n">0.11</span>,
-                <span class="n">8</span>,
+                <span class="n">0.018</span>,
+                <span class="n">0.12</span>,
+                <span class="n">10</span>,
                 WOOD_IDX,
-                euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.25</span>),
+                euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
             )
         )
 
@@ -583,87 +612,133 @@ METAL_IDX = <span class="n">1</span>
             <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
                 f.material_index = WOOD_IDX
 
+        plinth_top = slab_h + cap_h
         metal.extend(
             add_cyl(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, PLINTH_H + <span class="n">0.014</span>),
-                <span class="n">0.092</span>,
-                <span class="n">0.028</span>,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, col_z),
-                COL_R,
-                COL_H,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, PLINTH_H + COL_H * <span class="n">0.42</span>),
-                COL_R + <span class="n">0.010</span>,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, plinth_top + <span class="n">0.016</span>),
+                <span class="n">0.095</span>,
                 <span class="n">0.032</span>,
                 COL_SEGS,
                 METAL_IDX,
             )
         )
+        lower_h = <span class="n">0.40</span>
         metal.extend(
-            add_cone(
+            add_cyl(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, top_z + <span class="n">0.028</span>),
-                <span class="n">0.058</span>,
-                <span class="n">0.018</span>,
-                <span class="n">0.056</span>,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, plinth_top + lower_h / <span class="n">2.0</span>),
+                <span class="n">0.062</span>,
+                lower_h,
                 COL_SEGS,
                 METAL_IDX,
             )
         )
-        spout_y = -(COL_R + SPOUT_L / <span class="n">2.0</span>)
+        joint_z = plinth_top + lower_h
         metal.extend(
             add_cyl(
                 bm,
-                (<span class="n">0.0</span>, spout_y, SPOUT_Z),
-                <span class="n">0.022</span>,
-                SPOUT_L,
-                <span class="n">10</span>,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, joint_z),
+                <span class="n">0.078</span>,
+                <span class="n">0.026</span>,
+                COL_SEGS,
                 METAL_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+            )
+        )
+        upper_h = <span class="n">0.36</span>
+        metal.extend(
+            add_cyl(
+                bm,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, joint_z + upper_h / <span class="n">2.0</span>),
+                <span class="n">0.046</span>,
+                upper_h,
+                COL_SEGS,
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_box(
+                bm,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, top_z + <span class="n">0.012</span>),
+                (<span class="n">0.10</span>, <span class="n">0.10</span>, <span class="n">0.085</span>),
+                METAL_IDX,
             )
         )
         metal.extend(
             add_cyl(
                 bm,
-                (<span class="n">0.0</span>, spout_y - SPOUT_L / <span class="n">2.0</span> + <span class="n">0.012</span>, SPOUT_Z - <span class="n">0.045</span>),
-                <span class="n">0.018</span>,
-                <span class="n">0.090</span>,
-                <span class="n">10</span>,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, top_z + <span class="n">0.068</span>),
+                <span class="n">0.034</span>,
+                <span class="n">0.036</span>,
+                COL_SEGS,
                 METAL_IDX,
             )
         )
-        pivot = Vector((<span class="n">0.0</span>, COL_R + <span class="n">0.018</span>, top_z - <span class="n">0.055</span>))
+
+        arc_r = <span class="n">0.13</span>
+        origin_y = -(<span class="n">0.046</span>)
+        origin_z = SPOUT_Z
+        n_arc = <span class="n">7</span>
+        last = <span class="k">None</span>
+        <span class="k">for</span> i <span class="k">in</span> range(n_arc):
+            t0 = (i / n_arc) * (math.pi / <span class="n">2.0</span>)
+            t1 = ((i + <span class="n">1</span>) / n_arc) * (math.pi / <span class="n">2.0</span>)
+            p0 = (
+                <span class="n">0.0</span>,
+                origin_y - arc_r * math.sin(t0),
+                origin_z - arc_r * (<span class="n">1.0</span> - math.cos(t0)),
+            )
+            p1 = (
+                <span class="n">0.0</span>,
+                origin_y - arc_r * math.sin(t1),
+                origin_z - arc_r * (<span class="n">1.0</span> - math.cos(t1)),
+            )
+            metal.extend(add_cyl_between(bm, p0, p1, <span class="n">0.018</span>, <span class="n">10</span>, METAL_IDX))
+            last = p1
         metal.extend(
             add_cyl(
                 bm,
-                (pivot.x, pivot.y, pivot.z),
+                (<span class="n">0.0</span>, last[<span class="n">1</span>], last[<span class="n">2</span>] - <span class="n">0.028</span>),
                 <span class="n">0.016</span>,
-                <span class="n">0.055</span>,
-                <span class="n">8</span>,
+                <span class="n">0.056</span>,
+                <span class="n">10</span>,
                 METAL_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+            )
+        )
+
+        metal.extend(
+            add_box(
+                bm,
+                (<span class="n">0.028</span>, pivot.y, pivot.z),
+                (<span class="n">0.022</span>, <span class="n">0.048</span>, <span class="n">0.050</span>),
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_box(
+                bm,
+                (-<span class="n">0.028</span>, pivot.y, pivot.z),
+                (<span class="n">0.022</span>, <span class="n">0.048</span>, <span class="n">0.050</span>),
+                METAL_IDX,
+            )
+        )
+        metal.extend(
+            add_cyl(
+                bm,
+                (<span class="n">0.0</span>, pivot.y, pivot.z),
+                <span class="n">0.012</span>,
+                <span class="n">0.072</span>,
+                <span class="n">10</span>,
+                METAL_IDX,
+                euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
             )
         )
         metal.extend(
             add_oriented_box(
                 bm,
                 (pivot.x, pivot.y, pivot.z),
-                (grip_end.x + <span class="n">0.04</span>, grip_end.y, grip_end.z),
-                (<span class="n">0.022</span>, <span class="n">0.018</span>),
+                (grip_end.x + <span class="n">0.03</span>, grip_end.y, grip_end.z),
+                (<span class="n">0.020</span>, <span class="n">0.016</span>),
                 METAL_IDX,
             )
         )
@@ -841,7 +916,7 @@ METAL_IDX = <span class="n">1</span>
     low = build_hand_pump_mesh(<span class="s">&quot;HandPumpLow&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">2</span>)
     high = build_hand_pump_mesh(<span class="s">&quot;HandPumpHigh&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">4</span>)
     wood = principled(<span class="s">&quot;HandPumpWood&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.19</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.60</span>)
-    metal = principled(<span class="s">&quot;HandPumpIron&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.155</span>, <span class="n">0.15</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.42</span>)
+    metal = principled(<span class="s">&quot;HandPumpIron&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.21</span>, <span class="n">0.20</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.35</span>)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -992,7 +1067,7 @@ METAL_IDX = <span class="n">1</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
+    low.rotation_euler.z = math.radians(-<span class="n">36.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">0.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -1039,10 +1114,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.05</span>, -<span class="n">2.54</span>, <span class="n">0.97</span>)
+    cam.location = (<span class="n">2.15</span>, -<span class="n">2.35</span>, <span class="n">1.08</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.42</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.52</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

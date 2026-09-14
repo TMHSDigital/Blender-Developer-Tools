@@ -21,14 +21,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 980–1140 | 1052 / 1052 / 1052 |
+| Base triangles | 1620–1780 | 1696 / 1696 / 1696 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2186 / 0.2186 / 0.2110 |
-| Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 102 metal |
+| LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2182 |
+| Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 274 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.750, 0.406, 0.690) m ± 0.01 | (0.7500, 0.4060, 0.6900), zmin 0 |
-| Collider tris | ≤ 180 | 134 |
-| Export | written, size > 0 | 84092 / 84092 / 84088 bytes |
+| Outer AABB | (0.746, 0.410, 0.682) m ± 0.01 | (0.7460, 0.4095, 0.6820), zmin 0 |
+| Collider tris | ≤ 180 | 162 |
+| Export | written, size > 0 | 130852 / 130852 / 130840 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an

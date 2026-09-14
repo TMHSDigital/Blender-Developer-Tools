@@ -1,8 +1,9 @@
 """Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (U-staves, end boards, iron straps, trestle legs) after composing
-shipped pipeline pieces: bmesh construction, UVs, two materials,
+stand (U-staves, solid end-caps, water, iron straps, trestle legs)
+after composing shipped pipeline pieces: bmesh construction, UVs, three
+materials,
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
@@ -42,16 +43,16 @@ N_STAVES = 9
 A_SPAN = 1.42
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (1.136, 0.482, 0.470)
-BASE_TRIS_MIN = 3880
-BASE_TRIS_MAX = 4140
+OUTER_SIZE = (1.162, 0.528, 0.488)
+BASE_TRIS_MIN = 4650
+BASE_TRIS_MAX = 4900
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 2
+MATERIAL_COUNT = 3
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 150
@@ -59,9 +60,11 @@ BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 METAL_FACES_MIN = 24
 WOOD_FACES_MIN = 24
+WATER_FACES_MIN = 6
 
 WOOD_IDX = 0
 METAL_IDX = 1
+WATER_IDX = 2
 
 
 def eevee_engine_id():
@@ -221,14 +224,14 @@ def build_trough_mesh(name, bevel_offset, bevel_segments):
         zc = 0.30 + TRAY_R
         cx = 0.0
 
-        def pt(a, x):
+        def pt(a, x, radius=TRAY_R):
             return (
                 x,
-                TRAY_R * math.sin(a),
-                zc - TRAY_R * math.cos(a),
+                radius * math.sin(a),
+                zc - radius * math.cos(a),
             )
 
-        gap = 0.10
+        gap = 0.16
         for i in range(N_STAVES):
             t0 = i / N_STAVES
             t1 = (i + (1.0 - gap)) / N_STAVES
@@ -245,39 +248,58 @@ def build_trough_mesh(name, bevel_offset, bevel_segments):
                     euler=(mid, 0.0, 0.0),
                 )
             )
-            for xend in (cx + TRAY_L / 2.0 + 0.014, cx - TRAY_L / 2.0 - 0.014):
+
+        n_end = 11
+        end_r = TRAY_R + STAVE_T * 0.15
+        for xend in (cx + TRAY_L / 2.0 + 0.020, cx - TRAY_L / 2.0 - 0.020):
+            for i in range(n_end):
+                t0 = i / n_end
+                t1 = (i + 1.0) / n_end
+                a0 = -A_SPAN + 2.0 * A_SPAN * t0
+                a1 = -A_SPAN + 2.0 * A_SPAN * t1
+                mid = 0.5 * (a0 + a1)
+                chord = end_r * abs(a1 - a0) * 1.18
                 wood.extend(
                     add_box(
                         bm,
-                        pt(mid, xend),
-                        (0.028, chord * 1.02, STAVE_T * 1.05),
+                        pt(mid, xend, end_r),
+                        (0.042, chord, STAVE_T * 1.45),
                         WOOD_IDX,
                         euler=(mid, 0.0, 0.0),
                     )
                 )
 
-        for sx in (-TRAY_L * 0.32, TRAY_L * 0.32):
+        for a_lip in (-A_SPAN, A_SPAN):
+            wood.extend(
+                add_box(
+                    bm,
+                    pt(a_lip, cx),
+                    (TRAY_L + 0.050, 0.034, 0.030),
+                    WOOD_IDX,
+                    euler=(a_lip, 0.0, 0.0),
+                )
+            )
+
+        for sx in (-TRAY_L * 0.30, TRAY_L * 0.30):
             for ysign in (-1.0, 1.0):
-                top = (sx, ysign * 0.12, zc - TRAY_R - 0.02)
-                bot = (sx, ysign * 0.22, 0.02)
+                top = (sx, ysign * 0.10, zc - TRAY_R - 0.035)
+                bot = (sx, ysign * 0.24, 0.024)
                 wood.extend(
-                    add_oriented_box(bm, top, bot, (0.036, 0.036), WOOD_IDX)
+                    add_oriented_box(bm, top, bot, (0.050, 0.036), WOOD_IDX)
                 )
             wood.extend(
-                add_oriented_box(
+                add_box(
                     bm,
-                    (sx, -0.16, 0.13),
-                    (sx, 0.16, 0.13),
-                    (0.028, 0.028),
+                    (sx, 0.0, 0.115),
+                    (0.044, 0.38, 0.030),
                     WOOD_IDX,
                 )
             )
         wood.extend(
-            add_oriented_box(
+            add_box(
                 bm,
-                (-TRAY_L * 0.32, 0.0, 0.13),
-                (TRAY_L * 0.32, 0.0, 0.13),
-                (0.028, 0.028),
+                (0.0, 0.0, 0.115),
+                (TRAY_L * 0.62, 0.044, 0.030),
                 WOOD_IDX,
             )
         )
@@ -313,16 +335,40 @@ def build_trough_mesh(name, bevel_offset, bevel_segments):
                 metal.extend(
                     add_oriented_box(bm, p0, p1, (0.020, 0.010), METAL_IDX)
                 )
-        for sx in (-TRAY_L * 0.32, TRAY_L * 0.32):
+        for sx in (-TRAY_L * 0.30, TRAY_L * 0.30):
             for ysign in (-1.0, 1.0):
                 metal.extend(
                     add_box(
                         bm,
-                        (sx, ysign * 0.22, 0.012),
-                        (0.050, 0.042, 0.022),
+                        (sx, ysign * 0.24, 0.012),
+                        (0.056, 0.048, 0.024),
                         METAL_IDX,
                     )
                 )
+
+        n_w = 9
+        wr = TRAY_R - STAVE_T * 0.60
+        span = A_SPAN * 0.90
+        for i in range(n_w):
+            t0 = i / n_w
+            t1 = (i + 1.0) / n_w
+            a0 = -span + 2.0 * span * t0
+            a1 = -span + 2.0 * span * t1
+            mid = 0.5 * (a0 + a1)
+            chord = wr * abs(a1 - a0) * 1.16
+            add_box(
+                bm,
+                pt(mid, cx, wr),
+                (TRAY_L * 0.84, chord, 0.018),
+                WATER_IDX,
+                euler=(mid, 0.0, 0.0),
+            )
+        add_box(
+            bm,
+            (cx, 0.0, zc - TRAY_R * 0.28),
+            (TRAY_L * 0.84, TRAY_R * 1.50, 0.010),
+            WATER_IDX,
+        )
 
         xs = [v.co.x for v in bm.verts]
         ys = [v.co.y for v in bm.verts]
@@ -363,9 +409,9 @@ def principled(name, color, metallic, roughness):
     return mat
 
 
-def assign_slots(obj, wood, metal):
+def assign_slots(obj, wood, metal, water):
     mats = obj.data.materials
-    wanted = (wood, metal)
+    wanted = (wood, metal, water)
     for i, mat in enumerate(wanted):
         if i < len(mats):
             mats[i] = mat
@@ -498,8 +544,9 @@ def check(skip_decimate):
     high = build_trough_mesh("TroughHigh", bevel_offset=0.005, bevel_segments=4)
     wood = principled("TroughWood", (0.40, 0.22, 0.08, 1.0), 0.0, 0.58)
     metal = principled("TroughIron", (0.10, 0.105, 0.12, 1.0), 1.0, 0.30)
-    assign_slots(low, wood, metal)
-    assign_slots(high, wood, metal)
+    water = principled("TroughWater", (0.05, 0.13, 0.14, 1.0), 0.0, 0.14)
+    assign_slots(low, wood, metal, water)
+    assign_slots(high, wood, metal, water)
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("trough mesh did not build", 3), None, None, None, None, None
@@ -583,6 +630,11 @@ def check(skip_decimate):
             f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
             5,
         ), None, None, None, None, None
+    if idx_counts.get(WATER_IDX, 0) < WATER_FACES_MIN:
+        return fail(
+            f"water faces {idx_counts.get(WATER_IDX, 0)} < {WATER_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
         return fail(
             f"UVs outside 0..1: ({u0:.4f},{v0:.4f})-({u1:.4f},{v1:.4f})",
@@ -646,7 +698,7 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-16.0)
+    low.rotation_euler.z = math.radians(-90.0)
     low.rotation_euler.x = math.radians(0.0)
 
     floor_me = bpy.data.meshes.new("Floor")
@@ -693,10 +745,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.43, -1.73, 0.88)
+    cam.location = (1.05, -2.00, 1.22)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.26)
+    aim.location = (0.0, 0.0, 0.22)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
