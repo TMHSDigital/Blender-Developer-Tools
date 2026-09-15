@@ -97,5 +97,7 @@
   {"name": "wooden-bucket", "script": "showcase/wooden-bucket/wooden_bucket.py"},
   {"name": "wall-torch", "script": "showcase/wall-torch/wall_torch.py"},
   {"name": "tavern-stool", "script": "showcase/tavern-stool/tavern_stool.py"},
-  {"name": "iron-cauldron", "script": "showcase/iron-cauldron/iron_cauldron.py"}
+  {"name": "iron-cauldron", "script": "showcase/iron-cauldron/iron_cauldron.py"},
+  {"name": "wooden-ladder", "script": "showcase/wooden-ladder/wooden_ladder.py"},
+  {"name": "hay-bale", "script": "showcase/hay-bale/hay_bale.py"}
 ]
