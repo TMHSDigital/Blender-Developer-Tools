@@ -129,7 +129,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Wall-mounted torch sconce as a game-prop showcase piece~~ **SHIPPED** as `showcase/wall-torch/` — coursed stone plaque, iron bracket and cup, wooden haft, emissive flame; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wooden tavern stool (turned legs, round seat, stretchers) as a game-prop showcase piece~~ **SHIPPED** as `showcase/tavern-stool/` — round seat, turned splayed legs, stretchers, iron ferrules; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Cast-iron cooking cauldron on a tripod as a game-prop showcase piece~~ **SHIPPED** as `showcase/iron-cauldron/` — bulged open pot, bail, timber tripod, hook; `--skip-decimate` exits 9 on the LOD1 ratio band
-- Wooden ladder (rungs, stiles, iron shoes) as a game-prop showcase piece
+- ~~Wooden ladder (rungs, stiles, iron shoes) as a game-prop showcase piece~~ **SHIPPED** as `showcase/wooden-ladder/` — raked stiles, six rungs, iron shoes and straps; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Bound hay bale as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
 
