@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>22 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>24 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 22 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 24 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
 
@@ -97,6 +97,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <a href="showcase/chopping-block/"><img src="showcase/chopping-block/preview.webp" alt="Chopping block: a hooped timber stump with an embedded axe on a dark studio floor" /></a>
 <a href="showcase/wooden-bucket/"><img src="showcase/wooden-bucket/preview.webp" alt="Wooden bucket: a coopered bucket with overlapping staves, iron hoops, and a rope bail on a dark studio floor" /></a>
 <a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" alt="Wall torch: a coursed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
+<a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
+<a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
@@ -141,6 +143,10 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`wooden-bucket`](showcase/wooden-bucket/) — procedural coopered wooden bucket with iron hoops and a rope bail through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`wall-torch`](showcase/wall-torch/) — procedural wall-mounted torch sconce with a stone plaque, iron bracket, and flame through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`tavern-stool`](showcase/tavern-stool/) — procedural tavern stool with turned legs, stretchers, and iron ferrules through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+[`iron-cauldron`](showcase/iron-cauldron/) — procedural hanging iron cauldron on a timber tripod through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 ## Examples
 

@@ -268,6 +268,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "tavern-stool",
+      "dir": "showcase/tavern-stool",
+      "teaches": "A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 5396 tris, two materials with 2542 wood and 40 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.309×0.309×0.467 m, LOD ratios in band, convex collider 96 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/tavern-stool-hero.webp",
+      "preview": "showcase/tavern-stool/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "iron-cauldron",
+      "dir": "showcase/iron-cauldron",
+      "teaches": "A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 7012 tris, two materials with 2754 wood and 706 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.572×0.558×0.786 m, LOD ratios in band, convex collider 130 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/iron-cauldron-hero.webp",
+      "preview": "showcase/iron-cauldron/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
