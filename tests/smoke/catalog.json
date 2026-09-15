@@ -93,5 +93,7 @@
   {"name": "grindstone", "script": "showcase/grindstone/grindstone.py"},
   {"name": "hand-pump", "script": "showcase/hand-pump/hand_pump.py"},
   {"name": "signpost", "script": "showcase/signpost/signpost.py"},
-  {"name": "chopping-block", "script": "showcase/chopping-block/chopping_block.py"}
+  {"name": "chopping-block", "script": "showcase/chopping-block/chopping_block.py"},
+  {"name": "wooden-bucket", "script": "showcase/wooden-bucket/wooden_bucket.py"},
+  {"name": "wall-torch", "script": "showcase/wall-torch/wall_torch.py"}
 ]
