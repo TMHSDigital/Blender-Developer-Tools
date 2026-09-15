@@ -232,6 +232,30 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "bellows",
+      "dir": "showcase/bellows",
+      "teaches": "A procedural blacksmith bellows through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1272 tris, three materials with 294 leather and 48 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.630×0.403×0.277 m, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 148 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/bellows-hero.webp",
+      "preview": "showcase/bellows/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
+    },
+    {
+      "name": "chopping-block",
+      "dir": "showcase/chopping-block",
+      "teaches": "A procedural chopping block with an embedded axe through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 2016 tris, two materials with 122 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.471×0.463×0.841 m, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 188 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/chopping-block-hero.webp",
+      "preview": "showcase/chopping-block/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
