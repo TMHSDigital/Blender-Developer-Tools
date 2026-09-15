@@ -176,8 +176,8 @@
     {
       "name": "water-trough",
       "dir": "showcase/water-trough",
-      "teaches": "A procedural staved water trough with water through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 4776 tris, three materials with 168 metal and 60 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.162×0.528×0.488 m, LOD ratios in band, convex collider 128 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 2484 tris, three materials with 192 metal and 6 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.152×0.568×0.509 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 32 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/water-trough-hero.webp",
       "preview": "showcase/water-trough/preview.webp",
       "tags": [
@@ -228,18 +228,6 @@
       "witnessesFix": "Recomputed: 504 tris, three materials with 66 metal and 24 board faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.368×0.201×1.566 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 56 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/signpost-hero.webp",
       "preview": "showcase/signpost/preview.webp",
-      "tags": [
-        "mesh",
-        "export"
-      ]
-    },
-    {
-      "name": "bellows",
-      "dir": "showcase/bellows",
-      "teaches": "A procedural blacksmith bellows through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1272 tris, three materials with 294 leather and 48 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.630×0.403×0.277 m, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 148 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
-      "hero": "docs/gallery/assets/bellows-hero.webp",
-      "preview": "showcase/bellows/preview.webp",
       "tags": [
         "mesh",
         "export"

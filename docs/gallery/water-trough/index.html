@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>water-trough — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural staved water trough with water through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/water-trough/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="water-trough — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural staved water trough with water through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/water-trough/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="water-trough — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural staved water trough with water through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,26 +246,26 @@
   </div>
   <header class="hero">
     <h1>water-trough</h1>
-    <p>A procedural staved water trough with water through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom water-trough render">
       <img src="../assets/water-trough-hero.webp" alt="water-trough render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 4776 tris, three materials with 168 metal and 60 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.162×0.528×0.488 m, LOD ratios in band, convex collider 128 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2484 tris, three materials with 192 metal and 6 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.152×0.568×0.509 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 32 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/water-trough/water_trough.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (U-staves, solid end-caps, water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, plank end-caps, contained water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 4650–4900 | 4776 / 4776 / 4776 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 3 distinct, ≥24 metal and ≥6 water faces | 3 slots, 168 metal, 60 water | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.162, 0.528, 0.488) m ± 0.01 | (1.1620, 0.5280, 0.4883), zmin 0 | | Collider tris | ≤ 150 | 128 | | Export | written, size &gt; 0 | 348208 / 348208 / 348192 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series in general — the gate is a ratio band, not an exact count. On this piece LOD2 happened to match on 4.5.11, 5.1.2, and 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2320–2650 | 2484 / 2484 / 2484 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2166 | | Materials | exactly 3 distinct, ≥24 metal and ≥6 water faces | 3 slots, 192 metal, 6 water | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.152, 0.568, 0.509) m ± 0.01 | (1.1520, 0.5680, 0.5086), zmin 0 | | Collider tris | ≤ 80 | 32 | | Export | written, size &gt; 0 | 180748 / 180748 / 180728 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 20 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python water_trough.py --
@@ -285,10 +285,10 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
       <pre><span class="s">&quot;&quot;&quot;Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (U-staves, solid end-caps, water, iron straps, trestle legs)
-after composing shipped pipeline pieces: bmesh construction, UVs, three
-materials,
-high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
+stand (watertight U-hull, plank end-caps, contained water, iron straps,
+trestle legs) after composing shipped pipeline pieces: bmesh
+construction, UVs, three materials, high-to-low normal bake, LOD chain,
+convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
@@ -321,15 +321,16 @@ sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 TRAY_L = <span class="n">1.08</span>
-TRAY_R = <span class="n">0.20</span>
-STAVE_T = <span class="n">0.026</span>
-N_STAVES = <span class="n">9</span>
-A_SPAN = <span class="n">1.42</span>
+TRAY_R = <span class="n">0.22</span>
+STAVE_T = <span class="n">0.030</span>
+N_STAVES = <span class="n">12</span>
+A_SPAN = <span class="n">1.38</span>
+END_T = <span class="n">0.050</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.162</span>, <span class="n">0.528</span>, <span class="n">0.488</span>)
-BASE_TRIS_MIN = <span class="n">4650</span>
-BASE_TRIS_MAX = <span class="n">4900</span>
+OUTER_SIZE = (<span class="n">1.152</span>, <span class="n">0.568</span>, <span class="n">0.509</span>)
+BASE_TRIS_MIN = <span class="n">2320</span>
+BASE_TRIS_MAX = <span class="n">2650</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -339,7 +340,7 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">3</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">150</span>
+COLLIDER_TRIS_MAX = <span class="n">80</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
 METAL_FACES_MIN = <span class="n">24</span>
@@ -412,6 +413,49 @@ WATER_IDX = <span class="n">2</span>
         (scale_xy[<span class="n">0</span>], scale_xy[<span class="n">1</span>], length),
         mat_idx,
         euler=(eul.x, eul.y, eul.z),
+    )
+
+
+<span class="k">def</span> _face(bm, vs, mat_idx):
+    face = bm.faces.new(vs)
+    face.material_index = mat_idx
+    <span class="k">return</span> face
+
+
+<span class="k">def</span> _arc_point(a, radius, x, zc):
+    <span class="k">return</span> Vector((x, radius * math.sin(a), zc - radius * math.cos(a)))
+
+
+<span class="k">def</span> add_u_shell(bm, x0, x1, r_in, r_out, n_seg, zc, a_span, mat_idx):
+    in0, out0, in1, out1 = [], [], [], []
+    <span class="k">for</span> i <span class="k">in</span> range(n_seg + <span class="n">1</span>):
+        a = -a_span + <span class="n">2.0</span> * a_span * i / n_seg
+        in0.append(bm.verts.new(_arc_point(a, r_in, x0, zc)))
+        out0.append(bm.verts.new(_arc_point(a, r_out, x0, zc)))
+        in1.append(bm.verts.new(_arc_point(a, r_in, x1, zc)))
+        out1.append(bm.verts.new(_arc_point(a, r_out, x1, zc)))
+    collected = in0 + out0 + in1 + out1
+    <span class="k">for</span> i <span class="k">in</span> range(n_seg):
+        _face(bm, (out0[i], out0[i + <span class="n">1</span>], out1[i + <span class="n">1</span>], out1[i]), mat_idx)
+        _face(bm, (in0[i + <span class="n">1</span>], in0[i], in1[i], in1[i + <span class="n">1</span>]), mat_idx)
+        _face(bm, (out0[i], in0[i], in0[i + <span class="n">1</span>], out0[i + <span class="n">1</span>]), mat_idx)
+        _face(bm, (out1[i + <span class="n">1</span>], in1[i + <span class="n">1</span>], in1[i], out1[i]), mat_idx)
+    _face(bm, (out0[<span class="n">0</span>], out1[<span class="n">0</span>], in1[<span class="n">0</span>], in0[<span class="n">0</span>]), mat_idx)
+    _face(bm, (out0[n_seg], in0[n_seg], in1[n_seg], out1[n_seg]), mat_idx)
+    <span class="k">return</span> collected
+
+
+<span class="k">def</span> add_end_plank(bm, x_end, toward, radius, zc, a_span, thick, mat_idx):
+    y_span = <span class="n">2.0</span> * radius * math.sin(a_span) + <span class="n">0.046</span>
+    z_lo = zc - radius - <span class="n">0.008</span>
+    z_hi = zc - radius * math.cos(a_span) + <span class="n">0.036</span>
+    z_mid = <span class="n">0.5</span> * (z_lo + z_hi)
+    x_mid = x_end + toward * (thick * <span class="n">0.5</span> - <span class="n">0.014</span>)
+    <span class="k">return</span> add_box(
+        bm,
+        (x_mid, <span class="n">0.0</span>, z_mid),
+        (thick, y_span, z_hi - z_lo),
+        mat_idx,
     )
 
 
@@ -507,58 +551,22 @@ WATER_IDX = <span class="n">2</span>
         metal = []
         zc = <span class="n">0.30</span> + TRAY_R
         cx = <span class="n">0.0</span>
-
-        <span class="k">def</span> pt(a, x, radius=TRAY_R):
-            <span class="k">return</span> (
-                x,
-                radius * math.sin(a),
-                zc - radius * math.cos(a),
-            )
-
-        gap = <span class="n">0.16</span>
-        <span class="k">for</span> i <span class="k">in</span> range(N_STAVES):
-            t0 = i / N_STAVES
-            t1 = (i + (<span class="n">1.0</span> - gap)) / N_STAVES
-            a0 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t0
-            a1 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t1
-            mid = <span class="n">0.5</span> * (a0 + a1)
-            chord = TRAY_R * abs(a1 - a0) * <span class="n">0.95</span>
-            wood.extend(
-                add_box(
-                    bm,
-                    pt(mid, cx),
-                    (TRAY_L, chord, STAVE_T),
-                    WOOD_IDX,
-                    euler=(mid, <span class="n">0.0</span>, <span class="n">0.0</span>),
-                )
-            )
-
-        n_end = <span class="n">11</span>
-        end_r = TRAY_R + STAVE_T * <span class="n">0.15</span>
-        <span class="k">for</span> xend <span class="k">in</span> (cx + TRAY_L / <span class="n">2.0</span> + <span class="n">0.020</span>, cx - TRAY_L / <span class="n">2.0</span> - <span class="n">0.020</span>):
-            <span class="k">for</span> i <span class="k">in</span> range(n_end):
-                t0 = i / n_end
-                t1 = (i + <span class="n">1.0</span>) / n_end
-                a0 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t0
-                a1 = -A_SPAN + <span class="n">2.0</span> * A_SPAN * t1
-                mid = <span class="n">0.5</span> * (a0 + a1)
-                chord = end_r * abs(a1 - a0) * <span class="n">1.18</span>
-                wood.extend(
-                    add_box(
-                        bm,
-                        pt(mid, xend, end_r),
-                        (<span class="n">0.042</span>, chord, STAVE_T * <span class="n">1.45</span>),
-                        WOOD_IDX,
-                        euler=(mid, <span class="n">0.0</span>, <span class="n">0.0</span>),
-                    )
-                )
+        r_in = TRAY_R
+        r_out = TRAY_R + STAVE_T
+        x0 = cx - TRAY_L / <span class="n">2.0</span>
+        x1 = cx + TRAY_L / <span class="n">2.0</span>
+        wood.extend(
+            add_u_shell(bm, x0, x1, r_in, r_out, N_STAVES, zc, A_SPAN, WOOD_IDX)
+        )
+        wood.extend(add_end_plank(bm, x0, -<span class="n">1.0</span>, r_out, zc, A_SPAN, END_T, WOOD_IDX))
+        wood.extend(add_end_plank(bm, x1, <span class="n">1.0</span>, r_out, zc, A_SPAN, END_T, WOOD_IDX))
 
         <span class="k">for</span> a_lip <span class="k">in</span> (-A_SPAN, A_SPAN):
             wood.extend(
                 add_box(
                     bm,
-                    pt(a_lip, cx),
-                    (TRAY_L + <span class="n">0.050</span>, <span class="n">0.034</span>, <span class="n">0.030</span>),
+                    _arc_point(a_lip, r_out, cx, zc),
+                    (TRAY_L - <span class="n">0.04</span>, <span class="n">0.038</span>, <span class="n">0.032</span>),
                     WOOD_IDX,
                     euler=(a_lip, <span class="n">0.0</span>, <span class="n">0.0</span>),
                 )
@@ -566,8 +574,8 @@ WATER_IDX = <span class="n">2</span>
 
         <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.30</span>, TRAY_L * <span class="n">0.30</span>):
             <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                top = (sx, ysign * <span class="n">0.10</span>, zc - TRAY_R - <span class="n">0.035</span>)
-                bot = (sx, ysign * <span class="n">0.24</span>, <span class="n">0.024</span>)
+                top = (sx, ysign * <span class="n">0.11</span>, zc - TRAY_R - <span class="n">0.04</span>)
+                bot = (sx, ysign * <span class="n">0.26</span>, <span class="n">0.024</span>)
                 wood.extend(
                     add_oriented_box(bm, top, bot, (<span class="n">0.050</span>, <span class="n">0.036</span>), WOOD_IDX)
                 )
@@ -575,7 +583,7 @@ WATER_IDX = <span class="n">2</span>
                 add_box(
                     bm,
                     (sx, <span class="n">0.0</span>, <span class="n">0.115</span>),
-                    (<span class="n">0.044</span>, <span class="n">0.38</span>, <span class="n">0.030</span>),
+                    (<span class="n">0.044</span>, <span class="n">0.40</span>, <span class="n">0.030</span>),
                     WOOD_IDX,
                 )
             )
@@ -602,55 +610,37 @@ WATER_IDX = <span class="n">2</span>
             <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
                 f.material_index = WOOD_IDX
 
-        r_strap = TRAY_R + STAVE_T * <span class="n">0.55</span> + <span class="n">0.004</span>
+        r_strap = r_out + <span class="n">0.006</span>
         <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.28</span>, TRAY_L * <span class="n">0.28</span>):
-            n = <span class="n">12</span>
+            n = <span class="n">14</span>
             pts = []
             <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>):
                 a = -A_SPAN + <span class="n">2.0</span> * A_SPAN * k / n
-                pts.append(
-                    (
-                        cx + sx,
-                        r_strap * math.sin(a),
-                        zc - r_strap * math.cos(a),
-                    )
-                )
+                pts.append(_arc_point(a, r_strap, cx + sx, zc))
             <span class="k">for</span> p0, p1 <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
                 metal.extend(
-                    add_oriented_box(bm, p0, p1, (<span class="n">0.020</span>, <span class="n">0.010</span>), METAL_IDX)
+                    add_oriented_box(bm, p0, p1, (<span class="n">0.022</span>, <span class="n">0.011</span>), METAL_IDX)
                 )
         <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.30</span>, TRAY_L * <span class="n">0.30</span>):
             <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
                 metal.extend(
                     add_box(
                         bm,
-                        (sx, ysign * <span class="n">0.24</span>, <span class="n">0.012</span>),
+                        (sx, ysign * <span class="n">0.26</span>, <span class="n">0.012</span>),
                         (<span class="n">0.056</span>, <span class="n">0.048</span>, <span class="n">0.024</span>),
                         METAL_IDX,
                     )
                 )
 
-        n_w = <span class="n">9</span>
-        wr = TRAY_R - STAVE_T * <span class="n">0.60</span>
-        span = A_SPAN * <span class="n">0.90</span>
-        <span class="k">for</span> i <span class="k">in</span> range(n_w):
-            t0 = i / n_w
-            t1 = (i + <span class="n">1.0</span>) / n_w
-            a0 = -span + <span class="n">2.0</span> * span * t0
-            a1 = -span + <span class="n">2.0</span> * span * t1
-            mid = <span class="n">0.5</span> * (a0 + a1)
-            chord = wr * abs(a1 - a0) * <span class="n">1.16</span>
-            add_box(
-                bm,
-                pt(mid, cx, wr),
-                (TRAY_L * <span class="n">0.84</span>, chord, <span class="n">0.018</span>),
-                WATER_IDX,
-                euler=(mid, <span class="n">0.0</span>, <span class="n">0.0</span>),
-            )
+        z_bot = zc - r_in
+        z_rim = zc - r_in * math.cos(A_SPAN)
+        z_water = z_bot + <span class="n">0.70</span> * (z_rim - z_bot)
+        ca = (zc - z_water) / r_in
+        half_w = r_in * math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - ca * ca)) * <span class="n">0.97</span>
         add_box(
             bm,
-            (cx, <span class="n">0.0</span>, zc - TRAY_R * <span class="n">0.28</span>),
-            (TRAY_L * <span class="n">0.84</span>, TRAY_R * <span class="n">1.50</span>, <span class="n">0.010</span>),
+            (cx, <span class="n">0.0</span>, z_water),
+            (TRAY_L - <span class="n">2.0</span> * END_T - <span class="n">0.08</span>, <span class="n">2.0</span> * half_w, <span class="n">0.016</span>),
             WATER_IDX,
         )
 
@@ -828,7 +818,7 @@ WATER_IDX = <span class="n">2</span>
     high = build_trough_mesh(<span class="s">&quot;TroughHigh&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">4</span>)
     wood = principled(<span class="s">&quot;TroughWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>)
     metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
-    water = principled(<span class="s">&quot;TroughWater&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.13</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.14</span>)
+    water = principled(<span class="s">&quot;TroughWater&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.16</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.08</span>)
     assign_slots(low, wood, metal, water)
     assign_slots(high, wood, metal, water)
 
@@ -982,7 +972,7 @@ WATER_IDX = <span class="n">2</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">90.0</span>)
+    low.rotation_euler.z = math.radians(-<span class="n">38.0</span>)
     low.rotation_euler.x = math.radians(<span class="n">0.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -1029,10 +1019,10 @@ WATER_IDX = <span class="n">2</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.05</span>, -<span class="n">2.00</span>, <span class="n">1.22</span>)
+    cam.location = (<span class="n">1.349</span>, -<span class="n">1.833</span>, <span class="n">1.030</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.22</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.28</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

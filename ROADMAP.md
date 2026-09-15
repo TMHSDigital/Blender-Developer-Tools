@@ -118,12 +118,12 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Wrought-iron park bench (slatted seat, scrolled legs) as a game-prop showcase piece~~ **SHIPPED** as `showcase/park-bench/` — scrolled iron legs, slatted seat and back; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wooden wheelbarrow (staved tray, single wheel, handles) as a game-prop showcase piece~~ **SHIPPED** as `showcase/wheelbarrow/` — staved U-tray, iron straps, spoked wheel, rear legs; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Blacksmith anvil on a timber stump as a game-prop showcase piece~~ **SHIPPED** as `showcase/anvil/` — London-pattern horn, face, heel, waist, hooped stump; `--skip-decimate` exits 9 on the LOD1 ratio band
-- ~~Staved wooden water trough on a stand as a game-prop showcase piece~~ **SHIPPED** as `showcase/water-trough/` — U-staves, end boards, iron straps, trestle legs; `--skip-decimate` exits 9 on the LOD1 ratio band
+- ~~Staved wooden water trough on a stand as a game-prop showcase piece~~ **SHIPPED** as `showcase/water-trough/` — watertight U-hull, plank ends, contained water, iron straps, trestle legs; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Hitching post with iron ring as a game-prop showcase piece~~ **SHIPPED** as `showcase/hitching-post/` — square post, pyramidal cap, cross-arm, iron shoe, bands, two rings; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Grindstone on a timber trestle as a game-prop showcase piece~~ **SHIPPED** as `showcase/grindstone/` — stone wheel, A-frame trestle, iron axle, hubs, crank; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Cast-iron village hand pump as a game-prop showcase piece~~ **SHIPPED** as `showcase/hand-pump/` — wooden plinth, column, spout, handle, wooden grip; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Timber fingerboard signpost as a game-prop showcase piece~~ **SHIPPED** as `showcase/signpost/` — square post, pyramidal cap, two painted boards, iron shoe and straps; `--skip-decimate` exits 9 on the LOD1 ratio band
-- ~~Blacksmith bellows as a game-prop showcase piece~~ **SHIPPED** as `showcase/bellows/` — hinged timber paddles, leather bag, iron nozzle; `--skip-decimate` exits 9 on the LOD1 ratio band
+- ~~Blacksmith bellows as a game-prop showcase piece~~ **DROPPED** — leather bag never read; removed from the showcase tree rather than shipping a crate-shaped miss
 - ~~Chopping block with embedded axe as a game-prop showcase piece~~ **SHIPPED** as `showcase/chopping-block/` — hooped timber stump, kerf, embedded axe; `--skip-decimate` exits 9 on the LOD1 ratio band
 - Wooden bucket with iron bands and a rope bail as a game-prop showcase piece
 - Wall-mounted torch sconce as a game-prop showcase piece
