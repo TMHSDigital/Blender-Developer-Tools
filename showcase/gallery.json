@@ -244,6 +244,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "wooden-bucket",
+      "dir": "showcase/wooden-bucket",
+      "teaches": "A procedural coopered wooden bucket with overlapping staves, a sealed bottom, iron hoops, and a rope bail through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 4272 tris, three materials with 222 metal and 72 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.402×0.345×0.544 m, LOD ratios in band, convex collider 390 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/wooden-bucket-hero.webp",
+      "preview": "showcase/wooden-bucket/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
