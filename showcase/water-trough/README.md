@@ -1,9 +1,9 @@
 # Water trough
 
 A showcase piece, not an example. Procedural staved water trough on a
-timber stand (U-staves, solid end-caps, water, iron straps, trestle
-legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low
-normal bake, LOD chain, convex collider, Unity glTF export.
+timber stand (watertight U-hull, plank end-caps, contained water, iron
+straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles
+high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -21,21 +21,20 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 4650–4900 | 4776 / 4776 / 4776 |
+| Base triangles | 2320–2650 | 2484 / 2484 / 2484 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
-| Materials | exactly 3 distinct, ≥24 metal and ≥6 water faces | 3 slots, 168 metal, 60 water |
+| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2166 |
+| Materials | exactly 3 distinct, ≥24 metal and ≥6 water faces | 3 slots, 192 metal, 6 water |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.162, 0.528, 0.488) m ± 0.01 | (1.1620, 0.5280, 0.4883), zmin 0 |
-| Collider tris | ≤ 150 | 128 |
-| Export | written, size > 0 | 348208 / 348208 / 348192 bytes |
+| Outer AABB | (1.152, 0.568, 0.509) m ± 0.01 | (1.1520, 0.5680, 0.5086), zmin 0 |
+| Collider tris | ≤ 80 | 32 |
+| Export | written, size > 0 | 180748 / 180748 / 180728 bytes |
 
-DECIMATE COLLAPSE triangle counts are **not** identical across series
-in general — the gate is a ratio band, not an exact count. On this
-piece LOD2 happened to match on 4.5.11, 5.1.2, and 5.2.1. Bake pixels
-are stochastic; the gate is `has_data` plus operator `FINISHED`, not
-byte-identity. Construction uses no RNG. Export byte counts differ by
-16 B on 5.2.1 (glTF serializer), not a gated axis.
+DECIMATE COLLAPSE triangle counts are **not** identical across series —
+5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact
+count. Bake pixels are stochastic; the gate is `has_data` plus operator
+`FINISHED`, not byte-identity. Construction uses no RNG. Export byte
+counts differ by 20 B on 5.2.1 (glTF serializer), not a gated axis.
 
 `--skip-decimate` skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and
 exit 9 fires. That is the named budget the falsifier violates.
