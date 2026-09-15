@@ -46,12 +46,13 @@ R_BOT = 0.050
 R_MID = 0.205
 R_TOP = 0.148
 APEX_Z = 0.82
-TRIPOD_R = 0.32
+TRIPOD_R = 0.56
 BAIL_SEGS = 12
 BAIL_R = 0.009
 BBOX_TOL = 0.01
+POT_LEG_CLEARANCE_MIN = 0.04
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.606, 0.591, 0.826)
+OUTER_SIZE = (1.013, 0.986, 0.827)
 
 BASE_TRIS_MIN = 3280
 BASE_TRIS_MAX = 3520
@@ -442,6 +443,49 @@ def world_bbox(obj):
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
+def pot_tripod_clearance(mesh):
+    # Recomputed from verts vs the three pole axes. Leg verts sit on the
+    # axes and are skipped; remaining shell verts in the pot band must
+    # clear the pole radius.
+    feet = []
+    for i in range(3):
+        ang = i * (2.0 * math.pi / 3.0) + math.radians(18.0)
+        feet.append(
+            Vector((TRIPOD_R * math.cos(ang), TRIPOD_R * math.sin(ang), 0.016))
+        )
+    apex = Vector((0.0, 0.0, APEX_Z))
+    z0 = POT_Z0 - 0.02
+    z1 = POT_Z0 + POT_H + 0.03
+    min_c = None
+    for v in mesh.vertices:
+        p = Vector(v.co)
+        if p.z < z0 or p.z > z1:
+            continue
+        if math.hypot(p.x, p.y) < 0.06:
+            continue
+        nearest = None
+        on_pole = False
+        for foot in feet:
+            ab = apex - foot
+            denom = ab.length_squared
+            if denom < 1e-12:
+                continue
+            t = max(0.0, min(1.0, (p - foot).dot(ab) / denom))
+            axis = (p - (foot + t * ab)).length
+            rad = 0.028 * (1.0 - t) + 0.018 * t
+            gap = axis - rad
+            if axis < rad + 0.006:
+                on_pole = True
+                break
+            if nearest is None or gap < nearest:
+                nearest = gap
+        if on_pole or nearest is None:
+            continue
+        if min_c is None or nearest < min_c:
+            min_c = nearest
+    return min_c if min_c is not None else -1.0
+
+
 def uv_stats(mesh):
     uv = mesh.uv_layers.active
     if uv is None:
@@ -584,6 +628,14 @@ def check(skip_decimate):
     size_x = bb[3] - bb[0]
     size_y = bb[4] - bb[1]
     size_z = bb[5] - bb[2]
+    clearance = pot_tripod_clearance(low.data)
+    print(f"measured pot_tripod_clearance={clearance:.4f}")
+    if clearance < POT_LEG_CLEARANCE_MIN:
+        return fail(
+            f"pot clips tripod clearance {clearance:.4f} "
+            f"< {POT_LEG_CLEARANCE_MIN}",
+            3,
+        ), None, None, None, None, None
 
     img, tex = setup_bake_image(low, wood)
     if img is None:
@@ -762,10 +814,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.58, -2.18, 1.22)
+    cam.location = (1.82, -2.50, 1.40)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.46)
+    aim.location = (0.0, 0.0, 0.40)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

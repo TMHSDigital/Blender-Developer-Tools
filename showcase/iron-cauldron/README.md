@@ -23,18 +23,21 @@ materials, UVs, evaluated LOD, collider, or export file.
 | --- | --- | --- |
 | Base triangles | 3280–3520 | 3388 / 3388 / 3388 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2184 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2172 |
 | Materials | exactly 2 distinct, ≥12 wood, ≥24 metal | 2 slots, 450 wood, 1198 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.606, 0.591, 0.826) m ± 0.01 | (0.6061, 0.5911, 0.8255), zmin 0.002 |
-| Collider tris | ≤ 200 | 180 |
-| Export | written, size > 0 | 250748 / 250748 / 250736 bytes |
+| Outer AABB | (1.013, 0.986, 0.827) m ± 0.01 | (1.0128, 0.9865, 0.8271), zmin 0.002 |
+| Pot–leg clearance | ≥ 0.04 m (recomputed vs pole axes) | 0.0513 / 0.0513 / 0.0513 |
+| Collider tris | ≤ 200 | 98 |
+| Export | written, size > 0 | 245060 / 245060 / 245044 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
-5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact
+5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact
 count. Bake pixels are stochastic; the gate is `has_data` plus operator
 `FINISHED`, not byte-identity. Construction uses no RNG. Export byte
-counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.
+counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.
+The pot–leg clearance is recomputed from shell verts vs the three pole
+axes; clipping exits 3.
 
 `--skip-decimate` skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and
 exit 9 fires. That is the named budget the falsifier violates.
@@ -59,7 +62,7 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 0 | Success |
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
-| 3 | Mesh did not build / no UV layer |
+| 3 | Mesh did not build / no UV layer / pot clips tripod |
 | 4 | Base triangle count outside range |
 | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing |
 | 6 | UVs outside 0..1 |

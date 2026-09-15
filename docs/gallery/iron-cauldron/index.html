@@ -253,7 +253,7 @@
       <img src="../assets/iron-cauldron-hero.webp" alt="iron-cauldron render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3388 tris, two materials with 450 wood and 1198 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.606×0.591×0.826 m, LOD ratios in band (5.2 COLLAPSE 4 tris leaner on LOD2), convex collider 180 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3388 tris, two materials with 450 wood and 1198 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.013×0.986×0.827 m, pot–leg clearance 0.051 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 98 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/iron-cauldron/iron_cauldron.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -264,7 +264,7 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3280–3520 | 3388 / 3388 / 3388 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2184 | | Materials | exactly 2 distinct, ≥12 wood, ≥24 metal | 2 slots, 450 wood, 1198 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.606, 0.591, 0.826) m ± 0.01 | (0.6061, 0.5911, 0.8255), zmin 0.002 | | Collider tris | ≤ 200 | 180 | | Export | written, size &gt; 0 | 250748 / 250748 / 250736 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3280–3520 | 3388 / 3388 / 3388 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2172 | | Materials | exactly 2 distinct, ≥12 wood, ≥24 metal | 2 slots, 450 wood, 1198 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.013, 0.986, 0.827) m ± 0.01 | (1.0128, 0.9865, 0.8271), zmin 0.002 | | Pot–leg clearance | ≥ 0.04 m (recomputed vs pole axes) | 0.0513 / 0.0513 / 0.0513 | | Collider tris | ≤ 200 | 98 | | Export | written, size &gt; 0 | 245060 / 245060 / 245044 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
@@ -274,7 +274,7 @@ blender --background --python iron_cauldron.py -- --output cauldron.png</code></
 <p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer / pot clips tripod | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -330,12 +330,13 @@ R_BOT = <span class="n">0.050</span>
 R_MID = <span class="n">0.205</span>
 R_TOP = <span class="n">0.148</span>
 APEX_Z = <span class="n">0.82</span>
-TRIPOD_R = <span class="n">0.32</span>
+TRIPOD_R = <span class="n">0.56</span>
 BAIL_SEGS = <span class="n">12</span>
 BAIL_R = <span class="n">0.009</span>
 BBOX_TOL = <span class="n">0.01</span>
+POT_LEG_CLEARANCE_MIN = <span class="n">0.04</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.606</span>, <span class="n">0.591</span>, <span class="n">0.826</span>)
+OUTER_SIZE = (<span class="n">1.013</span>, <span class="n">0.986</span>, <span class="n">0.827</span>)
 
 BASE_TRIS_MIN = <span class="n">3280</span>
 BASE_TRIS_MAX = <span class="n">3520</span>
@@ -726,6 +727,49 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
+<span class="k">def</span> pot_tripod_clearance(mesh):
+    <span class="c"># Recomputed from verts vs the three pole axes. Leg verts sit on the</span>
+    <span class="c"># axes and are skipped; remaining shell verts in the pot band must</span>
+    <span class="c"># clear the pole radius.</span>
+    feet = []
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+        ang = i * (<span class="n">2.0</span> * math.pi / <span class="n">3.0</span>) + math.radians(<span class="n">18.0</span>)
+        feet.append(
+            Vector((TRIPOD_R * math.cos(ang), TRIPOD_R * math.sin(ang), <span class="n">0.016</span>))
+        )
+    apex = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, APEX_Z))
+    z0 = POT_Z0 - <span class="n">0.02</span>
+    z1 = POT_Z0 + POT_H + <span class="n">0.03</span>
+    min_c = <span class="k">None</span>
+    <span class="k">for</span> v <span class="k">in</span> mesh.vertices:
+        p = Vector(v.co)
+        <span class="k">if</span> p.z &lt; z0 <span class="k">or</span> p.z &gt; z1:
+            <span class="k">continue</span>
+        <span class="k">if</span> math.hypot(p.x, p.y) &lt; <span class="n">0.06</span>:
+            <span class="k">continue</span>
+        nearest = <span class="k">None</span>
+        on_pole = <span class="k">False</span>
+        <span class="k">for</span> foot <span class="k">in</span> feet:
+            ab = apex - foot
+            denom = ab.length_squared
+            <span class="k">if</span> denom &lt; <span class="n">1e-12</span>:
+                <span class="k">continue</span>
+            t = max(<span class="n">0.0</span>, min(<span class="n">1.0</span>, (p - foot).dot(ab) / denom))
+            axis = (p - (foot + t * ab)).length
+            rad = <span class="n">0.028</span> * (<span class="n">1.0</span> - t) + <span class="n">0.018</span> * t
+            gap = axis - rad
+            <span class="k">if</span> axis &lt; rad + <span class="n">0.006</span>:
+                on_pole = <span class="k">True</span>
+                <span class="k">break</span>
+            <span class="k">if</span> nearest <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> gap &lt; nearest:
+                nearest = gap
+        <span class="k">if</span> on_pole <span class="k">or</span> nearest <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        <span class="k">if</span> min_c <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> nearest &lt; min_c:
+            min_c = nearest
+    <span class="k">return</span> min_c <span class="k">if</span> min_c <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> -<span class="n">1.0</span>
+
+
 <span class="k">def</span> uv_stats(mesh):
     uv = mesh.uv_layers.active
     <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
@@ -868,6 +912,14 @@ METAL_IDX = <span class="n">1</span>
     size_x = bb[<span class="n">3</span>] - bb[<span class="n">0</span>]
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+    clearance = pot_tripod_clearance(low.data)
+    print(<span class="s">f&quot;</span><span class="s">measured pot_tripod_clearance=</span>{clearance:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    <span class="k">if</span> clearance &lt; POT_LEG_CLEARANCE_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">pot clips tripod clearance </span>{clearance:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">&lt; </span>{POT_LEG_CLEARANCE_MIN}<span class="s">&quot;</span>,
+            <span class="n">3</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
 
     img, tex = setup_bake_image(low, wood)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
@@ -1046,10 +1098,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.58</span>, -<span class="n">2.18</span>, <span class="n">1.22</span>)
+    cam.location = (<span class="n">1.82</span>, -<span class="n">2.50</span>, <span class="n">1.40</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.46</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.40</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
