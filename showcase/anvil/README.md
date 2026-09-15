@@ -21,21 +21,21 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1620–1780 | 1696 / 1696 / 1696 |
+| Base triangles | 6450–6800 | 6616 / 6616 / 6616 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2182 |
-| Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 274 metal |
+| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
+| Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 628 wood, 2616 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.746, 0.410, 0.682) m ± 0.01 | (0.7460, 0.4095, 0.6820), zmin 0 |
-| Collider tris | ≤ 180 | 162 |
-| Export | written, size > 0 | 130852 / 130852 / 130840 bytes |
+| Outer AABB | (0.772, 0.419, 0.662) m ± 0.01 | (0.7720, 0.4183, 0.6618), zmin 0 |
+| Collider tris | ≤ 220 | 190 |
+| Export | written, size > 0 | 474984 / 474984 / 474972 bytes |
 
-DECIMATE COLLAPSE triangle counts are **not** identical across series —
-5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an
-exact count. Bake pixels are stochastic; the gate is `has_data` plus
-operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 4 B on 5.2.1 (glTF serializer), not a
-gated axis.
+DECIMATE COLLAPSE triangle counts are **not** identical across series in
+general — the gate is a ratio band, not an exact count. On this mesh LOD
+ratios matched across 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic;
+the gate is `has_data` plus operator `FINISHED`, not byte-identity.
+Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1
+(glTF serializer), not a gated axis.
 
 `--skip-decimate` skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and
 exit 9 fires. That is the named budget the falsifier violates.

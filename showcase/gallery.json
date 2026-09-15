@@ -9,7 +9,7 @@
       "name": "shipping-crate",
       "dir": "showcase/shipping-crate",
       "teaches": "A procedural shipping crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 552 tris, two materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.256×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 20 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 624 tris, two materials with 132 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.352×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 36 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/shipping-crate-hero.webp",
       "preview": "showcase/shipping-crate/preview.webp",
       "tags": [
@@ -165,7 +165,7 @@
       "name": "anvil",
       "dir": "showcase/anvil",
       "teaches": "A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1696 tris, two materials with 274 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.746×0.410×0.682 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 162 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 6616 tris, two materials with 2616 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.772×0.419×0.662 m, LOD ratios in band, convex collider 190 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/anvil-hero.webp",
       "preview": "showcase/anvil/preview.webp",
       "tags": [
@@ -260,8 +260,8 @@
     {
       "name": "wall-torch",
       "dir": "showcase/wall-torch",
-      "teaches": "A procedural wall-mounted torch sconce with a coursed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1520 tris, four materials with 540 stone, 130 metal, and 28 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.440×0.343×0.740 m, LOD ratios in band (5.2 COLLAPSE 4 tris leaner on LOD2), convex collider 94 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 848 tris, four materials with 162 stone, 134 metal, and 44 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.384×0.360×0.670 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 92 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/wall-torch-hero.webp",
       "preview": "showcase/wall-torch/preview.webp",
       "tags": [
@@ -285,7 +285,7 @@
       "name": "iron-cauldron",
       "dir": "showcase/iron-cauldron",
       "teaches": "A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 7012 tris, two materials with 2754 wood and 706 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.572×0.558×0.786 m, LOD ratios in band, convex collider 130 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 3388 tris, two materials with 450 wood and 1198 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.606×0.591×0.826 m, LOD ratios in band (5.2 COLLAPSE 4 tris leaner on LOD2), convex collider 180 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
       "hero": "docs/gallery/assets/iron-cauldron-hero.webp",
       "preview": "showcase/iron-cauldron/preview.webp",
       "tags": [

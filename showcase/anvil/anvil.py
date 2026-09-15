@@ -35,23 +35,18 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-STUMP_R = 0.195
-STUMP_H = 0.34
-FACE_L = 0.40
-FACE_W = 0.125
-FACE_T = 0.048
-BODY_H = 0.18
-WAIST_L = 0.22
-WAIST_W = 0.088
-FOOT_L = 0.32
-FOOT_W = 0.15
-HORN_L = 0.28
-HEEL_L = 0.11
+STUMP_R = 0.20
+STUMP_H = 0.33
+FACE_L = 0.42
+FACE_W = 0.118
+FACE_T = 0.046
+HORN_L = 0.30
+HEEL_L = 0.12
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (0.746, 0.410, 0.682)
-BASE_TRIS_MIN = 1620
-BASE_TRIS_MAX = 1780
+OUTER_SIZE = (0.772, 0.419, 0.662)
+BASE_TRIS_MIN = 6450
+BASE_TRIS_MAX = 6800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -61,7 +56,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 180
+COLLIDER_TRIS_MAX = 220
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 METAL_FACES_MIN = 24
@@ -264,7 +259,7 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
                 STUMP_R + 0.010,
                 STUMP_R - 0.018,
                 STUMP_H,
-                20,
+                24,
                 WOOD_IDX,
             )
         )
@@ -274,7 +269,7 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
                 (0.0, 0.0, STUMP_H + 0.010),
                 STUMP_R - 0.022,
                 0.020,
-                20,
+                24,
                 WOOD_IDX,
             )
         )
@@ -302,36 +297,36 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
         metal.extend(
             add_box(
                 bm,
-                (0.0, 0.0, z0 + 0.024),
-                (0.38, 0.168, 0.048),
+                (0.0, 0.0, z0 + 0.028),
+                (0.44, 0.20, 0.056),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_box(
                 bm,
-                (0.0, 0.0, z0 + 0.066),
-                (0.30, 0.132, 0.038),
+                (0.0, 0.0, z0 + 0.078),
+                (0.30, 0.130, 0.046),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_box(
                 bm,
-                (0.0, 0.0, z0 + 0.148),
-                (0.176, 0.070, 0.130),
+                (0.0, 0.0, z0 + 0.155),
+                (0.150, 0.058, 0.112),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_box(
                 bm,
-                (0.0, 0.0, z0 + 0.248),
-                (0.34, 0.112, 0.052),
+                (0.0, 0.0, z0 + 0.236),
+                (0.36, 0.108, 0.050),
                 METAL_IDX,
             )
         )
-        face_z = z0 + 0.248 + 0.026 + FACE_T / 2.0
+        face_z = z0 + 0.236 + 0.025 + FACE_T / 2.0
         metal.extend(
             add_box(
                 bm,
@@ -341,15 +336,15 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
             )
         )
 
-        horn_z = face_z - 0.012
+        horn_z = face_z - 0.006
         metal.extend(
             add_cone(
                 bm,
-                (FACE_L / 2.0 + HORN_L / 2.0 - 0.028, 0.0, horn_z),
-                0.056,
-                0.014,
+                (FACE_L / 2.0 + HORN_L / 2.0 - 0.050, 0.0, horn_z),
+                FACE_W * 0.46,
+                0.012,
                 HORN_L,
-                16,
+                20,
                 METAL_IDX,
                 euler=(0.0, math.pi / 2.0, 0.0),
             )
@@ -357,34 +352,34 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
         metal.extend(
             add_box(
                 bm,
-                (FACE_L / 2.0 - 0.018, 0.0, horn_z - 0.018),
-                (0.10, FACE_W * 0.90, 0.048),
+                (FACE_L / 2.0 - 0.010, 0.0, horn_z - 0.014),
+                (0.12, FACE_W * 0.88, 0.040),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_box(
                 bm,
-                (-FACE_L / 2.0 - HEEL_L / 2.0 + 0.016, 0.0, face_z - 0.006),
-                (HEEL_L, FACE_W * 0.90, FACE_T * 0.78),
+                (-FACE_L / 2.0 - HEEL_L / 2.0 + 0.018, 0.0, face_z - 0.004),
+                (HEEL_L, FACE_W * 0.92, FACE_T * 0.82),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_box(
                 bm,
-                (FACE_L * 0.18, 0.0, face_z + FACE_T / 2.0 - 0.005),
-                (0.032, 0.032, 0.012),
+                (-FACE_L * 0.22, 0.0, face_z + FACE_T / 2.0 - 0.005),
+                (0.028, 0.028, 0.012),
                 METAL_IDX,
             )
         )
         metal.extend(
             add_cyl(
                 bm,
-                (FACE_L * 0.30, 0.0, face_z + FACE_T / 2.0 - 0.004),
-                0.009,
+                (FACE_L * 0.22, 0.0, face_z + FACE_T / 2.0 - 0.004),
+                0.008,
                 0.012,
-                10,
+                12,
                 METAL_IDX,
             )
         )
@@ -402,15 +397,35 @@ def build_anvil_mesh(name, bevel_offset, bevel_segments):
             if v.co.z < 0.0:
                 v.co.z = 0.0
 
+        if bevel_offset > 0.0:
+            metal_edges = list(
+                {e for v in metal for e in v.link_edges if v.is_valid}
+            )
+            if metal_edges:
+                ret = bmesh.ops.bevel(
+                    bm,
+                    geom=metal_edges,
+                    offset=max(bevel_offset, 0.012),
+                    segments=bevel_segments,
+                    profile=0.5,
+                    affect="EDGES",
+                    clamp_overlap=True,
+                )
+                for f in ret.get("faces") or []:
+                    f.material_index = METAL_IDX
+
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = True
+        for edge in bm.edges:
+            edge.smooth = True
+            if edge.is_manifold and len(edge.link_faces) == 2:
+                if edge.calc_face_angle() > math.radians(38.0):
+                    edge.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        for poly in me.polygons:
-            poly.use_smooth = False
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -559,10 +574,10 @@ def export_unity(path, objects):
 
 def check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_anvil_mesh("AnvilLow", bevel_offset=0.005, bevel_segments=2)
-    high = build_anvil_mesh("AnvilHigh", bevel_offset=0.005, bevel_segments=4)
+    low = build_anvil_mesh("AnvilLow", bevel_offset=0.010, bevel_segments=2)
+    high = build_anvil_mesh("AnvilHigh", bevel_offset=0.010, bevel_segments=4)
     wood = principled("AnvilStump", (0.34, 0.18, 0.07, 1.0), 0.0, 0.62)
-    metal = principled("AnvilSteel", (0.44, 0.45, 0.47, 1.0), 1.0, 0.30)
+    metal = principled("AnvilSteel", (0.16, 0.15, 0.14, 1.0), 0.90, 0.34)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -711,8 +726,8 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-8.0)
-    low.rotation_euler.x = math.radians(0.0)
+    low.rotation_euler.z = math.radians(-42.0)
+    low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -758,10 +773,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.70, -2.20, 1.08)
+    cam.location = (1.32, -1.90, 1.04)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.40)
+    aim.location = (0.0, 0.0, 0.44)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

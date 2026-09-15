@@ -37,18 +37,15 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-WALL_W = 0.42
-WALL_D = 0.11
-WALL_H = 0.68
-N_ROWS = 4
-N_COLS = 2
-MORTAR = 0.010
+WALL_W = 0.36
+WALL_D = 0.10
+WALL_H = 0.58
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.440, 0.343, 0.740)
+OUTER_SIZE = (0.384, 0.360, 0.670)
 
-BASE_TRIS_MIN = 1400
-BASE_TRIS_MAX = 1650
+BASE_TRIS_MIN = 800
+BASE_TRIS_MAX = 920
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -232,133 +229,133 @@ def build_torch_mesh(name, bevel_offset, bevel_segments):
     metal_faces = set()
     flame_faces = set()
     try:
-        # Solid core so mortar gaps cannot punch through the plaque.
+        # One dressed plaque — a tile grid reads as bathroom masonry.
         add_box(
             bm,
             (0.0, 0.0, WALL_H / 2.0),
-            (WALL_W - 0.03, WALL_D - 0.03, WALL_H),
+            (WALL_W, WALL_D, WALL_H),
             STONE_IDX,
         )
-        usable_w = WALL_W - 2.0 * MORTAR
-        usable_h = WALL_H - 2.0 * MORTAR
-        stone_w = (usable_w - (N_COLS - 1) * MORTAR) / N_COLS
-        stone_h = (usable_h - (N_ROWS - 1) * MORTAR) / N_ROWS
-        face_y = WALL_D / 2.0 + 0.006
-        for row in range(N_ROWS):
-            z0 = MORTAR + row * (stone_h + MORTAR) + stone_h / 2.0
-            x_shift = (stone_w + MORTAR) * 0.5 if row % 2 else 0.0
-            for col in range(N_COLS):
-                x = -WALL_W / 2.0 + MORTAR + col * (stone_w + MORTAR) + stone_w / 2.0
-                x += x_shift * 0.35
-                w = stone_w if col < N_COLS - 1 or row % 2 == 0 else stone_w * 0.78
-                add_box(
-                    bm,
-                    (x, face_y, z0),
-                    (w, 0.028, stone_h),
-                    STONE_IDX,
-                )
-        # Top cap course
         add_box(
             bm,
-            (0.0, 0.0, WALL_H + 0.012),
-            (WALL_W + 0.02, WALL_D + 0.02, 0.028),
+            (0.0, WALL_D / 2.0 + 0.010, WALL_H / 2.0),
+            (WALL_W - 0.048, 0.022, WALL_H - 0.070),
+            STONE_IDX,
+        )
+        add_box(
+            bm,
+            (0.0, 0.0, WALL_H + 0.014),
+            (WALL_W + 0.024, WALL_D + 0.024, 0.030),
             STONE_IDX,
         )
 
-        plate_y = WALL_D / 2.0 + 0.028
-        plate_z = 0.46
+        plate_y = WALL_D / 2.0 + 0.024
+        plate_z = 0.30
         before = set(bm.faces)
-        add_box(bm, (0.0, plate_y, plate_z), (0.16, 0.016, 0.22), METAL_IDX)
-        add_box(bm, (0.0, plate_y, plate_z + 0.08), (0.18, 0.012, 0.028), METAL_IDX)
-        add_box(bm, (0.0, plate_y, plate_z - 0.08), (0.18, 0.012, 0.028), METAL_IDX)
+        add_box(bm, (0.0, plate_y, plate_z), (0.14, 0.018, 0.20), METAL_IDX)
+        add_box(bm, (0.0, plate_y, plate_z + 0.078), (0.18, 0.014, 0.028), METAL_IDX)
+        add_box(bm, (0.0, plate_y, plate_z - 0.078), (0.18, 0.014, 0.028), METAL_IDX)
         add_rim(
             bm,
-            (0.0, plate_y + 0.018, plate_z + 0.02),
-            0.042,
-            0.008,
+            (0.0, plate_y + 0.020, plate_z + 0.016),
+            0.048,
+            0.009,
             METAL_IDX,
             euler=(math.radians(90.0), 0.0, 0.0),
         )
-        arm_y0 = plate_y + 0.010
-        arm_y1 = plate_y + 0.13
-        cup_z = 0.40
+        arm_y0 = plate_y + 0.012
+        arm_y1 = plate_y + 0.15
+        cup_z = 0.26
         add_oriented_box(
             bm,
-            (0.028, arm_y0, plate_z - 0.02),
-            (0.018, arm_y1, cup_z + 0.04),
-            (0.016, 0.016),
+            (0.032, arm_y0, plate_z - 0.018),
+            (0.020, arm_y1, cup_z + 0.036),
+            (0.018, 0.018),
             METAL_IDX,
         )
         add_oriented_box(
             bm,
-            (-0.028, arm_y0, plate_z - 0.02),
-            (-0.018, arm_y1, cup_z + 0.04),
-            (0.016, 0.016),
+            (-0.032, arm_y0, plate_z - 0.018),
+            (-0.020, arm_y1, cup_z + 0.036),
+            (0.018, 0.018),
             METAL_IDX,
         )
         add_cone(
             bm,
-            (0.0, arm_y1 + 0.01, cup_z),
-            0.055,
-            0.032,
-            0.055,
-            12,
+            (0.0, arm_y1 + 0.012, cup_z),
+            0.062,
+            0.034,
+            0.062,
+            14,
             METAL_IDX,
         )
         add_cylinder(
             bm,
-            (0.0, arm_y1 + 0.01, cup_z - 0.038),
-            0.048,
-            0.012,
-            12,
+            (0.0, arm_y1 + 0.012, cup_z - 0.042),
+            0.054,
+            0.014,
+            14,
             METAL_IDX,
         )
         metal_faces.update(set(bm.faces) - before)
 
-        stick_z0 = cup_z - 0.02
-        stick_z1 = 0.60
+        stick_z0 = cup_z - 0.018
+        stick_z1 = 0.50
         add_cylinder(
             bm,
-            (0.0, arm_y1 + 0.01, (stick_z0 + stick_z1) / 2.0),
-            0.022,
+            (0.0, arm_y1 + 0.012, (stick_z0 + stick_z1) / 2.0),
+            0.026,
             stick_z1 - stick_z0,
-            10,
+            12,
             WOOD_IDX,
         )
         add_cone(
             bm,
-            (0.0, arm_y1 + 0.01, 0.56),
-            0.042,
-            0.026,
-            0.10,
-            10,
+            (0.0, arm_y1 + 0.012, 0.46),
+            0.050,
+            0.030,
+            0.12,
+            12,
             WOOD_IDX,
         )
 
         before = set(bm.faces)
-        flame_y = arm_y1 + 0.01
-        add_cone(bm, (0.0, flame_y, 0.66), 0.038, 0.006, 0.16, 8, FLAME_IDX)
+        flame_y = arm_y1 + 0.012
+        add_cone(bm, (0.0, flame_y, 0.56), 0.048, 0.006, 0.22, 10, FLAME_IDX)
         add_cone(
             bm,
-            (0.016, flame_y - 0.008, 0.65),
-            0.022,
+            (0.018, flame_y - 0.010, 0.545),
+            0.030,
             0.004,
-            0.12,
-            7,
+            0.16,
+            9,
             FLAME_IDX,
-            euler=(0.0, math.radians(14.0), 0.0),
+            euler=(0.0, math.radians(16.0), 0.0),
         )
         add_cone(
             bm,
-            (-0.014, flame_y + 0.010, 0.645),
-            0.020,
+            (-0.016, flame_y + 0.012, 0.54),
+            0.028,
             0.004,
-            0.11,
-            7,
+            0.15,
+            9,
             FLAME_IDX,
-            euler=(math.radians(-10.0), math.radians(-12.0), 0.0),
+            euler=(math.radians(-12.0), math.radians(-14.0), 0.0),
+        )
+        add_cone(
+            bm,
+            (0.006, flame_y + 0.004, 0.58),
+            0.018,
+            0.003,
+            0.12,
+            8,
+            FLAME_IDX,
+            euler=(math.radians(8.0), math.radians(6.0), 0.0),
         )
         flame_faces.update(set(bm.faces) - before)
+
+        for v in bm.verts:
+            v.co.z += 0.14
 
         if bevel_offset > 0.0:
             stone_edges = [
@@ -558,16 +555,16 @@ def check(skip_decimate):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_torch_mesh("TorchLow", bevel_offset=0.004, bevel_segments=2)
     high = build_torch_mesh("TorchHigh", bevel_offset=0.004, bevel_segments=4)
-    stone = principled("TorchStone", (0.50, 0.42, 0.32, 1.0), 0.0, 0.68)
-    metal = principled("TorchMetal", (0.50, 0.48, 0.44, 1.0), 1.0, 0.28)
-    wood = principled("TorchWood", (0.28, 0.14, 0.06, 1.0), 0.0, 0.62)
+    stone = principled("TorchStone", (0.36, 0.34, 0.30, 1.0), 0.0, 0.72)
+    metal = principled("TorchMetal", (0.14, 0.12, 0.10, 1.0), 0.88, 0.38)
+    wood = principled("TorchWood", (0.22, 0.11, 0.05, 1.0), 0.0, 0.64)
     flame = principled(
         "TorchFlame",
-        (1.0, 0.32, 0.05, 1.0),
+        (1.0, 0.28, 0.04, 1.0),
         0.0,
-        0.42,
-        emission=4.5,
-        emission_color=(1.0, 0.38, 0.06, 1.0),
+        0.48,
+        emission=1.6,
+        emission_color=(1.0, 0.30, 0.05, 1.0),
     )
     assign_slots(low, stone, metal, wood, flame)
     assign_slots(high, stone, metal, wood, flame)
@@ -725,7 +722,7 @@ def render_still(low, stone, tex, path, engine):
             ob.hide_viewport = True
 
     # Sconce is built on +Y; camera sits in -Y, so yaw 180 so the flame faces us.
-    low.rotation_euler.z = math.radians(152.0)
+    low.rotation_euler.z = math.radians(142.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -773,10 +770,10 @@ def render_still(low, stone, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.32, -1.78, 1.08)
+    cam.location = (1.10, -1.70, 0.64)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.08, 0.38)
+    aim.location = (0.0, 0.06, 0.48)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim

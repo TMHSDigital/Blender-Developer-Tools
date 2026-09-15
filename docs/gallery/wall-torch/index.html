@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wall-torch — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural wall-mounted torch sconce with a coursed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wall-torch/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wall-torch — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural wall-mounted torch sconce with a coursed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wall-torch/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wall-torch-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wall-torch — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural wall-mounted torch sconce with a coursed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wall-torch-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,26 +246,26 @@
   </div>
   <header class="hero">
     <h1>wall-torch</h1>
-    <p>A procedural wall-mounted torch sconce with a coursed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom wall-torch render">
       <img src="../assets/wall-torch-hero.webp" alt="wall-torch render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1520 tris, four materials with 540 stone, 130 metal, and 28 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.440×0.343×0.740 m, LOD ratios in band (5.2 COLLAPSE 4 tris leaner on LOD2), convex collider 94 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 848 tris, four materials with 162 stone, 134 metal, and 44 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.384×0.360×0.670 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 92 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wall-torch/wall_torch.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural wall-mounted torch sconce (coursed stone plaque, iron bracket and cup, wooden haft, emissive flame) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural wall-mounted torch sconce (dressed stone plaque, iron bracket and cup, wooden haft, emissive flame) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, <code>procedural-materials-and-shaders</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1400–1650 | 1520 / 1520 / 1520 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2197 / 0.2197 / 0.2171 | | Materials | exactly 4 distinct, ≥24 stone, ≥24 metal, ≥8 flame | 4 slots, 540 stone, 130 metal, 28 flame | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.440, 0.343, 0.740) m ± 0.01 | (0.4400, 0.3430, 0.7400), zmin 0 | | Collider tris | ≤ 120 | 94 | | Export | written, size &gt; 0 | 117260 / 117260 / 117244 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 800–920 | 848 / 848 / 848 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2099 | | Materials | exactly 4 distinct, ≥24 stone, ≥24 metal, ≥8 flame | 4 slots, 162 stone, 134 metal, 44 flame | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.384, 0.360, 0.670) m ± 0.01 | (0.3840, 0.3600, 0.6700), zmin 0.140 | | Collider tris | ≤ 120 | 92 | | Export | written, size &gt; 0 | 69060 / 69060 / 69048 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wall_torch.py --
@@ -321,18 +321,15 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-WALL_W = <span class="n">0.42</span>
-WALL_D = <span class="n">0.11</span>
-WALL_H = <span class="n">0.68</span>
-N_ROWS = <span class="n">4</span>
-N_COLS = <span class="n">2</span>
-MORTAR = <span class="n">0.010</span>
+WALL_W = <span class="n">0.36</span>
+WALL_D = <span class="n">0.10</span>
+WALL_H = <span class="n">0.58</span>
 BBOX_TOL = <span class="n">0.01</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.440</span>, <span class="n">0.343</span>, <span class="n">0.740</span>)
+OUTER_SIZE = (<span class="n">0.384</span>, <span class="n">0.360</span>, <span class="n">0.670</span>)
 
-BASE_TRIS_MIN = <span class="n">1400</span>
-BASE_TRIS_MAX = <span class="n">1650</span>
+BASE_TRIS_MIN = <span class="n">800</span>
+BASE_TRIS_MAX = <span class="n">920</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -516,133 +513,133 @@ FLAME_IDX = <span class="n">3</span>
     metal_faces = set()
     flame_faces = set()
     <span class="k">try</span>:
-        <span class="c"># Solid core so mortar gaps cannot punch through the plaque.</span>
+        <span class="c"># One dressed plaque — a tile grid reads as bathroom masonry.</span>
         add_box(
             bm,
             (<span class="n">0.0</span>, <span class="n">0.0</span>, WALL_H / <span class="n">2.0</span>),
-            (WALL_W - <span class="n">0.03</span>, WALL_D - <span class="n">0.03</span>, WALL_H),
+            (WALL_W, WALL_D, WALL_H),
             STONE_IDX,
         )
-        usable_w = WALL_W - <span class="n">2.0</span> * MORTAR
-        usable_h = WALL_H - <span class="n">2.0</span> * MORTAR
-        stone_w = (usable_w - (N_COLS - <span class="n">1</span>) * MORTAR) / N_COLS
-        stone_h = (usable_h - (N_ROWS - <span class="n">1</span>) * MORTAR) / N_ROWS
-        face_y = WALL_D / <span class="n">2.0</span> + <span class="n">0.006</span>
-        <span class="k">for</span> row <span class="k">in</span> range(N_ROWS):
-            z0 = MORTAR + row * (stone_h + MORTAR) + stone_h / <span class="n">2.0</span>
-            x_shift = (stone_w + MORTAR) * <span class="n">0.5</span> <span class="k">if</span> row % <span class="n">2</span> <span class="k">else</span> <span class="n">0.0</span>
-            <span class="k">for</span> col <span class="k">in</span> range(N_COLS):
-                x = -WALL_W / <span class="n">2.0</span> + MORTAR + col * (stone_w + MORTAR) + stone_w / <span class="n">2.0</span>
-                x += x_shift * <span class="n">0.35</span>
-                w = stone_w <span class="k">if</span> col &lt; N_COLS - <span class="n">1</span> <span class="k">or</span> row % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> stone_w * <span class="n">0.78</span>
-                add_box(
-                    bm,
-                    (x, face_y, z0),
-                    (w, <span class="n">0.028</span>, stone_h),
-                    STONE_IDX,
-                )
-        <span class="c"># Top cap course</span>
         add_box(
             bm,
-            (<span class="n">0.0</span>, <span class="n">0.0</span>, WALL_H + <span class="n">0.012</span>),
-            (WALL_W + <span class="n">0.02</span>, WALL_D + <span class="n">0.02</span>, <span class="n">0.028</span>),
+            (<span class="n">0.0</span>, WALL_D / <span class="n">2.0</span> + <span class="n">0.010</span>, WALL_H / <span class="n">2.0</span>),
+            (WALL_W - <span class="n">0.048</span>, <span class="n">0.022</span>, WALL_H - <span class="n">0.070</span>),
+            STONE_IDX,
+        )
+        add_box(
+            bm,
+            (<span class="n">0.0</span>, <span class="n">0.0</span>, WALL_H + <span class="n">0.014</span>),
+            (WALL_W + <span class="n">0.024</span>, WALL_D + <span class="n">0.024</span>, <span class="n">0.030</span>),
             STONE_IDX,
         )
 
-        plate_y = WALL_D / <span class="n">2.0</span> + <span class="n">0.028</span>
-        plate_z = <span class="n">0.46</span>
+        plate_y = WALL_D / <span class="n">2.0</span> + <span class="n">0.024</span>
+        plate_z = <span class="n">0.30</span>
         before = set(bm.faces)
-        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z), (<span class="n">0.16</span>, <span class="n">0.016</span>, <span class="n">0.22</span>), METAL_IDX)
-        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z + <span class="n">0.08</span>), (<span class="n">0.18</span>, <span class="n">0.012</span>, <span class="n">0.028</span>), METAL_IDX)
-        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z - <span class="n">0.08</span>), (<span class="n">0.18</span>, <span class="n">0.012</span>, <span class="n">0.028</span>), METAL_IDX)
+        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z), (<span class="n">0.14</span>, <span class="n">0.018</span>, <span class="n">0.20</span>), METAL_IDX)
+        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z + <span class="n">0.078</span>), (<span class="n">0.18</span>, <span class="n">0.014</span>, <span class="n">0.028</span>), METAL_IDX)
+        add_box(bm, (<span class="n">0.0</span>, plate_y, plate_z - <span class="n">0.078</span>), (<span class="n">0.18</span>, <span class="n">0.014</span>, <span class="n">0.028</span>), METAL_IDX)
         add_rim(
             bm,
-            (<span class="n">0.0</span>, plate_y + <span class="n">0.018</span>, plate_z + <span class="n">0.02</span>),
-            <span class="n">0.042</span>,
-            <span class="n">0.008</span>,
+            (<span class="n">0.0</span>, plate_y + <span class="n">0.020</span>, plate_z + <span class="n">0.016</span>),
+            <span class="n">0.048</span>,
+            <span class="n">0.009</span>,
             METAL_IDX,
             euler=(math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>),
         )
-        arm_y0 = plate_y + <span class="n">0.010</span>
-        arm_y1 = plate_y + <span class="n">0.13</span>
-        cup_z = <span class="n">0.40</span>
+        arm_y0 = plate_y + <span class="n">0.012</span>
+        arm_y1 = plate_y + <span class="n">0.15</span>
+        cup_z = <span class="n">0.26</span>
         add_oriented_box(
             bm,
-            (<span class="n">0.028</span>, arm_y0, plate_z - <span class="n">0.02</span>),
-            (<span class="n">0.018</span>, arm_y1, cup_z + <span class="n">0.04</span>),
-            (<span class="n">0.016</span>, <span class="n">0.016</span>),
+            (<span class="n">0.032</span>, arm_y0, plate_z - <span class="n">0.018</span>),
+            (<span class="n">0.020</span>, arm_y1, cup_z + <span class="n">0.036</span>),
+            (<span class="n">0.018</span>, <span class="n">0.018</span>),
             METAL_IDX,
         )
         add_oriented_box(
             bm,
-            (-<span class="n">0.028</span>, arm_y0, plate_z - <span class="n">0.02</span>),
-            (-<span class="n">0.018</span>, arm_y1, cup_z + <span class="n">0.04</span>),
-            (<span class="n">0.016</span>, <span class="n">0.016</span>),
+            (-<span class="n">0.032</span>, arm_y0, plate_z - <span class="n">0.018</span>),
+            (-<span class="n">0.020</span>, arm_y1, cup_z + <span class="n">0.036</span>),
+            (<span class="n">0.018</span>, <span class="n">0.018</span>),
             METAL_IDX,
         )
         add_cone(
             bm,
-            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.01</span>, cup_z),
-            <span class="n">0.055</span>,
-            <span class="n">0.032</span>,
-            <span class="n">0.055</span>,
-            <span class="n">12</span>,
+            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.012</span>, cup_z),
+            <span class="n">0.062</span>,
+            <span class="n">0.034</span>,
+            <span class="n">0.062</span>,
+            <span class="n">14</span>,
             METAL_IDX,
         )
         add_cylinder(
             bm,
-            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.01</span>, cup_z - <span class="n">0.038</span>),
-            <span class="n">0.048</span>,
-            <span class="n">0.012</span>,
-            <span class="n">12</span>,
+            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.012</span>, cup_z - <span class="n">0.042</span>),
+            <span class="n">0.054</span>,
+            <span class="n">0.014</span>,
+            <span class="n">14</span>,
             METAL_IDX,
         )
         metal_faces.update(set(bm.faces) - before)
 
-        stick_z0 = cup_z - <span class="n">0.02</span>
-        stick_z1 = <span class="n">0.60</span>
+        stick_z0 = cup_z - <span class="n">0.018</span>
+        stick_z1 = <span class="n">0.50</span>
         add_cylinder(
             bm,
-            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.01</span>, (stick_z0 + stick_z1) / <span class="n">2.0</span>),
-            <span class="n">0.022</span>,
+            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.012</span>, (stick_z0 + stick_z1) / <span class="n">2.0</span>),
+            <span class="n">0.026</span>,
             stick_z1 - stick_z0,
-            <span class="n">10</span>,
+            <span class="n">12</span>,
             WOOD_IDX,
         )
         add_cone(
             bm,
-            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.01</span>, <span class="n">0.56</span>),
-            <span class="n">0.042</span>,
-            <span class="n">0.026</span>,
-            <span class="n">0.10</span>,
-            <span class="n">10</span>,
+            (<span class="n">0.0</span>, arm_y1 + <span class="n">0.012</span>, <span class="n">0.46</span>),
+            <span class="n">0.050</span>,
+            <span class="n">0.030</span>,
+            <span class="n">0.12</span>,
+            <span class="n">12</span>,
             WOOD_IDX,
         )
 
         before = set(bm.faces)
-        flame_y = arm_y1 + <span class="n">0.01</span>
-        add_cone(bm, (<span class="n">0.0</span>, flame_y, <span class="n">0.66</span>), <span class="n">0.038</span>, <span class="n">0.006</span>, <span class="n">0.16</span>, <span class="n">8</span>, FLAME_IDX)
+        flame_y = arm_y1 + <span class="n">0.012</span>
+        add_cone(bm, (<span class="n">0.0</span>, flame_y, <span class="n">0.56</span>), <span class="n">0.048</span>, <span class="n">0.006</span>, <span class="n">0.22</span>, <span class="n">10</span>, FLAME_IDX)
         add_cone(
             bm,
-            (<span class="n">0.016</span>, flame_y - <span class="n">0.008</span>, <span class="n">0.65</span>),
-            <span class="n">0.022</span>,
+            (<span class="n">0.018</span>, flame_y - <span class="n">0.010</span>, <span class="n">0.545</span>),
+            <span class="n">0.030</span>,
             <span class="n">0.004</span>,
-            <span class="n">0.12</span>,
-            <span class="n">7</span>,
+            <span class="n">0.16</span>,
+            <span class="n">9</span>,
             FLAME_IDX,
-            euler=(<span class="n">0.0</span>, math.radians(<span class="n">14.0</span>), <span class="n">0.0</span>),
+            euler=(<span class="n">0.0</span>, math.radians(<span class="n">16.0</span>), <span class="n">0.0</span>),
         )
         add_cone(
             bm,
-            (-<span class="n">0.014</span>, flame_y + <span class="n">0.010</span>, <span class="n">0.645</span>),
-            <span class="n">0.020</span>,
+            (-<span class="n">0.016</span>, flame_y + <span class="n">0.012</span>, <span class="n">0.54</span>),
+            <span class="n">0.028</span>,
             <span class="n">0.004</span>,
-            <span class="n">0.11</span>,
-            <span class="n">7</span>,
+            <span class="n">0.15</span>,
+            <span class="n">9</span>,
             FLAME_IDX,
-            euler=(math.radians(-<span class="n">10.0</span>), math.radians(-<span class="n">12.0</span>), <span class="n">0.0</span>),
+            euler=(math.radians(-<span class="n">12.0</span>), math.radians(-<span class="n">14.0</span>), <span class="n">0.0</span>),
+        )
+        add_cone(
+            bm,
+            (<span class="n">0.006</span>, flame_y + <span class="n">0.004</span>, <span class="n">0.58</span>),
+            <span class="n">0.018</span>,
+            <span class="n">0.003</span>,
+            <span class="n">0.12</span>,
+            <span class="n">8</span>,
+            FLAME_IDX,
+            euler=(math.radians(<span class="n">8.0</span>), math.radians(<span class="n">6.0</span>), <span class="n">0.0</span>),
         )
         flame_faces.update(set(bm.faces) - before)
+
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.z += <span class="n">0.14</span>
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
             stone_edges = [
@@ -842,16 +839,16 @@ FLAME_IDX = <span class="n">3</span>
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_torch_mesh(<span class="s">&quot;TorchLow&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">2</span>)
     high = build_torch_mesh(<span class="s">&quot;TorchHigh&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">4</span>)
-    stone = principled(<span class="s">&quot;TorchStone&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.42</span>, <span class="n">0.32</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.68</span>)
-    metal = principled(<span class="s">&quot;TorchMetal&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.48</span>, <span class="n">0.44</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
-    wood = principled(<span class="s">&quot;TorchWood&quot;</span>, (<span class="n">0.28</span>, <span class="n">0.14</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>)
+    stone = principled(<span class="s">&quot;TorchStone&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.34</span>, <span class="n">0.30</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.72</span>)
+    metal = principled(<span class="s">&quot;TorchMetal&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.12</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.88</span>, <span class="n">0.38</span>)
+    wood = principled(<span class="s">&quot;TorchWood&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.11</span>, <span class="n">0.05</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.64</span>)
     flame = principled(
         <span class="s">&quot;TorchFlame&quot;</span>,
-        (<span class="n">1.0</span>, <span class="n">0.32</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+        (<span class="n">1.0</span>, <span class="n">0.28</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
         <span class="n">0.0</span>,
-        <span class="n">0.42</span>,
-        emission=<span class="n">4.5</span>,
-        emission_color=(<span class="n">1.0</span>, <span class="n">0.38</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
+        <span class="n">0.48</span>,
+        emission=<span class="n">1.6</span>,
+        emission_color=(<span class="n">1.0</span>, <span class="n">0.30</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
     )
     assign_slots(low, stone, metal, wood, flame)
     assign_slots(high, stone, metal, wood, flame)
@@ -1009,7 +1006,7 @@ FLAME_IDX = <span class="n">3</span>
             ob.hide_viewport = <span class="k">True</span>
 
     <span class="c"># Sconce is built on +Y; camera sits in -Y, so yaw 180 so the flame faces us.</span>
-    low.rotation_euler.z = math.radians(<span class="n">152.0</span>)
+    low.rotation_euler.z = math.radians(<span class="n">142.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1057,10 +1054,10 @@ FLAME_IDX = <span class="n">3</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.32</span>, -<span class="n">1.78</span>, <span class="n">1.08</span>)
+    cam.location = (<span class="n">1.10</span>, -<span class="n">1.70</span>, <span class="n">0.64</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.08</span>, <span class="n">0.38</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.06</span>, <span class="n">0.48</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

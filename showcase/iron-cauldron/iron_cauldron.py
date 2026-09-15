@@ -37,24 +37,24 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-POT_H = 0.26
-POT_Z0 = 0.15
-POT_THICK = 0.016
-N_AROUND = 16
-N_RINGS = 5
-R_BOT = 0.065
-R_MID = 0.175
-R_TOP = 0.135
-APEX_Z = 0.78
-TRIPOD_R = 0.30
-BAIL_SEGS = 10
-BAIL_R = 0.010
+POT_H = 0.32
+POT_Z0 = 0.14
+POT_THICK = 0.014
+N_AROUND = 32
+N_RINGS = 12
+R_BOT = 0.050
+R_MID = 0.205
+R_TOP = 0.148
+APEX_Z = 0.82
+TRIPOD_R = 0.32
+BAIL_SEGS = 12
+BAIL_R = 0.009
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.572, 0.558, 0.786)
+OUTER_SIZE = (0.606, 0.591, 0.826)
 
-BASE_TRIS_MIN = 6850
-BASE_TRIS_MAX = 7200
+BASE_TRIS_MIN = 3280
+BASE_TRIS_MAX = 3520
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -64,7 +64,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 180
+COLLIDER_TRIS_MAX = 200
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 METAL_FACES_MIN = 24
@@ -256,46 +256,47 @@ def build_cauldron_mesh(name, bevel_offset, bevel_segments):
     metal_faces = set()
     pot_verts = []
     try:
+        # Shared-vertex lathe: one continuous iron shell, not overlapping
+        # stave panels (those read as a gold grid under studio lighting).
         zs = [POT_H * i / (N_RINGS - 1) for i in range(N_RINGS)]
-        gap = -0.06
+        outers = []
+        inners = []
+        for z_local in zs:
+            z = POT_Z0 + z_local
+            r = pot_radius(z_local)
+            ri = max(r - POT_THICK, 0.018)
+            oring = []
+            iring = []
+            for i in range(N_AROUND):
+                a = 2.0 * math.pi * i / N_AROUND
+                ov = bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+                iv = bm.verts.new((ri * math.cos(a), ri * math.sin(a), z))
+                oring.append(ov)
+                iring.append(iv)
+                pot_verts.extend((ov, iv))
+            outers.append(oring)
+            inners.append(iring)
+        for k in range(N_RINGS - 1):
+            for i in range(N_AROUND):
+                j = (i + 1) % N_AROUND
+                fo = bm.faces.new(
+                    (outers[k][i], outers[k + 1][i], outers[k + 1][j], outers[k][j])
+                )
+                fo.material_index = METAL_IDX
+                fi = bm.faces.new(
+                    (inners[k][j], inners[k + 1][j], inners[k + 1][i], inners[k][i])
+                )
+                fi.material_index = METAL_IDX
         for i in range(N_AROUND):
-            a0 = 2.0 * math.pi * i / N_AROUND
-            a1 = 2.0 * math.pi * (i + 1.0 - gap) / N_AROUND
-            outer = []
-            inner = []
-            for z_local in zs:
-                z = POT_Z0 + z_local
-                r = pot_radius(z_local)
-                ov = (
-                    bm.verts.new((r * math.cos(a0), r * math.sin(a0), z)),
-                    bm.verts.new((r * math.cos(a1), r * math.sin(a1), z)),
-                )
-                ri = max(r - POT_THICK, 0.02)
-                iv = (
-                    bm.verts.new((ri * math.cos(a0), ri * math.sin(a0), z)),
-                    bm.verts.new((ri * math.cos(a1), ri * math.sin(a1), z)),
-                )
-                outer.append(ov)
-                inner.append(iv)
-                pot_verts.extend(ov)
-                pot_verts.extend(iv)
-            for k in range(N_RINGS - 1):
-                o0a, o0b = outer[k]
-                o1a, o1b = outer[k + 1]
-                i0a, i0b = inner[k]
-                i1a, i1b = inner[k + 1]
-                for vs in (
-                    (o0a, o1a, o1b, o0b),
-                    (i0b, i1b, i1a, i0a),
-                    (o0a, i0a, i1a, o1a),
-                    (o0b, o1b, i1b, i0b),
-                ):
-                    face = bm.faces.new(vs)
-                    face.material_index = METAL_IDX
-            rim = bm.faces.new((outer[-1][0], outer[-1][1], inner[-1][1], inner[-1][0]))
-            rim.material_index = METAL_IDX
-            bot = bm.faces.new((outer[0][1], outer[0][0], inner[0][0], inner[0][1]))
+            j = (i + 1) % N_AROUND
+            bot = bm.faces.new(
+                (outers[0][j], outers[0][i], inners[0][i], inners[0][j])
+            )
             bot.material_index = METAL_IDX
+            rim = bm.faces.new(
+                (outers[-1][i], outers[-1][j], inners[-1][j], inners[-1][i])
+            )
+            rim.material_index = METAL_IDX
 
         before = set(bm.faces)
         add_cylinder(
@@ -377,7 +378,7 @@ def build_cauldron_mesh(name, bevel_offset, bevel_segments):
         metal_faces.update(set(bm.faces) - before)
 
         if bevel_offset > 0.0:
-            edges = list({e for v in pot_verts + wood_verts for e in v.link_edges if v.is_valid})
+            edges = list({e for v in wood_verts for e in v.link_edges if v.is_valid})
             if edges:
                 bmesh.ops.bevel(
                     bm,
@@ -396,7 +397,7 @@ def build_cauldron_mesh(name, bevel_offset, bevel_segments):
         for edge in bm.edges:
             edge.smooth = True
             if edge.is_manifold and len(edge.link_faces) == 2:
-                if edge.calc_face_angle() > math.radians(35.0):
+                if edge.calc_face_angle() > math.radians(70.0):
                     edge.smooth = False
         for f in metal_faces:
             if f.is_valid:
@@ -563,7 +564,7 @@ def check(skip_decimate):
     low = build_cauldron_mesh("CauldronLow", bevel_offset=0.003, bevel_segments=2)
     high = build_cauldron_mesh("CauldronHigh", bevel_offset=0.003, bevel_segments=4)
     wood = principled("TripodWood", (0.38, 0.22, 0.09, 1.0), 0.0, 0.58)
-    metal = principled("CauldronIron", (0.22, 0.23, 0.24, 1.0), 1.0, 0.42)
+    metal = principled("CauldronIron", (0.10, 0.095, 0.09, 1.0), 0.92, 0.40)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -761,10 +762,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.55, -2.05, 1.35)
+    cam.location = (1.58, -2.18, 1.22)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.38)
+    aim.location = (0.0, 0.0, 0.46)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
