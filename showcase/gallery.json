@@ -304,6 +304,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "hay-bale",
+      "dir": "showcase/hay-bale",
+      "teaches": "A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 252 tris, two materials with 66 hay and 60 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.916×0.520×0.401 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 68 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "hero": "docs/gallery/assets/hay-bale-hero.webp",
+      "preview": "showcase/hay-bale/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
