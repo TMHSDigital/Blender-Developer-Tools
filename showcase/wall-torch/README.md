@@ -1,7 +1,7 @@
 # Wall torch
 
 A showcase piece, not an example. Procedural wall-mounted torch sconce
-(coursed stone plaque, iron bracket and cup, wooden haft, emissive flame)
+(dressed stone plaque, iron bracket and cup, wooden haft, emissive flame)
 then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal
 bake, LOD chain, convex collider, Unity glTF export.
 
@@ -22,20 +22,20 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1400–1650 | 1520 / 1520 / 1520 |
+| Base triangles | 800–920 | 848 / 848 / 848 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2197 / 0.2197 / 0.2171 |
-| Materials | exactly 4 distinct, ≥24 stone, ≥24 metal, ≥8 flame | 4 slots, 540 stone, 130 metal, 28 flame |
+| LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2099 |
+| Materials | exactly 4 distinct, ≥24 stone, ≥24 metal, ≥8 flame | 4 slots, 162 stone, 134 metal, 44 flame |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (0.440, 0.343, 0.740) m ± 0.01 | (0.4400, 0.3430, 0.7400), zmin 0 |
-| Collider tris | ≤ 120 | 94 |
-| Export | written, size > 0 | 117260 / 117260 / 117244 bytes |
+| Outer AABB | (0.384, 0.360, 0.670) m ± 0.01 | (0.3840, 0.3600, 0.6700), zmin 0.140 |
+| Collider tris | ≤ 120 | 92 |
+| Export | written, size > 0 | 69060 / 69060 / 69048 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
-5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact
+5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact
 count. Bake pixels are stochastic; the gate is `has_data` plus operator
 `FINISHED`, not byte-identity. Construction uses no RNG. Export byte
-counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.
+counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.
 
 `--skip-decimate` skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and
 exit 9 fires. That is the named budget the falsifier violates.

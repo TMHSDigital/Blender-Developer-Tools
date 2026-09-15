@@ -253,18 +253,18 @@
       <img src="../assets/shipping-crate-hero.webp" alt="shipping-crate render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 552 tris, two materials, UVs in 0..1 with zero AABB overlap, outer AABB 1.256×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 20 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 624 tris, two materials with 132 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.352×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 36 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/shipping-crate/shipping_crate.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural crate (beveled body, arrayed slats, metal corner brackets, two materials) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural crate (beveled body, arrayed slats, iron corner brackets and end handles, two materials) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 500–620 | 552 / 552 / 552 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4239 | | LOD2 ratio | 0.10–0.35 of base | 0.2174 / 0.2174 / 0.1558 | | Materials | exactly 2 distinct | 2 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.256, 0.856, 0.748) m ± 0.01 | (1.2560, 0.8560, 0.7480), zmin 0 | | Collider tris | ≤ 48 | 20 | | Export | written, size &gt; 0 | 42092 / 42092 / 42088 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 580–680 | 624 / 624 / 624 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4455 | | LOD2 ratio | 0.10–0.35 of base | 0.2179 / 0.2179 / 0.1571 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 180 wood, 132 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.352, 0.856, 0.748) m ± 0.01 | (1.3520, 0.8560, 0.7480), zmin 0 | | Collider tris | ≤ 48 | 36 | | Export | written, size &gt; 0 | 50148 / 50148 / 50140 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
@@ -274,7 +274,7 @@ blender --background --python shipping_crate.py -- --output crate.png</code></pr
 <p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -322,22 +322,17 @@ sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
 <span class="c"># Body size (meters), sitting on z=0. Side slats sit proud on ±Y; lid</span>
-<span class="c"># slats sit proud on +Z. OUTER_SIZE is the closed-form AABB of that</span>
-<span class="c"># construction, compared against the measured world bbox — not assigned</span>
-<span class="c"># onto the mesh.</span>
+<span class="c"># slats sit proud on +Z. Iron handles sit proud on ±X. OUTER_SIZE is</span>
+<span class="c"># fitted after locking geometry against the measured world bbox.</span>
 BODY_SIZE = (<span class="n">1.20</span>, <span class="n">0.80</span>, <span class="n">0.72</span>)
 SLAT_THICK = <span class="n">0.028</span>
-OUTER_SIZE = (
-    round(BODY_SIZE[<span class="n">0</span>] + <span class="n">2.0</span> * SLAT_THICK, <span class="n">3</span>),
-    round(BODY_SIZE[<span class="n">1</span>] + <span class="n">2.0</span> * SLAT_THICK, <span class="n">3</span>),
-    round(BODY_SIZE[<span class="n">2</span>] + SLAT_THICK, <span class="n">3</span>),
-)
+OUTER_SIZE = (<span class="n">1.352</span>, <span class="n">0.856</span>, <span class="n">0.748</span>)
 BBOX_TOL = <span class="n">0.01</span>
 
-<span class="c"># Measured 4.5.11 / 5.1.2 / 5.2.1 after locking geometry. DECIMATE</span>
-<span class="c"># COLLAPSE ratios diverge across series — bands, not exact counts.</span>
-BASE_TRIS_MIN = <span class="n">500</span>
-BASE_TRIS_MAX = <span class="n">620</span>
+<span class="c"># Measured after locking geometry. DECIMATE COLLAPSE ratios diverge</span>
+<span class="c"># across series — bands, not exact counts.</span>
+BASE_TRIS_MIN = <span class="n">580</span>
+BASE_TRIS_MAX = <span class="n">680</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -350,6 +345,7 @@ UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">48</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
+METAL_FACES_MIN = <span class="n">24</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
@@ -490,8 +486,8 @@ METAL_IDX = <span class="n">1</span>
                     WOOD_IDX,
                 )
 
-        plate = <span class="n">0.13</span>
-        thick = <span class="n">0.024</span>
+        plate = <span class="n">0.18</span>
+        thick = <span class="n">0.028</span>
         hx = sx / <span class="n">2.0</span> + slat_h
         hy = sy / <span class="n">2.0</span> + slat_h
         hz = sz
@@ -518,6 +514,28 @@ METAL_IDX = <span class="n">1</span>
                     (plate, thick, hz - <span class="n">2.0</span> * thick),
                     METAL_IDX,
                 )
+
+        handle_out = <span class="n">0.038</span>
+        <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            hx_bar = sxn * (hx + handle_out)
+            add_cube(
+                bm,
+                (hx_bar, -<span class="n">0.12</span>, sz * <span class="n">0.48</span>),
+                (<span class="n">0.020</span>, <span class="n">0.020</span>, <span class="n">0.12</span>),
+                METAL_IDX,
+            )
+            add_cube(
+                bm,
+                (hx_bar, <span class="n">0.12</span>, sz * <span class="n">0.48</span>),
+                (<span class="n">0.020</span>, <span class="n">0.020</span>, <span class="n">0.12</span>),
+                METAL_IDX,
+            )
+            add_cube(
+                bm,
+                (hx_bar, <span class="n">0.0</span>, sz * <span class="n">0.54</span>),
+                (<span class="n">0.020</span>, <span class="n">0.26</span>, <span class="n">0.020</span>),
+                METAL_IDX,
+            )
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -549,9 +567,18 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
-    obj.data.materials.clear()
-    obj.data.materials.append(wood)
-    obj.data.materials.append(metal)
+    <span class="c"># Do not materials.clear() — that resets every polygon&#x27;s material_index</span>
+    <span class="c"># to 0 and the iron brackets vanish into wood.</span>
+    mats = obj.data.materials
+    <span class="k">if</span> len(mats) == <span class="n">0</span>:
+        mats.append(wood)
+        mats.append(metal)
+        <span class="k">return</span>
+    mats[<span class="n">0</span>] = wood
+    <span class="k">if</span> len(mats) == <span class="n">1</span>:
+        mats.append(metal)
+    <span class="k">else</span>:
+        mats[<span class="n">1</span>] = metal
 
 
 <span class="k">def</span> world_bbox(obj):
@@ -684,7 +711,7 @@ METAL_IDX = <span class="n">1</span>
     low = build_crate_mesh(<span class="s">&quot;CrateLow&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">2</span>)
     high = build_crate_mesh(<span class="s">&quot;CrateHigh&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">4</span>)
     wood = principled(<span class="s">&quot;CrateWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>)
-    metal = principled(<span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.58</span>, <span class="n">0.60</span>, <span class="n">0.64</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.22</span>)
+    metal = principled(<span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.13</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">0.86</span>, <span class="n">0.36</span>)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -695,6 +722,10 @@ METAL_IDX = <span class="n">1</span>
     mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
     nmat = len(mats)
     distinct_mats = len({id(s) <span class="k">for</span> s <span class="k">in</span> mats})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{idx_counts}<span class="s">&quot;</span>)
     u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
     bb = world_bbox(low)
     size_x = bb[<span class="n">3</span>] - bb[<span class="n">0</span>]
@@ -754,6 +785,11 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct_mats != MATERIAL_COUNT:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -819,8 +855,8 @@ METAL_IDX = <span class="n">1</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
-    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
+    low.rotation_euler.z = math.radians(-<span class="n">48.0</span>)
+    low.rotation_euler.x = math.radians(<span class="n">4.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -866,10 +902,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.30</span>, -<span class="n">3.20</span>, <span class="n">1.92</span>)
+    cam.location = (<span class="n">2.25</span>, -<span class="n">2.75</span>, <span class="n">1.38</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, OUTER_SIZE[<span class="n">2</span>] / <span class="n">2.0</span> + <span class="n">0.06</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.40</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

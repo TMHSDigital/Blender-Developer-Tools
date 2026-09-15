@@ -253,7 +253,7 @@
       <img src="../assets/iron-cauldron-hero.webp" alt="iron-cauldron render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 7012 tris, two materials with 2754 wood and 706 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.572×0.558×0.786 m, LOD ratios in band, convex collider 130 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3388 tris, two materials with 450 wood and 1198 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.606×0.591×0.826 m, LOD ratios in band (5.2 COLLAPSE 4 tris leaner on LOD2), convex collider 180 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/iron-cauldron/iron_cauldron.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -264,8 +264,8 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 6850–7200 | 7012 / 7012 / 7012 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2199 / 0.2199 / 0.2199 | | Materials | exactly 2 distinct, ≥12 wood, ≥24 metal | 2 slots, 2754 wood, 706 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.572, 0.558, 0.786) m ± 0.01 | (0.5723, 0.5582, 0.7855), zmin 0.002 | | Collider tris | ≤ 180 | 130 | | Export | written, size &gt; 0 | 501796 / 501796 / 501780 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series in general — the gate is a ratio band, not an exact count. On this mesh LOD2 matched across 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3280–3520 | 3388 / 3388 / 3388 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2184 | | Materials | exactly 2 distinct, ≥12 wood, ≥24 metal | 2 slots, 450 wood, 1198 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.606, 0.591, 0.826) m ± 0.01 | (0.6061, 0.5911, 0.8255), zmin 0.002 | | Collider tris | ≤ 200 | 180 | | Export | written, size &gt; 0 | 250748 / 250748 / 250736 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python iron_cauldron.py --
@@ -321,24 +321,24 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-POT_H = <span class="n">0.26</span>
-POT_Z0 = <span class="n">0.15</span>
-POT_THICK = <span class="n">0.016</span>
-N_AROUND = <span class="n">16</span>
-N_RINGS = <span class="n">5</span>
-R_BOT = <span class="n">0.065</span>
-R_MID = <span class="n">0.175</span>
-R_TOP = <span class="n">0.135</span>
-APEX_Z = <span class="n">0.78</span>
-TRIPOD_R = <span class="n">0.30</span>
-BAIL_SEGS = <span class="n">10</span>
-BAIL_R = <span class="n">0.010</span>
+POT_H = <span class="n">0.32</span>
+POT_Z0 = <span class="n">0.14</span>
+POT_THICK = <span class="n">0.014</span>
+N_AROUND = <span class="n">32</span>
+N_RINGS = <span class="n">12</span>
+R_BOT = <span class="n">0.050</span>
+R_MID = <span class="n">0.205</span>
+R_TOP = <span class="n">0.148</span>
+APEX_Z = <span class="n">0.82</span>
+TRIPOD_R = <span class="n">0.32</span>
+BAIL_SEGS = <span class="n">12</span>
+BAIL_R = <span class="n">0.009</span>
 BBOX_TOL = <span class="n">0.01</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.572</span>, <span class="n">0.558</span>, <span class="n">0.786</span>)
+OUTER_SIZE = (<span class="n">0.606</span>, <span class="n">0.591</span>, <span class="n">0.826</span>)
 
-BASE_TRIS_MIN = <span class="n">6850</span>
-BASE_TRIS_MAX = <span class="n">7200</span>
+BASE_TRIS_MIN = <span class="n">3280</span>
+BASE_TRIS_MAX = <span class="n">3520</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -348,7 +348,7 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">180</span>
+COLLIDER_TRIS_MAX = <span class="n">200</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
 METAL_FACES_MIN = <span class="n">24</span>
@@ -540,46 +540,47 @@ METAL_IDX = <span class="n">1</span>
     metal_faces = set()
     pot_verts = []
     <span class="k">try</span>:
+        <span class="c"># Shared-vertex lathe: one continuous iron shell, not overlapping</span>
+        <span class="c"># stave panels (those read as a gold grid under studio lighting).</span>
         zs = [POT_H * i / (N_RINGS - <span class="n">1</span>) <span class="k">for</span> i <span class="k">in</span> range(N_RINGS)]
-        gap = -<span class="n">0.06</span>
+        outers = []
+        inners = []
+        <span class="k">for</span> z_local <span class="k">in</span> zs:
+            z = POT_Z0 + z_local
+            r = pot_radius(z_local)
+            ri = max(r - POT_THICK, <span class="n">0.018</span>)
+            oring = []
+            iring = []
+            <span class="k">for</span> i <span class="k">in</span> range(N_AROUND):
+                a = <span class="n">2.0</span> * math.pi * i / N_AROUND
+                ov = bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+                iv = bm.verts.new((ri * math.cos(a), ri * math.sin(a), z))
+                oring.append(ov)
+                iring.append(iv)
+                pot_verts.extend((ov, iv))
+            outers.append(oring)
+            inners.append(iring)
+        <span class="k">for</span> k <span class="k">in</span> range(N_RINGS - <span class="n">1</span>):
+            <span class="k">for</span> i <span class="k">in</span> range(N_AROUND):
+                j = (i + <span class="n">1</span>) % N_AROUND
+                fo = bm.faces.new(
+                    (outers[k][i], outers[k + <span class="n">1</span>][i], outers[k + <span class="n">1</span>][j], outers[k][j])
+                )
+                fo.material_index = METAL_IDX
+                fi = bm.faces.new(
+                    (inners[k][j], inners[k + <span class="n">1</span>][j], inners[k + <span class="n">1</span>][i], inners[k][i])
+                )
+                fi.material_index = METAL_IDX
         <span class="k">for</span> i <span class="k">in</span> range(N_AROUND):
-            a0 = <span class="n">2.0</span> * math.pi * i / N_AROUND
-            a1 = <span class="n">2.0</span> * math.pi * (i + <span class="n">1.0</span> - gap) / N_AROUND
-            outer = []
-            inner = []
-            <span class="k">for</span> z_local <span class="k">in</span> zs:
-                z = POT_Z0 + z_local
-                r = pot_radius(z_local)
-                ov = (
-                    bm.verts.new((r * math.cos(a0), r * math.sin(a0), z)),
-                    bm.verts.new((r * math.cos(a1), r * math.sin(a1), z)),
-                )
-                ri = max(r - POT_THICK, <span class="n">0.02</span>)
-                iv = (
-                    bm.verts.new((ri * math.cos(a0), ri * math.sin(a0), z)),
-                    bm.verts.new((ri * math.cos(a1), ri * math.sin(a1), z)),
-                )
-                outer.append(ov)
-                inner.append(iv)
-                pot_verts.extend(ov)
-                pot_verts.extend(iv)
-            <span class="k">for</span> k <span class="k">in</span> range(N_RINGS - <span class="n">1</span>):
-                o0a, o0b = outer[k]
-                o1a, o1b = outer[k + <span class="n">1</span>]
-                i0a, i0b = inner[k]
-                i1a, i1b = inner[k + <span class="n">1</span>]
-                <span class="k">for</span> vs <span class="k">in</span> (
-                    (o0a, o1a, o1b, o0b),
-                    (i0b, i1b, i1a, i0a),
-                    (o0a, i0a, i1a, o1a),
-                    (o0b, o1b, i1b, i0b),
-                ):
-                    face = bm.faces.new(vs)
-                    face.material_index = METAL_IDX
-            rim = bm.faces.new((outer[-<span class="n">1</span>][<span class="n">0</span>], outer[-<span class="n">1</span>][<span class="n">1</span>], inner[-<span class="n">1</span>][<span class="n">1</span>], inner[-<span class="n">1</span>][<span class="n">0</span>]))
-            rim.material_index = METAL_IDX
-            bot = bm.faces.new((outer[<span class="n">0</span>][<span class="n">1</span>], outer[<span class="n">0</span>][<span class="n">0</span>], inner[<span class="n">0</span>][<span class="n">0</span>], inner[<span class="n">0</span>][<span class="n">1</span>]))
+            j = (i + <span class="n">1</span>) % N_AROUND
+            bot = bm.faces.new(
+                (outers[<span class="n">0</span>][j], outers[<span class="n">0</span>][i], inners[<span class="n">0</span>][i], inners[<span class="n">0</span>][j])
+            )
             bot.material_index = METAL_IDX
+            rim = bm.faces.new(
+                (outers[-<span class="n">1</span>][i], outers[-<span class="n">1</span>][j], inners[-<span class="n">1</span>][j], inners[-<span class="n">1</span>][i])
+            )
+            rim.material_index = METAL_IDX
 
         before = set(bm.faces)
         add_cylinder(
@@ -661,7 +662,7 @@ METAL_IDX = <span class="n">1</span>
         metal_faces.update(set(bm.faces) - before)
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> pot_verts + wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
             <span class="k">if</span> edges:
                 bmesh.ops.bevel(
                     bm,
@@ -680,7 +681,7 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">for</span> edge <span class="k">in</span> bm.edges:
             edge.smooth = <span class="k">True</span>
             <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
-                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">35.0</span>):
+                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">70.0</span>):
                     edge.smooth = <span class="k">False</span>
         <span class="k">for</span> f <span class="k">in</span> metal_faces:
             <span class="k">if</span> f.is_valid:
@@ -847,7 +848,7 @@ METAL_IDX = <span class="n">1</span>
     low = build_cauldron_mesh(<span class="s">&quot;CauldronLow&quot;</span>, bevel_offset=<span class="n">0.003</span>, bevel_segments=<span class="n">2</span>)
     high = build_cauldron_mesh(<span class="s">&quot;CauldronHigh&quot;</span>, bevel_offset=<span class="n">0.003</span>, bevel_segments=<span class="n">4</span>)
     wood = principled(<span class="s">&quot;TripodWood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.22</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>)
-    metal = principled(<span class="s">&quot;CauldronIron&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.23</span>, <span class="n">0.24</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.42</span>)
+    metal = principled(<span class="s">&quot;CauldronIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.095</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.92</span>, <span class="n">0.40</span>)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -1045,10 +1046,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.55</span>, -<span class="n">2.05</span>, <span class="n">1.35</span>)
+    cam.location = (<span class="n">1.58</span>, -<span class="n">2.18</span>, <span class="n">1.22</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.38</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.46</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

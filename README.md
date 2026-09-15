@@ -75,30 +75,35 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
-<a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
-<a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" alt="Wooden barrel: a staved barrel with iron hoops on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" alt="Campfire: a two-course stone fire ring with a tripod of logs on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
-<a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
-<a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
-<a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
-<a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
-<a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" alt="Watchtower: a timber lookout with X-braces, hatch ladder, plank platform, and a coursed shake roof on a dark studio floor" /></a>
-<a href="showcase/cart/"><img src="showcase/cart/preview.webp" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
-<a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
-<a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" alt="Wheelbarrow: a staved wooden tray with iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
-<a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
-<a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
-<a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands, and two hitching rings on a dark studio floor" /></a>
-<a href="showcase/grindstone/"><img src="showcase/grindstone/preview.webp" alt="Grindstone: a stone wheel on a timber A-frame with an iron axle, hubs, crank, and tray on a dark studio floor" /></a>
-<a href="showcase/hand-pump/"><img src="showcase/hand-pump/preview.webp" alt="Hand pump: a cast-iron village pump on a wooden plinth with a spout and handle on a dark studio floor" /></a>
-<a href="showcase/signpost/"><img src="showcase/signpost/preview.webp" alt="Signpost: a timber post with two painted fingerboards, iron straps, and a pyramidal cap on a dark studio floor" /></a>
-<a href="showcase/chopping-block/"><img src="showcase/chopping-block/preview.webp" alt="Chopping block: a hooped timber stump with an embedded axe on a dark studio floor" /></a>
-<a href="showcase/wooden-bucket/"><img src="showcase/wooden-bucket/preview.webp" alt="Wooden bucket: a coopered bucket with overlapping staves, iron hoops, and a rope bail on a dark studio floor" /></a>
-<a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" alt="Wall torch: a coursed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
-<a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
-<a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
+<details>
+<summary><strong>24 showcase pieces</strong> — click to expand the preview grid</summary>
+
+<p align="center">
+  <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
+  <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a staved barrel with iron hoops on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course stone fire ring with a tripod of logs on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
+  <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
+  <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" width="24%" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
+  <a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" width="24%" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
+  <a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" width="24%" alt="Watchtower: a timber lookout with X-braces, hatch ladder, plank platform, and a coursed shake roof on a dark studio floor" /></a>
+  <a href="showcase/cart/"><img src="showcase/cart/preview.webp" width="24%" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
+  <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
+  <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a staved wooden tray with iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
+  <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
+  <a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" width="24%" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
+  <a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" width="24%" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands, and two hitching rings on a dark studio floor" /></a>
+  <a href="showcase/grindstone/"><img src="showcase/grindstone/preview.webp" width="24%" alt="Grindstone: a stone wheel on a timber A-frame with an iron axle, hubs, crank, and tray on a dark studio floor" /></a>
+  <a href="showcase/hand-pump/"><img src="showcase/hand-pump/preview.webp" width="24%" alt="Hand pump: a cast-iron village pump on a wooden plinth with a spout and handle on a dark studio floor" /></a>
+  <a href="showcase/signpost/"><img src="showcase/signpost/preview.webp" width="24%" alt="Signpost: a timber post with two painted fingerboards, iron straps, and a pyramidal cap on a dark studio floor" /></a>
+  <a href="showcase/chopping-block/"><img src="showcase/chopping-block/preview.webp" width="24%" alt="Chopping block: a hooped timber stump with an embedded axe on a dark studio floor" /></a>
+  <a href="showcase/wooden-bucket/"><img src="showcase/wooden-bucket/preview.webp" width="24%" alt="Wooden bucket: a coopered bucket with overlapping staves, iron hoops, and a rope bail on a dark studio floor" /></a>
+  <a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" width="24%" alt="Wall torch: a dressed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
+  <a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" width="24%" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
+  <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
+</p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
 
@@ -147,6 +152,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`tavern-stool`](showcase/tavern-stool/) — procedural tavern stool with turned legs, stretchers, and iron ferrules through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`iron-cauldron`](showcase/iron-cauldron/) — procedural hanging iron cauldron on a timber tripod through the same pipeline. Falsifier `--skip-decimate` exits 9.
+
+</details>
 
 ## Examples
 

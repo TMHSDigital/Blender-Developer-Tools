@@ -1,8 +1,8 @@
 # Shipping crate
 
 A showcase piece, not an example. Procedural crate (beveled body, arrayed
-slats, metal corner brackets, two materials) then the shipped pipeline:
-unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex
+slats, iron corner brackets and end handles, two materials) then the shipped
+pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex
 collider, Unity glTF export.
 
 It asserts **budget conformance** of the generated result. It does not
@@ -21,14 +21,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 500–620 | 552 / 552 / 552 |
-| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4239 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2174 / 0.2174 / 0.1558 |
-| Materials | exactly 2 distinct | 2 |
+| Base triangles | 580–680 | 624 / 624 / 624 |
+| LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4455 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2179 / 0.2179 / 0.1571 |
+| Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 180 wood, 132 metal |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.256, 0.856, 0.748) m ± 0.01 | (1.2560, 0.8560, 0.7480), zmin 0 |
-| Collider tris | ≤ 48 | 20 |
-| Export | written, size > 0 | 42092 / 42092 / 42088 bytes |
+| Outer AABB | (1.352, 0.856, 0.748) m ± 0.01 | (1.3520, 0.8560, 0.7480), zmin 0 |
+| Collider tris | ≤ 48 | 36 |
+| Export | written, size > 0 | 50148 / 50148 / 50140 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 5.2.1 is more aggressive. The gate is a ratio band, not an exact count.
@@ -60,7 +60,7 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 2 | argparse / usage |
 | 3 | Mesh did not build / no UV layer |
 | 4 | Base triangle count outside range |
-| 5 | Material count ≠ 2 distinct slots |
+| 5 | Material count ≠ 2 distinct slots, or metal faces missing |
 | 6 | UVs outside 0..1 |
 | 7 | UV AABB overlap above tolerance |
 | 8 | World AABB off declared outer size |

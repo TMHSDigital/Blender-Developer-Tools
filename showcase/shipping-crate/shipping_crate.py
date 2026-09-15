@@ -38,22 +38,17 @@ sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
 # Body size (meters), sitting on z=0. Side slats sit proud on ±Y; lid
-# slats sit proud on +Z. OUTER_SIZE is the closed-form AABB of that
-# construction, compared against the measured world bbox — not assigned
-# onto the mesh.
+# slats sit proud on +Z. Iron handles sit proud on ±X. OUTER_SIZE is
+# fitted after locking geometry against the measured world bbox.
 BODY_SIZE = (1.20, 0.80, 0.72)
 SLAT_THICK = 0.028
-OUTER_SIZE = (
-    round(BODY_SIZE[0] + 2.0 * SLAT_THICK, 3),
-    round(BODY_SIZE[1] + 2.0 * SLAT_THICK, 3),
-    round(BODY_SIZE[2] + SLAT_THICK, 3),
-)
+OUTER_SIZE = (1.352, 0.856, 0.748)
 BBOX_TOL = 0.01
 
-# Measured 4.5.11 / 5.1.2 / 5.2.1 after locking geometry. DECIMATE
-# COLLAPSE ratios diverge across series — bands, not exact counts.
-BASE_TRIS_MIN = 500
-BASE_TRIS_MAX = 620
+# Measured after locking geometry. DECIMATE COLLAPSE ratios diverge
+# across series — bands, not exact counts.
+BASE_TRIS_MIN = 580
+BASE_TRIS_MAX = 680
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -66,6 +61,7 @@ UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 48
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
+METAL_FACES_MIN = 24
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -206,8 +202,8 @@ def build_crate_mesh(name, bevel_offset, bevel_segments):
                     WOOD_IDX,
                 )
 
-        plate = 0.13
-        thick = 0.024
+        plate = 0.18
+        thick = 0.028
         hx = sx / 2.0 + slat_h
         hy = sy / 2.0 + slat_h
         hz = sz
@@ -234,6 +230,28 @@ def build_crate_mesh(name, bevel_offset, bevel_segments):
                     (plate, thick, hz - 2.0 * thick),
                     METAL_IDX,
                 )
+
+        handle_out = 0.038
+        for sxn in (-1.0, 1.0):
+            hx_bar = sxn * (hx + handle_out)
+            add_cube(
+                bm,
+                (hx_bar, -0.12, sz * 0.48),
+                (0.020, 0.020, 0.12),
+                METAL_IDX,
+            )
+            add_cube(
+                bm,
+                (hx_bar, 0.12, sz * 0.48),
+                (0.020, 0.020, 0.12),
+                METAL_IDX,
+            )
+            add_cube(
+                bm,
+                (hx_bar, 0.0, sz * 0.54),
+                (0.020, 0.26, 0.020),
+                METAL_IDX,
+            )
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -265,9 +283,18 @@ def principled(name, color, metallic, roughness):
 
 
 def assign_slots(obj, wood, metal):
-    obj.data.materials.clear()
-    obj.data.materials.append(wood)
-    obj.data.materials.append(metal)
+    # Do not materials.clear() — that resets every polygon's material_index
+    # to 0 and the iron brackets vanish into wood.
+    mats = obj.data.materials
+    if len(mats) == 0:
+        mats.append(wood)
+        mats.append(metal)
+        return
+    mats[0] = wood
+    if len(mats) == 1:
+        mats.append(metal)
+    else:
+        mats[1] = metal
 
 
 def world_bbox(obj):
@@ -400,7 +427,7 @@ def check(skip_decimate):
     low = build_crate_mesh("CrateLow", bevel_offset=0.028, bevel_segments=2)
     high = build_crate_mesh("CrateHigh", bevel_offset=0.028, bevel_segments=4)
     wood = principled("CrateWood", (0.48, 0.22, 0.07, 1.0), 0.0, 0.50)
-    metal = principled("CrateMetal", (0.58, 0.60, 0.64, 1.0), 1.0, 0.22)
+    metal = principled("CrateMetal", (0.14, 0.13, 0.12, 1.0), 0.86, 0.36)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -411,6 +438,10 @@ def check(skip_decimate):
     mats = [s for s in low.data.materials if s is not None]
     nmat = len(mats)
     distinct_mats = len({id(s) for s in mats})
+    idx_counts = {}
+    for poly in low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, 0) + 1
+    print(f"measured mat_index_counts={idx_counts}")
     u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
     bb = world_bbox(low)
     size_x = bb[3] - bb[0]
@@ -470,6 +501,11 @@ def check(skip_decimate):
     if nmat != MATERIAL_COUNT or distinct_mats != MATERIAL_COUNT:
         return fail(
             f"material slots {nmat} distinct {distinct_mats} != {MATERIAL_COUNT}",
+            5,
+        ), None, None, None, None, None
+    if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
+        return fail(
+            f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
             5,
         ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
@@ -535,8 +571,8 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    low.rotation_euler.z = math.radians(-28.0)
-    low.rotation_euler.x = math.radians(2.0)
+    low.rotation_euler.z = math.radians(-48.0)
+    low.rotation_euler.x = math.radians(4.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -582,10 +618,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.30, -3.20, 1.92)
+    cam.location = (2.25, -2.75, 1.38)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, OUTER_SIZE[2] / 2.0 + 0.06)
+    aim.location = (0.0, 0.0, 0.40)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
