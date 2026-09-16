@@ -52,7 +52,9 @@ entry in `showcase/gallery.json`, and a rendered still.
   Multi-body props do **not** require Euler characteristic 2 — that is a
   single-shell contract. Pairs of parts meant to touch assert a BVH
   surface gap below a named epsilon (vert-vert is the wrong metric for
-  thin straps and collars).
+  thin straps and collars). A spanning board whose only vertices sit at
+  the far ends will report a false gap to a mid-span knuckle; put a
+  local shell at the joint station, or measure a slice there.
 - **Named supports (exit 16).** AABB `zmin` is necessary but not
   sufficient on a multi-support prop: a wheel, a sled floor, or one
   planted foot can ground the box while the other feet float. Split the

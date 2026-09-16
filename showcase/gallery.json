@@ -80,8 +80,8 @@
     {
       "name": "treasure-chest",
       "dir": "showcase/treasure-chest",
-      "teaches": "A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 5724 tris, two materials with 180 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.776×0.549×0.631 m, LOD ratios in band, convex collider 138 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 3852 tris, two materials with 1608 wood and 318 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.764×0.542×0.691 m, LOD ratios in band, convex collider 176 tris, non-empty glTF. Hygiene all zero, four feet at zmin 0, lid-knuckle to hinge barrel 7 mm, band-wall gap 0. --float-hinge exits 17 on the hinge join; --narrow-bands exits 18 on the band seat.",
       "hero": "docs/gallery/assets/treasure-chest-hero.webp",
       "preview": "showcase/treasure-chest/preview.webp",
       "tags": [
@@ -272,8 +272,8 @@
     {
       "name": "tavern-stool",
       "dir": "showcase/tavern-stool",
-      "teaches": "A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 5396 tris, two materials with 2542 wood and 40 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.309×0.309×0.467 m, LOD ratios in band, convex collider 96 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural tavern stool with a lathed seat, turned splayed legs, tenoned stretchers, and iron ferrule cups through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 2528 tris, two materials with 1168 wood and 256 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.340×0.340×0.470 m, LOD ratios in band, convex collider 396 tris, non-empty glTF. Hygiene all zero, four ferrule cups at zmin 0, stretcher-leg gap 0, ferrule clearance −1.25 mm. --float-stretchers exits 17 on the stretcher join; --pipe-ferrule exits 18 on the ferrule bite band.",
       "hero": "docs/gallery/assets/tavern-stool-hero.webp",
       "preview": "showcase/tavern-stool/preview.webp",
       "tags": [
