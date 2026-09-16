@@ -53,6 +53,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   single-shell contract. Pairs of parts meant to touch assert a BVH
   surface gap below a named epsilon (vert-vert is the wrong metric for
   thin straps and collars).
+- **Named supports (exit 16).** AABB `zmin` is necessary but not
+  sufficient on a multi-support prop: a wheel, a sled floor, or one
+  planted foot can ground the box while the other feet float. Split the
+  mesh into shells and assert each named support (shoe, tyre, foot) has
+  its own `zmin` within epsilon of 0. `--short-legs` (or the piece's
+  equivalent) is the falsifier: float the named supports while leaving
+  something else on the ground so the AABB gate would still pass.
 - **Joint-fit budgets.** Parts that interpenetrate on purpose — a tenon
   in a mortise, a peg in a hub — assert how deep the overlap goes, not
   just that it exists. Split the mesh into shells by edge connectivity,
