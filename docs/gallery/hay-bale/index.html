@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>hay-bale — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/hay-bale/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="hay-bale — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/hay-bale/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hay-bale-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hay-bale — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hay-bale-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,35 +246,37 @@
   </div>
   <header class="hero">
     <h1>hay-bale</h1>
-    <p>A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom hay-bale render">
       <img src="../assets/hay-bale-hero.webp" alt="hay-bale render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 252 tris, two materials with 66 hay and 60 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.916×0.520×0.401 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 68 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 852 tris, two materials with 294 hay and 132 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.920×0.517×0.426 m, zmin 0, hygiene 0, hay-twine BVH gap 0.07 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/hay-bale/hay_bale.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural bound straw bale (bevelled loaf, end nap, two sisal twine belts) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural bound straw bale (cinched pillow loaf, end nap, two square-torus sisal belts with hitch loops) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
+<p>Intended size: 0.90 × 0.48 × 0.38 m core loaf; outer AABB includes cinch bulge and belts.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 220–290 | 252 / 252 / 252 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4683 | | LOD2 ratio | 0.10–0.35 of base | 0.2143 / 0.2143 / 0.1429 | | Materials | exactly 2 distinct, ≥24 hay, ≥24 twine | 2 slots, 66 hay, 60 twine | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.916, 0.520, 0.401) m ± 0.01 | (0.9160, 0.5200, 0.4010), zmin 0 | | Collider tris | ≤ 120 | 68 | | Export | written, size &gt; 0 | 25944 / 25944 / 25936 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on both LOD ratios. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 750–1100 | 852 / 852 / 852 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2183 / 0.2183 / 0.2183 | | Materials | exactly 2 distinct, ≥24 hay, ≥24 twine | 2 slots, 294 hay, 132 twine | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.920, 0.517, 0.426) m ± 0.01 | (0.9199, 0.5170, 0.4257) | | Grounded zmin | within 1e-4 of 0 | 0 / 0 / 0 | | Hygiene | loose/nonman/zero-area/doubles/ngons = 0 | 0 / 0 / 0 | | Hay–twine gap | BVH surface &lt; 0.008 m | 0.00007 / 0.00007 / 0.00007 | | Collider tris | ≤ 400 | 78 | | Export | written, size &gt; 0 | 70720 / 70720 / 70712 bytes |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. <code>--lift-z</code> raises the mesh 5 cm so the grounded-zmin hygiene budget fails and exit 16 fires.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python hay_bale.py --
 blender --background --python hay_bale.py -- --skip-decimate
+blender --background --python hay_bale.py -- --lift-z
 blender --background --python hay_bale.py -- --output bale.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke does not pass <code>--output</code>, <code>--skip-decimate</code>, or <code>--lift-z</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or hay/twine faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or hay/twine faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene: loose verts/edges, non-manifold, zero-area, doubles, or n-gons | | 16 | Grounded zmin (<code>--lift-z</code> lands here) | | 17 | Hay–twine BVH gap above 8 mm |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -290,7 +292,8 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
+mesh so the grounded-zmin hygiene budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -298,6 +301,7 @@ ratio band, not an exact count.
 
     blender --background --python hay_bale.py --
     blender --background --python hay_bale.py -- --skip-decimate
+    blender --background --python hay_bale.py -- --lift-z
     blender --background --python hay_bale.py -- --output bale.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
@@ -310,6 +314,7 @@ ratio band, not an exact count.
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
 <span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
 <span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
@@ -324,15 +329,24 @@ sys.dont_write_bytecode = <span class="k">True</span>
 BALE_X = <span class="n">0.90</span>
 BALE_Y = <span class="n">0.48</span>
 BALE_Z = <span class="n">0.38</span>
-TWINE_T = <span class="n">0.014</span>
-TWINE_W = <span class="n">0.026</span>
-TWINE_PAD = <span class="n">0.006</span>
+TWINE_T = <span class="n">0.012</span>
+TWINE_W = <span class="n">0.028</span>
+TWINE_EMBED = <span class="n">0.003</span>
+BELT_XS = (-<span class="n">0.225</span>, <span class="n">0.225</span>)
+LOAF_CUTS = <span class="n">4</span>
+BULGE = <span class="n">0.055</span>
+RIDGE_AMP = <span class="n">0.007</span>
 BBOX_TOL = <span class="n">0.01</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.916</span>, <span class="n">0.520</span>, <span class="n">0.401</span>)
+OUTER_SIZE = (<span class="n">0.920</span>, <span class="n">0.517</span>, <span class="n">0.426</span>)
 
-BASE_TRIS_MIN = <span class="n">220</span>
-BASE_TRIS_MAX = <span class="n">290</span>
+BASE_TRIS_MIN = <span class="n">750</span>
+BASE_TRIS_MAX = <span class="n">1100</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+GAP_MAX = <span class="n">0.008</span>
+LIFT_Z = <span class="n">0.05</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -342,7 +356,7 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">120</span>
+COLLIDER_TRIS_MAX = <span class="n">400</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.04</span>
 HAY_FACES_MIN = <span class="n">24</span>
@@ -392,6 +406,150 @@ TWINE_IDX = <span class="n">1</span>
     <span class="k">return</span> verts
 
 
+<span class="k">def</span> add_rim(bm, loc, major, minor, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), n_major=<span class="n">12</span>, n_minor=<span class="n">6</span>):
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(n_major):
+        u = i * (<span class="n">2.0</span> * math.pi / n_major)
+        ring = []
+        <span class="k">for</span> j <span class="k">in</span> range(n_minor):
+            v = j * (<span class="n">2.0</span> * math.pi / n_minor)
+            ring.append(bm.verts.new((
+                (major + minor * math.cos(v)) * math.cos(u),
+                (major + minor * math.cos(v)) * math.sin(u),
+                minor * math.sin(v),
+            )))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+    <span class="k">for</span> i <span class="k">in</span> range(n_major):
+        i2 = (i + <span class="n">1</span>) % n_major
+        <span class="k">for</span> j <span class="k">in</span> range(n_minor):
+            j2 = (j + <span class="n">1</span>) % n_minor
+            face = bm.faces.new((rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2]))
+            face.material_index = mat_idx
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co = rot @ v.co + origin
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_square_wrap(bm, x, y_half, z_lo, z_hi, t, w, mat_idx):
+    <span class="s">&quot;&quot;&quot;Closed rectangular belt in YZ, extruded along X. One manifold torus.&quot;&quot;&quot;</span>
+    x0 = x - w * <span class="n">0.5</span>
+    x1 = x + w * <span class="n">0.5</span>
+    inner = (
+        (y_half, z_lo),
+        (y_half, z_hi),
+        (-y_half, z_hi),
+        (-y_half, z_lo),
+    )
+    outer = (
+        (y_half + t, z_lo - t),
+        (y_half + t, z_hi + t),
+        (-y_half - t, z_hi + t),
+        (-y_half - t, z_lo - t),
+    )
+
+    <span class="k">def</span> ring(xc, pts):
+        <span class="k">return</span> [bm.verts.new((xc, p[<span class="n">0</span>], p[<span class="n">1</span>])) <span class="k">for</span> p <span class="k">in</span> pts]
+
+    i0 = ring(x0, inner)
+    o0 = ring(x0, outer)
+    i1 = ring(x1, inner)
+    o1 = ring(x1, outer)
+
+    <span class="k">def</span> quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        <span class="k">return</span> face
+
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+        n = (k + <span class="n">1</span>) % <span class="n">4</span>
+        quad(i0[k], i1[k], i1[n], i0[n])
+        quad(o0[k], o0[n], o1[n], o1[k])
+        quad(i0[k], i0[n], o0[n], o0[k])
+        quad(i1[k], o1[k], o1[n], i1[n])
+
+
+<span class="k">def</span> face_area(me, poly):
+    vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> poly.vertices]
+    <span class="k">if</span> len(vs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = vs[<span class="n">0</span>]
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+        area += (vs[i] - v0).cross(vs[i + <span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    <span class="c"># Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).</span>
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    areas = [face_area(me, p) <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> a <span class="k">in</span> areas <span class="k">if</span> a &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv,
+        <span class="s">&quot;ne&quot;</span>: ne,
+        <span class="s">&quot;nf&quot;</span>: nf,
+        <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v,
+        <span class="s">&quot;loose_e&quot;</span>: loose_e,
+        <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;doubles&quot;</span>: doubles,
+        <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> min_mat_distance(me, ia, ib):
+    <span class="s">&quot;&quot;&quot;Closest surface distance between two material islands via BVH.
+
+    Vert-vert distance is the wrong metric for a 4-corner strap: the inner
+    face has no mid-edge verts, so a cinched belt still reports ~TWINE_W/2.
+    &quot;&quot;&quot;</span>
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    <span class="k">try</span>:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        bm_a.faces.ensure_lookup_table()
+        bm_b.faces.ensure_lookup_table()
+        drop_a = [f <span class="k">for</span> f <span class="k">in</span> bm_a.faces <span class="k">if</span> f.material_index != ia]
+        drop_b = [f <span class="k">for</span> f <span class="k">in</span> bm_b.faces <span class="k">if</span> f.material_index != ib]
+        <span class="k">if</span> drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_a.faces <span class="k">or</span> <span class="k">not</span> bm_b.faces:
+            <span class="k">return</span> <span class="n">1e9</span>
+        tree = BVHTree.FromBMesh(bm_b)
+        best = <span class="n">1e9</span>
+        <span class="k">for</span> src <span class="k">in</span> list(bm_a.verts) + list(bm_a.faces):
+            co = src.co <span class="k">if</span> hasattr(src, <span class="s">&quot;co&quot;</span>) <span class="k">else</span> src.calc_center_median()
+            hit = tree.find_nearest(co)
+            <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            best = min(best, hit[<span class="n">3</span>])
+        <span class="k">return</span> best
+    <span class="k">finally</span>:
+        bm_a.free()
+        bm_b.free()
+
+
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
     uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
     faces = list(bm.faces)
@@ -435,6 +593,29 @@ TWINE_IDX = <span class="n">1</span>
             )
 
 
+<span class="k">def</span> _shape_loaf(verts):
+    hx = BALE_X * <span class="n">0.5</span>
+    hy = BALE_Y * <span class="n">0.5</span>
+    hz = BALE_Z * <span class="n">0.5</span>
+    zc = BALE_Z * <span class="n">0.5</span>
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        x, y, z = v.co.x, v.co.y, v.co.z
+        nx = max(-<span class="n">1.0</span>, min(<span class="n">1.0</span>, x / hx))
+        ny = max(-<span class="n">1.0</span>, min(<span class="n">1.0</span>, y / hy))
+        nz = max(-<span class="n">1.0</span>, min(<span class="n">1.0</span>, (z - zc) / hz))
+        pillow = <span class="n">1.0</span> + BULGE * (<span class="n">1.0</span> - nx * nx)
+        v.co.y = y * pillow
+        v.co.z = zc + (z - zc) * pillow
+        <span class="c"># Longitudinal straw ridges on the long faces; closed-form, no RNG.</span>
+        ridge = RIDGE_AMP * math.sin(x * <span class="n">24.0</span>) * (<span class="n">0.35</span> + <span class="n">0.65</span> * abs(ny))
+        v.co.y += ridge
+        v.co.z += <span class="n">0.55</span> * RIDGE_AMP * math.sin(x * <span class="n">19.0</span> + <span class="n">0.7</span>) * (<span class="n">0.35</span> + <span class="n">0.65</span> * abs(nz))
+        <span class="c"># End-grain nap: bite the ±X faces instead of gluing on extra slabs.</span>
+        <span class="k">if</span> abs(nx) &gt; <span class="n">0.82</span>:
+            rr = math.hypot(v.co.y / (hy * pillow), (v.co.z - zc) / (hz * pillow))
+            v.co.x += math.copysign(<span class="n">0.010</span> * math.sin(rr * <span class="n">14.0</span>), x)
+
+
 <span class="k">def</span> build_bale_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
     hay_verts = []
@@ -448,59 +629,61 @@ TWINE_IDX = <span class="n">1</span>
                 HAY_IDX,
             )
         )
+        bmesh.ops.subdivide_edges(
+            bm,
+            edges=list({e <span class="k">for</span> v <span class="k">in</span> hay_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}),
+            cuts=LOAF_CUTS,
+            use_grid_fill=<span class="k">True</span>,
+        )
+        hay_verts = [v <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        _shape_loaf(hay_verts)
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> hay_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
-            <span class="k">if</span> edges:
-                bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=<span class="n">0.5</span>,
-                    affect=<span class="s">&quot;EDGES&quot;</span>,
-                    clamp_overlap=<span class="k">True</span>,
-                )
-
-        hx = BALE_X / <span class="n">2.0</span>
-        hy = BALE_Y / <span class="n">2.0</span>
-        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            add_box(
+            bm.edges.ensure_lookup_table()
+            edges = []
+            <span class="k">for</span> e <span class="k">in</span> bm.edges:
+                <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                    <span class="k">continue</span>
+                <span class="k">if</span> e.calc_face_angle() &gt; math.radians(<span class="n">50.0</span>):
+                    edges.append(e)
+            <span class="k">if</span> <span class="k">not</span> edges:
+                edges = list(bm.edges)
+            bmesh.ops.bevel(
                 bm,
-                (sign * (hx + <span class="n">0.002</span>), <span class="n">0.0</span>, BALE_Z / <span class="n">2.0</span>),
-                (<span class="n">0.012</span>, BALE_Y * <span class="n">0.98</span>, BALE_Z * <span class="n">0.96</span>),
-                HAY_IDX,
+                geom=edges,
+                offset=bevel_offset,
+                segments=bevel_segments,
+                profile=<span class="n">0.45</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>,
+                clamp_overlap=<span class="k">True</span>,
             )
 
+        hay_now = [v <span class="k">for</span> v <span class="k">in</span> bm.verts]
         before = set(bm.faces)
-        <span class="k">for</span> x <span class="k">in</span> (-<span class="n">0.22</span>, <span class="n">0.22</span>):
-            wrap_y = BALE_Y + <span class="n">2.0</span> * TWINE_PAD + TWINE_T
-            wrap_z = BALE_Z + <span class="n">2.0</span> * TWINE_PAD
-            add_box(bm, (x, <span class="n">0.0</span>, TWINE_T / <span class="n">2.0</span>), (TWINE_W, wrap_y, TWINE_T), TWINE_IDX)
-            add_box(
+        <span class="k">for</span> x <span class="k">in</span> BELT_XS:
+            near = [v <span class="k">for</span> v <span class="k">in</span> hay_now <span class="k">if</span> abs(v.co.x - x) &lt;= <span class="n">0.08</span>]
+            <span class="k">if</span> len(near) &lt; <span class="n">8</span>:
+                near = hay_now
+            y_max = max(abs(v.co.y) <span class="k">for</span> v <span class="k">in</span> near)
+            z_min = min(v.co.z <span class="k">for</span> v <span class="k">in</span> near)
+            z_max = max(v.co.z <span class="k">for</span> v <span class="k">in</span> near)
+            <span class="c"># Sit the belt in the ridge troughs so it cinches the peaks.</span>
+            y_half = y_max - RIDGE_AMP - TWINE_EMBED
+            z_lo = z_min + RIDGE_AMP + TWINE_EMBED
+            z_hi = z_max - RIDGE_AMP - TWINE_EMBED
+            add_square_wrap(bm, x, y_half, z_lo, z_hi, TWINE_T, TWINE_W, TWINE_IDX)
+            add_rim(
                 bm,
-                (x, <span class="n">0.0</span>, BALE_Z + TWINE_PAD - TWINE_T / <span class="n">2.0</span>),
-                (TWINE_W, wrap_y, TWINE_T),
+                (x, <span class="n">0.0</span>, z_hi + TWINE_T),
+                <span class="n">0.014</span>,
+                <span class="n">0.007</span>,
                 TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, hy + TWINE_PAD + TWINE_T / <span class="n">2.0</span>, BALE_Z / <span class="n">2.0</span> + <span class="n">0.004</span>),
-                (TWINE_W, TWINE_T, wrap_z),
-                TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, -(hy + TWINE_PAD + TWINE_T / <span class="n">2.0</span>), BALE_Z / <span class="n">2.0</span> + <span class="n">0.004</span>),
-                (TWINE_W, TWINE_T, wrap_z),
-                TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, <span class="n">0.02</span>, BALE_Z + TWINE_PAD + <span class="n">0.004</span>),
-                (TWINE_W + <span class="n">0.008</span>, <span class="n">0.032</span>, <span class="n">0.018</span>),
-                TWINE_IDX,
+                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, math.pi / <span class="n">2.0</span>),
+                n_major=<span class="n">10</span>,
+                n_minor=<span class="n">5</span>,
             )
         twine_faces.update(set(bm.faces) - before)
+
+        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
 
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
         zmin = min(zs)
@@ -537,13 +720,33 @@ TWINE_IDX = <span class="n">1</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -682,14 +885,32 @@ TWINE_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_bale_mesh(<span class="s">&quot;BaleLow&quot;</span>, bevel_offset=<span class="n">0.012</span>, bevel_segments=<span class="n">2</span>)
-    high = build_bale_mesh(<span class="s">&quot;BaleHigh&quot;</span>, bevel_offset=<span class="n">0.012</span>, bevel_segments=<span class="n">4</span>)
-    hay = principled(<span class="s">&quot;BaleHay&quot;</span>, (<span class="n">0.72</span>, <span class="n">0.55</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.84</span>)
-    twine = principled(<span class="s">&quot;BaleTwine&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.14</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.52</span>)
+    low = build_bale_mesh(<span class="s">&quot;BaleLow&quot;</span>, bevel_offset=<span class="n">0.016</span>, bevel_segments=<span class="n">2</span>)
+    high = build_bale_mesh(<span class="s">&quot;BaleHigh&quot;</span>, bevel_offset=<span class="n">0.016</span>, bevel_segments=<span class="n">4</span>)
+    hay = principled(
+        <span class="s">&quot;BaleHay&quot;</span>,
+        (<span class="n">0.66</span>, <span class="n">0.52</span>, <span class="n">0.18</span>, <span class="n">1.0</span>),
+        <span class="n">0.0</span>,
+        <span class="n">0.78</span>,
+        noise_scale=<span class="n">22.0</span>,
+        wear=(<span class="n">0.48</span>, <span class="n">0.36</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
+    )
+    twine = principled(
+        <span class="s">&quot;BaleTwine&quot;</span>,
+        (<span class="n">0.22</span>, <span class="n">0.16</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
+        <span class="n">0.0</span>,
+        <span class="n">0.58</span>,
+        noise_scale=<span class="n">14.0</span>,
+        wear=(<span class="n">0.14</span>, <span class="n">0.10</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+    )
     assign_slots(low, hay, twine)
     assign_slots(high, hay, twine)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;hay bale mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -750,10 +971,18 @@ TWINE_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span>
     )
+    hyg = hygiene_audit(low.data)
+    gap = min_mat_distance(low.data, TWINE_IDX, HAY_IDX)
     print(
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
+    )
+    print(<span class="s">f&quot;</span><span class="s">measured hay_twine_gap=</span>{gap:<span class="s">.5f</span>}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s">&quot;</span>)
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -818,6 +1047,31 @@ TWINE_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>]
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> gap &gt; GAP_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hay-twine gap </span>{gap:<span class="s">.5f</span>}<span class="s"> &gt; </span>{GAP_MAX}<span class="s"> (twine must cinch the loaf)</span><span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, hay, tex, collider
 
 
@@ -935,9 +1189,14 @@ TWINE_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--lift-z&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: lift the mesh so zmin fails the grounded budget&quot;</span>,
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, hay, tex, _col = check(args.skip_decimate)
+    code, low, _high, hay, tex, _col = check(args.skip_decimate, lift_z=args.lift_z)
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
