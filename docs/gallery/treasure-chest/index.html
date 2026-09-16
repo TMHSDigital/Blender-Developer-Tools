@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>treasure-chest — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/treasure-chest/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="treasure-chest — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/treasure-chest/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/treasure-chest-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="treasure-chest — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/treasure-chest-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,35 +246,48 @@
   </div>
   <header class="hero">
     <h1>treasure-chest</h1>
-    <p>A procedural slatted treasure chest through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural iron-bound chest with a lofted barrel-vault lid, U-wrap bands, and hinge knuckles through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom treasure-chest render">
       <img src="../assets/treasure-chest-hero.webp" alt="treasure-chest render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 5724 tris, two materials with 180 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.776×0.549×0.631 m, LOD ratios in band, convex collider 138 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3852 tris, two materials with 1608 wood and 318 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.764×0.542×0.691 m, LOD ratios in band, convex collider 176 tris, non-empty glTF. Hygiene all zero, four feet at zmin 0, lid-knuckle to hinge barrel 7 mm, band-wall gap 0. --float-hinge exits 17 on the hinge join; --narrow-bands exits 18 on the band seat.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/treasure-chest/treasure_chest.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural slatted treasure chest (hollow body, open lid, iron bands, corner brackets, lock plate) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural iron-bound chest (slatted hollow body, barrel-vault lid, U-wrap bands, corner irons, lock plate, hinge barrels with lid knuckles, wooden feet) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>The lid is one lofted vault slab, not stacked boxes. Hinge join is measured from local lid knuckles over the barrels — a spanning stile only has verts at the X ends, 8 cm from the knuckles, and reports a false gap.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 5600–5850 | 5724 / 5724 / 5724 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 180 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.776, 0.549, 0.631) m ± 0.01 | (0.7760, 0.5486, 0.6312), zmin 0 | | Collider tris | ≤ 160 | 138 | | Export | written, size &gt; 0 | 416656 / 416656 / 416644 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size differs by a few bytes across series.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3600–4500 | 3852 / 3852 / 3852 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2129 | | Materials | exactly 2 distinct; ≥200 wood, ≥80 metal faces | 2 slots; 1608 / 318 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.764, 0.542, 0.691) m ± 0.015 | (0.7640, 0.5423, 0.6907), zmin 0 | | Collider tris | ≤ 200 | 176 | | Export | written, size &gt; 0 | 288196 / 288196 / 288184 bytes |</p>
+<h3>Hygiene</h3>
+<p>Recomputed from the generated mesh, not asserted about the script.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Named supports: 4 feet | each <code>zmin</code> ≤ 1e-3 | 4, foot_z 0.00000 | | Body plan | 0.74 × 0.46 m ± 0.04 | 0.7400 × 0.4600 |</p>
+<h3>Joint fit and seat</h3>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Lid-knuckle to hinge barrel | ≤ 0.020 m | 0.00700 | | Band-wall BVH gap | ≤ 0.008 m | 0.00000 |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts may differ by a few bytes across series.</p>
+<h3>Falsifiers</h3>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--short-legs</code> | named foot supports at Z=0 | 16 | | <code>--float-hinge</code> | lid-knuckle to hinge barrel | 17 | | <code>--narrow-bands</code> | band-wall seat | 18 |</p>
 <h2>Run</h2>
 <pre><code>blender --background --python treasure_chest.py --
 blender --background --python treasure_chest.py -- --skip-decimate
+blender --background --python treasure_chest.py -- --stray-vert
+blender --background --python treasure_chest.py -- --lift-z
+blender --background --python treasure_chest.py -- --short-legs
+blender --background --python treasure_chest.py -- --float-hinge
+blender --background --python treasure_chest.py -- --narrow-bands
 blender --background --python treasure_chest.py -- --output chest.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0, or a named foot floats | | 17 | Joint fit: lid-knuckle to hinge barrel | | 18 | Seat: band-wall gap | | 19 | Body plan off the stated real-world size |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -289,8 +302,11 @@ shipped pipeline pieces: bmesh construction, UVs, two materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named foot
+supports, ``--float-hinge`` lid-hinge joint-fit, ``--narrow-bands``
+band-wall seat.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -310,10 +326,8 @@ ratio band, not an exact count.
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
-<span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
-<span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
-<span class="c"># resolve the repo root so we do not move gallery_framing.py.</span>
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -321,25 +335,37 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
+<span class="c"># A small iron-bound chest: 0.74 × 0.46 m plan, ~0.37 m to the rim,</span>
+<span class="c"># shallow barrel-vault lid. The old piece was a crate of overlay boxes</span>
+<span class="c"># with a flat sandwich lid.</span>
 OUTER_W = <span class="n">0.74</span>
 OUTER_D = <span class="n">0.46</span>
-CAVITY_H = <span class="n">0.30</span>
-WALL = <span class="n">0.030</span>
-BOTTOM = <span class="n">0.028</span>
-FOOT_H = <span class="n">0.038</span>
-FOOT_S = <span class="n">0.072</span>
-LID_T = <span class="n">0.032</span>
-LID_LIP = <span class="n">0.042</span>
-SLAT_T = <span class="n">0.018</span>
+CAVITY_H = <span class="n">0.28</span>
+WALL = <span class="n">0.028</span>
+BOTTOM = <span class="n">0.026</span>
+FOOT_H = <span class="n">0.042</span>
+FOOT_S = <span class="n">0.068</span>
+FOOT_NEST = <span class="n">0.012</span>
+LID_T = <span class="n">0.028</span>
 N_FRONT = <span class="n">5</span>
+N_SIDE = <span class="n">4</span>
 N_LID = <span class="n">5</span>
-BAND_W = <span class="n">0.048</span>
-BAND_T = <span class="n">0.016</span>
-LID_ANGLE = math.radians(-<span class="n">26.0</span>)
-BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">0.776</span>, <span class="n">0.549</span>, <span class="n">0.631</span>)
-BASE_TRIS_MIN = <span class="n">5600</span>
-BASE_TRIS_MAX = <span class="n">5850</span>
+BAND_W = <span class="n">0.042</span>
+BAND_T = <span class="n">0.010</span>
+VAULT_R = <span class="n">0.50</span>
+HINGE_R = <span class="n">0.011</span>
+LID_ANGLE = math.radians(-<span class="n">38.0</span>)
+BRACKET = <span class="n">0.050</span>
+IRON_T = <span class="n">0.012</span>
+BBOX_TOL = <span class="n">0.015</span>
+BODY_W = OUTER_W
+BODY_D = OUTER_D
+BODY_W_TOL = <span class="n">0.04</span>
+BODY_D_TOL = <span class="n">0.04</span>
+OUTER_SIZE = (<span class="n">0.764</span>, <span class="n">0.542</span>, <span class="n">0.691</span>)
+
+BASE_TRIS_MIN = <span class="n">3600</span>
+BASE_TRIS_MAX = <span class="n">4500</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -349,10 +375,20 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">160</span>
+COLLIDER_TRIS_MAX = <span class="n">200</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
-METAL_FACES_MIN = <span class="n">24</span>
+METAL_FACES_MIN = <span class="n">80</span>
+WOOD_FACES_MIN = <span class="n">200</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.999</span>
+LIFT_Z = <span class="n">0.05</span>
+FOOT_Z_MAX = <span class="n">1e-3</span>
+HINGE_JOIN = <span class="n">0.020</span>
+BAND_SEAT = <span class="n">0.008</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
@@ -373,7 +409,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> evaluated_triangle_count(obj):
-    <span class="c"># Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).</span>
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -395,6 +430,34 @@ METAL_IDX = <span class="n">1</span>
     faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
+    <span class="k">return</span> list(verts)
+
+
+<span class="k">def</span> add_arc_slab(bm, cz, a0, a1, r_in, r_out, x0, x1, n, mat_idx):
+    <span class="s">&quot;&quot;&quot;Solid barrel-vault slab along X. Inner/outer arcs, two X stations.&quot;&quot;&quot;</span>
+    <span class="k">def</span> mk(x, r, t):
+        <span class="k">return</span> bm.verts.new((x, r * math.sin(t), cz + r * math.cos(t)))
+
+    rin, rout, lin, lout = [], [], [], []
+    <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>):
+        t = a0 + (a1 - a0) * (i / float(n))
+        rin.append(mk(x0, r_in, t))
+        rout.append(mk(x0, r_out, t))
+        lin.append(mk(x1, r_in, t))
+        lout.append(mk(x1, r_out, t))
+    verts = rin + rout + lin + lout
+
+    <span class="k">def</span> face(vs):
+        f = bm.faces.new(vs)
+        f.material_index = mat_idx
+
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        face((rin[i], lin[i], lin[i + <span class="n">1</span>], rin[i + <span class="n">1</span>]))
+        face((rout[i], rout[i + <span class="n">1</span>], lout[i + <span class="n">1</span>], lout[i]))
+        face((rin[i], rin[i + <span class="n">1</span>], rout[i + <span class="n">1</span>], rout[i]))
+        face((lin[i], lout[i], lout[i + <span class="n">1</span>], lin[i + <span class="n">1</span>]))
+    face((rin[<span class="n">0</span>], rout[<span class="n">0</span>], lout[<span class="n">0</span>], lin[<span class="n">0</span>]))
+    face((rin[-<span class="n">1</span>], lin[-<span class="n">1</span>], lout[-<span class="n">1</span>], rout[-<span class="n">1</span>]))
     <span class="k">return</span> verts
 
 
@@ -414,9 +477,7 @@ METAL_IDX = <span class="n">1</span>
         col = i % cols
         row = i // cols
         nrm = face.normal
-        ax = abs(nrm.x)
-        ay = abs(nrm.y)
-        az = abs(nrm.z)
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
         coords = []
         <span class="k">for</span> loop <span class="k">in</span> face.loops:
             co = loop.vert.co
@@ -441,31 +502,44 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> build_chest_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_chest_mesh(
+    name, bevel_offset, bevel_segments,
+    short_legs=<span class="k">False</span>, float_hinge=<span class="k">False</span>, narrow_bands=<span class="k">False</span>,
+):
     bm = bmesh.new()
     <span class="k">try</span>:
-        bevel_verts = []
-        lid_verts = []
-        body_top = FOOT_H + BOTTOM + CAVITY_H
+        wood = []
+        metal = []
+        lid_wood = []
+        lid_metal = []
         hx = OUTER_W / <span class="n">2.0</span>
         hy = OUTER_D / <span class="n">2.0</span>
+        body_top = FOOT_H + BOTTOM + CAVITY_H
+        wall_h = CAVITY_H
+        wall_z = FOOT_H + BOTTOM + wall_h / <span class="n">2.0</span>
+        foot_z0 = <span class="n">0.05</span> <span class="k">if</span> short_legs <span class="k">else</span> <span class="n">0.0</span>
+
+        <span class="k">if</span> short_legs:
+            metal.extend(
+                add_box(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.004</span>), (<span class="n">0.04</span>, <span class="n">0.04</span>, <span class="n">0.008</span>), METAL_IDX)
+            )
 
         <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                bevel_verts.extend(
+                wood.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx - FOOT_S / <span class="n">2.0</span> - <span class="n">0.01</span>),
-                            syn * (hy - FOOT_S / <span class="n">2.0</span> - <span class="n">0.01</span>),
-                            FOOT_H / <span class="n">2.0</span>,
+                            sxn * (hx - FOOT_S / <span class="n">2.0</span> - <span class="n">0.010</span>),
+                            syn * (hy - FOOT_S / <span class="n">2.0</span> - <span class="n">0.010</span>),
+                            foot_z0 + (FOOT_H + FOOT_NEST) / <span class="n">2.0</span>,
                         ),
-                        (FOOT_S, FOOT_S, FOOT_H),
-                        METAL_IDX,
+                        (FOOT_S, FOOT_S, FOOT_H + FOOT_NEST),
+                        WOOD_IDX,
                     )
                 )
 
-        bevel_verts.extend(
+        wood.extend(
             add_box(
                 bm,
                 (<span class="n">0.0</span>, <span class="n">0.0</span>, FOOT_H + BOTTOM / <span class="n">2.0</span>),
@@ -473,212 +547,240 @@ METAL_IDX = <span class="n">1</span>
                 WOOD_IDX,
             )
         )
-        wall_h = CAVITY_H
-        wall_z = FOOT_H + BOTTOM + wall_h / <span class="n">2.0</span>
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, -hy + WALL / <span class="n">2.0</span>, wall_z),
-                (OUTER_W, WALL, wall_h),
-                WOOD_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, hy - WALL / <span class="n">2.0</span>, wall_z),
-                (OUTER_W, WALL, wall_h),
-                WOOD_IDX,
-            )
-        )
-        inner_d = OUTER_D - <span class="n">2.0</span> * WALL
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (-hx + WALL / <span class="n">2.0</span>, <span class="n">0.0</span>, wall_z),
-                (WALL, inner_d, wall_h),
-                WOOD_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (hx - WALL / <span class="n">2.0</span>, <span class="n">0.0</span>, wall_z),
-                (WALL, inner_d, wall_h),
-                WOOD_IDX,
-            )
-        )
 
-        slat_w = (OUTER_W - <span class="n">0.06</span>) / N_FRONT
-        gap = <span class="n">0.006</span>
-        usable = slat_w - gap
-        x0 = -hx + <span class="n">0.03</span> + usable / <span class="n">2.0</span>
+        pitch = OUTER_W / N_FRONT
+        overlap = <span class="n">0.006</span>
         <span class="k">for</span> i <span class="k">in</span> range(N_FRONT):
-            x = x0 + i * slat_w
-            bevel_verts.extend(
+            jw = <span class="n">0.004</span> * math.sin(i * <span class="n">1.7</span> + <span class="n">0.4</span>)
+            x = -hx + pitch * (i + <span class="n">0.5</span>)
+            y_off = <span class="n">0.0015</span> <span class="k">if</span> (i % <span class="n">2</span>) <span class="k">else</span> <span class="n">0.0</span>
+            wood.extend(
                 add_box(
                     bm,
-                    (x, -hy - SLAT_T / <span class="n">2.0</span>, wall_z),
-                    (usable, SLAT_T, wall_h - <span class="n">0.02</span>),
+                    (x, -hy + WALL / <span class="n">2.0</span> + y_off, wall_z),
+                    (pitch + overlap + jw, WALL, wall_h),
+                    WOOD_IDX,
+                )
+            )
+            wood.extend(
+                add_box(
+                    bm,
+                    (x, hy - WALL / <span class="n">2.0</span> - y_off, wall_z),
+                    (pitch + overlap + jw, WALL, wall_h),
                     WOOD_IDX,
                 )
             )
 
-        n_side = <span class="n">3</span>
-        side_h = (wall_h - <span class="n">0.04</span>) / n_side
+        pitch_z = wall_h / N_SIDE
+        inner_d = OUTER_D - <span class="n">2.0</span> * WALL + <span class="n">0.010</span>
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            <span class="k">for</span> i <span class="k">in</span> range(n_side):
-                z = FOOT_H + BOTTOM + <span class="n">0.02</span> + side_h / <span class="n">2.0</span> + i * (side_h + <span class="n">0.006</span>)
-                bevel_verts.extend(
+            <span class="k">for</span> i <span class="k">in</span> range(N_SIDE):
+                jh = <span class="n">0.003</span> * math.sin(i * <span class="n">1.3</span> + sign)
+                z = FOOT_H + BOTTOM + pitch_z * (i + <span class="n">0.5</span>)
+                x_off = <span class="n">0.0015</span> <span class="k">if</span> (i % <span class="n">2</span>) <span class="k">else</span> <span class="n">0.0</span>
+                wood.extend(
                     add_box(
                         bm,
-                        (sign * (hx + SLAT_T / <span class="n">2.0</span>), <span class="n">0.0</span>, z),
-                        (SLAT_T, OUTER_D - <span class="n">0.08</span>, side_h - <span class="n">0.008</span>),
+                        (sign * (hx - WALL / <span class="n">2.0</span> - sign * x_off), <span class="n">0.0</span>, z),
+                        (WALL, inner_d, pitch_z + <span class="n">0.006</span> + jh),
                         WOOD_IDX,
                     )
                 )
 
+        rim_t = <span class="n">0.012</span>
+        rim_z = body_top - rim_t / <span class="n">2.0</span> - <span class="n">0.002</span>
+        wood.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, -hy + WALL + rim_t / <span class="n">2.0</span>, rim_z),
+                (OUTER_W - <span class="n">2.0</span> * WALL, rim_t, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, hy - WALL - rim_t / <span class="n">2.0</span>, rim_z),
+                (OUTER_W - <span class="n">2.0</span> * WALL, rim_t, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (-hx + WALL + rim_t / <span class="n">2.0</span> + <span class="n">0.003</span>, <span class="n">0.0</span>, rim_z),
+                (rim_t, OUTER_D - <span class="n">2.0</span> * WALL - <span class="n">2.0</span> * rim_t - <span class="n">0.012</span>, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (hx - WALL - rim_t / <span class="n">2.0</span> - <span class="n">0.003</span>, <span class="n">0.0</span>, rim_z),
+                (rim_t, OUTER_D - <span class="n">2.0</span> * WALL - <span class="n">2.0</span> * rim_t - <span class="n">0.012</span>, rim_t), WOOD_IDX,
+            )
+        )
+
+        band_t = <span class="n">0.004</span> <span class="k">if</span> narrow_bands <span class="k">else</span> BAND_T
+        band_y_off = <span class="n">0.022</span> <span class="k">if</span> narrow_bands <span class="k">else</span> <span class="n">0.0</span>
         band_xs = (-OUTER_W * <span class="n">0.32</span>, <span class="n">0.0</span>, OUTER_W * <span class="n">0.32</span>)
         <span class="k">for</span> bx <span class="k">in</span> band_xs:
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, -hy - BAND_T / <span class="n">2.0</span>, wall_z),
-                    (BAND_W, BAND_T, wall_h + <span class="n">0.01</span>),
+                    (
+                        bx,
+                        -hy - band_t / <span class="n">2.0</span> - band_y_off,
+                        FOOT_H + (wall_h + BOTTOM) / <span class="n">2.0</span>,
+                    ),
+                    (BAND_W, band_t, wall_h + BOTTOM + band_t),
                     METAL_IDX,
                 )
             )
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, hy + BAND_T / <span class="n">2.0</span>, wall_z),
-                    (BAND_W, BAND_T, wall_h + <span class="n">0.01</span>),
+                    (
+                        bx,
+                        hy + band_t / <span class="n">2.0</span> + band_y_off,
+                        FOOT_H + (wall_h + BOTTOM) / <span class="n">2.0</span>,
+                    ),
+                    (BAND_W, band_t, wall_h + BOTTOM + band_t),
                     METAL_IDX,
                 )
             )
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, <span class="n">0.0</span>, FOOT_H + BAND_T / <span class="n">2.0</span>),
-                    (BAND_W, OUTER_D + <span class="n">2.0</span> * BAND_T, BAND_T),
+                    (bx, <span class="n">0.0</span>, FOOT_H - band_t / <span class="n">2.0</span> + <span class="n">0.002</span>),
+                    (BAND_W, OUTER_D - <span class="n">0.008</span>, band_t),
                     METAL_IDX,
                 )
             )
 
-        plate_w = <span class="n">0.12</span>
-        plate_h = <span class="n">0.13</span>
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, -hy - BAND_T - <span class="n">0.006</span>, FOOT_H + BOTTOM + CAVITY_H * <span class="n">0.55</span>),
-                (plate_w, <span class="n">0.014</span>, plate_h),
-                METAL_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, -hy - BAND_T - <span class="n">0.018</span>, FOOT_H + BOTTOM + CAVITY_H * <span class="n">0.70</span>),
-                (<span class="n">0.036</span>, <span class="n">0.028</span>, <span class="n">0.022</span>),
-                METAL_IDX,
-            )
-        )
-
-        bracket = <span class="n">0.055</span>
-        thick = <span class="n">0.016</span>
         <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                bevel_verts.extend(
+                metal.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx + thick / <span class="n">2.0</span>),
-                            syn * (hy - bracket / <span class="n">2.0</span>),
+                            sxn * (hx - BRACKET / <span class="n">2.0</span> + <span class="n">0.004</span>),
+                            syn * (hy + IRON_T / <span class="n">2.0</span>),
                             wall_z,
                         ),
-                        (thick, bracket, wall_h - <span class="n">0.02</span>),
+                        (BRACKET - <span class="n">0.010</span>, IRON_T, wall_h - <span class="n">0.020</span>),
                         METAL_IDX,
                     )
                 )
-                bevel_verts.extend(
+                metal.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx - bracket / <span class="n">2.0</span>),
-                            syn * (hy + thick / <span class="n">2.0</span>),
+                            sxn * (hx + IRON_T / <span class="n">2.0</span>),
+                            syn * (hy - BRACKET / <span class="n">2.0</span> + <span class="n">0.004</span>),
                             wall_z,
                         ),
-                        (bracket, thick, wall_h - <span class="n">0.02</span>),
+                        (IRON_T, BRACKET - <span class="n">0.010</span>, wall_h - <span class="n">0.020</span>),
                         METAL_IDX,
                     )
                 )
 
-        <span class="c"># Closed lid, then rotate around the back hinge so the front lifts.</span>
-        lid_z = body_top + LID_T / <span class="n">2.0</span>
-        lid_verts.extend(
+        plate_t = <span class="n">0.008</span>
+        metal.extend(
             add_box(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, lid_z),
-                (OUTER_W, OUTER_D, LID_T),
-                WOOD_IDX,
-            )
-        )
-        lid_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, -hy + LID_LIP / <span class="n">2.0</span>, body_top - LID_LIP / <span class="n">2.0</span> + <span class="n">0.004</span>),
-                (OUTER_W - <span class="n">0.02</span>, LID_LIP, LID_LIP),
-                WOOD_IDX,
-            )
-        )
-        lid_slat_w = (OUTER_W - <span class="n">0.05</span>) / N_LID
-        usable_l = lid_slat_w - <span class="n">0.006</span>
-        x0l = -hx + <span class="n">0.025</span> + usable_l / <span class="n">2.0</span>
-        <span class="k">for</span> i <span class="k">in</span> range(N_LID):
-            x = x0l + i * lid_slat_w
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (x, <span class="n">0.0</span>, body_top + LID_T + SLAT_T / <span class="n">2.0</span>),
-                    (usable_l, OUTER_D - <span class="n">0.04</span>, SLAT_T),
-                    WOOD_IDX,
-                )
-            )
-        <span class="k">for</span> bx <span class="k">in</span> band_xs:
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (bx, <span class="n">0.0</span>, body_top + LID_T + SLAT_T + BAND_T / <span class="n">2.0</span>),
-                    (BAND_W, OUTER_D + <span class="n">2.0</span> * BAND_T, BAND_T),
-                    METAL_IDX,
-                )
-            )
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (bx, -hy - BAND_T / <span class="n">2.0</span>, body_top + LID_T / <span class="n">2.0</span>),
-                    (BAND_W, BAND_T, LID_T + SLAT_T + <span class="n">0.01</span>),
-                    METAL_IDX,
-                )
-            )
-        lid_verts.extend(
-            add_box(
-                bm,
-                (<span class="n">0.0</span>, -hy - BAND_T - <span class="n">0.006</span>, body_top + <span class="n">0.012</span>),
-                (<span class="n">0.055</span>, <span class="n">0.016</span>, <span class="n">0.028</span>),
+                (<span class="n">0.0</span>, -hy - BAND_T - plate_t / <span class="n">2.0</span>, FOOT_H + BOTTOM + CAVITY_H * <span class="n">0.48</span>),
+                (<span class="n">0.11</span>, plate_t, <span class="n">0.12</span>),
                 METAL_IDX,
             )
         )
+        st_y = -hy - BAND_T - plate_t - <span class="n">0.006</span>
+        st_z = FOOT_H + BOTTOM + CAVITY_H * <span class="n">0.58</span>
+        metal.extend(add_box(bm, (-<span class="n">0.012</span>, st_y, st_z), (<span class="n">0.008</span>, <span class="n">0.014</span>, <span class="n">0.022</span>), METAL_IDX))
+        metal.extend(add_box(bm, (<span class="n">0.012</span>, st_y, st_z), (<span class="n">0.008</span>, <span class="n">0.014</span>, <span class="n">0.022</span>), METAL_IDX))
+        metal.extend(add_box(bm, (<span class="n">0.0</span>, st_y, st_z + <span class="n">0.012</span>), (<span class="n">0.032</span>, <span class="n">0.014</span>, <span class="n">0.008</span>), METAL_IDX))
+
+        cz = body_top - math.sqrt(max(VAULT_R * VAULT_R - hy * hy, <span class="n">1e-6</span>))
+        a_front = math.atan2(-hy, body_top - cz)
+        a_back = math.atan2(hy, body_top - cz)
+        lid_wood.extend(
+            add_arc_slab(
+                bm, cz, a_front, a_back,
+                VAULT_R, VAULT_R + LID_T,
+                -hx + <span class="n">0.008</span>, hx - <span class="n">0.008</span>,
+                <span class="n">10</span>, WOOD_IDX,
+            )
+        )
+
+        n_band_seg = <span class="n">8</span>
+        bspan = (a_back - a_front) / n_band_seg
+        r_band = VAULT_R + LID_T + BAND_T / <span class="n">2.0</span> + <span class="n">0.002</span>
+        <span class="k">for</span> bx <span class="k">in</span> band_xs:
+            <span class="k">for</span> i <span class="k">in</span> range(n_band_seg):
+                tmid = a_front + (i + <span class="n">0.5</span>) * bspan
+                y = r_band * math.sin(tmid)
+                z = cz + r_band * math.cos(tmid)
+                chord = r_band * bspan + <span class="n">0.003</span>
+                lid_metal.extend(
+                    add_box(
+                        bm, (bx, y, z),
+                        (BAND_W, chord, BAND_T),
+                        METAL_IDX, euler=(tmid, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                    )
+                )
+            tmid = a_front
+            y = r_band * math.sin(tmid)
+            z = cz + r_band * math.cos(tmid)
+            lid_metal.extend(
+                add_box(
+                    bm, (bx, y - <span class="n">0.008</span>, z - <span class="n">0.006</span>),
+                    (BAND_W, BAND_T, LID_T + <span class="n">0.016</span>),
+                    METAL_IDX, euler=(tmid, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                )
+            )
+
+        tmid = a_front
+        r_hasp = VAULT_R + LID_T + <span class="n">0.006</span>
+        y = r_hasp * math.sin(tmid)
+        z = cz + r_hasp * math.cos(tmid)
+        lid_metal.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, y - <span class="n">0.018</span>, z - <span class="n">0.010</span>),
+                (<span class="n">0.038</span>, <span class="n">0.010</span>, <span class="n">0.055</span>),
+                METAL_IDX, euler=(tmid, <span class="n">0.0</span>, <span class="n">0.0</span>),
+            )
+        )
+
+        knuckle_verts = []
+        <span class="k">for</span> hx_i <span class="k">in</span> (-OUTER_W * <span class="n">0.28</span>, OUTER_W * <span class="n">0.28</span>):
+            metal.extend(
+                add_box(
+                    bm, (hx_i, hy + HINGE_R * <span class="n">0.15</span>, body_top),
+                    (<span class="n">0.050</span>, <span class="n">0.022</span>, <span class="n">0.022</span>), METAL_IDX,
+                )
+            )
+            lid_metal.extend(
+                add_box(
+                    bm, (hx_i, hy - <span class="n">0.016</span>, body_top + <span class="n">0.006</span>),
+                    (<span class="n">0.036</span>, <span class="n">0.040</span>, <span class="n">0.008</span>), METAL_IDX,
+                )
+            )
+            <span class="c"># Short lid knuckles over the barrels, not a spanning stile.</span>
+            <span class="c"># A full-width stile only has verts at the X ends, 8 cm from</span>
+            <span class="c"># the barrels, so a BVH join against it is a false gap.</span>
+            kv = add_box(
+                bm, (hx_i, hy + <span class="n">0.002</span>, body_top + <span class="n">0.012</span>),
+                (<span class="n">0.070</span>, <span class="n">0.028</span>, <span class="n">0.016</span>), WOOD_IDX,
+            )
+            lid_wood.extend(kv)
+            knuckle_verts.extend(kv)
 
         hinge = Vector((<span class="n">0.0</span>, hy, body_top))
         rot = Euler((LID_ANGLE, <span class="n">0.0</span>, <span class="n">0.0</span>)).to_matrix()
-        <span class="k">for</span> v <span class="k">in</span> lid_verts:
+        <span class="k">for</span> v <span class="k">in</span> lid_wood + lid_metal:
             v.co = rot @ (v.co - hinge) + hinge
+        <span class="k">if</span> float_hinge:
+            <span class="c"># Lift knuckles off the barrels without swinging the vault</span>
+            <span class="c"># past the declared AABB (a shifted rotation pivot did).</span>
+            <span class="k">for</span> v <span class="k">in</span> knuckle_verts:
+                v.co.z += <span class="n">0.08</span>
 
+        bevel_verts = wood + knuckle_verts
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list(
-                {e <span class="k">for</span> v <span class="k">in</span> (bevel_verts + lid_verts) <span class="k">for</span> e <span class="k">in</span> v.link_edges}
-            )
+            edges = list({e <span class="k">for</span> v <span class="k">in</span> bevel_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -688,6 +790,16 @@ METAL_IDX = <span class="n">1</span>
                 affect=<span class="s">&quot;EDGES&quot;</span>,
                 clamp_overlap=<span class="k">True</span>,
             )
+            <span class="k">for</span> v <span class="k">in</span> bevel_verts:
+                <span class="k">if</span> <span class="k">not</span> v.is_valid:
+                    <span class="k">continue</span>
+                <span class="k">for</span> f <span class="k">in</span> v.link_faces:
+                    f.material_index = WOOD_IDX
+        <span class="k">for</span> v <span class="k">in</span> metal + lid_metal:
+            <span class="k">if</span> <span class="k">not</span> v.is_valid:
+                <span class="k">continue</span>
+            <span class="k">for</span> f <span class="k">in</span> v.link_faces:
+                f.material_index = METAL_IDX
 
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
@@ -721,19 +833,37 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
-    <span class="c"># Do not materials.clear() — that resets polygon material_index to 0</span>
-    <span class="c"># on this Blender, which would drop metal faces onto wood.</span>
     mats = obj.data.materials
     wanted = (wood, metal)
     <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
@@ -776,6 +906,260 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    <span class="k">if</span> len(idxs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        vs = (me.vertices[idxs[i]].co, me.vertices[idxs[i + <span class="n">1</span>]].co)
+        area += (vs[<span class="n">0</span>] - v0).cross(vs[<span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles, <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group):
+    member = set(group)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> p.vertices):
+            <span class="k">return</span> p.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> support_audit(me):
+    groups = shells(me)
+    feet = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> a[<span class="n">5</span>] &lt; <span class="n">0.10</span> <span class="k">and</span> dx &lt; <span class="n">0.12</span> <span class="k">and</span> dy &lt; <span class="n">0.12</span> <span class="k">and</span> dz &gt; <span class="n">0.03</span>:
+            feet.append(a)
+    foot_z = min((a[<span class="n">2</span>] <span class="k">for</span> a <span class="k">in</span> feet), default=<span class="n">99.0</span>)
+    <span class="k">return</span> {<span class="s">&quot;feet&quot;</span>: len(feet), <span class="s">&quot;foot_z&quot;</span>: foot_z}
+
+
+<span class="k">def</span> body_audit(me):
+    groups = shells(me)
+    best = <span class="k">None</span>
+    best_area = -<span class="n">1.0</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]
+        <span class="k">if</span> dx &gt; <span class="n">0.50</span> <span class="k">and</span> dy &gt; <span class="n">0.30</span> <span class="k">and</span> a[<span class="n">2</span>] &lt; <span class="n">0.12</span>:
+            area = dx * dy
+            <span class="k">if</span> area &gt; best_area:
+                best_area = area
+                best = a
+    <span class="k">if</span> best <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> {<span class="s">&quot;w&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;d&quot;</span>: <span class="n">0.0</span>}
+    <span class="k">return</span> {<span class="s">&quot;w&quot;</span>: best[<span class="n">3</span>] - best[<span class="n">0</span>], <span class="s">&quot;d&quot;</span>: best[<span class="n">4</span>] - best[<span class="n">1</span>]}
+
+
+<span class="k">def</span> hinge_join(me):
+    <span class="s">&quot;&quot;&quot;Gap from lid knuckles to the hinge barrels.
+
+    Barrels are compact metal at the back rim. Knuckles are compact wood
+    at the same station. Lock-plate staples, lid-band caps, and the
+    hasp must not enter this set — they sit on the front of the chest.
+    &quot;&quot;&quot;</span>
+    groups = shells(me)
+    hinges = []
+    lid_wood = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        a = shell_aabb(me, g)
+        m = mat_of(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        back_rim = a[<span class="n">1</span>] &gt; <span class="n">0.15</span> <span class="k">and</span> a[<span class="n">2</span>] &gt; <span class="n">0.30</span>
+        <span class="k">if</span> (
+            m == METAL_IDX <span class="k">and</span> back_rim
+            <span class="k">and</span> <span class="n">0.03</span> &lt; dx &lt; <span class="n">0.08</span> <span class="k">and</span> <span class="n">0.015</span> &lt; dy &lt; <span class="n">0.040</span> <span class="k">and</span> <span class="n">0.015</span> &lt; dz &lt; <span class="n">0.040</span>
+        ):
+            hinges.append(g)
+        <span class="k">if</span> (
+            m == WOOD_IDX <span class="k">and</span> back_rim
+            <span class="k">and</span> <span class="n">0.04</span> &lt; dx &lt; <span class="n">0.12</span> <span class="k">and</span> dy &lt; <span class="n">0.05</span> <span class="k">and</span> dz &lt; <span class="n">0.04</span>
+        ):
+            lid_wood.append(g)
+    <span class="k">if</span> <span class="k">not</span> hinges <span class="k">or</span> <span class="k">not</span> lid_wood:
+        <span class="k">return</span> <span class="n">99.0</span>
+    bm_h = bmesh.new()
+    <span class="k">try</span>:
+        bm_h.from_mesh(me)
+        keep = set()
+        <span class="k">for</span> g <span class="k">in</span> hinges:
+            keep.update(g)
+        drop = [
+            f <span class="k">for</span> f <span class="k">in</span> bm_h.faces
+            <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep <span class="k">for</span> v <span class="k">in</span> f.verts)
+        ]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_h, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_h.faces:
+            <span class="k">return</span> <span class="n">99.0</span>
+        tree = BVHTree.FromBMesh(bm_h)
+        best = <span class="n">99.0</span>
+        <span class="k">for</span> g <span class="k">in</span> lid_wood:
+            <span class="k">for</span> i <span class="k">in</span> g:
+                hit = tree.find_nearest(me.vertices[i].co)
+                <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                    <span class="k">continue</span>
+                best = min(best, hit[<span class="n">3</span>])
+        <span class="k">return</span> best
+    <span class="k">finally</span>:
+        bm_h.free()
+
+
+<span class="k">def</span> band_wall_gap(me):
+    <span class="s">&quot;&quot;&quot;Worst gap from a vertical iron band to wood.
+
+    Overlap counts as 0. ``--narrow-bands`` floats the straps off the
+    slats so this goes positive.
+    &quot;&quot;&quot;</span>
+    groups = shells(me)
+    bands = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != METAL_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> dz &gt; <span class="n">0.15</span> <span class="k">and</span> dx &lt; <span class="n">0.10</span> <span class="k">and</span> dy &lt; <span class="n">0.08</span>:
+            bands.append(g)
+    <span class="k">if</span> <span class="k">not</span> bands:
+        <span class="k">return</span> <span class="n">99.0</span>
+    bm_wood = bmesh.new()
+    <span class="k">try</span>:
+        bm_wood.from_mesh(me)
+        drop = [f <span class="k">for</span> f <span class="k">in</span> bm_wood.faces <span class="k">if</span> f.material_index != WOOD_IDX]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_wood, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_wood.faces:
+            <span class="k">return</span> <span class="n">99.0</span>
+        tree_wood = BVHTree.FromBMesh(bm_wood)
+        worst = <span class="n">0.0</span>
+        <span class="k">for</span> g <span class="k">in</span> bands:
+            bm_s = bmesh.new()
+            <span class="k">try</span>:
+                bm_s.from_mesh(me)
+                member = set(g)
+                drop_s = [
+                    f <span class="k">for</span> f <span class="k">in</span> bm_s.faces
+                    <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> f.verts)
+                ]
+                <span class="k">if</span> drop_s:
+                    bmesh.ops.delete(bm_s, geom=drop_s, context=<span class="s">&quot;FACES&quot;</span>)
+                <span class="k">if</span> <span class="k">not</span> bm_s.faces:
+                    worst = max(worst, <span class="n">99.0</span>)
+                    <span class="k">continue</span>
+                tree_s = BVHTree.FromBMesh(bm_s)
+                <span class="k">if</span> tree_wood.overlap(tree_s):
+                    <span class="k">continue</span>
+                best = <span class="n">99.0</span>
+                <span class="k">for</span> i <span class="k">in</span> g:
+                    hit = tree_wood.find_nearest(me.vertices[i].co)
+                    <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                        <span class="k">continue</span>
+                    best = min(best, hit[<span class="n">3</span>])
+                <span class="k">if</span> best &gt; worst:
+                    worst = best
+            <span class="k">finally</span>:
+                bm_s.free()
+        <span class="k">return</span> worst
+    <span class="k">finally</span>:
+        bm_wood.free()
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.40</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
 <span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
     mesh = obj.data.copy()
     lod = bpy.data.objects.new(name, mesh)
@@ -789,7 +1173,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> convex_hull_collider(obj, name):
-    <span class="c"># Duplicated from snippets/convex_hull_collider.py (not a package).</span>
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -812,7 +1195,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
-    <span class="c"># Adapted from snippets/setup_bake_target_image.py — do not replace slots.</span>
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
     img = bpy.data.images.new(<span class="s">&quot;ChestNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
@@ -827,7 +1209,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> bake_normal(high, low):
-    <span class="c"># Duplicated from snippets/bake_normal_high_to_low.py (not a package).</span>
     scene = bpy.context.scene
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
     scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
@@ -852,7 +1233,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> export_unity(path, objects):
-    <span class="c"># Duplicated from snippets/export_preset_unity.py (not a package).</span>
     <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
         ob.select_set(<span class="k">False</span>)
     <span class="k">for</span> ob <span class="k">in</span> objects:
@@ -868,14 +1248,33 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(
+    skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>,
+    short_legs=<span class="k">False</span>, float_hinge=<span class="k">False</span>, narrow_bands=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_chest_mesh(<span class="s">&quot;ChestLow&quot;</span>, bevel_offset=<span class="n">0.008</span>, bevel_segments=<span class="n">2</span>)
-    high = build_chest_mesh(<span class="s">&quot;ChestHigh&quot;</span>, bevel_offset=<span class="n">0.008</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(<span class="s">&quot;ChestWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.20</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.52</span>)
-    metal = principled(<span class="s">&quot;ChestMetal&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.23</span>, <span class="n">0.26</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    flags = dict(
+        short_legs=short_legs, float_hinge=float_hinge, narrow_bands=narrow_bands,
+    )
+    low = build_chest_mesh(<span class="s">&quot;ChestLow&quot;</span>, <span class="n">0.003</span>, <span class="n">2</span>, **flags)
+    high = build_chest_mesh(<span class="s">&quot;ChestHigh&quot;</span>, <span class="n">0.003</span>, <span class="n">4</span>, **flags)
+    wood = principled(
+        <span class="s">&quot;ChestWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.18</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.54</span>,
+        noise_scale=<span class="n">6.5</span>, wear=(<span class="n">0.22</span>, <span class="n">0.10</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;ChestMetal&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.19</span>, <span class="n">0.22</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>,
+        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.08</span>, <span class="n">0.08</span>, <span class="n">0.09</span>, <span class="n">1.0</span>),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;chest mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -907,9 +1306,7 @@ METAL_IDX = <span class="n">1</span>
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_chest_mesh(
-        <span class="s">&quot;ChestColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>
-    )
+    collider_src = build_chest_mesh(<span class="s">&quot;ChestColSrc&quot;</span>, <span class="n">0.0</span>, <span class="n">1</span>, **flags)
     collider = convex_hull_collider(collider_src, <span class="s">&quot;ChestCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
@@ -923,9 +1320,14 @@ METAL_IDX = <span class="n">1</span>
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
 
-    print(
-        <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
-    )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    body = body_audit(low.data)
+    hj = hinge_join(low.data)
+    bg = band_wall_gap(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
         <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
@@ -942,6 +1344,16 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured supports feet=</span>{sup[<span class="s">&#x27;feet&#x27;</span>]}<span class="s"> foot_z=</span>{sup[<span class="s">&#x27;foot_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">body_w=</span>{body[<span class="s">&#x27;w&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> body_d=</span>{body[<span class="s">&#x27;d&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">hinge_join=</span>{hj:<span class="s">.5f</span>}<span class="s"> band_gap=</span>{bg:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -956,6 +1368,11 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -1001,6 +1418,50 @@ METAL_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> sup[<span class="s">&quot;feet&quot;</span>] &lt; <span class="n">4</span> <span class="k">or</span> sup[<span class="s">&quot;foot_z&quot;</span>] &gt; FOOT_Z_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">foot supports </span>{sup[<span class="s">&#x27;feet&#x27;</span>]}<span class="s"> foot_z=</span>{sup[<span class="s">&#x27;foot_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-legs is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> hj &gt; HINGE_JOIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">lid-hinge gap </span>{hj:<span class="s">.5f</span>}<span class="s"> &gt; </span>{HINGE_JOIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-hinge is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> bg &gt; BAND_SEAT:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">band-wall gap </span>{bg:<span class="s">.5f</span>}<span class="s"> &gt; </span>{BAND_SEAT}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--narrow-bands is the designed fail)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(body[<span class="s">&quot;w&quot;</span>] - BODY_W) &gt; BODY_W_TOL:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">body width </span>{body[<span class="s">&#x27;w&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_W}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(body[<span class="s">&quot;d&quot;</span>] - BODY_D) &gt; BODY_D_TOL:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">body depth </span>{body[<span class="s">&#x27;d&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_D}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1068,10 +1529,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.54</span>, -<span class="n">2.16</span>, <span class="n">1.37</span>)
+    cam.location = (<span class="n">1.62</span>, -<span class="n">2.22</span>, <span class="n">1.42</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.34</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.36</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -1114,14 +1575,22 @@ METAL_IDX = <span class="n">1</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
-    p.add_argument(
-        <span class="s">&quot;--skip-decimate&quot;</span>,
-        action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-hinge&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--narrow-bands&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_legs=args.short_legs,
+        float_hinge=args.float_hinge,
+        narrow_bands=args.narrow_bands,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:

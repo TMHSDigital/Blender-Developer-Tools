@@ -5,8 +5,11 @@ shipped pipeline pieces: bmesh construction, UVs, two materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named foot
+supports, ``--float-hinge`` lid-hinge joint-fit, ``--narrow-bands``
+band-wall seat.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -26,10 +29,8 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
-# Showcase lives at repo-root/showcase/, not under examples/. The framing
-# helper is the repo's only shared import and lives next to the examples;
-# resolve the repo root so we do not move gallery_framing.py.
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -37,25 +38,37 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
+# A small iron-bound chest: 0.74 × 0.46 m plan, ~0.37 m to the rim,
+# shallow barrel-vault lid. The old piece was a crate of overlay boxes
+# with a flat sandwich lid.
 OUTER_W = 0.74
 OUTER_D = 0.46
-CAVITY_H = 0.30
-WALL = 0.030
-BOTTOM = 0.028
-FOOT_H = 0.038
-FOOT_S = 0.072
-LID_T = 0.032
-LID_LIP = 0.042
-SLAT_T = 0.018
+CAVITY_H = 0.28
+WALL = 0.028
+BOTTOM = 0.026
+FOOT_H = 0.042
+FOOT_S = 0.068
+FOOT_NEST = 0.012
+LID_T = 0.028
 N_FRONT = 5
+N_SIDE = 4
 N_LID = 5
-BAND_W = 0.048
-BAND_T = 0.016
-LID_ANGLE = math.radians(-26.0)
-BBOX_TOL = 0.01
-OUTER_SIZE = (0.776, 0.549, 0.631)
-BASE_TRIS_MIN = 5600
-BASE_TRIS_MAX = 5850
+BAND_W = 0.042
+BAND_T = 0.010
+VAULT_R = 0.50
+HINGE_R = 0.011
+LID_ANGLE = math.radians(-38.0)
+BRACKET = 0.050
+IRON_T = 0.012
+BBOX_TOL = 0.015
+BODY_W = OUTER_W
+BODY_D = OUTER_D
+BODY_W_TOL = 0.04
+BODY_D_TOL = 0.04
+OUTER_SIZE = (0.764, 0.542, 0.691)
+
+BASE_TRIS_MIN = 3600
+BASE_TRIS_MAX = 4500
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -65,10 +78,20 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 160
+COLLIDER_TRIS_MAX = 200
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
-METAL_FACES_MIN = 24
+METAL_FACES_MIN = 80
+WOOD_FACES_MIN = 200
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZFIGHT_EPS = 1e-4
+ZFIGHT_COS = 0.999
+LIFT_Z = 0.05
+FOOT_Z_MAX = 1e-3
+HINGE_JOIN = 0.020
+BAND_SEAT = 0.008
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -89,7 +112,6 @@ def triangle_count(mesh):
 
 
 def evaluated_triangle_count(obj):
-    # Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -111,6 +133,34 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     faces = {f for v in verts for f in v.link_faces}
     for f in faces:
         f.material_index = mat_idx
+    return list(verts)
+
+
+def add_arc_slab(bm, cz, a0, a1, r_in, r_out, x0, x1, n, mat_idx):
+    """Solid barrel-vault slab along X. Inner/outer arcs, two X stations."""
+    def mk(x, r, t):
+        return bm.verts.new((x, r * math.sin(t), cz + r * math.cos(t)))
+
+    rin, rout, lin, lout = [], [], [], []
+    for i in range(n + 1):
+        t = a0 + (a1 - a0) * (i / float(n))
+        rin.append(mk(x0, r_in, t))
+        rout.append(mk(x0, r_out, t))
+        lin.append(mk(x1, r_in, t))
+        lout.append(mk(x1, r_out, t))
+    verts = rin + rout + lin + lout
+
+    def face(vs):
+        f = bm.faces.new(vs)
+        f.material_index = mat_idx
+
+    for i in range(n):
+        face((rin[i], lin[i], lin[i + 1], rin[i + 1]))
+        face((rout[i], rout[i + 1], lout[i + 1], lout[i]))
+        face((rin[i], rin[i + 1], rout[i + 1], rout[i]))
+        face((lin[i], lout[i], lout[i + 1], lin[i + 1]))
+    face((rin[0], rout[0], lout[0], lin[0]))
+    face((rin[-1], lin[-1], lout[-1], rout[-1]))
     return verts
 
 
@@ -130,9 +180,7 @@ def pack_uvs(bm, margin=0.08):
         col = i % cols
         row = i // cols
         nrm = face.normal
-        ax = abs(nrm.x)
-        ay = abs(nrm.y)
-        az = abs(nrm.z)
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
         coords = []
         for loop in face.loops:
             co = loop.vert.co
@@ -157,31 +205,44 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_chest_mesh(name, bevel_offset, bevel_segments):
+def build_chest_mesh(
+    name, bevel_offset, bevel_segments,
+    short_legs=False, float_hinge=False, narrow_bands=False,
+):
     bm = bmesh.new()
     try:
-        bevel_verts = []
-        lid_verts = []
-        body_top = FOOT_H + BOTTOM + CAVITY_H
+        wood = []
+        metal = []
+        lid_wood = []
+        lid_metal = []
         hx = OUTER_W / 2.0
         hy = OUTER_D / 2.0
+        body_top = FOOT_H + BOTTOM + CAVITY_H
+        wall_h = CAVITY_H
+        wall_z = FOOT_H + BOTTOM + wall_h / 2.0
+        foot_z0 = 0.05 if short_legs else 0.0
+
+        if short_legs:
+            metal.extend(
+                add_box(bm, (0.0, 0.0, 0.004), (0.04, 0.04, 0.008), METAL_IDX)
+            )
 
         for sxn in (-1.0, 1.0):
             for syn in (-1.0, 1.0):
-                bevel_verts.extend(
+                wood.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx - FOOT_S / 2.0 - 0.01),
-                            syn * (hy - FOOT_S / 2.0 - 0.01),
-                            FOOT_H / 2.0,
+                            sxn * (hx - FOOT_S / 2.0 - 0.010),
+                            syn * (hy - FOOT_S / 2.0 - 0.010),
+                            foot_z0 + (FOOT_H + FOOT_NEST) / 2.0,
                         ),
-                        (FOOT_S, FOOT_S, FOOT_H),
-                        METAL_IDX,
+                        (FOOT_S, FOOT_S, FOOT_H + FOOT_NEST),
+                        WOOD_IDX,
                     )
                 )
 
-        bevel_verts.extend(
+        wood.extend(
             add_box(
                 bm,
                 (0.0, 0.0, FOOT_H + BOTTOM / 2.0),
@@ -189,212 +250,240 @@ def build_chest_mesh(name, bevel_offset, bevel_segments):
                 WOOD_IDX,
             )
         )
-        wall_h = CAVITY_H
-        wall_z = FOOT_H + BOTTOM + wall_h / 2.0
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (0.0, -hy + WALL / 2.0, wall_z),
-                (OUTER_W, WALL, wall_h),
-                WOOD_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (0.0, hy - WALL / 2.0, wall_z),
-                (OUTER_W, WALL, wall_h),
-                WOOD_IDX,
-            )
-        )
-        inner_d = OUTER_D - 2.0 * WALL
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (-hx + WALL / 2.0, 0.0, wall_z),
-                (WALL, inner_d, wall_h),
-                WOOD_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (hx - WALL / 2.0, 0.0, wall_z),
-                (WALL, inner_d, wall_h),
-                WOOD_IDX,
-            )
-        )
 
-        slat_w = (OUTER_W - 0.06) / N_FRONT
-        gap = 0.006
-        usable = slat_w - gap
-        x0 = -hx + 0.03 + usable / 2.0
+        pitch = OUTER_W / N_FRONT
+        overlap = 0.006
         for i in range(N_FRONT):
-            x = x0 + i * slat_w
-            bevel_verts.extend(
+            jw = 0.004 * math.sin(i * 1.7 + 0.4)
+            x = -hx + pitch * (i + 0.5)
+            y_off = 0.0015 if (i % 2) else 0.0
+            wood.extend(
                 add_box(
                     bm,
-                    (x, -hy - SLAT_T / 2.0, wall_z),
-                    (usable, SLAT_T, wall_h - 0.02),
+                    (x, -hy + WALL / 2.0 + y_off, wall_z),
+                    (pitch + overlap + jw, WALL, wall_h),
+                    WOOD_IDX,
+                )
+            )
+            wood.extend(
+                add_box(
+                    bm,
+                    (x, hy - WALL / 2.0 - y_off, wall_z),
+                    (pitch + overlap + jw, WALL, wall_h),
                     WOOD_IDX,
                 )
             )
 
-        n_side = 3
-        side_h = (wall_h - 0.04) / n_side
+        pitch_z = wall_h / N_SIDE
+        inner_d = OUTER_D - 2.0 * WALL + 0.010
         for sign in (-1.0, 1.0):
-            for i in range(n_side):
-                z = FOOT_H + BOTTOM + 0.02 + side_h / 2.0 + i * (side_h + 0.006)
-                bevel_verts.extend(
+            for i in range(N_SIDE):
+                jh = 0.003 * math.sin(i * 1.3 + sign)
+                z = FOOT_H + BOTTOM + pitch_z * (i + 0.5)
+                x_off = 0.0015 if (i % 2) else 0.0
+                wood.extend(
                     add_box(
                         bm,
-                        (sign * (hx + SLAT_T / 2.0), 0.0, z),
-                        (SLAT_T, OUTER_D - 0.08, side_h - 0.008),
+                        (sign * (hx - WALL / 2.0 - sign * x_off), 0.0, z),
+                        (WALL, inner_d, pitch_z + 0.006 + jh),
                         WOOD_IDX,
                     )
                 )
 
+        rim_t = 0.012
+        rim_z = body_top - rim_t / 2.0 - 0.002
+        wood.extend(
+            add_box(
+                bm, (0.0, -hy + WALL + rim_t / 2.0, rim_z),
+                (OUTER_W - 2.0 * WALL, rim_t, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (0.0, hy - WALL - rim_t / 2.0, rim_z),
+                (OUTER_W - 2.0 * WALL, rim_t, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (-hx + WALL + rim_t / 2.0 + 0.003, 0.0, rim_z),
+                (rim_t, OUTER_D - 2.0 * WALL - 2.0 * rim_t - 0.012, rim_t), WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm, (hx - WALL - rim_t / 2.0 - 0.003, 0.0, rim_z),
+                (rim_t, OUTER_D - 2.0 * WALL - 2.0 * rim_t - 0.012, rim_t), WOOD_IDX,
+            )
+        )
+
+        band_t = 0.004 if narrow_bands else BAND_T
+        band_y_off = 0.022 if narrow_bands else 0.0
         band_xs = (-OUTER_W * 0.32, 0.0, OUTER_W * 0.32)
         for bx in band_xs:
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, -hy - BAND_T / 2.0, wall_z),
-                    (BAND_W, BAND_T, wall_h + 0.01),
+                    (
+                        bx,
+                        -hy - band_t / 2.0 - band_y_off,
+                        FOOT_H + (wall_h + BOTTOM) / 2.0,
+                    ),
+                    (BAND_W, band_t, wall_h + BOTTOM + band_t),
                     METAL_IDX,
                 )
             )
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, hy + BAND_T / 2.0, wall_z),
-                    (BAND_W, BAND_T, wall_h + 0.01),
+                    (
+                        bx,
+                        hy + band_t / 2.0 + band_y_off,
+                        FOOT_H + (wall_h + BOTTOM) / 2.0,
+                    ),
+                    (BAND_W, band_t, wall_h + BOTTOM + band_t),
                     METAL_IDX,
                 )
             )
-            bevel_verts.extend(
+            metal.extend(
                 add_box(
                     bm,
-                    (bx, 0.0, FOOT_H + BAND_T / 2.0),
-                    (BAND_W, OUTER_D + 2.0 * BAND_T, BAND_T),
+                    (bx, 0.0, FOOT_H - band_t / 2.0 + 0.002),
+                    (BAND_W, OUTER_D - 0.008, band_t),
                     METAL_IDX,
                 )
             )
 
-        plate_w = 0.12
-        plate_h = 0.13
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (0.0, -hy - BAND_T - 0.006, FOOT_H + BOTTOM + CAVITY_H * 0.55),
-                (plate_w, 0.014, plate_h),
-                METAL_IDX,
-            )
-        )
-        bevel_verts.extend(
-            add_box(
-                bm,
-                (0.0, -hy - BAND_T - 0.018, FOOT_H + BOTTOM + CAVITY_H * 0.70),
-                (0.036, 0.028, 0.022),
-                METAL_IDX,
-            )
-        )
-
-        bracket = 0.055
-        thick = 0.016
         for sxn in (-1.0, 1.0):
             for syn in (-1.0, 1.0):
-                bevel_verts.extend(
+                metal.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx + thick / 2.0),
-                            syn * (hy - bracket / 2.0),
+                            sxn * (hx - BRACKET / 2.0 + 0.004),
+                            syn * (hy + IRON_T / 2.0),
                             wall_z,
                         ),
-                        (thick, bracket, wall_h - 0.02),
+                        (BRACKET - 0.010, IRON_T, wall_h - 0.020),
                         METAL_IDX,
                     )
                 )
-                bevel_verts.extend(
+                metal.extend(
                     add_box(
                         bm,
                         (
-                            sxn * (hx - bracket / 2.0),
-                            syn * (hy + thick / 2.0),
+                            sxn * (hx + IRON_T / 2.0),
+                            syn * (hy - BRACKET / 2.0 + 0.004),
                             wall_z,
                         ),
-                        (bracket, thick, wall_h - 0.02),
+                        (IRON_T, BRACKET - 0.010, wall_h - 0.020),
                         METAL_IDX,
                     )
                 )
 
-        # Closed lid, then rotate around the back hinge so the front lifts.
-        lid_z = body_top + LID_T / 2.0
-        lid_verts.extend(
+        plate_t = 0.008
+        metal.extend(
             add_box(
                 bm,
-                (0.0, 0.0, lid_z),
-                (OUTER_W, OUTER_D, LID_T),
-                WOOD_IDX,
-            )
-        )
-        lid_verts.extend(
-            add_box(
-                bm,
-                (0.0, -hy + LID_LIP / 2.0, body_top - LID_LIP / 2.0 + 0.004),
-                (OUTER_W - 0.02, LID_LIP, LID_LIP),
-                WOOD_IDX,
-            )
-        )
-        lid_slat_w = (OUTER_W - 0.05) / N_LID
-        usable_l = lid_slat_w - 0.006
-        x0l = -hx + 0.025 + usable_l / 2.0
-        for i in range(N_LID):
-            x = x0l + i * lid_slat_w
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (x, 0.0, body_top + LID_T + SLAT_T / 2.0),
-                    (usable_l, OUTER_D - 0.04, SLAT_T),
-                    WOOD_IDX,
-                )
-            )
-        for bx in band_xs:
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (bx, 0.0, body_top + LID_T + SLAT_T + BAND_T / 2.0),
-                    (BAND_W, OUTER_D + 2.0 * BAND_T, BAND_T),
-                    METAL_IDX,
-                )
-            )
-            lid_verts.extend(
-                add_box(
-                    bm,
-                    (bx, -hy - BAND_T / 2.0, body_top + LID_T / 2.0),
-                    (BAND_W, BAND_T, LID_T + SLAT_T + 0.01),
-                    METAL_IDX,
-                )
-            )
-        lid_verts.extend(
-            add_box(
-                bm,
-                (0.0, -hy - BAND_T - 0.006, body_top + 0.012),
-                (0.055, 0.016, 0.028),
+                (0.0, -hy - BAND_T - plate_t / 2.0, FOOT_H + BOTTOM + CAVITY_H * 0.48),
+                (0.11, plate_t, 0.12),
                 METAL_IDX,
             )
         )
+        st_y = -hy - BAND_T - plate_t - 0.006
+        st_z = FOOT_H + BOTTOM + CAVITY_H * 0.58
+        metal.extend(add_box(bm, (-0.012, st_y, st_z), (0.008, 0.014, 0.022), METAL_IDX))
+        metal.extend(add_box(bm, (0.012, st_y, st_z), (0.008, 0.014, 0.022), METAL_IDX))
+        metal.extend(add_box(bm, (0.0, st_y, st_z + 0.012), (0.032, 0.014, 0.008), METAL_IDX))
+
+        cz = body_top - math.sqrt(max(VAULT_R * VAULT_R - hy * hy, 1e-6))
+        a_front = math.atan2(-hy, body_top - cz)
+        a_back = math.atan2(hy, body_top - cz)
+        lid_wood.extend(
+            add_arc_slab(
+                bm, cz, a_front, a_back,
+                VAULT_R, VAULT_R + LID_T,
+                -hx + 0.008, hx - 0.008,
+                10, WOOD_IDX,
+            )
+        )
+
+        n_band_seg = 8
+        bspan = (a_back - a_front) / n_band_seg
+        r_band = VAULT_R + LID_T + BAND_T / 2.0 + 0.002
+        for bx in band_xs:
+            for i in range(n_band_seg):
+                tmid = a_front + (i + 0.5) * bspan
+                y = r_band * math.sin(tmid)
+                z = cz + r_band * math.cos(tmid)
+                chord = r_band * bspan + 0.003
+                lid_metal.extend(
+                    add_box(
+                        bm, (bx, y, z),
+                        (BAND_W, chord, BAND_T),
+                        METAL_IDX, euler=(tmid, 0.0, 0.0),
+                    )
+                )
+            tmid = a_front
+            y = r_band * math.sin(tmid)
+            z = cz + r_band * math.cos(tmid)
+            lid_metal.extend(
+                add_box(
+                    bm, (bx, y - 0.008, z - 0.006),
+                    (BAND_W, BAND_T, LID_T + 0.016),
+                    METAL_IDX, euler=(tmid, 0.0, 0.0),
+                )
+            )
+
+        tmid = a_front
+        r_hasp = VAULT_R + LID_T + 0.006
+        y = r_hasp * math.sin(tmid)
+        z = cz + r_hasp * math.cos(tmid)
+        lid_metal.extend(
+            add_box(
+                bm, (0.0, y - 0.018, z - 0.010),
+                (0.038, 0.010, 0.055),
+                METAL_IDX, euler=(tmid, 0.0, 0.0),
+            )
+        )
+
+        knuckle_verts = []
+        for hx_i in (-OUTER_W * 0.28, OUTER_W * 0.28):
+            metal.extend(
+                add_box(
+                    bm, (hx_i, hy + HINGE_R * 0.15, body_top),
+                    (0.050, 0.022, 0.022), METAL_IDX,
+                )
+            )
+            lid_metal.extend(
+                add_box(
+                    bm, (hx_i, hy - 0.016, body_top + 0.006),
+                    (0.036, 0.040, 0.008), METAL_IDX,
+                )
+            )
+            # Short lid knuckles over the barrels, not a spanning stile.
+            # A full-width stile only has verts at the X ends, 8 cm from
+            # the barrels, so a BVH join against it is a false gap.
+            kv = add_box(
+                bm, (hx_i, hy + 0.002, body_top + 0.012),
+                (0.070, 0.028, 0.016), WOOD_IDX,
+            )
+            lid_wood.extend(kv)
+            knuckle_verts.extend(kv)
 
         hinge = Vector((0.0, hy, body_top))
         rot = Euler((LID_ANGLE, 0.0, 0.0)).to_matrix()
-        for v in lid_verts:
+        for v in lid_wood + lid_metal:
             v.co = rot @ (v.co - hinge) + hinge
+        if float_hinge:
+            # Lift knuckles off the barrels without swinging the vault
+            # past the declared AABB (a shifted rotation pivot did).
+            for v in knuckle_verts:
+                v.co.z += 0.08
 
+        bevel_verts = wood + knuckle_verts
         if bevel_offset > 0.0:
-            edges = list(
-                {e for v in (bevel_verts + lid_verts) for e in v.link_edges}
-            )
+            edges = list({e for v in bevel_verts for e in v.link_edges})
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -404,6 +493,16 @@ def build_chest_mesh(name, bevel_offset, bevel_segments):
                 affect="EDGES",
                 clamp_overlap=True,
             )
+            for v in bevel_verts:
+                if not v.is_valid:
+                    continue
+                for f in v.link_faces:
+                    f.material_index = WOOD_IDX
+        for v in metal + lid_metal:
+            if not v.is_valid:
+                continue
+            for f in v.link_faces:
+                f.material_index = METAL_IDX
 
         xs = [v.co.x for v in bm.verts]
         ys = [v.co.y for v in bm.verts]
@@ -437,19 +536,37 @@ def build_chest_mesh(name, bevel_offset, bevel_segments):
     return obj
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
 
 
 def assign_slots(obj, wood, metal):
-    # Do not materials.clear() — that resets polygon material_index to 0
-    # on this Blender, which would drop metal faces onto wood.
     mats = obj.data.materials
     wanted = (wood, metal)
     for i, mat in enumerate(wanted):
@@ -492,6 +609,260 @@ def uv_stats(mesh):
     return min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
+def face_area(me, poly):
+    idxs = poly.vertices
+    if len(idxs) < 3:
+        return 0.0
+    v0 = me.vertices[idxs[0]].co
+    area = 0.0
+    for i in range(1, len(idxs) - 1):
+        vs = (me.vertices[idxs[i]].co, me.vertices[idxs[i + 1]].co)
+        area += (vs[0] - v0).cross(vs[1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for p in me.polygons:
+        if all(i in member for i in p.vertices):
+            return p.material_index
+    return None
+
+
+def support_audit(me):
+    groups = shells(me)
+    feet = []
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if a[5] < 0.10 and dx < 0.12 and dy < 0.12 and dz > 0.03:
+            feet.append(a)
+    foot_z = min((a[2] for a in feet), default=99.0)
+    return {"feet": len(feet), "foot_z": foot_z}
+
+
+def body_audit(me):
+    groups = shells(me)
+    best = None
+    best_area = -1.0
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy = a[3] - a[0], a[4] - a[1]
+        if dx > 0.50 and dy > 0.30 and a[2] < 0.12:
+            area = dx * dy
+            if area > best_area:
+                best_area = area
+                best = a
+    if best is None:
+        return {"w": 0.0, "d": 0.0}
+    return {"w": best[3] - best[0], "d": best[4] - best[1]}
+
+
+def hinge_join(me):
+    """Gap from lid knuckles to the hinge barrels.
+
+    Barrels are compact metal at the back rim. Knuckles are compact wood
+    at the same station. Lock-plate staples, lid-band caps, and the
+    hasp must not enter this set — they sit on the front of the chest.
+    """
+    groups = shells(me)
+    hinges = []
+    lid_wood = []
+    for g in groups:
+        a = shell_aabb(me, g)
+        m = mat_of(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        back_rim = a[1] > 0.15 and a[2] > 0.30
+        if (
+            m == METAL_IDX and back_rim
+            and 0.03 < dx < 0.08 and 0.015 < dy < 0.040 and 0.015 < dz < 0.040
+        ):
+            hinges.append(g)
+        if (
+            m == WOOD_IDX and back_rim
+            and 0.04 < dx < 0.12 and dy < 0.05 and dz < 0.04
+        ):
+            lid_wood.append(g)
+    if not hinges or not lid_wood:
+        return 99.0
+    bm_h = bmesh.new()
+    try:
+        bm_h.from_mesh(me)
+        keep = set()
+        for g in hinges:
+            keep.update(g)
+        drop = [
+            f for f in bm_h.faces
+            if not all(v.index in keep for v in f.verts)
+        ]
+        if drop:
+            bmesh.ops.delete(bm_h, geom=drop, context="FACES")
+        if not bm_h.faces:
+            return 99.0
+        tree = BVHTree.FromBMesh(bm_h)
+        best = 99.0
+        for g in lid_wood:
+            for i in g:
+                hit = tree.find_nearest(me.vertices[i].co)
+                if hit[0] is None:
+                    continue
+                best = min(best, hit[3])
+        return best
+    finally:
+        bm_h.free()
+
+
+def band_wall_gap(me):
+    """Worst gap from a vertical iron band to wood.
+
+    Overlap counts as 0. ``--narrow-bands`` floats the straps off the
+    slats so this goes positive.
+    """
+    groups = shells(me)
+    bands = []
+    for g in groups:
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if dz > 0.15 and dx < 0.10 and dy < 0.08:
+            bands.append(g)
+    if not bands:
+        return 99.0
+    bm_wood = bmesh.new()
+    try:
+        bm_wood.from_mesh(me)
+        drop = [f for f in bm_wood.faces if f.material_index != WOOD_IDX]
+        if drop:
+            bmesh.ops.delete(bm_wood, geom=drop, context="FACES")
+        if not bm_wood.faces:
+            return 99.0
+        tree_wood = BVHTree.FromBMesh(bm_wood)
+        worst = 0.0
+        for g in bands:
+            bm_s = bmesh.new()
+            try:
+                bm_s.from_mesh(me)
+                member = set(g)
+                drop_s = [
+                    f for f in bm_s.faces
+                    if not all(v.index in member for v in f.verts)
+                ]
+                if drop_s:
+                    bmesh.ops.delete(bm_s, geom=drop_s, context="FACES")
+                if not bm_s.faces:
+                    worst = max(worst, 99.0)
+                    continue
+                tree_s = BVHTree.FromBMesh(bm_s)
+                if tree_wood.overlap(tree_s):
+                    continue
+                best = 99.0
+                for i in g:
+                    hit = tree_wood.find_nearest(me.vertices[i].co)
+                    if hit[0] is None:
+                        continue
+                    best = min(best, hit[3])
+                if best > worst:
+                    worst = best
+            finally:
+                bm_s.free()
+        return worst
+    finally:
+        bm_wood.free()
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, 0.40))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
 def make_lod(obj, name, ratio, skip_decimate):
     mesh = obj.data.copy()
     lod = bpy.data.objects.new(name, mesh)
@@ -505,7 +876,6 @@ def make_lod(obj, name, ratio, skip_decimate):
 
 
 def convex_hull_collider(obj, name):
-    # Duplicated from snippets/convex_hull_collider.py (not a package).
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -528,7 +898,6 @@ def convex_hull_collider(obj, name):
 
 
 def setup_bake_image(obj, target_mat, size=BAKE_RES):
-    # Adapted from snippets/setup_bake_target_image.py — do not replace slots.
     if not obj.data.uv_layers:
         return None, None
     img = bpy.data.images.new("ChestNrm", size, size, alpha=True, float_buffer=False)
@@ -543,7 +912,6 @@ def setup_bake_image(obj, target_mat, size=BAKE_RES):
 
 
 def bake_normal(high, low):
-    # Duplicated from snippets/bake_normal_high_to_low.py (not a package).
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
@@ -568,7 +936,6 @@ def bake_normal(high, low):
 
 
 def export_unity(path, objects):
-    # Duplicated from snippets/export_preset_unity.py (not a package).
     for ob in bpy.context.view_layer.objects:
         ob.select_set(False)
     for ob in objects:
@@ -584,14 +951,33 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate, lift_z=False, stray_vert=False,
+    short_legs=False, float_hinge=False, narrow_bands=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_chest_mesh("ChestLow", bevel_offset=0.008, bevel_segments=2)
-    high = build_chest_mesh("ChestHigh", bevel_offset=0.008, bevel_segments=4)
-    wood = principled("ChestWood", (0.42, 0.20, 0.07, 1.0), 0.0, 0.52)
-    metal = principled("ChestMetal", (0.22, 0.23, 0.26, 1.0), 1.0, 0.30)
+    flags = dict(
+        short_legs=short_legs, float_hinge=float_hinge, narrow_bands=narrow_bands,
+    )
+    low = build_chest_mesh("ChestLow", 0.003, 2, **flags)
+    high = build_chest_mesh("ChestHigh", 0.003, 4, **flags)
+    wood = principled(
+        "ChestWood", (0.40, 0.18, 0.06, 1.0), 0.0, 0.54,
+        noise_scale=6.5, wear=(0.22, 0.10, 0.04, 1.0),
+    )
+    metal = principled(
+        "ChestMetal", (0.18, 0.19, 0.22, 1.0), 1.0, 0.32,
+        noise_scale=5.0, wear=(0.08, 0.08, 0.09, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("chest mesh did not build", 3), None, None, None, None, None
@@ -623,9 +1009,7 @@ def check(skip_decimate):
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_chest_mesh(
-        "ChestColSrc", bevel_offset=0.0, bevel_segments=1
-    )
+    collider_src = build_chest_mesh("ChestColSrc", 0.0, 1, **flags)
     collider = convex_hull_collider(collider_src, "ChestCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -639,9 +1023,14 @@ def check(skip_decimate):
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
 
-    print(
-        f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}"
-    )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    body = body_audit(low.data)
+    hj = hinge_join(low.data)
+    bg = band_wall_gap(low.data)
+
+    print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
         f"measured base_tris={base_tris} lod1_tris={lod1_tris} "
         f"lod2_tris={lod2_tris} r1={r1:.4f} r2={r2:.4f}"
@@ -658,6 +1047,16 @@ def check(skip_decimate):
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured supports feet={sup['feet']} foot_z={sup['foot_z']:.5f} "
+        f"body_w={body['w']:.4f} body_d={body['d']:.4f} "
+        f"hinge_join={hj:.5f} band_gap={bg:.5f}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -672,6 +1071,11 @@ def check(skip_decimate):
     if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
         return fail(
             f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
+    if idx_counts.get(WOOD_IDX, 0) < WOOD_FACES_MIN:
+        return fail(
+            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
             5,
         ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
@@ -717,6 +1121,50 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"]
+        or hyg["zero_area"] or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
+    if abs(bb[2]) > ZMIN_EPS:
+        return fail(
+            f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
+            "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if sup["feet"] < 4 or sup["foot_z"] > FOOT_Z_MAX:
+        return fail(
+            f"foot supports {sup['feet']} foot_z={sup['foot_z']:.5f} "
+            "(--short-legs is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if hj > HINGE_JOIN:
+        return fail(
+            f"lid-hinge gap {hj:.5f} > {HINGE_JOIN} "
+            "(--float-hinge is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if bg > BAND_SEAT:
+        return fail(
+            f"band-wall gap {bg:.5f} > {BAND_SEAT} "
+            "(--narrow-bands is the designed fail)",
+            18,
+        ), None, None, None, None, None
+    if abs(body["w"] - BODY_W) > BODY_W_TOL:
+        return fail(
+            f"body width {body['w']:.4f} off {BODY_W}",
+            19,
+        ), None, None, None, None, None
+    if abs(body["d"] - BODY_D) > BODY_D_TOL:
+        return fail(
+            f"body depth {body['d']:.4f} off {BODY_D}",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -784,10 +1232,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.54, -2.16, 1.37)
+    cam.location = (1.62, -2.22, 1.42)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.34)
+    aim.location = (0.0, 0.0, 0.36)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -830,14 +1278,22 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--short-legs", action="store_true")
+    p.add_argument("--float-hinge", action="store_true")
+    p.add_argument("--narrow-bands", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_legs=args.short_legs,
+        float_hinge=args.float_hinge,
+        narrow_bands=args.narrow_bands,
+    )
     if code:
         return code
     if args.output:
