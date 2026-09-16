@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>tavern-stool — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural tavern stool with a lathed seat, turned splayed legs, tenoned stretchers, and iron ferrule cups through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/tavern-stool/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="tavern-stool — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural tavern stool with a lathed seat, turned splayed legs, tenoned stretchers, and iron ferrule cups through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/tavern-stool/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/tavern-stool-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="tavern-stool — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural tavern stool with a lathed seat, turned splayed legs, tenoned stretchers, and iron ferrule cups through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/tavern-stool-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,35 +246,48 @@
   </div>
   <header class="hero">
     <h1>tavern-stool</h1>
-    <p>A procedural tavern stool with a round seat, turned splayed legs, stretchers, and iron ferrules through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural tavern stool with a lathed seat, turned splayed legs, tenoned stretchers, and iron ferrule cups through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom tavern-stool render">
       <img src="../assets/tavern-stool-hero.webp" alt="tavern-stool render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 5396 tris, two materials with 2542 wood and 40 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.309×0.309×0.467 m, LOD ratios in band, convex collider 96 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2528 tris, two materials with 1168 wood and 256 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.340×0.340×0.470 m, LOD ratios in band, convex collider 396 tris, non-empty glTF. Hygiene all zero, four ferrule cups at zmin 0, stretcher-leg gap 0, ferrule clearance −1.25 mm. --float-stretchers exits 17 on the stretcher join; --pipe-ferrule exits 18 on the ferrule bite band.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/tavern-stool/tavern_stool.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural tavern stool (round seat, turned splayed legs, stretchers, iron ferrules) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural tavern stool (lathed round seat, turned splayed legs, tenoned stretchers, iron ferrule cups) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>Legs are one loft per leg, not stacked cones. Ferrules are vertical cups the foot drops into; wood ends above the cup so a splayed cone does not sawtooth through the wall. Stretchers are classified as compact rails, not the seat disc.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 5250–5550 | 5396 / 5396 / 5396 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 2 distinct, ≥24 wood, ≥16 metal | 2 slots, 2542 wood, 40 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.309, 0.309, 0.467) m ± 0.01 | (0.3093, 0.3093, 0.4670), zmin 0.002 | | Collider tris | ≤ 140 | 96 | | Export | written, size &gt; 0 | 380604 / 380604 / 380588 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series in general — the gate is a ratio band, not an exact count. On this mesh LOD2 matched across 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2300–3200 | 2528 / 2528 / 2528 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2199 / 0.2199 / 0.2199 | | Materials | exactly 2 distinct; ≥200 wood, ≥48 metal faces | 2 slots; 1168 / 256 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.341, 0.341, 0.470) m ± 0.015 | (0.3400, 0.3400, 0.4700), zmin 0 | | Collider tris | ≤ 640 | 396 | | Export | written, size &gt; 0 | 215912 / 215912 / 215900 bytes |</p>
+<h3>Hygiene</h3>
+<p>Recomputed from the generated mesh, not asserted about the script.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Named supports: 4 ferrule cups | each <code>zmin</code> ≤ 1e-3 | 4, cup_z 0.00000 | | Seat | 0.340 m dia × 0.470 m high ± 0.02 | 0.3400 × 0.4700 |</p>
+<h3>Joint fit and seat</h3>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Stretcher-leg BVH gap | ≤ 0.008 m | 0.00000 | | Ferrule inner clearance (<code>r_wood − r_in</code>) | −0.005 .. 0.000 m | −0.00125 |</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts may differ by a few bytes across series.</p>
+<h3>Falsifiers</h3>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--short-legs</code> | named ferrule cups at Z=0 | 16 | | <code>--float-stretchers</code> | stretcher-leg join | 17 | | <code>--pipe-ferrule</code> | ferrule inner-clearance band | 18 |</p>
 <h2>Run</h2>
 <pre><code>blender --background --python tavern_stool.py --
 blender --background --python tavern_stool.py -- --skip-decimate
+blender --background --python tavern_stool.py -- --stray-vert
+blender --background --python tavern_stool.py -- --lift-z
+blender --background --python tavern_stool.py -- --short-legs
+blender --background --python tavern_stool.py -- --float-stretchers
+blender --background --python tavern_stool.py -- --pipe-ferrule
 blender --background --python tavern_stool.py -- --output stool.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0, or a named ferrule cup floats | | 17 | Joint fit: stretcher-leg gap | | 18 | Seat: ferrule inner-clearance band | | 19 | Seat diameter or height off the stated real-world size |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -289,8 +302,11 @@ shipped pipeline pieces: bmesh construction, UVs, two materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named ferrule
+supports, ``--float-stretchers`` stretcher joint-fit, ``--pipe-ferrule``
+ferrule-cup seat.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -309,11 +325,9 @@ ratio band, not an exact count.
 
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
-<span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
-<span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
-<span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
-<span class="c"># resolve the repo root so we do not move gallery_framing.py.</span>
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -321,19 +335,35 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-SEAT_R = <span class="n">0.155</span>
-SEAT_T = <span class="n">0.042</span>
-SEAT_Z = <span class="n">0.46</span>
+<span class="c"># A short tavern stool: ~34 cm seat, 47 cm to the rim, legs splayed so</span>
+<span class="c"># the feet land near the seat&#x27;s shadow. The old piece was a 16-gon puck</span>
+<span class="c"># on four stacked cones clustered under the disc.</span>
+SEAT_R = <span class="n">0.170</span>
+SEAT_T = <span class="n">0.040</span>
+SEAT_Z = <span class="n">0.470</span>
+SEAT_SEGS = <span class="n">48</span>
 N_LEGS = <span class="n">4</span>
-LEG_TOP_R = <span class="n">0.078</span>
-LEG_BOT_R = <span class="n">0.125</span>
-STRETCH_Z = <span class="n">0.175</span>
-BBOX_TOL = <span class="n">0.01</span>
+LEG_TOP_R = <span class="n">0.128</span>
+LEG_BOT_R = <span class="n">0.202</span>
+LEG_SEGS = <span class="n">16</span>
+FERRULE_H = <span class="n">0.022</span>
+FERRULE_T = <span class="n">0.0045</span>
+FERRULE_SEGS = <span class="n">16</span>
+STRETCH_T = <span class="n">0.58</span>
+STRETCH_R = <span class="n">0.011</span>
+STRETCH_SEGS = <span class="n">12</span>
+STRETCH_TENON = <span class="n">0.012</span>
+SEAT_TENON = <span class="n">0.018</span>
+BBOX_TOL = <span class="n">0.015</span>
+BODY_DIA = <span class="n">2.0</span> * SEAT_R
+BODY_DIA_TOL = <span class="n">0.02</span>
+BODY_H = SEAT_Z
+BODY_H_TOL = <span class="n">0.02</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.309</span>, <span class="n">0.309</span>, <span class="n">0.467</span>)
+OUTER_SIZE = (<span class="n">0.341</span>, <span class="n">0.341</span>, <span class="n">0.470</span>)
 
-BASE_TRIS_MIN = <span class="n">5250</span>
-BASE_TRIS_MAX = <span class="n">5550</span>
+BASE_TRIS_MIN = <span class="n">2300</span>
+BASE_TRIS_MAX = <span class="n">3200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -343,14 +373,51 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">140</span>
+COLLIDER_TRIS_MAX = <span class="n">640</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
-METAL_FACES_MIN = <span class="n">16</span>
-WOOD_FACES_MIN = <span class="n">24</span>
+METAL_FACES_MIN = <span class="n">48</span>
+WOOD_FACES_MIN = <span class="n">200</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.999</span>
+LIFT_Z = <span class="n">0.05</span>
+FERRULE_Z_MAX = <span class="n">1e-3</span>
+STRETCH_JOIN = <span class="n">0.008</span>
+FERRULE_BITE_MIN = -<span class="n">0.005</span>
+FERRULE_BITE_MAX = <span class="n">0.000</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
+
+<span class="c"># Turned-leg profile: (t along the axis from seat tenon to ferrule, radius).</span>
+<span class="c"># One loft, not four stacked cones. t=0 is up in the seat.</span>
+LEG_PROFILE = (
+    (<span class="n">0.00</span>, <span class="n">0.018</span>),
+    (<span class="n">0.08</span>, <span class="n">0.022</span>),
+    (<span class="n">0.20</span>, <span class="n">0.025</span>),
+    (<span class="n">0.36</span>, <span class="n">0.016</span>),
+    (<span class="n">0.52</span>, <span class="n">0.015</span>),
+    (<span class="n">0.60</span>, <span class="n">0.018</span>),
+    (<span class="n">0.78</span>, <span class="n">0.016</span>),
+    (<span class="n">0.92</span>, <span class="n">0.018</span>),
+    (<span class="n">1.00</span>, <span class="n">0.017</span>),
+)
+
+<span class="c"># Seat, underside to dish. One lathe, not three stacked cylinders.</span>
+<span class="c"># (z above the underside, radius). r=0 is the dish centre.</span>
+SEAT_PROFILE = (
+    (<span class="n">0.000</span>, <span class="n">0.122</span>),
+    (<span class="n">0.010</span>, <span class="n">0.138</span>),
+    (<span class="n">0.016</span>, <span class="n">0.158</span>),
+    (<span class="n">0.022</span>, <span class="n">0.168</span>),
+    (<span class="n">0.032</span>, <span class="n">0.170</span>),
+    (<span class="n">0.040</span>, <span class="n">0.164</span>),
+    (<span class="n">0.037</span>, <span class="n">0.095</span>),
+    (<span class="n">0.034</span>, <span class="n">0.000</span>),
+)
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -368,7 +435,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> evaluated_triangle_count(obj):
-    <span class="c"># Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).</span>
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -379,92 +445,144 @@ METAL_IDX = <span class="n">1</span>
         eval_obj.to_mesh_clear()
 
 
-<span class="k">def</span> add_box(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-    verts = geo[<span class="s">&quot;verts&quot;</span>]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        p = Vector((v.co.x * scale[<span class="n">0</span>], v.co.y * scale[<span class="n">1</span>], v.co.z * scale[<span class="n">2</span>]))
-        v.co = rot @ p + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
+<span class="k">def</span> _bridge_rings(bm, a, b, mat_idx):
+    <span class="k">if</span> len(a) == <span class="n">1</span> <span class="k">and</span> len(b) &gt; <span class="n">1</span>:
+        c = a[<span class="n">0</span>]
+        <span class="k">for</span> k <span class="k">in</span> range(len(b)):
+            kn = (k + <span class="n">1</span>) % len(b)
+            face = bm.faces.new((c, b[k], b[kn]))
+            face.material_index = mat_idx
+    <span class="k">elif</span> len(b) == <span class="n">1</span> <span class="k">and</span> len(a) &gt; <span class="n">1</span>:
+        c = b[<span class="n">0</span>]
+        <span class="k">for</span> k <span class="k">in</span> range(len(a)):
+            kn = (k + <span class="n">1</span>) % len(a)
+            face = bm.faces.new((c, a[kn], a[k]))
+            face.material_index = mat_idx
+    <span class="k">else</span>:
+        segs = len(a)
+        <span class="k">for</span> k <span class="k">in</span> range(segs):
+            kn = (k + <span class="n">1</span>) % segs
+            face = bm.faces.new((a[k], a[kn], b[kn], b[k]))
+            face.material_index = mat_idx
+
+
+<span class="k">def</span> loft_rings(bm, rings, mat_idx, cap_start=<span class="k">True</span>, cap_end=<span class="k">True</span>, cyclic=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Loft a stack of rings. A ring of one vert is a centre cap.&quot;&quot;&quot;</span>
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+    n = len(rings)
+    <span class="k">for</span> i <span class="k">in</span> range(n - <span class="n">1</span>):
+        _bridge_rings(bm, rings[i], rings[i + <span class="n">1</span>], mat_idx)
+    <span class="k">if</span> cyclic <span class="k">and</span> n &gt; <span class="n">2</span>:
+        _bridge_rings(bm, rings[-<span class="n">1</span>], rings[<span class="n">0</span>], mat_idx)
+    <span class="k">if</span> cap_start <span class="k">and</span> len(rings[<span class="n">0</span>]) &gt; <span class="n">1</span>:
+        ring = rings[<span class="n">0</span>]
+        c = bm.verts.new(sum((v.co <span class="k">for</span> v <span class="k">in</span> ring), Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))) / len(ring))
+        verts.append(c)
+        <span class="k">for</span> k <span class="k">in</span> range(len(ring)):
+            kn = (k + <span class="n">1</span>) % len(ring)
+            face = bm.faces.new((c, ring[kn], ring[k]))
+            face.material_index = mat_idx
+    <span class="k">if</span> cap_end <span class="k">and</span> len(rings[-<span class="n">1</span>]) &gt; <span class="n">1</span>:
+        ring = rings[-<span class="n">1</span>]
+        c = bm.verts.new(sum((v.co <span class="k">for</span> v <span class="k">in</span> ring), Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))) / len(ring))
+        verts.append(c)
+        <span class="k">for</span> k <span class="k">in</span> range(len(ring)):
+            kn = (k + <span class="n">1</span>) % len(ring)
+            face = bm.faces.new((c, ring[k], ring[kn]))
+            face.material_index = mat_idx
     <span class="k">return</span> verts
 
 
-<span class="k">def</span> add_oriented_box(bm, a, b, scale_xy, mat_idx):
+<span class="k">def</span> lathe_z(bm, profile, segs, mat_idx, z0=<span class="n">0.0</span>):
+    rings = []
+    <span class="k">for</span> z, r <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt;= <span class="n">1e-8</span>:
+            rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z0 + z))])
+            <span class="k">continue</span>
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            a = <span class="n">2.0</span> * math.pi * i / segs
+            ring.append(
+                bm.verts.new((r * math.cos(a), r * math.sin(a), z0 + z))
+            )
+        rings.append(ring)
+    <span class="c"># Profile already ends at r=0 (dish) or a ring. No extra caps.</span>
+    cap_start = len(rings[<span class="n">0</span>]) &gt; <span class="n">1</span>
+    cap_end = len(rings[-<span class="n">1</span>]) &gt; <span class="n">1</span>
+    <span class="k">return</span> loft_rings(bm, rings, mat_idx, cap_start=cap_start, cap_end=cap_end)
+
+
+<span class="k">def</span> lathe_axis(bm, a, b, profile, segs, mat_idx, cap_start=<span class="k">True</span>, cap_end=<span class="k">True</span>):
     a = Vector(a)
     b = Vector(b)
     delta = b - a
     length = delta.length
     <span class="k">if</span> length &lt; <span class="n">1e-8</span>:
         <span class="k">return</span> []
-    quat = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(delta.normalized())
-    eul = quat.to_euler(<span class="s">&quot;XYZ&quot;</span>)
-    <span class="k">return</span> add_box(
-        bm,
-        ((a + b) * <span class="n">0.5</span>),
-        (scale_xy[<span class="n">0</span>], scale_xy[<span class="n">1</span>], length),
-        mat_idx,
-        euler=(eul.x, eul.y, eul.z),
+    tangent = delta.normalized()
+    side = Vector((-tangent.y, tangent.x, <span class="n">0.0</span>))
+    <span class="k">if</span> side.length &lt; <span class="n">1e-6</span>:
+        side = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="k">else</span>:
+        side.normalize()
+    up = tangent.cross(side).normalized()
+    rings = []
+    <span class="k">for</span> t, radius <span class="k">in</span> profile:
+        p = a + tangent * (t * length)
+        <span class="k">if</span> radius &lt;= <span class="n">1e-8</span>:
+            rings.append([bm.verts.new(p)])
+            <span class="k">continue</span>
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            ang = <span class="n">2.0</span> * math.pi * i / segs
+            ring.append(
+                bm.verts.new(p + side * (radius * math.cos(ang)) + up * (radius * math.sin(ang)))
+            )
+        rings.append(ring)
+    <span class="k">return</span> loft_rings(
+        bm, rings, mat_idx, cap_start=cap_start, cap_end=cap_end,
     )
 
 
-<span class="k">def</span> add_cone_between(bm, a, b, r1, r2, segments, mat_idx):
-    a = Vector(a)
-    b = Vector(b)
-    delta = b - a
-    length = delta.length
-    <span class="k">if</span> length &lt; <span class="n">1e-8</span>:
-        <span class="k">return</span> []
-    quat = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(delta.normalized())
-    eul = quat.to_euler(<span class="s">&quot;XYZ&quot;</span>)
-    <span class="k">return</span> add_cone(
-        bm, (a + b) * <span class="n">0.5</span>, r1, r2, length, segments, mat_idx,
-        euler=(eul.x, eul.y, eul.z),
+<span class="k">def</span> add_cup(bm, xy, z0, z1, r_in, r_out, segs, mat_idx):
+    <span class="s">&quot;&quot;&quot;Vertical ferrule cup: annulus walls, open on the top, planted at z0.&quot;&quot;&quot;</span>
+    cx, cy = xy
+    specs = (
+        (z0, r_in),
+        (z0, r_out),
+        (z1, r_out),
+        (z1, r_in),
+    )
+    rings = []
+    <span class="k">for</span> z, r <span class="k">in</span> specs:
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            a = <span class="n">2.0</span> * math.pi * i / segs
+            ring.append(
+                bm.verts.new((cx + r * math.cos(a), cy + r * math.sin(a), z))
+            )
+        rings.append(ring)
+    <span class="k">return</span> loft_rings(
+        bm, rings, mat_idx, cap_start=<span class="k">False</span>, cap_end=<span class="k">False</span>, cyclic=<span class="k">True</span>,
     )
 
 
-<span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cone(
-        bm,
-        cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">False</span>,
-        segments=segments,
-        radius1=radius1,
-        radius2=radius2,
-        depth=depth,
-    )
-    verts = list(geo[<span class="s">&quot;verts&quot;</span>])
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
-    <span class="k">return</span> verts
-
-
-<span class="k">def</span> add_cylinder(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    <span class="k">return</span> add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
-
-
-<span class="k">def</span> add_rim(bm, loc, major, minor, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    n_major = <span class="n">12</span>
-    n_minor = <span class="n">6</span>
+<span class="k">def</span> add_pipe_torus(bm, xy, z, major, minor, mat_idx):
+    <span class="s">&quot;&quot;&quot;Falsifier: a metal torus planted at z that does not cup the foot.&quot;&quot;&quot;</span>
+    n_major, n_minor = <span class="n">12</span>, <span class="n">4</span>
+    cx, cy = xy
     rings = []
     <span class="k">for</span> i <span class="k">in</span> range(n_major):
         u = i * (<span class="n">2.0</span> * math.pi / n_major)
         ring = []
         <span class="k">for</span> j <span class="k">in</span> range(n_minor):
             v = j * (<span class="n">2.0</span> * math.pi / n_minor)
-            x = (major + minor * math.cos(v)) * math.cos(u)
-            y = (major + minor * math.cos(v)) * math.sin(u)
-            z = minor * math.sin(v)
-            ring.append(bm.verts.new((x, y, z)))
+            px = cx + (major + minor * math.cos(v)) * math.cos(u)
+            py = cy + (major + minor * math.cos(v)) * math.sin(u)
+            pz = z + minor * (<span class="n">1.0</span> + math.sin(v))
+            ring.append(bm.verts.new((px, py, pz)))
         rings.append(ring)
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
     <span class="k">for</span> i <span class="k">in</span> range(n_major):
         i2 = (i + <span class="n">1</span>) % n_major
         <span class="k">for</span> j <span class="k">in</span> range(n_minor):
@@ -473,11 +591,6 @@ METAL_IDX = <span class="n">1</span>
                 (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
             )
             face.material_index = mat_idx
-    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
     <span class="k">return</span> verts
 
 
@@ -497,9 +610,7 @@ METAL_IDX = <span class="n">1</span>
         col = i % cols
         row = i // cols
         nrm = face.normal
-        ax = abs(nrm.x)
-        ay = abs(nrm.y)
-        az = abs(nrm.z)
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
         coords = []
         <span class="k">for</span> loop <span class="k">in</span> face.loops:
             co = loop.vert.co
@@ -524,86 +635,108 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> build_stool_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> _leg_ends(i):
+    ang = math.pi / <span class="n">4.0</span> + i * (math.pi * <span class="n">2.0</span> / N_LEGS)
+    c, s = math.cos(ang), math.sin(ang)
+    seat_under = SEAT_Z - SEAT_T
+    top = Vector((LEG_TOP_R * c, LEG_TOP_R * s, seat_under + SEAT_TENON))
+    bot = Vector((LEG_BOT_R * c, LEG_BOT_R * s, FERRULE_H + <span class="n">0.003</span>))
+    foot_xy = (LEG_BOT_R * c, LEG_BOT_R * s)
+    <span class="k">return</span> top, bot, foot_xy, ang
+
+
+<span class="k">def</span> build_stool_mesh(
+    name,
+    short_legs=<span class="k">False</span>,
+    float_stretchers=<span class="k">False</span>,
+    pipe_ferrule=<span class="k">False</span>,
+):
     bm = bmesh.new()
-    wood_verts = []
-    metal_faces = set()
     <span class="k">try</span>:
-        seat_center = (<span class="n">0.0</span>, <span class="n">0.0</span>, SEAT_Z - SEAT_T / <span class="n">2.0</span>)
-        wood_verts.extend(add_cylinder(bm, seat_center, SEAT_R, SEAT_T, <span class="n">16</span>, WOOD_IDX))
-        wood_verts.extend(
-            add_cylinder(
-                bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, SEAT_Z - SEAT_T - <span class="n">0.012</span>),
-                SEAT_R - <span class="n">0.018</span>,
-                <span class="n">0.022</span>,
-                <span class="n">16</span>,
-                WOOD_IDX,
-            )
-        )
-        wood_verts.extend(
-            add_cone(
-                bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, SEAT_Z + <span class="n">0.004</span>),
-                SEAT_R - <span class="n">0.012</span>,
-                SEAT_R,
-                <span class="n">0.010</span>,
-                <span class="n">16</span>,
-                WOOD_IDX,
-            )
-        )
+        wood_faces = []
+        metal_faces = []
+        before = set(bm.faces)
+        lathe_z(bm, SEAT_PROFILE, SEAT_SEGS, WOOD_IDX, z0=SEAT_Z - SEAT_T)
+        wood_faces.extend(set(bm.faces) - before)
+
+        ferrule_z0 = <span class="n">0.05</span> <span class="k">if</span> short_legs <span class="k">else</span> <span class="n">0.0</span>
+        <span class="k">if</span> short_legs:
+            before = set(bm.faces)
+            geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
+                v.co.x *= <span class="n">0.024</span>
+                v.co.y *= <span class="n">0.024</span>
+                v.co.z *= <span class="n">0.006</span>
+                v.co.z += <span class="n">0.003</span>
+            metal_faces.extend(set(bm.faces) - before)
 
         leg_pts = []
         <span class="k">for</span> i <span class="k">in</span> range(N_LEGS):
-            ang = math.pi / <span class="n">4.0</span> + i * (math.pi * <span class="n">2.0</span> / N_LEGS)
-            c, s = math.cos(ang), math.sin(ang)
-            top = Vector((LEG_TOP_R * c, LEG_TOP_R * s, SEAT_Z - SEAT_T - <span class="n">0.004</span>))
-            bot = Vector((LEG_BOT_R * c, LEG_BOT_R * s, <span class="n">0.012</span>))
-            leg_pts.append((top, bot, ang))
-            d = bot - top
-            p_knuckle = top + d * <span class="n">0.22</span>
-            p_ring = top + d * <span class="n">0.55</span>
-            p_foot = top + d * <span class="n">0.88</span>
-            wood_verts.extend(add_cone_between(bm, top, p_knuckle, <span class="n">0.016</span>, <span class="n">0.024</span>, <span class="n">8</span>, WOOD_IDX))
-            wood_verts.extend(add_cone_between(bm, p_knuckle, p_ring, <span class="n">0.018</span>, <span class="n">0.015</span>, <span class="n">8</span>, WOOD_IDX))
-            wood_verts.extend(add_cone_between(bm, p_ring, p_foot, <span class="n">0.022</span>, <span class="n">0.018</span>, <span class="n">8</span>, WOOD_IDX))
-            wood_verts.extend(add_cone_between(bm, p_foot, bot, <span class="n">0.018</span>, <span class="n">0.028</span>, <span class="n">8</span>, WOOD_IDX))
+            top, bot, foot_xy, ang = _leg_ends(i)
+            leg_pts.append((top, bot, foot_xy, ang))
             before = set(bm.faces)
-            add_cone_between(bm, bot + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.006</span>)), bot - Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.010</span>)), <span class="n">0.030</span>, <span class="n">0.030</span>, <span class="n">8</span>, METAL_IDX)
-            metal_faces.update(set(bm.faces) - before)
+            lathe_axis(bm, top, bot, LEG_PROFILE, LEG_SEGS, WOOD_IDX)
+            wood_faces.extend(set(bm.faces) - before)
 
-        <span class="k">for</span> i <span class="k">in</span> range(N_LEGS):
-            a_top, a_bot, _ = leg_pts[i]
-            b_top, b_bot, _ = leg_pts[(i + <span class="n">1</span>) % N_LEGS]
-            a = a_top.lerp(a_bot, <span class="n">0.62</span>)
-            b = b_top.lerp(b_bot, <span class="n">0.62</span>)
-            wood_verts.extend(add_oriented_box(bm, a, b, (<span class="n">0.022</span>, <span class="n">0.018</span>), WOOD_IDX))
-
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
-            <span class="k">if</span> edges:
-                bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=<span class="n">0.5</span>,
-                    affect=<span class="s">&quot;EDGES&quot;</span>,
-                    clamp_overlap=<span class="k">True</span>,
+            r_foot = LEG_PROFILE[-<span class="n">1</span>][<span class="n">1</span>]
+            r_in = r_foot + <span class="n">0.001</span>
+            r_out = r_in + FERRULE_T
+            before = set(bm.faces)
+            <span class="k">if</span> pipe_ferrule:
+                add_pipe_torus(
+                    bm, foot_xy, ferrule_z0, <span class="n">0.016</span>, <span class="n">0.006</span>, METAL_IDX,
                 )
+            <span class="k">else</span>:
+                add_cup(
+                    bm,
+                    foot_xy,
+                    ferrule_z0,
+                    ferrule_z0 + FERRULE_H,
+                    r_in,
+                    r_out,
+                    FERRULE_SEGS,
+                    METAL_IDX,
+                )
+            metal_faces.extend(set(bm.faces) - before)
+
+        <span class="k">if</span> <span class="k">not</span> float_stretchers:
+            <span class="k">for</span> i <span class="k">in</span> range(N_LEGS):
+                a_top, a_bot, _, _ = leg_pts[i]
+                b_top, b_bot, _, _ = leg_pts[(i + <span class="n">1</span>) % N_LEGS]
+                a = a_top.lerp(a_bot, STRETCH_T)
+                b = b_top.lerp(b_bot, STRETCH_T)
+                d = (b - a).normalized()
+                r_leg = <span class="n">0.0</span>
+                <span class="k">for</span> t, r <span class="k">in</span> LEG_PROFILE:
+                    <span class="k">if</span> t &gt;= STRETCH_T:
+                        r_leg = r
+                        <span class="k">break</span>
+                a_end = a + d * (r_leg - STRETCH_TENON)
+                b_end = b - d * (r_leg - STRETCH_TENON)
+                before = set(bm.faces)
+                lathe_axis(
+                    bm, a_end, b_end,
+                    ((<span class="n">0.0</span>, STRETCH_R), (<span class="n">1.0</span>, STRETCH_R)),
+                    STRETCH_SEGS, WOOD_IDX,
+                )
+                wood_faces.extend(set(bm.faces) - before)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        wood_set = set(wood_faces)
+        metal_set = set(metal_faces)
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = <span class="k">True</span>
+            <span class="k">if</span> face <span class="k">in</span> metal_set:
+                face.material_index = METAL_IDX
+                face.smooth = <span class="k">True</span>
+            <span class="k">else</span>:
+                face.material_index = WOOD_IDX
+                face.smooth = <span class="k">True</span>
         <span class="k">for</span> edge <span class="k">in</span> bm.edges:
             edge.smooth = <span class="k">True</span>
             <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
-                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">35.0</span>):
+                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">40.0</span>):
                     edge.smooth = <span class="k">False</span>
-        <span class="k">for</span> f <span class="k">in</span> metal_faces:
-            <span class="k">if</span> f.is_valid:
-                f.material_index = METAL_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
@@ -613,27 +746,45 @@ METAL_IDX = <span class="n">1</span>
     bpy.context.collection.objects.link(obj)
     <span class="k">return</span> obj
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
     mats = obj.data.materials
-    <span class="k">if</span> len(mats) == <span class="n">0</span>:
-        mats.append(wood)
-        mats.append(metal)
-        <span class="k">return</span>
-    mats[<span class="n">0</span>] = wood
-    <span class="k">if</span> len(mats) == <span class="n">1</span>:
-        mats.append(metal)
-    <span class="k">else</span>:
-        mats[<span class="n">1</span>] = metal
+    wanted = (wood, metal)
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
+        <span class="k">if</span> i &lt; len(mats):
+            mats[i] = mat
+        <span class="k">else</span>:
+            mats.append(mat)
 
 
 <span class="k">def</span> world_bbox(obj):
@@ -669,6 +820,253 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    <span class="k">if</span> len(idxs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        vs = (me.vertices[idxs[i]].co, me.vertices[idxs[i + <span class="n">1</span>]].co)
+        area += (vs[<span class="n">0</span>] - v0).cross(vs[<span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles, <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group):
+    member = set(group)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> p.vertices):
+            <span class="k">return</span> p.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> support_audit(me):
+    groups = shells(me)
+    cups = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != METAL_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> a[<span class="n">5</span>] &lt; <span class="n">0.08</span> <span class="k">and</span> dx &gt; <span class="n">0.03</span> <span class="k">and</span> dy &gt; <span class="n">0.03</span> <span class="k">and</span> dz &lt; <span class="n">0.05</span>:
+            cups.append(a)
+    cup_z = min((a[<span class="n">2</span>] <span class="k">for</span> a <span class="k">in</span> cups), default=<span class="n">99.0</span>)
+    <span class="k">return</span> {<span class="s">&quot;cups&quot;</span>: len(cups), <span class="s">&quot;cup_z&quot;</span>: cup_z}
+
+
+<span class="k">def</span> seat_audit(me):
+    groups = shells(me)
+    best = <span class="k">None</span>
+    best_area = -<span class="n">1.0</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        area = dx * dy
+        <span class="k">if</span> dz &gt; <span class="n">0.02</span> <span class="k">and</span> area &gt; best_area:
+            best_area = area
+            best = a
+    <span class="k">if</span> best <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> {<span class="s">&quot;dia&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;height&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;zmin&quot;</span>: <span class="n">99.0</span>}
+    dia = <span class="n">0.5</span> * ((best[<span class="n">3</span>] - best[<span class="n">0</span>]) + (best[<span class="n">4</span>] - best[<span class="n">1</span>]))
+    <span class="k">return</span> {<span class="s">&quot;dia&quot;</span>: dia, <span class="s">&quot;height&quot;</span>: best[<span class="n">5</span>], <span class="s">&quot;zmin&quot;</span>: best[<span class="n">2</span>]}
+
+
+<span class="k">def</span> stretcher_join(me):
+    <span class="s">&quot;&quot;&quot;Worst gap from a stretcher shell to the nearest leg.&quot;&quot;&quot;</span>
+    groups = shells(me)
+    legs = []
+    stretchers = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> dz &gt; <span class="n">0.20</span> <span class="k">and</span> max(dx, dy) &lt; <span class="n">0.16</span>:
+            legs.append(g)
+        <span class="k">elif</span> dz &lt; <span class="n">0.035</span> <span class="k">and</span> <span class="n">0.10</span> &lt; max(dx, dy) &lt; <span class="n">0.30</span>:
+            stretchers.append(g)
+    <span class="k">if</span> <span class="k">not</span> legs <span class="k">or</span> <span class="k">not</span> stretchers:
+        <span class="k">return</span> <span class="n">99.0</span>
+    bm_leg = bmesh.new()
+    <span class="k">try</span>:
+        bm_leg.from_mesh(me)
+        keep = set()
+        <span class="k">for</span> g <span class="k">in</span> legs:
+            keep.update(g)
+        drop = [
+            f <span class="k">for</span> f <span class="k">in</span> bm_leg.faces
+            <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep <span class="k">for</span> v <span class="k">in</span> f.verts)
+        ]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_leg, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_leg.faces:
+            <span class="k">return</span> <span class="n">99.0</span>
+        tree = BVHTree.FromBMesh(bm_leg)
+        worst = <span class="n">0.0</span>
+        <span class="k">for</span> g <span class="k">in</span> stretchers:
+            bm_s = bmesh.new()
+            <span class="k">try</span>:
+                bm_s.from_mesh(me)
+                member = set(g)
+                drop_s = [
+                    f <span class="k">for</span> f <span class="k">in</span> bm_s.faces
+                    <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> f.verts)
+                ]
+                <span class="k">if</span> drop_s:
+                    bmesh.ops.delete(bm_s, geom=drop_s, context=<span class="s">&quot;FACES&quot;</span>)
+                <span class="k">if</span> <span class="k">not</span> bm_s.faces:
+                    worst = max(worst, <span class="n">99.0</span>)
+                    <span class="k">continue</span>
+                tree_s = BVHTree.FromBMesh(bm_s)
+                <span class="k">if</span> tree.overlap(tree_s):
+                    <span class="k">continue</span>
+                best = <span class="n">99.0</span>
+                <span class="k">for</span> i <span class="k">in</span> g:
+                    hit = tree.find_nearest(me.vertices[i].co)
+                    <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                        <span class="k">continue</span>
+                    best = min(best, hit[<span class="n">3</span>])
+                <span class="k">if</span> best &gt; worst:
+                    worst = best
+            <span class="k">finally</span>:
+                bm_s.free()
+        <span class="k">return</span> worst
+    <span class="k">finally</span>:
+        bm_leg.free()
+
+
+<span class="k">def</span> ferrule_bite(me):
+    <span class="s">&quot;&quot;&quot;How far the ferrule inner wall sits inside the foot radius.
+
+    Sample metal verts on the inner ring (closest to the foot axis) against
+    wood at the same angle. A torus planted around the foot has no inner
+    bite; a cup does.
+    &quot;&quot;&quot;</span>
+    groups = shells(me)
+    cups = []
+    woods = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        a = shell_aabb(me, g)
+        <span class="k">if</span> mat_of(me, g) == METAL_IDX <span class="k">and</span> a[<span class="n">5</span>] &lt; <span class="n">0.08</span>:
+            cups.append(g)
+        <span class="k">elif</span> mat_of(me, g) == WOOD_IDX <span class="k">and</span> a[<span class="n">2</span>] &lt; <span class="n">0.08</span> <span class="k">and</span> (a[<span class="n">5</span>] - a[<span class="n">2</span>]) &gt; <span class="n">0.15</span>:
+            woods.append(g)
+    <span class="k">if</span> <span class="k">not</span> cups <span class="k">or</span> <span class="k">not</span> woods:
+        <span class="k">return</span> <span class="n">0.0</span>
+    wood_pts = [me.vertices[i].co <span class="k">for</span> g <span class="k">in</span> woods <span class="k">for</span> i <span class="k">in</span> g <span class="k">if</span> me.vertices[i].co.z &lt; <span class="n">0.08</span>]
+    <span class="k">if</span> <span class="k">not</span> wood_pts:
+        <span class="k">return</span> <span class="n">0.0</span>
+    bites = []
+    <span class="k">for</span> g <span class="k">in</span> cups:
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        cx = sum(p.x <span class="k">for</span> p <span class="k">in</span> pts) / len(pts)
+        cy = sum(p.y <span class="k">for</span> p <span class="k">in</span> pts) / len(pts)
+        inner = min(pts, key=<span class="k">lambda</span> p: (p.x - cx) ** <span class="n">2</span> + (p.y - cy) ** <span class="n">2</span>)
+        r_in = math.hypot(inner.x - cx, inner.y - cy)
+        ring = [
+            p <span class="k">for</span> p <span class="k">in</span> wood_pts
+            <span class="k">if</span> <span class="n">0.008</span> &lt; math.hypot(p.x - cx, p.y - cy) &lt; <span class="n">0.06</span> <span class="k">and</span> p.z &lt; <span class="n">0.05</span>
+        ]
+        <span class="k">if</span> <span class="k">not</span> ring:
+            <span class="k">continue</span>
+        foot = min(ring, key=<span class="k">lambda</span> p: math.hypot(p.x - cx, p.y - cy))
+        r_wood = math.hypot(foot.x - cx, foot.y - cy)
+        bites.append(r_wood - r_in)
+    <span class="k">if</span> <span class="k">not</span> bites:
+        <span class="k">return</span> <span class="n">0.0</span>
+    <span class="k">return</span> min(bites)
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, SEAT_Z))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
 <span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
     mesh = obj.data.copy()
     lod = bpy.data.objects.new(name, mesh)
@@ -682,7 +1080,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> convex_hull_collider(obj, name):
-    <span class="c"># Duplicated from snippets/convex_hull_collider.py (not a package).</span>
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -705,7 +1102,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
-    <span class="c"># Adapted from snippets/setup_bake_target_image.py — do not replace slots.</span>
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
     img = bpy.data.images.new(<span class="s">&quot;StoolNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
@@ -720,7 +1116,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> bake_normal(high, low):
-    <span class="c"># Duplicated from snippets/bake_normal_high_to_low.py (not a package).</span>
     scene = bpy.context.scene
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
     scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
@@ -745,7 +1140,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> export_unity(path, objects):
-    <span class="c"># Duplicated from snippets/export_preset_unity.py (not a package).</span>
     <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
         ob.select_set(<span class="k">False</span>)
     <span class="k">for</span> ob <span class="k">in</span> objects:
@@ -761,14 +1155,39 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    short_legs=<span class="k">False</span>,
+    float_stretchers=<span class="k">False</span>,
+    pipe_ferrule=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_stool_mesh(<span class="s">&quot;StoolLow&quot;</span>, bevel_offset=<span class="n">0.003</span>, bevel_segments=<span class="n">2</span>)
-    high = build_stool_mesh(<span class="s">&quot;StoolHigh&quot;</span>, bevel_offset=<span class="n">0.003</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(<span class="s">&quot;StoolWood&quot;</span>, (<span class="n">0.44</span>, <span class="n">0.26</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.48</span>)
-    metal = principled(<span class="s">&quot;StoolMetal&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.52</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
+    flags = dict(
+        short_legs=short_legs,
+        float_stretchers=float_stretchers,
+        pipe_ferrule=pipe_ferrule,
+    )
+    low = build_stool_mesh(<span class="s">&quot;StoolLow&quot;</span>, **flags)
+    high = build_stool_mesh(<span class="s">&quot;StoolHigh&quot;</span>, **flags)
+    wood = principled(
+        <span class="s">&quot;StoolWood&quot;</span>, (<span class="n">0.46</span>, <span class="n">0.26</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>,
+        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;StoolMetal&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.48</span>, <span class="n">0.44</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>,
+        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.22</span>, <span class="n">0.20</span>, <span class="n">0.18</span>, <span class="n">1.0</span>),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;stool mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -800,7 +1219,7 @@ METAL_IDX = <span class="n">1</span>
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_stool_mesh(<span class="s">&quot;StoolColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>)
+    collider_src = build_stool_mesh(<span class="s">&quot;StoolColSrc&quot;</span>, **flags)
     collider = convex_hull_collider(collider_src, <span class="s">&quot;StoolCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
@@ -814,9 +1233,14 @@ METAL_IDX = <span class="n">1</span>
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
 
-    print(
-        <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
-    )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    st = seat_audit(low.data)
+    sj = stretcher_join(low.data)
+    bite = ferrule_bite(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
         <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
@@ -832,6 +1256,16 @@ METAL_IDX = <span class="n">1</span>
     print(
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured supports cups=</span>{sup[<span class="s">&#x27;cups&#x27;</span>]}<span class="s"> cup_z=</span>{sup[<span class="s">&#x27;cup_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seat_dia=</span>{st[<span class="s">&#x27;dia&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> seat_h=</span>{st[<span class="s">&#x27;height&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">stretch_join=</span>{sj:<span class="s">.5f</span>}<span class="s"> ferrule_bite=</span>{bite:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -897,6 +1331,51 @@ METAL_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> sup[<span class="s">&quot;cups&quot;</span>] &lt; <span class="n">4</span> <span class="k">or</span> sup[<span class="s">&quot;cup_z&quot;</span>] &gt; FERRULE_Z_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">ferrule supports </span>{sup[<span class="s">&#x27;cups&#x27;</span>]}<span class="s"> cup_z=</span>{sup[<span class="s">&#x27;cup_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-legs is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> sj &gt; STRETCH_JOIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">stretcher-leg gap </span>{sj:<span class="s">.5f</span>}<span class="s"> &gt; </span>{STRETCH_JOIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-stretchers is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> (FERRULE_BITE_MIN &lt;= bite &lt;= FERRULE_BITE_MAX):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">ferrule bite </span>{bite:<span class="s">.5f</span>}<span class="s"> not in </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{FERRULE_BITE_MIN}<span class="s">, </span>{FERRULE_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--pipe-ferrule is the designed fail)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(st[<span class="s">&quot;dia&quot;</span>] - BODY_DIA) &gt; BODY_DIA_TOL:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">seat diameter </span>{st[<span class="s">&#x27;dia&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_DIA}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(st[<span class="s">&quot;height&quot;</span>] - BODY_H) &gt; BODY_H_TOL:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">seat height </span>{st[<span class="s">&#x27;height&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_H}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -964,7 +1443,7 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.94</span>, -<span class="n">1.26</span>, <span class="n">0.90</span>)
+    cam.location = (<span class="n">1.05</span>, -<span class="n">1.38</span>, <span class="n">0.92</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.26</span>)
@@ -1010,14 +1489,22 @@ METAL_IDX = <span class="n">1</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
-    p.add_argument(
-        <span class="s">&quot;--skip-decimate&quot;</span>,
-        action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-stretchers&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--pipe-ferrule&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_legs=args.short_legs,
+        float_stretchers=args.float_stretchers,
+        pipe_ferrule=args.pipe_ferrule,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
