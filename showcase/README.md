@@ -33,7 +33,16 @@ entry in `showcase/gallery.json`, and a rendered still.
   assigned `DECLARED` is not a check).
 - **Falsifier** breaks one pipeline stage so a **named** budget fails and
   the piece exits its documented code. Prove default and falsifier on
-  4.5.11, 5.1.2, and 5.2.1.
+  4.5.11, 5.1.2, and 5.2.1. `--skip-decimate` is the LOD-ratio
+  falsifier (exit 9). `--lift-z` is the grounded-zmin falsifier (exit 16).
+- **Hygiene budgets.** Copied combinatorics from
+  `examples/mesh-hygiene-audit` (do not import the example). Every piece
+  asserts on the generated mesh: non-manifold edges 0, loose verts 0,
+  loose edges 0, doubles at 1e-5 0, zero-area faces 0, n-gons 0, world
+  AABB min Z within 1e-4 of 0. Multi-body props do **not** require Euler
+  characteristic 2 — that is a single-shell contract. Pairs of parts
+  meant to touch assert a BVH surface gap below a named epsilon
+  (vert-vert is the wrong metric for thin straps and collars).
 - **Exit codes** are file-local: `0` success, argparse `2`, `3` and above
   in check order. `9` is legal. FATAL `sys.exit(1)` is a crash, never a
   named check.
