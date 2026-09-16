@@ -21,14 +21,18 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 8280–8500 | 8388 / 8388 / 8388 |
+| Base triangles | 8280–9500 | 9380 / 9380 / 9380 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 |
 | Materials | exactly 3 distinct | 3 |
+| Material faces | stone ≥ 3000, wood ≥ 600, metal ≥ 100 | all above |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.640, 1.640, 1.688) m ± 0.01 | (1.6400, 1.6400, 1.6882), zmin 0 |
-| Collider tris | ≤ 260 | 230 |
-| Export | written, size > 0 | 601028 / 601092 / 601372 bytes |
+| Outer AABB | (1.640, 1.640, 1.761) m ± 0.01 | (1.6400, 1.6400, 1.7606) |
+| Grounded | bbox min Z within 1e-4 of 0 | 0.0000 / 0.0000 / 0.0000 |
+| Hygiene | loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0 | 0 / 0 / 0 on every axis |
+| Material-island gap | stone↔wood and metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 |
+| Collider tris | ≤ 320 | 306 |
+| Export | written, size > 0 | 686672 / 686736 / 686724 bytes |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh happened
@@ -37,17 +41,20 @@ is `has_data` plus operator `FINISHED`, not byte-identity. Construction
 uses no RNG. glTF byte size differs by a few hundred bytes across series.
 
 `--skip-decimate` skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and
-exit 9 fires. That is the named budget the falsifier violates.
+exit 9 fires. `--lift-z` raises the finished mesh 0.05 m so the grounded
+budget fails and exit 16 fires. Those are the named budgets the two
+falsifiers violate.
 
 ## Run
 
 ```bash
 blender --background --python stone_well.py --
 blender --background --python stone_well.py -- --skip-decimate
+blender --background --python stone_well.py -- --lift-z
 blender --background --python stone_well.py -- --output well.png
 ```
 
-Smoke does not pass `--output` or `--skip-decimate`.
+Smoke does not pass `--output`, `--skip-decimate`, or `--lift-z`.
 
 ## Exit codes
 
@@ -61,7 +68,7 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 2 | argparse / usage |
 | 3 | Mesh did not build / no UV layer |
 | 4 | Base triangle count outside range |
-| 5 | Material count ≠ 3 distinct slots |
+| 5 | Material count ≠ 3 distinct slots, or a material face floor missed |
 | 6 | UVs outside 0..1 |
 | 7 | UV AABB overlap above tolerance |
 | 8 | World AABB off declared outer size |
@@ -71,3 +78,6 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 12 | Bake did not finish or image has no data |
 | 13 | Export file missing or empty |
 | 14 | `--output` produced no file |
+| 15 | Hygiene: loose geometry, non-manifold, zero-area, doubles, or n-gons |
+| 16 | Bbox min Z not grounded (`--lift-z` lands here) |
+| 17 | Material-island gap above tolerance (parts meant to touch) |
