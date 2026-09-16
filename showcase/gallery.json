@@ -32,8 +32,8 @@
     {
       "name": "wooden-barrel",
       "dir": "showcase/wooden-barrel",
-      "teaches": "A procedural staved barrel through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 4312 tris, two materials with 88 metal hoop faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.719×0.719×0.880 m, LOD ratios in band, convex collider 372 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural wine-cask with croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 7216 tris, two materials with 2512 wood and 1440 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.714×0.880 m, 20 grounded staves, hoop bite 0.003 m, head-croze gap 0.007 m, LOD ratios in band, convex collider 238 tris, non-empty glTF. --skip-decimate exits 9; --round-band exits 18 on the hoop-seat budget.",
       "hero": "docs/gallery/assets/wooden-barrel-hero.webp",
       "preview": "showcase/wooden-barrel/preview.webp",
       "tags": [
@@ -248,8 +248,8 @@
     {
       "name": "wooden-bucket",
       "dir": "showcase/wooden-bucket",
-      "teaches": "A procedural coopered wooden bucket with overlapping staves, a sealed bottom, iron hoops, and a rope bail through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 4272 tris, three materials with 222 metal and 72 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.402×0.345×0.544 m, LOD ratios in band, convex collider 390 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 4872 tris, three materials with 1424 wood, 1020 metal, and 208 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.383×0.346×0.527 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0013 m, LOD ratios in band, convex collider 302 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget.",
       "hero": "docs/gallery/assets/wooden-bucket-hero.webp",
       "preview": "showcase/wooden-bucket/preview.webp",
       "tags": [

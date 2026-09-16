@@ -1,14 +1,25 @@
 """Game-ready wooden bucket — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural coopered bucket after composing
-shipped pipeline pieces: bmesh construction, UVs, three materials,
-high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a procedural coopered bucket (tight staves
+with seeded width jitter, a bottom seated in a croze, iron hoops lofted
+on the stave faces, ear rings, a round rope bail through the rings)
+after composing shipped pipeline pieces: bmesh construction, UVs, three
+materials, high-to-low normal bake, LOD chain, convex collider, Unity
+glTF export.
+
+The old piece overlapped 14 identical staves into a 14-gon, wrapped them
+in capped-cylinder hoops that floated off the flats, and lofted the bail
+from 12 boxes that never entered the ear rings.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
+supports, ``--float-handle`` bail-ear joint-fit, ``--float-bottom``
+floor-croze joint-fit, ``--round-band`` hoop seat (hoop generated on a
+circle instead of the stave chords).
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -19,6 +30,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -26,10 +38,8 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
-# Showcase lives at repo-root/showcase/, not under examples/. The framing
-# helper is the repo's only shared import and lives next to the examples;
-# resolve the repo root so we do not move gallery_framing.py.
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -37,26 +47,51 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
+# Pail scale: 36 cm bowl, 33 cm rim.
 HEIGHT = 0.36
 R_BOT = 0.125
 R_TOP = 0.168
-N_STAVES = 14
-STAVE_THICK = 0.022
-N_RINGS = 4
-# Negative gap = overlapping staves so the hull is sealed.
-STAVE_GAP = -0.08
-HOOP_ZS = (0.055, 0.155, 0.305)
-HOOP_H = 0.026
-HOOP_PAD = 0.011
-BOTTOM_T = 0.024
-BAIL_R = 0.012
-BAIL_SEGS = 12
-BBOX_TOL = 0.01
-# Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.402, 0.345, 0.544)
+BULGE = 0.012
+N_STAVES = 16
+STAVE_THICK = 0.018
+N_RINGS = 6
+STAVE_SEED = 17
+STAVE_JITTER = 0.08
+GAP_M = 0.0007
+HOOP_ZS = (0.055, 0.155, 0.300)
+HOOP_H = 0.022
+HOOP_PROUD = 0.006
+HOOP_BITE = 0.0025
+HOOP_CHAMFER = 0.0025
+HOOP_BITE_MIN = 0.0010
+HOOP_BITE_MAX = 0.007
+BOTTOM_T = 0.022
+CHIME = 0.008
+CROZE_BITE = 0.0025
+FLOOR_GAP_MAX = 0.008
+BAIL_R = 0.008
+BAIL_SEGS = 24
+BAIL_PIPE = 8
+EAR_Z = HEIGHT - 0.016
+RING_MAJOR = 0.013
+RING_MINOR = 0.0035
+BAIL_GAP_MAX = 0.006
+STAVE_ZMIN_MAX = 0.001
+SHORT_STAVES_LIFT = 0.040
+LIFT_Z = 0.05
+AREA_EPS = 1e-10
+DOUBLES_EPS = 1e-5
+ZMIN_EPS = 1e-4
+ZFIGHT_EPS = 1e-4
+ZFIGHT_COS = 0.998
+BODY_TOL = 0.04
+BODY_DIA = 0.335
+BODY_H = 0.360
+BBOX_TOL = 0.015
+OUTER_SIZE = (0.383, 0.346, 0.527)
 
-BASE_TRIS_MIN = 4150
-BASE_TRIS_MAX = 4400
+BASE_TRIS_MIN = 4000
+BASE_TRIS_MAX = 5800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -64,13 +99,15 @@ LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
+WOOD_FACES_MIN = 350
+METAL_FACES_MIN = 180
+ROPE_FACES_MIN = 40
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 420
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
-METAL_FACES_MIN = 24
-ROPE_FACES_MIN = 12
+STAVE_COUNT = N_STAVES
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -92,7 +129,6 @@ def triangle_count(mesh):
 
 
 def evaluated_triangle_count(obj):
-    # Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -105,7 +141,162 @@ def evaluated_triangle_count(obj):
 
 def radius_at(z):
     t = max(0.0, min(1.0, z / HEIGHT))
-    return R_BOT + (R_TOP - R_BOT) * t
+    return R_BOT + (R_TOP - R_BOT) * t + BULGE * math.sin(math.pi * t)
+
+
+def stave_spans(n, gap_ang, jitter, seed):
+    rng = random.Random(seed)
+    weights = [1.0 + rng.uniform(-jitter, jitter) for _ in range(n)]
+    total = sum(weights)
+    usable = 2.0 * math.pi - n * gap_ang
+    spans = []
+    a = 0.0
+    for w in weights:
+        width = usable * (w / total)
+        spans.append((a, a + width))
+        a += width + gap_ang
+    return spans
+
+
+def host_outer_r(u, z, spans, round_band):
+    r = radius_at(z)
+    if round_band:
+        return r
+    u = u % (2.0 * math.pi)
+    for a0, a1 in spans:
+        if a0 - 1e-9 <= u <= a1 + 1e-9:
+            mid = 0.5 * (a0 + a1)
+            half = 0.5 * (a1 - a0)
+            den = math.cos(u - mid)
+            if abs(den) < 1e-4:
+                return r * math.cos(half)
+            return r * math.cos(half) / den
+    return r
+
+
+def loft_cyclic(bm, sections, mat_idx):
+    vert_rings = [[bm.verts.new(p) for p in s] for s in sections]
+    m = len(vert_rings)
+    n = len(vert_rings[0])
+    faces = []
+    for k in range(m):
+        a = vert_rings[k]
+        b = vert_rings[(k + 1) % m]
+        for i in range(n):
+            j = (i + 1) % n
+            face = bm.faces.new((a[i], a[j], b[j], b[i]))
+            face.material_index = mat_idx
+            faces.append(face)
+    return [v for ring in vert_rings for v in ring], faces
+
+
+def loft_rings(bm, rings, mat_idx, cap_start=True, cap_end=True):
+    n = len(rings[0])
+    for k in range(len(rings) - 1):
+        a, b = rings[k], rings[k + 1]
+        for i in range(n):
+            j = (i + 1) % n
+            face = bm.faces.new((a[i], a[j], b[j], b[i]))
+            face.material_index = mat_idx
+    if cap_start:
+        fan_cap(bm, rings[0], mat_idx, flip=True)
+    if cap_end:
+        fan_cap(bm, rings[-1], mat_idx, flip=False)
+
+
+def fan_cap(bm, ring, mat_idx, flip=False):
+    center = Vector((0.0, 0.0, 0.0))
+    for v in ring:
+        center += v.co
+    center /= len(ring)
+    hub = bm.verts.new(center)
+    n = len(ring)
+    for i in range(n):
+        vs = (hub, ring[i], ring[(i + 1) % n])
+        if flip:
+            vs = (hub, vs[2], vs[1])
+        face = bm.faces.new(vs)
+        face.material_index = mat_idx
+    return hub
+
+
+def croze_xy(spans, z, bite, shrink=0.0):
+    pts = []
+    for a0, a1 in spans:
+        for u in (a0, 0.5 * (a0 + a1), a1):
+            r = host_outer_r(u, z, spans, False) - STAVE_THICK + bite - shrink
+            pts.append((r * math.cos(u), r * math.sin(u)))
+    return pts
+
+
+def add_polygon_disk(bm, z0, z1, xy_ring, mat_idx):
+    rings = []
+    for z in (z0, z1):
+        ring = [bm.verts.new((x, y, z)) for x, y in xy_ring]
+        rings.append(ring)
+    a, b = rings
+    n = len(xy_ring)
+    for i in range(n):
+        j = (i + 1) % n
+        face = bm.faces.new((a[i], a[j], b[j], b[i]))
+        face.material_index = mat_idx
+    fan_cap(bm, a, mat_idx, flip=True)
+    fan_cap(bm, b, mat_idx, flip=False)
+
+
+def add_torus(bm, loc, major, minor, n_major, n_minor, mat_idx, euler=(0.0, 0.0, 0.0)):
+    rings = []
+    for i in range(n_major):
+        u = i * (2.0 * math.pi / n_major)
+        ring = []
+        for j in range(n_minor):
+            v = j * (2.0 * math.pi / n_minor)
+            x = (major + minor * math.cos(v)) * math.cos(u)
+            y = (major + minor * math.cos(v)) * math.sin(u)
+            z = minor * math.sin(v)
+            ring.append(bm.verts.new((x, y, z)))
+        rings.append(ring)
+    verts = [v for ring in rings for v in ring]
+    for i in range(n_major):
+        i2 = (i + 1) % n_major
+        for j in range(n_minor):
+            j2 = (j + 1) % n_minor
+            face = bm.faces.new(
+                (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
+            )
+            face.material_index = mat_idx
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    for v in verts:
+        v.co = rot @ v.co + origin
+    return verts
+
+
+def add_pipe_curve(bm, points, radius, segs, mat_idx):
+    rings = []
+    n = len(points)
+    for i, p in enumerate(points):
+        p = Vector(p)
+        if i < n - 1:
+            tangent = (Vector(points[i + 1]) - p).normalized()
+        else:
+            tangent = (p - Vector(points[i - 1])).normalized()
+        side = Vector((-tangent.y, tangent.x, 0.0))
+        if side.length < 1e-6:
+            side = Vector((1.0, 0.0, 0.0))
+        else:
+            side.normalize()
+        up = tangent.cross(side).normalized()
+        ring = []
+        for k in range(segs):
+            a = 2.0 * math.pi * k / segs
+            ring.append(
+                bm.verts.new(
+                    p + side * (radius * math.cos(a)) + up * (radius * math.sin(a))
+                )
+            )
+        rings.append(ring)
+    loft_rings(bm, rings, mat_idx, cap_start=True, cap_end=True)
 
 
 def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
@@ -122,77 +313,149 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
-def add_oriented_box(bm, a, b, scale_xy, mat_idx):
-    a = Vector(a)
-    b = Vector(b)
-    delta = b - a
-    length = delta.length
-    if length < 1e-8:
-        return []
-    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
-    eul = quat.to_euler("XYZ")
-    return add_box(
-        bm,
-        ((a + b) * 0.5),
-        (scale_xy[0], scale_xy[1], length),
-        mat_idx,
-        euler=(eul.x, eul.y, eul.z),
-    )
-
-
-def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
-    geo = bmesh.ops.create_cone(
-        bm,
-        cap_ends=True,
-        cap_tris=False,
-        segments=segments,
-        radius1=radius1,
-        radius2=radius2,
-        depth=depth,
-    )
-    verts = list(geo["verts"])
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    for v in verts:
-        v.co = rot @ v.co + origin
-    faces = {f for v in verts for f in v.link_faces}
-    for f in faces:
-        f.material_index = mat_idx
-    return verts
-
-
-def add_cylinder(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
-    return add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
-
-
-def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
-    n_major = 12
-    n_minor = 6
-    rings = []
-    for i in range(n_major):
-        u = i * (2.0 * math.pi / n_major)
-        ring = []
-        for j in range(n_minor):
-            v = j * (2.0 * math.pi / n_minor)
-            x = (major + minor * math.cos(v)) * math.cos(u)
-            y = (major + minor * math.cos(v)) * math.sin(u)
-            z = minor * math.sin(v)
-            ring.append(bm.verts.new((x, y, z)))
-        rings.append(ring)
-    for i in range(n_major):
-        i2 = (i + 1) % n_major
-        for j in range(n_minor):
-            j2 = (j + 1) % n_minor
-            face = bm.faces.new(
-                (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
+def build_hoops(bm, spans, round_band):
+    for z_mid in HOOP_ZS:
+        z0 = z_mid - HOOP_H * 0.5
+        z1 = z_mid + HOOP_H * 0.5
+        c = HOOP_CHAMFER
+        sections = []
+        samples = []
+        for a0, a1 in spans:
+            samples.append(a0)
+            samples.append(0.5 * (a0 + a1))
+            samples.append(a1)
+        for u in samples:
+            cu, su = math.cos(u), math.sin(u)
+            r0 = host_outer_r(u, z0, spans, round_band)
+            r1 = host_outer_r(u, z1, spans, round_band)
+            profile = (
+                (r0 - HOOP_BITE, z0),
+                (r0 + HOOP_PROUD - c, z0),
+                (r0 + HOOP_PROUD, z0 + c),
+                (r1 + HOOP_PROUD, z1 - c),
+                (r1 + HOOP_PROUD - c, z1),
+                (r1 - HOOP_BITE, z1),
             )
-            face.material_index = mat_idx
-    verts = [v for ring in rings for v in ring]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    for v in verts:
-        v.co = rot @ v.co + origin
-    return verts
+            sections.append([Vector((r * cu, r * su, z)) for r, z in profile])
+        loft_cyclic(bm, sections, METAL_IDX)
+
+
+def build_staves(bm, spans, z0, bevel_offset, bevel_segments):
+    zs = [HEIGHT * i / (N_RINGS - 1) for i in range(N_RINGS)]
+    stave_verts = []
+    for a0, a1 in spans:
+        outer = []
+        inner = []
+        for z in zs:
+            r = radius_at(z)
+            ov = (
+                bm.verts.new((r * math.cos(a0), r * math.sin(a0), z0 + z)),
+                bm.verts.new((r * math.cos(a1), r * math.sin(a1), z0 + z)),
+            )
+            ri = r - STAVE_THICK
+            iv = (
+                bm.verts.new((ri * math.cos(a0), ri * math.sin(a0), z0 + z)),
+                bm.verts.new((ri * math.cos(a1), ri * math.sin(a1), z0 + z)),
+            )
+            outer.append(ov)
+            inner.append(iv)
+            stave_verts.extend(ov)
+            stave_verts.extend(iv)
+        for k in range(N_RINGS - 1):
+            o0a, o0b = outer[k]
+            o1a, o1b = outer[k + 1]
+            i0a, i0b = inner[k]
+            i1a, i1b = inner[k + 1]
+            for vs in (
+                (o0a, o1a, o1b, o0b),
+                (i0b, i1b, i1a, i0a),
+                (o0a, i0a, i1a, o1a),
+                (o0b, o1b, i1b, i0b),
+            ):
+                face = bm.faces.new(vs)
+                face.material_index = WOOD_IDX
+        top = bm.faces.new((outer[-1][0], outer[-1][1], inner[-1][1], inner[-1][0]))
+        top.material_index = WOOD_IDX
+        bot = bm.faces.new((outer[0][1], outer[0][0], inner[0][0], inner[0][1]))
+        bot.material_index = WOOD_IDX
+    if bevel_offset > 0.0:
+        long_edges = []
+        seen = set()
+        for v in stave_verts:
+            for e in v.link_edges:
+                if e in seen:
+                    continue
+                seen.add(e)
+                a, b = e.verts
+                if abs(a.co.z - b.co.z) > 0.015:
+                    long_edges.append(e)
+        if long_edges:
+            bmesh.ops.bevel(
+                bm,
+                geom=long_edges,
+                offset=bevel_offset,
+                segments=bevel_segments,
+                profile=0.5,
+                affect="EDGES",
+                clamp_overlap=True,
+            )
+    return stave_verts
+
+
+def triangulate_ngons(bm):
+    faces = [f for f in bm.faces if len(f.verts) > 4]
+    if faces:
+        bmesh.ops.triangulate(bm, faces=faces)
+
+
+def add_ears_and_bail(bm, spans, float_handle):
+    """Ear plates + flat rings (hole along Z) and a round bail through them.
+
+    Ring centres sit on the stave outer at EAR_Z. The bail is a semicircle
+    in XZ whose ends are vertical, so they pass through the rings. A
+    smaller semicircle is the falsifier: the bar sits on the ring.
+    """
+    u_l = 0.5 * (spans[0][0] + spans[0][1])
+    u_r = 0.5 * (spans[N_STAVES // 2][0] + spans[N_STAVES // 2][1])
+    r_l = host_outer_r(u_l, EAR_Z, spans, False)
+    r_r = host_outer_r(u_r, EAR_Z, spans, False)
+    plate_t = 0.007
+    plate_h = 0.036
+    plate_w = 0.028
+    plate_z = HEIGHT - plate_h * 0.5 - 0.006
+    x_l = -(r_l + plate_t * 0.5)
+    x_r = r_r + plate_t * 0.5
+    ring_x_l = -(r_l + plate_t + RING_MAJOR * 0.25)
+    ring_x_r = r_r + plate_t + RING_MAJOR * 0.25
+    for x in (x_l, x_r):
+        add_box(
+            bm,
+            (x, 0.0, plate_z),
+            (plate_t, plate_w, plate_h),
+            METAL_IDX,
+        )
+    for x in (ring_x_l, ring_x_r):
+        add_torus(
+            bm,
+            (x, 0.0, EAR_Z),
+            RING_MAJOR,
+            RING_MINOR,
+            12,
+            6,
+            METAL_IDX,
+            euler=(0.0, 0.0, 0.0),
+        )
+    rx = 0.5 * (abs(ring_x_l) + abs(ring_x_r))
+    if float_handle:
+        rx *= 0.72
+        z0 = EAR_Z + 0.035
+    else:
+        z0 = EAR_Z
+    pts = []
+    for i in range(BAIL_SEGS + 1):
+        t = math.pi * i / BAIL_SEGS
+        pts.append((rx * math.cos(t), 0.0, z0 + rx * math.sin(t)))
+    add_pipe_curve(bm, pts, BAIL_R, BAIL_PIPE, ROPE_IDX)
 
 
 def pack_uvs(bm, margin=0.08):
@@ -211,9 +474,7 @@ def pack_uvs(bm, margin=0.08):
         col = i % cols
         row = i // cols
         nrm = face.normal
-        ax = abs(nrm.x)
-        ay = abs(nrm.y)
-        az = abs(nrm.z)
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
         coords = []
         for loop in face.loops:
             co = loop.vert.co
@@ -238,122 +499,32 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_bucket_mesh(name, bevel_offset, bevel_segments):
+def build_bucket_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    short_staves=False,
+    float_handle=False,
+    round_band=False,
+    float_bottom=False,
+):
     bm = bmesh.new()
-    stave_verts = []
-    hoop_faces = set()
-    rope_faces = set()
+    gap_ang = GAP_M / max(R_TOP, 0.1)
+    spans = stave_spans(N_STAVES, gap_ang, STAVE_JITTER, STAVE_SEED)
+    z0 = SHORT_STAVES_LIFT if short_staves else 0.0
     try:
-        zs = [HEIGHT * i / (N_RINGS - 1) for i in range(N_RINGS)]
-        for i in range(N_STAVES):
-            a0 = 2.0 * math.pi * i / N_STAVES
-            a1 = 2.0 * math.pi * (i + 1.0 - STAVE_GAP) / N_STAVES
-            outer = []
-            inner = []
-            for z in zs:
-                r = radius_at(z)
-                ov = (
-                    bm.verts.new((r * math.cos(a0), r * math.sin(a0), z)),
-                    bm.verts.new((r * math.cos(a1), r * math.sin(a1), z)),
-                )
-                ri = r - STAVE_THICK
-                iv = (
-                    bm.verts.new((ri * math.cos(a0), ri * math.sin(a0), z)),
-                    bm.verts.new((ri * math.cos(a1), ri * math.sin(a1), z)),
-                )
-                outer.append(ov)
-                inner.append(iv)
-                stave_verts.extend(ov)
-                stave_verts.extend(iv)
-            for k in range(N_RINGS - 1):
-                o0a, o0b = outer[k]
-                o1a, o1b = outer[k + 1]
-                i0a, i0b = inner[k]
-                i1a, i1b = inner[k + 1]
-                for vs in (
-                    (o0a, o1a, o1b, o0b),
-                    (i0b, i1b, i1a, i0a),
-                    (o0a, i0a, i1a, o1a),
-                    (o0b, o1b, i1b, i0b),
-                ):
-                    face = bm.faces.new(vs)
-                    face.material_index = WOOD_IDX
-            # Rim only — no top lid. Interior stays open.
-            top = bm.faces.new((outer[-1][0], outer[-1][1], inner[-1][1], inner[-1][0]))
-            top.material_index = WOOD_IDX
-            bot = bm.faces.new((outer[0][1], outer[0][0], inner[0][0], inner[0][1]))
-            bot.material_index = WOOD_IDX
-
-        if bevel_offset > 0.0:
-            edges = list({e for v in stave_verts for e in v.link_edges})
-            bmesh.ops.bevel(
-                bm,
-                geom=edges,
-                offset=bevel_offset,
-                segments=bevel_segments,
-                profile=0.5,
-                affect="EDGES",
-                clamp_overlap=True,
-            )
-
-        # Bottom seated inside the hull so the basin actually holds.
-        add_cylinder(
-            bm,
-            (0.0, 0.0, BOTTOM_T / 2.0),
-            R_BOT - STAVE_THICK * 0.35,
-            BOTTOM_T,
-            16,
+        build_staves(bm, spans, z0, bevel_offset, bevel_segments)
+        bot_z0 = CHIME
+        bot_z1 = CHIME + BOTTOM_T
+        shrink = 0.022 if float_bottom else 0.0
+        add_polygon_disk(
+            bm, bot_z0, bot_z1,
+            croze_xy(spans, 0.5 * (bot_z0 + bot_z1), CROZE_BITE, shrink),
             WOOD_IDX,
         )
-
-        for z in HOOP_ZS:
-            before = set(bm.faces)
-            add_cylinder(
-                bm,
-                (0.0, 0.0, z),
-                radius_at(z) + HOOP_PAD,
-                HOOP_H,
-                20,
-                METAL_IDX,
-            )
-            hoop_faces.update(set(bm.faces) - before)
-
-        ear_x = R_TOP + 0.006
-        ear_z = HEIGHT - 0.018
-        for sign in (-1.0, 1.0):
-            before = set(bm.faces)
-            add_box(
-                bm,
-                (sign * ear_x, 0.0, ear_z),
-                (0.028, 0.036, 0.048),
-                METAL_IDX,
-            )
-            add_rim(
-                bm,
-                (sign * (ear_x + 0.006), 0.0, ear_z + 0.012),
-                0.016,
-                0.005,
-                METAL_IDX,
-                euler=(math.radians(90.0), 0.0, 0.0),
-            )
-            hoop_faces.update(set(bm.faces) - before)
-
-        bail_major = ear_x + 0.004
-        bail_pts = []
-        for i in range(BAIL_SEGS + 1):
-            t = math.pi * i / BAIL_SEGS
-            bail_pts.append(
-                (
-                    bail_major * math.cos(t),
-                    0.0,
-                    ear_z + 0.012 + bail_major * math.sin(t),
-                )
-            )
-        before = set(bm.faces)
-        for a, b in zip(bail_pts, bail_pts[1:]):
-            add_oriented_box(bm, a, b, (BAIL_R * 2.0, BAIL_R * 2.0), ROPE_IDX)
-        rope_faces.update(set(bm.faces) - before)
-
+        build_hoops(bm, spans, round_band)
+        add_ears_and_bail(bm, spans, float_handle)
+        triangulate_ngons(bm)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
@@ -363,12 +534,6 @@ def build_bucket_mesh(name, bevel_offset, bevel_segments):
             if edge.is_manifold and len(edge.link_faces) == 2:
                 if edge.calc_face_angle() > math.radians(35.0):
                     edge.smooth = False
-        for f in hoop_faces:
-            if f.is_valid:
-                f.material_index = METAL_IDX
-        for f in rope_faces:
-            if f.is_valid:
-                f.material_index = ROPE_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
@@ -379,32 +544,44 @@ def build_bucket_mesh(name, bevel_offset, bevel_segments):
     return obj
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
 
 
 def assign_slots(obj, wood, metal, rope):
     mats = obj.data.materials
-    if len(mats) == 0:
-        mats.append(wood)
-        mats.append(metal)
-        mats.append(rope)
-        return
-    mats[0] = wood
-    if len(mats) == 1:
-        mats.append(metal)
-    else:
-        mats[1] = metal
-    if len(mats) == 2:
-        mats.append(rope)
-    else:
-        mats[2] = rope
+    wanted = (wood, metal, rope)
+    for i, mat in enumerate(wanted):
+        if i < len(mats):
+            mats[i] = mat
+        else:
+            mats.append(mat)
 
 
 def world_bbox(obj):
@@ -413,6 +590,17 @@ def world_bbox(obj):
     ys = [c.y for c in corners]
     zs = [c.z for c in corners]
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+def face_area(me, poly):
+    verts = [me.vertices[i].co for i in poly.vertices]
+    if len(verts) < 3:
+        return 0.0
+    acc = Vector((0.0, 0.0, 0.0))
+    origin = verts[0]
+    for a, b in zip(verts[1:], verts[2:]):
+        acc += (a - origin).cross(b - origin)
+    return 0.5 * acc.length
 
 
 def uv_stats(mesh):
@@ -440,6 +628,239 @@ def uv_stats(mesh):
     return min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for p in me.polygons:
+        if all(i in member for i in p.vertices):
+            return p.material_index
+    return None
+
+
+def support_audit(me):
+    groups = shells(me)
+    staves = []
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dz = a[5] - a[2]
+        if dz > 0.20:
+            staves.append(a)
+    stave_z = min((a[2] for a in staves), default=99.0)
+    return {"staves": len(staves), "stave_z": stave_z}
+
+
+def hoop_seat(me, spans):
+    groups = shells(me)
+    bites = []
+    for g in groups:
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if dz > 0.06 or max(dx, dy) < 0.20:
+            continue
+        rs = [math.hypot(me.vertices[i].co.x, me.vertices[i].co.y) for i in g]
+        for i, r in zip(g, rs):
+            p = me.vertices[i].co
+            u = math.atan2(p.y, p.x)
+            host = host_outer_r(u, p.z, spans, False)
+            if r > host + 0.0005:
+                continue
+            bites.append(host - r)
+    if not bites:
+        return 0.05, 0.05
+    return min(bites), max(bites)
+
+
+def floor_gap(me):
+    groups = shells(me)
+    floors, staves = [], []
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dz = a[5] - a[2]
+        r = 0.25 * ((a[3] - a[0]) + (a[4] - a[1]))
+        if dz < 0.05 and r > 0.08:
+            floors.append(g)
+        elif dz > 0.20:
+            staves.append(g)
+    if not floors or not staves:
+        return 99.0
+    bm_s = bmesh.new()
+    try:
+        bm_s.from_mesh(me)
+        keep = set()
+        for g in staves:
+            keep.update(g)
+        drop = [f for f in bm_s.faces if not all(v.index in keep for v in f.verts)]
+        if drop:
+            bmesh.ops.delete(bm_s, geom=drop, context="FACES")
+        if not bm_s.faces:
+            return 99.0
+        tree = BVHTree.FromBMesh(bm_s)
+        worst = 0.0
+        for g in floors:
+            rmax = max(math.hypot(me.vertices[i].co.x, me.vertices[i].co.y) for i in g)
+            for i in g:
+                p = me.vertices[i].co
+                if math.hypot(p.x, p.y) < 0.90 * rmax:
+                    continue
+                loc, _n, _i, dist = tree.find_nearest(p)
+                if loc is None:
+                    continue
+                worst = max(worst, dist)
+        return worst
+    finally:
+        bm_s.free()
+
+
+def bail_join(me):
+    groups = shells(me)
+    rings, bails = [], []
+    for g in groups:
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        mat = mat_of(me, g)
+        if mat == METAL_IDX and max(dx, dy, dz) < 0.08 and a[2] > 0.25:
+            rings.append(g)
+        elif mat == ROPE_IDX:
+            bails.append(g)
+    if not rings or not bails:
+        return 99.0
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep = set()
+        for g in bails:
+            keep.update(g)
+        drop = [f for f in bm_b.faces if not all(v.index in keep for v in f.verts)]
+        if drop:
+            bmesh.ops.delete(bm_b, geom=drop, context="FACES")
+        if not bm_b.faces:
+            return 99.0
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 99.0
+        for g in rings:
+            for i in g:
+                p = me.vertices[i].co
+                loc, _n, _idx, dist = tree.find_nearest(p)
+                if loc is None:
+                    continue
+                best = min(best, dist)
+        return best
+    finally:
+        bm_b.free()
+
+
+def body_plan(me):
+    groups = shells(me)
+    xs, ys, z0s, z1s = [], [], [], []
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        if a[5] - a[2] < 0.20:
+            continue
+        xs.extend((a[0], a[3]))
+        ys.extend((a[1], a[4]))
+        z0s.append(a[2])
+        z1s.append(a[5])
+    if not xs:
+        return 0.0, 0.0
+    dia = 0.5 * ((max(xs) - min(xs)) + (max(ys) - min(ys)))
+    return dia, max(z1s) - min(z0s)
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, HEIGHT * 0.5))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
 def make_lod(obj, name, ratio, skip_decimate):
     mesh = obj.data.copy()
     lod = bpy.data.objects.new(name, mesh)
@@ -453,7 +874,6 @@ def make_lod(obj, name, ratio, skip_decimate):
 
 
 def convex_hull_collider(obj, name):
-    # Duplicated from snippets/convex_hull_collider.py (not a package).
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -465,6 +885,14 @@ def convex_hull_collider(obj, name):
             bmesh.ops.delete(bm, geom=interior, context="VERTS")
         if unused:
             bmesh.ops.delete(bm, geom=unused, context="VERTS")
+        bmesh.ops.dissolve_limit(
+            bm,
+            angle_limit=math.radians(10.0),
+            verts=list(bm.verts),
+            edges=list(bm.edges),
+            delimit={"NORMAL"},
+        )
+        bmesh.ops.triangulate(bm, faces=list(bm.faces))
         bm.to_mesh(mesh)
         mesh.update()
     finally:
@@ -476,7 +904,6 @@ def convex_hull_collider(obj, name):
 
 
 def setup_bake_image(obj, target_mat, size=BAKE_RES):
-    # Adapted from snippets/setup_bake_target_image.py — do not replace slots.
     if not obj.data.uv_layers:
         return None, None
     img = bpy.data.images.new("BucketNrm", size, size, alpha=True, float_buffer=False)
@@ -491,7 +918,6 @@ def setup_bake_image(obj, target_mat, size=BAKE_RES):
 
 
 def bake_normal(high, low):
-    # Duplicated from snippets/bake_normal_high_to_low.py (not a package).
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
@@ -516,7 +942,6 @@ def bake_normal(high, low):
 
 
 def export_unity(path, objects):
-    # Duplicated from snippets/export_preset_unity.py (not a package).
     for ob in bpy.context.view_layer.objects:
         ob.select_set(False)
     for ob in objects:
@@ -532,19 +957,50 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    short_staves=False,
+    float_handle=False,
+    round_band=False,
+    float_bottom=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_bucket_mesh("BucketLow", bevel_offset=0.003, bevel_segments=2)
-    high = build_bucket_mesh("BucketHigh", bevel_offset=0.003, bevel_segments=4)
-    wood = principled("BucketWood", (0.46, 0.24, 0.09, 1.0), 0.0, 0.52)
-    metal = principled("BucketMetal", (0.58, 0.56, 0.52, 1.0), 1.0, 0.24)
-    rope = principled("BucketRope", (0.42, 0.32, 0.18, 1.0), 0.0, 0.78)
+    flags = dict(
+        short_staves=short_staves,
+        float_handle=float_handle,
+        round_band=round_band,
+        float_bottom=float_bottom,
+    )
+    low = build_bucket_mesh("BucketLow", 0.003, 2, **flags)
+    high = build_bucket_mesh("BucketHigh", 0.003, 4, **flags)
+    wood = principled(
+        "BucketWood", (0.46, 0.24, 0.09, 1.0), 0.0, 0.52,
+        noise_scale=7.0, wear=(0.28, 0.14, 0.05, 1.0),
+    )
+    metal = principled(
+        "BucketHoop", (0.55, 0.53, 0.50, 1.0), 1.0, 0.28,
+        noise_scale=5.0, wear=(0.35, 0.32, 0.28, 1.0),
+    )
+    rope = principled(
+        "BucketRope", (0.42, 0.32, 0.18, 1.0), 0.0, 0.72,
+        noise_scale=9.0, wear=(0.30, 0.22, 0.12, 1.0),
+    )
     assign_slots(low, wood, metal, rope)
     assign_slots(high, wood, metal, rope)
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("bucket mesh did not build", 3), None, None, None, None, None
 
+    spans = stave_spans(N_STAVES, GAP_M / max(R_TOP, 0.1), STAVE_JITTER, STAVE_SEED)
     base_tris = triangle_count(low.data)
     mats = [s for s in low.data.materials if s is not None]
     nmat = len(mats)
@@ -558,6 +1014,23 @@ def check(skip_decimate):
     size_x = bb[3] - bb[0]
     size_y = bb[4] - bb[1]
     size_z = bb[5] - bb[2]
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    bite_min, bite_max = hoop_seat(low.data, spans)
+    bjoin = bail_join(low.data)
+    fgap = floor_gap(low.data)
+    dia, ht = body_plan(low.data)
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured staves={sup['staves']} stave_z={sup['stave_z']:.5f} "
+        f"hoop_bite={bite_min:.5f}..{bite_max:.5f} bail_join={bjoin:.5f} "
+        f"floor_gap={fgap:.5f} body={dia:.4f}x{ht:.4f}"
+    )
 
     img, tex = setup_bake_image(low, wood)
     if img is None:
@@ -572,7 +1045,7 @@ def check(skip_decimate):
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_bucket_mesh("BucketColSrc", bevel_offset=0.0, bevel_segments=1)
+    collider_src = build_bucket_mesh("BucketColSrc", 0.0, 1)
     collider = convex_hull_collider(collider_src, "BucketCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -586,9 +1059,7 @@ def check(skip_decimate):
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
 
-    print(
-        f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}"
-    )
+    print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
         f"measured base_tris={base_tris} lod1_tris={lod1_tris} "
         f"lod2_tris={lod2_tris} r1={r1:.4f} r2={r2:.4f}"
@@ -614,6 +1085,11 @@ def check(skip_decimate):
     if nmat != MATERIAL_COUNT or distinct_mats != MATERIAL_COUNT:
         return fail(
             f"material slots {nmat} distinct {distinct_mats} != {MATERIAL_COUNT}",
+            5,
+        ), None, None, None, None, None
+    if idx_counts.get(WOOD_IDX, 0) < WOOD_FACES_MIN:
+        return fail(
+            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
             5,
         ), None, None, None, None, None
     if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
@@ -669,6 +1145,58 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"]
+        or hyg["loose_e"]
+        or hyg["nonman"]
+        or hyg["zero_area"]
+        or hyg["doubles"]
+        or hyg["ngons"]
+        or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf} "
+            "(--stray-vert is the designed fail)",
+            15,
+        ), None, None, None, None, None
+    if abs(bb[2]) > ZMIN_EPS:
+        return fail(
+            f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
+            "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if sup["staves"] != STAVE_COUNT or sup["stave_z"] > STAVE_ZMIN_MAX:
+        return fail(
+            f"named staves {sup['staves']} z={sup['stave_z']:.5f} "
+            "(--short-staves is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if bjoin > BAIL_GAP_MAX:
+        return fail(
+            f"bail-ear gap {bjoin:.5f} > {BAIL_GAP_MAX} "
+            "(--float-handle is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if fgap > FLOOR_GAP_MAX:
+        return fail(
+            f"floor-croze gap {fgap:.5f} > {FLOOR_GAP_MAX} "
+            "(--float-bottom is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if bite_min < HOOP_BITE_MIN or bite_max > HOOP_BITE_MAX:
+        return fail(
+            f"hoop bite {bite_min:.5f}..{bite_max:.5f} "
+            f"outside [{HOOP_BITE_MIN}, {HOOP_BITE_MAX}] "
+            "(--round-band is the designed fail)",
+            18,
+        ), None, None, None, None, None
+    if abs(dia - BODY_DIA) > BODY_TOL or abs(ht - BODY_H) > BODY_TOL:
+        return fail(
+            f"body plan {dia:.4f}x{ht:.4f} off {BODY_DIA}x{BODY_H}",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -681,15 +1209,13 @@ def wire_normal(mat, tex):
     nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
-def render_still(low, wood, tex, path, engine):
+def render_still(low, wood, _tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(wood, tex)
     for ob in list(scene.objects):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
             ob.hide_viewport = True
 
-    # Three-quarter from above so the open basin and bottom read.
     low.rotation_euler.z = math.radians(-38.0)
     low.rotation_euler.x = math.radians(8.0)
 
@@ -737,10 +1263,10 @@ def render_still(low, wood, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.05, -1.42, 1.12)
+    cam.location = (0.94, -1.28, 1.16)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.30)
+    aim.location = (0.0, 0.0, 0.28)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -783,14 +1309,24 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--short-staves", action="store_true")
+    p.add_argument("--float-handle", action="store_true")
+    p.add_argument("--float-bottom", action="store_true")
+    p.add_argument("--round-band", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_staves=args.short_staves,
+        float_handle=args.float_handle,
+        round_band=args.round_band,
+        float_bottom=args.float_bottom,
+    )
     if code:
         return code
     if args.output:
