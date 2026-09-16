@@ -43,6 +43,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   characteristic 2 — that is a single-shell contract. Pairs of parts
   meant to touch assert a BVH surface gap below a named epsilon
   (vert-vert is the wrong metric for thin straps and collars).
+- **Material face floors.** Every declared material asserts a named
+  minimum face count on the finished mesh, recomputed from
+  `polygon.material_index`. This catches the slot-assignment wipe class:
+  `obj.data.materials.clear()` resets every polygon's `material_index`
+  to 0 on some versions, which renders the piece single-material while
+  the slot count still passes. Assign slots by index-preserving
+  append/replace, never clear-and-rebuild.
 - **Exit codes** are file-local: `0` success, argparse `2`, `3` and above
   in check order. `9` is legal. FATAL `sys.exit(1)` is a crash, never a
   named check.
