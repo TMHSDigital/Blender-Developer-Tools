@@ -253,28 +253,42 @@
       <img src="../assets/shipping-crate-hero.webp" alt="shipping-crate render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 624 tris, two materials with 132 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.352×0.856×0.748 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 36 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2508 tris, two materials with 1170 wood and 280 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.146×0.726×0.612 m, grounded zmin, 3 skids, handle-end and slat-post join 0, mesh hygiene all zero, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 76 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-skids 16; --float-handle 17; --omit-slats 18.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/shipping-crate/shipping_crate.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural crate (beveled body, arrayed slats, iron corner brackets and end handles, two materials) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural crate (skids under the posts, corner posts with tenoned slats and seeded width jitter, bottom sills, L-straps, filleted iron bail handles through mounting plates) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>Skids sit under the posts so the outer corner is a mortise, not a cave. Handle bails use quarter-circle corners so a 90-degree loft cannot sit the bar on the plate.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 580–680 | 624 / 624 / 624 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.4455 | | LOD2 ratio | 0.10–0.35 of base | 0.2179 / 0.2179 / 0.1571 | | Materials | exactly 2 distinct, ≥24 metal faces | 2 slots, 180 wood, 132 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.352, 0.856, 0.748) m ± 0.01 | (1.3520, 0.8560, 0.7480), zmin 0 | | Collider tris | ≤ 48 | 36 | | Export | written, size &gt; 0 | 50148 / 50148 / 50140 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1200–2800 | 2508 / 2508 / 2508 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2193 / 0.2193 / 0.2057 | | Materials | exactly 2 distinct; ≥200 wood, ≥48 metal faces | 2 slots; 1170 / 280 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.146, 0.726, 0.612) m ± 0.015 | (1.1460, 0.7260, 0.6120), zmin 0 | | Collider tris | ≤ 220 | 76 | | Export | written, size &gt; 0 | 197408 / 197408 / 197392 bytes |</p>
+<p>Base triangles rose from <strong>624 to 2508</strong> in the quality pass: the old beveled cube with glued-on slats became a post-and-slat crate with tenons, sills, L-straps, and pipe handles.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Slat-width jitter uses fixed seed 17. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<h3>Hygiene</h3>
+<p>Recomputed from the generated mesh, not asserted about the script.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Named supports: 3 skids | each <code>zmin</code> ≤ 1e-3 | 3, skid_z 0.00000 | | Body plan | 1.056 × 0.716 m ± 0.05 | 1.0560 × 0.7160 |</p>
+<h3>Joint fit and seat</h3>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Handle-end BVH gap | ≤ 0.008 m | 0.00000 | | Slat-post BVH gap | ≤ 0.006 m | 0.00000 |</p>
+<h3>Falsifiers</h3>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--short-skids</code> | named skid supports at Z=0 | 16 | | <code>--float-handle</code> | handle-end gap | 17 | | <code>--omit-slats</code> | slat-post seat | 18 |</p>
 <h2>Run</h2>
 <pre><code>blender --background --python shipping_crate.py --
 blender --background --python shipping_crate.py -- --skip-decimate
+blender --background --python shipping_crate.py -- --stray-vert
+blender --background --python shipping_crate.py -- --lift-z
+blender --background --python shipping_crate.py -- --short-skids
+blender --background --python shipping_crate.py -- --float-handle
+blender --background --python shipping_crate.py -- --omit-slats
 blender --background --python shipping_crate.py -- --output crate.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0, or a named skid floats | | 17 | Joint fit: handle-end gap | | 18 | Seat: slat-post gap | | 19 | Body plan off the stated real-world size |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -284,15 +298,24 @@ blender --background --python shipping_crate.py -- --output crate.png</code></pr
       </div>
       <pre><span class="s">&quot;&quot;&quot;Game-ready shipping crate — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural crate after composing shipped
-pipeline pieces: bmesh construction, UVs, two materials, high-to-low
-normal bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a procedural crate (skids, corner posts,
+tenoned slats with seeded width jitter, L-straps, iron bail handles)
+after composing shipped pipeline pieces: bmesh construction, UVs, two
+materials, high-to-low normal bake, LOD chain, convex collider, Unity
+glTF export.
+
+The old piece was a solid beveled cube with identical slats glued on
+and three overlapping cubes per corner that left window-holes through
+the iron.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-skids`` named skid
+supports, ``--float-handle`` handle-to-end joint-fit, ``--omit-slats``
+slat-to-post seat.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Fixed seed 17 for slat-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -303,6 +326,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -310,10 +334,8 @@ ratio band, not an exact count.
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
-<span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
-<span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
-<span class="c"># resolve the repo root so we do not move gallery_framing.py.</span>
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -321,18 +343,33 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-<span class="c"># Body size (meters), sitting on z=0. Side slats sit proud on ±Y; lid</span>
-<span class="c"># slats sit proud on +Z. Iron handles sit proud on ±X. OUTER_SIZE is</span>
-<span class="c"># fitted after locking geometry against the measured world bbox.</span>
-BODY_SIZE = (<span class="n">1.20</span>, <span class="n">0.80</span>, <span class="n">0.72</span>)
-SLAT_THICK = <span class="n">0.028</span>
-OUTER_SIZE = (<span class="n">1.352</span>, <span class="n">0.856</span>, <span class="n">0.748</span>)
-BBOX_TOL = <span class="n">0.01</span>
+<span class="c"># A chest-sized shipping crate, ~96 × 62 × 58 cm inner, sitting on</span>
+<span class="c"># three skids. Outer AABB includes the proud L-straps and handles.</span>
+INNER = (<span class="n">0.96</span>, <span class="n">0.62</span>, <span class="n">0.52</span>)
+POST = <span class="n">0.048</span>
+SKID_H = <span class="n">0.036</span>
+SKID_W = <span class="n">0.058</span>
+SLAT_T = <span class="n">0.016</span>
+RAIL_H = <span class="n">0.040</span>
+TENON = <span class="n">0.010</span>
+IRON_T = <span class="n">0.004</span>
+IRON_WRAP = <span class="n">0.072</span>
+HANDLE_OUT = <span class="n">0.038</span>
+HANDLE_R = <span class="n">0.007</span>
+N_FLOOR = <span class="n">6</span>
+N_LID = <span class="n">6</span>
+N_LONG = <span class="n">5</span>
+N_END = <span class="n">4</span>
+SLAT_SEED = <span class="n">17</span>
+SLAT_JITTER = <span class="n">0.045</span>
 
-<span class="c"># Measured after locking geometry. DECIMATE COLLAPSE ratios diverge</span>
-<span class="c"># across series — bands, not exact counts.</span>
-BASE_TRIS_MIN = <span class="n">580</span>
-BASE_TRIS_MAX = <span class="n">680</span>
+BBOX_TOL = <span class="n">0.015</span>
+OUTER_SIZE = (<span class="n">1.146</span>, <span class="n">0.726</span>, <span class="n">0.612</span>)
+BODY_X, BODY_Y, BODY_Z = <span class="n">1.056</span>, <span class="n">0.716</span>, <span class="n">0.576</span>
+BODY_TOL = <span class="n">0.05</span>
+
+BASE_TRIS_MIN = <span class="n">1200</span>
+BASE_TRIS_MAX = <span class="n">2800</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -342,21 +379,31 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">48</span>
+COLLIDER_TRIS_MAX = <span class="n">220</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
-METAL_FACES_MIN = <span class="n">24</span>
+METAL_FACES_MIN = <span class="n">48</span>
+WOOD_FACES_MIN = <span class="n">200</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.999</span>
+LIFT_Z = <span class="n">0.05</span>
+SKID_Z_MAX = <span class="n">1e-3</span>
+HANDLE_JOIN = <span class="n">0.008</span>
+SLAT_JOIN = <span class="n">0.006</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> eevee_engine_id():
-    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">4</span>, <span class="n">2</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span>
 
 
 <span class="k">def</span> fail(msg, code):
-    print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
     <span class="k">return</span> code
 
 
@@ -366,18 +413,17 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> evaluated_triangle_count(obj):
-    <span class="c"># Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).</span>
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-    eval_obj = obj.evaluated_get(depsgraph)
-    eval_mesh = eval_obj.to_mesh()
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
     <span class="k">try</span>:
-        eval_mesh.calc_loop_triangles()
-        <span class="k">return</span> len(eval_mesh.loop_triangles)
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
     <span class="k">finally</span>:
-        eval_obj.to_mesh_clear()
+        ev.to_mesh_clear()
 
 
-<span class="k">def</span> add_cube(bm, loc, scale, mat_idx):
+<span class="k">def</span> add_box(bm, loc, scale, mat_idx):
     geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
     verts = geo[<span class="s">&quot;verts&quot;</span>]
     <span class="k">for</span> v <span class="k">in</span> verts:
@@ -388,6 +434,96 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
     <span class="k">return</span> verts
+
+
+<span class="k">def</span> _bridge_rings(bm, a, b, mat_idx):
+    segs = len(a)
+    <span class="k">for</span> k <span class="k">in</span> range(segs):
+        kn = (k + <span class="n">1</span>) % segs
+        face = bm.faces.new((a[k], a[kn], b[kn], b[k]))
+        face.material_index = mat_idx
+
+
+<span class="k">def</span> loft_rings(bm, rings, mat_idx, cap_start=<span class="k">True</span>, cap_end=<span class="k">True</span>):
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+    n = len(rings)
+    <span class="k">for</span> i <span class="k">in</span> range(n - <span class="n">1</span>):
+        _bridge_rings(bm, rings[i], rings[i + <span class="n">1</span>], mat_idx)
+    <span class="k">if</span> cap_start <span class="k">and</span> len(rings[<span class="n">0</span>]) &gt; <span class="n">1</span>:
+        ring = rings[<span class="n">0</span>]
+        c = bm.verts.new(sum((v.co <span class="k">for</span> v <span class="k">in</span> ring), Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))) / len(ring))
+        verts.append(c)
+        <span class="k">for</span> k <span class="k">in</span> range(len(ring)):
+            kn = (k + <span class="n">1</span>) % len(ring)
+            face = bm.faces.new((c, ring[kn], ring[k]))
+            face.material_index = mat_idx
+    <span class="k">if</span> cap_end <span class="k">and</span> len(rings[-<span class="n">1</span>]) &gt; <span class="n">1</span>:
+        ring = rings[-<span class="n">1</span>]
+        c = bm.verts.new(sum((v.co <span class="k">for</span> v <span class="k">in</span> ring), Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))) / len(ring))
+        verts.append(c)
+        <span class="k">for</span> k <span class="k">in</span> range(len(ring)):
+            kn = (k + <span class="n">1</span>) % len(ring)
+            face = bm.faces.new((c, ring[k], ring[kn]))
+            face.material_index = mat_idx
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_pipe_curve(bm, points, radius, segs, mat_idx):
+    rings = []
+    n = len(points)
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(points):
+        p = Vector(p)
+        <span class="k">if</span> i &lt; n - <span class="n">1</span>:
+            tangent = (Vector(points[i + <span class="n">1</span>]) - p).normalized()
+        <span class="k">else</span>:
+            tangent = (p - Vector(points[i - <span class="n">1</span>])).normalized()
+        side = Vector((-tangent.y, tangent.x, <span class="n">0.0</span>))
+        <span class="k">if</span> side.length &lt; <span class="n">1e-6</span>:
+            side = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        <span class="k">else</span>:
+            side.normalize()
+        up = tangent.cross(side).normalized()
+        ring = []
+        <span class="k">for</span> k <span class="k">in</span> range(segs):
+            a = <span class="n">2.0</span> * math.pi * k / segs
+            ring.append(
+                bm.verts.new(
+                    p + side * (radius * math.cos(a)) + up * (radius * math.sin(a))
+                )
+            )
+        rings.append(ring)
+    <span class="k">return</span> loft_rings(bm, rings, mat_idx, cap_start=<span class="k">True</span>, cap_end=<span class="k">True</span>)
+
+
+<span class="k">def</span> add_handle_bail(bm, x_in, x_out, y0, y1, z, radius, segs, mat_idx):
+    <span class="s">&quot;&quot;&quot;U-bail with quarter-circle corners so the loft stays on the tube.
+
+    A four-point polyline puts a 90-degree tangent jump at each outer
+    corner; the ring there orients to the next span and the bar sits on
+    the mounting plate instead of entering it.
+    &quot;&quot;&quot;</span>
+    sign_x = <span class="n">1.0</span> <span class="k">if</span> x_out &gt; x_in <span class="k">else</span> -<span class="n">1.0</span>
+    sign_y = <span class="n">1.0</span> <span class="k">if</span> y1 &gt; y0 <span class="k">else</span> -<span class="n">1.0</span>
+    rad = min(<span class="n">0.014</span>, abs(x_out - x_in) * <span class="n">0.40</span>, abs(y1 - y0) * <span class="n">0.20</span>)
+    pts = [
+        Vector((x_in, y0, z)),
+        Vector((x_out - sign_x * rad, y0, z)),
+    ]
+    c1 = Vector((x_out - sign_x * rad, y0 + sign_y * rad, z))
+    s1 = Vector((<span class="n">0.0</span>, -sign_y * rad, <span class="n">0.0</span>))
+    e1 = Vector((sign_x * rad, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, <span class="n">5</span>):
+        a = (math.pi / <span class="n">2.0</span>) * i / <span class="n">4.0</span>
+        pts.append(c1 + s1 * math.cos(a) + e1 * math.sin(a))
+    pts.append(Vector((x_out, y1 - sign_y * rad, z)))
+    c2 = Vector((x_out - sign_x * rad, y1 - sign_y * rad, z))
+    s2 = Vector((sign_x * rad, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    e2 = Vector((<span class="n">0.0</span>, sign_y * rad, <span class="n">0.0</span>))
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, <span class="n">5</span>):
+        a = (math.pi / <span class="n">2.0</span>) * i / <span class="n">4.0</span>
+        pts.append(c2 + s2 * math.cos(a) + e2 * math.sin(a))
+    pts.append(Vector((x_in, y1, z)))
+    add_pipe_curve(bm, pts, radius, segs, mat_idx)
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -406,9 +542,7 @@ METAL_IDX = <span class="n">1</span>
         col = i % cols
         row = i // cols
         nrm = face.normal
-        ax = abs(nrm.x)
-        ay = abs(nrm.y)
-        az = abs(nrm.z)
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
         coords = []
         <span class="k">for</span> loop <span class="k">in</span> face.loops:
             co = loop.vert.co
@@ -433,109 +567,227 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> build_crate_mesh(name, bevel_offset, bevel_segments):
-    sx, sy, sz = BODY_SIZE
-    slat_h = SLAT_THICK
+<span class="k">def</span> _span_layout(count, span, rng):
+    <span class="s">&quot;&quot;&quot;Uneven slat widths that still fill `span` with named gaps.&quot;&quot;&quot;</span>
+    raw = [<span class="n">1.0</span> + rng.uniform(-SLAT_JITTER, SLAT_JITTER) <span class="k">for</span> _ <span class="k">in</span> range(count)]
+    s = sum(raw)
+    gap = <span class="n">0.010</span>
+    usable = span - gap * (count + <span class="n">1</span>)
+    widths = [usable * r / s <span class="k">for</span> r <span class="k">in</span> raw]
+    pos = -span / <span class="n">2.0</span> + gap
+    centres = []
+    <span class="k">for</span> w <span class="k">in</span> widths:
+        centres.append(pos + w / <span class="n">2.0</span>)
+        pos += w + gap
+    <span class="k">return</span> centres, widths
+
+
+<span class="k">def</span> build_crate_mesh(
+    name,
+    short_skids=<span class="k">False</span>,
+    float_handle=<span class="k">False</span>,
+    omit_slats=<span class="k">False</span>,
+):
+    ix, iy, iz = INNER
+    hx = ix / <span class="n">2.0</span> + POST / <span class="n">2.0</span>
+    hy = iy / <span class="n">2.0</span> + POST / <span class="n">2.0</span>
+    post_h = iz + RAIL_H
+    top_z = SKID_H + post_h
+    rng = random.Random(SLAT_SEED)
     bm = bmesh.new()
+    wood_verts = []
     <span class="k">try</span>:
-        body = add_cube(
-            bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, sz / <span class="n">2.0</span>), (sx, sy, sz), WOOD_IDX,
-        )
-        body_edges = list({e <span class="k">for</span> v <span class="k">in</span> body <span class="k">for</span> e <span class="k">in</span> v.link_edges})
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            bmesh.ops.bevel(
-                bm,
-                geom=body_edges,
-                offset=bevel_offset,
-                segments=bevel_segments,
-                profile=<span class="n">0.5</span>,
-                affect=<span class="s">&quot;EDGES&quot;</span>,
-                clamp_overlap=<span class="k">True</span>,
-            )
-
-        slat_w = <span class="n">0.118</span>
-        n_lid = <span class="n">5</span>
-        gap = (sy - <span class="n">0.04</span> - n_lid * slat_w) / (n_lid + <span class="n">1</span>)
-        y0 = -sy / <span class="n">2.0</span> + <span class="n">0.02</span> + gap + slat_w / <span class="n">2.0</span>
-        <span class="k">for</span> i <span class="k">in</span> range(n_lid):
-            y = y0 + i * (slat_w + gap)
-            add_cube(
-                bm,
-                (<span class="n">0.0</span>, y, sz + slat_h / <span class="n">2.0</span>),
-                (sx - <span class="n">0.06</span>, slat_w, slat_h),
-                WOOD_IDX,
-            )
-
-        n_side = <span class="n">4</span>
-        side_h = <span class="n">0.095</span>
-        z0 = <span class="n">0.08</span> + side_h / <span class="n">2.0</span>
-        z_step = (sz - <span class="n">0.16</span> - side_h) / (n_side - <span class="n">1</span>)
-        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            <span class="k">for</span> i <span class="k">in</span> range(n_side):
-                z = z0 + i * z_step
-                add_cube(
+        skid_z0 = <span class="n">0.055</span> <span class="k">if</span> short_skids <span class="k">else</span> <span class="n">0.0</span>
+        <span class="k">if</span> short_skids:
+            geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+            <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
+                v.co.x *= <span class="n">0.024</span>
+                v.co.y *= <span class="n">0.024</span>
+                v.co.z *= <span class="n">0.006</span>
+                v.co.z += <span class="n">0.003</span>
+            <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+                f.material_index = WOOD_IDX
+        <span class="c"># Skids sit under the posts, not inset at the inner wall line —</span>
+        <span class="c"># that left a cave at the outer corner.</span>
+        skid_ys = (-hy, <span class="n">0.0</span>, hy)
+        <span class="k">for</span> sy <span class="k">in</span> skid_ys:
+            wood_verts.extend(
+                add_box(
                     bm,
-                    (<span class="n">0.0</span>, sign * (sy / <span class="n">2.0</span> + slat_h / <span class="n">2.0</span>), z),
-                    (sx - <span class="n">0.10</span>, slat_h, side_h),
+                    (<span class="n">0.0</span>, sy, skid_z0 + SKID_H / <span class="n">2.0</span>),
+                    (ix + <span class="n">2.0</span> * POST, SKID_W, SKID_H),
                     WOOD_IDX,
                 )
-                add_cube(
-                    bm,
-                    (sign * (sx / <span class="n">2.0</span> + slat_h / <span class="n">2.0</span>), <span class="n">0.0</span>, z),
-                    (slat_h, sy - <span class="n">0.10</span>, side_h),
-                    WOOD_IDX,
-                )
-
-        plate = <span class="n">0.18</span>
-        thick = <span class="n">0.028</span>
-        hx = sx / <span class="n">2.0</span> + slat_h
-        hy = sy / <span class="n">2.0</span> + slat_h
-        hz = sz
+            )
         <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                <span class="k">for</span> szt <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">1.0</span>):
-                    zc = thick / <span class="n">2.0</span> <span class="k">if</span> szt == <span class="n">0.0</span> <span class="k">else</span> hz - thick / <span class="n">2.0</span>
-                    add_cube(
+                wood_verts.extend(
+                    add_box(
                         bm,
-                        (sxn * (hx - plate / <span class="n">2.0</span>), syn * (hy - plate / <span class="n">2.0</span>), zc),
-                        (plate, plate, thick),
-                        METAL_IDX,
+                        (sxn * hx, syn * hy, SKID_H - TENON + (post_h + TENON) / <span class="n">2.0</span>),
+                        (POST, POST, post_h + TENON),
+                        WOOD_IDX,
                     )
-                z_bar = hz / <span class="n">2.0</span>
-                add_cube(
+                )
+        <span class="c"># Top rails tenon into the posts — overlapping, not sharing a plane.</span>
+        wood_verts.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, hy, top_z - RAIL_H / <span class="n">2.0</span>),
+                (ix + <span class="n">2.0</span> * TENON, POST, RAIL_H), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, -hy, top_z - RAIL_H / <span class="n">2.0</span>),
+                (ix + <span class="n">2.0</span> * TENON, POST, RAIL_H), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (hx, <span class="n">0.0</span>, top_z - RAIL_H / <span class="n">2.0</span>),
+                (POST, iy + <span class="n">2.0</span> * TENON, RAIL_H), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (-hx, <span class="n">0.0</span>, top_z - RAIL_H / <span class="n">2.0</span>),
+                (POST, iy + <span class="n">2.0</span> * TENON, RAIL_H), WOOD_IDX,
+            )
+        )
+        <span class="c"># Bottom sill tenons into the skid so the shared z=SKID_H plane</span>
+        <span class="c"># is not two coplanar faces (z-fight).</span>
+        sill_h = RAIL_H + TENON
+        sill_z = SKID_H - TENON + sill_h / <span class="n">2.0</span>
+        wood_verts.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, hy, sill_z),
+                (ix + <span class="n">2.0</span> * TENON, POST, sill_h), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (<span class="n">0.0</span>, -hy, sill_z),
+                (ix + <span class="n">2.0</span> * TENON, POST, sill_h), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (hx, <span class="n">0.0</span>, sill_z),
+                (POST, iy + <span class="n">2.0</span> * TENON, sill_h), WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm, (-hx, <span class="n">0.0</span>, sill_z),
+                (POST, iy + <span class="n">2.0</span> * TENON, sill_h), WOOD_IDX,
+            )
+        )
+
+        floor_c, floor_w = _span_layout(N_FLOOR, ix, rng)
+        <span class="k">for</span> c, w <span class="k">in</span> zip(floor_c, floor_w):
+            wood_verts.extend(
+                add_box(
                     bm,
-                    (sxn * (hx - thick / <span class="n">2.0</span>), syn * (hy - plate / <span class="n">2.0</span>), z_bar),
-                    (thick, plate, hz - <span class="n">2.0</span> * thick),
+                    (c, <span class="n">0.0</span>, SKID_H + SLAT_T / <span class="n">2.0</span>),
+                    (w, iy + TENON, SLAT_T),
+                    WOOD_IDX,
+                )
+            )
+        lid_c, lid_w = _span_layout(N_LID, ix + POST * <span class="n">0.5</span>, rng)
+        <span class="k">for</span> c, w <span class="k">in</span> zip(lid_c, lid_w):
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (c, <span class="n">0.0</span>, top_z + SLAT_T / <span class="n">2.0</span>),
+                    (w, iy + POST, SLAT_T),
+                    WOOD_IDX,
+                )
+            )
+
+        <span class="k">if</span> <span class="k">not</span> omit_slats:
+            long_c, long_w = _span_layout(N_LONG, iz - <span class="n">0.04</span>, rng)
+            <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                y = sign * (iy / <span class="n">2.0</span> + POST - SLAT_T / <span class="n">2.0</span> - <span class="n">0.001</span>)
+                <span class="k">for</span> c, w <span class="k">in</span> zip(long_c, long_w):
+                    wood_verts.extend(
+                        add_box(
+                            bm,
+                            (<span class="n">0.0</span>, y, SKID_H + <span class="n">0.02</span> + iz / <span class="n">2.0</span> + c),
+                            (ix + TENON, SLAT_T, w),
+                            WOOD_IDX,
+                        )
+                    )
+        end_c, end_w = _span_layout(N_END, iz - <span class="n">0.04</span>, rng)
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            x = sign * (ix / <span class="n">2.0</span> + POST - SLAT_T / <span class="n">2.0</span> - <span class="n">0.001</span>)
+            <span class="k">for</span> c, w <span class="k">in</span> zip(end_c, end_w):
+                wood_verts.extend(
+                    add_box(
+                        bm,
+                        (x, <span class="n">0.0</span>, SKID_H + <span class="n">0.02</span> + iz / <span class="n">2.0</span> + c),
+                        (SLAT_T, iy + TENON, w),
+                        WOOD_IDX,
+                    )
+                )
+
+        <span class="k">if</span> wood_verts:
+            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            <span class="k">if</span> edges:
+                bmesh.ops.bevel(
+                    bm,
+                    geom=edges,
+                    offset=<span class="n">0.002</span>,
+                    segments=<span class="n">1</span>,
+                    profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&quot;EDGES&quot;</span>,
+                    clamp_overlap=<span class="k">True</span>,
+                )
+
+        <span class="c"># L-straps: two plates meeting at a vertical edge, proud of the</span>
+        <span class="c"># post. Not three overlapping cubes — those leave window holes.</span>
+        wrap = IRON_WRAP
+        strap_z0 = <span class="n">0.006</span>
+        strap_h = top_z - strap_z0
+        zc = strap_z0 + strap_h / <span class="n">2.0</span>
+        <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                ox = sxn * (hx + POST / <span class="n">2.0</span> + IRON_T / <span class="n">2.0</span>)
+                oy = syn * (hy + POST / <span class="n">2.0</span> + IRON_T / <span class="n">2.0</span>)
+                add_box(
+                    bm,
+                    (ox, syn * (hy + POST / <span class="n">2.0</span> - wrap / <span class="n">2.0</span> + IRON_T / <span class="n">2.0</span>), zc),
+                    (IRON_T, wrap, strap_h),
                     METAL_IDX,
                 )
-                add_cube(
+                add_box(
                     bm,
-                    (sxn * (hx - plate / <span class="n">2.0</span>), syn * (hy - thick / <span class="n">2.0</span>), z_bar),
-                    (plate, thick, hz - <span class="n">2.0</span> * thick),
+                    (sxn * (hx + POST / <span class="n">2.0</span> - wrap / <span class="n">2.0</span> + IRON_T / <span class="n">2.0</span>), oy, zc),
+                    (wrap - IRON_T, IRON_T, strap_h),
                     METAL_IDX,
                 )
 
-        handle_out = <span class="n">0.038</span>
+        hz = SKID_H + post_h * <span class="n">0.52</span>
         <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            hx_bar = sxn * (hx + handle_out)
-            add_cube(
-                bm,
-                (hx_bar, -<span class="n">0.12</span>, sz * <span class="n">0.48</span>),
-                (<span class="n">0.020</span>, <span class="n">0.020</span>, <span class="n">0.12</span>),
-                METAL_IDX,
+            x_plate = sxn * (ix / <span class="n">2.0</span> + POST - SLAT_T / <span class="n">2.0</span>)
+            x_in = sxn * (ix / <span class="n">2.0</span> + POST - SLAT_T - <span class="n">0.008</span>)
+            x_out = sxn * (ix / <span class="n">2.0</span> + POST + HANDLE_OUT)
+            y0, y1 = -<span class="n">0.11</span>, <span class="n">0.11</span>
+            add_box(
+                bm, (x_plate, y0, hz),
+                (SLAT_T + IRON_T * <span class="n">2.0</span>, <span class="n">0.034</span>, <span class="n">0.044</span>), METAL_IDX,
             )
-            add_cube(
-                bm,
-                (hx_bar, <span class="n">0.12</span>, sz * <span class="n">0.48</span>),
-                (<span class="n">0.020</span>, <span class="n">0.020</span>, <span class="n">0.12</span>),
-                METAL_IDX,
+            add_box(
+                bm, (x_plate, y1, hz),
+                (SLAT_T + IRON_T * <span class="n">2.0</span>, <span class="n">0.034</span>, <span class="n">0.044</span>), METAL_IDX,
             )
-            add_cube(
-                bm,
-                (hx_bar, <span class="n">0.0</span>, sz * <span class="n">0.54</span>),
-                (<span class="n">0.020</span>, <span class="n">0.26</span>, <span class="n">0.020</span>),
-                METAL_IDX,
-            )
+            <span class="k">if</span> float_handle:
+                add_box(
+                    bm, (x_out, <span class="n">0.0</span>, hz), (<span class="n">0.020</span>, <span class="n">0.020</span>, <span class="n">0.020</span>), METAL_IDX,
+                )
+            <span class="k">else</span>:
+                add_handle_bail(
+                    bm, x_in, x_out, y0, y1, hz, HANDLE_R, <span class="n">8</span>, METAL_IDX,
+                )
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -556,29 +808,44 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
-    <span class="c"># Do not materials.clear() — that resets every polygon&#x27;s material_index</span>
-    <span class="c"># to 0 and the iron brackets vanish into wood.</span>
     mats = obj.data.materials
-    <span class="k">if</span> len(mats) == <span class="n">0</span>:
-        mats.append(wood)
-        mats.append(metal)
-        <span class="k">return</span>
-    mats[<span class="n">0</span>] = wood
-    <span class="k">if</span> len(mats) == <span class="n">1</span>:
-        mats.append(metal)
-    <span class="k">else</span>:
-        mats[<span class="n">1</span>] = metal
+    wanted = (wood, metal)
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
+        <span class="k">if</span> i &lt; len(mats):
+            mats[i] = mat
+        <span class="k">else</span>:
+            mats.append(mat)
 
 
 <span class="k">def</span> world_bbox(obj):
@@ -614,6 +881,226 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    <span class="k">if</span> len(idxs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        vs = (me.vertices[idxs[i]].co, me.vertices[idxs[i + <span class="n">1</span>]].co)
+        area += (vs[<span class="n">0</span>] - v0).cross(vs[<span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles, <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group):
+    member = set(group)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> p.vertices):
+            <span class="k">return</span> p.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> support_audit(me):
+    groups = shells(me)
+    skids = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> a[<span class="n">2</span>] &lt; <span class="n">0.01</span> <span class="k">and</span> dx &gt; <span class="n">0.6</span> <span class="k">and</span> dy &lt; <span class="n">0.12</span> <span class="k">and</span> dz &lt; <span class="n">0.08</span>:
+            skids.append(a)
+    skid_z = min((a[<span class="n">2</span>] <span class="k">for</span> a <span class="k">in</span> skids), default=<span class="n">99.0</span>)
+    <span class="k">return</span> {<span class="s">&quot;skids&quot;</span>: len(skids), <span class="s">&quot;skid_z&quot;</span>: skid_z}
+
+
+<span class="k">def</span> body_audit(me):
+    wood_ids = set()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> p.material_index == WOOD_IDX:
+            wood_ids.update(p.vertices)
+    pts = [
+        me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> wood_ids
+        <span class="k">if</span> me.vertices[i].co.z &gt; SKID_H + <span class="n">0.01</span>
+    ]
+    <span class="k">if</span> <span class="k">not</span> pts:
+        <span class="k">return</span> {<span class="s">&quot;dx&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;dy&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;dz&quot;</span>: <span class="n">0.0</span>}
+    xs, ys, zs = [p.x <span class="k">for</span> p <span class="k">in</span> pts], [p.y <span class="k">for</span> p <span class="k">in</span> pts], [p.z <span class="k">for</span> p <span class="k">in</span> pts]
+    <span class="k">return</span> {
+        <span class="s">&quot;dx&quot;</span>: max(xs) - min(xs),
+        <span class="s">&quot;dy&quot;</span>: max(ys) - min(ys),
+        <span class="s">&quot;dz&quot;</span>: max(zs) - min(zs),
+    }
+
+
+<span class="k">def</span> _bvh_gap(me, hosts, guests):
+    <span class="k">if</span> <span class="k">not</span> hosts <span class="k">or</span> <span class="k">not</span> guests:
+        <span class="k">return</span> <span class="n">99.0</span>
+    bm_h = bmesh.new()
+    <span class="k">try</span>:
+        bm_h.from_mesh(me)
+        keep = set()
+        <span class="k">for</span> g <span class="k">in</span> hosts:
+            keep.update(g)
+        drop = [
+            f <span class="k">for</span> f <span class="k">in</span> bm_h.faces
+            <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep <span class="k">for</span> v <span class="k">in</span> f.verts)
+        ]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_h, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_h.faces:
+            <span class="k">return</span> <span class="n">99.0</span>
+        tree = BVHTree.FromBMesh(bm_h)
+        worst = <span class="n">0.0</span>
+        <span class="k">for</span> g <span class="k">in</span> guests:
+            bm_g = bmesh.new()
+            <span class="k">try</span>:
+                bm_g.from_mesh(me)
+                member = set(g)
+                drop_g = [
+                    f <span class="k">for</span> f <span class="k">in</span> bm_g.faces
+                    <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> f.verts)
+                ]
+                <span class="k">if</span> drop_g:
+                    bmesh.ops.delete(bm_g, geom=drop_g, context=<span class="s">&quot;FACES&quot;</span>)
+                <span class="k">if</span> <span class="k">not</span> bm_g.faces:
+                    worst = max(worst, <span class="n">99.0</span>)
+                    <span class="k">continue</span>
+                tree_g = BVHTree.FromBMesh(bm_g)
+                <span class="k">if</span> tree.overlap(tree_g):
+                    <span class="k">continue</span>
+                best = <span class="n">99.0</span>
+                <span class="k">for</span> i <span class="k">in</span> g:
+                    hit = tree.find_nearest(me.vertices[i].co)
+                    <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                        <span class="k">continue</span>
+                    best = min(best, hit[<span class="n">3</span>])
+                <span class="k">if</span> best &gt; worst:
+                    worst = best
+            <span class="k">finally</span>:
+                bm_g.free()
+        <span class="k">return</span> worst
+    <span class="k">finally</span>:
+        bm_h.free()
+
+
+<span class="k">def</span> handle_join(me):
+    groups = shells(me)
+    ends, handles = [], []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> mat_of(me, g) == WOOD_IDX <span class="k">and</span> dx &lt; <span class="n">0.04</span> <span class="k">and</span> dy &gt; <span class="n">0.40</span> <span class="k">and</span> <span class="n">0.03</span> &lt; dz &lt; <span class="n">0.18</span>:
+            ends.append(g)
+        <span class="k">elif</span> mat_of(me, g) == METAL_IDX <span class="k">and</span> dz &lt; <span class="n">0.12</span> <span class="k">and</span> max(dx, dy) &gt; <span class="n">0.15</span>:
+            handles.append(g)
+    <span class="k">return</span> _bvh_gap(me, ends, handles)
+
+
+<span class="k">def</span> slat_join(me):
+    groups = shells(me)
+    posts, slats = [], []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> dz &gt; <span class="n">0.30</span> <span class="k">and</span> dx &lt; <span class="n">0.08</span> <span class="k">and</span> dy &lt; <span class="n">0.08</span>:
+            posts.append(g)
+        <span class="k">elif</span> <span class="n">0.04</span> &lt; dz &lt; <span class="n">0.16</span> <span class="k">and</span> dx &gt; <span class="n">0.40</span> <span class="k">and</span> dy &lt; <span class="n">0.030</span>:
+            slats.append(g)
+    <span class="k">return</span> _bvh_gap(me, posts, slats)
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.40</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
 <span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
     mesh = obj.data.copy()
     lod = bpy.data.objects.new(name, mesh)
@@ -627,7 +1114,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> convex_hull_collider(obj, name):
-    <span class="c"># Duplicated from snippets/convex_hull_collider.py (not a package).</span>
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -649,13 +1135,12 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> collider
 
 
-<span class="k">def</span> setup_bake_image(obj, wood, size=BAKE_RES):
-    <span class="c"># Adapted from snippets/setup_bake_target_image.py — do not replace slots.</span>
+<span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
     img = bpy.data.images.new(<span class="s">&quot;CrateNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
     img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
-    nodes = wood.node_tree.nodes
+    nodes = target_mat.node_tree.nodes
     tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
     tex.image = img
     nodes.active = tex
@@ -665,7 +1150,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> bake_normal(high, low):
-    <span class="c"># Duplicated from snippets/bake_normal_high_to_low.py (not a package).</span>
     scene = bpy.context.scene
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
     scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
@@ -690,7 +1174,6 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> export_unity(path, objects):
-    <span class="c"># Duplicated from snippets/export_preset_unity.py (not a package).</span>
     <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
         ob.select_set(<span class="k">False</span>)
     <span class="k">for</span> ob <span class="k">in</span> objects:
@@ -706,14 +1189,39 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    short_skids=<span class="k">False</span>,
+    float_handle=<span class="k">False</span>,
+    omit_slats=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_crate_mesh(<span class="s">&quot;CrateLow&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">2</span>)
-    high = build_crate_mesh(<span class="s">&quot;CrateHigh&quot;</span>, bevel_offset=<span class="n">0.028</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(<span class="s">&quot;CrateWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>)
-    metal = principled(<span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.13</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">0.86</span>, <span class="n">0.36</span>)
+    flags = dict(
+        short_skids=short_skids,
+        float_handle=float_handle,
+        omit_slats=omit_slats,
+    )
+    low = build_crate_mesh(<span class="s">&quot;CrateLow&quot;</span>, **flags)
+    high = build_crate_mesh(<span class="s">&quot;CrateHigh&quot;</span>, **flags)
+    wood = principled(
+        <span class="s">&quot;CrateWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>,
+        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;CrateMetal&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.17</span>, <span class="n">0.16</span>, <span class="n">1.0</span>), <span class="n">0.86</span>, <span class="n">0.36</span>,
+        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.10</span>, <span class="n">0.09</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;crate mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -745,7 +1253,9 @@ METAL_IDX = <span class="n">1</span>
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider = convex_hull_collider(low, <span class="s">&quot;CrateCollider&quot;</span>)
+    collider_src = build_crate_mesh(<span class="s">&quot;CrateColSrc&quot;</span>, **flags)
+    collider = convex_hull_collider(collider_src, <span class="s">&quot;CrateCollider&quot;</span>)
+    bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
 
     export_path = os.path.join(
@@ -757,9 +1267,14 @@ METAL_IDX = <span class="n">1</span>
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
 
-    print(
-        <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
-    )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    body = body_audit(low.data)
+    hj = handle_join(low.data)
+    sj = slat_join(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
         <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
@@ -776,6 +1291,16 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured supports skids=</span>{sup[<span class="s">&#x27;skids&#x27;</span>]}<span class="s"> skid_z=</span>{sup[<span class="s">&#x27;skid_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">body=(</span>{body[<span class="s">&#x27;dx&#x27;</span>]:<span class="s">.4f</span>}<span class="s">,</span>{body[<span class="s">&#x27;dy&#x27;</span>]:<span class="s">.4f</span>}<span class="s">,</span>{body[<span class="s">&#x27;dz&#x27;</span>]:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">handle_join=</span>{hj:<span class="s">.5f</span>}<span class="s"> slat_join=</span>{sj:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -790,6 +1315,11 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -835,6 +1365,44 @@ METAL_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> sup[<span class="s">&quot;skids&quot;</span>] &lt; <span class="n">3</span> <span class="k">or</span> sup[<span class="s">&quot;skid_z&quot;</span>] &gt; SKID_Z_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">skid supports </span>{sup[<span class="s">&#x27;skids&#x27;</span>]}<span class="s"> skid_z=</span>{sup[<span class="s">&#x27;skid_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-skids is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> hj &gt; HANDLE_JOIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">handle-end gap </span>{hj:<span class="s">.5f</span>}<span class="s"> &gt; </span>{HANDLE_JOIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-handle is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> sj &gt; SLAT_JOIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">slat-post gap </span>{sj:<span class="s">.5f</span>}<span class="s"> &gt; </span>{SLAT_JOIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--omit-slats is the designed fail)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(body[<span class="s">&quot;dx&quot;</span>] - BODY_X) &gt; BODY_TOL:
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">body dx </span>{body[<span class="s">&#x27;dx&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_X}<span class="s">&quot;</span>, <span class="n">19</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(body[<span class="s">&quot;dy&quot;</span>] - BODY_Y) &gt; BODY_TOL:
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">body dy </span>{body[<span class="s">&#x27;dy&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_Y}<span class="s">&quot;</span>, <span class="n">19</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -902,10 +1470,10 @@ METAL_IDX = <span class="n">1</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.25</span>, -<span class="n">2.75</span>, <span class="n">1.38</span>)
+    cam.location = (<span class="n">1.96</span>, -<span class="n">2.44</span>, <span class="n">1.32</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.40</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.30</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -934,7 +1502,6 @@ METAL_IDX = <span class="n">1</span>
 
     fcode = gallery_framing.check_framing(
         scene, cam, hero=[low], elements=[low], stage=[floor, wall],
-        strategy=<span class="s">&quot;projection&quot;</span>,
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -949,14 +1516,22 @@ METAL_IDX = <span class="n">1</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
-    p.add_argument(
-        <span class="s">&quot;--skip-decimate&quot;</span>,
-        action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-skids&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-handle&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--omit-slats&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_skids=args.short_skids,
+        float_handle=args.float_handle,
+        omit_slats=args.omit_slats,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
