@@ -236,8 +236,8 @@
     {
       "name": "chopping-block",
       "dir": "showcase/chopping-block",
-      "teaches": "A procedural chopping block with an embedded axe through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 2016 tris, two materials with 122 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.471×0.463×0.841 m, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 188 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1472 tris, three materials with 252 bark / 252 grain / 288 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.012 m, LOD ratios in band, convex collider 434 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7. Joint fit: four shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.0 mm into the log on every segment. --fat-haft exits 17 on eye clearance; --round-band exits 18 on the hoop bite band.",
       "hero": "docs/gallery/assets/chopping-block-hero.webp",
       "preview": "showcase/chopping-block/preview.webp",
       "tags": [
