@@ -188,8 +188,8 @@
     {
       "name": "hitching-post",
       "dir": "showcase/hitching-post",
-      "teaches": "A procedural hitching post through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 848 tris, two materials with 262 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.460×0.194×1.260 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 144 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural hitching post (corner-aligned cap, stub-and-tenon arm, collar shoe, eye-threaded rings) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1598 tris, two materials with 269 wood and 532 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.460×0.191×1.258 m, zmin 0, hygiene 0, wood-metal BVH gap 0.45 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.",
       "hero": "docs/gallery/assets/hitching-post-hero.webp",
       "preview": "showcase/hitching-post/preview.webp",
       "tags": [
@@ -308,8 +308,8 @@
     {
       "name": "hay-bale",
       "dir": "showcase/hay-bale",
-      "teaches": "A procedural bound hay bale with a bevelled loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 252 tris, two materials with 66 hay and 60 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.916×0.520×0.401 m, LOD ratios in band (5.2 COLLAPSE more aggressive), convex collider 68 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 852 tris, two materials with 294 hay and 132 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.920×0.517×0.426 m, zmin 0, hygiene 0, hay-twine BVH gap 0.07 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.",
       "hero": "docs/gallery/assets/hay-bale-hero.webp",
       "preview": "showcase/hay-bale/preview.webp",
       "tags": [

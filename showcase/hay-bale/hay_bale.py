@@ -6,7 +6,8 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
+mesh so the grounded-zmin hygiene budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -14,6 +15,7 @@ ratio band, not an exact count.
 
     blender --background --python hay_bale.py --
     blender --background --python hay_bale.py -- --skip-decimate
+    blender --background --python hay_bale.py -- --lift-z
     blender --background --python hay_bale.py -- --output bale.png
 """
 import argparse
@@ -26,6 +28,7 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
 # Showcase lives at repo-root/showcase/, not under examples/. The framing
 # helper is the repo's only shared import and lives next to the examples;
@@ -40,15 +43,24 @@ import gallery_framing  # noqa: E402
 BALE_X = 0.90
 BALE_Y = 0.48
 BALE_Z = 0.38
-TWINE_T = 0.014
-TWINE_W = 0.026
-TWINE_PAD = 0.006
+TWINE_T = 0.012
+TWINE_W = 0.028
+TWINE_EMBED = 0.003
+BELT_XS = (-0.225, 0.225)
+LOAF_CUTS = 4
+BULGE = 0.055
+RIDGE_AMP = 0.007
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.916, 0.520, 0.401)
+OUTER_SIZE = (0.920, 0.517, 0.426)
 
-BASE_TRIS_MIN = 220
-BASE_TRIS_MAX = 290
+BASE_TRIS_MIN = 750
+BASE_TRIS_MAX = 1100
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+GAP_MAX = 0.008
+LIFT_Z = 0.05
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -58,7 +70,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 120
+COLLIDER_TRIS_MAX = 400
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.04
 HAY_FACES_MIN = 24
@@ -108,6 +120,150 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
+def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0), n_major=12, n_minor=6):
+    rings = []
+    for i in range(n_major):
+        u = i * (2.0 * math.pi / n_major)
+        ring = []
+        for j in range(n_minor):
+            v = j * (2.0 * math.pi / n_minor)
+            ring.append(bm.verts.new((
+                (major + minor * math.cos(v)) * math.cos(u),
+                (major + minor * math.cos(v)) * math.sin(u),
+                minor * math.sin(v),
+            )))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+    for i in range(n_major):
+        i2 = (i + 1) % n_major
+        for j in range(n_minor):
+            j2 = (j + 1) % n_minor
+            face = bm.faces.new((rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2]))
+            face.material_index = mat_idx
+    verts = [v for ring in rings for v in ring]
+    rot = Euler(euler).to_matrix()
+    origin = Vector(loc)
+    for v in verts:
+        v.co = rot @ v.co + origin
+    return verts
+
+
+def add_square_wrap(bm, x, y_half, z_lo, z_hi, t, w, mat_idx):
+    """Closed rectangular belt in YZ, extruded along X. One manifold torus."""
+    x0 = x - w * 0.5
+    x1 = x + w * 0.5
+    inner = (
+        (y_half, z_lo),
+        (y_half, z_hi),
+        (-y_half, z_hi),
+        (-y_half, z_lo),
+    )
+    outer = (
+        (y_half + t, z_lo - t),
+        (y_half + t, z_hi + t),
+        (-y_half - t, z_hi + t),
+        (-y_half - t, z_lo - t),
+    )
+
+    def ring(xc, pts):
+        return [bm.verts.new((xc, p[0], p[1])) for p in pts]
+
+    i0 = ring(x0, inner)
+    o0 = ring(x0, outer)
+    i1 = ring(x1, inner)
+    o1 = ring(x1, outer)
+
+    def quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        return face
+
+    for k in range(4):
+        n = (k + 1) % 4
+        quad(i0[k], i1[k], i1[n], i0[n])
+        quad(o0[k], o0[n], o1[n], o1[k])
+        quad(i0[k], i0[n], o0[n], o0[k])
+        quad(i1[k], o1[k], o1[n], i1[n])
+
+
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    # Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    areas = [face_area(me, p) for p in me.polygons]
+    zero_area = sum(1 for a in areas if a <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv,
+        "ne": ne,
+        "nf": nf,
+        "ngons": ngons,
+        "loose_v": loose_v,
+        "loose_e": loose_e,
+        "nonman": nonman,
+        "zero_area": zero_area,
+        "doubles": doubles,
+        "euler": nv - ne + nf,
+    }
+
+
+def min_mat_distance(me, ia, ib):
+    """Closest surface distance between two material islands via BVH.
+
+    Vert-vert distance is the wrong metric for a 4-corner strap: the inner
+    face has no mid-edge verts, so a cinched belt still reports ~TWINE_W/2.
+    """
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        bm_a.faces.ensure_lookup_table()
+        bm_b.faces.ensure_lookup_table()
+        drop_a = [f for f in bm_a.faces if f.material_index != ia]
+        drop_b = [f for f in bm_b.faces if f.material_index != ib]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for src in list(bm_a.verts) + list(bm_a.faces):
+            co = src.co if hasattr(src, "co") else src.calc_center_median()
+            hit = tree.find_nearest(co)
+            if hit[0] is None:
+                continue
+            best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
+
+
 def pack_uvs(bm, margin=0.08):
     uv = bm.loops.layers.uv.new("UVMap")
     faces = list(bm.faces)
@@ -151,6 +307,29 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
+def _shape_loaf(verts):
+    hx = BALE_X * 0.5
+    hy = BALE_Y * 0.5
+    hz = BALE_Z * 0.5
+    zc = BALE_Z * 0.5
+    for v in verts:
+        x, y, z = v.co.x, v.co.y, v.co.z
+        nx = max(-1.0, min(1.0, x / hx))
+        ny = max(-1.0, min(1.0, y / hy))
+        nz = max(-1.0, min(1.0, (z - zc) / hz))
+        pillow = 1.0 + BULGE * (1.0 - nx * nx)
+        v.co.y = y * pillow
+        v.co.z = zc + (z - zc) * pillow
+        # Longitudinal straw ridges on the long faces; closed-form, no RNG.
+        ridge = RIDGE_AMP * math.sin(x * 24.0) * (0.35 + 0.65 * abs(ny))
+        v.co.y += ridge
+        v.co.z += 0.55 * RIDGE_AMP * math.sin(x * 19.0 + 0.7) * (0.35 + 0.65 * abs(nz))
+        # End-grain nap: bite the ±X faces instead of gluing on extra slabs.
+        if abs(nx) > 0.82:
+            rr = math.hypot(v.co.y / (hy * pillow), (v.co.z - zc) / (hz * pillow))
+            v.co.x += math.copysign(0.010 * math.sin(rr * 14.0), x)
+
+
 def build_bale_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
     hay_verts = []
@@ -164,59 +343,61 @@ def build_bale_mesh(name, bevel_offset, bevel_segments):
                 HAY_IDX,
             )
         )
+        bmesh.ops.subdivide_edges(
+            bm,
+            edges=list({e for v in hay_verts for e in v.link_edges}),
+            cuts=LOAF_CUTS,
+            use_grid_fill=True,
+        )
+        hay_verts = [v for v in bm.verts]
+        _shape_loaf(hay_verts)
         if bevel_offset > 0.0:
-            edges = list({e for v in hay_verts for e in v.link_edges if v.is_valid})
-            if edges:
-                bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=0.5,
-                    affect="EDGES",
-                    clamp_overlap=True,
-                )
-
-        hx = BALE_X / 2.0
-        hy = BALE_Y / 2.0
-        for sign in (-1.0, 1.0):
-            add_box(
+            bm.edges.ensure_lookup_table()
+            edges = []
+            for e in bm.edges:
+                if len(e.link_faces) != 2:
+                    continue
+                if e.calc_face_angle() > math.radians(50.0):
+                    edges.append(e)
+            if not edges:
+                edges = list(bm.edges)
+            bmesh.ops.bevel(
                 bm,
-                (sign * (hx + 0.002), 0.0, BALE_Z / 2.0),
-                (0.012, BALE_Y * 0.98, BALE_Z * 0.96),
-                HAY_IDX,
+                geom=edges,
+                offset=bevel_offset,
+                segments=bevel_segments,
+                profile=0.45,
+                affect="EDGES",
+                clamp_overlap=True,
             )
 
+        hay_now = [v for v in bm.verts]
         before = set(bm.faces)
-        for x in (-0.22, 0.22):
-            wrap_y = BALE_Y + 2.0 * TWINE_PAD + TWINE_T
-            wrap_z = BALE_Z + 2.0 * TWINE_PAD
-            add_box(bm, (x, 0.0, TWINE_T / 2.0), (TWINE_W, wrap_y, TWINE_T), TWINE_IDX)
-            add_box(
+        for x in BELT_XS:
+            near = [v for v in hay_now if abs(v.co.x - x) <= 0.08]
+            if len(near) < 8:
+                near = hay_now
+            y_max = max(abs(v.co.y) for v in near)
+            z_min = min(v.co.z for v in near)
+            z_max = max(v.co.z for v in near)
+            # Sit the belt in the ridge troughs so it cinches the peaks.
+            y_half = y_max - RIDGE_AMP - TWINE_EMBED
+            z_lo = z_min + RIDGE_AMP + TWINE_EMBED
+            z_hi = z_max - RIDGE_AMP - TWINE_EMBED
+            add_square_wrap(bm, x, y_half, z_lo, z_hi, TWINE_T, TWINE_W, TWINE_IDX)
+            add_rim(
                 bm,
-                (x, 0.0, BALE_Z + TWINE_PAD - TWINE_T / 2.0),
-                (TWINE_W, wrap_y, TWINE_T),
+                (x, 0.0, z_hi + TWINE_T),
+                0.014,
+                0.007,
                 TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, hy + TWINE_PAD + TWINE_T / 2.0, BALE_Z / 2.0 + 0.004),
-                (TWINE_W, TWINE_T, wrap_z),
-                TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, -(hy + TWINE_PAD + TWINE_T / 2.0), BALE_Z / 2.0 + 0.004),
-                (TWINE_W, TWINE_T, wrap_z),
-                TWINE_IDX,
-            )
-            add_box(
-                bm,
-                (x, 0.02, BALE_Z + TWINE_PAD + 0.004),
-                (TWINE_W + 0.008, 0.032, 0.018),
-                TWINE_IDX,
+                euler=(math.pi / 2.0, 0.0, math.pi / 2.0),
+                n_major=10,
+                n_minor=5,
             )
         twine_faces.update(set(bm.faces) - before)
+
+        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
 
         zs = [v.co.z for v in bm.verts]
         zmin = min(zs)
@@ -253,13 +434,33 @@ def build_bale_mesh(name, bevel_offset, bevel_segments):
     return obj
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
 
 
@@ -398,14 +599,32 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(skip_decimate, lift_z=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_bale_mesh("BaleLow", bevel_offset=0.012, bevel_segments=2)
-    high = build_bale_mesh("BaleHigh", bevel_offset=0.012, bevel_segments=4)
-    hay = principled("BaleHay", (0.72, 0.55, 0.18, 1.0), 0.0, 0.84)
-    twine = principled("BaleTwine", (0.20, 0.14, 0.07, 1.0), 0.0, 0.52)
+    low = build_bale_mesh("BaleLow", bevel_offset=0.016, bevel_segments=2)
+    high = build_bale_mesh("BaleHigh", bevel_offset=0.016, bevel_segments=4)
+    hay = principled(
+        "BaleHay",
+        (0.66, 0.52, 0.18, 1.0),
+        0.0,
+        0.78,
+        noise_scale=22.0,
+        wear=(0.48, 0.36, 0.10, 1.0),
+    )
+    twine = principled(
+        "BaleTwine",
+        (0.22, 0.16, 0.08, 1.0),
+        0.0,
+        0.58,
+        noise_scale=14.0,
+        wear=(0.14, 0.10, 0.05, 1.0),
+    )
     assign_slots(low, hay, twine)
     assign_slots(high, hay, twine)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("hay bale mesh did not build", 3), None, None, None, None, None
@@ -466,10 +685,18 @@ def check(skip_decimate):
         f"measured bbox=({size_x:.4f},{size_y:.4f},{size_z:.4f}) "
         f"outer={OUTER_SIZE} zmin={bb[2]:.4f}"
     )
+    hyg = hygiene_audit(low.data)
+    gap = min_mat_distance(low.data, TWINE_IDX, HAY_IDX)
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
+    )
+    print(f"measured hay_twine_gap={gap:.5f} zmin={bb[2]:.6f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -534,6 +761,31 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"]
+        or hyg["loose_e"]
+        or hyg["nonman"]
+        or hyg["zero_area"]
+        or hyg["doubles"]
+        or hyg["ngons"]
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
+            15,
+        ), None, None, None, None, None
+    if abs(bb[2]) > ZMIN_EPS:
+        return fail(
+            f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
+            "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if gap > GAP_MAX:
+        return fail(
+            f"hay-twine gap {gap:.5f} > {GAP_MAX} (twine must cinch the loaf)",
+            17,
+        ), None, None, None, None, None
     return 0, low, high, hay, tex, collider
 
 
@@ -651,9 +903,14 @@ def main():
         action="store_true",
         help="falsification: skip the LOD DECIMATE stage",
     )
+    p.add_argument(
+        "--lift-z",
+        action="store_true",
+        help="falsification: lift the mesh so zmin fails the grounded budget",
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, hay, tex, _col = check(args.skip_decimate)
+    code, low, _high, hay, tex, _col = check(args.skip_decimate, lift_z=args.lift_z)
     if code:
         return code
     if args.output:

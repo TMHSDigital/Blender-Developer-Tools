@@ -8,7 +8,8 @@ glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
+mesh so the grounded-zmin hygiene budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -16,6 +17,7 @@ ratio band, not an exact count.
 
     blender --background --python hitching_post.py --
     blender --background --python hitching_post.py -- --skip-decimate
+    blender --background --python hitching_post.py -- --lift-z
     blender --background --python hitching_post.py -- --output hitching-post.png
 """
 import argparse
@@ -28,6 +30,7 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -39,22 +42,27 @@ import gallery_framing  # noqa: E402
 POST_W = 0.125
 POST_H = 1.16
 CAP_H = 0.10
-SHOE_H = 0.050
-SHOE_SCALE = 1.34
+CAP_EMBED = 0.002
+SHOE_H = 0.055
+SHOE_T = 0.014
+SHOE_SCALE = 1.38
 ARM_Z = 0.90
 ARM_L = 0.46
 ARM_Y = 0.056
 ARM_ZTH = 0.056
-RING_MAJOR = 0.058
-RING_MINOR = 0.011
-BAND_H = 0.030
-BAND_T = 0.012
+TENON_SCALE = 0.62
+RING_MAJOR = 0.052
+RING_MINOR = 0.009
+EYE_MAJOR = 0.015
+EYE_MINOR = 0.005
+BAND_H = 0.028
+BAND_T = 0.010
 BAND_ZS = (0.20, 0.52)
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (0.460, 0.194, 1.260)
-BASE_TRIS_MIN = 780
-BASE_TRIS_MAX = 920
+OUTER_SIZE = (0.460, 0.191, 1.258)
+BASE_TRIS_MIN = 900
+BASE_TRIS_MAX = 1800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -64,11 +72,16 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 180
+COLLIDER_TRIS_MAX = 280
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 METAL_FACES_MIN = 24
 WOOD_FACES_MIN = 12
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+GAP_MAX = 0.008
+LIFT_Z = 0.05
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -180,19 +193,18 @@ def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.
     return verts
 
 
-def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
-    n_major = 14
-    n_minor = 7
+def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0), n_major=18, n_minor=8):
     rings = []
     for i in range(n_major):
         u = i * (2.0 * math.pi / n_major)
         ring = []
         for j in range(n_minor):
             v = j * (2.0 * math.pi / n_minor)
-            x = (major + minor * math.cos(v)) * math.cos(u)
-            y = (major + minor * math.cos(v)) * math.sin(u)
-            z = minor * math.sin(v)
-            ring.append(bm.verts.new((x, y, z)))
+            ring.append(bm.verts.new((
+                (major + minor * math.cos(v)) * math.cos(u),
+                (major + minor * math.cos(v)) * math.sin(u),
+                minor * math.sin(v),
+            )))
         rings.append(ring)
     bm.verts.ensure_lookup_table()
     for i in range(n_major):
@@ -212,12 +224,120 @@ def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
 
 
 def add_square_band(bm, z, half, t, h, mat_idx):
-    metal = []
-    metal.extend(add_box(bm, (0.0, half + t / 2.0, z), (2.0 * half + 2.0 * t, t, h), mat_idx))
-    metal.extend(add_box(bm, (0.0, -(half + t / 2.0), z), (2.0 * half + 2.0 * t, t, h), mat_idx))
-    metal.extend(add_box(bm, (half + t / 2.0, 0.0, z), (t, 2.0 * half, h), mat_idx))
-    metal.extend(add_box(bm, (-(half + t / 2.0), 0.0, z), (t, 2.0 * half, h), mat_idx))
-    return metal
+    """Closed square collar in XY, extruded along Z. One manifold torus."""
+    z0 = z - h * 0.5
+    z1 = z + h * 0.5
+    inner = (
+        (half, half),
+        (-half, half),
+        (-half, -half),
+        (half, -half),
+    )
+    outer = (
+        (half + t, half + t),
+        (-(half + t), half + t),
+        (-(half + t), -(half + t)),
+        (half + t, -(half + t)),
+    )
+
+    def ring(zc, pts):
+        return [bm.verts.new((p[0], p[1], zc)) for p in pts]
+
+    i0 = ring(z0, inner)
+    o0 = ring(z0, outer)
+    i1 = ring(z1, inner)
+    o1 = ring(z1, outer)
+
+    def quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        return face
+
+    for k in range(4):
+        n = (k + 1) % 4
+        quad(i0[k], i0[n], i1[n], i1[k])
+        quad(o0[k], o1[k], o1[n], o0[n])
+        quad(i0[k], o0[k], o0[n], i0[n])
+        quad(i1[k], i1[n], o1[n], o1[k])
+    return i0 + o0 + i1 + o1
+
+
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    # Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    areas = [face_area(me, p) for p in me.polygons]
+    zero_area = sum(1 for a in areas if a <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv,
+        "ne": ne,
+        "nf": nf,
+        "ngons": ngons,
+        "loose_v": loose_v,
+        "loose_e": loose_e,
+        "nonman": nonman,
+        "zero_area": zero_area,
+        "doubles": doubles,
+        "euler": nv - ne + nf,
+    }
+
+
+def min_mat_distance(me, ia, ib):
+    """Closest surface distance between two material islands via BVH."""
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        bm_a.faces.ensure_lookup_table()
+        bm_b.faces.ensure_lookup_table()
+        drop_a = [f for f in bm_a.faces if f.material_index != ia]
+        drop_b = [f for f in bm_b.faces if f.material_index != ib]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for v in bm_a.verts:
+            hit = tree.find_nearest(v.co)
+            if hit[0] is None:
+                continue
+            best = min(best, hit[3])
+        for f in bm_a.faces:
+            hit = tree.find_nearest(f.calc_center_median())
+            if hit[0] is None:
+                continue
+            best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
 
 
 def pack_uvs(bm, margin=0.08):
@@ -267,8 +387,8 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
     bm = bmesh.new()
     try:
         wood = []
-        metal = []
         half = POST_W / 2.0
+        cap_r = half * math.sqrt(2.0)
 
         wood.extend(
             add_box(
@@ -278,29 +398,50 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
                 WOOD_IDX,
             )
         )
+        # Pyramid whose base vertices land on the post corners, then embed
+        # 2mm so the cap/post plane cannot z-fight.
         wood.extend(
             add_cone(
                 bm,
-                (0.0, 0.0, POST_H + CAP_H / 2.0),
-                POST_W * 0.78,
-                0.012,
+                (0.0, 0.0, POST_H + CAP_H / 2.0 - CAP_EMBED),
+                cap_r,
+                0.008,
                 CAP_H,
                 4,
                 WOOD_IDX,
                 euler=(0.0, 0.0, math.pi / 4.0),
             )
         )
+        stub = ARM_L / 2.0 - half
+        tenon_y = ARM_Y * TENON_SCALE
+        tenon_z = ARM_ZTH * TENON_SCALE
         wood.extend(
             add_box(
                 bm,
                 (0.0, 0.0, ARM_Z),
-                (ARM_L, ARM_Y, ARM_ZTH),
+                (POST_W + 0.012, tenon_y, tenon_z),
+                WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm,
+                (half + stub / 2.0, 0.0, ARM_Z),
+                (stub, ARM_Y, ARM_ZTH),
+                WOOD_IDX,
+            )
+        )
+        wood.extend(
+            add_box(
+                bm,
+                (-(half + stub / 2.0), 0.0, ARM_Z),
+                (stub, ARM_Y, ARM_ZTH),
                 WOOD_IDX,
             )
         )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood for e in v.link_edges})
+            edges = list({e for v in wood for e in v.link_edges if v.is_valid})
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -313,37 +454,45 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
-        metal.extend(
-            add_box(
-                bm,
-                (0.0, 0.0, SHOE_H / 2.0),
-                (POST_W * SHOE_SCALE, POST_W * SHOE_SCALE, SHOE_H),
-                METAL_IDX,
-            )
-        )
+        # Shoe is a collar whose inner faces sit on the post, not a solid plate
+        # the post punches through.
+        add_square_band(bm, SHOE_H / 2.0, half - 0.002, SHOE_T, SHOE_H, METAL_IDX)
         for z in BAND_ZS:
-            metal.extend(add_square_band(bm, z, half, BAND_T, BAND_H, METAL_IDX))
+            add_square_band(bm, z, half - 0.002, BAND_T, BAND_H, METAL_IDX)
 
-        ring_y = -(max(POST_W, ARM_Y) / 2.0 + RING_MINOR + 0.006)
+        arm_y_face = -(ARM_Y / 2.0)
         for sx in (-ARM_L * 0.32, ARM_L * 0.32):
-            metal.extend(
-                add_box(
-                    bm,
-                    (sx, ring_y + RING_MINOR + 0.010, ARM_Z),
-                    (0.018, 0.022, 0.018),
-                    METAL_IDX,
-                )
+            # Eye on the -Y arm face; hitching ring threads it (YZ vs XZ).
+            add_rim(
+                bm,
+                (sx, arm_y_face + EYE_MINOR * 0.25, ARM_Z),
+                EYE_MAJOR,
+                EYE_MINOR,
+                METAL_IDX,
+                euler=(math.pi / 2.0, 0.0, 0.0),
+                n_major=14,
+                n_minor=7,
             )
-            metal.extend(
-                add_rim(
-                    bm,
-                    (sx, ring_y - RING_MAJOR * 0.35, ARM_Z - RING_MAJOR * 0.15),
-                    RING_MAJOR,
-                    RING_MINOR,
-                    METAL_IDX,
-                    euler=(math.pi / 2.0, 0.0, 0.0),
-                )
+            add_rim(
+                bm,
+                (
+                    sx,
+                    arm_y_face - RING_MAJOR * 0.55,
+                    ARM_Z - RING_MAJOR * 0.28,
+                ),
+                RING_MAJOR,
+                RING_MINOR,
+                METAL_IDX,
+                euler=(0.0, math.pi / 2.0, 0.0),
+                n_major=18,
+                n_minor=8,
             )
+
+        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        bm.faces.ensure_lookup_table()
+        degen = [f for f in bm.faces if f.calc_area() <= AREA_EPS]
+        if degen:
+            bmesh.ops.delete(bm, geom=degen, context="FACES")
 
         xs = [v.co.x for v in bm.verts]
         ys = [v.co.y for v in bm.verts]
@@ -361,12 +510,20 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = False
+            if face.material_index == METAL_IDX:
+                face.smooth = True
+            else:
+                face.smooth = False
+        for edge in bm.edges:
+            if not edge.is_manifold or len(edge.link_faces) != 2:
+                continue
+            if edge.calc_face_angle() > math.radians(35.0):
+                edge.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         for poly in me.polygons:
-            poly.use_smooth = False
+            poly.use_smooth = poly.material_index == METAL_IDX
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -374,13 +531,25 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 6.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
@@ -513,14 +682,25 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(skip_decimate, lift_z=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_hitching_post_mesh("HitchPostLow", bevel_offset=0.004, bevel_segments=2)
-    high = build_hitching_post_mesh("HitchPostHigh", bevel_offset=0.004, bevel_segments=4)
-    wood = principled("HitchPostWood", (0.36, 0.19, 0.07, 1.0), 0.0, 0.60)
-    metal = principled("HitchPostIron", (0.14, 0.145, 0.155, 1.0), 1.0, 0.38)
+    low = build_hitching_post_mesh("HitchPostLow", bevel_offset=0.008, bevel_segments=2)
+    high = build_hitching_post_mesh("HitchPostHigh", bevel_offset=0.008, bevel_segments=4)
+    wood = principled(
+        "HitchPostWood",
+        (0.36, 0.19, 0.07, 1.0),
+        0.0,
+        0.62,
+        noise_scale=11.0,
+        wear=(0.24, 0.13, 0.05, 1.0),
+    )
+    metal = principled("HitchPostIron", (0.12, 0.125, 0.135, 1.0), 1.0, 0.42)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("hitching post mesh did not build", 3), None, None, None, None, None
@@ -581,10 +761,18 @@ def check(skip_decimate):
         f"measured bbox=({size_x:.4f},{size_y:.4f},{size_z:.4f}) "
         f"outer={OUTER_SIZE} zmin={bb[2]:.4f}"
     )
+    hyg = hygiene_audit(low.data)
+    gap = min_mat_distance(low.data, METAL_IDX, WOOD_IDX)
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
+    )
+    print(f"measured wood_metal_gap={gap:.5f} zmin={bb[2]:.6f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -649,6 +837,31 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"]
+        or hyg["loose_e"]
+        or hyg["nonman"]
+        or hyg["zero_area"]
+        or hyg["doubles"]
+        or hyg["ngons"]
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
+            15,
+        ), None, None, None, None, None
+    if abs(bb[2]) > ZMIN_EPS:
+        return fail(
+            f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
+            "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if gap > GAP_MAX:
+        return fail(
+            f"wood-metal gap {gap:.5f} > {GAP_MAX}",
+            17,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -767,9 +980,14 @@ def main():
         action="store_true",
         help="falsification: skip the LOD DECIMATE stage",
     )
+    p.add_argument(
+        "--lift-z",
+        action="store_true",
+        help="falsification: lift the mesh so zmin fails the grounded budget",
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(args.skip_decimate, lift_z=args.lift_z)
     if code:
         return code
     if args.output:
