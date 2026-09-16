@@ -723,7 +723,7 @@ def mat_of(me, group):
     for p in me.polygons:
         if all(i in member for i in p.vertices):
             return p.material_index
-    return -1
+    return None
 
 
 def support_audit(me):
