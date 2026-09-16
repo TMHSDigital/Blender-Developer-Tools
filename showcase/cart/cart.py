@@ -8,7 +8,8 @@ export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
+mesh so the grounded-zmin hygiene budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -16,6 +17,7 @@ ratio band, not an exact count.
 
     blender --background --python cart.py --
     blender --background --python cart.py -- --skip-decimate
+    blender --background --python cart.py -- --lift-z
     blender --background --python cart.py -- --output cart.png
 """
 import argparse
@@ -28,6 +30,7 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -37,9 +40,15 @@ sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
 RIM_MAJOR = 0.30
-RIM_MINOR = 0.028
+# Felloe ring: flat-tread box section, not a round tube — round torus rims
+# read as bicycle wheels. The iron tyre wraps the tread.
+RIM_RADIAL = 0.012
+RIM_W = 0.036
+TYRE_T = 0.008
+TYRE_W = 0.040
 TRACK = 0.68
 AXLE_X = -0.16
+AXLE_R = 0.020
 HUB_R = 0.052
 HUB_W = 0.046
 N_SPOKES = 8
@@ -49,15 +58,23 @@ BED_W = 0.50
 BED_T = 0.038
 WALL_H = 0.16
 WALL_T = 0.032
+TAILGATE_H = 0.10
 SHAFT_L = 0.58
 SHAFT_T = 0.034
+SHAFT_PITCH = math.radians(7.0)
 N_SLATS = 6
 IRON_T = 0.014
+BOLSTER_H = 0.044
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (1.547, 0.749, 0.656)
+OUTER_SIZE = (1.539, 0.749, 0.640)
 BASE_TRIS_MIN = 2470
-BASE_TRIS_MAX = 2680
+BASE_TRIS_MAX = 2900
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+GAP_MAX = 0.008
+LIFT_Z = 0.05
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -71,6 +88,7 @@ COLLIDER_TRIS_MAX = 360
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 METAL_FACES_MIN = 24
+WOOD_FACES_MIN = 800
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -126,7 +144,7 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=False,
+        cap_tris=True,
         segments=segments,
         radius1=radius,
         radius2=radius,
@@ -143,28 +161,39 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
-def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
-    n_major = 16
-    n_minor = 8
+def add_ring(bm, loc, r_mid, radial_t, width, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
+    """Flat-sided ring with a box cross-section (felloe / tyre profile).
+
+    Manifold: outer tread, inner surface, and two side annuli, all quads.
+    Built in the XY plane, width along Z, then rotated/translated.
+    """
+    r_in = r_mid - radial_t
+    r_out = r_mid + radial_t
+    hw = width / 2.0
     rings = []
-    for i in range(n_major):
-        u = i * (2.0 * math.pi / n_major)
-        ring = []
-        for j in range(n_minor):
-            v = j * (2.0 * math.pi / n_minor)
-            x = (major + minor * math.cos(v)) * math.cos(u)
-            y = (major + minor * math.cos(v)) * math.sin(u)
-            z = minor * math.sin(v)
-            ring.append(bm.verts.new((x, y, z)))
-        rings.append(ring)
-    bm.verts.ensure_lookup_table()
-    for i in range(n_major):
-        i2 = (i + 1) % n_major
-        for j in range(n_minor):
-            j2 = (j + 1) % n_minor
-            face = bm.faces.new(
-                (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
-            )
+    for i in range(segments):
+        u = i * (2.0 * math.pi / segments)
+        cu = math.cos(u)
+        su = math.sin(u)
+        rings.append(
+            [
+                bm.verts.new((r_in * cu, r_in * su, -hw)),
+                bm.verts.new((r_out * cu, r_out * su, -hw)),
+                bm.verts.new((r_out * cu, r_out * su, hw)),
+                bm.verts.new((r_in * cu, r_in * su, hw)),
+            ]
+        )
+    for i in range(segments):
+        i2 = (i + 1) % segments
+        a = rings[i]
+        b = rings[i2]
+        for quad in (
+            (a[1], b[1], b[2], a[2]),
+            (a[3], b[3], b[0], a[0]),
+            (a[2], b[2], b[3], a[3]),
+            (a[0], b[0], b[1], a[1]),
+        ):
+            face = bm.faces.new(quad)
             face.material_index = mat_idx
     verts = [v for ring in rings for v in ring]
     rot = Euler(euler).to_matrix()
@@ -219,7 +248,17 @@ def pack_uvs(bm, margin=0.08):
 
 def add_wheel(bm, loc, wood, metal):
     wood.extend(
-        add_rim(bm, loc, RIM_MAJOR, RIM_MINOR, WOOD_IDX, euler=(math.pi / 2.0, 0.0, 0.0))
+        add_ring(
+            bm, loc, RIM_MAJOR, RIM_RADIAL, RIM_W, 16, WOOD_IDX,
+            euler=(math.pi / 2.0, 0.0, 0.0),
+        )
+    )
+    metal.extend(
+        add_ring(
+            bm, loc, RIM_MAJOR + RIM_RADIAL + TYRE_T / 2.0, TYRE_T / 2.0,
+            TYRE_W, 16, METAL_IDX,
+            euler=(math.pi / 2.0, 0.0, 0.0),
+        )
     )
     wood.extend(
         add_cyl(
@@ -232,8 +271,10 @@ def add_wheel(bm, loc, wood, metal):
             euler=(math.pi / 2.0, 0.0, 0.0),
         )
     )
-    inner = HUB_R + 0.008
-    outer = RIM_MAJOR - RIM_MINOR * 0.55
+    # Spokes root inside the hub and embed into the felloe ring — no
+    # floating ends hidden by the hub band.
+    inner = HUB_R * 0.4
+    outer = RIM_MAJOR - RIM_RADIAL + 0.008
     mid_r = 0.5 * (inner + outer)
     slen = outer - inner
     for i in range(N_SPOKES):
@@ -283,7 +324,10 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
         wood_wheels = []
         metal = []
         axle_z = RIM_MAJOR
-        bed_z = axle_z + 0.10
+        # The bed rides on the axle through a bolster: axle top -> bolster ->
+        # bed bottom. Never let the axle interpenetrate the slats.
+        bed_z = axle_z + AXLE_R + BOLSTER_H + BED_T / 2.0
+        bed_bottom = bed_z - BED_T / 2.0
         bed_cx = 0.06
 
         add_wheel(bm, (AXLE_X, TRACK / 2.0, axle_z), wood_wheels, metal)
@@ -293,7 +337,7 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
             add_cyl(
                 bm,
                 (AXLE_X, 0.0, axle_z),
-                0.020,
+                AXLE_R,
                 TRACK + 0.06,
                 10,
                 METAL_IDX,
@@ -313,6 +357,8 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
                     WOOD_IDX,
                 )
             )
+        # Side walls and the front board finish flush at WALL_H; the back
+        # board is a deliberately lower tailgate.
         for ysign in (-1.0, 1.0):
             body.extend(
                 add_box(
@@ -325,32 +371,37 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
         body.extend(
             add_box(
                 bm,
-                (bed_cx + BED_L / 2.0 - WALL_T / 2.0, 0.0, bed_z + WALL_H / 2.0 + 0.02),
-                (WALL_T, BED_W + WALL_T * 2.0, WALL_H + 0.04),
+                (bed_cx + BED_L / 2.0 - WALL_T / 2.0, 0.0, bed_z + WALL_H / 2.0),
+                (WALL_T, BED_W + WALL_T * 2.0, WALL_H),
                 WOOD_IDX,
             )
         )
         body.extend(
             add_box(
                 bm,
-                (bed_cx - BED_L / 2.0 + WALL_T / 2.0, 0.0, bed_z + 0.06),
-                (WALL_T, BED_W + WALL_T, 0.12),
+                (bed_cx - BED_L / 2.0 + WALL_T / 2.0, 0.0, bed_z + TAILGATE_H / 2.0),
+                (WALL_T, BED_W + WALL_T * 2.0, TAILGATE_H),
                 WOOD_IDX,
             )
         )
-        for xj in (bed_cx - BED_L * 0.32, bed_cx + BED_L * 0.28):
+        # Bolsters: one sits on the axle, one forward; both carry the bed.
+        for xj in (AXLE_X, bed_cx + BED_L * 0.28):
             body.extend(
                 add_box(
                     bm,
-                    (xj, 0.0, bed_z - BED_T / 2.0 - 0.022),
-                    (0.055, BED_W * 0.92, 0.044),
+                    (xj, 0.0, axle_z + AXLE_R + BOLSTER_H / 2.0),
+                    (0.055, BED_W * 0.92, BOLSTER_H),
                     WOOD_IDX,
                 )
             )
 
+        # Shafts hang under the bed front: the back end embeds 6 mm into the
+        # slat bottom and never pokes through the bed floor.
         shaft_x = bed_cx + BED_L / 2.0 + SHAFT_L / 2.0 - 0.04
-        shaft_z = bed_z - 0.02
-        pitch = math.radians(7.0)
+        shaft_z = (
+            bed_bottom + 0.006 - SHAFT_T / 2.0
+            - math.sin(SHAFT_PITCH) * (SHAFT_L / 2.0)
+        )
         for ysign in (-1.0, 1.0):
             body.extend(
                 add_box(
@@ -358,28 +409,30 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
                     (shaft_x, ysign * 0.12, shaft_z),
                     (SHAFT_L, SHAFT_T, SHAFT_T),
                     WOOD_IDX,
-                    euler=(0.0, pitch, 0.0),
+                    euler=(0.0, SHAFT_PITCH, 0.0),
                 )
             )
             metal.extend(
                 add_box(
                     bm,
-                    (bed_cx + BED_L / 2.0 - 0.02, ysign * 0.12, bed_z - 0.01),
+                    (bed_cx + BED_L / 2.0 - 0.02, ysign * 0.12, bed_bottom - IRON_T / 2.0),
                     (0.05, 0.042, IRON_T),
                     METAL_IDX,
                 )
             )
 
+        # Tie-down plates sit on top of the bed floor, fully inboard of the
+        # walls — visible, not buried inside the slats.
         for sx, sy in (
-            (bed_cx - BED_L / 2.0 + 0.04, -BED_W / 2.0),
-            (bed_cx - BED_L / 2.0 + 0.04, BED_W / 2.0),
-            (bed_cx + BED_L / 2.0 - 0.04, -BED_W / 2.0),
-            (bed_cx + BED_L / 2.0 - 0.04, BED_W / 2.0),
+            (bed_cx - BED_L / 2.0 + 0.055, -BED_W / 2.0 + 0.055),
+            (bed_cx - BED_L / 2.0 + 0.055, BED_W / 2.0 - 0.055),
+            (bed_cx + BED_L / 2.0 - 0.055, -BED_W / 2.0 + 0.055),
+            (bed_cx + BED_L / 2.0 - 0.055, BED_W / 2.0 - 0.055),
         ):
             metal.extend(
                 add_box(
                     bm,
-                    (sx, sy, bed_z + 0.01),
+                    (sx, sy, bed_z + BED_T / 2.0 + IRON_T / 2.0),
                     (0.055, 0.055, IRON_T),
                     METAL_IDX,
                 )
@@ -428,13 +481,33 @@ def build_cart_mesh(name, bevel_offset, bevel_segments):
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
 
 
@@ -479,6 +552,84 @@ def uv_stats(mesh):
             y1 = min(a[3], b[3])
             overlap += max(0.0, x1 - x0) * max(0.0, y1 - y0)
     return min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    # Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    areas = [face_area(me, p) for p in me.polygons]
+    zero_area = sum(1 for a in areas if a <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv,
+        "ne": ne,
+        "nf": nf,
+        "ngons": ngons,
+        "loose_v": loose_v,
+        "loose_e": loose_e,
+        "nonman": nonman,
+        "zero_area": zero_area,
+        "doubles": doubles,
+        "euler": nv - ne + nf,
+    }
+
+
+def min_mat_distance(me, ia, ib):
+    """Closest surface distance between two material islands via BVH.
+
+    Vert-vert distance is the wrong metric for thin parts: a face interior
+    can touch while its corner verts sit a radius apart.
+    """
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        bm_a.faces.ensure_lookup_table()
+        bm_b.faces.ensure_lookup_table()
+        drop_a = [f for f in bm_a.faces if f.material_index != ia]
+        drop_b = [f for f in bm_b.faces if f.material_index != ib]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for src in list(bm_a.verts) + list(bm_a.faces):
+            co = src.co if hasattr(src, "co") else src.calc_center_median()
+            hit = tree.find_nearest(co)
+            if hit[0] is None:
+                continue
+            best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
 
 
 def make_lod(obj, name, ratio, skip_decimate):
@@ -567,14 +718,24 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(skip_decimate, lift_z=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_cart_mesh("CartLow", bevel_offset=0.005, bevel_segments=2)
     high = build_cart_mesh("CartHigh", bevel_offset=0.005, bevel_segments=4)
-    wood = principled("CartWood", (0.42, 0.22, 0.08, 1.0), 0.0, 0.58)
-    metal = principled("CartIron", (0.13, 0.135, 0.15, 1.0), 1.0, 0.32)
+    wood = principled(
+        "CartWood", (0.42, 0.22, 0.08, 1.0), 0.0, 0.58,
+        noise_scale=7.0, wear=(0.26, 0.12, 0.04, 1.0),
+    )
+    metal = principled(
+        "CartIron", (0.13, 0.135, 0.15, 1.0), 1.0, 0.32,
+        noise_scale=5.0, wear=(0.05, 0.05, 0.06, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("cart mesh did not build", 3), None, None, None, None, None
@@ -637,6 +798,14 @@ def check(skip_decimate):
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    hyg = hygiene_audit(low.data)
+    gap_mw = min_mat_distance(low.data, METAL_IDX, WOOD_IDX)
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
+    )
+    print(f"measured gap_metal_wood={gap_mw:.5f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -651,6 +820,11 @@ def check(skip_decimate):
     if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
         return fail(
             f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
+    if idx_counts.get(WOOD_IDX, 0) < WOOD_FACES_MIN:
+        return fail(
+            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
             5,
         ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
@@ -696,6 +870,32 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"]
+        or hyg["loose_e"]
+        or hyg["nonman"]
+        or hyg["zero_area"]
+        or hyg["doubles"]
+        or hyg["ngons"]
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
+            15,
+        ), None, None, None, None, None
+    if abs(bb[2]) > ZMIN_EPS:
+        return fail(
+            f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
+            "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if gap_mw > GAP_MAX:
+        return fail(
+            f"metal-wood gap {gap_mw:.5f} > {GAP_MAX} "
+            "(tyres, hubs, straps, and plates must touch the wood they mount to)",
+            17,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -814,9 +1014,16 @@ def main():
         action="store_true",
         help="falsification: skip the LOD DECIMATE stage",
     )
+    p.add_argument(
+        "--lift-z",
+        action="store_true",
+        help="falsification: lift the mesh so zmin fails the grounded budget",
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate, lift_z=args.lift_z
+    )
     if code:
         return code
     if args.output:
