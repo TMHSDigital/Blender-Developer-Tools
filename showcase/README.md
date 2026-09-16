@@ -37,16 +37,22 @@ entry in `showcase/gallery.json`, and a rendered still.
   falsifier (exit 9), `--stray-vert` the mesh-hygiene falsifier (exit
   15), `--lift-z` the grounded-zmin falsifier (exit 16), and
   `--fat-rungs` (or the piece's equivalent) the joint-fit falsifier
-  (exit 17). A budget with no falsifier witnesses nothing: prove each
-  one fails once, and check the exit code, not just non-zero.
+  (exit 17), and `--round-band` (or equivalent) the seat-conformance
+  falsifier (exit 18). A budget with no falsifier witnesses nothing:
+  prove each one fails once, and check the exit code, not just
+  non-zero.
 - **Hygiene budgets.** Copied combinatorics from
   `examples/mesh-hygiene-audit` (do not import the example). Every piece
   asserts on the generated mesh: non-manifold edges 0, loose verts 0,
   loose edges 0, doubles at 1e-5 0, zero-area faces 0, n-gons 0, world
-  AABB min Z within 1e-4 of 0. Multi-body props do **not** require Euler
-  characteristic 2 — that is a single-shell contract. Pairs of parts
-  meant to touch assert a BVH surface gap below a named epsilon
-  (vert-vert is the wrong metric for thin straps and collars).
+  AABB min Z within 1e-4 of 0, and coplanar disjoint face pairs 0. Count
+  the last one over faces that share **no** vertex: the triangles of one
+  flat fan cap are coplanar and close-centred by construction, and
+  counting those makes the budget unsatisfiable rather than meaningful.
+  Multi-body props do **not** require Euler characteristic 2 — that is a
+  single-shell contract. Pairs of parts meant to touch assert a BVH
+  surface gap below a named epsilon (vert-vert is the wrong metric for
+  thin straps and collars).
 - **Joint-fit budgets.** Parts that interpenetrate on purpose — a tenon
   in a mortise, a peg in a hub — assert how deep the overlap goes, not
   just that it exists. Split the mesh into shells by edge connectivity,
@@ -58,6 +64,25 @@ entry in `showcase/gallery.json`, and a rendered still.
   the host's chamfer as a spike — that is the class this catches.
   Measure in the construction frame (un-rotate by any rake) so a tilted
   host does not inflate its own AABB.
+- **Seat conformance (exit 18).** A band, hoop, strap or collar wrapped
+  around a host asserts a **banded** seat depth — a minimum so it cannot
+  float and a maximum so it cannot sink — sampled per angular segment
+  rather than as a single global figure. Derive the wrapper's profile
+  from the host's own radius function instead of a circle, and classify
+  inner versus outer vertices against the host surface at each vertex's
+  own angle. A global midpoint radius misclassifies outer chamfer
+  vertices as inner ones the moment the host is out of round, which is
+  how a hoop that visibly gapped on one side still passed. The paired
+  falsifier makes the wrapper a true circle on an out-of-round host.
+- **Plumb and real-world size (exit 19).** Assert that the axis of a
+  turned or lofted body is vertical, by comparing the XY centroid of a
+  bottom slab against a top slab — not the exact `zmin` and `zmax`
+  rings, which may be a handful of vertices once a rim is notched or
+  chipped. Separately assert the body's own diameter and height against
+  the dimensions the README states in metres, with a named tolerance.
+  The outer AABB does not cover this: on a prop with an appendage the
+  AABB is the appendage, and the body can drift to any size underneath
+  it.
 - **Material face floors.** Every declared material asserts a named
   minimum face count on the finished mesh, recomputed from
   `polygon.material_index`. This catches the slot-assignment wipe class:
@@ -67,7 +92,14 @@ entry in `showcase/gallery.json`, and a rendered still.
   append/replace, never clear-and-rebuild.
 - **Exit codes** are file-local: `0` success, argparse `2`, `3` and above
   in check order. `9` is legal. FATAL `sys.exit(1)` is a crash, never a
-  named check.
+  named check. `15`–`19` are reserved across pieces for the hygiene
+  family above: `15` hygiene, `16` grounded, `17` joint fit, `18` seat
+  conformance and contact, `19` plumb and real-world size.
+- **Shading is part of the model.** A flat-shaded low-poly body and a
+  smooth-shaded one are different objects to a viewer. Smoothing a
+  wobbled 36-gon erases every bit of surface modelling in it and leaves
+  a featureless drum, so decide per part and say why. Nothing here is
+  measurable, which is exactly why it has to be looked at.
 - **Rendered still and gallery entry.** Showcase pieces are visual by
   definition. The pathology / sidecar exemption does not apply. Call
   `examples/gallery_framing.check_framing` on the `--output` path only.
