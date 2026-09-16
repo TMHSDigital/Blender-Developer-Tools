@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wooden-ladder — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural timber ladder with raked stiles, six rungs, and iron shoes through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wooden-ladder — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural timber ladder with raked stiles, six rungs, and iron shoes through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-ladder — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural timber ladder with raked stiles, six rungs, and iron shoes through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,35 +246,43 @@
   </div>
   <header class="hero">
     <h1>wooden-ladder</h1>
-    <p>A procedural timber ladder with raked stiles, six rungs, and iron shoes through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom wooden-ladder render">
       <img src="../assets/wooden-ladder-hero.webp" alt="wooden-ladder render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2184 tris, two materials with 1008 wood and 48 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.474×0.361×1.482 m, LOD ratios in band, convex collider 52 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 936 tris, two materials with 324 wood and 216 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.472×0.365×1.460 m, grounded at zmin 0, mesh hygiene all zero, 12 shells with every rung clearing the stile chamfer by 3.61 mm, convex collider 24 tris, non-empty glTF. Four falsifiers exit 9, 15, 16, and 17 on the LOD, hygiene, grounded, and joint-fit budgets.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-ladder/wooden_ladder.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber ladder (raked stiles, six rungs, iron shoes and straps) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural timber ladder (raked stiles, six 26 mm dowel rungs tenoned into the stiles, iron shoes and top caps) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2100–2280 | 2184 / 2184 / 2184 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 2 distinct, ≥24 wood, ≥24 metal | 2 slots, 1008 wood, 48 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.474, 0.361, 1.482) m ± 0.01 | (0.4740, 0.3612, 1.4823), zmin 0 | | Collider tris | ≤ 120 | 52 | | Export | written, size &gt; 0 | 158256 / 158256 / 158240 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 900–975 | 936 / 936 / 936 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2179 / 0.2179 / 0.2179 | | Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 324 wood, 216 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.472, 0.365, 1.460) m ± 0.01 | (0.4720, 0.3649, 1.4597) | | Grounded | <code>abs(zmin)</code> ≤ 1e-4 | 0.0000 | | Mesh hygiene | non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons all 0 | all 0 | | Parts | exactly 12 shells (2 stiles, 6 rungs, 2 caps, 2 shoes) | 12 (2 / 6) | | Rung depth clearance | ≥ 0.003 m inside the stile faces | 0.00361 | | Tenon engagement | ≥ 0.006 m past the stile inner face | 0.01200 | | Tenon breakout margin | ≥ 0.005 m short of the stile outer face | 0.04600 | | Collider tris | ≤ 120 | 24 | | Export | written, size &gt; 0 | 75140 / 75140 / 75128 bytes |</p>
+<p>Base triangles fell from <strong>2184 to 936</strong> in the quality pass: four iron fittings per stile collapsed to one shoe and one top cap, and the redundant top block came out. No hidden-face removal was involved.</p>
+<p>The rung rims are capped and buried in the stile rather than left open. That costs 144 tris nobody sees, but an open rim is a non-manifold boundary and the hygiene budget forbids it.</p>
+<p>The joint budgets are measured per rung against each stile, from vertex positions in the un-raked construction frame, and the reported value is the worst case over all twelve rung ends. <code>clearance</code> is how far the widest dowel stays inside the stile&#x27;s front and back faces; it must exceed the 2.5 mm chamfer or the dowel erupts through it as a spike.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed on LOD ratios. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>Each falsifier violates exactly one named budget, and each was proven to fire on all three binaries:</p>
+<p>| Falsifier | Budget violated | Exit | Measured failure | | --- | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | ratio 1.0000 | | <code>--stray-vert</code> | Mesh hygiene, loose verts | 15 | <code>loose_v=1</code> | | <code>--lift-z</code> | Grounded zmin | 16 | zmin 0.050000 | | <code>--fat-rungs</code> | Rung depth clearance | 17 | clearance −0.00051 |</p>
+<p><code>--fat-rungs</code> widens the dowels to the full 34 mm stile depth, which is the proportion this piece shipped with before the quality pass.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wooden_ladder.py --
 blender --background --python wooden_ladder.py -- --skip-decimate
+blender --background --python wooden_ladder.py -- --stray-vert
+blender --background --python wooden_ladder.py -- --lift-z
+blender --background --python wooden_ladder.py -- --fat-rungs
 blender --background --python wooden_ladder.py -- --output ladder.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags: no <code>--output</code>, no falsifier.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene (<code>--stray-vert</code> lands here) | | 16 | World AABB min Z off the floor (<code>--lift-z</code> lands here) | | 17 | Part count or rung-to-stile joint fit (<code>--fat-rungs</code> lands here) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -289,8 +297,12 @@ shipped pipeline pieces: bmesh construction, UVs, two materials,
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates exactly one
+named budget: ``--skip-decimate`` skips the LOD DECIMATE stage so the
+LOD-ratio budget fails, ``--lift-z`` moves the mesh off the floor so the
+grounded budget fails, ``--stray-vert`` adds one unconnected vertex so the
+mesh-hygiene budget fails, and ``--fat-rungs`` widens the dowels to the
+full stile depth so the rung-to-stile joint-fit budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -298,6 +310,9 @@ ratio band, not an exact count.
 
     blender --background --python wooden_ladder.py --
     blender --background --python wooden_ladder.py -- --skip-decimate
+    blender --background --python wooden_ladder.py -- --lift-z
+    blender --background --python wooden_ladder.py -- --stray-vert
+    blender --background --python wooden_ladder.py -- --fat-rungs
     blender --background --python wooden_ladder.py -- --output ladder.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
@@ -326,15 +341,37 @@ STILE_W = <span class="n">0.058</span>
 STILE_D = <span class="n">0.034</span>
 SPAN = <span class="n">0.34</span>
 N_RUNGS = <span class="n">6</span>
-RUNG_R = <span class="n">0.017</span>
-RUNG_SEGS = <span class="n">10</span>
+<span class="c"># A 26 mm dowel in a 34 mm stile. Sized so the widest rung still clears the</span>
+<span class="c"># stile&#x27;s 2.5 mm chamfer by more than a millimetre; at 17 mm the dowel was as</span>
+<span class="c"># deep as the stile and broke through the front and back chamfers as a spike.</span>
+RUNG_R = <span class="n">0.013</span>
+RUNG_SEGS = <span class="n">12</span>
+RUNG_TENON = <span class="n">0.012</span>
+RUNG_RADIUS_SCALE = (<span class="n">0.98</span>, <span class="n">1.02</span>, <span class="n">0.99</span>, <span class="n">1.03</span>, <span class="n">0.97</span>, <span class="n">1.01</span>)
+RUNG_Z_OFFSETS = (<span class="n">0.0</span>, <span class="n">0.0015</span>, -<span class="n">0.0010</span>, <span class="n">0.0010</span>, -<span class="n">0.0015</span>, <span class="n">0.0</span>)
+TOP_CAP_H = <span class="n">0.025</span>
+SHOE_H = <span class="n">0.065</span>
+SHOE_W = <span class="n">0.074</span>
+SHOE_D = <span class="n">0.070</span>
 RAKE = math.radians(<span class="n">12.0</span>)
 BBOX_TOL = <span class="n">0.01</span>
+<span class="c"># 2 stiles + 6 rungs + 2 top caps + 2 shoes, each a closed shell.</span>
+PART_COUNT = <span class="n">12</span>
+<span class="c"># Measured joint contract. Clearance exceeds the 2.5 mm chamfer so the dowel</span>
+<span class="c"># stays on the stile&#x27;s flat face; engagement keeps the tenon seated; breakout</span>
+<span class="c"># keeps it from reaching the outer face.</span>
+RUNG_DEPTH_CLEARANCE = <span class="n">0.003</span>
+TENON_ENGAGE_MIN = <span class="n">0.006</span>
+TENON_BREAKOUT_MIN = <span class="n">0.005</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+LIFT_Z = <span class="n">0.05</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.474</span>, <span class="n">0.361</span>, <span class="n">1.482</span>)
+OUTER_SIZE = (<span class="n">0.472</span>, <span class="n">0.365</span>, <span class="n">1.460</span>)
 
-BASE_TRIS_MIN = <span class="n">2100</span>
-BASE_TRIS_MAX = <span class="n">2280</span>
+BASE_TRIS_MIN = <span class="n">900</span>
+BASE_TRIS_MAX = <span class="n">975</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -347,8 +384,11 @@ UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">120</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
-METAL_FACES_MIN = <span class="n">24</span>
-WOOD_FACES_MIN = <span class="n">24</span>
+<span class="c"># The caps and shoes carry far more chamfer than body faces, so a floor above</span>
+<span class="c"># their 24 unbevelled box faces is what catches a bevel whose new faces fell</span>
+<span class="c"># back to the wood slot.</span>
+METAL_FACES_MIN = <span class="n">180</span>
+WOOD_FACES_MIN = <span class="n">280</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
@@ -398,7 +438,7 @@ METAL_IDX = <span class="n">1</span>
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">False</span>,
+        cap_tris=<span class="k">True</span>,
         segments=segments,
         radius1=radius1,
         radius2=radius2,
@@ -462,26 +502,19 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> build_ladder_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
     bm = bmesh.new()
-    wood_verts = []
+    stile_verts = []
     metal_faces = set()
+    metal_verts = []
     <span class="k">try</span>:
         half = SPAN / <span class="n">2.0</span> + STILE_W / <span class="n">2.0</span>
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            wood_verts.extend(
+            stile_verts.extend(
                 add_box(
                     bm,
                     (sign * half, <span class="n">0.0</span>, STILE_H / <span class="n">2.0</span>),
                     (STILE_W, STILE_D, STILE_H),
-                    WOOD_IDX,
-                )
-            )
-            wood_verts.extend(
-                add_box(
-                    bm,
-                    (sign * half, <span class="n">0.0</span>, STILE_H + <span class="n">0.012</span>),
-                    (STILE_W + <span class="n">0.008</span>, STILE_D + <span class="n">0.008</span>, <span class="n">0.028</span>),
                     WOOD_IDX,
                 )
             )
@@ -490,21 +523,29 @@ METAL_IDX = <span class="n">1</span>
         z1 = STILE_H - <span class="n">0.14</span>
         <span class="k">for</span> i <span class="k">in</span> range(N_RUNGS):
             t = i / (N_RUNGS - <span class="n">1</span>)
-            z = z0 + t * (z1 - z0)
-            wood_verts.extend(
-                add_cylinder(
-                    bm,
-                    (<span class="n">0.0</span>, <span class="n">0.0</span>, z),
-                    RUNG_R,
-                    SPAN + STILE_W * <span class="n">0.55</span>,
-                    RUNG_SEGS,
-                    WOOD_IDX,
-                    euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
-                )
+            z = z0 + t * (z1 - z0) + RUNG_Z_OFFSETS[i]
+            <span class="c"># Tenons stop inside the stile, so the rung rims never reach the</span>
+            <span class="c"># chamfered outer face. Rungs stay unbeveled: they are already</span>
+            <span class="c"># round, and beveling a cap rim spikes through that chamfer.</span>
+            add_cylinder(
+                bm,
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, z),
+                rung_radius * RUNG_RADIUS_SCALE[i],
+                SPAN + <span class="n">2.0</span> * RUNG_TENON,
+                RUNG_SEGS,
+                WOOD_IDX,
+                euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
             )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            edges = list(
+                {
+                    edge
+                    <span class="k">for</span> vertex <span class="k">in</span> stile_verts
+                    <span class="k">for</span> edge <span class="k">in</span> vertex.link_edges
+                    <span class="k">if</span> vertex.is_valid
+                }
+            )
             <span class="k">if</span> edges:
                 bmesh.ops.bevel(
                     bm,
@@ -519,24 +560,13 @@ METAL_IDX = <span class="n">1</span>
         before = set(bm.faces)
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             hx = sign * half
-            add_box(bm, (hx, <span class="n">0.0</span>, <span class="n">0.028</span>), (STILE_W + <span class="n">0.018</span>, STILE_D + <span class="n">0.018</span>, <span class="n">0.056</span>), METAL_IDX)
-            add_box(
-                bm,
-                (hx, STILE_D / <span class="n">2.0</span> + <span class="n">0.010</span>, <span class="n">0.070</span>),
-                (STILE_W * <span class="n">0.70</span>, <span class="n">0.014</span>, <span class="n">0.090</span>),
-                METAL_IDX,
-            )
-            add_box(
-                bm,
-                (hx, -(STILE_D / <span class="n">2.0</span> + <span class="n">0.010</span>), <span class="n">0.070</span>),
-                (STILE_W * <span class="n">0.70</span>, <span class="n">0.014</span>, <span class="n">0.090</span>),
-                METAL_IDX,
-            )
-            add_box(
-                bm,
-                (hx, <span class="n">0.0</span>, STILE_H - <span class="n">0.055</span>),
-                (STILE_W + <span class="n">0.016</span>, STILE_D + <span class="n">0.016</span>, <span class="n">0.028</span>),
-                METAL_IDX,
+            metal_verts.extend(
+                add_box(
+                    bm,
+                    (hx, <span class="n">0.0</span>, STILE_H - TOP_CAP_H * <span class="n">0.30</span>),
+                    (STILE_W + <span class="n">0.010</span>, STILE_D + <span class="n">0.010</span>, TOP_CAP_H),
+                    METAL_IDX,
+                )
             )
         metal_faces.update(set(bm.faces) - before)
 
@@ -553,8 +583,52 @@ METAL_IDX = <span class="n">1</span>
             v.co.x -= cx
             v.co.y -= cy
             v.co.z -= zmin
-            <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
-                v.co.z = <span class="n">0.0</span>
+
+        before = set(bm.faces)
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            bottom = rake @ Vector((sign * half, <span class="n">0.0</span>, <span class="n">0.0</span>))
+            bottom.x -= cx
+            bottom.y -= cy
+            bottom.z -= zmin
+            metal_verts.extend(
+                add_box(
+                    bm,
+                    (bottom.x, bottom.y, SHOE_H / <span class="n">2.0</span>),
+                    (SHOE_W, SHOE_D, SHOE_H),
+                    METAL_IDX,
+                )
+            )
+        metal_faces.update(set(bm.faces) - before)
+
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+            metal_edges = list(
+                {
+                    edge
+                    <span class="k">for</span> vertex <span class="k">in</span> metal_verts
+                    <span class="k">for</span> edge <span class="k">in</span> vertex.link_edges
+                    <span class="k">if</span> vertex.is_valid
+                }
+            )
+            <span class="k">if</span> metal_edges:
+                <span class="c"># Bevel does not inherit material_index onto the faces it</span>
+                <span class="c"># creates, so claim them from the op&#x27;s own return rather than</span>
+                <span class="c"># from a pre-bevel face snapshot. Without this every chamfer</span>
+                <span class="c"># on a cap or shoe falls back to slot 0 and renders as wood.</span>
+                bevelled = bmesh.ops.bevel(
+                    bm,
+                    geom=metal_edges,
+                    offset=min(bevel_offset, <span class="n">0.002</span>),
+                    segments=bevel_segments,
+                    profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&quot;EDGES&quot;</span>,
+                    clamp_overlap=<span class="k">True</span>,
+                )
+                metal_faces.update(bevelled.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> [])
+
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        final_cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.y -= final_cy
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -604,6 +678,146 @@ METAL_IDX = <span class="n">1</span>
     ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
     zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
     <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> face_area(me, poly):
+    vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> poly.vertices]
+    <span class="k">if</span> len(vs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = vs[<span class="n">0</span>]
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+        area += (vs[i] - v0).cross(vs[i + <span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    <span class="c"># Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).</span>
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    areas = [face_area(me, p) <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> area <span class="k">in</span> areas <span class="k">if</span> area &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv,
+        <span class="s">&quot;ne&quot;</span>: ne,
+        <span class="s">&quot;nf&quot;</span>: nf,
+        <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v,
+        <span class="s">&quot;loose_e&quot;</span>: loose_e,
+        <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;doubles&quot;</span>: doubles,
+        <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> mesh_components(me):
+    <span class="s">&quot;&quot;&quot;Per-part AABBs in the construction frame, un-raked so the stiles read
+    axis-aligned. The parts interpenetrate but share no vertices, so edge
+    connectivity separates them.&quot;&quot;&quot;</span>
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    unrake = Euler((-RAKE, <span class="n">0.0</span>, <span class="n">0.0</span>)).to_matrix()
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    parts = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        points = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            points.append(unrake @ me.vertices[current].co)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        lo = Vector(
+            (
+                min(p.x <span class="k">for</span> p <span class="k">in</span> points),
+                min(p.y <span class="k">for</span> p <span class="k">in</span> points),
+                min(p.z <span class="k">for</span> p <span class="k">in</span> points),
+            )
+        )
+        hi = Vector(
+            (
+                max(p.x <span class="k">for</span> p <span class="k">in</span> points),
+                max(p.y <span class="k">for</span> p <span class="k">in</span> points),
+                max(p.z <span class="k">for</span> p <span class="k">in</span> points),
+            )
+        )
+        parts.append((lo, hi))
+    <span class="k">return</span> parts
+
+
+<span class="k">def</span> joint_audit(me):
+    <span class="s">&quot;&quot;&quot;Worst-case rung-to-stile fit, recomputed from vertex positions.&quot;&quot;&quot;</span>
+    parts = mesh_components(me)
+    stiles = [p <span class="k">for</span> p <span class="k">in</span> parts <span class="k">if</span> (p[<span class="n">1</span>].z - p[<span class="n">0</span>].z) &gt; STILE_H * <span class="n">0.8</span>]
+    rungs = [p <span class="k">for</span> p <span class="k">in</span> parts <span class="k">if</span> (p[<span class="n">1</span>].x - p[<span class="n">0</span>].x) &gt; SPAN]
+    <span class="k">if</span> len(stiles) != <span class="n">2</span> <span class="k">or</span> len(rungs) != N_RUNGS:
+        <span class="k">return</span> {
+            <span class="s">&quot;parts&quot;</span>: len(parts),
+            <span class="s">&quot;stiles&quot;</span>: len(stiles),
+            <span class="s">&quot;rungs&quot;</span>: len(rungs),
+            <span class="s">&quot;clearance&quot;</span>: -<span class="n">1.0</span>,
+            <span class="s">&quot;engage&quot;</span>: -<span class="n">1.0</span>,
+            <span class="s">&quot;breakout&quot;</span>: -<span class="n">1.0</span>,
+        }
+    left = min(stiles, key=<span class="k">lambda</span> p: p[<span class="n">0</span>].x)
+    right = max(stiles, key=<span class="k">lambda</span> p: p[<span class="n">0</span>].x)
+    clearance = min(
+        min(
+            (stile[<span class="n">1</span>].y - stile[<span class="n">0</span>].y) - (rung[<span class="n">1</span>].y - rung[<span class="n">0</span>].y)
+            <span class="k">for</span> stile <span class="k">in</span> (left, right)
+        )
+        * <span class="n">0.5</span>
+        <span class="k">for</span> rung <span class="k">in</span> rungs
+    )
+    engage = min(
+        min(left[<span class="n">1</span>].x - rung[<span class="n">0</span>].x, rung[<span class="n">1</span>].x - right[<span class="n">0</span>].x) <span class="k">for</span> rung <span class="k">in</span> rungs
+    )
+    breakout = min(
+        min(rung[<span class="n">0</span>].x - left[<span class="n">0</span>].x, right[<span class="n">1</span>].x - rung[<span class="n">1</span>].x) <span class="k">for</span> rung <span class="k">in</span> rungs
+    )
+    <span class="k">return</span> {
+        <span class="s">&quot;parts&quot;</span>: len(parts),
+        <span class="s">&quot;stiles&quot;</span>: len(stiles),
+        <span class="s">&quot;rungs&quot;</span>: len(rungs),
+        <span class="s">&quot;clearance&quot;</span>: clearance,
+        <span class="s">&quot;engage&quot;</span>: engage,
+        <span class="s">&quot;breakout&quot;</span>: breakout,
+    }
+
+
+<span class="k">def</span> add_stray_vert(me):
+    <span class="c"># Falsification only: one unconnected vertex, placed inside the existing</span>
+    <span class="c"># bounds so the bbox budget still passes and the hygiene budget is the</span>
+    <span class="c"># gate that fires.</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, STILE_H / <span class="n">3.0</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
 
 
 <span class="k">def</span> uv_stats(mesh):
@@ -723,10 +937,24 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, fat_rungs=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_ladder_mesh(<span class="s">&quot;LadderLow&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">2</span>)
-    high = build_ladder_mesh(<span class="s">&quot;LadderHigh&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">4</span>)
+    <span class="c"># Falsification: a dowel as deep as the stile, which is what used to break</span>
+    <span class="c"># through the front and back chamfers.</span>
+    rung_radius = STILE_D / <span class="n">2.0</span> <span class="k">if</span> fat_rungs <span class="k">else</span> RUNG_R
+    low = build_ladder_mesh(
+        <span class="s">&quot;LadderLow&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">2</span>, rung_radius=rung_radius
+    )
+    high = build_ladder_mesh(
+        <span class="s">&quot;LadderHigh&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">4</span>, rung_radius=rung_radius
+    )
+    <span class="k">if</span> lift_z:
+        low.location.z += LIFT_Z
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="c"># world_bbox reads matrix_world, which is evaluated data. Without this the</span>
+    <span class="c"># cached matrix hides a moved object and the grounded budget cannot fail.</span>
+    bpy.context.view_layer.update()
     wood = principled(<span class="s">&quot;LadderWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.24</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>)
     metal = principled(<span class="s">&quot;LadderMetal&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.46</span>, <span class="n">0.42</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
     assign_slots(low, wood, metal)
@@ -795,6 +1023,18 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    hyg = hygiene_audit(low.data)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
+    )
+    joint = joint_audit(low.data)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured joints parts=</span>{joint[<span class="s">&#x27;parts&#x27;</span>]}<span class="s"> stiles=</span>{joint[<span class="s">&#x27;stiles&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">rungs=</span>{joint[<span class="s">&#x27;rungs&#x27;</span>]}<span class="s"> clearance=</span>{joint[<span class="s">&#x27;clearance&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">engage=</span>{joint[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> breakout=</span>{joint[<span class="s">&#x27;breakout&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -859,6 +1099,49 @@ METAL_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>]
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> joint[<span class="s">&quot;parts&quot;</span>] != PART_COUNT:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">part count </span>{joint[<span class="s">&#x27;parts&#x27;</span>]}<span class="s"> != </span>{PART_COUNT}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(stiles=</span>{joint[<span class="s">&#x27;stiles&#x27;</span>]}<span class="s"> rungs=</span>{joint[<span class="s">&#x27;rungs&#x27;</span>]}<span class="s">)</span><span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> joint[<span class="s">&quot;clearance&quot;</span>] &lt; RUNG_DEPTH_CLEARANCE:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">rung-to-stile depth clearance </span>{joint[<span class="s">&#x27;clearance&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{RUNG_DEPTH_CLEARANCE}<span class="s"> (--fat-rungs is the designed fail)</span><span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> joint[<span class="s">&quot;engage&quot;</span>] &lt; TENON_ENGAGE_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">tenon engagement </span>{joint[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{TENON_ENGAGE_MIN}<span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> joint[<span class="s">&quot;breakout&quot;</span>] &lt; TENON_BREAKOUT_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">tenon breakout margin </span>{joint[<span class="s">&#x27;breakout&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{TENON_BREAKOUT_MIN}<span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -884,7 +1167,9 @@ METAL_IDX = <span class="n">1</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        <span class="c"># Oversized so no edge of the set can enter frame; the committed hero</span>
+        <span class="c"># used to show the wall&#x27;s left edge as a bright band in the corner.</span>
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -976,9 +1261,29 @@ METAL_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--lift-z&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: lift the mesh so zmin fails the grounded budget&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--stray-vert&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: add a loose vertex so the hygiene budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--fat-rungs&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: dowels as deep as the stile, failing joint fit&quot;</span>,
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        fat_rungs=args.fat_rungs,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:

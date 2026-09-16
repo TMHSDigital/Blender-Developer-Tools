@@ -34,7 +34,11 @@ entry in `showcase/gallery.json`, and a rendered still.
 - **Falsifier** breaks one pipeline stage so a **named** budget fails and
   the piece exits its documented code. Prove default and falsifier on
   4.5.11, 5.1.2, and 5.2.1. `--skip-decimate` is the LOD-ratio
-  falsifier (exit 9). `--lift-z` is the grounded-zmin falsifier (exit 16).
+  falsifier (exit 9), `--stray-vert` the mesh-hygiene falsifier (exit
+  15), `--lift-z` the grounded-zmin falsifier (exit 16), and
+  `--fat-rungs` (or the piece's equivalent) the joint-fit falsifier
+  (exit 17). A budget with no falsifier witnesses nothing: prove each
+  one fails once, and check the exit code, not just non-zero.
 - **Hygiene budgets.** Copied combinatorics from
   `examples/mesh-hygiene-audit` (do not import the example). Every piece
   asserts on the generated mesh: non-manifold edges 0, loose verts 0,
@@ -43,6 +47,17 @@ entry in `showcase/gallery.json`, and a rendered still.
   characteristic 2 — that is a single-shell contract. Pairs of parts
   meant to touch assert a BVH surface gap below a named epsilon
   (vert-vert is the wrong metric for thin straps and collars).
+- **Joint-fit budgets.** Parts that interpenetrate on purpose — a tenon
+  in a mortise, a peg in a hub — assert how deep the overlap goes, not
+  just that it exists. Split the mesh into shells by edge connectivity,
+  assert the expected shell count, and for each joint assert three
+  named minima recomputed from vertex positions: the inserted part stays
+  clear of the host's chamfer, it seats far enough past the host's near
+  face, and it stops short of the host's far face. A part exactly as
+  thick as its host passes a "parts overlap" test while erupting through
+  the host's chamfer as a spike — that is the class this catches.
+  Measure in the construction frame (un-rotate by any rake) so a tilted
+  host does not inflate its own AABB.
 - **Material face floors.** Every declared material asserts a named
   minimum face count on the finished mesh, recomputed from
   `polygon.material_index`. This catches the slot-assignment wipe class:
