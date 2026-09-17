@@ -5,12 +5,15 @@ shipped pipeline pieces: bmesh construction, UVs, three materials,
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-feet`` named post-foot
+supports, ``--low-brace`` brace-vs-counter joint fit, ``--float-awning``
+awning-on-header seat, ``--rake-posts`` post plumb.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+No RNG. Slat jitter is closed-form ``sin(i)``. DECIMATE COLLAPSE
+triangle counts are not byte-identical across Blender versions — the LOD
+gate is a ratio band, not an exact count.
 
     blender --background --python market_stall.py --
     blender --background --python market_stall.py -- --skip-decimate
@@ -44,16 +47,20 @@ FRONT_H = 1.28
 BACK_H = 1.72
 N_STRIPES = 8
 AWNING_T = 0.018
+OVERHANG_F = 0.040
+OVERHANG_B = 0.030
 COUNTER_Z = 0.82
 COUNTER_D = 0.34
 COUNTER_T = 0.070
 BRACE = 0.036
+FOOT_H = 0.036
+TENON = POST * 0.35
 BBOX_TOL = 0.01
 # Fitted to the generated AABB after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (1.392, 0.966, 1.743)
+OUTER_SIZE = (1.389, 1.011, 1.740)
 
-BASE_TRIS_MIN = 4280
-BASE_TRIS_MAX = 4550
+BASE_TRIS_MIN = 3900
+BASE_TRIS_MAX = 5200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -66,6 +73,24 @@ UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 80
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZFIGHT_EPS = 1e-4
+ZFIGHT_COS = 0.998
+FOOT_ZMIN_MAX = 0.001
+FOOT_COUNT = 4
+AWNING_SEAT_MAX = 0.010
+AWNING_SEAT_MIN = -0.002
+BRACE_COUNTER_OVERLAP_MAX = 1e-6
+POST_PLUMB_MAX = 0.008
+FRAME_XY_TOL = 0.04
+LIFT_Z = 0.05
+# Small enough that the AABB still sits in BBOX_TOL; large enough that
+# the front-eave seat drops below AWNING_SEAT_MIN.
+FLOAT_AWNING = 0.008
+RAKE = math.radians(2.0)
+SHORT_FOOT_Z = 0.048
 
 WOOD_IDX = 0
 STRIPE_A_IDX = 1
@@ -112,25 +137,75 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
-def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
-    geo = bmesh.ops.create_cone(
+def add_oriented_box(bm, a, b, scale_xy, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    if length < 1e-8:
+        return []
+    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
+    eul = quat.to_euler("XYZ")
+    return add_box(
         bm,
-        cap_ends=True,
-        cap_tris=False,
-        segments=segments,
-        radius1=radius1,
-        radius2=radius2,
-        depth=depth,
+        ((a + b) * 0.5),
+        (scale_xy[0], scale_xy[1], length),
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
     )
-    verts = geo["verts"]
+
+
+def add_wrap(bm, px, py, z, height, host, t, mat_idx):
+    """Four plates around a square post. Y-facing plates cover the corners."""
+    half = host / 2.0
+    off = half + t / 2.0 + 0.002
+    add_box(bm, (px + off, py, z), (t, host, height), mat_idx)
+    add_box(bm, (px - off, py, z), (t, host, height), mat_idx)
+    add_box(bm, (px, py + off, z), (host + 2.0 * t, t, height), mat_idx)
+    add_box(bm, (px, py - off, z), (host + 2.0 * t, t, height), mat_idx)
+    return []
+
+
+def add_striped_slab(bm, loc, scale, euler, n_stripes, even_idx, odd_idx):
+    """One slab split into n stripes that share vertices — no daylight gaps."""
     rot = Euler(euler).to_matrix()
     origin = Vector(loc)
-    for v in verts:
-        v.co = rot @ v.co + origin
-    faces = {f for v in verts for f in v.link_faces}
-    for f in faces:
-        f.material_index = mat_idx
-    return verts
+    sx, sy, sz = scale
+    stations = []
+    for i in range(n_stripes + 1):
+        x = -0.5 * sx + sx * i / n_stripes
+        row = []
+        for y, z in (
+            (-0.5 * sy, -0.5 * sz),
+            (-0.5 * sy, 0.5 * sz),
+            (0.5 * sy, -0.5 * sz),
+            (0.5 * sy, 0.5 * sz),
+        ):
+            row.append(bm.verts.new(rot @ Vector((x, y, z)) + origin))
+        stations.append(row)
+    kept = []
+    for i in range(n_stripes):
+        a = stations[i]
+        b = stations[i + 1]
+        idx = even_idx if (i % 2 == 0) else odd_idx
+        quads = (
+            (a[0], b[0], b[2], a[2]),
+            (a[1], a[3], b[3], b[1]),
+            (a[0], a[1], b[1], b[0]),
+            (a[2], b[2], b[3], a[3]),
+        )
+        for q in quads:
+            face = bm.faces.new(q)
+            face.material_index = idx
+            kept.append(face)
+    first = stations[0]
+    last = stations[-1]
+    cap_a = bm.faces.new((first[0], first[2], first[3], first[1]))
+    cap_a.material_index = even_idx
+    cap_b = bm.faces.new((last[0], last[1], last[3], last[2]))
+    cap_b.material_index = even_idx if ((n_stripes - 1) % 2 == 0) else odd_idx
+    kept.extend((cap_a, cap_b))
+    return kept
 
 
 def pack_uvs(bm, margin=0.08):
@@ -176,205 +251,228 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_stall_mesh(name, bevel_offset, bevel_segments):
+def build_stall_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    low_brace=False,
+    float_awning=False,
+    rake_posts=False,
+    short_feet=False,
+):
     bm = bmesh.new()
     wood_verts = []
-    stripe_a = set()
-    stripe_b = set()
+    stripe_faces = []
     try:
         hx = WIDTH / 2.0
         hy = DEPTH / 2.0
-        inset = POST / 2.0
+        px = hx - POST / 2.0
+        py_f = -(hy - POST / 2.0)
+        py_b = hy - POST / 2.0
+        post_h_f = FRONT_H - POST
+        post_h_b = BACK_H - POST
+        rake = (RAKE, 0.0, 0.0) if rake_posts else (0.0, 0.0, 0.0)
         posts = (
-            (-hx + inset, -hy + inset, FRONT_H / 2.0, FRONT_H),
-            (hx - inset, -hy + inset, FRONT_H / 2.0, FRONT_H),
-            (-hx + inset, hy - inset, BACK_H / 2.0, BACK_H),
-            (hx - inset, hy - inset, BACK_H / 2.0, BACK_H),
+            (-px, py_f, post_h_f),
+            (px, py_f, post_h_f),
+            (-px, py_b, post_h_b),
+            (px, py_b, post_h_b),
         )
-        for x, y, z, h in posts:
-            wood_verts.extend(add_box(bm, (x, y, z), (POST, POST, h), WOOD_IDX))
+        foot_z = SHORT_FOOT_Z if short_feet else FOOT_H / 2.0
+        foot_h = 0.020 if short_feet else FOOT_H
+        wrap_t = POST * 0.18
+        for x, y, h in posts:
             wood_verts.extend(
-                add_box(bm, (x, y, 0.018), (POST * 1.45, POST * 1.45, 0.036), WOOD_IDX)
+                add_box(bm, (x, y, h / 2.0), (POST, POST, h), WOOD_IDX, euler=rake)
             )
+            add_wrap(bm, x, y, foot_z, foot_h, POST, wrap_t, WOOD_IDX)
 
-        # Front and back header beams (along X).
+        header_len = WIDTH - POST + 2.0 * TENON
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, -hy + inset, FRONT_H - POST / 2.0),
-                (WIDTH - POST, POST, POST),
+                (0.0, py_f, FRONT_H - POST / 2.0),
+                (header_len, POST * 0.78, POST),
                 WOOD_IDX,
             )
         )
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, hy - inset, BACK_H - POST / 2.0),
-                (WIDTH - POST, POST, POST),
+                (0.0, py_b, BACK_H - POST / 2.0),
+                (header_len, POST * 0.78, POST),
                 WOOD_IDX,
             )
         )
-        # Side plates, slanted to match the awning.
-        dz = BACK_H - FRONT_H
-        slant_len = math.hypot(DEPTH - POST, dz)
-        pitch = math.atan2(dz, DEPTH - POST)
-        for sx in (-hx + inset, hx - inset):
+        # Side plates sit on the header centres, spanning post to post.
+        for sx in (-px, px):
             wood_verts.extend(
-                add_box(
+                add_oriented_box(
                     bm,
-                    (sx, 0.0, (FRONT_H + BACK_H) / 2.0 - POST / 2.0),
-                    (POST * 0.85, slant_len, POST * 0.85),
+                    (sx, py_f, FRONT_H - POST / 2.0),
+                    (sx, py_b, BACK_H - POST / 2.0),
+                    (POST * 0.80, POST * 0.80),
                     WOOD_IDX,
-                    euler=(pitch, 0.0, 0.0),
                 )
             )
-        # Inner rafters under the awning — the empty underside was a slab of air.
         for i in range(3):
             rx = -hx + POST * 2.0 + (i + 1) * (WIDTH - 4.0 * POST) / 4.0
             wood_verts.extend(
-                add_box(
+                add_oriented_box(
                     bm,
-                    (rx, 0.0, (FRONT_H + BACK_H) / 2.0 - POST * 0.42),
-                    (POST * 0.42, slant_len * 0.96, POST * 0.42),
+                    (rx, py_f, FRONT_H - POST / 2.0),
+                    (rx, py_b, BACK_H - POST / 2.0),
+                    (POST * 0.42, POST * 0.42),
                     WOOD_IDX,
-                    euler=(pitch, 0.0, 0.0),
                 )
             )
 
-        # Mid rail on the back wall and two diagonal braces at the sides.
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, hy - inset, BACK_H * 0.55),
-                (WIDTH - 2.0 * POST, POST * 0.7, POST * 0.7),
+                (0.0, py_b, BACK_H * 0.48),
+                (WIDTH - POST, POST * 0.65, POST * 0.65),
                 WOOD_IDX,
             )
         )
-        for sx in (-hx + inset, hx - inset):
-            p0 = Vector((sx, -hy + inset, 0.30))
-            p1 = Vector((sx, hy - inset, BACK_H * 0.58))
-            mid = (p0 + p1) * 0.5
-            delta = p1 - p0
-            brace_len = delta.length
-            brace_pitch = math.atan2(delta.z, delta.y)
-            wood_verts.extend(
-                add_box(
-                    bm,
-                    (mid.x, mid.y, mid.z),
-                    (BRACE, brace_len, BRACE),
-                    WOOD_IDX,
-                    euler=(brace_pitch, 0.0, 0.0),
-                )
+        wood_verts.extend(
+            add_box(
+                bm,
+                (0.0, py_f, 0.16),
+                (WIDTH - 2.0 * POST, POST * 0.70, POST * 0.55),
+                WOOD_IDX,
             )
+        )
 
-        # Slatted counter — crate-lid language, not one fat slab.
-        cy = -hy + COUNTER_D / 2.0 + 0.04
+        for sign in (-1.0, 1.0):
+            sx = sign * px
+            if low_brace:
+                a = Vector((sx, py_f, 0.28))
+                b = Vector((sx, py_b, BACK_H * 0.58))
+            else:
+                # On the post centreline so the brace tenons the post instead
+                # of reading as a wing in the front elevation.
+                a = Vector((sx, 0.04, COUNTER_Z + 0.14))
+                b = Vector((sx, py_b, BACK_H * 0.56))
+            wood_verts.extend(add_oriented_box(bm, a, b, (BRACE, BRACE), WOOD_IDX))
+
+        inner_w = WIDTH - 2.0 * POST - 0.024
+        y0 = py_f + POST / 2.0 + 0.016
+        y1 = y0 + COUNTER_D
         n_slats = 6
-        slat_gap = 0.010
-        slat_d = (COUNTER_D - 0.02 - (n_slats - 1) * slat_gap) / n_slats
-        y0 = cy - COUNTER_D / 2.0 + 0.01 + slat_d / 2.0
+        slat_gap = 0.008
+        slat_d = (COUNTER_D - (n_slats - 1) * slat_gap) / n_slats
         for i in range(n_slats):
+            jw = 0.018 * math.sin(i * 2.31 + 0.5)
+            jt = 0.006 * math.sin(i * 1.87)
+            y = y0 + slat_d / 2.0 + i * (slat_d + slat_gap)
             wood_verts.extend(
                 add_box(
                     bm,
-                    (0.0, y0 + i * (slat_d + slat_gap), COUNTER_Z),
-                    (WIDTH - 0.06, slat_d, COUNTER_T * 0.72),
+                    (0.0, y, COUNTER_Z),
+                    (inner_w + jw, slat_d * 0.94, COUNTER_T * 0.62 + jt),
                     WOOD_IDX,
                 )
             )
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, cy - COUNTER_D / 2.0 + 0.018, COUNTER_Z - 0.09),
-                (WIDTH - 0.08, 0.036, 0.16),
+                (0.0, y0 + 0.016, COUNTER_Z - 0.08),
+                (inner_w * 0.96, 0.032, 0.14),
                 WOOD_IDX,
             )
         )
-        under_shelf_z = 0.38
+        shelf_z = 0.38
         n_shelf = 4
         shelf_d = COUNTER_D * 0.78
-        shelf_gap = 0.010
+        shelf_gap = 0.008
         shelf_slat = (shelf_d - (n_shelf - 1) * shelf_gap) / n_shelf
-        sy0 = cy - shelf_d / 2.0 + shelf_slat / 2.0
+        sy0 = y0 + 0.04 + shelf_slat / 2.0
         for i in range(n_shelf):
+            jw = 0.014 * math.sin(i * 1.63 + 0.9)
             wood_verts.extend(
                 add_box(
                     bm,
-                    (0.0, sy0 + i * (shelf_slat + shelf_gap), under_shelf_z),
-                    (WIDTH - 0.16, shelf_slat, 0.024),
+                    (0.0, sy0 + i * (shelf_slat + shelf_gap), shelf_z),
+                    (inner_w - 0.08 + jw, shelf_slat * 0.94, 0.024),
                     WOOD_IDX,
                 )
             )
-        for lx in (-hx + 0.16, hx - 0.16):
-            for ly in (cy - COUNTER_D * 0.32, cy + COUNTER_D * 0.32):
+        leg_h = COUNTER_Z - COUNTER_T * 0.32
+        for lx in (-inner_w / 2.0 + 0.04, inner_w / 2.0 - 0.04):
+            for ly in (y0 + 0.05, y1 - 0.05):
                 wood_verts.extend(
-                    add_box(
-                        bm,
-                        (lx, ly, COUNTER_Z / 2.0),
-                        (0.045, 0.045, COUNTER_Z),
-                        WOOD_IDX,
-                    )
+                    add_box(bm, (lx, ly, leg_h / 2.0), (0.042, 0.042, leg_h), WOOD_IDX)
                 )
 
-        # Back wall: horizontal planks with gaps, not a felt slab.
+        plank_y = py_b - POST / 2.0 - 0.014
+        plank_len = WIDTH - POST
         for i in range(5):
-            z = 0.36 + i * 0.155
+            z = 0.30 + i * 0.148
+            jw = 0.004 * math.sin(i * 2.11)
             wood_verts.extend(
                 add_box(
                     bm,
-                    (0.0, hy - inset - 0.014, z),
-                    (WIDTH - 2.35 * POST, 0.028, 0.122),
+                    (0.0, plank_y, z),
+                    (plank_len + jw, 0.028, 0.118),
                     WOOD_IDX,
                 )
             )
 
-        # Front eave fascia under the valance.
+        fascia_y = -hy - OVERHANG_F
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, -hy - 0.008, FRONT_H - 0.028),
-                (WIDTH - POST * 0.4, 0.032, 0.048),
+                (0.0, fascia_y, FRONT_H - 0.022),
+                (WIDTH - POST * 0.2, 0.032, 0.044),
+                WOOD_IDX,
+            )
+        )
+        wood_verts.extend(
+            add_box(
+                bm,
+                (0.0, fascia_y - 0.006, FRONT_H - 0.004),
+                (WIDTH - POST * 0.05, 0.022, 0.022),
                 WOOD_IDX,
             )
         )
 
-        stripe_w = WIDTH / N_STRIPES
-        awning_len = math.hypot(DEPTH, dz)
-        awning_pitch = math.atan2(dz, DEPTH)
-        cz = (FRONT_H + BACK_H) / 2.0 + AWNING_T * 0.35
-        for i in range(N_STRIPES):
-            cx = -hx + (i + 0.5) * stripe_w
-            idx = STRIPE_A_IDX if (i % 2 == 0) else STRIPE_B_IDX
-            before = set(bm.faces)
-            add_box(
+        # Centreline sits above the header; thickness then hangs along the
+        # roof normal so the front underside clears the fascia top.
+        seat = 0.012
+        front = Vector((0.0, -hy - OVERHANG_F, FRONT_H + seat))
+        back = Vector((0.0, hy + OVERHANG_B, BACK_H + seat))
+        dy = back.y - front.y
+        dz = back.z - front.z
+        awning_len = math.hypot(dy, dz)
+        pitch = math.atan2(dz, dy)
+        nrm = Vector((0.0, -math.sin(pitch), math.cos(pitch)))
+        mid = (front + back) * 0.5
+        if float_awning:
+            mid = Vector((mid.x, mid.y, mid.z + FLOAT_AWNING))
+        stripe_faces.extend(
+            add_striped_slab(
                 bm,
-                (cx, 0.0, cz),
-                (stripe_w * 0.98, awning_len + 0.04, AWNING_T),
-                idx,
-                euler=(awning_pitch, 0.0, 0.0),
+                mid,
+                (WIDTH, awning_len, AWNING_T),
+                (pitch, 0.0, 0.0),
+                N_STRIPES,
+                STRIPE_A_IDX,
+                STRIPE_B_IDX,
             )
-            new_faces = set(bm.faces) - before
-            if idx == STRIPE_A_IDX:
-                stripe_a.update(new_faces)
-            else:
-                stripe_b.update(new_faces)
-
-        # Front valance hanging from the eave.
-        for i in range(N_STRIPES):
-            cx = -hx + (i + 0.5) * stripe_w
-            idx = STRIPE_B_IDX if (i % 2 == 0) else STRIPE_A_IDX
-            before = set(bm.faces)
-            add_box(
+        )
+        val_z = FRONT_H - 0.09 + (FLOAT_AWNING if float_awning else 0.0)
+        stripe_faces.extend(
+            add_striped_slab(
                 bm,
-                (cx, -hy - 0.01, FRONT_H - 0.08),
-                (stripe_w * 0.96, 0.016, 0.14),
-                idx,
+                (0.0, fascia_y - 0.002, val_z),
+                (WIDTH, 0.014, 0.15),
+                (0.0, 0.0, 0.0),
+                N_STRIPES,
+                STRIPE_B_IDX,
+                STRIPE_A_IDX,
             )
-            new_faces = set(bm.faces) - before
-            if idx == STRIPE_A_IDX:
-                stripe_a.update(new_faces)
-            else:
-                stripe_b.update(new_faces)
+        )
 
         if bevel_offset > 0.0:
             edges = list({e for v in wood_verts for e in v.link_edges})
@@ -389,9 +487,10 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
             )
 
         zmin = min(v.co.z for v in bm.verts)
-        if zmin != 0.0:
-            for v in bm.verts:
-                v.co.z -= zmin
+        for v in bm.verts:
+            v.co.z -= zmin
+            if v.co.z < 0.002:
+                v.co.z = 0.0
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -402,12 +501,9 @@ def build_stall_mesh(name, bevel_offset, bevel_segments):
             if edge.is_manifold and len(edge.link_faces) == 2:
                 if edge.calc_face_angle() < math.radians(25.0):
                     edge.smooth = True
-        for f in stripe_a:
-            if f.is_valid:
-                f.material_index = STRIPE_A_IDX
-        for f in stripe_b:
-            if f.is_valid:
-                f.material_index = STRIPE_B_IDX
+        for face in stripe_faces:
+            if face.is_valid:
+                pass
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
@@ -471,6 +567,271 @@ def uv_stats(mesh):
             y1 = min(a[3], b[3])
             overlap += max(0.0, x1 - x0) * max(0.0, y1 - y0)
     return min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    # Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def aabb_overlap(a, b):
+    x = min(a[3], b[3]) - max(a[0], b[0])
+    y = min(a[4], b[4]) - max(a[1], b[1])
+    z = min(a[5], b[5]) - max(a[2], b[2])
+    if x <= 0.0 or y <= 0.0 or z <= 0.0:
+        return 0.0
+    return x * y * z
+
+
+def mat_of(me, group):
+    member = set(group)
+    for poly in me.polygons:
+        if all(i in member for i in poly.vertices):
+            return poly.material_index
+    return None
+
+
+def support_audit(me):
+    """Post feet: wrap plates clustered at the four frame corners."""
+    plates = []
+    for group in shells(me):
+        if mat_of(me, group) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, group)
+        dz = a[5] - a[2]
+        dx = a[3] - a[0]
+        dy = a[4] - a[1]
+        cz = 0.5 * (a[2] + a[5])
+        if cz > 0.10 or dz > 0.10:
+            continue
+        if max(dx, dy) < POST * 0.8:
+            continue
+        plates.append(a)
+    corners = {}
+    for a in plates:
+        cx = 0.5 * (a[0] + a[3])
+        cy = 0.5 * (a[1] + a[4])
+        key = (1 if cx > 0.0 else -1, 1 if cy > 0.0 else -1)
+        corners.setdefault(key, []).append(a)
+    zmin = min((a[2] for a in plates), default=99.0)
+    return {"feet": len(corners), "foot_z": zmin}
+
+
+def joint_audit(me):
+    """Braces must not occupy the counter volume. Headers bite the posts."""
+    hx = WIDTH / 2.0
+    groups = shells(me)
+    boxes = [(g, shell_aabb(me, g), mat_of(me, g)) for g in groups]
+    posts = []
+    headers = []
+    braces = []
+    slats = []
+    for _g, a, mat in boxes:
+        if mat != WOOD_IDX:
+            continue
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        cx = 0.5 * (a[0] + a[3])
+        cy = 0.5 * (a[1] + a[4])
+        cz = 0.5 * (a[2] + a[5])
+        if dz > FRONT_H * 0.55 and dx < POST * 2.4 and dy < POST * 2.4:
+            posts.append(a)
+            continue
+        if dx > WIDTH * 0.6 and dz < POST * 2.2 and dy < POST * 2.2 and cz > FRONT_H * 0.7:
+            headers.append(a)
+            continue
+        if abs(cx) > hx - POST * 1.8 and dz > 0.35 and dy > 0.25 and dx < 0.20:
+            braces.append(a)
+            continue
+        if abs(cz - COUNTER_Z) < 0.08 and dx > WIDTH * 0.4:
+            slats.append(a)
+    overlap = 0.0
+    for brace in braces:
+        for slat in slats:
+            overlap = max(overlap, aabb_overlap(brace, slat))
+    pairs = [
+        min(h[3] - p[0], p[3] - h[0])
+        for h in headers
+        for p in posts
+        if abs(0.5 * (h[1] + h[4]) - 0.5 * (p[1] + p[4])) < POST * 2.0
+    ]
+    engage = min(pairs) if pairs else 1.0
+    return {
+        "posts": len(posts),
+        "headers": len(headers),
+        "braces": len(braces),
+        "slats": len(slats),
+        "overlap": overlap,
+        "engage": engage,
+    }
+
+
+def awning_seat(me):
+    """Gap from front-header top to awning underside, at the front eave."""
+    hy = DEPTH / 2.0
+    wood_z = []
+    stripe_z = []
+    for poly in me.polygons:
+        zs = [me.vertices[i].co.z for i in poly.vertices]
+        ys = [me.vertices[i].co.y for i in poly.vertices]
+        cy = sum(ys) / len(ys)
+        if cy > -hy + 0.15:
+            continue
+        zmax = max(zs)
+        zmin = min(zs)
+        if poly.material_index == WOOD_IDX and zmax > FRONT_H - 0.12:
+            if max(ys) - min(ys) > 0.028:
+                wood_z.append(zmax)
+        if poly.material_index in (STRIPE_A_IDX, STRIPE_B_IDX) and zmax > FRONT_H:
+            stripe_z.append(zmin)
+    if not wood_z or not stripe_z:
+        return 99.0
+    return min(stripe_z) - max(wood_z)
+
+
+def plumb_audit(me):
+    """XY centroid of each post's bottom slab vs top slab."""
+    drifts = []
+    for group in shells(me):
+        if mat_of(me, group) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, group)
+        dz = a[5] - a[2]
+        dx = a[3] - a[0]
+        dy = a[4] - a[1]
+        if dz < FRONT_H * 0.55 or dx > POST * 2.4 or dy > POST * 2.4:
+            continue
+        pts = [me.vertices[i].co for i in group]
+        zcut_lo = a[2] + 0.08 * dz
+        zcut_hi = a[5] - 0.08 * dz
+        lo = [p for p in pts if p.z <= zcut_lo]
+        hi = [p for p in pts if p.z >= zcut_hi]
+        if len(lo) < 3 or len(hi) < 3:
+            continue
+        c_lo = Vector((sum(p.x for p in lo) / len(lo), sum(p.y for p in lo) / len(lo)))
+        c_hi = Vector((sum(p.x for p in hi) / len(hi), sum(p.y for p in hi) / len(hi)))
+        drifts.append((c_hi - c_lo).length)
+    return max(drifts) if drifts else 99.0
+
+
+def frame_size(me):
+    """Post-foot envelope vs declared stall plan, not the awning AABB."""
+    hx = WIDTH / 2.0
+    hy = DEPTH / 2.0
+    xs, ys, zs = [], [], []
+    for group in shells(me):
+        if mat_of(me, group) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, group)
+        dz = a[5] - a[2]
+        dx = a[3] - a[0]
+        dy = a[4] - a[1]
+        cx = 0.5 * (a[0] + a[3])
+        cy = 0.5 * (a[1] + a[4])
+        if dz > FRONT_H * 0.55 and dx < POST * 2.4 and dy < POST * 2.4:
+            xs.extend((a[0], a[3]))
+            ys.extend((a[1], a[4]))
+            zs.append(a[5])
+            continue
+        if dz < 0.08 and abs(cx) > hx - POST * 1.6 and abs(cy) > hy - POST * 1.6:
+            zs.append(a[2])
+    if not xs:
+        return 0.0, 0.0, 0.0
+    return max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, COUNTER_Z))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
 
 
 def make_lod(obj, name, ratio, skip_decimate):
@@ -565,15 +926,46 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    short_feet=False,
+    low_brace=False,
+    float_awning=False,
+    rake_posts=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_stall_mesh("StallLow", bevel_offset=0.006, bevel_segments=2)
-    high = build_stall_mesh("StallHigh", bevel_offset=0.006, bevel_segments=4)
+    low = build_stall_mesh(
+        "StallLow",
+        bevel_offset=0.006,
+        bevel_segments=2,
+        low_brace=low_brace,
+        float_awning=float_awning,
+        rake_posts=rake_posts,
+        short_feet=short_feet,
+    )
+    high = build_stall_mesh(
+        "StallHigh",
+        bevel_offset=0.006,
+        bevel_segments=4,
+        low_brace=low_brace,
+        float_awning=float_awning,
+        rake_posts=rake_posts,
+        short_feet=short_feet,
+    )
     wood = principled("StallWood", (0.42, 0.24, 0.10, 1.0), 0.0, 0.55)
     stripe_a = principled("StallStripeA", (0.72, 0.12, 0.10, 1.0), 0.0, 0.62)
     stripe_b = principled("StallStripeB", (0.86, 0.80, 0.62, 1.0), 0.0, 0.58)
     assign_slots(low, wood, stripe_a, stripe_b)
     assign_slots(high, wood, stripe_a, stripe_b)
+
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("stall mesh did not build", 3), None, None, None, None, None
@@ -591,6 +983,13 @@ def check(skip_decimate):
     size_x = bb[3] - bb[0]
     size_y = bb[4] - bb[1]
     size_z = bb[5] - bb[2]
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    jnt = joint_audit(low.data)
+    seat = awning_seat(low.data)
+    plumb = plumb_audit(low.data)
+    fx, fy, fz = frame_size(low.data)
 
     img, tex = setup_bake_image(low, wood)
     if img is None:
@@ -619,9 +1018,7 @@ def check(skip_decimate):
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
 
-    print(
-        f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}"
-    )
+    print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
         f"measured base_tris={base_tris} lod1_tris={lod1_tris} "
         f"lod2_tris={lod2_tris} r1={r1:.4f} r2={r2:.4f}"
@@ -637,6 +1034,16 @@ def check(skip_decimate):
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
+    )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured feet={sup['feet']} foot_z={sup['foot_z']:.5f} "
+        f"brace_overlap={jnt['overlap']:.6f} engage={jnt['engage']:.4f} "
+        f"seat={seat:.5f} plumb={plumb:.5f} frame=({fx:.4f},{fy:.4f},{fz:.4f})"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -702,6 +1109,40 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"] or hyg["zero_area"]
+        or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
+    if bb[2] > ZMIN_EPS or sup["feet"] != FOOT_COUNT or sup["foot_z"] > FOOT_ZMIN_MAX:
+        return fail(
+            f"grounded zmin={bb[2]:.5f} feet={sup['feet']} "
+            f"foot_z={sup['foot_z']:.5f}",
+            16,
+        ), None, None, None, None, None
+    if jnt["overlap"] > BRACE_COUNTER_OVERLAP_MAX or jnt["engage"] < TENON * 0.4:
+        return fail(
+            f"joint overlap={jnt['overlap']:.6f} engage={jnt['engage']:.4f} "
+            f"posts={jnt['posts']} braces={jnt['braces']} slats={jnt['slats']}",
+            17,
+        ), None, None, None, None, None
+    if seat < AWNING_SEAT_MIN or seat > AWNING_SEAT_MAX:
+        return fail(f"awning seat gap {seat:.5f} > {AWNING_SEAT_MAX}", 18), None, None, None, None, None
+    if (
+        plumb > POST_PLUMB_MAX
+        or abs(fx - WIDTH) > FRAME_XY_TOL
+        or abs(fy - DEPTH) > FRAME_XY_TOL
+    ):
+        return fail(
+            f"plumb={plumb:.5f} frame=({fx:.4f},{fy:.4f},{fz:.4f}) "
+            f"off {WIDTH}x{DEPTH}",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -766,13 +1207,15 @@ def render_still(low, wood, tex, path, engine):
     light("Fill", (5.0, -3.6, 2.6), 48.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.4, 4.2, 4.1), 640.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
 
+    bb = world_bbox(low)
+    span = max(bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2], 0.2)
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.11, -5.10, 1.60)
+    cam.location = (span * 2.17, -span * 2.95, span * 1.12)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, -0.10, 0.92)
+    aim.location = (0.0, -0.04 * span, 0.52 * (bb[2] + bb[5]))
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -815,14 +1258,24 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--short-feet", action="store_true")
+    p.add_argument("--low-brace", action="store_true")
+    p.add_argument("--float-awning", action="store_true")
+    p.add_argument("--rake-posts", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_feet=args.short_feet,
+        low_brace=args.low_brace,
+        float_awning=args.float_awning,
+        rake_posts=args.rake_posts,
+    )
     if code:
         return code
     if args.output:
