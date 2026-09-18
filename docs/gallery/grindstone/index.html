@@ -1022,7 +1022,7 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">for</span> p <span class="k">in</span> me.polygons:
         <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> p.vertices):
             <span class="k">return</span> p.material_index
-    <span class="k">return</span> -<span class="n">1</span>
+    <span class="k">return</span> <span class="k">None</span>
 
 
 <span class="k">def</span> support_audit(me):
