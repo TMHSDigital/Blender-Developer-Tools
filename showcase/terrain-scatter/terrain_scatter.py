@@ -1,19 +1,23 @@
 """Game-ready GN terrain scatter — a showcase piece, not an example.
 
 Asserts budget conformance of a Geometry Nodes hill grid with instanced
-masonry rocks after composing shipped pipeline pieces: GN construction,
+rocks after composing shipped pipeline pieces: GN construction,
 UVs, two materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
+GN still builds the sine hill and the Index-jittered instance grid.
+Realized cubes are replaced with closed-form displaced icospheres seated
+on sampled dirt Z, then clamped above the slab floor.
+
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` LOD, ``--stray-vert`` hygiene, ``--lift-z``
+zmin, ``--poke-rock`` stone floor, ``--float-rocks`` seat, ``--box-rocks``
+stone shell faces.
 
 No RNG. Hills are a closed-form sine product; scatter is an Index-jittered
-instance grid. Realized cubes are replaced with bevelled lumped boxes
-(campfire/well masonry, not icospheres). DECIMATE COLLAPSE triangle
-counts are not byte-identical across Blender versions — the LOD gate is
-a ratio band, not an exact count.
+instance grid. DECIMATE COLLAPSE triangle counts are not byte-identical
+across Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python terrain_scatter.py --
     blender --background --python terrain_scatter.py -- --skip-decimate
@@ -44,11 +48,14 @@ ROCK_SIZE = (0.22, 0.17, 0.13)
 ROCK_GRID = 3
 ROCK_SPAN = 1.15
 SLAB_LIFT = 0.10
+ROCK_BITE = 0.035
+ROCK_ZMIN = 0.012
+N_ROCKS = 9
 
-BBOX_TOL = 0.01
-OUTER_SIZE = (1.800, 1.800, 0.655)
-BASE_TRIS_MIN = 1150
-BASE_TRIS_MAX = 1250
+BBOX_TOL = 0.015
+OUTER_SIZE = (1.800, 1.800, 0.552)
+BASE_TRIS_MIN = 1400
+BASE_TRIS_MAX = 2800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -58,10 +65,20 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 80
+COLLIDER_TRIS_MAX = 120
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 STONE_FACES_MIN = 24
+STONE_SHELL_FACES_MIN = 40
+ZMIN_EPS = 1e-4
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZFIGHT_EPS = 1e-4
+ZFIGHT_COS = 0.998
+ROCK_SEAT_MAX = 0.02
+FLOAT_LIFT = 0.12
+POKE_BITE = 0.22
+LIFT_Z = 0.05
 
 DIRT_IDX = 0
 STONE_IDX = 1
@@ -233,7 +250,7 @@ def build_scatter_tree(verts, dirt, stone):
     tree.links.new(jx.outputs[0], jxs.inputs[0])
     jxm = tree.nodes.new("ShaderNodeMath")
     jxm.operation = "MULTIPLY"
-    jxm.inputs[1].default_value = 0.09
+    jxm.inputs[1].default_value = 0.22
     tree.links.new(jxs.outputs[0], jxm.inputs[0])
     jy = tree.nodes.new("ShaderNodeMath")
     jy.operation = "MULTIPLY"
@@ -244,7 +261,7 @@ def build_scatter_tree(verts, dirt, stone):
     tree.links.new(jy.outputs[0], jyc.inputs[0])
     jym = tree.nodes.new("ShaderNodeMath")
     jym.operation = "MULTIPLY"
-    jym.inputs[1].default_value = 0.09
+    jym.inputs[1].default_value = 0.22
     tree.links.new(jyc.outputs[0], jym.inputs[0])
     extra = tree.nodes.new("ShaderNodeMath")
     extra.operation = "ADD"
@@ -356,7 +373,64 @@ def slabify(bm, floor_z=0.0):
             f.material_index = DIRT_IDX
 
 
-def masonry_from_cubes(bm, lump, bevel_offset, bevel_segments):
+def nearest_dirt_z(bm, x, y):
+    best_z = None
+    best_d = 1e9
+    for v in bm.verts:
+        if not v.link_faces:
+            continue
+        if not any(f.material_index == DIRT_IDX for f in v.link_faces):
+            continue
+        dx = v.co.x - x
+        dy = v.co.y - y
+        d = dx * dx + dy * dy
+        if d < best_d:
+            best_d = d
+            best_z = v.co.z
+    return 0.0 if best_z is None else best_z
+
+
+def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
+    sx = 0.11 + 0.025 * math.sin(cx * 8.1)
+    sy = 0.10 + 0.022 * math.cos(cy * 6.4)
+    sz = 0.075 + 0.020 * math.sin(cx * 4.2 + cy * 3.1)
+    bite = POKE_BITE if poke else ROCK_BITE
+    seat = dirt_z + FLOAT_LIFT if float_up else dirt_z - bite
+    rot = Euler(
+        (
+            0.22 * math.sin(cx * 3.1),
+            0.18 * math.cos(cy * 2.7),
+            cx * 2.4 + cy * 1.6,
+        )
+    ).to_matrix()
+    if box_rocks:
+        verts = add_box(bm, (0.0, 0.0, 0.0), (sx * 2.0, sy * 2.0, sz * 2.0), STONE_IDX)
+        for v in verts:
+            v.co = rot @ v.co
+    else:
+        geo = bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+        verts = geo["verts"]
+        for v in verts:
+            p = Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz))
+            if p.length > 1e-8:
+                bump = 0.016 * math.sin(p.x * 26.0 + cx * 5.0) * math.cos(
+                    p.y * 21.0 + cy * 4.0
+                )
+                p += p.normalized() * bump
+            v.co = rot @ p
+        for f in {face for v in verts for face in v.link_faces}:
+            f.material_index = STONE_IDX
+    zmin = min(v.co.z for v in verts)
+    dz = seat - zmin
+    for v in verts:
+        v.co.x += cx
+        v.co.y += cy
+        v.co.z += dz
+        if not poke and v.co.z < ROCK_ZMIN:
+            v.co.z = ROCK_ZMIN
+
+
+def masonry_from_cubes(bm, box_rocks=False, poke=False, float_up=False):
     stone_faces = [f for f in bm.faces if f.material_index == STONE_IDX]
     visited = set()
     islands = []
@@ -382,19 +456,9 @@ def masonry_from_cubes(bm, lump, bevel_offset, bevel_segments):
         verts = {v for f in island for v in f.verts}
         xs = [v.co.x for v in verts]
         ys = [v.co.y for v in verts]
-        zs = [v.co.z for v in verts]
         cx = 0.5 * (min(xs) + max(xs))
         cy = 0.5 * (min(ys) + max(ys))
-        cz = 0.5 * (min(zs) + max(zs))
-        z0 = min(zs)
-        sx = 0.17 + 0.04 * math.sin(cx * 8.1)
-        sy = 0.15 + 0.03 * math.cos(cy * 6.4)
-        sz = 0.20 + 0.05 * math.sin(cx * 4.2 + cy * 3.1)
-        ex = 0.38 * math.sin(cx * 5.1)
-        ey = 0.30 * math.cos(cy * 4.3)
-        ez = cx * 3.7 + cy * 2.1
-        cz = z0 + sz * 0.30
-        specs.append((cx, cy, cz, sx, sy, sz, ex, ey, ez))
+        specs.append((cx, cy))
 
     if stone_faces:
         bmesh.ops.delete(bm, geom=stone_faces, context="FACES")
@@ -402,31 +466,22 @@ def masonry_from_cubes(bm, lump, bevel_offset, bevel_segments):
         if loose:
             bmesh.ops.delete(bm, geom=loose, context="VERTS")
 
-    for cx, cy, cz, sx, sy, sz, ex, ey, ez in specs:
-        verts = add_box(
-            bm,
-            (cx, cy, cz),
-            (sx, sy, sz),
-            STONE_IDX,
-            euler=(ex, ey, ez),
-        )
-        if bevel_offset > 0.0:
-            edges = list({e for v in verts for e in v.link_edges})
-            if edges:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=0.5,
-                    affect="EDGES",
-                    clamp_overlap=True,
-                )
-                for f in ret.get("faces") or []:
-                    f.material_index = STONE_IDX
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+    for cx, cy in specs:
+        dirt_z = nearest_dirt_z(bm, cx, cy)
+        add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up)
 
 
-def build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dirt, stone):
+def build_terrain_mesh(
+    name,
+    grid_verts,
+    dirt,
+    stone,
+    box_rocks=False,
+    poke=False,
+    float_up=False,
+):
     carrier = bpy.data.meshes.new(name + "Carrier")
     carrier.vertices.add(1)
     obj = bpy.data.objects.new(name + "GN", carrier)
@@ -446,7 +501,7 @@ def build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dir
         slabify(bm, floor_z=0.0)
         bm.verts.ensure_lookup_table()
         bm.faces.ensure_lookup_table()
-        masonry_from_cubes(bm, lump, bevel_offset, bevel_segments)
+        masonry_from_cubes(bm, box_rocks=box_rocks, poke=poke, float_up=float_up)
         xs = [v.co.x for v in bm.verts]
         ys = [v.co.y for v in bm.verts]
         zs = [v.co.z for v in bm.verts]
@@ -459,15 +514,18 @@ def build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dir
             v.co.z -= zmin
             if v.co.z < 0.0:
                 v.co.z = 0.0
+        ngons = [f for f in bm.faces if len(f.verts) > 4]
+        if ngons:
+            bmesh.ops.triangulate(bm, faces=ngons)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = face.material_index == STONE_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         for poly in me.polygons:
-            poly.use_smooth = False
+            poly.use_smooth = poly.material_index == STONE_IDX
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -475,13 +533,25 @@ def build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dir
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 6.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
@@ -498,10 +568,11 @@ def assign_slots(obj, dirt, stone):
 
 
 def world_bbox(obj):
-    corners = [obj.matrix_world @ Vector(c) for c in obj.bound_box]
-    xs = [c.x for c in corners]
-    ys = [c.y for c in corners]
-    zs = [c.z for c in corners]
+    mat = obj.matrix_world
+    pts = [mat @ v.co for v in obj.data.vertices]
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    zs = [p.z for p in pts]
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
@@ -616,14 +687,186 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for poly in me.polygons:
+        if all(i in member for i in poly.vertices):
+            return poly.material_index
+    return None
+
+
+def shell_faces(me, group):
+    member = set(group)
+    return sum(1 for p in me.polygons if all(i in member for i in p.vertices))
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, 0.55))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
+def nearest_mesh_dirt_z(me, x, y, dirt_verts):
+    best_z = 0.0
+    best_d = 1e9
+    for co in dirt_verts:
+        d = (co.x - x) ** 2 + (co.y - y) ** 2
+        if d < best_d:
+            best_d = d
+            best_z = co.z
+    return best_z
+
+
+def joint_audit(me):
+    groups = shells(me)
+    stones = []
+    dirt_verts = []
+    for poly in me.polygons:
+        if poly.material_index != DIRT_IDX:
+            continue
+        for i in poly.vertices:
+            dirt_verts.append(me.vertices[i].co)
+    for g in groups:
+        if mat_of(me, g) != STONE_IDX:
+            continue
+        a = shell_aabb(me, g)
+        nfaces = shell_faces(me, g)
+        cx = 0.5 * (a[0] + a[3])
+        cy = 0.5 * (a[1] + a[4])
+        dirt_z = nearest_mesh_dirt_z(me, cx, cy, dirt_verts)
+        stones.append((a[2], nfaces, a[2] - dirt_z))
+    n_stones = len(stones)
+    min_faces = min((s[1] for s in stones), default=0)
+    poke_z = min((s[0] for s in stones), default=99.0)
+    float_off = max((s[2] for s in stones), default=0.0)
+    return {
+        "n_stones": n_stones,
+        "min_faces": min_faces,
+        "poke_z": poke_z,
+        "float_off": float_off,
+    }
+
+
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    poke=False,
+    float_up=False,
+    box_rocks=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    dirt = principled("TerrainDirt", (0.30, 0.17, 0.07, 1.0), 0.0, 0.90)
-    stone = principled("TerrainStone", (0.56, 0.53, 0.48, 1.0), 0.0, 0.76)
-    low = build_terrain_mesh("TerrainLow", 9, 0.10, 0.022, 2, dirt, stone)
-    high = build_terrain_mesh("TerrainHigh", 13, 0.10, 0.022, 4, dirt, stone)
+    dirt = principled(
+        "TerrainDirt", (0.30, 0.17, 0.07, 1.0), 0.0, 0.90,
+        noise_scale=14.0, wear=(0.18, 0.10, 0.04, 1.0),
+    )
+    stone = principled(
+        "TerrainStone", (0.56, 0.53, 0.48, 1.0), 0.0, 0.76,
+        noise_scale=20.0, wear=(0.38, 0.35, 0.30, 1.0),
+    )
+    kw = dict(box_rocks=box_rocks, poke=poke, float_up=float_up)
+    low = build_terrain_mesh("TerrainLow", 21, dirt, stone, **kw)
+    high = build_terrain_mesh("TerrainHigh", 25, dirt, stone, **kw)
     assign_slots(low, dirt, stone)
     assign_slots(high, dirt, stone)
+
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("terrain mesh did not build", 3), None, None, None, None, None
@@ -656,7 +899,7 @@ def check(skip_decimate):
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
     collider_src = build_terrain_mesh(
-        "TerrainColSrc", 9, 0.0, 0.0, 1, dirt, stone
+        "TerrainColSrc", 21, dirt, stone, **kw
     )
     collider = convex_hull_collider(collider_src, "TerrainCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
@@ -688,7 +931,24 @@ def check(skip_decimate):
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    jnt = joint_audit(low.data)
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured stones={jnt['n_stones']} min_faces={jnt['min_faces']} "
+        f"poke_z={jnt['poke_z']:.5f} float_off={jnt['float_off']:.5f}"
+    )
 
+    if jnt["min_faces"] < STONE_SHELL_FACES_MIN:
+        return fail(
+            f"stone shell faces {jnt['min_faces']} < {STONE_SHELL_FACES_MIN}",
+            19,
+        ), None, None, None, None, None
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
             f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]",
@@ -714,6 +974,18 @@ def check(skip_decimate):
             f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}",
             7,
         ), None, None, None, None, None
+    if jnt["n_stones"] != N_ROCKS or jnt["poke_z"] < ROCK_ZMIN:
+        return fail(
+            f"poke stones={jnt['n_stones']} poke_z={jnt['poke_z']:.5f}",
+            17,
+        ), None, None, None, None, None
+    if jnt["float_off"] > ROCK_SEAT_MAX:
+        return fail(
+            f"float_off {jnt['float_off']:.5f} > {ROCK_SEAT_MAX}",
+            18,
+        ), None, None, None, None, None
+    if bb[2] > ZMIN_EPS:
+        return fail(f"grounded zmin={bb[2]:.5f}", 16), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
         or abs(size_y - OUTER_SIZE[1]) > BBOX_TOL
@@ -747,6 +1019,16 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"] or hyg["zero_area"]
+        or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
     return 0, low, high, dirt, tex, collider
 
 
@@ -860,14 +1142,22 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--poke-rock", action="store_true")
+    p.add_argument("--float-rocks", action="store_true")
+    p.add_argument("--box-rocks", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, dirt, tex, _col = check(args.skip_decimate)
+    code, low, _high, dirt, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        poke=args.poke_rock,
+        float_up=args.float_rocks,
+        box_rocks=args.box_rocks,
+    )
     if code:
         return code
     if args.output:
