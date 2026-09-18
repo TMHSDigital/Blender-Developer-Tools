@@ -89,6 +89,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   vertices as inner ones the moment the host is out of round, which is
   how a hoop that visibly gapped on one side still passed. The paired
   falsifier makes the wrapper a true circle on an out-of-round host.
+- **Sampled host seat (exit 17/18 on scatter).** Instanced scatter
+  seats by sampling the host surface Z at each instance's XY, biting a
+  named depth, then clamping instance verts above the slab floor. A
+  closed-form icosphere (or equivalent) replaces the GN cube so the
+  scatter is stones, not open crates; a per-shell face floor is the
+  budget that catches a cube leftover (exit 19). `--poke-rock` skips
+  the clamp and over-bites; `--float-rocks` seats above the host.
 - **Plumb and real-world size (exit 19).** Assert that the axis of a
   turned or lofted body is vertical, by comparing the XY centroid of a
   bottom slab against a top slab — not the exact `zmin` and `zmax`
