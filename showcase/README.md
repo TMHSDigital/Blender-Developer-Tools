@@ -50,7 +50,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   flat fan cap are coplanar and close-centred by construction, and
   counting those makes the budget unsatisfiable rather than meaningful.
   Multi-body props do **not** require Euler characteristic 2 — that is a
-  single-shell contract. Pairs of parts meant to touch assert a BVH
+  single-shell contract. Two boxes that share a coplanar face z-fight;
+  two that share a vertex weld into one shell. Seat a joint with a named
+  overlap or rebate computed from the host (a cage post into its rail, a
+  glass pane behind its muntin, a plinth step into its base) rather than
+  hoping the numbers happen not to coincide. A hang-station versus
+  arm-station split lets a contact falsifier move one member without
+  dragging the rest of the assembly. Pairs of parts meant to touch assert a BVH
   surface gap below a named epsilon (vert-vert is the wrong metric for
   thin straps and collars). A spanning board whose only vertices sit at
   the far ends will report a false gap to a mid-span knuckle; put a

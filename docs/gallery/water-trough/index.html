@@ -253,28 +253,46 @@
       <img src="../assets/water-trough-hero.webp" alt="water-trough render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2484 tris, three materials with 192 metal and 6 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.152×0.568×0.509 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 32 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3700 tris, three materials with 1674 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093×0.552×0.504 m, zmin 0, four shoes planted, U end-cap rim span 5 mm, strap BVH gap 0, water-hull gap 2.6 mm, hull 1.045×0.466 m, LOD ratios in band, convex collider 64 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap 18; --narrow-hull 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/water-trough/water_trough.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, plank end-caps, contained water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, U end-caps, contained water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>The hull, ends, straps and water all sample the same YZ arc. End caps are U-boards the staves tenon into, not a bounding-box slab around the U. Straps sit at <code>STRAP_X</code>, offset from <code>LEG_X</code>, so the trestle does not punch through the iron. Stretchers span the inner faces of the legs. <code>--round-band</code> is not used; <code>--float-strap</code> is the seat falsifier.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
+<p>Intended size: 1.08 m tray length, 0.44 m across the U, 0.50 m overall height; outer AABB 1.093 × 0.552 × 0.504 m.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2320–2650 | 2484 / 2484 / 2484 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2166 | | Materials | exactly 3 distinct, ≥24 metal and ≥6 water faces | 3 slots, 192 metal, 6 water | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.152, 0.568, 0.509) m ± 0.01 | (1.1520, 0.5680, 0.5086), zmin 0 | | Collider tris | ≤ 80 | 32 | | Export | written, size &gt; 0 | 180748 / 180748 / 180728 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 8 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 20 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 3300–4000 | 3700 / 3700 / 3700 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 | | Materials | exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water | 3 slots; 1674 / 156 / 29 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.093, 0.552, 0.504) m ± 0.01 | (1.0932, 0.5520, 0.5040), zmin 0 | | Collider tris | ≤ 80 | 64 | | Export | written, size &gt; 0 | 268840 / 268840 / 268824 bytes |</p>
+<p>Base triangles rose from <strong>2484 to 3700</strong> in the quality pass: box end slabs and a single extruded U became ten jittered staves, U end-caps, continuous straps offset from the legs, and stretchers that meet the inner faces.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses closed-form <code>sin(i)</code>, no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>The hull-size budget (exit 19) runs <strong>before</strong> the outer AABB budget (exit 8) so <code>--narrow-hull</code> is not swallowed by a moved bounding box.</p>
+<h3>Hygiene</h3>
+<p>Recomputed from the generated mesh, not asserted about the script.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Named supports: 4 shoes | each <code>zmin</code> ≤ 0.001 | 4, shoe_z 0.00000 | | Hull plan | 1.08 m × 0.44 m ± 0.08 | 1.0448 × 0.4661 |</p>
+<h3>Joint fit and seat</h3>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | End-cap rim Z-span | ≤ 0.080 m | 0.0050 | | Strap-to-hull BVH gap | ≤ 0.008 m | 0.00000 | | Water-to-hull BVH gap | ≤ 0.008 m | 0.00260 |</p>
+<h3>Falsifiers</h3>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--short-legs</code> | named shoe supports at Z=0 | 16 | | <code>--box-ends</code> | end-cap rim span | 17 | | <code>--float-strap</code> | strap-to-hull gap | 18 | | <code>--narrow-hull</code> | hull plan vs stated size | 19 |</p>
+<p><code>--short-legs</code> lifts the shoes only, so AABB <code>zmin</code> stays 0 (the legs still plant) and the named-support gate is what fires.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python water_trough.py --
 blender --background --python water_trough.py -- --skip-decimate
+blender --background --python water_trough.py -- --stray-vert
+blender --background --python water_trough.py -- --lift-z
+blender --background --python water_trough.py -- --short-legs
+blender --background --python water_trough.py -- --box-ends
+blender --background --python water_trough.py -- --float-strap
+blender --background --python water_trough.py -- --narrow-hull
 blender --background --python water_trough.py -- --output trough.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or wood/metal/water faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats | | 17 | Joint fit: end-cap U-rim span (<code>--box-ends</code>) | | 18 | Seat: strap or water BVH gap (<code>--float-strap</code>) | | 19 | Hull length or width off the stated real-world size (<code>--narrow-hull</code>) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -285,18 +303,26 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
       <pre><span class="s">&quot;&quot;&quot;Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (watertight U-hull, plank end-caps, contained water, iron straps,
-trestle legs) after composing shipped pipeline pieces: bmesh
-construction, UVs, three materials, high-to-low normal bake, LOD chain,
-convex collider, Unity glTF export.
+stand (U-staves and U end-caps from one radius function, contained
+water, iron straps lofted on that same host, trestle legs) after
+composing shipped pipeline pieces: bmesh construction, UVs, three
+materials, high-to-low normal bake, LOD chain, convex collider, Unity
+glTF export.
+
+The hull, ends, straps and water all sample the same YZ arc. End caps
+are U-boards the staves tenon into, not a bounding-box slab around the
+U. Legs run from a hull-outer station to a shoe at Z=0.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named shoe
+supports, ``--box-ends`` end-cap U-fit, ``--float-strap`` strap seat,
+``--narrow-hull`` hull real-world size.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+No RNG. Stave seams use closed-form ``sin(i)``. DECIMATE COLLAPSE
+triangle counts are not byte-identical across Blender versions — the LOD
+gate is a ratio band, not an exact count.
 
     blender --background --python water_trough.py --
     blender --background --python water_trough.py -- --skip-decimate
@@ -312,6 +338,7 @@ ratio band, not an exact count.
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -322,15 +349,34 @@ sys.dont_write_bytecode = <span class="k">True</span>
 
 TRAY_L = <span class="n">1.08</span>
 TRAY_R = <span class="n">0.22</span>
-STAVE_T = <span class="n">0.030</span>
-N_STAVES = <span class="n">12</span>
-A_SPAN = <span class="n">1.38</span>
-END_T = <span class="n">0.050</span>
+STAVE_T = <span class="n">0.032</span>
+N_STAVES = <span class="n">10</span>
+A_SPAN = <span class="n">1.20</span>
+END_T = <span class="n">0.044</span>
+END_OVERHANG = <span class="n">0.010</span>
+STAVE_GAP = <span class="n">0.008</span>
+STRAP_W = <span class="n">0.028</span>
+STRAP_T = <span class="n">0.008</span>
+STRAP_BITE = <span class="n">0.008</span>
+SHOE_H = <span class="n">0.028</span>
+SHOE_XY = (<span class="n">0.058</span>, <span class="n">0.052</span>)
+LEG_X = TRAY_L * <span class="n">0.28</span>
+STRAP_X = TRAY_L * <span class="n">0.18</span>
+LEG_TOP_Y = <span class="n">0.090</span>
+LEG_BOT_Y = <span class="n">0.250</span>
+STRETCHER_Z = <span class="n">0.115</span>
+STRETCHER_T = <span class="n">0.028</span>
+LEG_W = <span class="n">0.048</span>
+WATER_GAP = <span class="n">0.004</span>
+WATER_FILL = <span class="n">0.68</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.152</span>, <span class="n">0.568</span>, <span class="n">0.509</span>)
-BASE_TRIS_MIN = <span class="n">2320</span>
-BASE_TRIS_MAX = <span class="n">2650</span>
+OUTER_SIZE = (<span class="n">1.093</span>, <span class="n">0.552</span>, <span class="n">0.504</span>)
+HULL_SIZE = (<span class="n">1.08</span>, <span class="n">0.44</span>)
+HULL_SIZE_TOL = (<span class="n">0.08</span>, <span class="n">0.08</span>)
+NARROW_HULL_R = <span class="n">0.12</span>
+BASE_TRIS_MIN = <span class="n">3300</span>
+BASE_TRIS_MAX = <span class="n">4000</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -346,6 +392,19 @@ CAGE_EXTRUSION = <span class="n">0.08</span>
 METAL_FACES_MIN = <span class="n">24</span>
 WOOD_FACES_MIN = <span class="n">24</span>
 WATER_FACES_MIN = <span class="n">6</span>
+
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.998</span>
+LIFT_Z = <span class="n">0.05</span>
+SHOE_COUNT = <span class="n">4</span>
+SHOE_ZMIN_MAX = <span class="n">1e-3</span>
+END_RIM_SPAN_MAX = <span class="n">0.080</span>
+STRAP_GAP_MAX = <span class="n">0.008</span>
+WATER_CONTACT_MAX = <span class="n">0.008</span>
+PLUMB_MAX = <span class="n">0.010</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
@@ -426,6 +485,11 @@ WATER_IDX = <span class="n">2</span>
     <span class="k">return</span> Vector((x, radius * math.sin(a), zc - radius * math.cos(a)))
 
 
+<span class="k">def</span> hull_z_at_y(y, radius, zc):
+    y = max(-radius + <span class="n">1e-6</span>, min(radius - <span class="n">1e-6</span>, y))
+    <span class="k">return</span> zc - math.sqrt(radius * radius - y * y)
+
+
 <span class="k">def</span> add_u_shell(bm, x0, x1, r_in, r_out, n_seg, zc, a_span, mat_idx):
     in0, out0, in1, out1 = [], [], [], []
     <span class="k">for</span> i <span class="k">in</span> range(n_seg + <span class="n">1</span>):
@@ -445,60 +509,63 @@ WATER_IDX = <span class="n">2</span>
     <span class="k">return</span> collected
 
 
-<span class="k">def</span> add_end_plank(bm, x_end, toward, radius, zc, a_span, thick, mat_idx):
-    y_span = <span class="n">2.0</span> * radius * math.sin(a_span) + <span class="n">0.046</span>
-    z_lo = zc - radius - <span class="n">0.008</span>
-    z_hi = zc - radius * math.cos(a_span) + <span class="n">0.036</span>
+<span class="k">def</span> add_stave(bm, a0, a1, x0, x1, r_in, r_out, zc, mat_idx):
+    <span class="k">def</span> ring(x):
+        <span class="k">return</span> [
+            bm.verts.new(_arc_point(a0, r_out, x, zc)),
+            bm.verts.new(_arc_point(a1, r_out, x, zc)),
+            bm.verts.new(_arc_point(a1, r_in, x, zc)),
+            bm.verts.new(_arc_point(a0, r_in, x, zc)),
+        ]
+
+    r0 = ring(x0)
+    r1 = ring(x1)
+    _face(bm, (r0[<span class="n">0</span>], r0[<span class="n">1</span>], r1[<span class="n">1</span>], r1[<span class="n">0</span>]), mat_idx)
+    _face(bm, (r0[<span class="n">2</span>], r0[<span class="n">3</span>], r1[<span class="n">3</span>], r1[<span class="n">2</span>]), mat_idx)
+    _face(bm, (r0[<span class="n">1</span>], r0[<span class="n">2</span>], r1[<span class="n">2</span>], r1[<span class="n">1</span>]), mat_idx)
+    _face(bm, (r0[<span class="n">3</span>], r0[<span class="n">0</span>], r1[<span class="n">0</span>], r1[<span class="n">3</span>]), mat_idx)
+    _face(bm, (r0[<span class="n">0</span>], r0[<span class="n">3</span>], r0[<span class="n">2</span>], r0[<span class="n">1</span>]), mat_idx)
+    _face(bm, (r1[<span class="n">0</span>], r1[<span class="n">1</span>], r1[<span class="n">2</span>], r1[<span class="n">3</span>]), mat_idx)
+    <span class="k">return</span> r0 + r1
+
+
+<span class="k">def</span> add_box_end(bm, x_mid, radius, zc, a_span, thick, mat_idx):
+    y_span = <span class="n">2.0</span> * radius * math.sin(a_span)
+    z_lo = zc - radius
+    z_hi = zc - radius * math.cos(a_span)
     z_mid = <span class="n">0.5</span> * (z_lo + z_hi)
-    x_mid = x_end + toward * (thick * <span class="n">0.5</span> - <span class="n">0.014</span>)
-    <span class="k">return</span> add_box(
+    verts = add_box(
         bm,
         (x_mid, <span class="n">0.0</span>, z_mid),
         (thick, y_span, z_hi - z_lo),
         mat_idx,
     )
-
-
-<span class="k">def</span> add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cone(
-        bm,
-        cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">False</span>,
-        segments=segments,
-        radius1=radius,
-        radius2=radius,
-        depth=depth,
-    )
-    verts = geo[<span class="s">&quot;verts&quot;</span>]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
+    edges = list({e <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+    bmesh.ops.subdivide_edges(bm, edges=edges, cuts=<span class="n">6</span>, use_grid_fill=<span class="k">True</span>)
     <span class="k">return</span> verts
 
 
-<span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    geo = bmesh.ops.create_cone(
-        bm,
-        cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">False</span>,
-        segments=segments,
-        radius1=radius1,
-        radius2=radius2,
-        depth=depth,
-    )
-    verts = geo[<span class="s">&quot;verts&quot;</span>]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
-    <span class="k">return</span> verts
+<span class="k">def</span> add_u_water(bm, x0, x1, r, n_seg, zc, z_water, mat_idx):
+    ca = max(-<span class="n">1.0</span>, min(<span class="n">1.0</span>, (zc - z_water) / r))
+    a_wl = math.acos(ca)
+    ring0, ring1 = [], []
+    <span class="k">for</span> i <span class="k">in</span> range(n_seg + <span class="n">1</span>):
+        a = -a_wl + <span class="n">2.0</span> * a_wl * i / n_seg
+        ring0.append(bm.verts.new(_arc_point(a, r, x0, zc)))
+        ring1.append(bm.verts.new(_arc_point(a, r, x1, zc)))
+    collected = ring0 + ring1
+    <span class="k">for</span> i <span class="k">in</span> range(n_seg):
+        _face(bm, (ring0[i], ring0[i + <span class="n">1</span>], ring1[i + <span class="n">1</span>], ring1[i]), mat_idx)
+    _face(bm, (ring0[<span class="n">0</span>], ring1[<span class="n">0</span>], ring1[n_seg], ring0[n_seg]), mat_idx)
+    _face(bm, tuple(reversed(ring0)), mat_idx)
+    _face(bm, tuple(ring1), mat_idx)
+    <span class="k">return</span> collected
+
+
+<span class="k">def</span> triangulate_ngons(bm):
+    faces = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
+    <span class="k">if</span> faces:
+        bmesh.ops.triangulate(bm, faces=faces)
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -544,54 +611,86 @@ WATER_IDX = <span class="n">2</span>
             )
 
 
-<span class="k">def</span> build_trough_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_trough_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    box_ends=<span class="k">False</span>,
+    float_strap=<span class="k">False</span>,
+    short_legs=<span class="k">False</span>,
+    narrow_hull=<span class="k">False</span>,
+):
     bm = bmesh.new()
     <span class="k">try</span>:
         wood = []
-        metal = []
-        zc = <span class="n">0.30</span> + TRAY_R
-        cx = <span class="n">0.0</span>
-        r_in = TRAY_R
-        r_out = TRAY_R + STAVE_T
-        x0 = cx - TRAY_L / <span class="n">2.0</span>
-        x1 = cx + TRAY_L / <span class="n">2.0</span>
-        wood.extend(
-            add_u_shell(bm, x0, x1, r_in, r_out, N_STAVES, zc, A_SPAN, WOOD_IDX)
-        )
-        wood.extend(add_end_plank(bm, x0, -<span class="n">1.0</span>, r_out, zc, A_SPAN, END_T, WOOD_IDX))
-        wood.extend(add_end_plank(bm, x1, <span class="n">1.0</span>, r_out, zc, A_SPAN, END_T, WOOD_IDX))
+        tray_r = NARROW_HULL_R <span class="k">if</span> narrow_hull <span class="k">else</span> TRAY_R
+        zc = SHOE_H + <span class="n">0.335</span> + TRAY_R
+        r_in = tray_r
+        r_out = tray_r + STAVE_T
+        x_cap_l0 = -TRAY_L / <span class="n">2.0</span> - END_T * <span class="n">0.15</span>
+        x_cap_l1 = -TRAY_L / <span class="n">2.0</span> + END_T * <span class="n">0.85</span>
+        x_cap_r0 = TRAY_L / <span class="n">2.0</span> - END_T * <span class="n">0.85</span>
+        x_cap_r1 = TRAY_L / <span class="n">2.0</span> + END_T * <span class="n">0.15</span>
+        x_stave_0 = -TRAY_L / <span class="n">2.0</span> + END_T * <span class="n">0.40</span>
+        x_stave_1 = TRAY_L / <span class="n">2.0</span> - END_T * <span class="n">0.40</span>
 
-        <span class="k">for</span> a_lip <span class="k">in</span> (-A_SPAN, A_SPAN):
+        span = <span class="n">2.0</span> * A_SPAN
+        usable = span - STAVE_GAP * N_STAVES
+        width = usable / N_STAVES
+        a = -A_SPAN + STAVE_GAP * <span class="n">0.5</span>
+        <span class="k">for</span> i <span class="k">in</span> range(N_STAVES):
+            jitter = <span class="n">0.0035</span> * math.sin(i * <span class="n">1.7</span> + <span class="n">0.4</span>)
+            a0 = a
+            a1 = a + width + jitter
             wood.extend(
-                add_box(
-                    bm,
-                    _arc_point(a_lip, r_out, cx, zc),
-                    (TRAY_L - <span class="n">0.04</span>, <span class="n">0.038</span>, <span class="n">0.032</span>),
-                    WOOD_IDX,
-                    euler=(a_lip, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                add_stave(bm, a0, a1, x_stave_0, x_stave_1, r_in, r_out, zc, WOOD_IDX)
+            )
+            a = a1 + STAVE_GAP
+
+        <span class="k">if</span> <span class="k">not</span> box_ends:
+            r_cap_in = r_in - <span class="n">0.006</span>
+            r_cap_out = r_out + END_OVERHANG
+            wood.extend(
+                add_u_shell(
+                    bm, x_cap_l0, x_cap_l1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+                )
+            )
+            wood.extend(
+                add_u_shell(
+                    bm, x_cap_r0, x_cap_r1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
                 )
             )
 
-        <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.30</span>, TRAY_L * <span class="n">0.30</span>):
+        top_z = hull_z_at_y(LEG_TOP_Y, r_out, zc)
+        bot_z = SHOE_H * <span class="n">0.55</span>
+        shoe_mid = SHOE_H / <span class="n">2.0</span>
+        <span class="k">if</span> short_legs:
+            shoe_mid += <span class="n">0.045</span>
+        <span class="k">for</span> sx <span class="k">in</span> (-LEG_X, LEG_X):
             <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                top = (sx, ysign * <span class="n">0.11</span>, zc - TRAY_R - <span class="n">0.04</span>)
-                bot = (sx, ysign * <span class="n">0.26</span>, <span class="n">0.024</span>)
-                wood.extend(
-                    add_oriented_box(bm, top, bot, (<span class="n">0.050</span>, <span class="n">0.036</span>), WOOD_IDX)
-                )
+                top_pt = Vector((sx, ysign * LEG_TOP_Y, top_z))
+                bot_pt = Vector((sx, ysign * LEG_BOT_Y, bot_z))
+                direction = (top_pt - bot_pt).normalized()
+                top_pt = top_pt + direction * (STAVE_T * <span class="n">0.35</span>)
+                wood.extend(add_oriented_box(bm, top_pt, bot_pt, (LEG_W, <span class="n">0.034</span>), WOOD_IDX))
+            t_st = (STRETCHER_Z - bot_z) / max(top_z - bot_z, <span class="n">1e-6</span>)
+            y_leg = LEG_BOT_Y + t_st * (LEG_TOP_Y - LEG_BOT_Y)
+            <span class="c"># Inner face of the diagonal leg, not through its volume.</span>
+            side_len = <span class="n">2.0</span> * (y_leg - <span class="n">0.022</span>)
             wood.extend(
                 add_box(
                     bm,
-                    (sx, <span class="n">0.0</span>, <span class="n">0.115</span>),
-                    (<span class="n">0.044</span>, <span class="n">0.40</span>, <span class="n">0.030</span>),
+                    (sx, <span class="n">0.0</span>, STRETCHER_Z),
+                    (<span class="n">0.042</span>, side_len, STRETCHER_T),
                     WOOD_IDX,
                 )
             )
+        long_len = <span class="n">2.0</span> * LEG_X - LEG_W
         wood.extend(
             add_box(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.115</span>),
-                (TRAY_L * <span class="n">0.62</span>, <span class="n">0.044</span>, <span class="n">0.030</span>),
+                (<span class="n">0.0</span>, <span class="n">0.0</span>, STRETCHER_Z),
+                (long_len, <span class="n">0.042</span>, STRETCHER_T),
                 WOOD_IDX,
             )
         )
@@ -610,40 +709,54 @@ WATER_IDX = <span class="n">2</span>
             <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
                 f.material_index = WOOD_IDX
 
-        r_strap = r_out + <span class="n">0.006</span>
-        <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.28</span>, TRAY_L * <span class="n">0.28</span>):
-            n = <span class="n">14</span>
-            pts = []
-            <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>):
-                a = -A_SPAN + <span class="n">2.0</span> * A_SPAN * k / n
-                pts.append(_arc_point(a, r_strap, cx + sx, zc))
-            <span class="k">for</span> p0, p1 <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
-                metal.extend(
-                    add_oriented_box(bm, p0, p1, (<span class="n">0.022</span>, <span class="n">0.011</span>), METAL_IDX)
-                )
-        <span class="k">for</span> sx <span class="k">in</span> (-TRAY_L * <span class="n">0.30</span>, TRAY_L * <span class="n">0.30</span>):
+        <span class="k">if</span> box_ends:
+            add_box_end(
+                bm, <span class="n">0.5</span> * (x_cap_l0 + x_cap_l1), r_out, zc, A_SPAN, END_T, WOOD_IDX
+            )
+            add_box_end(
+                bm, <span class="n">0.5</span> * (x_cap_r0 + x_cap_r1), r_out, zc, A_SPAN, END_T, WOOD_IDX
+            )
+
+        r_strap_in = r_out + <span class="n">0.040</span> <span class="k">if</span> float_strap <span class="k">else</span> r_out - STRAP_BITE
+        r_strap_out = r_strap_in + STRAP_T
+        <span class="k">for</span> sx <span class="k">in</span> (-STRAP_X, STRAP_X):
+            add_u_shell(
+                bm,
+                sx - STRAP_W / <span class="n">2.0</span>,
+                sx + STRAP_W / <span class="n">2.0</span>,
+                r_strap_in,
+                r_strap_out,
+                <span class="n">16</span>,
+                zc,
+                A_SPAN,
+                METAL_IDX,
+            )
+        <span class="k">for</span> sx <span class="k">in</span> (-LEG_X, LEG_X):
             <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-                metal.extend(
-                    add_box(
-                        bm,
-                        (sx, ysign * <span class="n">0.26</span>, <span class="n">0.012</span>),
-                        (<span class="n">0.056</span>, <span class="n">0.048</span>, <span class="n">0.024</span>),
-                        METAL_IDX,
-                    )
+                add_box(
+                    bm,
+                    (sx, ysign * LEG_BOT_Y, shoe_mid),
+                    (SHOE_XY[<span class="n">0</span>], SHOE_XY[<span class="n">1</span>], SHOE_H),
+                    METAL_IDX,
                 )
 
         z_bot = zc - r_in
         z_rim = zc - r_in * math.cos(A_SPAN)
-        z_water = z_bot + <span class="n">0.70</span> * (z_rim - z_bot)
-        ca = (zc - z_water) / r_in
-        half_w = r_in * math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - ca * ca)) * <span class="n">0.97</span>
-        add_box(
+        z_water = z_bot + WATER_FILL * (z_rim - z_bot)
+        add_u_water(
             bm,
-            (cx, <span class="n">0.0</span>, z_water),
-            (TRAY_L - <span class="n">2.0</span> * END_T - <span class="n">0.08</span>, <span class="n">2.0</span> * half_w, <span class="n">0.016</span>),
+            x_cap_l1 - <span class="n">0.010</span>,
+            x_cap_r0 + <span class="n">0.010</span>,
+            r_in - WATER_GAP,
+            N_STAVES,
+            zc,
+            z_water,
             WATER_IDX,
         )
 
+        triangulate_ngons(bm)
+        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=<span class="n">1e-5</span>)
+        bmesh.ops.dissolve_degenerate(bm, dist=<span class="n">1e-6</span>)
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
@@ -673,13 +786,26 @@ WATER_IDX = <span class="n">2</span>
     <span class="k">return</span> out
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, roughness_var=<span class="n">0.0</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> roughness_var &gt; <span class="n">0.0</span>:
+        noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">11.0</span>
+        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+        lo = max(<span class="n">0.08</span>, roughness - roughness_var)
+        hi = min(<span class="n">0.95</span>, roughness + roughness_var)
+        ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.28</span>
+        ramp.color_ramp.elements[<span class="n">0</span>].color = (lo, lo, lo, <span class="n">1.0</span>)
+        ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+        ramp.color_ramp.elements[<span class="n">1</span>].color = (hi, hi, hi, <span class="n">1.0</span>)
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -724,6 +850,246 @@ WATER_IDX = <span class="n">2</span>
             y1 = min(a[<span class="n">3</span>], b[<span class="n">3</span>])
             overlap += max(<span class="n">0.0</span>, x1 - x0) * max(<span class="n">0.0</span>, y1 - y0)
     <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> poly.vertices]
+    <span class="k">if</span> len(vs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = vs[<span class="n">0</span>]
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+        area += (vs[i] - v0).cross(vs[i + <span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    <span class="c"># Combinatorics match examples/mesh-hygiene-audit.audit (copied, not imported).</span>
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv,
+        <span class="s">&quot;ne&quot;</span>: ne,
+        <span class="s">&quot;nf&quot;</span>: nf,
+        <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v,
+        <span class="s">&quot;loose_e&quot;</span>: loose_e,
+        <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;doubles&quot;</span>: doubles,
+        <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts),
+        min(p.y <span class="k">for</span> p <span class="k">in</span> pts),
+        min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.y <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group):
+    member = set(group)
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> poly.vertices):
+            <span class="k">return</span> poly.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> shell_bvh_gap(me, ga, gb):
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    <span class="k">try</span>:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        keep_a, keep_b = set(ga), set(gb)
+        drop_a = [f <span class="k">for</span> f <span class="k">in</span> bm_a.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep_a <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        drop_b = [f <span class="k">for</span> f <span class="k">in</span> bm_b.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep_b <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_a.faces <span class="k">or</span> <span class="k">not</span> bm_b.faces:
+            <span class="k">return</span> <span class="n">1e9</span>
+        tree = BVHTree.FromBMesh(bm_b)
+        best = <span class="n">1e9</span>
+        <span class="k">for</span> v <span class="k">in</span> bm_a.verts:
+            hit = tree.find_nearest(v.co)
+            <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            best = min(best, hit[<span class="n">3</span>])
+        <span class="k">for</span> face <span class="k">in</span> bm_a.faces:
+            hit = tree.find_nearest(face.calc_center_median())
+            <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            best = min(best, hit[<span class="n">3</span>])
+        <span class="k">return</span> best
+    <span class="k">finally</span>:
+        bm_a.free()
+        bm_b.free()
+
+
+<span class="k">def</span> min_vert_gap(me, ga, gb):
+    pa = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> ga]
+    pb = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> gb]
+    step_a = max(<span class="n">1</span>, len(pa) // <span class="n">80</span>)
+    step_b = max(<span class="n">1</span>, len(pb) // <span class="n">80</span>)
+    best = <span class="n">1e9</span>
+    <span class="k">for</span> a <span class="k">in</span> pa[::step_a]:
+        <span class="k">for</span> b <span class="k">in</span> pb[::step_b]:
+            d = (a - b).length
+            <span class="k">if</span> d &lt; best:
+                best = d
+    <span class="k">return</span> best
+
+
+<span class="k">def</span> support_audit(me):
+    shoes = []
+    <span class="k">for</span> group <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, group) != METAL_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, group)
+        dz = a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        dx = a[<span class="n">3</span>] - a[<span class="n">0</span>]
+        dy = a[<span class="n">4</span>] - a[<span class="n">1</span>]
+        cz = <span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>])
+        <span class="k">if</span> cz &gt; <span class="n">0.08</span> <span class="k">or</span> dz &gt; <span class="n">0.06</span>:
+            <span class="k">continue</span>
+        <span class="k">if</span> max(dx, dy) &lt; <span class="n">0.03</span>:
+            <span class="k">continue</span>
+        shoes.append(a)
+    zmin = min((a[<span class="n">2</span>] <span class="k">for</span> a <span class="k">in</span> shoes), default=<span class="n">99.0</span>)
+    <span class="k">return</span> {<span class="s">&quot;shoes&quot;</span>: len(shoes), <span class="s">&quot;shoe_z&quot;</span>: zmin}
+
+
+<span class="k">def</span> joint_audit(me):
+    groups = shells(me)
+    boxes = [(g, shell_aabb(me, g), mat_of(me, g)) <span class="k">for</span> g <span class="k">in</span> groups]
+    staves = []
+    ends = []
+    straps = []
+    waters = []
+    <span class="k">for</span> g, a, mat <span class="k">in</span> boxes:
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        cx = <span class="n">0.5</span> * (a[<span class="n">0</span>] + a[<span class="n">3</span>])
+        <span class="k">if</span> mat == WOOD_IDX <span class="k">and</span> dx &gt; TRAY_L * <span class="n">0.5</span>:
+            staves.append((g, a))
+            <span class="k">continue</span>
+        <span class="k">if</span> mat == WOOD_IDX <span class="k">and</span> dx &lt; END_T * <span class="n">3.5</span> <span class="k">and</span> dy &gt; <span class="n">0.25</span> <span class="k">and</span> abs(cx) &gt; TRAY_L * <span class="n">0.35</span>:
+            ends.append((g, a))
+            <span class="k">continue</span>
+        <span class="k">if</span> mat == METAL_IDX <span class="k">and</span> dy &gt; <span class="n">0.15</span> <span class="k">and</span> dz &gt; <span class="n">0.10</span>:
+            straps.append((g, a))
+            <span class="k">continue</span>
+        <span class="k">if</span> mat == WATER_IDX:
+            waters.append((g, a))
+    hulls = staves
+    rim_span = <span class="n">0.0</span>
+    <span class="k">for</span> g, a <span class="k">in</span> ends:
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        ymax = max(abs(p.y) <span class="k">for</span> p <span class="k">in</span> pts)
+        rim = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> abs(abs(p.y) - ymax) &lt; <span class="n">0.025</span>]
+        <span class="k">if</span> rim:
+            span = max(p.z <span class="k">for</span> p <span class="k">in</span> rim) - min(p.z <span class="k">for</span> p <span class="k">in</span> rim)
+            <span class="k">if</span> span &gt; rim_span:
+                rim_span = span
+    strap_gap = <span class="n">99.0</span>
+    <span class="k">if</span> straps <span class="k">and</span> hulls:
+        strap_gap = min(shell_bvh_gap(me, s[<span class="n">0</span>], h[<span class="n">0</span>]) <span class="k">for</span> s <span class="k">in</span> straps <span class="k">for</span> h <span class="k">in</span> hulls)
+    water_gap = <span class="n">99.0</span>
+    <span class="k">if</span> waters <span class="k">and</span> hulls:
+        water_gap = min(shell_bvh_gap(me, w[<span class="n">0</span>], h[<span class="n">0</span>]) <span class="k">for</span> w <span class="k">in</span> waters <span class="k">for</span> h <span class="k">in</span> hulls)
+    hull_xy = (<span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="k">if</span> staves:
+        xs = [v <span class="k">for</span> _g, a <span class="k">in</span> staves <span class="k">for</span> v <span class="k">in</span> (a[<span class="n">0</span>], a[<span class="n">3</span>])]
+        ys = [v <span class="k">for</span> _g, a <span class="k">in</span> staves <span class="k">for</span> v <span class="k">in</span> (a[<span class="n">1</span>], a[<span class="n">4</span>])]
+        hull_xy = (max(xs) - min(xs), max(ys) - min(ys))
+    <span class="k">return</span> {
+        <span class="s">&quot;parts&quot;</span>: len(groups),
+        <span class="s">&quot;hulls&quot;</span>: len(hulls),
+        <span class="s">&quot;ends&quot;</span>: len(ends),
+        <span class="s">&quot;straps&quot;</span>: len(straps),
+        <span class="s">&quot;waters&quot;</span>: len(waters),
+        <span class="s">&quot;rim_span&quot;</span>: rim_span,
+        <span class="s">&quot;strap_gap&quot;</span>: strap_gap,
+        <span class="s">&quot;water_gap&quot;</span>: water_gap,
+        <span class="s">&quot;hull_xy&quot;</span>: hull_xy,
+    }
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.25</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
 
 
 <span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
@@ -812,15 +1178,46 @@ WATER_IDX = <span class="n">2</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    box_ends=<span class="k">False</span>,
+    float_strap=<span class="k">False</span>,
+    short_legs=<span class="k">False</span>,
+    narrow_hull=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_trough_mesh(<span class="s">&quot;TroughLow&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">2</span>)
-    high = build_trough_mesh(<span class="s">&quot;TroughHigh&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(<span class="s">&quot;TroughWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>)
-    metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    low = build_trough_mesh(
+        <span class="s">&quot;TroughLow&quot;</span>,
+        bevel_offset=<span class="n">0.004</span>,
+        bevel_segments=<span class="n">2</span>,
+        box_ends=box_ends,
+        float_strap=float_strap,
+        short_legs=short_legs,
+        narrow_hull=narrow_hull,
+    )
+    high = build_trough_mesh(
+        <span class="s">&quot;TroughHigh&quot;</span>,
+        bevel_offset=<span class="n">0.004</span>,
+        bevel_segments=<span class="n">4</span>,
+        box_ends=box_ends,
+        float_strap=float_strap,
+        short_legs=short_legs,
+        narrow_hull=narrow_hull,
+    )
+    wood = principled(<span class="s">&quot;TroughWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>, roughness_var=<span class="n">0.10</span>)
+    metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>, roughness_var=<span class="n">0.08</span>)
     water = principled(<span class="s">&quot;TroughWater&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.16</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.08</span>)
     assign_slots(low, wood, metal, water)
     assign_slots(high, wood, metal, water)
+
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;trough mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -838,6 +1235,10 @@ WATER_IDX = <span class="n">2</span>
     size_x = bb[<span class="n">3</span>] - bb[<span class="n">0</span>]
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sup = support_audit(low.data)
+    jnt = joint_audit(low.data)
 
     img, tex = setup_bake_image(low, wood)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
@@ -883,6 +1284,17 @@ WATER_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured shoes=</span>{sup[<span class="s">&#x27;shoes&#x27;</span>]}<span class="s"> shoe_z=</span>{sup[<span class="s">&#x27;shoe_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">rim_span=</span>{jnt[<span class="s">&#x27;rim_span&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> strap_gap=</span>{jnt[<span class="s">&#x27;strap_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">water_gap=</span>{jnt[<span class="s">&#x27;water_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> hull_xy=</span>{jnt[<span class="s">&#x27;hull_xy&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">ends=</span>{jnt[<span class="s">&#x27;ends&#x27;</span>]}<span class="s"> straps=</span>{jnt[<span class="s">&#x27;straps&#x27;</span>]}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -919,6 +1331,12 @@ WATER_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>,
             <span class="n">7</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    hx, hy = jnt[<span class="s">&quot;hull_xy&quot;</span>]
+    <span class="k">if</span> abs(hx - HULL_SIZE[<span class="n">0</span>]) &gt; HULL_SIZE_TOL[<span class="n">0</span>] <span class="k">or</span> abs(hy - HULL_SIZE[<span class="n">1</span>]) &gt; HULL_SIZE_TOL[<span class="n">1</span>]:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hull size (</span>{hx:<span class="s">.4f</span>}<span class="s">,</span>{hy:<span class="s">.4f</span>}<span class="s">) off </span>{HULL_SIZE}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
         abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
@@ -952,6 +1370,46 @@ WATER_IDX = <span class="n">2</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>]
+        <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        bb[<span class="n">2</span>] &gt; ZMIN_EPS
+        <span class="k">or</span> sup[<span class="s">&quot;shoes&quot;</span>] != SHOE_COUNT
+        <span class="k">or</span> sup[<span class="s">&quot;shoe_z&quot;</span>] &gt; SHOE_ZMIN_MAX
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">grounded zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s"> shoes=</span>{sup[<span class="s">&#x27;shoes&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">shoe_z=</span>{sup[<span class="s">&#x27;shoe_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;ends&quot;</span>] &lt; <span class="n">2</span> <span class="k">or</span> jnt[<span class="s">&quot;rim_span&quot;</span>] &gt; END_RIM_SPAN_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">end rim span </span>{jnt[<span class="s">&#x27;rim_span&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> ends=</span>{jnt[<span class="s">&#x27;ends&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;straps&quot;</span>] &lt; <span class="n">2</span> <span class="k">or</span> jnt[<span class="s">&quot;strap_gap&quot;</span>] &gt; STRAP_GAP_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">strap gap </span>{jnt[<span class="s">&#x27;strap_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> straps=</span>{jnt[<span class="s">&#x27;straps&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;water_gap&quot;</span>] &gt; WATER_CONTACT_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">water-hull gap </span>{jnt[<span class="s">&#x27;water_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1065,14 +1523,24 @@ WATER_IDX = <span class="n">2</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
-    p.add_argument(
-        <span class="s">&quot;--skip-decimate&quot;</span>,
-        action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--box-ends&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-strap&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--narrow-hull&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        box_ends=args.box_ends,
+        float_strap=args.float_strap,
+        short_legs=args.short_legs,
+        narrow_hull=args.narrow_hull,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
