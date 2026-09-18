@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>terrain-scatter — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="terrain-scatter — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="terrain-scatter — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,35 +246,48 @@
   </div>
   <header class="hero">
     <h1>terrain-scatter</h1>
-    <p>A Geometry Nodes hill tile with masonry scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom terrain-scatter render">
       <img src="../assets/terrain-scatter-hero.webp" alt="terrain-scatter render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1194 tris, two materials with 486 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.655 m, LOD ratios in band, convex collider 52 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1758 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.552 m, grounded zmin, 9 stones of ≥80 faces seated on sampled dirt Z (offset −35 mm, floor zmin 0.113 m), LOD ratios in band, convex collider 81 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/terrain-scatter/terrain_scatter.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid with an Index-jittered Instance-on-Points scatter, realized cubes replaced by bevelled masonry, then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid with an Index-jittered Instance-on-Points scatter, realized cubes replaced by closed-form displaced icospheres seated on sampled dirt Z, then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>GN still builds the hill and the instance grid. After realize+slabify, cube islands are deleted and each centroid is reseated: stone <code>zmin</code> equals sampled dirt Z minus a named bite, then verts clamp above the slab floor. That is why rocks sit on the hill instead of punching through the slab as bevelled crates.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p><strong>Composes</strong> skills <code>geometry-nodes-python</code>, <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<p><strong>Composes</strong> skills <code>geometry-nodes-python</code>, <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
+<p>Intended size: 1.80 m square hill tile, ~0.16 m sine amplitude, nine seated stones; outer AABB 1.800 × 1.800 × 0.552 m.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1150–1250 | 1194 / 1194 / 1194 | | LOD1 ratio | 0.32–0.62 of base | 0.4992 / 0.4992 / 0.4992 | | LOD2 ratio | 0.10–0.35 of base | 0.2194 / 0.2194 / 0.2194 | | Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 486 stone | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.800, 1.800, 0.655) m ± 0.01 | (1.8000, 1.8000, 0.6554), zmin 0 | | Collider tris | ≤ 80 | 52 | | Export | written, size &gt; 0 | 90704 / 90704 / 90696 bytes |</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size may differ by a few bytes across series.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. That is the named budget the falsifier violates.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1400–2800 | 1758 / 1758 / 1758 | | LOD1 ratio | 0.32–0.62 of base | 0.4994 / 0.4994 / 0.4994 | | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 | | Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 720 stone | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.800, 1.800, 0.552) m ± 0.015 | (1.8000, 1.8000, 0.5523), zmin 0 | | Collider tris | ≤ 120 | 81 | | Export | written, size &gt; 0 | 158156 / 158156 / 158140 bytes |</p>
+<p>Base triangles rose from <strong>1194 to 1758</strong> in the quality pass: 9-vert hill became a 21-vert grid, and bevelled cubes became subdiv-2 icospheres. Outer Z dropped from 0.655 m (crate corners swinging through the slab) to 0.552 m of seated stone on the hill.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh matched on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<h3>Hygiene</h3>
+<p>Recomputed from the generated mesh, not asserted about the script.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Stone shells | 9 | 9 | | Per-stone faces | ≥ 40 | 80 | | Stone floor <code>zmin</code> | ≥ 0.012 m | 0.11334 | | Seat offset (<code>zmin</code> − dirt Z) | ≤ 0.02 m | −0.03500 |</p>
+<h3>Falsifiers</h3>
+<p>Each violates one named budget. All were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--poke-rock</code> | stone floor <code>zmin</code> | 17 | | <code>--float-rocks</code> | seat offset vs sampled dirt Z | 18 | | <code>--box-rocks</code> | per-stone face floor | 19 |</p>
 <h2>Run</h2>
 <pre><code>blender --background --python terrain_scatter.py --
 blender --background --python terrain_scatter.py -- --skip-decimate
+blender --background --python terrain_scatter.py -- --stray-vert
+blender --background --python terrain_scatter.py -- --lift-z
+blender --background --python terrain_scatter.py -- --poke-rock
+blender --background --python terrain_scatter.py -- --float-rocks
+blender --background --python terrain_scatter.py -- --box-rocks
 blender --background --python terrain_scatter.py -- --output terrain.png</code></pre>
-<p>Smoke does not pass <code>--output</code> or <code>--skip-decimate</code>.</p>
+<p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or stone faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file |</p>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or stone faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene (<code>--stray-vert</code> lands here) | | 16 | Grounded zmin (<code>--lift-z</code>) | | 17 | Stone floor poke (<code>--poke-rock</code>) | | 18 | Float above host (<code>--float-rocks</code>) | | 19 | Stone shell faces (<code>--box-rocks</code>) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -285,19 +298,23 @@ blender --background --python terrain_scatter.py -- --output terrain.png</code><
       <pre><span class="s">&quot;&quot;&quot;Game-ready GN terrain scatter — a showcase piece, not an example.
 
 Asserts budget conformance of a Geometry Nodes hill grid with instanced
-masonry rocks after composing shipped pipeline pieces: GN construction,
+rocks after composing shipped pipeline pieces: GN construction,
 UVs, two materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
+GN still builds the sine hill and the Index-jittered instance grid.
+Realized cubes are replaced with closed-form displaced icospheres seated
+on sampled dirt Z, then clamped above the slab floor.
+
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` LOD, ``--stray-vert`` hygiene, ``--lift-z``
+zmin, ``--poke-rock`` stone floor, ``--float-rocks`` seat, ``--box-rocks``
+stone shell faces.
 
 No RNG. Hills are a closed-form sine product; scatter is an Index-jittered
-instance grid. Realized cubes are replaced with bevelled lumped boxes
-(campfire/well masonry, not icospheres). DECIMATE COLLAPSE triangle
-counts are not byte-identical across Blender versions — the LOD gate is
-a ratio band, not an exact count.
+instance grid. DECIMATE COLLAPSE triangle counts are not byte-identical
+across Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python terrain_scatter.py --
     blender --background --python terrain_scatter.py -- --skip-decimate
@@ -328,11 +345,14 @@ ROCK_SIZE = (<span class="n">0.22</span>, <span class="n">0.17</span>, <span cla
 ROCK_GRID = <span class="n">3</span>
 ROCK_SPAN = <span class="n">1.15</span>
 SLAB_LIFT = <span class="n">0.10</span>
+ROCK_BITE = <span class="n">0.035</span>
+ROCK_ZMIN = <span class="n">0.012</span>
+N_ROCKS = <span class="n">9</span>
 
-BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.800</span>, <span class="n">1.800</span>, <span class="n">0.655</span>)
-BASE_TRIS_MIN = <span class="n">1150</span>
-BASE_TRIS_MAX = <span class="n">1250</span>
+BBOX_TOL = <span class="n">0.015</span>
+OUTER_SIZE = (<span class="n">1.800</span>, <span class="n">1.800</span>, <span class="n">0.552</span>)
+BASE_TRIS_MIN = <span class="n">1400</span>
+BASE_TRIS_MAX = <span class="n">2800</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -342,10 +362,20 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">80</span>
+COLLIDER_TRIS_MAX = <span class="n">120</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
 STONE_FACES_MIN = <span class="n">24</span>
+STONE_SHELL_FACES_MIN = <span class="n">40</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.998</span>
+ROCK_SEAT_MAX = <span class="n">0.02</span>
+FLOAT_LIFT = <span class="n">0.12</span>
+POKE_BITE = <span class="n">0.22</span>
+LIFT_Z = <span class="n">0.05</span>
 
 DIRT_IDX = <span class="n">0</span>
 STONE_IDX = <span class="n">1</span>
@@ -517,7 +547,7 @@ STONE_IDX = <span class="n">1</span>
     tree.links.new(jx.outputs[<span class="n">0</span>], jxs.inputs[<span class="n">0</span>])
     jxm = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     jxm.operation = <span class="s">&quot;MULTIPLY&quot;</span>
-    jxm.inputs[<span class="n">1</span>].default_value = <span class="n">0.09</span>
+    jxm.inputs[<span class="n">1</span>].default_value = <span class="n">0.22</span>
     tree.links.new(jxs.outputs[<span class="n">0</span>], jxm.inputs[<span class="n">0</span>])
     jy = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     jy.operation = <span class="s">&quot;MULTIPLY&quot;</span>
@@ -528,7 +558,7 @@ STONE_IDX = <span class="n">1</span>
     tree.links.new(jy.outputs[<span class="n">0</span>], jyc.inputs[<span class="n">0</span>])
     jym = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     jym.operation = <span class="s">&quot;MULTIPLY&quot;</span>
-    jym.inputs[<span class="n">1</span>].default_value = <span class="n">0.09</span>
+    jym.inputs[<span class="n">1</span>].default_value = <span class="n">0.22</span>
     tree.links.new(jyc.outputs[<span class="n">0</span>], jym.inputs[<span class="n">0</span>])
     extra = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
     extra.operation = <span class="s">&quot;ADD&quot;</span>
@@ -640,7 +670,64 @@ STONE_IDX = <span class="n">1</span>
             f.material_index = DIRT_IDX
 
 
-<span class="k">def</span> masonry_from_cubes(bm, lump, bevel_offset, bevel_segments):
+<span class="k">def</span> nearest_dirt_z(bm, x, y):
+    best_z = <span class="k">None</span>
+    best_d = <span class="n">1e9</span>
+    <span class="k">for</span> v <span class="k">in</span> bm.verts:
+        <span class="k">if</span> <span class="k">not</span> v.link_faces:
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="k">not</span> any(f.material_index == DIRT_IDX <span class="k">for</span> f <span class="k">in</span> v.link_faces):
+            <span class="k">continue</span>
+        dx = v.co.x - x
+        dy = v.co.y - y
+        d = dx * dx + dy * dy
+        <span class="k">if</span> d &lt; best_d:
+            best_d = d
+            best_z = v.co.z
+    <span class="k">return</span> <span class="n">0.0</span> <span class="k">if</span> best_z <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> best_z
+
+
+<span class="k">def</span> add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
+    sx = <span class="n">0.11</span> + <span class="n">0.025</span> * math.sin(cx * <span class="n">8.1</span>)
+    sy = <span class="n">0.10</span> + <span class="n">0.022</span> * math.cos(cy * <span class="n">6.4</span>)
+    sz = <span class="n">0.075</span> + <span class="n">0.020</span> * math.sin(cx * <span class="n">4.2</span> + cy * <span class="n">3.1</span>)
+    bite = POKE_BITE <span class="k">if</span> poke <span class="k">else</span> ROCK_BITE
+    seat = dirt_z + FLOAT_LIFT <span class="k">if</span> float_up <span class="k">else</span> dirt_z - bite
+    rot = Euler(
+        (
+            <span class="n">0.22</span> * math.sin(cx * <span class="n">3.1</span>),
+            <span class="n">0.18</span> * math.cos(cy * <span class="n">2.7</span>),
+            cx * <span class="n">2.4</span> + cy * <span class="n">1.6</span>,
+        )
+    ).to_matrix()
+    <span class="k">if</span> box_rocks:
+        verts = add_box(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (sx * <span class="n">2.0</span>, sy * <span class="n">2.0</span>, sz * <span class="n">2.0</span>), STONE_IDX)
+        <span class="k">for</span> v <span class="k">in</span> verts:
+            v.co = rot @ v.co
+    <span class="k">else</span>:
+        geo = bmesh.ops.create_icosphere(bm, subdivisions=<span class="n">2</span>, radius=<span class="n">1.0</span>)
+        verts = geo[<span class="s">&quot;verts&quot;</span>]
+        <span class="k">for</span> v <span class="k">in</span> verts:
+            p = Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz))
+            <span class="k">if</span> p.length &gt; <span class="n">1e-8</span>:
+                bump = <span class="n">0.016</span> * math.sin(p.x * <span class="n">26.0</span> + cx * <span class="n">5.0</span>) * math.cos(
+                    p.y * <span class="n">21.0</span> + cy * <span class="n">4.0</span>
+                )
+                p += p.normalized() * bump
+            v.co = rot @ p
+        <span class="k">for</span> f <span class="k">in</span> {face <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> face <span class="k">in</span> v.link_faces}:
+            f.material_index = STONE_IDX
+    zmin = min(v.co.z <span class="k">for</span> v <span class="k">in</span> verts)
+    dz = seat - zmin
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co.x += cx
+        v.co.y += cy
+        v.co.z += dz
+        <span class="k">if</span> <span class="k">not</span> poke <span class="k">and</span> v.co.z &lt; ROCK_ZMIN:
+            v.co.z = ROCK_ZMIN
+
+
+<span class="k">def</span> masonry_from_cubes(bm, box_rocks=<span class="k">False</span>, poke=<span class="k">False</span>, float_up=<span class="k">False</span>):
     stone_faces = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> f.material_index == STONE_IDX]
     visited = set()
     islands = []
@@ -666,19 +753,9 @@ STONE_IDX = <span class="n">1</span>
         verts = {v <span class="k">for</span> f <span class="k">in</span> island <span class="k">for</span> v <span class="k">in</span> f.verts}
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> verts]
-        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> verts]
         cx = <span class="n">0.5</span> * (min(xs) + max(xs))
         cy = <span class="n">0.5</span> * (min(ys) + max(ys))
-        cz = <span class="n">0.5</span> * (min(zs) + max(zs))
-        z0 = min(zs)
-        sx = <span class="n">0.17</span> + <span class="n">0.04</span> * math.sin(cx * <span class="n">8.1</span>)
-        sy = <span class="n">0.15</span> + <span class="n">0.03</span> * math.cos(cy * <span class="n">6.4</span>)
-        sz = <span class="n">0.20</span> + <span class="n">0.05</span> * math.sin(cx * <span class="n">4.2</span> + cy * <span class="n">3.1</span>)
-        ex = <span class="n">0.38</span> * math.sin(cx * <span class="n">5.1</span>)
-        ey = <span class="n">0.30</span> * math.cos(cy * <span class="n">4.3</span>)
-        ez = cx * <span class="n">3.7</span> + cy * <span class="n">2.1</span>
-        cz = z0 + sz * <span class="n">0.30</span>
-        specs.append((cx, cy, cz, sx, sy, sz, ex, ey, ez))
+        specs.append((cx, cy))
 
     <span class="k">if</span> stone_faces:
         bmesh.ops.delete(bm, geom=stone_faces, context=<span class="s">&quot;FACES&quot;</span>)
@@ -686,31 +763,22 @@ STONE_IDX = <span class="n">1</span>
         <span class="k">if</span> loose:
             bmesh.ops.delete(bm, geom=loose, context=<span class="s">&quot;VERTS&quot;</span>)
 
-    <span class="k">for</span> cx, cy, cz, sx, sy, sz, ex, ey, ez <span class="k">in</span> specs:
-        verts = add_box(
-            bm,
-            (cx, cy, cz),
-            (sx, sy, sz),
-            STONE_IDX,
-            euler=(ex, ey, ez),
-        )
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
-            <span class="k">if</span> edges:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=<span class="n">0.5</span>,
-                    affect=<span class="s">&quot;EDGES&quot;</span>,
-                    clamp_overlap=<span class="k">True</span>,
-                )
-                <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
-                    f.material_index = STONE_IDX
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+    <span class="k">for</span> cx, cy <span class="k">in</span> specs:
+        dirt_z = nearest_dirt_z(bm, cx, cy)
+        add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up)
 
 
-<span class="k">def</span> build_terrain_mesh(name, grid_verts, lump, bevel_offset, bevel_segments, dirt, stone):
+<span class="k">def</span> build_terrain_mesh(
+    name,
+    grid_verts,
+    dirt,
+    stone,
+    box_rocks=<span class="k">False</span>,
+    poke=<span class="k">False</span>,
+    float_up=<span class="k">False</span>,
+):
     carrier = bpy.data.meshes.new(name + <span class="s">&quot;Carrier&quot;</span>)
     carrier.vertices.add(<span class="n">1</span>)
     obj = bpy.data.objects.new(name + <span class="s">&quot;GN&quot;</span>, carrier)
@@ -730,7 +798,7 @@ STONE_IDX = <span class="n">1</span>
         slabify(bm, floor_z=<span class="n">0.0</span>)
         bm.verts.ensure_lookup_table()
         bm.faces.ensure_lookup_table()
-        masonry_from_cubes(bm, lump, bevel_offset, bevel_segments)
+        masonry_from_cubes(bm, box_rocks=box_rocks, poke=poke, float_up=float_up)
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
         zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
@@ -743,15 +811,18 @@ STONE_IDX = <span class="n">1</span>
             v.co.z -= zmin
             <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
                 v.co.z = <span class="n">0.0</span>
+        ngons = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
+        <span class="k">if</span> ngons:
+            bmesh.ops.triangulate(bm, faces=ngons)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = <span class="k">False</span>
+            face.smooth = face.material_index == STONE_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = <span class="k">False</span>
+            poly.use_smooth = poly.material_index == STONE_IDX
     <span class="k">finally</span>:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -759,13 +830,25 @@ STONE_IDX = <span class="n">1</span>
     <span class="k">return</span> out
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -782,10 +865,11 @@ STONE_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> world_bbox(obj):
-    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
-    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
-    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
-    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    mat = obj.matrix_world
+    pts = [mat @ v.co <span class="k">for</span> v <span class="k">in</span> obj.data.vertices]
+    xs = [p.x <span class="k">for</span> p <span class="k">in</span> pts]
+    ys = [p.y <span class="k">for</span> p <span class="k">in</span> pts]
+    zs = [p.z <span class="k">for</span> p <span class="k">in</span> pts]
     <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
@@ -900,14 +984,186 @@ STONE_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate):
+<span class="k">def</span> face_area(me, poly):
+    vs = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> poly.vertices]
+    <span class="k">if</span> len(vs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = vs[<span class="n">0</span>]
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(vs) - <span class="n">1</span>):
+        area += (vs[i] - v0).cross(vs[i + <span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles, <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group):
+    member = set(group)
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> poly.vertices):
+            <span class="k">return</span> poly.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> shell_faces(me, group):
+    member = set(group)
+    <span class="k">return</span> sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> all(i <span class="k">in</span> member <span class="k">for</span> i <span class="k">in</span> p.vertices))
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> nearest_mesh_dirt_z(me, x, y, dirt_verts):
+    best_z = <span class="n">0.0</span>
+    best_d = <span class="n">1e9</span>
+    <span class="k">for</span> co <span class="k">in</span> dirt_verts:
+        d = (co.x - x) ** <span class="n">2</span> + (co.y - y) ** <span class="n">2</span>
+        <span class="k">if</span> d &lt; best_d:
+            best_d = d
+            best_z = co.z
+    <span class="k">return</span> best_z
+
+
+<span class="k">def</span> joint_audit(me):
+    groups = shells(me)
+    stones = []
+    dirt_verts = []
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        <span class="k">if</span> poly.material_index != DIRT_IDX:
+            <span class="k">continue</span>
+        <span class="k">for</span> i <span class="k">in</span> poly.vertices:
+            dirt_verts.append(me.vertices[i].co)
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != STONE_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        nfaces = shell_faces(me, g)
+        cx = <span class="n">0.5</span> * (a[<span class="n">0</span>] + a[<span class="n">3</span>])
+        cy = <span class="n">0.5</span> * (a[<span class="n">1</span>] + a[<span class="n">4</span>])
+        dirt_z = nearest_mesh_dirt_z(me, cx, cy, dirt_verts)
+        stones.append((a[<span class="n">2</span>], nfaces, a[<span class="n">2</span>] - dirt_z))
+    n_stones = len(stones)
+    min_faces = min((s[<span class="n">1</span>] <span class="k">for</span> s <span class="k">in</span> stones), default=<span class="n">0</span>)
+    poke_z = min((s[<span class="n">0</span>] <span class="k">for</span> s <span class="k">in</span> stones), default=<span class="n">99.0</span>)
+    float_off = max((s[<span class="n">2</span>] <span class="k">for</span> s <span class="k">in</span> stones), default=<span class="n">0.0</span>)
+    <span class="k">return</span> {
+        <span class="s">&quot;n_stones&quot;</span>: n_stones,
+        <span class="s">&quot;min_faces&quot;</span>: min_faces,
+        <span class="s">&quot;poke_z&quot;</span>: poke_z,
+        <span class="s">&quot;float_off&quot;</span>: float_off,
+    }
+
+
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    poke=<span class="k">False</span>,
+    float_up=<span class="k">False</span>,
+    box_rocks=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    dirt = principled(<span class="s">&quot;TerrainDirt&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.17</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.90</span>)
-    stone = principled(<span class="s">&quot;TerrainStone&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.53</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.76</span>)
-    low = build_terrain_mesh(<span class="s">&quot;TerrainLow&quot;</span>, <span class="n">9</span>, <span class="n">0.10</span>, <span class="n">0.022</span>, <span class="n">2</span>, dirt, stone)
-    high = build_terrain_mesh(<span class="s">&quot;TerrainHigh&quot;</span>, <span class="n">13</span>, <span class="n">0.10</span>, <span class="n">0.022</span>, <span class="n">4</span>, dirt, stone)
+    dirt = principled(
+        <span class="s">&quot;TerrainDirt&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.17</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.90</span>,
+        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.18</span>, <span class="n">0.10</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
+    )
+    stone = principled(
+        <span class="s">&quot;TerrainStone&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.53</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.76</span>,
+        noise_scale=<span class="n">20.0</span>, wear=(<span class="n">0.38</span>, <span class="n">0.35</span>, <span class="n">0.30</span>, <span class="n">1.0</span>),
+    )
+    kw = dict(box_rocks=box_rocks, poke=poke, float_up=float_up)
+    low = build_terrain_mesh(<span class="s">&quot;TerrainLow&quot;</span>, <span class="n">21</span>, dirt, stone, **kw)
+    high = build_terrain_mesh(<span class="s">&quot;TerrainHigh&quot;</span>, <span class="n">25</span>, dirt, stone, **kw)
     assign_slots(low, dirt, stone)
     assign_slots(high, dirt, stone)
+
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;terrain mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -940,7 +1196,7 @@ STONE_IDX = <span class="n">1</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
     collider_src = build_terrain_mesh(
-        <span class="s">&quot;TerrainColSrc&quot;</span>, <span class="n">9</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1</span>, dirt, stone
+        <span class="s">&quot;TerrainColSrc&quot;</span>, <span class="n">21</span>, dirt, stone, **kw
     )
     collider = convex_hull_collider(collider_src, <span class="s">&quot;TerrainCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
@@ -972,7 +1228,24 @@ STONE_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    jnt = joint_audit(low.data)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured stones=</span>{jnt[<span class="s">&#x27;n_stones&#x27;</span>]}<span class="s"> min_faces=</span>{jnt[<span class="s">&#x27;min_faces&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">poke_z=</span>{jnt[<span class="s">&#x27;poke_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> float_off=</span>{jnt[<span class="s">&#x27;float_off&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
+    <span class="k">if</span> jnt[<span class="s">&quot;min_faces&quot;</span>] &lt; STONE_SHELL_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">stone shell faces </span>{jnt[<span class="s">&#x27;min_faces&#x27;</span>]}<span class="s"> &lt; </span>{STONE_SHELL_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>,
@@ -998,6 +1271,18 @@ STONE_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>,
             <span class="n">7</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;n_stones&quot;</span>] != N_ROCKS <span class="k">or</span> jnt[<span class="s">&quot;poke_z&quot;</span>] &lt; ROCK_ZMIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">poke stones=</span>{jnt[<span class="s">&#x27;n_stones&#x27;</span>]}<span class="s"> poke_z=</span>{jnt[<span class="s">&#x27;poke_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;float_off&quot;</span>] &gt; ROCK_SEAT_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">float_off </span>{jnt[<span class="s">&#x27;float_off&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{ROCK_SEAT_MAX}<span class="s">&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> bb[<span class="n">2</span>] &gt; ZMIN_EPS:
+        <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">grounded zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>, <span class="n">16</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
         abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
@@ -1031,6 +1316,16 @@ STONE_IDX = <span class="n">1</span>
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
         <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, dirt, tex, collider
 
 
@@ -1144,14 +1439,22 @@ STONE_IDX = <span class="n">1</span>
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
     p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
-    p.add_argument(
-        <span class="s">&quot;--skip-decimate&quot;</span>,
-        action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: skip the LOD DECIMATE stage&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--poke-rock&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-rocks&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--box-rocks&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
-    code, low, _high, dirt, tex, _col = check(args.skip_decimate)
+    code, low, _high, dirt, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        poke=args.poke_rock,
+        float_up=args.float_rocks,
+        box_rocks=args.box_rocks,
+    )
     <span class="k">if</span> code:
         <span class="k">return</span> code
     <span class="k">if</span> args.output:
