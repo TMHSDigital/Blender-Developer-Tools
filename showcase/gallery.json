@@ -104,8 +104,8 @@
     {
       "name": "fence-kit",
       "dir": "showcase/fence-kit",
-      "teaches": "A procedural post-and-rail fence section through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1212 tris, two materials with 120 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.642×0.157×1.235 m, LOD ratios in band, convex collider 62 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1092 tris, two materials with 156 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.624×0.134×1.232 m, grounded zmin, 2 iron shoes, brace-to-post gap 2.4 mm on both posts, rail-to-post gap 0.93 mm, rail span 1.390 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 32 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19.",
       "hero": "docs/gallery/assets/fence-kit-hero.webp",
       "preview": "showcase/fence-kit/preview.webp",
       "tags": [
@@ -212,8 +212,8 @@
     {
       "name": "hand-pump",
       "dir": "showcase/hand-pump",
-      "teaches": "A procedural village hand pump with a gooseneck through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1164 tris, two materials with 222 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.364×1.049 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 110 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "teaches": "A procedural village hand pump whose gooseneck is a 6-gon tube from the lower-column radius, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1064 tris, two materials with 564 metal and 144 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.610×0.382×1.052 m, grounded zmin, spout-to-column gap 2.7 mm, flange-to-plinth gap 6.0 mm, column radius 62 mm, LOD ratios in band, convex collider 114 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-spout 17; --float-flange 18; --skinny-col 19.",
       "hero": "docs/gallery/assets/hand-pump-hero.webp",
       "preview": "showcase/hand-pump/preview.webp",
       "tags": [
