@@ -5,9 +5,17 @@ composing shipped pipeline pieces: bmesh construction, UVs, two
 materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
+Posts, rails, kick, brace and collars share named stations
+(``post_xs``, ``RAIL_ZS``, ``y_brace``). The brace is an oriented
+box between those stations, not a hypot-length cube rotated about
+its centroid. Rails and kick tenon into the post volume without
+sharing corner verts.
+
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+DECIMATE stage so the LOD-ratio budget fails. Hygiene family 15–19:
+``--stray-vert``, ``--lift-z`` / ``--short-shoes``, ``--short-brace``,
+``--gap-rails``, ``--long-rails``.
 
 No RNG. Construction is closed-form. AABB X is the tile width so
 adjacent copies meet; this piece does not re-witness the modular-kit
@@ -29,6 +37,7 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -41,6 +50,7 @@ TILE = 1.60
 POST_W = 0.110
 POST_H = 1.14
 CAP_H = 0.095
+CAP_OVERHANG = 0.012
 RAIL_Y = 0.055
 RAIL_Z = 0.064
 RAIL_ZS = (0.30, 0.58, 0.86)
@@ -49,12 +59,17 @@ KICK_Y = 0.040
 BRACE_T = 0.042
 IRON_T = 0.016
 SHOE_H = 0.034
-SHOE_SCALE = 1.38
+TENON = 0.005
+POST_XS = (-(TILE / 2.0 - POST_W / 2.0), TILE / 2.0 - POST_W / 2.0)
+HX = POST_XS[1]
+Y_BRACE = -(POST_W * 0.5 - BRACE_T * 0.30)
+RAIL_HALF = HX - POST_W * 0.5 + TENON
+COLLAR_BITE = 0.004
 
-BBOX_TOL = 0.01
-OUTER_SIZE = (1.642, 0.157, 1.235)
-BASE_TRIS_MIN = 1160
-BASE_TRIS_MAX = 1280
+BBOX_TOL = 0.015
+OUTER_SIZE = (1.624, 0.134, 1.232)
+BASE_TRIS_MIN = 1000
+BASE_TRIS_MAX = 1400
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -64,13 +79,30 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 96
+COLLIDER_TRIS_MAX = 180
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
-METAL_FACES_MIN = 24
+METAL_FACES_MIN = 48
+WOOD_FACES_MIN = 48
 
 WOOD_IDX = 0
 METAL_IDX = 1
+
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZMIN_EPS = 1e-4
+ZFIGHT_EPS = 0.002
+ZFIGHT_COS = 0.98
+SHOE_COUNT = 2
+SHOE_ZMIN_MAX = 0.002
+BRACE_GAP_MAX = 0.008
+RAIL_GAP_MAX = 0.008
+SPAN_TOL = 0.04
+LIFT_Z = 0.05
+SHORT_SHOE = 0.08
+SHORT_BRACE = 0.22
+GAP_RAIL = 0.10
+LONG_RAIL = 0.08
 
 
 def eevee_engine_id():
@@ -117,6 +149,46 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     for f in faces:
         f.material_index = mat_idx
     return verts
+
+
+def add_oriented_box(bm, a, b, scale_xy, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    if length < 1e-8:
+        return []
+    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
+    eul = quat.to_euler("XYZ")
+    return add_box(
+        bm,
+        ((a + b) * 0.5),
+        (scale_xy[0], scale_xy[1], length),
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
+
+
+def add_collar(bm, px, z, half, t, h, mat_idx, closed=True):
+    """Plates around a post. Bite the host. U-wrap omits the span-facing plate."""
+    loc_y = half - COLLAR_BITE + t * 0.5
+    add_box(bm, (px, loc_y, z), (2.0 * half - t * 0.50, t, h), mat_idx)
+    add_box(bm, (px, -loc_y, z), (2.0 * half - t * 0.50, t, h), mat_idx)
+    loc_x = half - COLLAR_BITE + t * 0.5
+    sign = 1.0 if px >= 0.0 else -1.0
+    add_box(
+        bm,
+        (px + sign * loc_x, 0.0, z),
+        (t, 2.0 * half - t * 0.70, h),
+        mat_idx,
+    )
+    if closed:
+        add_box(
+            bm,
+            (px - sign * loc_x, 0.0, z),
+            (t, 2.0 * half - t * 0.70, h),
+            mat_idx,
+        )
 
 
 def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
@@ -183,60 +255,68 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_fence_mesh(name, bevel_offset, bevel_segments):
+def build_fence_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    short_brace=False,
+    short_shoes=False,
+    gap_rails=False,
+    long_rails=False,
+):
     bm = bmesh.new()
     try:
         wood_verts = []
-        post_xs = (-(TILE / 2.0 - POST_W / 2.0), TILE / 2.0 - POST_W / 2.0)
+        post_xs = POST_XS
+        half = POST_W * 0.5
+        rail_half = RAIL_HALF - GAP_RAIL if gap_rails else RAIL_HALF
+
         for px in post_xs:
             wood_verts.extend(
-                add_box(bm, (px, 0.0, POST_H / 2.0), (POST_W, POST_W, POST_H), WOOD_IDX)
-            )
-            wood_verts.extend(
-                add_cone(
+                add_box(
                     bm,
-                    (px, 0.0, POST_H + CAP_H / 2.0),
-                    POST_W * 0.72,
-                    0.010,
-                    CAP_H,
-                    4,
+                    (px, 0.0, POST_H / 2.0),
+                    (POST_W, POST_W, POST_H),
                     WOOD_IDX,
-                    euler=(0.0, 0.0, math.pi / 4.0),
                 )
             )
 
-        rail_len = TILE - POST_W * 0.18
-        for z in RAIL_ZS:
+        for i, z in enumerate(RAIL_ZS):
+            ry = RAIL_Y * (1.0 + 0.10 * math.sin(i * 2.15 + 0.3))
+            rz = RAIL_Z * (1.0 + 0.06 * math.sin(i * 1.7 + 1.1))
             wood_verts.extend(
-                add_box(bm, (0.0, 0.0, z), (rail_len, RAIL_Y, RAIL_Z), WOOD_IDX)
+                add_box(bm, (0.0, 0.0, z), (2.0 * rail_half, ry, rz), WOOD_IDX)
             )
 
+        kick_z0 = SHOE_H - 0.003
         wood_verts.extend(
             add_box(
                 bm,
-                (0.0, 0.0, KICK_Z / 2.0),
-                (TILE - POST_W * 0.22, KICK_Y, KICK_Z),
+                (0.0, 0.0, kick_z0 + KICK_Z / 2.0),
+                (2.0 * rail_half, KICK_Y, KICK_Z),
                 WOOD_IDX,
             )
         )
 
-        span = TILE - POST_W
-        rise = RAIL_ZS[-1] - RAIL_ZS[0]
-        brace_len = math.hypot(span, rise)
-        brace_ang = math.atan2(rise, span)
-        wood_verts.extend(
-            add_box(
-                bm,
-                (0.0, -POST_W * 0.55, (RAIL_ZS[0] + RAIL_ZS[-1]) / 2.0),
-                (brace_len, BRACE_T, BRACE_T),
-                WOOD_IDX,
-                euler=(0.0, -brace_ang, 0.0),
+        if long_rails:
+            wood_verts.extend(
+                add_box(
+                    bm,
+                    (0.0, 0.0, (RAIL_ZS[0] + RAIL_ZS[1]) * 0.5),
+                    (2.0 * (RAIL_HALF + LONG_RAIL), RAIL_Y, RAIL_Z),
+                    WOOD_IDX,
+                )
             )
-        )
+
+        a = Vector((post_xs[0], Y_BRACE, RAIL_ZS[0]))
+        b = Vector((post_xs[1], Y_BRACE, RAIL_ZS[-1]))
+        if short_brace:
+            a = Vector((post_xs[0] + SHORT_BRACE, Y_BRACE, RAIL_ZS[0]))
+        wood_verts.extend(add_oriented_box(bm, a, b, (BRACE_T, BRACE_T), WOOD_IDX))
 
         if bevel_offset > 0.0:
             edges = list({e for v in wood_verts for e in v.link_edges})
-            bmesh.ops.bevel(
+            ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
                 offset=bevel_offset,
@@ -245,42 +325,36 @@ def build_fence_mesh(name, bevel_offset, bevel_segments):
                 affect="EDGES",
                 clamp_overlap=True,
             )
+            for f in ret.get("faces") or []:
+                f.material_index = WOOD_IDX
 
+        cap_half = half + CAP_OVERHANG
         for px in post_xs:
-            add_box(
+            add_cone(
                 bm,
-                (px, 0.0, SHOE_H / 2.0),
-                (POST_W * SHOE_SCALE, POST_W * SHOE_SCALE, SHOE_H),
-                METAL_IDX,
+                (px, 0.0, POST_H + CAP_H / 2.0 - 0.003),
+                cap_half * math.sqrt(2.0),
+                0.020,
+                CAP_H,
+                4,
+                WOOD_IDX,
+                euler=(0.0, 0.0, math.pi / 4.0),
             )
-            sign = 1.0 if px > 0.0 else -1.0
+
+        shoe_lift = SHORT_SHOE if short_shoes else 0.0
+        for px in post_xs:
+            add_collar(
+                bm, px, SHOE_H / 2.0 + shoe_lift, half, IRON_T, SHOE_H, METAL_IDX,
+                closed=True,
+            )
             for z in RAIL_ZS:
-                add_box(
-                    bm,
-                    (px, POST_W / 2.0 + IRON_T / 2.0, z),
-                    (POST_W * 0.88, IRON_T, RAIL_Z * 1.40),
-                    METAL_IDX,
-                )
-                add_box(
-                    bm,
-                    (px, -(POST_W / 2.0 + IRON_T / 2.0), z),
-                    (POST_W * 0.88, IRON_T, RAIL_Z * 1.40),
-                    METAL_IDX,
-                )
-                add_box(
-                    bm,
-                    (px + sign * (POST_W / 2.0 + IRON_T / 2.0), 0.0, z),
-                    (IRON_T, POST_W * 0.88, RAIL_Z * 1.40),
-                    METAL_IDX,
+                add_collar(
+                    bm, px, z, half, IRON_T, RAIL_Z * 1.25, METAL_IDX, closed=False
                 )
 
-        xs = [v.co.x for v in bm.verts]
-        ys = [v.co.y for v in bm.verts]
         zs = [v.co.z for v in bm.verts]
-        cy = 0.5 * (min(ys) + max(ys))
         zmin = min(zs)
         for v in bm.verts:
-            v.co.y -= cy
             v.co.z -= zmin
             if v.co.z < 0.0:
                 v.co.z = 0.0
@@ -301,13 +375,25 @@ def build_fence_mesh(name, bevel_offset, bevel_segments):
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 6.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
@@ -324,10 +410,11 @@ def assign_slots(obj, wood, metal):
 
 
 def world_bbox(obj):
-    corners = [obj.matrix_world @ Vector(c) for c in obj.bound_box]
-    xs = [c.x for c in corners]
-    ys = [c.y for c in corners]
-    zs = [c.z for c in corners]
+    mat = obj.matrix_world
+    pts = [mat @ v.co for v in obj.data.vertices]
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    zs = [p.z for p in pts]
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
@@ -390,6 +477,193 @@ def convex_hull_collider(obj, name):
     return collider
 
 
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for poly in me.polygons:
+        if all(i in member for i in poly.vertices):
+            return poly.material_index
+    return None
+
+
+def shell_bvh_gap(me, ga, gb):
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        keep_a, keep_b = set(ga), set(gb)
+        drop_a = [f for f in bm_a.faces if not all(v.index in keep_a for v in f.verts)]
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for v in bm_a.verts:
+            hit = tree.find_nearest(v.co)
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        for f in bm_a.faces:
+            hit = tree.find_nearest(f.calc_center_median())
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, POST_H * 0.55))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
+def joint_audit(me):
+    groups = shells(me)
+    posts = []
+    rails = []
+    braces = []
+    shoes = []
+    for g in groups:
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        mat = mat_of(me, g)
+        if mat == WOOD_IDX and dz > 0.70 and dx < 0.18 and dy < 0.18:
+            posts.append((g, a))
+        if mat == WOOD_IDX and dx > TILE * 0.45 and dz < 0.18:
+            rails.append((g, a))
+        if mat == WOOD_IDX and dx > 0.40 and dz > 0.25 and dy < 0.12:
+            braces.append((g, a))
+        if mat == METAL_IDX and a[2] < 0.08 and dz < 0.08 and max(dx, dy) < 0.22:
+            shoes.append((g, a))
+    left = [a for _g, a in shoes if (a[0] + a[3]) * 0.5 < 0.0]
+    right = [a for _g, a in shoes if (a[0] + a[3]) * 0.5 >= 0.0]
+    shoe_n = (1 if left else 0) + (1 if right else 0)
+    shoe_z = 99.0
+    if shoes:
+        shoe_z = min(a[2] for _g, a in shoes)
+    brace_gap = 99.0
+    if braces and posts:
+        per_post = [
+            min(shell_bvh_gap(me, b[0], p[0]) for b in braces) for p in posts
+        ]
+        brace_gap = max(per_post)
+    rail_gap = 99.0
+    if rails and posts:
+        rail_gap = min(
+            shell_bvh_gap(me, r[0], p[0]) for r in rails for p in posts
+        )
+    span_x = 0.0
+    if rails:
+        xs = [v for _g, a in rails for v in (a[0], a[3])]
+        span_x = max(xs) - min(xs)
+    return {
+        "posts": len(posts),
+        "rails": len(rails),
+        "braces": len(braces),
+        "shoes": shoe_n,
+        "shoe_z": shoe_z,
+        "brace_gap": brace_gap,
+        "rail_gap": rail_gap,
+        "span_x": span_x,
+    }
+
+
 def setup_bake_image(obj, target_mat, size=BAKE_RES):
     if not obj.data.uv_layers:
         return None, None
@@ -442,14 +716,41 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    short_brace=False,
+    short_shoes=False,
+    gap_rails=False,
+    long_rails=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_fence_mesh("FenceLow", bevel_offset=0.006, bevel_segments=2)
-    high = build_fence_mesh("FenceHigh", bevel_offset=0.006, bevel_segments=4)
-    wood = principled("FenceWood", (0.46, 0.24, 0.08, 1.0), 0.0, 0.55)
-    metal = principled("FenceIron", (0.11, 0.115, 0.13, 1.0), 1.0, 0.28)
+    kw = dict(
+        short_brace=short_brace,
+        short_shoes=short_shoes,
+        gap_rails=gap_rails,
+        long_rails=long_rails,
+    )
+    low = build_fence_mesh("FenceLow", bevel_offset=0.006, bevel_segments=2, **kw)
+    high = build_fence_mesh("FenceHigh", bevel_offset=0.006, bevel_segments=4, **kw)
+    wood = principled(
+        "FenceWood", (0.46, 0.24, 0.08, 1.0), 0.0, 0.55,
+        noise_scale=16.0, wear=(0.32, 0.16, 0.05, 1.0),
+    )
+    metal = principled(
+        "FenceIron", (0.11, 0.115, 0.13, 1.0), 1.0, 0.28,
+        noise_scale=20.0, wear=(0.18, 0.16, 0.12, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("fence mesh did not build", 3), None, None, None, None, None
@@ -481,7 +782,9 @@ def check(skip_decimate):
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_fence_mesh("FenceColSrc", bevel_offset=0.0, bevel_segments=1)
+    collider_src = build_fence_mesh(
+        "FenceColSrc", bevel_offset=0.0, bevel_segments=1, **kw
+    )
     collider = convex_hull_collider(collider_src, "FenceCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -494,6 +797,10 @@ def check(skip_decimate):
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    jnt = joint_audit(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -512,6 +819,17 @@ def check(skip_decimate):
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured posts={jnt['posts']} rails={jnt['rails']} "
+        f"braces={jnt['braces']} shoes={jnt['shoes']} "
+        f"shoe_z={jnt['shoe_z']:.5f} brace_gap={jnt['brace_gap']:.5f} "
+        f"rail_gap={jnt['rail_gap']:.5f} span_x={jnt['span_x']:.4f}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -528,6 +846,11 @@ def check(skip_decimate):
             f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
             5,
         ), None, None, None, None, None
+    if idx_counts.get(WOOD_IDX, 0) < WOOD_FACES_MIN:
+        return fail(
+            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
         return fail(
             f"UVs outside 0..1: ({u0:.4f},{v0:.4f})-({u1:.4f},{v1:.4f})",
@@ -537,6 +860,32 @@ def check(skip_decimate):
         return fail(
             f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}",
             7,
+        ), None, None, None, None, None
+    if (
+        bb[2] > ZMIN_EPS
+        or jnt["shoes"] != SHOE_COUNT
+        or jnt["shoe_z"] > SHOE_ZMIN_MAX
+    ):
+        return fail(
+            f"grounded zmin={bb[2]:.5f} shoes={jnt['shoes']} "
+            f"shoe_z={jnt['shoe_z']:.5f}",
+            16,
+        ), None, None, None, None, None
+    if jnt["braces"] < 1 or jnt["posts"] < 2 or jnt["brace_gap"] > BRACE_GAP_MAX:
+        return fail(
+            f"brace gap {jnt['brace_gap']:.5f} braces={jnt['braces']} "
+            f"posts={jnt['posts']}",
+            17,
+        ), None, None, None, None, None
+    if jnt["rails"] < 3 or jnt["rail_gap"] > RAIL_GAP_MAX:
+        return fail(
+            f"rail gap {jnt['rail_gap']:.5f} rails={jnt['rails']}",
+            18,
+        ), None, None, None, None, None
+    if abs(jnt["span_x"] - 2.0 * RAIL_HALF) > SPAN_TOL:
+        return fail(
+            f"rail span {jnt['span_x']:.4f} off {2.0 * RAIL_HALF}",
+            19,
         ), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
@@ -571,6 +920,16 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"] or hyg["zero_area"]
+        or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -684,14 +1043,24 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--short-shoes", action="store_true")
+    p.add_argument("--short-brace", action="store_true")
+    p.add_argument("--gap-rails", action="store_true")
+    p.add_argument("--long-rails", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_brace=args.short_brace,
+        short_shoes=args.short_shoes,
+        gap_rails=args.gap_rails,
+        long_rails=args.long_rails,
+    )
     if code:
         return code
     if args.output:
