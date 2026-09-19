@@ -79,6 +79,11 @@ entry in `showcase/gallery.json`, and a rendered still.
   the host's chamfer as a spike — that is the class this catches.
   Measure in the construction frame (un-rotate by any rake) so a tilted
   host does not inflate its own AABB.
+- **Diagonal from stations (exit 17).** A brace, gooseneck or scroll is
+  an oriented primitive or a tube between named host endpoints, not a
+  hypot-length box rotated about its centroid. The centroid form is
+  short of one host and punches through the other. `--short-brace` /
+  `--float-spout` (or the piece's equivalent) is the falsifier.
 - **Seat conformance (exit 18).** A band, hoop, strap or collar wrapped
   around a host asserts a **banded** seat depth — a minimum so it cannot
   float and a maximum so it cannot sink — sampled per angular segment
