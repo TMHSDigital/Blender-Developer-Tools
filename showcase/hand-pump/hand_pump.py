@@ -1,13 +1,19 @@
 """Game-ready village hand pump — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural cast-iron hand pump (plinth,
-column, spout, handle, and wooden grip) after composing shipped
-pipeline pieces: bmesh construction, UVs, two materials, high-to-low
-normal bake, LOD chain, convex collider, Unity glTF export.
+column, gooseneck, stuffing-box head, handle, wooden grip) after
+composing shipped pipeline pieces: bmesh construction, UVs, two
+materials, high-to-low normal bake, LOD chain, convex collider,
+Unity glTF export.
+
+The column stays on the origin; only zmin is snapped. The gooseneck is
+a 6-gon tube about named stations on the lower-column radius, not a
+chain of cylinders. The flange bites the plinth.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+They are not API-contract witnesses. Hygiene family 15–19:
+``--stray-vert``, ``--lift-z``, ``--float-spout``, ``--float-flange``,
+``--skinny-col``.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -27,6 +33,7 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -36,17 +43,32 @@ sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
 PLINTH_XY = 0.34
-PLINTH_H = 0.090
-COL_R = 0.050
-COL_H = 0.78
-COL_SEGS = 16
-SPOUT_Z = 0.46
+SLAB_H = 0.050
+CAP_H = 0.040
+PLINTH_BITE = 0.006
+PLINTH_TOP = SLAB_H + CAP_H - PLINTH_BITE
+COL_R_LO = 0.062
+COL_R_HI = 0.046
+COL_SEGS = 24
+LOWER_H = 0.40
+UPPER_H = 0.36
+COL_H = LOWER_H + UPPER_H
+SPOUT_Z = PLINTH_TOP + 0.36
+SPOUT_R = 0.13
+SPOUT_T = 0.036
+SPOUT_N = 10
 HANDLE_LIFT = 0.18
+FLANGE_R = 0.095
+FLANGE_H = 0.028
+FLANGE_BITE = 0.006
+BOLT_N = 4
+BOLT_R = 0.008
+BOLT_H = 0.014
 
-BBOX_TOL = 0.01
-OUTER_SIZE = (0.610, 0.364, 1.049)
-BASE_TRIS_MIN = 1080
-BASE_TRIS_MAX = 1240
+BBOX_TOL = 0.015
+OUTER_SIZE = (0.610, 0.382, 1.052)
+BASE_TRIS_MIN = 900
+BASE_TRIS_MAX = 2200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -56,14 +78,27 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 160
+COLLIDER_TRIS_MAX = 220
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
-METAL_FACES_MIN = 24
-WOOD_FACES_MIN = 12
+METAL_FACES_MIN = 48
+WOOD_FACES_MIN = 24
 
 WOOD_IDX = 0
 METAL_IDX = 1
+
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZMIN_EPS = 1e-4
+ZFIGHT_EPS = 0.002
+ZFIGHT_COS = 0.98
+SPOUT_GAP_MAX = 0.008
+FLANGE_GAP_MAX = 0.008
+COL_R_TOL = 0.008
+LIFT_Z = 0.05
+FLOAT_SPOUT = 0.12
+FLOAT_FLANGE = 0.04
+SKINNY = 0.028
 
 
 def eevee_engine_id():
@@ -154,7 +189,7 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=False,
+        cap_tris=True,
         segments=segments,
         radius1=radius,
         radius2=radius,
@@ -171,11 +206,63 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
+def add_gooseneck(bm, x, y0, z0, radius, n, thick, mat_idx, t0=0.08, t1=1.0):
+    pts = []
+    for i in range(n + 1):
+        t = t0 + (t1 - t0) * (i / n)
+        ang = t * (math.pi / 2.0)
+        pts.append(
+            Vector(
+                (
+                    x,
+                    y0 - radius * math.sin(ang),
+                    z0 - radius * (1.0 - math.cos(ang)),
+                )
+            )
+        )
+    rings = 6
+    r = thick * 0.5
+    ring_verts = []
+    for i, p in enumerate(pts):
+        if i < n:
+            tangent = (pts[i + 1] - p).normalized()
+        else:
+            tangent = (p - pts[i - 1]).normalized()
+        side = tangent.cross(Vector((1.0, 0.0, 0.0)))
+        if side.length < 1e-6:
+            side = tangent.cross(Vector((0.0, 1.0, 0.0)))
+        side.normalize()
+        up = tangent.cross(side).normalized()
+        ring = []
+        for k in range(rings):
+            ang = (2.0 * math.pi * k) / rings
+            offset = side * math.cos(ang) * r + up * math.sin(ang) * r
+            ring.append(bm.verts.new(p + offset))
+        ring_verts.append(ring)
+    bm.verts.ensure_lookup_table()
+    for a, b in zip(ring_verts, ring_verts[1:]):
+        for k in range(rings):
+            k2 = (k + 1) % rings
+            face = bm.faces.new((a[k], a[k2], b[k2], b[k]))
+            face.material_index = mat_idx
+    for end_i, p in ((0, pts[0]), (-1, pts[-1])):
+        center = bm.verts.new(p)
+        ring = ring_verts[end_i]
+        for k in range(rings):
+            k2 = (k + 1) % rings
+            if end_i == 0:
+                face = bm.faces.new((center, ring[k2], ring[k]))
+            else:
+                face = bm.faces.new((center, ring[k], ring[k2]))
+            face.material_index = mat_idx
+    return [v for ring in ring_verts for v in ring]
+
+
 def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=False,
+        cap_tris=True,
         segments=segments,
         radius1=radius1,
         radius2=radius2,
@@ -275,45 +362,39 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
+def build_hand_pump_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    float_spout=False,
+    float_flange=False,
+    skinny_col=False,
+):
     bm = bmesh.new()
     try:
         wood = []
-        metal = []
-        slab_h = 0.050
-        cap_h = 0.040
-        top_z = slab_h + cap_h + COL_H
+        r_lo = COL_R_LO - SKINNY if skinny_col else COL_R_LO
+        r_hi = COL_R_HI - SKINNY * 0.6 if skinny_col else COL_R_HI
+        top_z = PLINTH_TOP + COL_H
+        pivot = Vector((0.0, r_hi + 0.028, top_z + 0.010))
+        grip_end = Vector((-0.38, pivot.y + 0.015, pivot.z + HANDLE_LIFT))
 
         wood.extend(
             add_box(
                 bm,
-                (0.0, 0.0, slab_h / 2.0),
-                (PLINTH_XY, PLINTH_XY, slab_h),
+                (0.0, 0.0, SLAB_H / 2.0),
+                (PLINTH_XY, PLINTH_XY, SLAB_H),
                 WOOD_IDX,
             )
         )
         wood.extend(
             add_box(
                 bm,
-                (0.0, 0.0, slab_h + cap_h / 2.0),
-                (0.26, 0.26, cap_h),
+                (0.0, 0.0, SLAB_H - PLINTH_BITE + CAP_H / 2.0),
+                (0.26, 0.26, CAP_H),
                 WOOD_IDX,
             )
         )
-        pivot = Vector((0.0, COL_R + 0.030, top_z - 0.018))
-        grip_end = Vector((-0.38, pivot.y + 0.02, pivot.z + HANDLE_LIFT))
-        wood.extend(
-            add_cyl(
-                bm,
-                (grip_end.x, grip_end.y, grip_end.z),
-                0.018,
-                0.12,
-                10,
-                WOOD_IDX,
-                euler=(0.0, math.pi / 2.0, 0.0),
-            )
-        )
-
         if bevel_offset > 0.0:
             edges = list({e for v in wood for e in v.link_edges})
             ret = bmesh.ops.bevel(
@@ -328,146 +409,127 @@ def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
-        plinth_top = slab_h + cap_h
-        metal.extend(
+        wood.extend(
             add_cyl(
                 bm,
-                (0.0, 0.0, plinth_top + 0.016),
-                0.095,
-                0.032,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        lower_h = 0.40
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, plinth_top + lower_h / 2.0),
-                0.062,
-                lower_h,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        joint_z = plinth_top + lower_h
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, joint_z),
-                0.078,
-                0.026,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        upper_h = 0.36
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, joint_z + upper_h / 2.0),
-                0.046,
-                upper_h,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_box(
-                bm,
-                (0.0, 0.0, top_z + 0.012),
-                (0.10, 0.10, 0.085),
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, 0.0, top_z + 0.068),
-                0.034,
-                0.036,
-                COL_SEGS,
-                METAL_IDX,
-            )
-        )
-
-        arc_r = 0.13
-        origin_y = -(0.046)
-        origin_z = SPOUT_Z
-        n_arc = 7
-        last = None
-        for i in range(n_arc):
-            t0 = (i / n_arc) * (math.pi / 2.0)
-            t1 = ((i + 1) / n_arc) * (math.pi / 2.0)
-            p0 = (
-                0.0,
-                origin_y - arc_r * math.sin(t0),
-                origin_z - arc_r * (1.0 - math.cos(t0)),
-            )
-            p1 = (
-                0.0,
-                origin_y - arc_r * math.sin(t1),
-                origin_z - arc_r * (1.0 - math.cos(t1)),
-            )
-            metal.extend(add_cyl_between(bm, p0, p1, 0.018, 10, METAL_IDX))
-            last = p1
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, last[1], last[2] - 0.028),
-                0.016,
-                0.056,
-                10,
-                METAL_IDX,
-            )
-        )
-
-        metal.extend(
-            add_box(
-                bm,
-                (0.028, pivot.y, pivot.z),
-                (0.022, 0.048, 0.050),
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_box(
-                bm,
-                (-0.028, pivot.y, pivot.z),
-                (0.022, 0.048, 0.050),
-                METAL_IDX,
-            )
-        )
-        metal.extend(
-            add_cyl(
-                bm,
-                (0.0, pivot.y, pivot.z),
-                0.012,
-                0.072,
-                10,
-                METAL_IDX,
+                (grip_end.x, grip_end.y, grip_end.z),
+                0.018,
+                0.12,
+                12,
+                WOOD_IDX,
                 euler=(0.0, math.pi / 2.0, 0.0),
             )
         )
-        metal.extend(
-            add_oriented_box(
+
+        flange_z = PLINTH_TOP - FLANGE_BITE + FLANGE_H / 2.0
+        if float_flange:
+            flange_z += FLOAT_FLANGE
+        add_cyl(
+            bm, (0.0, 0.0, flange_z), FLANGE_R, FLANGE_H, COL_SEGS, METAL_IDX
+        )
+        bolt_ring = FLANGE_R * 0.72
+        for i in range(BOLT_N):
+            ang = math.pi / 4.0 + i * (math.pi / 2.0)
+            add_cyl(
                 bm,
-                (pivot.x, pivot.y, pivot.z),
-                (grip_end.x + 0.03, grip_end.y, grip_end.z),
-                (0.020, 0.016),
+                (
+                    bolt_ring * math.cos(ang),
+                    bolt_ring * math.sin(ang),
+                    flange_z + FLANGE_H / 2.0 + BOLT_H / 2.0 - 0.002,
+                ),
+                BOLT_R,
+                BOLT_H,
+                8,
                 METAL_IDX,
             )
+
+        add_cyl(
+            bm,
+            (0.0, 0.0, PLINTH_TOP + LOWER_H / 2.0),
+            r_lo,
+            LOWER_H,
+            COL_SEGS,
+            METAL_IDX,
+        )
+        joint_z = PLINTH_TOP + LOWER_H
+        add_cyl(
+            bm,
+            (0.0, 0.0, joint_z + UPPER_H / 2.0 - 0.006),
+            r_hi,
+            UPPER_H,
+            COL_SEGS,
+            METAL_IDX,
         )
 
-        xs = [v.co.x for v in bm.verts]
-        ys = [v.co.y for v in bm.verts]
+        add_cyl(
+            bm,
+            (0.0, 0.0, top_z + 0.012),
+            0.052,
+            0.048,
+            COL_SEGS,
+            METAL_IDX,
+        )
+        add_cyl(
+            bm,
+            (0.0, 0.0, top_z + 0.044),
+            0.032,
+            0.030,
+            8,
+            METAL_IDX,
+        )
+
+        cheek_y = pivot.y
+        add_box(
+            bm,
+            (0.028, cheek_y, pivot.z),
+            (0.016, 0.046, 0.044),
+            METAL_IDX,
+        )
+        add_box(
+            bm,
+            (-0.028, cheek_y, pivot.z),
+            (0.016, 0.046, 0.044),
+            METAL_IDX,
+        )
+        add_cyl(
+            bm,
+            (0.0, cheek_y, pivot.z),
+            0.010,
+            0.068,
+            10,
+            METAL_IDX,
+            euler=(0.0, math.pi / 2.0, 0.0),
+        )
+        add_oriented_box(
+            bm,
+            (pivot.x, pivot.y, pivot.z),
+            (grip_end.x + 0.03, grip_end.y, grip_end.z),
+            (0.018, 0.014),
+            METAL_IDX,
+        )
+
+        y0 = -r_lo
+        z0 = SPOUT_Z
+        if float_spout:
+            y0 -= FLOAT_SPOUT
+        add_gooseneck(
+            bm, 0.0, y0, z0, SPOUT_R, SPOUT_N, SPOUT_T, METAL_IDX, t0=-0.14
+        )
+        nozzle_y = y0 - SPOUT_R
+        nozzle_z = z0 - SPOUT_R
+        add_cone(
+            bm,
+            (0.0, nozzle_y, nozzle_z - 0.028),
+            0.014,
+            0.020,
+            0.044,
+            12,
+            METAL_IDX,
+        )
+
         zs = [v.co.z for v in bm.verts]
-        rcx = 0.5 * (min(xs) + max(xs))
-        rcy = 0.5 * (min(ys) + max(ys))
         zmin = min(zs)
         for v in bm.verts:
-            v.co.x -= rcx
-            v.co.y -= rcy
             v.co.z -= zmin
             if v.co.z < 0.0:
                 v.co.z = 0.0
@@ -475,12 +537,12 @@ def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = face.material_index == METAL_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
         for poly in me.polygons:
-            poly.use_smooth = False
+            poly.use_smooth = poly.material_index == METAL_IDX
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -488,13 +550,25 @@ def build_hand_pump_mesh(name, bevel_offset, bevel_segments):
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 6.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
@@ -509,10 +583,11 @@ def assign_slots(obj, wood, metal):
 
 
 def world_bbox(obj):
-    corners = [obj.matrix_world @ Vector(c) for c in obj.bound_box]
-    xs = [c.x for c in corners]
-    ys = [c.y for c in corners]
-    zs = [c.z for c in corners]
+    mat = obj.matrix_world
+    pts = [mat @ v.co for v in obj.data.vertices]
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    zs = [p.z for p in pts]
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
@@ -575,6 +650,190 @@ def convex_hull_collider(obj, name):
     return collider
 
 
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for poly in me.polygons:
+        if all(i in member for i in poly.vertices):
+            return poly.material_index
+    return None
+
+
+def shell_bvh_gap(me, ga, gb):
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        keep_a, keep_b = set(ga), set(gb)
+        drop_a = [f for f in bm_a.faces if not all(v.index in keep_a for v in f.verts)]
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for v in bm_a.verts:
+            hit = tree.find_nearest(v.co)
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        for f in bm_a.faces:
+            hit = tree.find_nearest(f.calc_center_median())
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, PLINTH_TOP + LOWER_H * 0.5))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
+def joint_audit(me):
+    groups = shells(me)
+    plinths = []
+    columns = []
+    spouts = []
+    flanges = []
+    for g in groups:
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        mat = mat_of(me, g)
+        if mat == WOOD_IDX and dz < 0.08 and dx > 0.20:
+            plinths.append((g, a))
+        if mat == METAL_IDX and dz > 0.25 and dx < 0.18 and dy < 0.18:
+            columns.append((g, a))
+        if mat == METAL_IDX and dy > 0.10 and dx < 0.10 and a[1] < -0.04:
+            spouts.append((g, a))
+        if mat == METAL_IDX and dz < 0.05 and dx > 0.14 and a[2] < PLINTH_TOP + 0.05:
+            flanges.append((g, a))
+    spout_gap = 99.0
+    if spouts and columns:
+        spout_gap = min(
+            shell_bvh_gap(me, s[0], c[0]) for s in spouts for c in columns
+        )
+    flange_gap = 99.0
+    if flanges and plinths:
+        flange_gap = min(
+            shell_bvh_gap(me, f[0], p[0]) for f in flanges for p in plinths
+        )
+    col_r = 0.0
+    if columns:
+        widest = max(columns, key=lambda t: max(t[1][3] - t[1][0], t[1][4] - t[1][1]))
+        a = widest[1]
+        col_r = 0.5 * max(a[3] - a[0], a[4] - a[1])
+    plinth_z = 99.0
+    if plinths:
+        plinth_z = min(a[2] for _g, a in plinths)
+    return {
+        "plinths": len(plinths),
+        "columns": len(columns),
+        "spouts": len(spouts),
+        "flanges": len(flanges),
+        "spout_gap": spout_gap,
+        "flange_gap": flange_gap,
+        "col_r": col_r,
+        "plinth_z": plinth_z,
+    }
+
+
 def setup_bake_image(obj, target_mat, size=BAKE_RES):
     if not obj.data.uv_layers:
         return None, None
@@ -627,14 +886,39 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    float_spout=False,
+    float_flange=False,
+    skinny_col=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_hand_pump_mesh("HandPumpLow", bevel_offset=0.004, bevel_segments=2)
-    high = build_hand_pump_mesh("HandPumpHigh", bevel_offset=0.004, bevel_segments=4)
-    wood = principled("HandPumpWood", (0.36, 0.19, 0.07, 1.0), 0.0, 0.60)
-    metal = principled("HandPumpIron", (0.22, 0.21, 0.20, 1.0), 1.0, 0.35)
+    kw = dict(
+        float_spout=float_spout,
+        float_flange=float_flange,
+        skinny_col=skinny_col,
+    )
+    low = build_hand_pump_mesh("HandPumpLow", bevel_offset=0.004, bevel_segments=2, **kw)
+    high = build_hand_pump_mesh("HandPumpHigh", bevel_offset=0.004, bevel_segments=4, **kw)
+    wood = principled(
+        "HandPumpWood", (0.36, 0.19, 0.07, 1.0), 0.0, 0.60,
+        noise_scale=14.0, wear=(0.22, 0.12, 0.05, 1.0),
+    )
+    metal = principled(
+        "HandPumpIron", (0.18, 0.175, 0.17, 1.0), 1.0, 0.38,
+        noise_scale=18.0, wear=(0.28, 0.24, 0.18, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
+
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("hand pump mesh did not build", 3), None, None, None, None, None
@@ -667,7 +951,7 @@ def check(skip_decimate):
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
     collider_src = build_hand_pump_mesh(
-        "HandPumpColSrc", bevel_offset=0.0, bevel_segments=1
+        "HandPumpColSrc", bevel_offset=0.0, bevel_segments=1, **kw
     )
     collider = convex_hull_collider(collider_src, "HandPumpCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
@@ -681,6 +965,10 @@ def check(skip_decimate):
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    jnt = joint_audit(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -698,6 +986,17 @@ def check(skip_decimate):
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
+    )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured plinths={jnt['plinths']} columns={jnt['columns']} "
+        f"spouts={jnt['spouts']} flanges={jnt['flanges']} "
+        f"spout_gap={jnt['spout_gap']:.5f} flange_gap={jnt['flange_gap']:.5f} "
+        f"col_r={jnt['col_r']:.5f} plinth_z={jnt['plinth_z']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -729,6 +1028,28 @@ def check(skip_decimate):
         return fail(
             f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}",
             7,
+        ), None, None, None, None, None
+    if bb[2] > ZMIN_EPS or jnt["plinth_z"] > ZMIN_EPS:
+        return fail(
+            f"grounded zmin={bb[2]:.5f} plinth_z={jnt['plinth_z']:.5f}",
+            16,
+        ), None, None, None, None, None
+    if jnt["spouts"] < 1 or jnt["columns"] < 1 or jnt["spout_gap"] > SPOUT_GAP_MAX:
+        return fail(
+            f"spout gap {jnt['spout_gap']:.5f} spouts={jnt['spouts']} "
+            f"columns={jnt['columns']}",
+            17,
+        ), None, None, None, None, None
+    if jnt["flanges"] < 1 or jnt["plinths"] < 1 or jnt["flange_gap"] > FLANGE_GAP_MAX:
+        return fail(
+            f"flange gap {jnt['flange_gap']:.5f} flanges={jnt['flanges']} "
+            f"plinths={jnt['plinths']}",
+            18,
+        ), None, None, None, None, None
+    if abs(jnt["col_r"] - COL_R_LO) > COL_R_TOL:
+        return fail(
+            f"column radius {jnt['col_r']:.5f} off {COL_R_LO}",
+            19,
         ), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
@@ -763,6 +1084,16 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"] or hyg["zero_area"]
+        or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -876,14 +1207,22 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--float-spout", action="store_true")
+    p.add_argument("--float-flange", action="store_true")
+    p.add_argument("--skinny-col", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        float_spout=args.float_spout,
+        float_flange=args.float_flange,
+        skinny_col=args.skinny_col,
+    )
     if code:
         return code
     if args.output:
