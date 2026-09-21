@@ -143,7 +143,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`hand-pump`](showcase/hand-pump/) — procedural cast-iron village hand pump through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`signpost`](showcase/signpost/) — procedural timber fingerboard signpost through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`signpost`](showcase/signpost/) — procedural timber fingerboard signpost through the same pipeline. Falsifiers `--skip-decimate` (9), `--stray-vert` (15), `--yaw-boards` (19).
 
 [`chopping-block`](showcase/chopping-block/) — procedural hooped timber stump with an embedded axe through the same pipeline. Falsifier `--skip-decimate` exits 9.
 

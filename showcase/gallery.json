@@ -225,7 +225,7 @@
       "name": "signpost",
       "dir": "showcase/signpost",
       "teaches": "A procedural timber fingerboard signpost through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 504 tris, three materials with 66 metal and 24 board faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.368×0.201×1.566 m, LOD ratios in band (5.2 COLLAPSE more aggressive on LOD2), convex collider 56 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 376 tris, three materials with 108 metal, 22 board and 60 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.260×0.142×1.551 m at zmin 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD1/LOD2), convex collider 52 tris, non-empty glTF. Hygiene all zero. Board-to-post gap 5 mm, strap gap 3 mm, board AABB Y 28 mm. --skip-decimate exits 9; --stray-vert 15; --lift-z / --short-shoe 16; --gap-board 17; --float-strap 18; --yaw-boards 19.",
       "hero": "docs/gallery/assets/signpost-hero.webp",
       "preview": "showcase/signpost/preview.webp",
       "tags": [
