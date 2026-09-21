@@ -101,6 +101,16 @@ entry in `showcase/gallery.json`, and a rendered still.
   scatter is stones, not open crates; a per-shell face floor is the
   budget that catches a cube leftover (exit 19). `--poke-rock` skips
   the clamp and over-bites; `--float-rocks` seats above the host.
+- **Orthogonal members (exit 19).** Boards, planks or arms that should
+  sit on a world axis assert their AABB secondary extent stays within a
+  named bound of the member thickness. A closed-form yaw of 0.12 rad
+  reads as an accident, not weathering. `--yaw-boards` is the
+  falsifier. Fingerboard tips are a wedge whose base is the board's own
+  thickness×height, bitten into the board so the base face is inside
+  it — not a 45° cube of a different size glued on the end.
+- **Wall-mount zmin (exit 16).** A wall sconce plants the plaque bottom
+  at Z=0. Lifting every vert by a hanging height so the asset floats in
+  its own space is not the same as placing it on a wall in the engine.
 - **Plumb and real-world size (exit 19).** Assert that the axis of a
   turned or lofted body is vertical, by comparing the XY centroid of a
   bottom slab against a top slab — not the exact `zmin` and `zmax`
