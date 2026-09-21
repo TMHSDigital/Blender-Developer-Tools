@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wooden-ladder — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wooden-ladder — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-ladder — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,43 +246,45 @@
   </div>
   <header class="hero">
     <h1>wooden-ladder</h1>
-    <p>A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom wooden-ladder render">
       <img src="../assets/wooden-ladder-hero.webp" alt="wooden-ladder render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 936 tris, two materials with 324 wood and 216 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.472×0.365×1.460 m, grounded at zmin 0, mesh hygiene all zero, 12 shells with every rung clearing the stile chamfer by 3.61 mm, convex collider 24 tris, non-empty glTF. Four falsifiers exit 9, 15, 16, and 17 on the LOD, hygiene, grounded, and joint-fit budgets.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-ladder/wooden_ladder.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural timber ladder (raked stiles, six 26 mm dowel rungs tenoned into the stiles, iron shoes and top caps) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural timber ladder: two stiles tapered from 64 mm to 50 mm, raked 12°, six turned rungs (22 mm tenon, barrel thicker only in the clear span), iron ferrules at the top, and level shoe plates under sleeves that follow the rake. Then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
-<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
+<p>Intended size: stile length 1.50 m, overall about 0.49 × 0.38 × 1.49 m. A household ladder, not a 3 m orchard ladder.</p>
+<p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 900–975 | 936 / 936 / 936 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2179 / 0.2179 / 0.2179 | | Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 324 wood, 216 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.472, 0.365, 1.460) m ± 0.01 | (0.4720, 0.3649, 1.4597) | | Grounded | <code>abs(zmin)</code> ≤ 1e-4 | 0.0000 | | Mesh hygiene | non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons all 0 | all 0 | | Parts | exactly 12 shells (2 stiles, 6 rungs, 2 caps, 2 shoes) | 12 (2 / 6) | | Rung depth clearance | ≥ 0.003 m inside the stile faces | 0.00361 | | Tenon engagement | ≥ 0.006 m past the stile inner face | 0.01200 | | Tenon breakout margin | ≥ 0.005 m short of the stile outer face | 0.04600 | | Collider tris | ≤ 120 | 24 | | Export | written, size &gt; 0 | 75140 / 75140 / 75128 bytes |</p>
-<p>Base triangles fell from <strong>2184 to 936</strong> in the quality pass: four iron fittings per stile collapsed to one shoe and one top cap, and the redundant top block came out. No hidden-face removal was involved.</p>
-<p>The rung rims are capped and buried in the stile rather than left open. That costs 144 tris nobody sees, but an open rim is a non-manifold boundary and the hygiene budget forbids it.</p>
-<p>The joint budgets are measured per rung against each stile, from vertex positions in the un-raked construction frame, and the reported value is the worst case over all twelve rung ends. <code>clearance</code> is how far the widest dowel stays inside the stile&#x27;s front and back faces; it must exceed the 2.5 mm chamfer or the dowel erupts through it as a spike.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed on LOD ratios. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p>Each falsifier violates exactly one named budget, and each was proven to fire on all three binaries:</p>
-<p>| Falsifier | Budget violated | Exit | Measured failure | | --- | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | ratio 1.0000 | | <code>--stray-vert</code> | Mesh hygiene, loose verts | 15 | <code>loose_v=1</code> | | <code>--lift-z</code> | Grounded zmin | 16 | zmin 0.050000 | | <code>--fat-rungs</code> | Rung depth clearance | 17 | clearance −0.00051 |</p>
-<p><code>--fat-rungs</code> widens the dowels to the full 34 mm stile depth, which is the proportion this piece shipped with before the quality pass.</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1800–2800 | 2536 / 2536 / 2536 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2192 / 0.2192 / 0.2192 | | Materials | exactly 2 distinct, ≥280 wood, ≥180 metal | 2 slots, 612 wood, 736 metal | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.490, 0.376, 1.487) m ± 0.01 | (0.4897, 0.3760, 1.4870) | | Grounded | <code>abs(zmin)</code> ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m | zmin 0, sole 0, rail 0.02037 | | Mesh hygiene | non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0 | all 0 | | Parts | 16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles) | 16 (2 / 6 / 2 / 2) | | Rung depth clearance | ≥ 0.003 m inside the stile faces | 0.00800 | | Tenon engagement | ≥ 0.008 m past the stile inner face | 0.01399 | | Tenon breakout margin | ≥ 0.008 m short of the stile outer face | 0.03780 | | Shoe bite / cover | bite ≥ 0.010 m, cover ≥ 0.016 m | 0.02000 / 0.03800 | | Collider tris | ≤ 180 | 24 | | Export | written, size &gt; 0 | 187528 / 187528 / 187504 bytes |</p>
+<p>Base triangles rose from <strong>936 to 2536</strong>. The previous mesh was two boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon and barrel in one shell) plus ferrule collars and chamfered soles added the triangles. Nothing was removed as a hidden face.</p>
+<p>The joint budgets are measured per rung against each stile, from vertex positions in the un-raked construction frame, and the reported value is the worst case. Clearance is the tenon, not the barrel: the barrel is thicker only between the stiles.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 24 B on 5.2.1 (glTF serializer), not a gated axis. Euler is 24 (multi-body) and is not gated to 2.</p>
+<p>Each falsifier violates exactly one named budget. Proven on Blender 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries&#x27; own <code>--version</code>):</p>
+<p>| Falsifier | Budget violated | Exit | Measured failure | | --- | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | ratio 1.0000 | | <code>--stray-vert</code> | Mesh hygiene, loose verts | 15 | <code>loose_v=1</code> | | <code>--twin-sole</code> | Coplanar face pairs | 15 | <code>zfight=6</code> | | <code>--lift-z</code> | Grounded zmin | 16 | zmin 0.050000 | | <code>--fat-rungs</code> | Rung depth clearance | 17 | clearance 0 | | <code>--short-stile</code> | Shoe bite / cover | 18 | bite 0.070, cover −0.012 |</p>
+<p>Default exit is 0 on all three.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wooden_ladder.py --
 blender --background --python wooden_ladder.py -- --skip-decimate
 blender --background --python wooden_ladder.py -- --stray-vert
+blender --background --python wooden_ladder.py -- --twin-sole
 blender --background --python wooden_ladder.py -- --lift-z
 blender --background --python wooden_ladder.py -- --fat-rungs
-blender --background --python wooden_ladder.py -- --output ladder.png</code></pre>
+blender --background --python wooden_ladder.py -- --short-stile
+blender --background --python wooden_ladder.py -- --output preview.webp --engine cycles</code></pre>
 <p>Smoke passes no flags: no <code>--output</code>, no falsifier.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene (<code>--stray-vert</code> lands here) | | 16 | World AABB min Z off the floor (<code>--lift-z</code> lands here) | | 17 | Part count or rung-to-stile joint fit (<code>--fat-rungs</code> lands here) |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or wood/metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>) | | 16 | Grounded zmin, or a rail end sitting in the tread (<code>--lift-z</code>) | | 17 | Part count or rung-to-stile joint fit (<code>--fat-rungs</code>) | | 18 | Shoe bite / cover (<code>--short-stile</code>) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -336,42 +338,50 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-STILE_H = <span class="n">1.48</span>
-STILE_W = <span class="n">0.058</span>
-STILE_D = <span class="n">0.034</span>
-SPAN = <span class="n">0.34</span>
+STILE_H = <span class="n">1.50</span>
+STILE_W_BOT = <span class="n">0.064</span>
+STILE_W_TOP = <span class="n">0.050</span>
+STILE_D = <span class="n">0.038</span>
+CENTER = <span class="n">0.198</span>
 N_RUNGS = <span class="n">6</span>
-<span class="c"># A 26 mm dowel in a 34 mm stile. Sized so the widest rung still clears the</span>
-<span class="c"># stile&#x27;s 2.5 mm chamfer by more than a millimetre; at 17 mm the dowel was as</span>
-<span class="c"># deep as the stile and broke through the front and back chamfers as a spike.</span>
-RUNG_R = <span class="n">0.013</span>
+<span class="c"># Tenon stays inside the chamfer. The visible barrel is wider and stops</span>
+<span class="c"># outside the stile, so the two radii are different stations.</span>
+RUNG_R = <span class="n">0.011</span>
+BARREL_RATIO = <span class="n">1.34</span>
 RUNG_SEGS = <span class="n">12</span>
-RUNG_TENON = <span class="n">0.012</span>
-RUNG_RADIUS_SCALE = (<span class="n">0.98</span>, <span class="n">1.02</span>, <span class="n">0.99</span>, <span class="n">1.03</span>, <span class="n">0.97</span>, <span class="n">1.01</span>)
-RUNG_Z_OFFSETS = (<span class="n">0.0</span>, <span class="n">0.0015</span>, -<span class="n">0.0010</span>, <span class="n">0.0010</span>, -<span class="n">0.0015</span>, <span class="n">0.0</span>)
-TOP_CAP_H = <span class="n">0.025</span>
-SHOE_H = <span class="n">0.065</span>
-SHOE_W = <span class="n">0.074</span>
-SHOE_D = <span class="n">0.070</span>
+RUNG_TENON = <span class="n">0.014</span>
+RUNG_BARREL_SCALE = (<span class="n">1.00</span>, <span class="n">1.16</span>, <span class="n">0.86</span>, <span class="n">1.22</span>, <span class="n">0.82</span>, <span class="n">1.10</span>)
+RUNG_Z_OFFSETS = (<span class="n">0.0</span>, <span class="n">0.016</span>, -<span class="n">0.012</span>, <span class="n">0.014</span>, -<span class="n">0.018</span>, <span class="n">0.008</span>)
+BAND_Z0 = <span class="n">0.0</span>
+BAND_H = <span class="n">0.058</span>
+BAND_T = <span class="n">0.007</span>
+RAIL_Z0 = <span class="n">0.020</span>
+CAP_DROP = <span class="n">0.010</span>
+CAP_RISE = <span class="n">0.016</span>
+PLATE_H = <span class="n">0.006</span>
+SOLE_H = <span class="n">0.032</span>
+SOLE_PAD = <span class="n">0.008</span>
 RAKE = math.radians(<span class="n">12.0</span>)
 BBOX_TOL = <span class="n">0.01</span>
-<span class="c"># 2 stiles + 6 rungs + 2 top caps + 2 shoes, each a closed shell.</span>
-PART_COUNT = <span class="n">12</span>
-<span class="c"># Measured joint contract. Clearance exceeds the 2.5 mm chamfer so the dowel</span>
-<span class="c"># stays on the stile&#x27;s flat face; engagement keeps the tenon seated; breakout</span>
-<span class="c"># keeps it from reaching the outer face.</span>
+<span class="c"># 2 stiles + 6 rungs + 2 shoe sleeves + 2 cap sleeves + 2 cap plates + 2 soles.</span>
+PART_COUNT = <span class="n">16</span>
 RUNG_DEPTH_CLEARANCE = <span class="n">0.003</span>
-TENON_ENGAGE_MIN = <span class="n">0.006</span>
-TENON_BREAKOUT_MIN = <span class="n">0.005</span>
+TENON_ENGAGE_MIN = <span class="n">0.008</span>
+TENON_BREAKOUT_MIN = <span class="n">0.008</span>
+SHOE_BITE_MIN = <span class="n">0.010</span>
+SHOE_COVER_MIN = <span class="n">0.016</span>
+RAIL_ZMIN_MIN = <span class="n">0.012</span>
 ZMIN_EPS = <span class="n">1e-4</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">0.002</span>
+ZFIGHT_COS = <span class="n">0.98</span>
 LIFT_Z = <span class="n">0.05</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.472</span>, <span class="n">0.365</span>, <span class="n">1.460</span>)
+OUTER_SIZE = (<span class="n">0.490</span>, <span class="n">0.376</span>, <span class="n">1.487</span>)
 
-BASE_TRIS_MIN = <span class="n">900</span>
-BASE_TRIS_MAX = <span class="n">975</span>
+BASE_TRIS_MIN = <span class="n">1800</span>
+BASE_TRIS_MAX = <span class="n">2800</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -381,7 +391,7 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">120</span>
+COLLIDER_TRIS_MAX = <span class="n">180</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
 <span class="c"># The caps and shoes carry far more chamfer than body faces, so a floor above</span>
@@ -459,6 +469,128 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
 
 
+<span class="k">def</span> half_w(z):
+    t = min(<span class="n">1.0</span>, max(<span class="n">0.0</span>, z / STILE_H))
+    <span class="k">return</span> <span class="n">0.5</span> * (STILE_W_BOT + (STILE_W_TOP - STILE_W_BOT) * t)
+
+
+<span class="k">def</span> inner_x(z, sign):
+    x = sign * CENTER
+    hw = half_w(z)
+    <span class="k">return</span> x + hw <span class="k">if</span> sign &lt; <span class="n">0.0</span> <span class="k">else</span> x - hw
+
+
+<span class="k">def</span> add_ruled_box(bm, x, z0, z1, hw0, hw1, hd, mat_idx):
+    <span class="s">&quot;&quot;&quot;Tapered box. Width is the local X half-extent at each end; depth is constant.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> ring(z, hw):
+        <span class="k">return</span> [
+            bm.verts.new((x - hw, -hd, z)),
+            bm.verts.new((x + hw, -hd, z)),
+            bm.verts.new((x + hw, hd, z)),
+            bm.verts.new((x - hw, hd, z)),
+        ]
+
+    bottom = ring(z0, hw0)
+    top = ring(z1, hw1)
+
+    <span class="k">def</span> quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        <span class="k">return</span> face
+
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+        j = (i + <span class="n">1</span>) % <span class="n">4</span>
+        quad(bottom[i], bottom[j], top[j], top[i])
+    quad(bottom[<span class="n">3</span>], bottom[<span class="n">2</span>], bottom[<span class="n">1</span>], bottom[<span class="n">0</span>])
+    quad(top[<span class="n">0</span>], top[<span class="n">1</span>], top[<span class="n">2</span>], top[<span class="n">3</span>])
+    <span class="k">return</span> bottom + top
+
+
+<span class="k">def</span> add_rect_band(bm, zc, cx, hx, hy, tx, ty, h, mat_idx):
+    <span class="s">&quot;&quot;&quot;Closed rectangular collar, constant section, axis along local Z.&quot;&quot;&quot;</span>
+    z0 = zc - h * <span class="n">0.5</span>
+    z1 = zc + h * <span class="n">0.5</span>
+    inner = (
+        (cx + hx, hy),
+        (cx - hx, hy),
+        (cx - hx, -hy),
+        (cx + hx, -hy),
+    )
+    outer = (
+        (cx + hx + tx, hy + ty),
+        (cx - hx - tx, hy + ty),
+        (cx - hx - tx, -(hy + ty)),
+        (cx + hx + tx, -(hy + ty)),
+    )
+
+    <span class="k">def</span> ring(z, pts):
+        <span class="k">return</span> [bm.verts.new((p[<span class="n">0</span>], p[<span class="n">1</span>], z)) <span class="k">for</span> p <span class="k">in</span> pts]
+
+    i0, o0 = ring(z0, inner), ring(z0, outer)
+    i1, o1 = ring(z1, inner), ring(z1, outer)
+
+    <span class="k">def</span> quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        <span class="k">return</span> face
+
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+        n = (k + <span class="n">1</span>) % <span class="n">4</span>
+        quad(i0[k], i0[n], i1[n], i1[k])
+        quad(o0[k], o1[k], o1[n], o0[n])
+        quad(i0[k], o0[k], o0[n], i0[n])
+        quad(i1[k], i1[n], o1[n], o1[k])
+    <span class="k">return</span> i0 + o0 + i1 + o1
+
+
+<span class="k">def</span> add_turned_rung(bm, z, x_left, x_right, tenon, r_tenon, r_barrel, segs, mat_idx):
+    <span class="s">&quot;&quot;&quot;One shell: thin tenon inside each stile, thicker barrel only in the clear span.&quot;&quot;&quot;</span>
+    xs = (
+        x_left - tenon,
+        x_left - <span class="n">0.0015</span>,
+        x_left + <span class="n">0.004</span>,
+        x_right - <span class="n">0.004</span>,
+        x_right + <span class="n">0.0015</span>,
+        x_right + tenon,
+    )
+    rs = (r_tenon, r_tenon, r_barrel, r_barrel, r_tenon, r_tenon)
+    rings = []
+    <span class="k">for</span> x, radius <span class="k">in</span> zip(xs, rs):
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            ang = i * (<span class="n">2.0</span> * math.pi / segs)
+            ring.append(bm.verts.new((
+                x,
+                radius * math.cos(ang),
+                z + radius * math.sin(ang),
+            )))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+
+    <span class="k">def</span> face(verts):
+        poly = bm.faces.new(verts)
+        poly.material_index = mat_idx
+        <span class="k">return</span> poly
+
+    <span class="k">for</span> i <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+        <span class="k">for</span> j <span class="k">in</span> range(segs):
+            j2 = (j + <span class="n">1</span>) % segs
+            face((rings[i][j], rings[i][j2], rings[i + <span class="n">1</span>][j2], rings[i + <span class="n">1</span>][j]))
+    <span class="k">for</span> ring, x, radius, outward <span class="k">in</span> (
+        (rings[<span class="n">0</span>], xs[<span class="n">0</span>], rs[<span class="n">0</span>], -<span class="n">1.0</span>),
+        (rings[-<span class="n">1</span>], xs[-<span class="n">1</span>], rs[-<span class="n">1</span>], <span class="n">1.0</span>),
+    ):
+        cap = bm.verts.new((x, <span class="n">0.0</span>, z))
+        <span class="k">for</span> j <span class="k">in</span> range(segs):
+            j2 = (j + <span class="n">1</span>) % segs
+            <span class="k">if</span> outward &lt; <span class="n">0.0</span>:
+                face((cap, ring[j2], ring[j]))
+            <span class="k">else</span>:
+                face((cap, ring[j], ring[j2]))
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
     uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
     faces = list(bm.faces)
@@ -502,39 +634,55 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
+<span class="k">def</span> build_ladder_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    rung_radius=RUNG_R,
+    short_stile=<span class="k">False</span>,
+    twin_sole=<span class="k">False</span>,
+):
+    <span class="s">&quot;&quot;&quot;Raked tapered rails, turned rungs, sleeve shoes with level soles.
+
+    The sleeve is built in the rail frame so it follows the rake. The sole
+    is a separate world-level plate the sleeve bites into. The rail ends
+    inside the sleeve, above the sole.
+    &quot;&quot;&quot;</span>
     bm = bmesh.new()
-    stile_verts = []
     metal_faces = set()
-    metal_verts = []
     <span class="k">try</span>:
-        half = SPAN / <span class="n">2.0</span> + STILE_W / <span class="n">2.0</span>
+        rail_z0 = (BAND_Z0 + BAND_H + <span class="n">0.012</span>) <span class="k">if</span> short_stile <span class="k">else</span> RAIL_Z0
+        rail_z1 = STILE_H - CAP_DROP
+        stile_verts = []
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             stile_verts.extend(
-                add_box(
+                add_ruled_box(
                     bm,
-                    (sign * half, <span class="n">0.0</span>, STILE_H / <span class="n">2.0</span>),
-                    (STILE_W, STILE_D, STILE_H),
+                    sign * CENTER,
+                    rail_z0,
+                    rail_z1,
+                    half_w(rail_z0),
+                    half_w(rail_z1),
+                    STILE_D * <span class="n">0.5</span>,
                     WOOD_IDX,
                 )
             )
 
-        z0 = <span class="n">0.16</span>
-        z1 = STILE_H - <span class="n">0.14</span>
+        z_lo = <span class="n">0.22</span>
+        z_hi = STILE_H - <span class="n">0.20</span>
         <span class="k">for</span> i <span class="k">in</span> range(N_RUNGS):
             t = i / (N_RUNGS - <span class="n">1</span>)
-            z = z0 + t * (z1 - z0) + RUNG_Z_OFFSETS[i]
-            <span class="c"># Tenons stop inside the stile, so the rung rims never reach the</span>
-            <span class="c"># chamfered outer face. Rungs stay unbeveled: they are already</span>
-            <span class="c"># round, and beveling a cap rim spikes through that chamfer.</span>
-            add_cylinder(
+            z = z_lo + t * (z_hi - z_lo) + RUNG_Z_OFFSETS[i]
+            add_turned_rung(
                 bm,
-                (<span class="n">0.0</span>, <span class="n">0.0</span>, z),
-                rung_radius * RUNG_RADIUS_SCALE[i],
-                SPAN + <span class="n">2.0</span> * RUNG_TENON,
+                z,
+                inner_x(z, -<span class="n">1.0</span>),
+                inner_x(z, <span class="n">1.0</span>),
+                RUNG_TENON,
+                rung_radius,
+                rung_radius * BARREL_RATIO * RUNG_BARREL_SCALE[i],
                 RUNG_SEGS,
                 WOOD_IDX,
-                euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
             )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
@@ -558,49 +706,58 @@ METAL_IDX = <span class="n">1</span>
                 )
 
         before = set(bm.faces)
+        metal_verts = []
+        hd = STILE_D * <span class="n">0.5</span>
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            hx = sign * half
+            x = sign * CENTER
+            shoe_z = BAND_Z0 + BAND_H * <span class="n">0.5</span>
+            grip = <span class="n">0.0015</span> + bevel_offset
+            metal_verts.extend(
+                add_rect_band(
+                    bm,
+                    shoe_z,
+                    x,
+                    half_w(shoe_z) - grip,
+                    hd - grip,
+                    BAND_T,
+                    BAND_T,
+                    BAND_H,
+                    METAL_IDX,
+                )
+            )
+            cap_h = CAP_RISE + <span class="n">0.006</span>
+            cap_z = rail_z1 + (CAP_RISE - <span class="n">0.006</span>) * <span class="n">0.5</span>
+            chw = half_w(rail_z1)
+            metal_verts.extend(
+                add_rect_band(
+                    bm,
+                    cap_z,
+                    x,
+                    chw - grip,
+                    hd - grip,
+                    BAND_T,
+                    BAND_T,
+                    cap_h,
+                    METAL_IDX,
+                )
+            )
+            <span class="c"># Plate overlaps the sleeve top so the two faces are not coplanar.</span>
+            plate_z = rail_z1 + CAP_RISE - <span class="n">0.002</span> + PLATE_H * <span class="n">0.5</span>
             metal_verts.extend(
                 add_box(
                     bm,
-                    (hx, <span class="n">0.0</span>, STILE_H - TOP_CAP_H * <span class="n">0.30</span>),
-                    (STILE_W + <span class="n">0.010</span>, STILE_D + <span class="n">0.010</span>, TOP_CAP_H),
+                    (x, <span class="n">0.0</span>, plate_z),
+                    (
+                        (chw + BAND_T) * <span class="n">2.0</span> + <span class="n">0.006</span>,
+                        (hd + BAND_T) * <span class="n">2.0</span> + <span class="n">0.006</span>,
+                        PLATE_H,
+                    ),
                     METAL_IDX,
                 )
             )
         metal_faces.update(set(bm.faces) - before)
 
-        rake = Euler((RAKE, <span class="n">0.0</span>, <span class="n">0.0</span>)).to_matrix()
-        <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            v.co = rake @ v.co
-        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        zmin = min(zs)
-        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
-        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
-        <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            v.co.x -= cx
-            v.co.y -= cy
-            v.co.z -= zmin
-
-        before = set(bm.faces)
-        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            bottom = rake @ Vector((sign * half, <span class="n">0.0</span>, <span class="n">0.0</span>))
-            bottom.x -= cx
-            bottom.y -= cy
-            bottom.z -= zmin
-            metal_verts.extend(
-                add_box(
-                    bm,
-                    (bottom.x, bottom.y, SHOE_H / <span class="n">2.0</span>),
-                    (SHOE_W, SHOE_D, SHOE_H),
-                    METAL_IDX,
-                )
-            )
-        metal_faces.update(set(bm.faces) - before)
-
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span> <span class="k">and</span> metal_verts:
             metal_edges = list(
                 {
                     edge
@@ -610,14 +767,10 @@ METAL_IDX = <span class="n">1</span>
                 }
             )
             <span class="k">if</span> metal_edges:
-                <span class="c"># Bevel does not inherit material_index onto the faces it</span>
-                <span class="c"># creates, so claim them from the op&#x27;s own return rather than</span>
-                <span class="c"># from a pre-bevel face snapshot. Without this every chamfer</span>
-                <span class="c"># on a cap or shoe falls back to slot 0 and renders as wood.</span>
                 bevelled = bmesh.ops.bevel(
                     bm,
                     geom=metal_edges,
-                    offset=min(bevel_offset, <span class="n">0.002</span>),
+                    offset=min(bevel_offset, <span class="n">0.0016</span>),
                     segments=bevel_segments,
                     profile=<span class="n">0.5</span>,
                     affect=<span class="s">&quot;EDGES&quot;</span>,
@@ -625,10 +778,74 @@ METAL_IDX = <span class="n">1</span>
                 )
                 metal_faces.update(bevelled.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> [])
 
-        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        final_cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        rake = Euler((RAKE, <span class="n">0.0</span>, <span class="n">0.0</span>)).to_matrix()
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
-            v.co.y -= final_cy
+            v.co = rake @ v.co
+        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        zmin = min(zs)
+        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
+        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x -= cx
+            v.co.y -= cy
+            v.co.z -= zmin
+
+        <span class="k">def</span> world_of(local):
+            q = rake @ Vector(local)
+            q.x -= cx
+            q.y -= cy
+            q.z -= zmin
+            <span class="k">return</span> q
+
+        before = set(bm.faces)
+        sole_centers = []
+        sole_verts = []
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            x = sign * CENTER
+            shoe_z = BAND_Z0 + BAND_H * <span class="n">0.5</span>
+            sole_w = (half_w(shoe_z) + BAND_T + SOLE_PAD) * <span class="n">2.0</span>
+            sole_d = (hd + BAND_T + SOLE_PAD) * <span class="n">2.0</span>
+            anchor = world_of((x, <span class="n">0.0</span>, <span class="n">0.0</span>))
+            sole_centers.append((anchor.x, anchor.y, sole_w, sole_d))
+            sole_verts.extend(
+                add_box(
+                    bm,
+                    (anchor.x, anchor.y, SOLE_H * <span class="n">0.5</span>),
+                    (sole_w, sole_d, SOLE_H),
+                    METAL_IDX,
+                )
+            )
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span> <span class="k">and</span> sole_verts:
+            sole_edges = list(
+                {
+                    edge
+                    <span class="k">for</span> vertex <span class="k">in</span> sole_verts
+                    <span class="k">for</span> edge <span class="k">in</span> vertex.link_edges
+                    <span class="k">if</span> vertex.is_valid
+                }
+            )
+            <span class="k">if</span> sole_edges:
+                bevelled = bmesh.ops.bevel(
+                    bm,
+                    geom=sole_edges,
+                    offset=min(bevel_offset, <span class="n">0.0014</span>),
+                    segments=<span class="n">1</span>,
+                    profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&quot;EDGES&quot;</span>,
+                    clamp_overlap=<span class="k">True</span>,
+                )
+                metal_faces.update(bevelled.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> [])
+        <span class="k">if</span> twin_sole <span class="k">and</span> sole_centers:
+            sx, sy, sw, sd = sole_centers[<span class="n">0</span>]
+            add_box(
+                bm,
+                (sx + <span class="n">0.0012</span>, sy + <span class="n">0.0012</span>, SOLE_H * <span class="n">0.5</span>),
+                (sw, sd, SOLE_H),
+                METAL_IDX,
+            )
+        metal_faces.update(set(bm.faces) - before)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -652,13 +869,26 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     <span class="k">return</span> mat
 
 
@@ -723,87 +953,171 @@ METAL_IDX = <span class="n">1</span>
     }
 
 
-<span class="k">def</span> mesh_components(me):
-    <span class="s">&quot;&quot;&quot;Per-part AABBs in the construction frame, un-raked so the stiles read
-    axis-aligned. The parts interpenetrate but share no vertices, so edge
-    connectivity separates them.&quot;&quot;&quot;</span>
+<span class="k">def</span> zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
+        ci, ni, vi = data[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
+            cj, nj, vj = data[j]
+            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                <span class="k">continue</span>
+            <span class="k">if</span> vi &amp; vj:
+                <span class="k">continue</span>
+            count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shell_records(me):
+    <span class="s">&quot;&quot;&quot;One record per edge-connected shell, in world space and un-raked.&quot;&quot;&quot;</span>
     neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
     <span class="k">for</span> edge <span class="k">in</span> me.edges:
-        a, b = edge.vertices
+        a, b = int(edge.vertices[<span class="n">0</span>]), int(edge.vertices[<span class="n">1</span>])
         neighbors[a].append(b)
         neighbors[b].append(a)
     unrake = Euler((-RAKE, <span class="n">0.0</span>, <span class="n">0.0</span>)).to_matrix()
     seen = [<span class="k">False</span>] * len(me.vertices)
-    parts = []
+    groups = []
     <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
         <span class="k">if</span> seen[start]:
             <span class="k">continue</span>
         seen[start] = <span class="k">True</span>
         stack = [start]
-        points = []
+        group = []
         <span class="k">while</span> stack:
             current = stack.pop()
-            points.append(unrake @ me.vertices[current].co)
+            group.append(current)
             <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
                 <span class="k">if</span> <span class="k">not</span> seen[nxt]:
                     seen[nxt] = <span class="k">True</span>
                     stack.append(nxt)
-        lo = Vector(
-            (
-                min(p.x <span class="k">for</span> p <span class="k">in</span> points),
-                min(p.y <span class="k">for</span> p <span class="k">in</span> points),
-                min(p.z <span class="k">for</span> p <span class="k">in</span> points),
-            )
-        )
-        hi = Vector(
-            (
-                max(p.x <span class="k">for</span> p <span class="k">in</span> points),
-                max(p.y <span class="k">for</span> p <span class="k">in</span> points),
-                max(p.z <span class="k">for</span> p <span class="k">in</span> points),
-            )
-        )
-        parts.append((lo, hi))
-    <span class="k">return</span> parts
+        groups.append(group)
+    records = []
+    <span class="k">for</span> group <span class="k">in</span> groups:
+        member = set(group)
+        world = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> group]
+        local = [unrake @ p <span class="k">for</span> p <span class="k">in</span> world]
+        mats = {}
+        <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+            <span class="k">if</span> all(v <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> poly.vertices):
+                mats[poly.material_index] = mats.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+        mat = max(mats, key=mats.get) <span class="k">if</span> mats <span class="k">else</span> -<span class="n">1</span>
+        records.append({<span class="s">&quot;world&quot;</span>: world, <span class="s">&quot;local&quot;</span>: local, <span class="s">&quot;mat&quot;</span>: mat})
+    <span class="k">return</span> records
+
+
+<span class="k">def</span> _span_at(pts, z):
+    <span class="s">&quot;&quot;&quot;X extent of a ruled stile at height z, from the end rings.
+
+    Bevel does not add vertices along the rail, so the section is the
+    linear blend of the two end widths.
+    &quot;&quot;&quot;</span>
+    z0 = min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+    z1 = max(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+    <span class="k">if</span> z1 - z0 &lt; <span class="n">1e-6</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    bot = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> p.z &lt;= z0 + <span class="n">0.015</span>]
+    top = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> p.z &gt;= z1 - <span class="n">0.015</span>]
+    <span class="k">if</span> len(bot) &lt; <span class="n">2</span> <span class="k">or</span> len(top) &lt; <span class="n">2</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    t = min(<span class="n">1.0</span>, max(<span class="n">0.0</span>, (z - z0) / (z1 - z0)))
+    x0 = (<span class="n">1.0</span> - t) * min(p.x <span class="k">for</span> p <span class="k">in</span> bot) + t * min(p.x <span class="k">for</span> p <span class="k">in</span> top)
+    x1 = (<span class="n">1.0</span> - t) * max(p.x <span class="k">for</span> p <span class="k">in</span> bot) + t * max(p.x <span class="k">for</span> p <span class="k">in</span> top)
+    <span class="k">return</span> x0, x1
 
 
 <span class="k">def</span> joint_audit(me):
-    <span class="s">&quot;&quot;&quot;Worst-case rung-to-stile fit, recomputed from vertex positions.&quot;&quot;&quot;</span>
-    parts = mesh_components(me)
-    stiles = [p <span class="k">for</span> p <span class="k">in</span> parts <span class="k">if</span> (p[<span class="n">1</span>].z - p[<span class="n">0</span>].z) &gt; STILE_H * <span class="n">0.8</span>]
-    rungs = [p <span class="k">for</span> p <span class="k">in</span> parts <span class="k">if</span> (p[<span class="n">1</span>].x - p[<span class="n">0</span>].x) &gt; SPAN]
-    <span class="k">if</span> len(stiles) != <span class="n">2</span> <span class="k">or</span> len(rungs) != N_RUNGS:
-        <span class="k">return</span> {
-            <span class="s">&quot;parts&quot;</span>: len(parts),
-            <span class="s">&quot;stiles&quot;</span>: len(stiles),
-            <span class="s">&quot;rungs&quot;</span>: len(rungs),
-            <span class="s">&quot;clearance&quot;</span>: -<span class="n">1.0</span>,
-            <span class="s">&quot;engage&quot;</span>: -<span class="n">1.0</span>,
-            <span class="s">&quot;breakout&quot;</span>: -<span class="n">1.0</span>,
-        }
-    left = min(stiles, key=<span class="k">lambda</span> p: p[<span class="n">0</span>].x)
-    right = max(stiles, key=<span class="k">lambda</span> p: p[<span class="n">0</span>].x)
-    clearance = min(
-        min(
-            (stile[<span class="n">1</span>].y - stile[<span class="n">0</span>].y) - (rung[<span class="n">1</span>].y - rung[<span class="n">0</span>].y)
-            <span class="k">for</span> stile <span class="k">in</span> (left, right)
-        )
-        * <span class="n">0.5</span>
-        <span class="k">for</span> rung <span class="k">in</span> rungs
-    )
-    engage = min(
-        min(left[<span class="n">1</span>].x - rung[<span class="n">0</span>].x, rung[<span class="n">1</span>].x - right[<span class="n">0</span>].x) <span class="k">for</span> rung <span class="k">in</span> rungs
-    )
-    breakout = min(
-        min(rung[<span class="n">0</span>].x - left[<span class="n">0</span>].x, right[<span class="n">1</span>].x - rung[<span class="n">1</span>].x) <span class="k">for</span> rung <span class="k">in</span> rungs
-    )
-    <span class="k">return</span> {
-        <span class="s">&quot;parts&quot;</span>: len(parts),
+    <span class="s">&quot;&quot;&quot;Rung tenon fit and shoe seat, recomputed from vertex positions.&quot;&quot;&quot;</span>
+    recs = shell_records(me)
+    stiles = []
+    rungs = []
+    bands = []
+    soles = []
+    <span class="k">for</span> rec <span class="k">in</span> recs:
+        loc = rec[<span class="s">&quot;local&quot;</span>]
+        zs = [p.z <span class="k">for</span> p <span class="k">in</span> loc]
+        xs = [p.x <span class="k">for</span> p <span class="k">in</span> loc]
+        dz = max(zs) - min(zs)
+        dx = max(xs) - min(xs)
+        wz = [p.z <span class="k">for</span> p <span class="k">in</span> rec[<span class="s">&quot;world&quot;</span>]]
+        wz0 = min(wz)
+        wdz = max(wz) - wz0
+        <span class="k">if</span> rec[<span class="s">&quot;mat&quot;</span>] == WOOD_IDX <span class="k">and</span> dz &gt; <span class="n">0.8</span>:
+            stiles.append(rec)
+        <span class="k">elif</span> rec[<span class="s">&quot;mat&quot;</span>] == WOOD_IDX <span class="k">and</span> dx &gt; <span class="n">0.2</span>:
+            rungs.append(rec)
+        <span class="k">elif</span> rec[<span class="s">&quot;mat&quot;</span>] == METAL_IDX <span class="k">and</span> wz0 &lt; <span class="n">0.004</span> <span class="k">and</span> wdz &lt; SOLE_H + <span class="n">0.01</span>:
+            soles.append(rec)
+        <span class="k">elif</span> rec[<span class="s">&quot;mat&quot;</span>] == METAL_IDX <span class="k">and</span> min(zs) &lt; <span class="n">0.08</span> <span class="k">and</span> dz &lt; <span class="n">0.12</span>:
+            bands.append(rec)
+    empty = {
+        <span class="s">&quot;parts&quot;</span>: len(recs),
         <span class="s">&quot;stiles&quot;</span>: len(stiles),
         <span class="s">&quot;rungs&quot;</span>: len(rungs),
+        <span class="s">&quot;bands&quot;</span>: len(bands),
+        <span class="s">&quot;soles&quot;</span>: len(soles),
+        <span class="s">&quot;clearance&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;engage&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;breakout&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;shoe_bite&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;shoe_cover&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;rail_zmin&quot;</span>: -<span class="n">1.0</span>,
+        <span class="s">&quot;sole_zmin&quot;</span>: <span class="n">1.0</span>,
+    }
+    <span class="k">if</span> len(stiles) != <span class="n">2</span> <span class="k">or</span> len(rungs) != N_RUNGS <span class="k">or</span> len(bands) != <span class="n">2</span> <span class="k">or</span> len(soles) != <span class="n">2</span>:
+        <span class="k">return</span> empty
+    clearance = <span class="n">1e9</span>
+    engage = <span class="n">1e9</span>
+    breakout = <span class="n">1e9</span>
+    <span class="k">for</span> rung <span class="k">in</span> rungs:
+        rz = sum(p.z <span class="k">for</span> p <span class="k">in</span> rung[<span class="s">&quot;local&quot;</span>]) / len(rung[<span class="s">&quot;local&quot;</span>])
+        rx0 = min(p.x <span class="k">for</span> p <span class="k">in</span> rung[<span class="s">&quot;local&quot;</span>])
+        rx1 = max(p.x <span class="k">for</span> p <span class="k">in</span> rung[<span class="s">&quot;local&quot;</span>])
+        <span class="k">for</span> stile <span class="k">in</span> stiles:
+            span = _span_at(stile[<span class="s">&quot;local&quot;</span>], rz)
+            <span class="k">if</span> span <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">return</span> empty
+            x0, x1 = span
+            inside = [p <span class="k">for</span> p <span class="k">in</span> rung[<span class="s">&quot;local&quot;</span>] <span class="k">if</span> x0 + <span class="n">0.003</span> &lt; p.x &lt; x1 - <span class="n">0.003</span>]
+            <span class="k">if</span> len(inside) &lt; <span class="n">3</span>:
+                <span class="k">return</span> empty
+            stile_dy = max(p.y <span class="k">for</span> p <span class="k">in</span> stile[<span class="s">&quot;local&quot;</span>]) - min(p.y <span class="k">for</span> p <span class="k">in</span> stile[<span class="s">&quot;local&quot;</span>])
+            rung_dy = max(p.y <span class="k">for</span> p <span class="k">in</span> inside) - min(p.y <span class="k">for</span> p <span class="k">in</span> inside)
+            clearance = min(clearance, (stile_dy - rung_dy) * <span class="n">0.5</span>)
+            <span class="k">if</span> x1 &lt; <span class="n">0.0</span>:
+                engage = min(engage, x1 - rx0)
+                breakout = min(breakout, rx0 - x0)
+            <span class="k">else</span>:
+                engage = min(engage, rx1 - x0)
+                breakout = min(breakout, x1 - rx1)
+    shoe_bite = <span class="n">1e9</span>
+    shoe_cover = <span class="n">1e9</span>
+    <span class="k">for</span> stile <span class="k">in</span> stiles:
+        sx = sum(p.x <span class="k">for</span> p <span class="k">in</span> stile[<span class="s">&quot;local&quot;</span>]) / len(stile[<span class="s">&quot;local&quot;</span>])
+        band = min(bands, key=<span class="k">lambda</span> b: abs(sum(p.x <span class="k">for</span> p <span class="k">in</span> b[<span class="s">&quot;local&quot;</span>]) / len(b[<span class="s">&quot;local&quot;</span>]) - sx))
+        stile_z0 = min(p.z <span class="k">for</span> p <span class="k">in</span> stile[<span class="s">&quot;local&quot;</span>])
+        band_z0 = min(p.z <span class="k">for</span> p <span class="k">in</span> band[<span class="s">&quot;local&quot;</span>])
+        band_z1 = max(p.z <span class="k">for</span> p <span class="k">in</span> band[<span class="s">&quot;local&quot;</span>])
+        shoe_bite = min(shoe_bite, stile_z0 - band_z0)
+        shoe_cover = min(shoe_cover, band_z1 - stile_z0)
+    rail_zmin = min(min(p.z <span class="k">for</span> p <span class="k">in</span> s[<span class="s">&quot;world&quot;</span>]) <span class="k">for</span> s <span class="k">in</span> stiles)
+    sole_zmin = max(min(p.z <span class="k">for</span> p <span class="k">in</span> s[<span class="s">&quot;world&quot;</span>]) <span class="k">for</span> s <span class="k">in</span> soles)
+    empty.update({
         <span class="s">&quot;clearance&quot;</span>: clearance,
         <span class="s">&quot;engage&quot;</span>: engage,
         <span class="s">&quot;breakout&quot;</span>: breakout,
-    }
+        <span class="s">&quot;shoe_bite&quot;</span>: shoe_bite,
+        <span class="s">&quot;shoe_cover&quot;</span>: shoe_cover,
+        <span class="s">&quot;rail_zmin&quot;</span>: rail_zmin,
+        <span class="s">&quot;sole_zmin&quot;</span>: sole_zmin,
+    })
+    <span class="k">return</span> empty
 
 
 <span class="k">def</span> add_stray_vert(me):
@@ -937,16 +1251,33 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, fat_rungs=<span class="k">False</span>):
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    fat_rungs=<span class="k">False</span>,
+    short_stile=<span class="k">False</span>,
+    twin_sole=<span class="k">False</span>,
+):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    <span class="c"># Falsification: a dowel as deep as the stile, which is what used to break</span>
-    <span class="c"># through the front and back chamfers.</span>
+    <span class="c"># Falsification: a tenon as deep as the stile, which breaks the front</span>
+    <span class="c"># and back chamfers. The barrel stays outside the stile.</span>
     rung_radius = STILE_D / <span class="n">2.0</span> <span class="k">if</span> fat_rungs <span class="k">else</span> RUNG_R
     low = build_ladder_mesh(
-        <span class="s">&quot;LadderLow&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">2</span>, rung_radius=rung_radius
+        <span class="s">&quot;LadderLow&quot;</span>,
+        bevel_offset=<span class="n">0.0022</span>,
+        bevel_segments=<span class="n">2</span>,
+        rung_radius=rung_radius,
+        short_stile=short_stile,
+        twin_sole=twin_sole,
     )
     high = build_ladder_mesh(
-        <span class="s">&quot;LadderHigh&quot;</span>, bevel_offset=<span class="n">0.0025</span>, bevel_segments=<span class="n">4</span>, rung_radius=rung_radius
+        <span class="s">&quot;LadderHigh&quot;</span>,
+        bevel_offset=<span class="n">0.0022</span>,
+        bevel_segments=<span class="n">4</span>,
+        rung_radius=rung_radius,
+        short_stile=short_stile,
+        twin_sole=twin_sole,
     )
     <span class="k">if</span> lift_z:
         low.location.z += LIFT_Z
@@ -955,8 +1286,22 @@ METAL_IDX = <span class="n">1</span>
     <span class="c"># world_bbox reads matrix_world, which is evaluated data. Without this the</span>
     <span class="c"># cached matrix hides a moved object and the grounded budget cannot fail.</span>
     bpy.context.view_layer.update()
-    wood = principled(<span class="s">&quot;LadderWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.24</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>)
-    metal = principled(<span class="s">&quot;LadderMetal&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.46</span>, <span class="n">0.42</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>)
+    wood = principled(
+        <span class="s">&quot;LadderWood&quot;</span>,
+        (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.09</span>, <span class="n">1.0</span>),
+        <span class="n">0.0</span>,
+        <span class="n">0.62</span>,
+        noise_scale=<span class="n">9.0</span>,
+        wear=(<span class="n">0.28</span>, <span class="n">0.15</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;LadderMetal&quot;</span>,
+        (<span class="n">0.18</span>, <span class="n">0.175</span>, <span class="n">0.16</span>, <span class="n">1.0</span>),
+        <span class="n">1.0</span>,
+        <span class="n">0.48</span>,
+        noise_scale=<span class="n">18.0</span>,
+        wear=(<span class="n">0.10</span>, <span class="n">0.09</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -1024,16 +1369,21 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
     )
     hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
     print(
         <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
     )
     joint = joint_audit(low.data)
     print(
         <span class="s">f&quot;</span><span class="s">measured joints parts=</span>{joint[<span class="s">&#x27;parts&#x27;</span>]}<span class="s"> stiles=</span>{joint[<span class="s">&#x27;stiles&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">rungs=</span>{joint[<span class="s">&#x27;rungs&#x27;</span>]}<span class="s"> clearance=</span>{joint[<span class="s">&#x27;clearance&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">engage=</span>{joint[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> breakout=</span>{joint[<span class="s">&#x27;breakout&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">rungs=</span>{joint[<span class="s">&#x27;rungs&#x27;</span>]}<span class="s"> bands=</span>{joint[<span class="s">&#x27;bands&#x27;</span>]}<span class="s"> soles=</span>{joint[<span class="s">&#x27;soles&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">clearance=</span>{joint[<span class="s">&#x27;clearance&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> engage=</span>{joint[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">breakout=</span>{joint[<span class="s">&#x27;breakout&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> shoe_bite=</span>{joint[<span class="s">&#x27;shoe_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">shoe_cover=</span>{joint[<span class="s">&#x27;shoe_cover&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> rail_zmin=</span>{joint[<span class="s">&#x27;rail_zmin&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">sole_zmin=</span>{joint[<span class="s">&#x27;sole_zmin&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -1106,17 +1456,24 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
         <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>]
         <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>]
+        <span class="k">or</span> zf
     ):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--stray-vert / --twin-sole are the designed fails)&quot;</span>,
             <span class="n">15</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
             <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> abs(joint[<span class="s">&quot;sole_zmin&quot;</span>]) &gt; ZMIN_EPS <span class="k">or</span> joint[<span class="s">&quot;rail_zmin&quot;</span>] &lt; RAIL_ZMIN_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">sole_zmin </span>{joint[<span class="s">&#x27;sole_zmin&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> rail_zmin </span>{joint[<span class="s">&#x27;rail_zmin&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>,
             <span class="n">16</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> joint[<span class="s">&quot;parts&quot;</span>] != PART_COUNT:
@@ -1141,6 +1498,12 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">tenon breakout margin </span>{joint[<span class="s">&#x27;breakout&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span>{TENON_BREAKOUT_MIN}<span class="s">&quot;</span>,
             <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> joint[<span class="s">&quot;shoe_bite&quot;</span>] &lt; SHOE_BITE_MIN <span class="k">or</span> joint[<span class="s">&quot;shoe_cover&quot;</span>] &lt; SHOE_COVER_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">shoe bite </span>{joint[<span class="s">&#x27;shoe_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> cover </span>{joint[<span class="s">&#x27;shoe_cover&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-stile is the designed fail)&quot;</span>,
+            <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
@@ -1274,7 +1637,17 @@ METAL_IDX = <span class="n">1</span>
     p.add_argument(
         <span class="s">&quot;--fat-rungs&quot;</span>,
         action=<span class="s">&quot;store_true&quot;</span>,
-        help=<span class="s">&quot;falsification: dowels as deep as the stile, failing joint fit&quot;</span>,
+        help=<span class="s">&quot;falsification: tenons as deep as the stile, failing joint fit&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--short-stile&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: rails start above the shoe sleeve&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--twin-sole&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: duplicate a sole so a coplanar pair z-fights&quot;</span>,
     )
     args = p.parse_args(argv)
 
@@ -1283,6 +1656,8 @@ METAL_IDX = <span class="n">1</span>
         lift_z=args.lift_z,
         stray_vert=args.stray_vert,
         fat_rungs=args.fat_rungs,
+        short_stile=args.short_stile,
+        twin_sole=args.twin_sole,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code

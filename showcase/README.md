@@ -38,7 +38,11 @@ entry in `showcase/gallery.json`, and a rendered still.
   15), `--lift-z` the grounded-zmin falsifier (exit 16), and
   `--fat-rungs` (or the piece's equivalent) the joint-fit falsifier
   (exit 17), and `--round-band` (or equivalent) the seat-conformance
-  falsifier (exit 18). A budget with no falsifier witnesses nothing:
+  falsifier (exit 18). `--twin-sole` duplicates a ground plate so the
+  coplanar-face budget fails (exit 15). `--short-stile` /
+  `--short-post` lift a member out of its cup (exit 18 or 19).
+  `--clip-ring` pulls a hung ring off the eye centerline (exit 18).
+  A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
 - **Hygiene budgets.** Copied combinatorics from
@@ -92,8 +96,24 @@ entry in `showcase/gallery.json`, and a rendered still.
   inner versus outer vertices against the host surface at each vertex's
   own angle. A global midpoint radius misclassifies outer chamfer
   vertices as inner ones the moment the host is out of round, which is
-  how a hoop that visibly gapped on one side still passed. The paired
+  how a hoop that visibly gapped on one side still passed.   The paired
   falsifier makes the wrapper a true circle on an out-of-round host.
+- **Level sole on a raked leg (exit 18).** A raked stile does not sit
+  in a world-axis cube. Build the sleeve in the member frame so it
+  follows the rake; add the tread after the rake as its own
+  axis-aligned plate, from Z=0 up to a height that covers the tilted
+  sleeve. The member end stays inside the sleeve by a named bite and
+  above the tread. `--short-stile` starts the member above the sleeve
+  so the bite fails while the AABB zmin still passes.
+- **Hung ring (exit 18).** A hitching ring is a torus whose center is
+  the eye center plus the hang direction times the major radius, so
+  the eye lies on the ring centerline, and the tube is thinner than
+  the eye's inner radius. The shank stops in the top of the eye tube;
+  continuing it to the eye center runs the pin through the ring. A
+  torus parked on a face is not a hung ring. `--clip-ring` lifts the
+  ring off that centerline. `--short-post` starts the post above the
+  shoe cup so the seated-post budget fails (exit 19) while the sole
+  still grounds the AABB.
 - **Sampled host seat (exit 17/18 on scatter).** Instanced scatter
   seats by sampling the host surface Z at each instance's XY, biting a
   named depth, then clamping instance verts above the slab floor. A
