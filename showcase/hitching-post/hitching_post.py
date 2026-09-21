@@ -9,7 +9,11 @@ glTF export.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin hygiene budget fails.
+mesh so the grounded-zmin budget fails. ``--stray-vert`` adds one loose
+vertex so the hygiene budget fails. ``--twin-sole`` duplicates the shoe
+plate so the coplanar-face budget fails. ``--clip-ring`` lifts a hung
+ring off the eye centerline. ``--short-post`` starts the post above the
+shoe cup so the seated-post budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -18,6 +22,10 @@ ratio band, not an exact count.
     blender --background --python hitching_post.py --
     blender --background --python hitching_post.py -- --skip-decimate
     blender --background --python hitching_post.py -- --lift-z
+    blender --background --python hitching_post.py -- --stray-vert
+    blender --background --python hitching_post.py -- --twin-sole
+    blender --background --python hitching_post.py -- --clip-ring
+    blender --background --python hitching_post.py -- --short-post
     blender --background --python hitching_post.py -- --output hitching-post.png
 """
 import argparse
@@ -41,28 +49,37 @@ import gallery_framing  # noqa: E402
 
 POST_W = 0.125
 POST_H = 1.16
-CAP_H = 0.10
-CAP_EMBED = 0.002
-SHOE_H = 0.055
-SHOE_T = 0.014
-SHOE_SCALE = 1.38
-ARM_Z = 0.90
-ARM_L = 0.46
+CAP_H = 0.096
+CAP_OVERHANG = 0.010
+CAP_EMBED = 0.010
+SOLE_T = 0.016
+POST_BITE = 0.006
+SHOE_H = 0.064
+SHOE_T = 0.012
+ARM_Z = 0.88
+ARM_L = 0.50
 ARM_Y = 0.056
-ARM_ZTH = 0.056
-TENON_SCALE = 0.62
-RING_MAJOR = 0.052
-RING_MINOR = 0.009
-EYE_MAJOR = 0.015
-EYE_MINOR = 0.005
-BAND_H = 0.028
-BAND_T = 0.010
-BAND_ZS = (0.20, 0.52)
+ARM_ZTH = 0.050
+EYE_MAJOR = 0.016
+EYE_MINOR = 0.0045
+RING_MAJOR = 0.038
+RING_MINOR = 0.0065
+EYE_X = 0.162
+BAND_H = 0.026
+BAND_T = 0.008
+BAND_ZS = (0.24, 0.56)
+# Ring tube must fit through the eye: RING_MINOR < EYE_MAJOR - EYE_MINOR.
+RING_FIT = 0.004
+POST_ZMIN_LO = 0.004
+POST_ZMIN_HI = 0.014
+RING_CENTER_TOL = 0.008
+AXIS_COS_MIN = math.cos(math.radians(0.5))
+POST_XY_MAX = 0.010
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (0.460, 0.191, 1.258)
-BASE_TRIS_MIN = 900
-BASE_TRIS_MAX = 1800
+OUTER_SIZE = (0.500, 0.149, 1.246)
+BASE_TRIS_MIN = 1400
+BASE_TRIS_MAX = 2400
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -75,11 +92,13 @@ UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 280
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
-METAL_FACES_MIN = 24
-WOOD_FACES_MIN = 12
+METAL_FACES_MIN = 560
+WOOD_FACES_MIN = 70
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
 AREA_EPS = 1e-10
+ZFIGHT_EPS = 0.002
+ZFIGHT_COS = 0.98
 GAP_MAX = 0.008
 LIFT_Z = 0.05
 
@@ -155,7 +174,7 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=False,
+        cap_tris=True,
         segments=segments,
         radius1=radius,
         radius2=radius,
@@ -305,6 +324,241 @@ def hygiene_audit(me):
     }
 
 
+def zfight_pairs(me):
+    # Same pair test as showcase/signpost (copied, not imported).
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def _face_shells(me):
+    parent = list(range(len(me.vertices)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[rb] = ra
+
+    for edge in me.edges:
+        union(int(edge.vertices[0]), int(edge.vertices[1]))
+    groups = {}
+    for i in range(len(me.vertices)):
+        groups.setdefault(find(i), []).append(i)
+    shells = []
+    for idxs in groups.values():
+        want = set(idxs)
+        polys = [
+            p.index
+            for p in me.polygons
+            if all(v in want for v in p.vertices)
+        ]
+        if polys:
+            shells.append((idxs, polys))
+    return shells
+
+
+def _bounds(me, idxs):
+    xs, ys, zs = [], [], []
+    for i in idxs:
+        co = me.vertices[i].co
+        xs.append(co.x)
+        ys.append(co.y)
+        zs.append(co.z)
+    return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
+
+
+def _centroid(me, idxs):
+    acc = Vector()
+    for i in idxs:
+        acc += me.vertices[i].co
+    return acc / float(len(idxs))
+
+
+def _majority_mat(me, poly_ids):
+    counts = {}
+    for i in poly_ids:
+        mat = me.polygons[i].material_index
+        counts[mat] = counts.get(mat, 0) + 1
+    return max(counts, key=counts.get)
+
+
+def _bvh(me, poly_ids):
+    remap = {}
+    verts = []
+    faces = []
+    for pi in poly_ids:
+        face = []
+        for vi in me.polygons[pi].vertices:
+            if vi not in remap:
+                remap[vi] = len(verts)
+                verts.append(me.vertices[vi].co.copy())
+            face.append(remap[vi])
+        faces.append(face)
+    return BVHTree.FromPolygons(verts, faces)
+
+
+def seat_audit(me):
+    """Recompute cup, hung-ring, and plumb budgets from the generated shells."""
+    post = arm = cap = None
+    soles, rings, eyes, bands, shanks = [], [], [], [], []
+    for idxs, polys in _face_shells(me):
+        x0, x1, y0, y1, z0, z1 = _bounds(me, idxs)
+        dx, dy, dz = x1 - x0, y1 - y0, z1 - z0
+        rec = {
+            "idxs": idxs,
+            "polys": polys,
+            "c": _centroid(me, idxs),
+            "z0": z0,
+        }
+        if _majority_mat(me, polys) == WOOD_IDX:
+            if dz > 0.5 and dx < 0.30:
+                post = rec
+            elif dx > 0.30:
+                arm = rec
+            else:
+                cap = rec
+            continue
+        if z0 < 0.004 and dz < 0.030 and dx > 0.10:
+            soles.append(rec)
+        elif dy < 0.025 and dx > 0.06 and dz > 0.06:
+            rings.append(rec)
+        elif dx < 0.025 and dy > 0.025 and dz > 0.02:
+            eyes.append(rec)
+        elif dx < 0.030 and dy < 0.030 and dz < 0.08:
+            shanks.append(rec)
+        else:
+            bands.append(rec)
+
+    out = {
+        "post": int(post is not None),
+        "arm": int(arm is not None),
+        "cap": int(cap is not None),
+        "soles": len(soles),
+        "rings": len(rings),
+        "eyes": len(eyes),
+        "bands": len(bands),
+        "post_zmin": -1.0,
+        "post_xy": 99.0,
+        "arm_cos": 0.0,
+        "ring_err": 99.0,
+        "ring_wood": 99,
+        "eye_wood": 99,
+        "band_gap": 99.0,
+        "sole_shoe": 0,
+        "shanks": 0,
+        "shank_ring": 99,
+        "shank_eye": 0,
+    }
+    if (
+        post is None
+        or arm is None
+        or cap is None
+        or len(rings) != 2
+        or len(eyes) != 2
+        or len(bands) < 3
+        or len(shanks) != 2
+        or not soles
+    ):
+        return out
+
+    wood_bvh = _bvh(me, post["polys"] + arm["polys"] + cap["polys"])
+    ring_wood = 0
+    eye_wood = 0
+    ring_err = 0.0
+    for eye, ring in zip(
+        sorted(eyes, key=lambda r: r["c"].x),
+        sorted(rings, key=lambda r: r["c"].x),
+    ):
+        ring_err = max(ring_err, abs((ring["c"] - eye["c"]).length - RING_MAJOR))
+        ring_wood += len(wood_bvh.overlap(_bvh(me, ring["polys"])))
+        eye_wood += len(wood_bvh.overlap(_bvh(me, eye["polys"])))
+
+    shank_ring = 0
+    shank_eye = 0
+    for shank in shanks:
+        shank_bvh = _bvh(me, shank["polys"])
+        for ring in rings:
+            shank_ring += len(shank_bvh.overlap(_bvh(me, ring["polys"])))
+        eye = min(eyes, key=lambda rec: abs(rec["c"].x - shank["c"].x))
+        shank_eye += len(shank_bvh.overlap(_bvh(me, eye["polys"])))
+
+    band_gap = 0.0
+    for band in bands:
+        if wood_bvh.overlap(_bvh(me, band["polys"])):
+            continue
+        dmin = 1.0e9
+        for i in band["idxs"]:
+            hit = wood_bvh.find_nearest(me.vertices[i].co)
+            if hit[3] is not None:
+                dmin = min(dmin, hit[3])
+        band_gap = max(band_gap, dmin)
+
+    shoe = min(bands, key=lambda b: b["z0"])
+    sole_shoe = len(_bvh(me, soles[0]["polys"]).overlap(_bvh(me, shoe["polys"])))
+
+    pos, neg = [], []
+    for i in arm["idxs"]:
+        co = me.vertices[i].co
+        if co.x > 0.12:
+            pos.append(co)
+        elif co.x < -0.12:
+            neg.append(co)
+    if pos and neg:
+        a = sum(pos, Vector()) / len(pos)
+        b = sum(neg, Vector()) / len(neg)
+        arm_cos = abs((a - b).normalized().dot(Vector((1.0, 0.0, 0.0))))
+    else:
+        arm_cos = 0.0
+
+    out.update({
+        "post_zmin": post["z0"],
+        "post_xy": math.hypot(post["c"].x, post["c"].y),
+        "arm_cos": arm_cos,
+        "ring_err": ring_err,
+        "ring_wood": ring_wood,
+        "eye_wood": eye_wood,
+        "band_gap": band_gap,
+        "sole_shoe": sole_shoe,
+        "shanks": len(shanks),
+        "shank_ring": shank_ring,
+        "shank_eye": shank_eye,
+    })
+    return out
+
+
+def add_stray_vert(me):
+    # Inside the post so the bbox budget still passes and hygiene is the gate.
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, 0.0, POST_H * 0.5))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
 def min_mat_distance(me, ia, ib):
     """Closest surface distance between two material islands via BVH."""
     bm_a = bmesh.new()
@@ -383,63 +637,71 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
+def add_torus(bm, center, major, minor, axis, mat_idx, n_major=24, n_minor=8):
+    """Torus whose hole points along `axis`. The loop lies in the perpendicular plane."""
+    axis = Vector(axis).normalized()
+    tmp = Vector((0.0, 0.0, 1.0)) if abs(axis.z) < 0.85 else Vector((1.0, 0.0, 0.0))
+    u = axis.cross(tmp).normalized()
+    v = axis.cross(u).normalized()
+    origin = Vector(center)
+    rings = []
+    for i in range(n_major):
+        a = i * (2.0 * math.pi / n_major)
+        radial = u * math.cos(a) + v * math.sin(a)
+        ring = []
+        for j in range(n_minor):
+            b = j * (2.0 * math.pi / n_minor)
+            point = origin + radial * (major + minor * math.cos(b)) + axis * (minor * math.sin(b))
+            ring.append(bm.verts.new(point))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+    made = []
+    for i in range(n_major):
+        i2 = (i + 1) % n_major
+        for j in range(n_minor):
+            j2 = (j + 1) % n_minor
+            face = bm.faces.new((rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2]))
+            face.material_index = mat_idx
+            made.append(rings[i][j])
+    return made
+
+
+def build_hitching_post_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    short_post=False,
+    clip_ring=False,
+    twin_sole=False,
+    small_cap=False,
+):
+    """Post on a closed shoe, one rail, rings hung through eyes under the rail.
+
+    The ring center is the eye center plus (0, 0, -RING_MAJOR), so the eye
+    sits on the ring centerline. The eye hangs below the rail; the shank
+    is bitten into the rail.
+    """
     bm = bmesh.new()
     try:
+        half = POST_W * 0.5
+        post_z0 = (SOLE_T + 0.014) if short_post else (SOLE_T - POST_BITE)
         wood = []
-        half = POST_W / 2.0
-        cap_r = half * math.sqrt(2.0)
-
         wood.extend(
             add_box(
                 bm,
-                (0.0, 0.0, POST_H / 2.0),
-                (POST_W, POST_W, POST_H),
+                (0.0, 0.0, (post_z0 + POST_H) * 0.5),
+                (POST_W, POST_W, POST_H - post_z0),
                 WOOD_IDX,
             )
         )
-        # Pyramid whose base vertices land on the post corners, then embed
-        # 2mm so the cap/post plane cannot z-fight.
-        wood.extend(
-            add_cone(
-                bm,
-                (0.0, 0.0, POST_H + CAP_H / 2.0 - CAP_EMBED),
-                cap_r,
-                0.008,
-                CAP_H,
-                4,
-                WOOD_IDX,
-                euler=(0.0, 0.0, math.pi / 4.0),
-            )
-        )
-        stub = ARM_L / 2.0 - half
-        tenon_y = ARM_Y * TENON_SCALE
-        tenon_z = ARM_ZTH * TENON_SCALE
         wood.extend(
             add_box(
                 bm,
                 (0.0, 0.0, ARM_Z),
-                (POST_W + 0.012, tenon_y, tenon_z),
+                (ARM_L, ARM_Y, ARM_ZTH),
                 WOOD_IDX,
             )
         )
-        wood.extend(
-            add_box(
-                bm,
-                (half + stub / 2.0, 0.0, ARM_Z),
-                (stub, ARM_Y, ARM_ZTH),
-                WOOD_IDX,
-            )
-        )
-        wood.extend(
-            add_box(
-                bm,
-                (-(half + stub / 2.0), 0.0, ARM_Z),
-                (stub, ARM_Y, ARM_ZTH),
-                WOOD_IDX,
-            )
-        )
-
         if bevel_offset > 0.0:
             edges = list({e for v in wood for e in v.link_edges if v.is_valid})
             ret = bmesh.ops.bevel(
@@ -451,58 +713,90 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
                 affect="EDGES",
                 clamp_overlap=True,
             )
-            for f in ret.get("faces") or []:
-                f.material_index = WOOD_IDX
+            for face in ret.get("faces") or []:
+                face.material_index = WOOD_IDX
 
-        # Shoe is a collar whose inner faces sit on the post, not a solid plate
-        # the post punches through.
-        add_square_band(bm, SHOE_H / 2.0, half - 0.002, SHOE_T, SHOE_H, METAL_IDX)
-        for z in BAND_ZS:
-            add_square_band(bm, z, half - 0.002, BAND_T, BAND_H, METAL_IDX)
+        cap_r = (half * 0.55) if small_cap else (half + CAP_OVERHANG) * math.sqrt(2.0)
+        add_cone(
+            bm,
+            (0.0, 0.0, POST_H + CAP_H * 0.5 - CAP_EMBED),
+            cap_r,
+            0.004,
+            CAP_H,
+            4,
+            WOOD_IDX,
+            euler=(0.0, 0.0, math.pi / 4.0),
+        )
 
-        arm_y_face = -(ARM_Y / 2.0)
-        for sx in (-ARM_L * 0.32, ARM_L * 0.32):
-            # Eye on the -Y arm face; hitching ring threads it (YZ vs XZ).
-            add_rim(
+        grip = bevel_offset + 0.0015
+        sole_w = POST_W + 2.0 * SHOE_T
+        add_box(
+            bm,
+            (0.0, 0.0, SOLE_T * 0.5),
+            (sole_w, sole_w, SOLE_T),
+            METAL_IDX,
+        )
+        if twin_sole:
+            add_box(
                 bm,
-                (sx, arm_y_face + EYE_MINOR * 0.25, ARM_Z),
+                (0.0012, 0.0012, SOLE_T * 0.5),
+                (sole_w, sole_w, SOLE_T),
+                METAL_IDX,
+            )
+        wall_z0 = SOLE_T - 0.003
+        wall_z1 = SHOE_H
+        add_square_band(
+            bm,
+            0.5 * (wall_z0 + wall_z1),
+            half - grip,
+            SHOE_T,
+            wall_z1 - wall_z0,
+            METAL_IDX,
+        )
+        for z in BAND_ZS:
+            add_square_band(bm, z, half - grip, BAND_T, BAND_H, METAL_IDX)
+
+        arm_bottom = ARM_Z - ARM_ZTH * 0.5
+        eye_z = arm_bottom - EYE_MAJOR - EYE_MINOR - 0.004
+        # Shank stops in the top of the eye tube. Continuing it to the eye
+        # center runs the pin through the hung ring.
+        shank_bot = eye_z + EYE_MAJOR - 0.002
+        shank_top = arm_bottom + 0.012
+        shank_h = shank_top - shank_bot
+        ring_lift = 0.024 if clip_ring else 0.0
+        for sx in (-EYE_X, EYE_X):
+            add_cyl(
+                bm,
+                (sx, 0.0, shank_bot + shank_h * 0.5),
+                EYE_MINOR * 0.9,
+                shank_h,
+                8,
+                METAL_IDX,
+            )
+            add_torus(
+                bm,
+                (sx, 0.0, eye_z),
                 EYE_MAJOR,
                 EYE_MINOR,
+                (1.0, 0.0, 0.0),
                 METAL_IDX,
-                euler=(math.pi / 2.0, 0.0, 0.0),
-                n_major=14,
-                n_minor=7,
+                n_major=16,
+                n_minor=8,
             )
-            add_rim(
+            add_torus(
                 bm,
-                (
-                    sx,
-                    arm_y_face - RING_MAJOR * 0.55,
-                    ARM_Z - RING_MAJOR * 0.28,
-                ),
+                (sx, 0.0, eye_z - RING_MAJOR + ring_lift),
                 RING_MAJOR,
                 RING_MINOR,
+                (0.0, 1.0, 0.0),
                 METAL_IDX,
-                euler=(0.0, math.pi / 2.0, 0.0),
-                n_major=18,
+                n_major=24,
                 n_minor=8,
             )
 
-        bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
-        bm.faces.ensure_lookup_table()
-        degen = [f for f in bm.faces if f.calc_area() <= AREA_EPS]
-        if degen:
-            bmesh.ops.delete(bm, geom=degen, context="FACES")
-
-        xs = [v.co.x for v in bm.verts]
-        ys = [v.co.y for v in bm.verts]
         zs = [v.co.z for v in bm.verts]
-        rcx = 0.5 * (min(xs) + max(xs))
-        rcy = 0.5 * (min(ys) + max(ys))
         zmin = min(zs)
         for v in bm.verts:
-            v.co.x -= rcx
-            v.co.y -= rcy
             v.co.z -= zmin
             if v.co.z < 0.0:
                 v.co.z = 0.0
@@ -510,10 +804,7 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            if face.material_index == METAL_IDX:
-                face.smooth = True
-            else:
-                face.smooth = False
+            face.smooth = face.material_index == METAL_IDX
         for edge in bm.edges:
             if not edge.is_manifold or len(edge.link_faces) != 2:
                 continue
@@ -529,7 +820,6 @@ def build_hitching_post_mesh(name, bevel_offset, bevel_segments):
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     return out
-
 
 def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
@@ -682,9 +972,23 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate, lift_z=False):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    twin_sole=False,
+    clip_ring=False,
+    short_post=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_hitching_post_mesh("HitchPostLow", bevel_offset=0.008, bevel_segments=2)
+    low = build_hitching_post_mesh(
+        "HitchPostLow",
+        bevel_offset=0.008,
+        bevel_segments=2,
+        short_post=short_post,
+        clip_ring=clip_ring,
+        twin_sole=twin_sole,
+    )
     high = build_hitching_post_mesh("HitchPostHigh", bevel_offset=0.008, bevel_segments=4)
     wood = principled(
         "HitchPostWood",
@@ -694,13 +998,22 @@ def check(skip_decimate, lift_z=False):
         noise_scale=11.0,
         wear=(0.24, 0.13, 0.05, 1.0),
     )
-    metal = principled("HitchPostIron", (0.12, 0.125, 0.135, 1.0), 1.0, 0.42)
+    metal = principled(
+        "HitchPostIron",
+        (0.16, 0.155, 0.15, 1.0),
+        1.0,
+        0.48,
+        noise_scale=16.0,
+        wear=(0.09, 0.085, 0.08, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if lift_z:
         for v in low.data.vertices:
             v.co.z += LIFT_Z
         low.data.update()
+    if stray_vert:
+        add_stray_vert(low.data)
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("hitching post mesh did not build", 3), None, None, None, None, None
@@ -762,7 +1075,9 @@ def check(skip_decimate, lift_z=False):
         f"outer={OUTER_SIZE} zmin={bb[2]:.4f}"
     )
     hyg = hygiene_audit(low.data)
+    zfight = zfight_pairs(low.data)
     gap = min_mat_distance(low.data, METAL_IDX, WOOD_IDX)
+    seat = seat_audit(low.data)
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
@@ -770,9 +1085,19 @@ def check(skip_decimate, lift_z=False):
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
         f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
-        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']} "
+        f"zfight={zfight}"
     )
     print(f"measured wood_metal_gap={gap:.5f} zmin={bb[2]:.6f}")
+    print(
+        f"measured seat post_zmin={seat['post_zmin']:.5f} post_xy={seat['post_xy']:.5f} "
+        f"arm_cos={seat['arm_cos']:.6f} ring_err={seat['ring_err']:.5f} "
+        f"ring_wood={seat['ring_wood']} eye_wood={seat['eye_wood']} "
+        f"band_gap={seat['band_gap']:.5f} sole_shoe={seat['sole_shoe']} "
+        f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
+        f"parts={seat['post']}/{seat['arm']}/{seat['cap']}/"
+        f"soles={seat['soles']}/rings={seat['rings']}/eyes={seat['eyes']}/bands={seat['bands']}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -841,14 +1166,16 @@ def check(skip_decimate, lift_z=False):
         hyg["loose_v"]
         or hyg["loose_e"]
         or hyg["nonman"]
-        or hyg["zero_area"]
+        or         hyg["zero_area"]
         or hyg["doubles"]
         or hyg["ngons"]
+        or zfight
     ):
         return fail(
             f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
             f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
-            f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zfight} "
+            "(--stray-vert / --twin-sole are the designed fails)",
             15,
         ), None, None, None, None, None
     if abs(bb[2]) > ZMIN_EPS:
@@ -861,6 +1188,39 @@ def check(skip_decimate, lift_z=False):
         return fail(
             f"wood-metal gap {gap:.5f} > {GAP_MAX}",
             17,
+        ), None, None, None, None, None
+    if (
+        seat["rings"] != 2
+        or seat["eyes"] != 2
+        or seat["bands"] < 3
+        or seat["soles"] < 1
+        or seat["ring_err"] > RING_CENTER_TOL
+        or seat["ring_wood"]
+        or seat["eye_wood"]
+        or seat["shanks"] != 2
+        or seat["band_gap"] > GAP_MAX
+        or seat["sole_shoe"] < 1
+        or seat["shank_ring"]
+        or seat["shank_eye"] < 1
+    ):
+        return fail(
+            f"hung ring / shoe seat ring_err={seat['ring_err']:.5f} "
+            f"ring_wood={seat['ring_wood']} eye_wood={seat['eye_wood']} "
+            f"band_gap={seat['band_gap']:.5f} sole_shoe={seat['sole_shoe']} "
+            f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
+            "(--clip-ring is the designed fail)",
+            18,
+        ), None, None, None, None, None
+    if (
+        not (POST_ZMIN_LO < seat["post_zmin"] < POST_ZMIN_HI)
+        or seat["post_xy"] > POST_XY_MAX
+        or seat["arm_cos"] < AXIS_COS_MIN
+    ):
+        return fail(
+            f"post seat zmin={seat['post_zmin']:.5f} xy={seat['post_xy']:.5f} "
+            f"arm_cos={seat['arm_cos']:.6f} "
+            "(--short-post is the designed fail)",
+            19,
         ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
@@ -985,9 +1345,36 @@ def main():
         action="store_true",
         help="falsification: lift the mesh so zmin fails the grounded budget",
     )
+    p.add_argument(
+        "--stray-vert",
+        action="store_true",
+        help="falsification: one loose vertex so the hygiene budget fails",
+    )
+    p.add_argument(
+        "--twin-sole",
+        action="store_true",
+        help="falsification: duplicate the shoe plate so coplanar faces fail",
+    )
+    p.add_argument(
+        "--clip-ring",
+        action="store_true",
+        help="falsification: lift the rings off the eye centerline",
+    )
+    p.add_argument(
+        "--short-post",
+        action="store_true",
+        help="falsification: start the post above the shoe cup",
+    )
     args = p.parse_args(argv)
 
-    code, low, _high, wood, tex, _col = check(args.skip_decimate, lift_z=args.lift_z)
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        twin_sole=args.twin_sole,
+        clip_ring=args.clip_ring,
+        short_post=args.short_post,
+    )
     if code:
         return code
     if args.output:

@@ -188,8 +188,8 @@
     {
       "name": "hitching-post",
       "dir": "showcase/hitching-post",
-      "teaches": "A procedural hitching post (corner-aligned cap, stub-and-tenon arm, collar shoe, eye-threaded rings) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1598 tris, two materials with 269 wood and 532 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.460×0.191×1.258 m, zmin 0, hygiene 0, wood-metal BVH gap 0.45 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.",
+      "teaches": "A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1680 tris, two materials with 114 wood and 742 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring exits 18; --short-post exits 19.",
       "hero": "docs/gallery/assets/hitching-post-hero.webp",
       "preview": "showcase/hitching-post/preview.webp",
       "tags": [
@@ -296,8 +296,8 @@
     {
       "name": "wooden-ladder",
       "dir": "showcase/wooden-ladder",
-      "teaches": "A procedural timber ladder with raked stiles, six dowel rungs tenoned into the stiles, and iron shoes and top caps through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 936 tris, two materials with 324 wood and 216 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.472×0.365×1.460 m, grounded at zmin 0, mesh hygiene all zero, 12 shells with every rung clearing the stile chamfer by 3.61 mm, convex collider 24 tris, non-empty glTF. Four falsifiers exit 9, 15, 16, and 17 on the LOD, hygiene, grounded, and joint-fit budgets.",
+      "teaches": "A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18.",
       "hero": "docs/gallery/assets/wooden-ladder-hero.webp",
       "preview": "showcase/wooden-ladder/preview.webp",
       "tags": [
