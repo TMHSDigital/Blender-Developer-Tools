@@ -1,16 +1,19 @@
 """Game-ready wall torch sconce — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural wall-mounted torch after composing
-shipped pipeline pieces: bmesh construction, UVs, four materials, high-to-low
-normal bake, LOD chain, convex collider, Unity glTF export.
+Asserts budget conformance of a procedural wall-mounted torch after
+composing shipped pipeline pieces: bmesh construction, UVs, four
+materials, high-to-low normal bake, LOD chain, convex collider,
+Unity glTF export.
 
-Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails.
+The plaque back sits on the wall plane Y=0 with zmin at 0. The iron
+arm is a tube between the plate station and the cup station. The
+bowl opens upward and holds the haft. Hygiene family 15–19:
+``--stray-vert``, ``--lift-z``, ``--float-arm``, ``--float-plate``,
+``--skinny-plaque``.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle
+counts are not byte-identical across Blender versions — the LOD
+gate is a ratio band, not an exact count.
 
     blender --background --python wall_torch.py --
     blender --background --python wall_torch.py -- --skip-decimate
@@ -26,10 +29,8 @@ import traceback
 import bmesh
 import bpy
 from mathutils import Euler, Vector
+from mathutils.bvhtree import BVHTree
 
-# Showcase lives at repo-root/showcase/, not under examples/. The framing
-# helper is the repo's only shared import and lives next to the examples;
-# resolve the repo root so we do not move gallery_framing.py.
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
 )
@@ -37,15 +38,34 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-WALL_W = 0.36
-WALL_D = 0.10
-WALL_H = 0.58
-BBOX_TOL = 0.01
-# Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.384, 0.360, 0.670)
+WALL_W = 0.28
+WALL_D = 0.070
+WALL_H = 0.40
+CORNICE_H = 0.028
+GROUT = 0.007
+NROWS = 4
+STONE_D = 0.020
+STONE_BITE = 0.004
+PLATE_Z = 0.22
+PLATE_R = 0.055
+PLATE_T = 0.016
+CUP_Y = 0.24
+CUP_Z = 0.20
+CUP_H = 0.052
+CUP_R0 = 0.024
+CUP_R1 = 0.050
+ARM_R = 0.011
+ARM_BITE = 0.012
+HAFT_R = 0.016
+LIFT_Z = 0.05
+FLOAT_ARM = 0.55
+FLOAT_PLATE = 0.08
+SKINNY = 0.55
 
-BASE_TRIS_MIN = 800
-BASE_TRIS_MAX = 920
+BBOX_TOL = 0.015
+OUTER_SIZE = (0.304, 0.293, 0.424)
+BASE_TRIS_MIN = 1400
+BASE_TRIS_MAX = 1700
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -55,7 +75,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 4
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 120
+COLLIDER_TRIS_MAX = 180
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
 STONE_FACES_MIN = 24
@@ -66,6 +86,15 @@ STONE_IDX = 0
 METAL_IDX = 1
 WOOD_IDX = 2
 FLAME_IDX = 3
+
+DOUBLES_EPS = 1e-5
+AREA_EPS = 1e-10
+ZMIN_EPS = 1e-4
+ZFIGHT_EPS = 0.002
+ZFIGHT_COS = 0.98
+ARM_GAP_MAX = 0.008
+PLATE_GAP_MAX = 0.008
+PLAQUE_W_TOL = 0.04
 
 
 def eevee_engine_id():
@@ -83,7 +112,6 @@ def triangle_count(mesh):
 
 
 def evaluated_triangle_count(obj):
-    # Duplicated from snippets/lod_chain.py / decimate_to_budget.py (not a package).
     depsgraph = bpy.context.evaluated_depsgraph_get()
     eval_obj = obj.evaluated_get(depsgraph)
     eval_mesh = eval_obj.to_mesh()
@@ -108,29 +136,11 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
-def add_oriented_box(bm, a, b, scale_xy, mat_idx):
-    a = Vector(a)
-    b = Vector(b)
-    delta = b - a
-    length = delta.length
-    if length < 1e-8:
-        return []
-    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
-    eul = quat.to_euler("XYZ")
-    return add_box(
-        bm,
-        ((a + b) * 0.5),
-        (scale_xy[0], scale_xy[1], length),
-        mat_idx,
-        euler=(eul.x, eul.y, eul.z),
-    )
-
-
 def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=False,
+        cap_tris=segments > 4,
         segments=segments,
         radius1=radius1,
         radius2=radius2,
@@ -147,38 +157,25 @@ def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.
     return verts
 
 
-def add_cylinder(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
-    return add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
-
-
-def add_rim(bm, loc, major, minor, mat_idx, euler=(0.0, 0.0, 0.0)):
-    n_major = 12
-    n_minor = 6
-    rings = []
-    for i in range(n_major):
-        u = i * (2.0 * math.pi / n_major)
-        ring = []
-        for j in range(n_minor):
-            v = j * (2.0 * math.pi / n_minor)
-            x = (major + minor * math.cos(v)) * math.cos(u)
-            y = (major + minor * math.cos(v)) * math.sin(u)
-            z = minor * math.sin(v)
-            ring.append(bm.verts.new((x, y, z)))
-        rings.append(ring)
-    for i in range(n_major):
-        i2 = (i + 1) % n_major
-        for j in range(n_minor):
-            j2 = (j + 1) % n_minor
-            face = bm.faces.new(
-                (rings[i][j], rings[i2][j], rings[i2][j2], rings[i][j2])
-            )
-            face.material_index = mat_idx
-    verts = [v for ring in rings for v in ring]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    for v in verts:
-        v.co = rot @ v.co + origin
-    return verts
+def add_cyl_between(bm, a, b, radius, segments, mat_idx):
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    if length < 1e-8:
+        return []
+    quat = Vector((0.0, 0.0, 1.0)).rotation_difference(delta.normalized())
+    eul = quat.to_euler("XYZ")
+    return add_cone(
+        bm,
+        (a + b) * 0.5,
+        radius,
+        radius,
+        length,
+        segments,
+        mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
 
 
 def pack_uvs(bm, margin=0.08):
@@ -224,138 +221,133 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_torch_mesh(name, bevel_offset, bevel_segments):
+def build_torch_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    float_arm=False,
+    float_plate=False,
+    skinny_plaque=False,
+):
     bm = bmesh.new()
-    metal_faces = set()
-    flame_faces = set()
     try:
-        # One dressed plaque — a tile grid reads as bathroom masonry.
+        plaque_w = WALL_W * SKINNY if skinny_plaque else WALL_W
         add_box(
             bm,
-            (0.0, 0.0, WALL_H / 2.0),
-            (WALL_W, WALL_D, WALL_H),
+            (0.0, WALL_D / 2.0, WALL_H / 2.0),
+            (plaque_w, WALL_D, WALL_H),
             STONE_IDX,
         )
         add_box(
             bm,
-            (0.0, WALL_D / 2.0 + 0.010, WALL_H / 2.0),
-            (WALL_W - 0.048, 0.022, WALL_H - 0.070),
-            STONE_IDX,
-        )
-        add_box(
-            bm,
-            (0.0, 0.0, WALL_H + 0.014),
-            (WALL_W + 0.024, WALL_D + 0.024, 0.030),
+            (0.0, WALL_D / 2.0 + 0.006, WALL_H + CORNICE_H / 2.0 - 0.004),
+            (plaque_w + 0.024, WALL_D + 0.018, CORNICE_H),
             STONE_IDX,
         )
 
-        plate_y = WALL_D / 2.0 + 0.024
-        plate_z = 0.30
-        before = set(bm.faces)
-        add_box(bm, (0.0, plate_y, plate_z), (0.14, 0.018, 0.20), METAL_IDX)
-        add_box(bm, (0.0, plate_y, plate_z + 0.078), (0.18, 0.014, 0.028), METAL_IDX)
-        add_box(bm, (0.0, plate_y, plate_z - 0.078), (0.18, 0.014, 0.028), METAL_IDX)
-        add_rim(
+        course_h = (WALL_H - GROUT * (NROWS + 1)) / NROWS
+        face_y = WALL_D - STONE_BITE + STONE_D / 2.0
+        inner = plaque_w - 2.0 * GROUT
+        for row in range(NROWS):
+            zc = GROUT + row * (course_h + GROUT) + course_h / 2.0
+            fracs = (0.58, 0.42) if row % 2 == 0 else (0.40, 0.60)
+            x = -plaque_w / 2.0 + GROUT
+            for frac in fracs:
+                w = inner * frac - GROUT * 0.5
+                cx = x + w / 2.0
+                add_box(
+                    bm,
+                    (cx, face_y, zc),
+                    (max(w, 0.04), STONE_D, course_h - 0.001),
+                    STONE_IDX,
+                )
+                x += w + GROUT
+
+        plate_y = WALL_D - 0.004 + PLATE_T / 2.0
+        if float_plate:
+            plate_y += FLOAT_PLATE
+        add_cone(
             bm,
-            (0.0, plate_y + 0.020, plate_z + 0.016),
-            0.048,
-            0.009,
+            (0.0, plate_y, PLATE_Z),
+            PLATE_R,
+            PLATE_R,
+            PLATE_T,
+            12,
             METAL_IDX,
-            euler=(math.radians(90.0), 0.0, 0.0),
+            euler=(math.pi / 2.0, 0.0, 0.0),
         )
-        arm_y0 = plate_y + 0.012
-        arm_y1 = plate_y + 0.15
-        cup_z = 0.26
-        add_oriented_box(
+        for sx, sz in ((-0.032, 0.028), (0.032, 0.028), (-0.032, -0.028), (0.032, -0.028)):
+            add_cone(
+                bm,
+                (sx, plate_y + PLATE_T / 2.0 + 0.004, PLATE_Z + sz),
+                0.006,
+                0.006,
+                0.010,
+                8,
+                METAL_IDX,
+                euler=(math.pi / 2.0, 0.0, 0.0),
+            )
+
+        plate_st = Vector((0.0, plate_y, PLATE_Z))
+        cup_st = Vector((0.0, CUP_Y - CUP_R1 + ARM_BITE, CUP_Z))
+        arm_end = cup_st
+        if float_arm:
+            arm_end = plate_st + (cup_st - plate_st) * FLOAT_ARM
+        add_cyl_between(bm, plate_st, arm_end, ARM_R, 8, METAL_IDX)
+
+        add_cone(
             bm,
-            (0.032, arm_y0, plate_z - 0.018),
-            (0.020, arm_y1, cup_z + 0.036),
-            (0.018, 0.018),
-            METAL_IDX,
-        )
-        add_oriented_box(
-            bm,
-            (-0.032, arm_y0, plate_z - 0.018),
-            (-0.020, arm_y1, cup_z + 0.036),
-            (0.018, 0.018),
+            (0.0, CUP_Y, CUP_Z),
+            CUP_R0,
+            CUP_R1,
+            CUP_H,
+            12,
             METAL_IDX,
         )
         add_cone(
             bm,
-            (0.0, arm_y1 + 0.012, cup_z),
-            0.062,
-            0.034,
-            0.062,
-            14,
-            METAL_IDX,
-        )
-        add_cylinder(
-            bm,
-            (0.0, arm_y1 + 0.012, cup_z - 0.042),
-            0.054,
-            0.014,
-            14,
-            METAL_IDX,
-        )
-        metal_faces.update(set(bm.faces) - before)
-
-        stick_z0 = cup_z - 0.018
-        stick_z1 = 0.50
-        add_cylinder(
-            bm,
-            (0.0, arm_y1 + 0.012, (stick_z0 + stick_z1) / 2.0),
-            0.026,
-            stick_z1 - stick_z0,
+            (0.0, CUP_Y, CUP_Z - CUP_H / 2.0 - 0.006),
+            CUP_R0 + 0.004,
+            CUP_R0 + 0.004,
+            0.010,
             12,
+            METAL_IDX,
+        )
+
+        cup_rim = CUP_Z + CUP_H / 2.0
+        haft_z0 = CUP_Z - CUP_H / 2.0 + 0.006
+        haft_z1 = cup_rim + 0.026
+        add_cone(
+            bm,
+            (0.0, CUP_Y, (haft_z0 + haft_z1) / 2.0),
+            HAFT_R,
+            HAFT_R,
+            haft_z1 - haft_z0,
+            10,
             WOOD_IDX,
         )
-        add_cone(
-            bm,
-            (0.0, arm_y1 + 0.012, 0.46),
-            0.050,
-            0.030,
-            0.12,
-            12,
-            WOOD_IDX,
-        )
 
-        before = set(bm.faces)
-        flame_y = arm_y1 + 0.012
-        add_cone(bm, (0.0, flame_y, 0.56), 0.048, 0.006, 0.22, 10, FLAME_IDX)
+        add_cone(bm, (0.0, CUP_Y, cup_rim + 0.038), 0.034, 0.004, 0.078, 10, FLAME_IDX)
         add_cone(
             bm,
-            (0.018, flame_y - 0.010, 0.545),
-            0.030,
-            0.004,
-            0.16,
-            9,
-            FLAME_IDX,
-            euler=(0.0, math.radians(16.0), 0.0),
-        )
-        add_cone(
-            bm,
-            (-0.016, flame_y + 0.012, 0.54),
-            0.028,
-            0.004,
-            0.15,
-            9,
-            FLAME_IDX,
-            euler=(math.radians(-12.0), math.radians(-14.0), 0.0),
-        )
-        add_cone(
-            bm,
-            (0.006, flame_y + 0.004, 0.58),
-            0.018,
+            (0.012, CUP_Y - 0.008, cup_rim + 0.028),
+            0.022,
             0.003,
-            0.12,
+            0.058,
             8,
             FLAME_IDX,
-            euler=(math.radians(8.0), math.radians(6.0), 0.0),
+            euler=(0.0, math.radians(14.0), 0.0),
         )
-        flame_faces.update(set(bm.faces) - before)
-
-        for v in bm.verts:
-            v.co.z += 0.14
+        add_cone(
+            bm,
+            (-0.010, CUP_Y + 0.006, cup_rim + 0.024),
+            0.018,
+            0.003,
+            0.050,
+            8,
+            FLAME_IDX,
+            euler=(math.radians(-10.0), math.radians(-12.0), 0.0),
+        )
 
         if bevel_offset > 0.0:
             stone_edges = [
@@ -363,7 +355,7 @@ def build_torch_mesh(name, bevel_offset, bevel_segments):
                 if any(f.material_index == STONE_IDX for f in e.link_faces)
             ]
             if stone_edges:
-                bmesh.ops.bevel(
+                ret = bmesh.ops.bevel(
                     bm,
                     geom=stone_edges,
                     offset=bevel_offset,
@@ -372,25 +364,25 @@ def build_torch_mesh(name, bevel_offset, bevel_segments):
                     affect="EDGES",
                     clamp_overlap=True,
                 )
+                for f in ret.get("faces") or []:
+                    f.material_index = STONE_IDX
+
+        zs = [v.co.z for v in bm.verts]
+        zmin = min(zs)
+        for v in bm.verts:
+            v.co.z -= zmin
+            if v.co.z < 0.0:
+                v.co.z = 0.0
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
-            face.smooth = face.material_index != STONE_IDX
-        for edge in bm.edges:
-            edge.smooth = True
-            if edge.is_manifold and len(edge.link_faces) == 2:
-                if edge.calc_face_angle() > math.radians(35.0):
-                    edge.smooth = False
-        for f in metal_faces:
-            if f.is_valid:
-                f.material_index = METAL_IDX
-        for f in flame_faces:
-            if f.is_valid:
-                f.material_index = FLAME_IDX
+            face.smooth = face.material_index in (METAL_IDX, FLAME_IDX)
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
+        for poly in me.polygons:
+            poly.use_smooth = poly.material_index in (METAL_IDX, FLAME_IDX)
     finally:
         bm.free()
     obj = bpy.data.objects.new(name, me)
@@ -398,10 +390,20 @@ def build_torch_mesh(name, bevel_offset, bevel_segments):
     return obj
 
 
-def principled(name, color, metallic, roughness, emission=0.0, emission_color=None):
+def principled(
+    name,
+    color,
+    metallic,
+    roughness,
+    emission=0.0,
+    emission_color=None,
+    noise_scale=0.0,
+    wear=None,
+):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
@@ -412,28 +414,36 @@ def principled(name, color, metallic, roughness, emission=0.0, emission_color=No
             bsdf.inputs["Emission Strength"].default_value = emission
         elif "Emission" in bsdf.inputs:
             bsdf.inputs["Emission"].default_value = ecol
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 6.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
 def assign_slots(obj, stone, metal, wood, flame):
     mats = obj.data.materials
-    slots = (stone, metal, wood, flame)
-    if len(mats) == 0:
-        for s in slots:
-            mats.append(s)
-        return
-    for i, s in enumerate(slots):
+    wanted = (stone, metal, wood, flame)
+    for i, mat in enumerate(wanted):
         if i < len(mats):
-            mats[i] = s
+            mats[i] = mat
         else:
-            mats.append(s)
+            mats.append(mat)
 
 
 def world_bbox(obj):
-    corners = [obj.matrix_world @ Vector(c) for c in obj.bound_box]
-    xs = [c.x for c in corners]
-    ys = [c.y for c in corners]
-    zs = [c.z for c in corners]
+    mat = obj.matrix_world
+    pts = [mat @ v.co for v in obj.data.vertices]
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    zs = [p.z for p in pts]
     return (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
 
 
@@ -475,7 +485,6 @@ def make_lod(obj, name, ratio, skip_decimate):
 
 
 def convex_hull_collider(obj, name):
-    # Duplicated from snippets/convex_hull_collider.py (not a package).
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
@@ -495,6 +504,180 @@ def convex_hull_collider(obj, name):
     bpy.context.collection.objects.link(collider)
     collider.matrix_world = obj.matrix_world.copy()
     return collider
+
+
+def face_area(me, poly):
+    vs = [me.vertices[i].co for i in poly.vertices]
+    if len(vs) < 3:
+        return 0.0
+    v0 = vs[0]
+    area = 0.0
+    for i in range(1, len(vs) - 1):
+        area += (vs[i] - v0).cross(vs[i + 1] - v0).length * 0.5
+    return area
+
+
+def hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(1 for p in me.polygons if len(p.vertices) > 4)
+    zero_area = sum(1 for p in me.polygons if face_area(me, p) <= AREA_EPS)
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        loose_v = sum(1 for v in bm.verts if len(v.link_edges) == 0)
+        loose_e = sum(1 for e in bm.edges if len(e.link_faces) == 0)
+        nonman = sum(1 for e in bm.edges if not e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get("targetmap") or {})
+    finally:
+        bm.free()
+    return {
+        "nv": nv, "ne": ne, "nf": nf, "ngons": ngons,
+        "loose_v": loose_v, "loose_e": loose_e, "nonman": nonman,
+        "zero_area": zero_area, "doubles": doubles, "euler": nv - ne + nf,
+    }
+
+
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shells(me):
+    neighbors = [[] for _ in range(len(me.vertices))]
+    for edge in me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [False] * len(me.vertices)
+    groups = []
+    for start in range(len(me.vertices)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        stack = [start]
+        group = []
+        while stack:
+            current = stack.pop()
+            group.append(current)
+            for nxt in neighbors[current]:
+                if not seen[nxt]:
+                    seen[nxt] = True
+                    stack.append(nxt)
+        groups.append(group)
+    return groups
+
+
+def shell_aabb(me, group):
+    pts = [me.vertices[i].co for i in group]
+    return (
+        min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts),
+        max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts),
+    )
+
+
+def mat_of(me, group):
+    member = set(group)
+    for poly in me.polygons:
+        if all(i in member for i in poly.vertices):
+            return poly.material_index
+    return None
+
+
+def shell_bvh_gap(me, ga, gb):
+    bm_a = bmesh.new()
+    bm_b = bmesh.new()
+    try:
+        bm_a.from_mesh(me)
+        bm_b.from_mesh(me)
+        keep_a, keep_b = set(ga), set(gb)
+        drop_a = [f for f in bm_a.faces if not all(v.index in keep_a for v in f.verts)]
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_a:
+            bmesh.ops.delete(bm_a, geom=drop_a, context="FACES")
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_a.faces or not bm_b.faces:
+            return 1e9
+        tree = BVHTree.FromBMesh(bm_b)
+        best = 1e9
+        for v in bm_a.verts:
+            hit = tree.find_nearest(v.co)
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        for f in bm_a.faces:
+            hit = tree.find_nearest(f.calc_center_median())
+            if hit[0] is not None:
+                best = min(best, hit[3])
+        return best
+    finally:
+        bm_a.free()
+        bm_b.free()
+
+
+def add_stray_vert(me):
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        bm.verts.new((0.0, CUP_Y, PLATE_Z))
+        bm.to_mesh(me)
+        me.update()
+    finally:
+        bm.free()
+
+
+def joint_audit(me):
+    groups = shells(me)
+    plaques = []
+    plates = []
+    cups = []
+    arms = []
+    for g in groups:
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        mat = mat_of(me, g)
+        if mat == STONE_IDX and dz > 0.20 and dx > 0.12:
+            plaques.append((g, a))
+        elif mat == METAL_IDX and dy <= 0.04 and dx >= 0.08 and dz >= 0.08:
+            plates.append((g, a))
+        elif mat == METAL_IDX and a[4] > CUP_Y - 0.05 and dx > 0.05 and dz < 0.14:
+            cups.append((g, a))
+        elif mat == METAL_IDX and dy > dx and dy > dz:
+            arms.append((g, a))
+    arm_gap = 1e9
+    for ag, _ in arms:
+        for cg, _ in cups:
+            arm_gap = min(arm_gap, shell_bvh_gap(me, ag, cg))
+    plate_gap = 1e9
+    for pg, _ in plates:
+        for qg, _ in plaques:
+            plate_gap = min(plate_gap, shell_bvh_gap(me, pg, qg))
+    plaque_w = max((a[3] - a[0] for _, a in plaques), default=0.0)
+    return {
+        "plaques": len(plaques),
+        "plates": len(plates),
+        "cups": len(cups),
+        "arms": len(arms),
+        "arm_gap": arm_gap if arms and cups else 1e9,
+        "plate_gap": plate_gap if plates and plaques else 1e9,
+        "plaque_w": plaque_w,
+    }
 
 
 def setup_bake_image(obj, target_mat, size=BAKE_RES):
@@ -551,13 +734,34 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    float_arm=False,
+    float_plate=False,
+    skinny_plaque=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_torch_mesh("TorchLow", bevel_offset=0.004, bevel_segments=2)
-    high = build_torch_mesh("TorchHigh", bevel_offset=0.004, bevel_segments=4)
-    stone = principled("TorchStone", (0.36, 0.34, 0.30, 1.0), 0.0, 0.72)
-    metal = principled("TorchMetal", (0.14, 0.12, 0.10, 1.0), 0.88, 0.38)
-    wood = principled("TorchWood", (0.22, 0.11, 0.05, 1.0), 0.0, 0.64)
+    kw = dict(
+        float_arm=float_arm,
+        float_plate=float_plate,
+        skinny_plaque=skinny_plaque,
+    )
+    low = build_torch_mesh("TorchLow", bevel_offset=0.004, bevel_segments=2, **kw)
+    high = build_torch_mesh("TorchHigh", bevel_offset=0.004, bevel_segments=4, **kw)
+    stone = principled(
+        "TorchStone", (0.36, 0.34, 0.30, 1.0), 0.0, 0.72,
+        noise_scale=12.0, wear=(0.28, 0.26, 0.22, 1.0),
+    )
+    metal = principled(
+        "TorchMetal", (0.14, 0.12, 0.10, 1.0), 0.88, 0.38,
+        noise_scale=18.0, wear=(0.22, 0.16, 0.10, 1.0),
+    )
+    wood = principled(
+        "TorchWood", (0.22, 0.11, 0.05, 1.0), 0.0, 0.64,
+        noise_scale=14.0, wear=(0.12, 0.06, 0.03, 1.0),
+    )
     flame = principled(
         "TorchFlame",
         (1.0, 0.28, 0.04, 1.0),
@@ -568,6 +772,13 @@ def check(skip_decimate):
     )
     assign_slots(low, stone, metal, wood, flame)
     assign_slots(high, stone, metal, wood, flame)
+
+    if stray_vert:
+        add_stray_vert(low.data)
+    if lift_z:
+        for v in low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("torch mesh did not build", 3), None, None, None, None, None
@@ -599,7 +810,7 @@ def check(skip_decimate):
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_torch_mesh("TorchColSrc", bevel_offset=0.0, bevel_segments=1)
+    collider_src = build_torch_mesh("TorchColSrc", bevel_offset=0.0, bevel_segments=1, **kw)
     collider = convex_hull_collider(collider_src, "TorchCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -613,9 +824,11 @@ def check(skip_decimate):
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
 
-    print(
-        f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}"
-    )
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    jnt = joint_audit(low.data)
+
+    print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
         f"measured base_tris={base_tris} lod1_tris={lod1_tris} "
         f"lod2_tris={lod2_tris} r1={r1:.4f} r2={r2:.4f}"
@@ -631,6 +844,17 @@ def check(skip_decimate):
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
         f"bake_has_data={img.has_data} export_bytes={export_size}"
+    )
+    print(
+        f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+        f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}"
+    )
+    print(
+        f"measured plaques={jnt['plaques']} plates={jnt['plates']} "
+        f"cups={jnt['cups']} arms={jnt['arms']} "
+        f"arm_gap={jnt['arm_gap']:.5f} plate_gap={jnt['plate_gap']:.5f} "
+        f"plaque_w={jnt['plaque_w']:.4f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -668,6 +892,24 @@ def check(skip_decimate):
             f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}",
             7,
         ), None, None, None, None, None
+    if bb[2] > ZMIN_EPS:
+        return fail(f"grounded zmin={bb[2]:.5f}", 16), None, None, None, None, None
+    if jnt["arms"] < 1 or jnt["cups"] < 1 or jnt["arm_gap"] > ARM_GAP_MAX:
+        return fail(
+            f"arm-cup gap {jnt['arm_gap']:.5f} arms={jnt['arms']} cups={jnt['cups']}",
+            17,
+        ), None, None, None, None, None
+    if jnt["plates"] < 1 or jnt["plaques"] < 1 or jnt["plate_gap"] > PLATE_GAP_MAX:
+        return fail(
+            f"plate-plaque gap {jnt['plate_gap']:.5f} plates={jnt['plates']} "
+            f"plaques={jnt['plaques']}",
+            18,
+        ), None, None, None, None, None
+    if abs(jnt["plaque_w"] - WALL_W) > PLAQUE_W_TOL:
+        return fail(
+            f"plaque width {jnt['plaque_w']:.4f} off {WALL_W}",
+            19,
+        ), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
         or abs(size_y - OUTER_SIZE[1]) > BBOX_TOL
@@ -701,6 +943,16 @@ def check(skip_decimate):
         ), None, None, None, None, None
     if export_size <= 0:
         return fail("export file missing or empty", 13), None, None, None, None, None
+    if (
+        hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"] or hyg["zero_area"]
+        or hyg["doubles"] or hyg["ngons"] or zf
+    ):
+        return fail(
+            f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
+            f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            15,
+        ), None, None, None, None, None
     return 0, low, high, stone, tex, collider
 
 
@@ -721,8 +973,7 @@ def render_still(low, stone, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
-    # Sconce is built on +Y; camera sits in -Y, so yaw 180 so the flame faces us.
-    low.rotation_euler.z = math.radians(142.0)
+    low.rotation_euler.z = math.radians(128.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -764,16 +1015,15 @@ def render_still(low, stone, tex, path, engine):
     light("Key", (-3.6, -5.0, 5.4), 640.0, 4.0, (1.0, 0.94, 0.86), (50, 0, -36))
     light("Fill", (5.0, -3.4, 2.4), 42.0, 8.0, (0.72, 0.82, 1.0), (62, 0, 50))
     light("Wedge", (2.2, 4.0, 3.8), 560.0, 5.5, (1.0, 0.70, 0.40), (-70, 0, 198))
-    # Small warm key on the flame so emission reads in EEVEE stills.
-    light("FlameKick", (0.4, 1.2, 1.1), 90.0, 0.6, (1.0, 0.55, 0.22), (40, 0, 160))
+    light("FlameKick", (0.4, 1.2, 0.8), 90.0, 0.6, (1.0, 0.55, 0.22), (40, 0, 160))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 50.0
+    cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.10, -1.70, 0.64)
+    cam.location = (-0.95, -1.15, 0.36)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.06, 0.48)
+    aim.location = (0.02, 0.06, 0.21)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -816,14 +1066,22 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--output", default=None)
     p.add_argument("--engine", default="eevee", choices=("eevee", "cycles"))
-    p.add_argument(
-        "--skip-decimate",
-        action="store_true",
-        help="falsification: skip the LOD DECIMATE stage",
-    )
+    p.add_argument("--skip-decimate", action="store_true")
+    p.add_argument("--stray-vert", action="store_true")
+    p.add_argument("--lift-z", action="store_true")
+    p.add_argument("--float-arm", action="store_true")
+    p.add_argument("--float-plate", action="store_true")
+    p.add_argument("--skinny-plaque", action="store_true")
     args = p.parse_args(argv)
 
-    code, low, _high, stone, tex, _col = check(args.skip_decimate)
+    code, low, _high, stone, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        float_arm=args.float_arm,
+        float_plate=args.float_plate,
+        skinny_plaque=args.skinny_plaque,
+    )
     if code:
         return code
     if args.output:

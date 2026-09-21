@@ -261,7 +261,7 @@
       "name": "wall-torch",
       "dir": "showcase/wall-torch",
       "teaches": "A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 848 tris, four materials with 162 stone, 134 metal, and 44 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.384×0.360×0.670 m, LOD ratios in band (5.2 COLLAPSE 8 tris leaner on LOD2), convex collider 92 tris, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget.",
+      "witnessesFix": "Recomputed: 1528 tris, four materials with 540 stone, 228 metal and 78 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.293×0.424 m at zmin 0, LOD ratios in band, convex collider 60 tris, non-empty glTF. Hygiene all zero. Arm-to-cup gap 0.87 mm, plate-to-plaque gap 4 mm, plaque width 0.280 m. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19.",
       "hero": "docs/gallery/assets/wall-torch-hero.webp",
       "preview": "showcase/wall-torch/preview.webp",
       "tags": [
