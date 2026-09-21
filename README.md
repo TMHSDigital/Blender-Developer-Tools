@@ -143,13 +143,13 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`hand-pump`](showcase/hand-pump/) — procedural cast-iron village hand pump through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`signpost`](showcase/signpost/) — procedural timber fingerboard signpost through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`signpost`](showcase/signpost/) — procedural timber fingerboard signpost through the same pipeline. Falsifiers `--skip-decimate` (9), `--stray-vert` (15), `--yaw-boards` (19).
 
 [`chopping-block`](showcase/chopping-block/) — procedural hooped timber stump with an embedded axe through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
 [`wooden-bucket`](showcase/wooden-bucket/) — procedural coopered pail with a round bail through the ear rings through the same pipeline. Falsifier `--float-handle` exits 17.
 
-[`wall-torch`](showcase/wall-torch/) — procedural wall-mounted torch sconce with a stone plaque, iron bracket, and flame through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`wall-torch`](showcase/wall-torch/) — procedural wall-mounted torch sconce with a stone plaque, iron bracket, and flame through the same pipeline. Falsifiers `--skip-decimate` (9), `--stray-vert` (15), `--float-arm` (17).
 
 [`tavern-stool`](showcase/tavern-stool/) — procedural tavern stool with turned legs, stretchers, and iron ferrules through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
