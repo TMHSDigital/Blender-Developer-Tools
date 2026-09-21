@@ -1,6 +1,6 @@
 # Contributing to Blender Developer Tools
 
-Thanks for helping improve this repository. This document describes how to set up locally, extend skills, rules, snippets, and the template, and submit changes.
+Thanks for helping improve this repository. This document describes how to set up locally, extend skills, rules, snippets, templates, examples, and showcase pieces, and submit changes.
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ Thanks for helping improve this repository. This document describes how to set u
 
 ## Repository Structure
 
-This repo is a content collection (skills, rules, snippets, and one template) for Blender Python development. There is no runtime, no MCP server, and no test runner; CI validates frontmatter, syntax, and aggregate counts.
+This repo is a content collection (skills, rules, snippets, templates, examples, and showcase pieces) for Blender Python development. There is no runtime and no MCP server. Headless checks run through `tests/smoke/run_example.py`; CI validates frontmatter, syntax, and aggregate counts.
 
 ```text
 skills/
@@ -34,6 +34,10 @@ templates/
   <template-name>/
     blender_manifest.toml
     __init__.py
+    README.md
+examples/
+  gallery.json
+  <example-name>/
     README.md
 showcase/
   README.md
@@ -51,12 +55,12 @@ showcase/
 
 ## Adding a Skill
 
-1. Add a **kebab-case** directory under `skills/`, e.g. `skills/procedural-materials/`.
+1. Add a **kebab-case** directory under `skills/`, e.g. `skills/procedural-materials-and-shaders/`.
 2. Create **`SKILL.md`** with YAML frontmatter:
 
    ```yaml
    ---
-   name: procedural-materials
+   name: procedural-materials-and-shaders
    description: One-line description, under 200 chars.
    standards-version: <current meta-repo STANDARDS_VERSION>
    ---
@@ -67,7 +71,7 @@ showcase/
 
 ## Adding a Rule
 
-1. Add a **`.mdc`** file under `rules/`, e.g. `rules/avoid-python-loops-on-vertices.mdc`.
+1. Add a **`.mdc`** file under `rules/`, e.g. `rules/use-foreach-set-for-bulk-data.mdc`.
 2. Start with YAML **frontmatter**:
 
    ```yaml
@@ -191,7 +195,7 @@ The drift-check workflow enforces these on every push and PR.
 
 ## Aggregate Counts
 
-`README.md` declares aggregate counts (e.g. "16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 1 showcase piece"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
+`README.md` declares aggregate counts (e.g. "16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 26 showcase pieces"). The `validate-counts` job in `.github/workflows/validate.yml` enforces these substrings against the filesystem on every push and PR. Showcase pieces are counted separately from examples. When you add or remove content, update the README counts in the same commit.
 
 ## Pull Request Process
 

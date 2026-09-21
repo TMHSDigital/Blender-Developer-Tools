@@ -27,10 +27,10 @@ Label every claim.
 
 - [ ] Explicit paths only (`git add` never `-A` / `.`). Leave unstaged Cursor-injected `CLAUDE.md` hunks.
 - [ ] Counts in `README.md` match disk if content was added or removed (`validate-counts`).
-- [ ] Manifest arrays list every new skill / rule / snippet / template / example (`validate-manifest`). Do not touch the `"version"` line.
-- [ ] New example: `gallery.json`, smoke step, README row, hero/preview webp, `python scripts/build_gallery.py`, framing / contact-sheet gates as in `CLAUDE.md`.
+- [ ] Manifest arrays list every new skill / rule / snippet / template / example / showcase piece (`validate-manifest`). Do not touch the `"version"` line.
+- [ ] New example: `gallery.json`, `tests/smoke/catalog.json` row, README row, hero/preview webp, `python scripts/build_gallery.py`, framing / contact-sheet gates as in `CLAUDE.md`.
 - [ ] Every new check was falsified once (break it, non-zero exit, restore) — or this PR has no new check.
-- [ ] DCO `Signed-off-by:` on every commit ([CONTRIBUTING.md](CONTRIBUTING.md)).
+- [ ] DCO `Signed-off-by:` on every commit ([CONTRIBUTING.md](../CONTRIBUTING.md)).
 - [ ] No credentials, business emails, or local filesystem paths.
 
 ## Test plan
