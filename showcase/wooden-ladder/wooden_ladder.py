@@ -9,8 +9,11 @@ They are not API-contract witnesses. Each falsifier violates exactly one
 named budget: ``--skip-decimate`` skips the LOD DECIMATE stage so the
 LOD-ratio budget fails, ``--lift-z`` moves the mesh off the floor so the
 grounded budget fails, ``--stray-vert`` adds one unconnected vertex so the
-mesh-hygiene budget fails, and ``--fat-rungs`` widens the dowels to the
-full stile depth so the rung-to-stile joint-fit budget fails.
+mesh-hygiene budget fails, ``--twin-sole`` duplicates a shoe plate so the
+coplanar-face budget fails, ``--fat-rungs`` widens the tenons to the full
+stile depth so the rung-to-stile joint-fit budget fails, and
+``--short-stile`` starts the rail above the sleeve so the shoe-bite
+budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -21,7 +24,9 @@ ratio band, not an exact count.
     blender --background --python wooden_ladder.py -- --lift-z
     blender --background --python wooden_ladder.py -- --stray-vert
     blender --background --python wooden_ladder.py -- --fat-rungs
-    blender --background --python wooden_ladder.py -- --output ladder.png
+    blender --background --python wooden_ladder.py -- --short-stile
+    blender --background --python wooden_ladder.py -- --twin-sole
+    blender --background --python wooden_ladder.py -- --output preview.webp
 """
 import argparse
 import math
@@ -44,42 +49,50 @@ sys.path.insert(0, os.path.join(_REPO, "examples"))
 sys.dont_write_bytecode = True
 import gallery_framing  # noqa: E402
 
-STILE_H = 1.48
-STILE_W = 0.058
-STILE_D = 0.034
-SPAN = 0.34
+STILE_H = 1.50
+STILE_W_BOT = 0.064
+STILE_W_TOP = 0.050
+STILE_D = 0.038
+CENTER = 0.198
 N_RUNGS = 6
-# A 26 mm dowel in a 34 mm stile. Sized so the widest rung still clears the
-# stile's 2.5 mm chamfer by more than a millimetre; at 17 mm the dowel was as
-# deep as the stile and broke through the front and back chamfers as a spike.
-RUNG_R = 0.013
+# Tenon stays inside the chamfer. The visible barrel is wider and stops
+# outside the stile, so the two radii are different stations.
+RUNG_R = 0.011
+BARREL_RATIO = 1.34
 RUNG_SEGS = 12
-RUNG_TENON = 0.012
-RUNG_RADIUS_SCALE = (0.98, 1.02, 0.99, 1.03, 0.97, 1.01)
-RUNG_Z_OFFSETS = (0.0, 0.0015, -0.0010, 0.0010, -0.0015, 0.0)
-TOP_CAP_H = 0.025
-SHOE_H = 0.065
-SHOE_W = 0.074
-SHOE_D = 0.070
+RUNG_TENON = 0.014
+RUNG_BARREL_SCALE = (1.00, 1.16, 0.86, 1.22, 0.82, 1.10)
+RUNG_Z_OFFSETS = (0.0, 0.016, -0.012, 0.014, -0.018, 0.008)
+BAND_Z0 = 0.0
+BAND_H = 0.058
+BAND_T = 0.007
+RAIL_Z0 = 0.020
+CAP_DROP = 0.010
+CAP_RISE = 0.016
+PLATE_H = 0.006
+SOLE_H = 0.032
+SOLE_PAD = 0.008
 RAKE = math.radians(12.0)
 BBOX_TOL = 0.01
-# 2 stiles + 6 rungs + 2 top caps + 2 shoes, each a closed shell.
-PART_COUNT = 12
-# Measured joint contract. Clearance exceeds the 2.5 mm chamfer so the dowel
-# stays on the stile's flat face; engagement keeps the tenon seated; breakout
-# keeps it from reaching the outer face.
+# 2 stiles + 6 rungs + 2 shoe sleeves + 2 cap sleeves + 2 cap plates + 2 soles.
+PART_COUNT = 16
 RUNG_DEPTH_CLEARANCE = 0.003
-TENON_ENGAGE_MIN = 0.006
-TENON_BREAKOUT_MIN = 0.005
+TENON_ENGAGE_MIN = 0.008
+TENON_BREAKOUT_MIN = 0.008
+SHOE_BITE_MIN = 0.010
+SHOE_COVER_MIN = 0.016
+RAIL_ZMIN_MIN = 0.012
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
 AREA_EPS = 1e-10
+ZFIGHT_EPS = 0.002
+ZFIGHT_COS = 0.98
 LIFT_Z = 0.05
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.472, 0.365, 1.460)
+OUTER_SIZE = (0.490, 0.376, 1.487)
 
-BASE_TRIS_MIN = 900
-BASE_TRIS_MAX = 975
+BASE_TRIS_MIN = 1800
+BASE_TRIS_MAX = 2800
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -89,7 +102,7 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 120
+COLLIDER_TRIS_MAX = 180
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
 # The caps and shoes carry far more chamfer than body faces, so a floor above
@@ -167,6 +180,128 @@ def add_cylinder(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0
     return add_cone(bm, loc, radius, radius, depth, segments, mat_idx, euler=euler)
 
 
+def half_w(z):
+    t = min(1.0, max(0.0, z / STILE_H))
+    return 0.5 * (STILE_W_BOT + (STILE_W_TOP - STILE_W_BOT) * t)
+
+
+def inner_x(z, sign):
+    x = sign * CENTER
+    hw = half_w(z)
+    return x + hw if sign < 0.0 else x - hw
+
+
+def add_ruled_box(bm, x, z0, z1, hw0, hw1, hd, mat_idx):
+    """Tapered box. Width is the local X half-extent at each end; depth is constant."""
+
+    def ring(z, hw):
+        return [
+            bm.verts.new((x - hw, -hd, z)),
+            bm.verts.new((x + hw, -hd, z)),
+            bm.verts.new((x + hw, hd, z)),
+            bm.verts.new((x - hw, hd, z)),
+        ]
+
+    bottom = ring(z0, hw0)
+    top = ring(z1, hw1)
+
+    def quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        return face
+
+    for i in range(4):
+        j = (i + 1) % 4
+        quad(bottom[i], bottom[j], top[j], top[i])
+    quad(bottom[3], bottom[2], bottom[1], bottom[0])
+    quad(top[0], top[1], top[2], top[3])
+    return bottom + top
+
+
+def add_rect_band(bm, zc, cx, hx, hy, tx, ty, h, mat_idx):
+    """Closed rectangular collar, constant section, axis along local Z."""
+    z0 = zc - h * 0.5
+    z1 = zc + h * 0.5
+    inner = (
+        (cx + hx, hy),
+        (cx - hx, hy),
+        (cx - hx, -hy),
+        (cx + hx, -hy),
+    )
+    outer = (
+        (cx + hx + tx, hy + ty),
+        (cx - hx - tx, hy + ty),
+        (cx - hx - tx, -(hy + ty)),
+        (cx + hx + tx, -(hy + ty)),
+    )
+
+    def ring(z, pts):
+        return [bm.verts.new((p[0], p[1], z)) for p in pts]
+
+    i0, o0 = ring(z0, inner), ring(z0, outer)
+    i1, o1 = ring(z1, inner), ring(z1, outer)
+
+    def quad(a, b, c, d):
+        face = bm.faces.new((a, b, c, d))
+        face.material_index = mat_idx
+        return face
+
+    for k in range(4):
+        n = (k + 1) % 4
+        quad(i0[k], i0[n], i1[n], i1[k])
+        quad(o0[k], o1[k], o1[n], o0[n])
+        quad(i0[k], o0[k], o0[n], i0[n])
+        quad(i1[k], i1[n], o1[n], o1[k])
+    return i0 + o0 + i1 + o1
+
+
+def add_turned_rung(bm, z, x_left, x_right, tenon, r_tenon, r_barrel, segs, mat_idx):
+    """One shell: thin tenon inside each stile, thicker barrel only in the clear span."""
+    xs = (
+        x_left - tenon,
+        x_left - 0.0015,
+        x_left + 0.004,
+        x_right - 0.004,
+        x_right + 0.0015,
+        x_right + tenon,
+    )
+    rs = (r_tenon, r_tenon, r_barrel, r_barrel, r_tenon, r_tenon)
+    rings = []
+    for x, radius in zip(xs, rs):
+        ring = []
+        for i in range(segs):
+            ang = i * (2.0 * math.pi / segs)
+            ring.append(bm.verts.new((
+                x,
+                radius * math.cos(ang),
+                z + radius * math.sin(ang),
+            )))
+        rings.append(ring)
+    bm.verts.ensure_lookup_table()
+
+    def face(verts):
+        poly = bm.faces.new(verts)
+        poly.material_index = mat_idx
+        return poly
+
+    for i in range(len(rings) - 1):
+        for j in range(segs):
+            j2 = (j + 1) % segs
+            face((rings[i][j], rings[i][j2], rings[i + 1][j2], rings[i + 1][j]))
+    for ring, x, radius, outward in (
+        (rings[0], xs[0], rs[0], -1.0),
+        (rings[-1], xs[-1], rs[-1], 1.0),
+    ):
+        cap = bm.verts.new((x, 0.0, z))
+        for j in range(segs):
+            j2 = (j + 1) % segs
+            if outward < 0.0:
+                face((cap, ring[j2], ring[j]))
+            else:
+                face((cap, ring[j], ring[j2]))
+    return [v for ring in rings for v in ring]
+
+
 def pack_uvs(bm, margin=0.08):
     uv = bm.loops.layers.uv.new("UVMap")
     faces = list(bm.faces)
@@ -210,39 +345,55 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
+def build_ladder_mesh(
+    name,
+    bevel_offset,
+    bevel_segments,
+    rung_radius=RUNG_R,
+    short_stile=False,
+    twin_sole=False,
+):
+    """Raked tapered rails, turned rungs, sleeve shoes with level soles.
+
+    The sleeve is built in the rail frame so it follows the rake. The sole
+    is a separate world-level plate the sleeve bites into. The rail ends
+    inside the sleeve, above the sole.
+    """
     bm = bmesh.new()
-    stile_verts = []
     metal_faces = set()
-    metal_verts = []
     try:
-        half = SPAN / 2.0 + STILE_W / 2.0
+        rail_z0 = (BAND_Z0 + BAND_H + 0.012) if short_stile else RAIL_Z0
+        rail_z1 = STILE_H - CAP_DROP
+        stile_verts = []
         for sign in (-1.0, 1.0):
             stile_verts.extend(
-                add_box(
+                add_ruled_box(
                     bm,
-                    (sign * half, 0.0, STILE_H / 2.0),
-                    (STILE_W, STILE_D, STILE_H),
+                    sign * CENTER,
+                    rail_z0,
+                    rail_z1,
+                    half_w(rail_z0),
+                    half_w(rail_z1),
+                    STILE_D * 0.5,
                     WOOD_IDX,
                 )
             )
 
-        z0 = 0.16
-        z1 = STILE_H - 0.14
+        z_lo = 0.22
+        z_hi = STILE_H - 0.20
         for i in range(N_RUNGS):
             t = i / (N_RUNGS - 1)
-            z = z0 + t * (z1 - z0) + RUNG_Z_OFFSETS[i]
-            # Tenons stop inside the stile, so the rung rims never reach the
-            # chamfered outer face. Rungs stay unbeveled: they are already
-            # round, and beveling a cap rim spikes through that chamfer.
-            add_cylinder(
+            z = z_lo + t * (z_hi - z_lo) + RUNG_Z_OFFSETS[i]
+            add_turned_rung(
                 bm,
-                (0.0, 0.0, z),
-                rung_radius * RUNG_RADIUS_SCALE[i],
-                SPAN + 2.0 * RUNG_TENON,
+                z,
+                inner_x(z, -1.0),
+                inner_x(z, 1.0),
+                RUNG_TENON,
+                rung_radius,
+                rung_radius * BARREL_RATIO * RUNG_BARREL_SCALE[i],
                 RUNG_SEGS,
                 WOOD_IDX,
-                euler=(0.0, math.pi / 2.0, 0.0),
             )
 
         if bevel_offset > 0.0:
@@ -266,49 +417,58 @@ def build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
                 )
 
         before = set(bm.faces)
+        metal_verts = []
+        hd = STILE_D * 0.5
         for sign in (-1.0, 1.0):
-            hx = sign * half
+            x = sign * CENTER
+            shoe_z = BAND_Z0 + BAND_H * 0.5
+            grip = 0.0015 + bevel_offset
+            metal_verts.extend(
+                add_rect_band(
+                    bm,
+                    shoe_z,
+                    x,
+                    half_w(shoe_z) - grip,
+                    hd - grip,
+                    BAND_T,
+                    BAND_T,
+                    BAND_H,
+                    METAL_IDX,
+                )
+            )
+            cap_h = CAP_RISE + 0.006
+            cap_z = rail_z1 + (CAP_RISE - 0.006) * 0.5
+            chw = half_w(rail_z1)
+            metal_verts.extend(
+                add_rect_band(
+                    bm,
+                    cap_z,
+                    x,
+                    chw - grip,
+                    hd - grip,
+                    BAND_T,
+                    BAND_T,
+                    cap_h,
+                    METAL_IDX,
+                )
+            )
+            # Plate overlaps the sleeve top so the two faces are not coplanar.
+            plate_z = rail_z1 + CAP_RISE - 0.002 + PLATE_H * 0.5
             metal_verts.extend(
                 add_box(
                     bm,
-                    (hx, 0.0, STILE_H - TOP_CAP_H * 0.30),
-                    (STILE_W + 0.010, STILE_D + 0.010, TOP_CAP_H),
+                    (x, 0.0, plate_z),
+                    (
+                        (chw + BAND_T) * 2.0 + 0.006,
+                        (hd + BAND_T) * 2.0 + 0.006,
+                        PLATE_H,
+                    ),
                     METAL_IDX,
                 )
             )
         metal_faces.update(set(bm.faces) - before)
 
-        rake = Euler((RAKE, 0.0, 0.0)).to_matrix()
-        for v in bm.verts:
-            v.co = rake @ v.co
-        zs = [v.co.z for v in bm.verts]
-        zmin = min(zs)
-        xs = [v.co.x for v in bm.verts]
-        ys = [v.co.y for v in bm.verts]
-        cx = 0.5 * (min(xs) + max(xs))
-        cy = 0.5 * (min(ys) + max(ys))
-        for v in bm.verts:
-            v.co.x -= cx
-            v.co.y -= cy
-            v.co.z -= zmin
-
-        before = set(bm.faces)
-        for sign in (-1.0, 1.0):
-            bottom = rake @ Vector((sign * half, 0.0, 0.0))
-            bottom.x -= cx
-            bottom.y -= cy
-            bottom.z -= zmin
-            metal_verts.extend(
-                add_box(
-                    bm,
-                    (bottom.x, bottom.y, SHOE_H / 2.0),
-                    (SHOE_W, SHOE_D, SHOE_H),
-                    METAL_IDX,
-                )
-            )
-        metal_faces.update(set(bm.faces) - before)
-
-        if bevel_offset > 0.0:
+        if bevel_offset > 0.0 and metal_verts:
             metal_edges = list(
                 {
                     edge
@@ -318,14 +478,10 @@ def build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
                 }
             )
             if metal_edges:
-                # Bevel does not inherit material_index onto the faces it
-                # creates, so claim them from the op's own return rather than
-                # from a pre-bevel face snapshot. Without this every chamfer
-                # on a cap or shoe falls back to slot 0 and renders as wood.
                 bevelled = bmesh.ops.bevel(
                     bm,
                     geom=metal_edges,
-                    offset=min(bevel_offset, 0.002),
+                    offset=min(bevel_offset, 0.0016),
                     segments=bevel_segments,
                     profile=0.5,
                     affect="EDGES",
@@ -333,10 +489,74 @@ def build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
                 )
                 metal_faces.update(bevelled.get("faces") or [])
 
-        ys = [v.co.y for v in bm.verts]
-        final_cy = 0.5 * (min(ys) + max(ys))
+        rake = Euler((RAKE, 0.0, 0.0)).to_matrix()
         for v in bm.verts:
-            v.co.y -= final_cy
+            v.co = rake @ v.co
+        zs = [v.co.z for v in bm.verts]
+        xs = [v.co.x for v in bm.verts]
+        ys = [v.co.y for v in bm.verts]
+        zmin = min(zs)
+        cx = 0.5 * (min(xs) + max(xs))
+        cy = 0.5 * (min(ys) + max(ys))
+        for v in bm.verts:
+            v.co.x -= cx
+            v.co.y -= cy
+            v.co.z -= zmin
+
+        def world_of(local):
+            q = rake @ Vector(local)
+            q.x -= cx
+            q.y -= cy
+            q.z -= zmin
+            return q
+
+        before = set(bm.faces)
+        sole_centers = []
+        sole_verts = []
+        for sign in (-1.0, 1.0):
+            x = sign * CENTER
+            shoe_z = BAND_Z0 + BAND_H * 0.5
+            sole_w = (half_w(shoe_z) + BAND_T + SOLE_PAD) * 2.0
+            sole_d = (hd + BAND_T + SOLE_PAD) * 2.0
+            anchor = world_of((x, 0.0, 0.0))
+            sole_centers.append((anchor.x, anchor.y, sole_w, sole_d))
+            sole_verts.extend(
+                add_box(
+                    bm,
+                    (anchor.x, anchor.y, SOLE_H * 0.5),
+                    (sole_w, sole_d, SOLE_H),
+                    METAL_IDX,
+                )
+            )
+        if bevel_offset > 0.0 and sole_verts:
+            sole_edges = list(
+                {
+                    edge
+                    for vertex in sole_verts
+                    for edge in vertex.link_edges
+                    if vertex.is_valid
+                }
+            )
+            if sole_edges:
+                bevelled = bmesh.ops.bevel(
+                    bm,
+                    geom=sole_edges,
+                    offset=min(bevel_offset, 0.0014),
+                    segments=1,
+                    profile=0.5,
+                    affect="EDGES",
+                    clamp_overlap=True,
+                )
+                metal_faces.update(bevelled.get("faces") or [])
+        if twin_sole and sole_centers:
+            sx, sy, sw, sd = sole_centers[0]
+            add_box(
+                bm,
+                (sx + 0.0012, sy + 0.0012, SOLE_H * 0.5),
+                (sw, sd, SOLE_H),
+                METAL_IDX,
+            )
+        metal_faces.update(set(bm.faces) - before)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -360,13 +580,26 @@ def build_ladder_mesh(name, bevel_offset, bevel_segments, rung_radius=RUNG_R):
     return obj
 
 
-def principled(name, color, metallic, roughness):
+
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 4.0
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
 
 
@@ -431,87 +664,171 @@ def hygiene_audit(me):
     }
 
 
-def mesh_components(me):
-    """Per-part AABBs in the construction frame, un-raked so the stiles read
-    axis-aligned. The parts interpenetrate but share no vertices, so edge
-    connectivity separates them."""
+def zfight_pairs(me):
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        for p in me.polygons
+    ]
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = 0
+    for i in range(len(data)):
+        ci, ni, vi = data[i]
+        for j in range(i + 1, len(data)):
+            cj, nj, vj = data[j]
+            if (cj - ci).length_squared > eps2:
+                continue
+            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+                continue
+            if vi & vj:
+                continue
+            count += 1
+    return count
+
+
+def shell_records(me):
+    """One record per edge-connected shell, in world space and un-raked."""
     neighbors = [[] for _ in range(len(me.vertices))]
     for edge in me.edges:
-        a, b = edge.vertices
+        a, b = int(edge.vertices[0]), int(edge.vertices[1])
         neighbors[a].append(b)
         neighbors[b].append(a)
     unrake = Euler((-RAKE, 0.0, 0.0)).to_matrix()
     seen = [False] * len(me.vertices)
-    parts = []
+    groups = []
     for start in range(len(me.vertices)):
         if seen[start]:
             continue
         seen[start] = True
         stack = [start]
-        points = []
+        group = []
         while stack:
             current = stack.pop()
-            points.append(unrake @ me.vertices[current].co)
+            group.append(current)
             for nxt in neighbors[current]:
                 if not seen[nxt]:
                     seen[nxt] = True
                     stack.append(nxt)
-        lo = Vector(
-            (
-                min(p.x for p in points),
-                min(p.y for p in points),
-                min(p.z for p in points),
-            )
-        )
-        hi = Vector(
-            (
-                max(p.x for p in points),
-                max(p.y for p in points),
-                max(p.z for p in points),
-            )
-        )
-        parts.append((lo, hi))
-    return parts
+        groups.append(group)
+    records = []
+    for group in groups:
+        member = set(group)
+        world = [me.vertices[i].co.copy() for i in group]
+        local = [unrake @ p for p in world]
+        mats = {}
+        for poly in me.polygons:
+            if all(v in member for v in poly.vertices):
+                mats[poly.material_index] = mats.get(poly.material_index, 0) + 1
+        mat = max(mats, key=mats.get) if mats else -1
+        records.append({"world": world, "local": local, "mat": mat})
+    return records
+
+
+def _span_at(pts, z):
+    """X extent of a ruled stile at height z, from the end rings.
+
+    Bevel does not add vertices along the rail, so the section is the
+    linear blend of the two end widths.
+    """
+    z0 = min(p.z for p in pts)
+    z1 = max(p.z for p in pts)
+    if z1 - z0 < 1e-6:
+        return None
+    bot = [p for p in pts if p.z <= z0 + 0.015]
+    top = [p for p in pts if p.z >= z1 - 0.015]
+    if len(bot) < 2 or len(top) < 2:
+        return None
+    t = min(1.0, max(0.0, (z - z0) / (z1 - z0)))
+    x0 = (1.0 - t) * min(p.x for p in bot) + t * min(p.x for p in top)
+    x1 = (1.0 - t) * max(p.x for p in bot) + t * max(p.x for p in top)
+    return x0, x1
 
 
 def joint_audit(me):
-    """Worst-case rung-to-stile fit, recomputed from vertex positions."""
-    parts = mesh_components(me)
-    stiles = [p for p in parts if (p[1].z - p[0].z) > STILE_H * 0.8]
-    rungs = [p for p in parts if (p[1].x - p[0].x) > SPAN]
-    if len(stiles) != 2 or len(rungs) != N_RUNGS:
-        return {
-            "parts": len(parts),
-            "stiles": len(stiles),
-            "rungs": len(rungs),
-            "clearance": -1.0,
-            "engage": -1.0,
-            "breakout": -1.0,
-        }
-    left = min(stiles, key=lambda p: p[0].x)
-    right = max(stiles, key=lambda p: p[0].x)
-    clearance = min(
-        min(
-            (stile[1].y - stile[0].y) - (rung[1].y - rung[0].y)
-            for stile in (left, right)
-        )
-        * 0.5
-        for rung in rungs
-    )
-    engage = min(
-        min(left[1].x - rung[0].x, rung[1].x - right[0].x) for rung in rungs
-    )
-    breakout = min(
-        min(rung[0].x - left[0].x, right[1].x - rung[1].x) for rung in rungs
-    )
-    return {
-        "parts": len(parts),
+    """Rung tenon fit and shoe seat, recomputed from vertex positions."""
+    recs = shell_records(me)
+    stiles = []
+    rungs = []
+    bands = []
+    soles = []
+    for rec in recs:
+        loc = rec["local"]
+        zs = [p.z for p in loc]
+        xs = [p.x for p in loc]
+        dz = max(zs) - min(zs)
+        dx = max(xs) - min(xs)
+        wz = [p.z for p in rec["world"]]
+        wz0 = min(wz)
+        wdz = max(wz) - wz0
+        if rec["mat"] == WOOD_IDX and dz > 0.8:
+            stiles.append(rec)
+        elif rec["mat"] == WOOD_IDX and dx > 0.2:
+            rungs.append(rec)
+        elif rec["mat"] == METAL_IDX and wz0 < 0.004 and wdz < SOLE_H + 0.01:
+            soles.append(rec)
+        elif rec["mat"] == METAL_IDX and min(zs) < 0.08 and dz < 0.12:
+            bands.append(rec)
+    empty = {
+        "parts": len(recs),
         "stiles": len(stiles),
         "rungs": len(rungs),
+        "bands": len(bands),
+        "soles": len(soles),
+        "clearance": -1.0,
+        "engage": -1.0,
+        "breakout": -1.0,
+        "shoe_bite": -1.0,
+        "shoe_cover": -1.0,
+        "rail_zmin": -1.0,
+        "sole_zmin": 1.0,
+    }
+    if len(stiles) != 2 or len(rungs) != N_RUNGS or len(bands) != 2 or len(soles) != 2:
+        return empty
+    clearance = 1e9
+    engage = 1e9
+    breakout = 1e9
+    for rung in rungs:
+        rz = sum(p.z for p in rung["local"]) / len(rung["local"])
+        rx0 = min(p.x for p in rung["local"])
+        rx1 = max(p.x for p in rung["local"])
+        for stile in stiles:
+            span = _span_at(stile["local"], rz)
+            if span is None:
+                return empty
+            x0, x1 = span
+            inside = [p for p in rung["local"] if x0 + 0.003 < p.x < x1 - 0.003]
+            if len(inside) < 3:
+                return empty
+            stile_dy = max(p.y for p in stile["local"]) - min(p.y for p in stile["local"])
+            rung_dy = max(p.y for p in inside) - min(p.y for p in inside)
+            clearance = min(clearance, (stile_dy - rung_dy) * 0.5)
+            if x1 < 0.0:
+                engage = min(engage, x1 - rx0)
+                breakout = min(breakout, rx0 - x0)
+            else:
+                engage = min(engage, rx1 - x0)
+                breakout = min(breakout, x1 - rx1)
+    shoe_bite = 1e9
+    shoe_cover = 1e9
+    for stile in stiles:
+        sx = sum(p.x for p in stile["local"]) / len(stile["local"])
+        band = min(bands, key=lambda b: abs(sum(p.x for p in b["local"]) / len(b["local"]) - sx))
+        stile_z0 = min(p.z for p in stile["local"])
+        band_z0 = min(p.z for p in band["local"])
+        band_z1 = max(p.z for p in band["local"])
+        shoe_bite = min(shoe_bite, stile_z0 - band_z0)
+        shoe_cover = min(shoe_cover, band_z1 - stile_z0)
+    rail_zmin = min(min(p.z for p in s["world"]) for s in stiles)
+    sole_zmin = max(min(p.z for p in s["world"]) for s in soles)
+    empty.update({
         "clearance": clearance,
         "engage": engage,
         "breakout": breakout,
-    }
+        "shoe_bite": shoe_bite,
+        "shoe_cover": shoe_cover,
+        "rail_zmin": rail_zmin,
+        "sole_zmin": sole_zmin,
+    })
+    return empty
 
 
 def add_stray_vert(me):
@@ -645,16 +962,33 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate, lift_z=False, stray_vert=False, fat_rungs=False):
+def check(
+    skip_decimate,
+    lift_z=False,
+    stray_vert=False,
+    fat_rungs=False,
+    short_stile=False,
+    twin_sole=False,
+):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    # Falsification: a dowel as deep as the stile, which is what used to break
-    # through the front and back chamfers.
+    # Falsification: a tenon as deep as the stile, which breaks the front
+    # and back chamfers. The barrel stays outside the stile.
     rung_radius = STILE_D / 2.0 if fat_rungs else RUNG_R
     low = build_ladder_mesh(
-        "LadderLow", bevel_offset=0.0025, bevel_segments=2, rung_radius=rung_radius
+        "LadderLow",
+        bevel_offset=0.0022,
+        bevel_segments=2,
+        rung_radius=rung_radius,
+        short_stile=short_stile,
+        twin_sole=twin_sole,
     )
     high = build_ladder_mesh(
-        "LadderHigh", bevel_offset=0.0025, bevel_segments=4, rung_radius=rung_radius
+        "LadderHigh",
+        bevel_offset=0.0022,
+        bevel_segments=4,
+        rung_radius=rung_radius,
+        short_stile=short_stile,
+        twin_sole=twin_sole,
     )
     if lift_z:
         low.location.z += LIFT_Z
@@ -663,8 +997,22 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_rungs=False):
     # world_bbox reads matrix_world, which is evaluated data. Without this the
     # cached matrix hides a moved object and the grounded budget cannot fail.
     bpy.context.view_layer.update()
-    wood = principled("LadderWood", (0.42, 0.24, 0.10, 1.0), 0.0, 0.55)
-    metal = principled("LadderMetal", (0.48, 0.46, 0.42, 1.0), 1.0, 0.28)
+    wood = principled(
+        "LadderWood",
+        (0.40, 0.22, 0.09, 1.0),
+        0.0,
+        0.62,
+        noise_scale=9.0,
+        wear=(0.28, 0.15, 0.06, 1.0),
+    )
+    metal = principled(
+        "LadderMetal",
+        (0.18, 0.175, 0.16, 1.0),
+        1.0,
+        0.48,
+        noise_scale=18.0,
+        wear=(0.10, 0.09, 0.08, 1.0),
+    )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -732,16 +1080,21 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_rungs=False):
         f"bake_has_data={img.has_data} export_bytes={export_size}"
     )
     hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
         f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
-        f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
+        f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf} "
+        f"euler={hyg['euler']}"
     )
     joint = joint_audit(low.data)
     print(
         f"measured joints parts={joint['parts']} stiles={joint['stiles']} "
-        f"rungs={joint['rungs']} clearance={joint['clearance']:.5f} "
-        f"engage={joint['engage']:.5f} breakout={joint['breakout']:.5f}"
+        f"rungs={joint['rungs']} bands={joint['bands']} soles={joint['soles']} "
+        f"clearance={joint['clearance']:.5f} engage={joint['engage']:.5f} "
+        f"breakout={joint['breakout']:.5f} shoe_bite={joint['shoe_bite']:.5f} "
+        f"shoe_cover={joint['shoe_cover']:.5f} rail_zmin={joint['rail_zmin']:.5f} "
+        f"sole_zmin={joint['sole_zmin']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -814,17 +1167,24 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_rungs=False):
         or hyg["zero_area"]
         or hyg["doubles"]
         or hyg["ngons"]
+        or zf
     ):
         return fail(
             f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
             f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
-            f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf} "
+            "(--stray-vert / --twin-sole are the designed fails)",
             15,
         ), None, None, None, None, None
     if abs(bb[2]) > ZMIN_EPS:
         return fail(
             f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
             "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if abs(joint["sole_zmin"]) > ZMIN_EPS or joint["rail_zmin"] < RAIL_ZMIN_MIN:
+        return fail(
+            f"sole_zmin {joint['sole_zmin']:.5f} rail_zmin {joint['rail_zmin']:.5f}",
             16,
         ), None, None, None, None, None
     if joint["parts"] != PART_COUNT:
@@ -849,6 +1209,12 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_rungs=False):
             f"tenon breakout margin {joint['breakout']:.5f} < "
             f"{TENON_BREAKOUT_MIN}",
             17,
+        ), None, None, None, None, None
+    if joint["shoe_bite"] < SHOE_BITE_MIN or joint["shoe_cover"] < SHOE_COVER_MIN:
+        return fail(
+            f"shoe bite {joint['shoe_bite']:.5f} cover {joint['shoe_cover']:.5f} "
+            "(--short-stile is the designed fail)",
+            18,
         ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
@@ -982,7 +1348,17 @@ def main():
     p.add_argument(
         "--fat-rungs",
         action="store_true",
-        help="falsification: dowels as deep as the stile, failing joint fit",
+        help="falsification: tenons as deep as the stile, failing joint fit",
+    )
+    p.add_argument(
+        "--short-stile",
+        action="store_true",
+        help="falsification: rails start above the shoe sleeve",
+    )
+    p.add_argument(
+        "--twin-sole",
+        action="store_true",
+        help="falsification: duplicate a sole so a coplanar pair z-fights",
     )
     args = p.parse_args(argv)
 
@@ -991,6 +1367,8 @@ def main():
         lift_z=args.lift_z,
         stray_vert=args.stray_vert,
         fat_rungs=args.fat_rungs,
+        short_stile=args.short_stile,
+        twin_sole=args.twin_sole,
     )
     if code:
         return code
