@@ -55,12 +55,12 @@ showcase/
 
 ## Adding a Skill
 
-1. Add a **kebab-case** directory under `skills/`, e.g. `skills/procedural-materials/`.
+1. Add a **kebab-case** directory under `skills/`, e.g. `skills/procedural-materials-and-shaders/`.
 2. Create **`SKILL.md`** with YAML frontmatter:
 
    ```yaml
    ---
-   name: procedural-materials
+   name: procedural-materials-and-shaders
    description: One-line description, under 200 chars.
    standards-version: <current meta-repo STANDARDS_VERSION>
    ---
@@ -71,7 +71,7 @@ showcase/
 
 ## Adding a Rule
 
-1. Add a **`.mdc`** file under `rules/`, e.g. `rules/avoid-python-loops-on-vertices.mdc`.
+1. Add a **`.mdc`** file under `rules/`, e.g. `rules/use-foreach-set-for-bulk-data.mdc`.
 2. Start with YAML **frontmatter**:
 
    ```yaml

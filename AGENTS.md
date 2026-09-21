@@ -151,11 +151,11 @@ way, and a one-paragraph rationale. 30 to 80 lines is the right size.
 
 - `validate.yml` runs file structure checks plus a `validate-counts` job that
   asserts the README aggregate counts (skills, rules, templates, snippets,
-  and examples) match filesystem reality. The counts language in `README.md`
+  examples, and showcase pieces) match filesystem reality. The counts language in `README.md`
   is load-bearing: the job greps for it.
 - `validate.yml` also runs a `validate-manifest` job that checks
   `.cursor-plugin/plugin.json` against reality: every listed path must exist,
-  every skill, rule, snippet, template, and example on disk must be listed,
+  every skill, rule, snippet, template, example, and showcase piece on disk must be listed,
   and the manifest `version` must equal `VERSION`. The release pipeline owns
   the manifest `version` line (see `release.yml` below) — never hand-edit it.
 - `blender-smoke.yml` executes every shipped example (check-only, no render)
