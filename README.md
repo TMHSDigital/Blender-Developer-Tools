@@ -47,6 +47,7 @@ The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capabl
 | **Rules** | Guardrails for the most common AI mistakes: ops-in-loops, bmesh leaks, legacy `bl_info` only, prop assignments, deprecated context-copy override, per-element loops over bulk mesh data, import without scale check, export without evaluated geometry, mixed glTF/FBX axis RNA |
 | **Templates** | A working Extensions Platform add-on starter, a headless batch script starter, and a GLB-in engine-ready asset pipeline |
 | **Snippets** | 27 small standalone Python files demonstrating canonical patterns |
+| **Examples** | Runnable headless scripts under [`examples/`](examples/). Each asserts an API contract and exits non-zero on failure. |
 | **Showcase** | Budget-conformance props under [`showcase/`](showcase/). Not examples. Conventions: [`showcase/README.md`](showcase/README.md) |
 
 ## Quick start
@@ -777,7 +778,7 @@ portable path is `radius`.
 </details>
 
 <details>
-<summary><strong>Game asset pipeline</strong> — 21 examples</summary>
+<summary><strong>Game asset pipeline</strong> — 22 examples</summary>
 
 <table>
 <tr>

@@ -15,7 +15,7 @@ Please include:
 
 ## Scope
 
-This repository ships Markdown skill files, MDC rule files, Python snippets, and two starter templates (a Blender extension add-on and a headless batch script). The primary security concerns are:
+This repository ships Markdown skill files, MDC rule files, Python snippets, and three starter templates (a Blender extension add-on, a headless batch script, and a GLB-in engine-ready asset pipeline). The primary security concerns are:
 
 - **Snippets or templates demonstrating insecure patterns** (executing arbitrary code from `.blend` files, loading remote scripts without validation, leaking filesystem paths into logs).
 - **The extension-addon template declaring over-broad permissions** in `blender_manifest.toml` (e.g. `network`, `files`, `clipboard`, `camera`) without a documented justification.
