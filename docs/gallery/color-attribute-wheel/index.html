@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -260,7 +265,7 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that builds an HSV color wheel disc entirely with <code>bmesh</code> and colors it with <code>Mesh.color_attributes.new()</code> — the modern attributes API, not the deprecated <code>Mesh.vertex_colors</code> alias AI code keeps reaching for. It witnesses the domain trap that comes with it: a <code>CORNER</code>-domain attribute is sized to <code>len(mesh.loops)</code>, not <code>len(mesh.vertices)</code>, so per-vertex data has to be expanded across face corners before it is written. The material wires the same attribute into a Shader <code>Attribute</code> node (<code>attribute_type=&#x27;GEOMETRY&#x27;</code>) feeding Base Color — the step AI code most often skips, leaving the mesh gray even when the attribute data is correct.</p>
-<p><strong>What it witnesses:</strong> a <code>FLOAT_COLOR</code> attribute on the <code>CORNER</code> domain, filled with one <code>foreach_get</code> (loop → vertex index) and one <code>foreach_set</code> (loop color), never a per-loop Python assignment. The check asserts the attribute is sized to the loop count and *not* the vertex count, that it is <code>color_attributes.active_color</code> (so a renderer or exporter actually picks it up), and that several probe loops match the closed-form HSV value for the vertex they reference. A separate check in the render path confirms the <code>Attribute</code> node is actually linked to Base Color, not just present in the node tree.</p>
+<p><strong>What it witnesses:</strong> a <code>FLOAT_COLOR</code> attribute on the <code>CORNER</code> domain, filled with one <code>foreach_get</code> (loop → vertex index) and one <code>foreach_set</code> (loop color), never a per-loop Python assignment. The check asserts the attribute is sized to the loop count and <em>not</em> the vertex count, that it is <code>color_attributes.active_color</code> (so a renderer or exporter actually picks it up), and that several probe loops match the closed-form HSV value for the vertex they reference. A separate check in the render path confirms the <code>Attribute</code> node is actually linked to Base Color, not just present in the node tree.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python color_attribute_wheel.py --
@@ -273,7 +278,7 @@ blender --background --python color_attribute_wheel.py -- --output wheel.png
 blender --background --python color_attribute_wheel.py -- --output wheel.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Topology ≠ closed form | | 4 | Color attribute missing | | 5 | Domain/type ≠ CORNER/FLOAT_COLOR (<code>--point-domain</code> lands here) | | 6 | Attribute sized to verts, not loops | | 7 | <code>active_color</code> not set | | 8 | Probe loop color off HSV closed form | | 9 | <code>--output</code> produced no file |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Topology ≠ closed form</td></tr><tr><td>4</td><td>Color attribute missing</td></tr><tr><td>5</td><td>Domain/type ≠ CORNER/FLOAT_COLOR (<code>--point-domain</code> lands here)</td></tr><tr><td>6</td><td>Attribute sized to verts, not loops</td></tr><tr><td>7</td><td><code>active_color</code> not set</td></tr><tr><td>8</td><td>Probe loop color off HSV closed form</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--point-domain</code>.</p>
     </section>
     <section class="detail-section src">

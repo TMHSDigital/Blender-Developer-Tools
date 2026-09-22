@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -260,9 +265,9 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that draws five nested neon rose curves as Grease Pencil v3 strokes — layer → <code>frames.new(1).drawing</code> → <code>add_strokes([counts])</code> → per-point <code>position</code>, <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> — the attribute-based API that replaced legacy GPencil across the 4.x-to-5.x window, the largest bpy API break the gallery witnesses.</p>
-<p><strong>What it witnesses:</strong> GPv3 lives at *different addresses* on the two supported versions, and the check asserts each side&#x27;s actual contract:</p>
+<p><strong>What it witnesses:</strong> GPv3 lives at <em>different addresses</em> on the two supported versions, and the check asserts each side&#x27;s actual contract:</p>
 <ul><li><strong>Blender 4.5 LTS</strong> — GPv3 is <code>bpy.data.grease_pencils_v3</code> (<code>GreasePencilv3</code>), while <code>bpy.data.grease_pencils</code> still holds <strong>legacy</strong> GPencil whose frames carry <code>.strokes</code> directly and have no <code>.drawing</code>. Same collection name, incompatible API — the trap is asserted, not just avoided.</li><li><strong>Blender 5.x</strong> — legacy is gone: GPv3 took over the <code>bpy.data.grease_pencils</code> name, and <code>grease_pencils_v3</code> / <code>bpy.types.GPencilStroke</code> no longer exist.</li></ul>
-<p>On the shared GPv3 surface it then asserts that stroke points are *views over attribute layers*: writing <code>pt.radius</code> / <code>pt.opacity</code> / <code>pt.vertex_color</code> lazily materializes <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> (POINT) and <code>cyclic</code> (CURVE) layers in <code>drawing.attributes</code>, and every closed-form rose position round-trips exactly through the raw <code>position</code> attribute buffer via <code>foreach_get</code>.</p>
+<p>On the shared GPv3 surface it then asserts that stroke points are <em>views over attribute layers</em>: writing <code>pt.radius</code> / <code>pt.opacity</code> / <code>pt.vertex_color</code> lazily materializes <code>radius</code>, <code>opacity</code>, <code>vertex_color</code> (POINT) and <code>cyclic</code> (CURVE) layers in <code>drawing.attributes</code>, and every closed-form rose position round-trips exactly through the raw <code>position</code> attribute buffer via <code>foreach_get</code>.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python grease_pencil_rosette.py --
@@ -275,7 +280,7 @@ blender --background --python grease_pencil_rosette.py -- --output rosette.png
 blender --background --python grease_pencil_rosette.py -- --output rosette.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | GPv3 address / legacy trap for this Blender | | 4 | Object type, layer count, or frame number | | 5 | Stroke topology or cyclic (<code>--open-strokes</code> lands here) | | 6 | Lazy attribute layers missing or wrong domain/type | | 7 | Position buffer length or closed-form round-trip | | 8 | Grease Pencil material missing gpencil settings | | 9 | <code>--output</code> produced no file |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>GPv3 address / legacy trap for this Blender</td></tr><tr><td>4</td><td>Object type, layer count, or frame number</td></tr><tr><td>5</td><td>Stroke topology or cyclic (<code>--open-strokes</code> lands here)</td></tr><tr><td>6</td><td>Lazy attribute layers missing or wrong domain/type</td></tr><tr><td>7</td><td>Position buffer length or closed-form round-trip</td></tr><tr><td>8</td><td>Grease Pencil material missing gpencil settings</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--open-strokes</code>.</p>
     </section>
     <section class="detail-section src">

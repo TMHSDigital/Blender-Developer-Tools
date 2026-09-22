@@ -322,8 +322,13 @@ SHELL = """<!DOCTYPE html>
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -646,11 +651,21 @@ def highlight_python(src: str) -> str:
 
 # ---------------------------------------------------------------------------
 # Minimal Markdown renderer for the example READMEs (headings, paragraphs,
-# unordered lists, fenced code, inline code/bold/links). Relative links are
-# resolved against the example's directory on GitHub.
+# ordered and unordered lists, pipe tables, fenced code, inline
+# code/bold/emphasis/links/images). Relative links are resolved against the
+# example's directory on GitHub.
 # ---------------------------------------------------------------------------
 
-_INLINE = re.compile(r"`([^`]+)`|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)]+)\)")
+_INLINE = re.compile(
+    r"`([^`]+)`"
+    r"|\*\*(.+?)\*\*"
+    r"|(?<![*\w])\*(?![\s*])([^*\n]+?)(?<!\s)\*(?![*\w])"
+    r"|(!?)\[([^\]]+)\]\(([^)]+)\)"
+)
+_OL_ITEM = re.compile(r"^\d+\.\s+")
+_TABLE_SEP = re.compile(r"^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?$")
+# A README's leading `![alt](preview.webp)` repeats the hero the page already shows.
+_PREVIEW_IMAGE = re.compile(r"^!\[[^\]]*\]\((\./)?preview\.webp\)$")
 
 
 def render_inline(text: str, resolve) -> str:
@@ -662,12 +677,44 @@ def render_inline(text: str, resolve) -> str:
             out.append(f"<code>{html.escape(m.group(1))}</code>")
         elif m.group(2) is not None:
             out.append(f"<strong>{render_inline(m.group(2), resolve)}</strong>")
+        elif m.group(3) is not None:
+            out.append(f"<em>{render_inline(m.group(3), resolve)}</em>")
         else:
-            href = html.escape(resolve(m.group(4)), quote=True)
-            out.append(f'<a href="{href}">{render_inline(m.group(3), resolve)}</a>')
+            # An inline image becomes a link carrying its alt text: the gallery
+            # only publishes the hero, so the image file itself lives on GitHub.
+            href = html.escape(resolve(m.group(6)), quote=True)
+            out.append(f'<a href="{href}">{render_inline(m.group(5), resolve)}</a>')
         pos = m.end()
     out.append(html.escape(text[pos:]))
     return "".join(out)
+
+
+def _split_row(row: str) -> list[str]:
+    """Split a pipe-table row on `|` outside backtick code spans."""
+    row = row.strip()
+    if row.startswith("|"):
+        row = row[1:]
+    if row.endswith("|") and not row.endswith("\\|"):
+        row = row[:-1]
+    cells, cur, in_code = [], [], False
+    for ch in row:
+        if ch == "`":
+            in_code = not in_code
+        if ch == "|" and not in_code:
+            cells.append("".join(cur).strip())
+            cur = []
+        else:
+            cur.append(ch)
+    cells.append("".join(cur).strip())
+    return cells
+
+
+def _starts_block(lines: list[str], i: int) -> bool:
+    s = lines[i].strip()
+    if s.startswith(("#", "- ", "```")) or _OL_ITEM.match(s):
+        return True
+    return (s.startswith("|") and i + 1 < len(lines)
+            and bool(_TABLE_SEP.match(lines[i + 1].strip())))
 
 
 def md_to_html(text: str, resolve, skip_first_h1: bool = True) -> str:
@@ -704,28 +751,51 @@ def md_to_html(text: str, resolve, skip_first_h1: bool = True) -> str:
             i += 1
             continue
 
-        if stripped.startswith("- "):
+        if _PREVIEW_IMAGE.match(stripped):
+            i += 1
+            continue
+
+        if (stripped.startswith("|") and i + 1 < len(lines)
+                and _TABLE_SEP.match(lines[i + 1].strip())):
+            head = _split_row(stripped)
+            i += 2  # header row + separator
+            rows: list[list[str]] = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                rows.append(_split_row(lines[i]))
+                i += 1
+            ths = "".join(f'<th scope="col">{render_inline(c, resolve)}</th>' for c in head)
+            trs = "".join(
+                "<tr>" + "".join(f"<td>{render_inline(c, resolve)}</td>" for c in r) + "</tr>"
+                for r in rows)
+            out.append(f'<div class="table-wrap"><table><thead><tr>{ths}</tr></thead>'
+                       f"<tbody>{trs}</tbody></table></div>")
+            continue
+
+        ordered = bool(_OL_ITEM.match(stripped))
+        if stripped.startswith("- ") or ordered:
+            marker = _OL_ITEM if ordered else re.compile(r"^- ")
             items: list[str] = []
             while i < len(lines):
                 cur = lines[i].strip()
-                if cur.startswith("- "):
-                    items.append(cur[2:])
+                mm = marker.match(cur)
+                if mm:
+                    items.append(cur[mm.end():])
                 elif cur and lines[i].startswith("  ") and items:
                     items[-1] += " " + cur  # wrapped continuation line
                 else:
                     break
                 i += 1
             lis = "".join(f"<li>{render_inline(it, resolve)}</li>" for it in items)
-            out.append(f"<ul>{lis}</ul>")
+            tag = "ol" if ordered else "ul"
+            out.append(f"<{tag}>{lis}</{tag}>")
             continue
 
         para: list[str] = [stripped]
         i += 1
         while i < len(lines):
-            nxt = lines[i].strip()
-            if not nxt or nxt.startswith(("#", "- ", "```")):
+            if not lines[i].strip() or _starts_block(lines, i):
                 break
-            para.append(nxt)
+            para.append(lines[i].strip())
             i += 1
         out.append(f"<p>{render_inline(' '.join(para), resolve)}</p>")
 

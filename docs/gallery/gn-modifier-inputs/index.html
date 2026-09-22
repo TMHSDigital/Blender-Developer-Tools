@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -278,10 +283,10 @@ blender --background --python gn_modifier_inputs.py -- --output stairs.png
 blender --background --python gn_modifier_inputs.py -- --output stairs.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Scale input identifier missing on the tree interface | | 4 | Modifiers do not share one node_group | | 5 | Version-path write raised (<code>--api dict</code> on 5.2, <code>--api rna</code> on 4.5) | | 6 | Version-path read raised | | 7 | Readback ≠ intended scale (<code>--same-scale</code> lands here) | | 8 | Evaluated Z-extent ≠ intended scale | | 9 | Evaluated mesh not sitting on z=0 | | 10 | Gallery framing violation | | 11 | Evaluated extents not distinct | | 12 | <code>--output</code> produced no file |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Scale input identifier missing on the tree interface</td></tr><tr><td>4</td><td>Modifiers do not share one node_group</td></tr><tr><td>5</td><td>Version-path write raised (<code>--api dict</code> on 5.2, <code>--api rna</code> on 4.5)</td></tr><tr><td>6</td><td>Version-path read raised</td></tr><tr><td>7</td><td>Readback ≠ intended scale (<code>--same-scale</code> lands here)</td></tr><tr><td>8</td><td>Evaluated Z-extent ≠ intended scale</td></tr><tr><td>9</td><td>Evaluated mesh not sitting on z=0</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Evaluated extents not distinct</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--same-scale</code>, or <code>--api dict</code>/<code>rna</code>.</p>
 <h2>Falsification</h2>
-<p>| Probe | Binary | Result | | --- | --- | --- | | <code>--api dict</code> | 5.2.1 LTS | exit 5, <code>TypeError: id properties not supported for this type</code> | | <code>--api rna</code> | 4.5.11 LTS | exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code> | | <code>--api auto</code> | 5.2.1, 5.1.2, 4.5.11 | exit 0, extents 1.000 / 2.000 / 3.000 |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Probe</th><th scope="col">Binary</th><th scope="col">Result</th></tr></thead><tbody><tr><td><code>--api dict</code></td><td>5.2.1 LTS</td><td>exit 5, <code>TypeError: id properties not supported for this type</code></td></tr><tr><td><code>--api rna</code></td><td>4.5.11 LTS</td><td>exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code></td></tr><tr><td><code>--api auto</code></td><td>5.2.1, 5.1.2, 4.5.11</td><td>exit 0, extents 1.000 / 2.000 / 3.000</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>

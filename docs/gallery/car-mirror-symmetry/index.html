@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -277,7 +282,7 @@ blender --background --python car_mirror_symmetry.py -- --output car.png
 blender --background --python car_mirror_symmetry.py -- --output car.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Body datablock is not the authored half | | 4 | Authored centerline vert count ≠ 28 | | 5 | Evaluated verts ≠ <code>2n − c</code> (<code>--no-mirror</code> lands here) | | 6 | Evaluated on-plane verts ≠ centerline; also <code>--output</code> produced no file | | 7 | Evaluated Euler characteristic ≠ 2 | | 8 | Non-manifold edges in the evaluated shell | | 9 | Evaluated verts lack a mirrored partner | | 10 | Mirror partner deviation above tolerance | | 11 | Evaluated bbox not symmetric about X | | 12 | Mirrored-part origin off the plane | | 13 | Mirrored-part datablock is not the authored half | | 14 | Mirrored-part evaluated counts did not double | | 15 | Mirrored-part partner check failed | | 16 | Mirrored-part evaluated mesh stayed on one side |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Body datablock is not the authored half</td></tr><tr><td>4</td><td>Authored centerline vert count ≠ 28</td></tr><tr><td>5</td><td>Evaluated verts ≠ <code>2n − c</code> (<code>--no-mirror</code> lands here)</td></tr><tr><td>6</td><td>Evaluated on-plane verts ≠ centerline; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Evaluated Euler characteristic ≠ 2</td></tr><tr><td>8</td><td>Non-manifold edges in the evaluated shell</td></tr><tr><td>9</td><td>Evaluated verts lack a mirrored partner</td></tr><tr><td>10</td><td>Mirror partner deviation above tolerance</td></tr><tr><td>11</td><td>Evaluated bbox not symmetric about X</td></tr><tr><td>12</td><td>Mirrored-part origin off the plane</td></tr><tr><td>13</td><td>Mirrored-part datablock is not the authored half</td></tr><tr><td>14</td><td>Mirrored-part evaluated counts did not double</td></tr><tr><td>15</td><td>Mirrored-part partner check failed</td></tr><tr><td>16</td><td>Mirrored-part evaluated mesh stayed on one side</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-mirror</code>.</p>
     </section>
     <section class="detail-section src">

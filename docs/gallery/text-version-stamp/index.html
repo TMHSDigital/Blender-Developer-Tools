@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -260,7 +265,7 @@
     </div>
     <section class="detail-section md">
 <p>A runnable example that builds a beveled 3D stamp of the running Blender version — a <code>TextCurve</code> (<code>bpy.data.curves.new(type=&#x27;FONT&#x27;)</code>) whose <code>body</code> is the live <code>bpy.app.version_string</code>, so every render self-documents which Blender produced it. CI artifacts made this way are self-labeling.</p>
-<p><strong>What it witnesses:</strong> the TextCurve data-API contract. <code>curves.new(type=&#x27;FONT&#x27;)</code> returns a Curve subclass, the built-in font (&quot;Bfont Regular&quot;) is always loaded even headless, <code>body</code> is plain assignable text that regenerates geometry on edit (more characters → strictly wider evaluated mesh), and <code>extrude</code> / <code>bevel_depth</code> produce exactly predictable solids: the evaluated mesh z-extent equals 2 × (extrude + bevel_depth) and the round bevel widens the outline in-plane by 2 × bevel_depth. Flat text (no extrude, no bevel) is already *filled* — faces exist — but strictly planar. The check also witnesses the depsgraph lifetime hazard: after <code>to_mesh_clear()</code> the returned Mesh reference is dead and any access raises <code>ReferenceError</code>.</p>
+<p><strong>What it witnesses:</strong> the TextCurve data-API contract. <code>curves.new(type=&#x27;FONT&#x27;)</code> returns a Curve subclass, the built-in font (&quot;Bfont Regular&quot;) is always loaded even headless, <code>body</code> is plain assignable text that regenerates geometry on edit (more characters → strictly wider evaluated mesh), and <code>extrude</code> / <code>bevel_depth</code> produce exactly predictable solids: the evaluated mesh z-extent equals 2 × (extrude + bevel_depth) and the round bevel widens the outline in-plane by 2 × bevel_depth. Flat text (no extrude, no bevel) is already <em>filled</em> — faces exist — but strictly planar. The check also witnesses the depsgraph lifetime hazard: after <code>to_mesh_clear()</code> the returned Mesh reference is dead and any access raises <code>ReferenceError</code>.</p>
 <p><strong>Version divergence:</strong> the string format itself differs — <code>&quot;5.1.2&quot;</code> on 5.x but <code>&quot;4.5.11 LTS&quot;</code> on 4.5 (the suffix is part of <code>version_string</code>). The check therefore asserts the contract that holds on both: <code>version_string</code> starts with the dotted <code>bpy.app.version</code> tuple. Code that parses <code>version_string</code> as a bare semver breaks on every LTS build; branch on the <code>bpy.app.version</code> tuple instead.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
@@ -275,7 +280,7 @@ blender --background --python text_version_stamp.py -- --output stamp.png --engi
 <p>The render scales the stamp to a constant width, so the frame holds for any version-string length.</p>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Not a FONT <code>TextCurve</code> with the built-in Bfont | | 4 | <code>body</code> is not the live <code>version_string</code> (<code>--wrong-body</code> lands here) | | 5 | Flat text is not a filled planar mesh | | 6 | Extrude / bevel closed form failed | | 7 | Appending characters did not widen the text | | 8 | Mesh survived <code>to_mesh_clear()</code> | | 9 | <code>--output</code> produced no file | | 10 | Gallery framing violation |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Not a FONT <code>TextCurve</code> with the built-in Bfont</td></tr><tr><td>4</td><td><code>body</code> is not the live <code>version_string</code> (<code>--wrong-body</code> lands here)</td></tr><tr><td>5</td><td>Flat text is not a filled planar mesh</td></tr><tr><td>6</td><td>Extrude / bevel closed form failed</td></tr><tr><td>7</td><td>Appending characters did not widen the text</td></tr><tr><td>8</td><td>Mesh survived <code>to_mesh_clear()</code></td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--wrong-body</code>.</p>
     </section>
     <section class="detail-section src">

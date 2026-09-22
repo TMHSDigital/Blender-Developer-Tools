@@ -46,21 +46,32 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
     return meta, body
 
 
-def _extract_tools_from_frontmatter(lines: list[str]) -> list[str]:
-    """Parse a YAML list of tools from frontmatter lines (handles ``tools:`` key)."""
-    tools: list[str] = []
-    in_tools = False
+def _extract_frontmatter_list(lines: list[str], key: str) -> list[str]:
+    """Parse the YAML block list under ``key:`` from frontmatter lines.
+
+    An inline scalar (``key: value``) comes back as a one-item list, so a
+    single-glob rule written without list syntax still reports its scope."""
+    items: list[str] = []
+    in_list = False
     for line in lines:
         stripped = line.strip()
-        if stripped.startswith("tools:"):
-            in_tools = True
+        if stripped.startswith(f"{key}:"):
+            inline = stripped[len(key) + 1:].strip().strip("\"'")
+            if inline:
+                return [inline]
+            in_list = True
             continue
-        if in_tools:
+        if in_list:
             if stripped.startswith("- "):
-                tools.append(stripped[2:].strip())
+                items.append(stripped[2:].strip().strip("\"'"))
             else:
                 break
-    return tools
+    return items
+
+
+def _extract_tools_from_frontmatter(lines: list[str]) -> list[str]:
+    """Parse a YAML list of tools from frontmatter lines (handles ``tools:`` key)."""
+    return _extract_frontmatter_list(lines, "tools")
 
 
 def _extract_trigger_section(body: str) -> list[str]:
@@ -148,26 +159,24 @@ def parse_rules(repo_root: Path) -> list[dict]:
             continue
 
         text = rule_file.read_text(encoding="utf-8", errors="replace")
-        lines = text.strip().splitlines()
+        meta, body = parse_frontmatter(text)
+        fm_lines = text[: len(text) - len(body)].splitlines()
 
         name = rule_file.stem.replace("-", " ").replace("_", " ").title()
-        description = ""
-        scope = ""
+        description = _truncate_words(meta.get("description", ""), 200)
+        if not description:
+            for line in body.splitlines():
+                stripped = line.strip()
+                if stripped and not stripped.startswith("#"):
+                    description = stripped[:200]
+                    break
 
-        for line in lines:
-            stripped = line.strip()
-            if stripped.startswith("---"):
-                continue
-            if ":" in stripped and not description:
-                key, _, val = stripped.partition(":")
-                key_lower = key.strip().lower()
-                if key_lower == "description":
-                    description = _truncate_words(val.strip(), 200)
-                elif key_lower in ("globs", "scope"):
-                    scope = val.strip()
-                continue
-            if stripped and not description:
-                description = stripped[:200]
+        # `globs` is a YAML list in every shipped rule; the old line parser
+        # stopped at `description` (always the first key) and never saw it.
+        scope = ", ".join(
+            _extract_frontmatter_list(fm_lines, "globs")
+            or _extract_frontmatter_list(fm_lines, "scope")
+        )
 
         results.append({
             "name": name,
@@ -400,6 +409,9 @@ def main():
         "rule_count": len(rules),
         "examples": examples,
         "example_count": len(examples),
+        # gallery.json lists rendered examples only; plugin.json lists every
+        # shipped example, check-only ones included (the README's count).
+        "example_total": len(plugin.get("examples", [])) or len(examples),
         "featured_examples": featured,
         "featured_count": len(featured),
         "showcase": showcase,

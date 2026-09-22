@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -278,7 +283,7 @@ blender --background --python gltf_skin_roundtrip.py -- --output scorp.png
 blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Exporter RNA missing expected kwargs | | 4 | Vertex group count ≠ bone count | | 5 | Disk skins ≠ 1 (<code>--no-skins</code> lands here) | | 6 | Skin joints ≠ bone names | | 7 | Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch | | 8 | Disk weight sums off 1.0 | | 9 | Disk verts exceed evaluated loops | | 10 | Armature count after import ≠ 1 | | 11 | Bone count drifted | | 12 | Named bone lost | | 13 | Bone parent drifted | | 14 | Rest matrices drifted | | 15 | Skinned mesh count after import ≠ 1 | | 16 | Re-import vert count ≠ disk | | 17 | Vertex group names drifted | | 18 | Weight round-trip drifted | | 19 | Deformation round-trip drifted | | 20 | <code>--output</code> produced no file |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Exporter RNA missing expected kwargs</td></tr><tr><td>4</td><td>Vertex group count ≠ bone count</td></tr><tr><td>5</td><td>Disk skins ≠ 1 (<code>--no-skins</code> lands here)</td></tr><tr><td>6</td><td>Skin joints ≠ bone names</td></tr><tr><td>7</td><td>Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch</td></tr><tr><td>8</td><td>Disk weight sums off 1.0</td></tr><tr><td>9</td><td>Disk verts exceed evaluated loops</td></tr><tr><td>10</td><td>Armature count after import ≠ 1</td></tr><tr><td>11</td><td>Bone count drifted</td></tr><tr><td>12</td><td>Named bone lost</td></tr><tr><td>13</td><td>Bone parent drifted</td></tr><tr><td>14</td><td>Rest matrices drifted</td></tr><tr><td>15</td><td>Skinned mesh count after import ≠ 1</td></tr><tr><td>16</td><td>Re-import vert count ≠ disk</td></tr><tr><td>17</td><td>Vertex group names drifted</td></tr><tr><td>18</td><td>Weight round-trip drifted</td></tr><tr><td>19</td><td>Deformation round-trip drifted</td></tr><tr><td>20</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-skins</code>.</p>
     </section>
     <section class="detail-section src">
