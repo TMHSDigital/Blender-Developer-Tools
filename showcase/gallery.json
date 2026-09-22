@@ -316,6 +316,18 @@
         "mesh",
         "export"
       ]
+    },
+    {
+        "name": "crate-stack",
+        "dir": "showcase/crate-stack",
+        "teaches": "A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+        "witnessesFix": "Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
+        "hero": "docs/gallery/assets/crate-stack-hero.webp",
+        "preview": "showcase/crate-stack/preview.webp",
+        "tags": [
+            "mesh",
+            "export"
+        ]
     }
   ]
 }
