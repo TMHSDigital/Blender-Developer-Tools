@@ -1318,7 +1318,7 @@ def render_still(low, wood, tex, path, engine):
     light("Rim", (-1.5, 3.4, 2.6), 320.0, 3.0, (0.60, 0.78, 1.00), (-64, 0, 200))
     # Wedge sits between the subject and the wall so the pool lands on the
     # backdrop, not across the crates.
-    light("Wedge", (1.2, 2.7, 2.3), 380.0, 7.0, (1.0, 0.76, 0.50), (-92, 0, 196))
+    light("Wedge", (1.1, 4.3, 1.95), 560.0, 6.0, (1.0, 0.72, 0.40), (-94, 0, 194))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 52.0
