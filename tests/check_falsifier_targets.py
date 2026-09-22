@@ -31,8 +31,9 @@ asserts they agree:
 **Runtime (``--run BLENDER``).** Executes each falsifier and asserts the
 *observed* exit equals the declared one. This is the mode that catches a
 falsifier tripping an earlier check. It costs one Blender launch per
-falsifier — roughly 150 s for the showcase tree on one version — so it is
-an authoring and cron tool, not a per-PR smoke step.
+falsifier: measured at 276 s for the whole showcase tree on one version
+(160 falsifiers, 25 pieces, Blender 5.2.1). That is an authoring and cron
+tool, not a per-PR smoke step.
 
 Exit codes: 0 clean, 1 a mapping disagrees, 2 usage.
 """

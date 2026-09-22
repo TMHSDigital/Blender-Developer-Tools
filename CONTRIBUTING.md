@@ -252,8 +252,9 @@ flags are real argparse flags, the declared exit codes appear in that
 piece's exit-code table, and every falsifier names a target budget. Its
 `--run BLENDER` mode executes each falsifier and asserts the **observed**
 exit equals the declared one — the mode that catches an ill-aimed
-falsifier. Runtime costs one Blender launch per falsifier, so it is an
-authoring and cron tool, not a per-PR smoke step.
+falsifier. Runtime costs one Blender launch per falsifier, measured at
+276 s for the whole showcase tree on one version, so it is an authoring
+and cron tool rather than a per-PR smoke step.
 
 ## Exit codes
 
