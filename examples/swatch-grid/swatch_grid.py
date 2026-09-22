@@ -265,7 +265,7 @@ def main():
     # Cycles. Witness the inversion for real: the OTHER era's id must be rejected
     # by this build, and the helper's id must be accepted.
     eid = get_eevee_engine_id()
-    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'
+    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'  # engine-id-exempt: the wrong-era id this example asserts is rejected
     try:
         sc.render.engine = wrong
         print(f"ERROR: wrong-era EEVEE id '{wrong}' was accepted by this build — "

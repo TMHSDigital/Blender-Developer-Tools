@@ -136,6 +136,9 @@ jobs:
       - name: Check product exit codes are in README tables
         run: python3 tests/check_exit_code_readme.py
 
+      - name: Check EEVEE engine-id mappings
+        run: python3 tests/check_engine_id.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."

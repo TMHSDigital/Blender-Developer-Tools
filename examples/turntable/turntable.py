@@ -135,7 +135,7 @@ def main():
     # the EEVEE-id mapping is asserted regardless of whether we render: the
     # OTHER era's id must be rejected by this build, the helper's accepted
     eid = get_eevee_engine_id()
-    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'
+    wrong = 'BLENDER_EEVEE_NEXT' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE'  # engine-id-exempt: the wrong-era id this example asserts is rejected
     try:
         bpy.context.scene.render.engine = wrong
         print(f"ERROR: wrong-era EEVEE id '{wrong}' was accepted", file=sys.stderr); return 5
