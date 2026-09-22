@@ -26,10 +26,19 @@ Issues with the Blender Python API itself (`bpy`, `bmesh`, `bpy_extras`) belong 
 
 ## Supported Versions
 
+This is a content repository — Markdown, MDC, Python, and TOML files consumed
+directly by an AI agent. There is no installed runtime, no server, and no
+long-lived deployment to patch, so there are no maintenance branches and no
+backports.
+
 | Version | Supported |
 |---------|-----------|
-| 0.2.x   | Yes       |
-| < 0.2.0 | No        |
+| Latest release (see [`VERSION`](VERSION)) | Yes |
+| Any earlier release | No |
+
+A confirmed fix lands on `main` and ships in the next release cut by
+`release.yml`. Consumers pin by tag or track `main`; the remedy in both cases
+is to move to the current release. Nothing older is patched in place.
 
 ## Response Timeline
 

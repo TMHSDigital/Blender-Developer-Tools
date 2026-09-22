@@ -39,7 +39,7 @@
 
 This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 26 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
-The content is consumed by AI coding agents (Cursor, Claude Code, any MCP-capable client) when working on Blender add-ons, geometry nodes scripts, batch pipelines, or animation tooling. There is no build step. Edit the markdown and Python files directly.
+The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
 | Layer | Role |
 | --- | --- |
@@ -58,6 +58,7 @@ git clone https://github.com/TMHSDigital/Blender-Developer-Tools.git
 
 - **Cursor** — point Cursor at the checkout (or symlink `rules/` into your project). The `.mdc` rules apply automatically by glob scope; skills are referenced by name in chat.
 - **Claude Code** — copy `skills/` and `rules/` into your project workspace, or keep this repo as a checkout that Claude Code references directly.
+- **Get Blender** — download **5.2 LTS** (primary target) or **4.5 LTS** (supported fallback) from [blender.org/download/lts](https://www.blender.org/download/lts/); current stable lives at [blender.org/download](https://www.blender.org/download/). The `blender` command below is that binary — on macOS it is inside the app bundle at `/Applications/Blender.app/Contents/MacOS/Blender`.
 - **Run an example** — every example is a self-checking headless script (exit non-zero on failure, no GPU needed for the check):
 
 ```bash
@@ -71,6 +72,34 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 | Blender 5.2 LTS | Primary target (current stable; all examples assume 5.2 unless a 4.5 path is shown) |
 | Blender 5.1 | Prior stable (weekly cron; PR via `needs-5.1` or manual dispatch) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
+
+## Falsifiers
+
+Every one of the 59 examples carries a **falsifier**: a flag that changes the
+input so a real assertion fails. It never disables the assertion, skips the
+check, or short-circuits to an error — it feeds the script something the
+contract says must not pass, and the same check that guards the happy path
+catches it.
+
+```bash
+# The contract holds: exit 0
+blender --background --python examples/bmesh-gear/bmesh_gear.py --
+
+# The falsifier: skip the extrude, so the topology no longer matches the
+# closed form. The topology check fires and the script exits 3.
+blender --background --python examples/bmesh-gear/bmesh_gear.py -- --no-extrude
+```
+
+This is what makes a green run mean something. An assertion that has only
+ever passed witnesses nothing — it could be comparing a constant to itself.
+Proving each one fails once, on demand, is the difference between a test
+suite and a set of scripts that print "OK". Shipping an example requires
+demonstrating the falsifier's non-zero exit and reporting the measured error.
+
+`--api`, `--check-pixels`, and `--output` are not falsifiers; they select a
+code path rather than break a contract. Full conventions, including the
+per-script exit-code model, are in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#exit-codes).
 
 ## Showcase
 

@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>fence-kit — Examples — Blender Developer Tools</title>
+  <title>fence-kit — Showcase — Blender Developer Tools</title>
   <meta name="description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/fence-kit/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="fence-kit — Examples — Blender Developer Tools" />
+  <meta property="og:title" content="fence-kit — Showcase — Blender Developer Tools" />
   <meta property="og:description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/fence-kit/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="fence-kit — Examples — Blender Developer Tools" />
+  <meta name="twitter:title" content="fence-kit — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
   <style>
@@ -239,7 +239,7 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
     </div>
@@ -252,7 +252,7 @@
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom fence-kit render">
       <img src="../assets/fence-kit-hero.webp" alt="fence-kit render" width="1280" height="720" />
     </button>
-    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1092 tris, two materials with 156 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.624×0.134×1.232 m, grounded zmin, 2 iron shoes, brace-to-post gap 2.4 mm on both posts, rail-to-post gap 0.93 mm, rail span 1.390 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 32 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/fence-kit/fence_kit.py --</pre>

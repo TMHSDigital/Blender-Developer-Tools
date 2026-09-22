@@ -105,12 +105,25 @@ AI asset pipeline track: `decimate_to_budget.py`, `convex_hull_collider.py`, `lo
 Runnable scripts at `examples/<name>/`, each asserting a real API contract with
 deterministic checks (exit non-zero on failure) and optionally rendering a still via
 `--output`. All of them run headless on Blender 5.2 LTS and 4.5 LTS in `blender-smoke.yml` (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch);
-their renders ship in the site gallery at `docs/gallery/`. `examples/gallery.json` is the
-gallery's source of truth. When authoring a new one, copy the anatomy of
+**51 of the 59 ship a render in the site gallery** at `docs/gallery/`. The other
+eight are **check-only**: they carry no `--output` path, no gallery entry, and no
+hero asset. The criterion is whether the contract is expressible in pixels. An
+example is check-only when its witness is a data or state fact that no scene
+redesign can make visible — a datablock name, an RNA attribute's presence, a
+post-exit sidecar, a topology count, export metadata — so a render would look
+identical whether the API held or broke. That is a category, not a shortcut: a
+subject whose render *could* be made legible must be rendered, per
+`docs/new-example-prompt.md`. Smoke coverage is unaffected; every check-only
+example still carries a `tests/smoke/catalog.json` row and a falsifier.
+`examples/gallery.json` is the
+gallery's source of truth. When authoring a new gallery example, copy the anatomy of
 `examples/bmesh-gear/` (script structure, README shape, dark-studio render recipe) and
 wire all of: gallery.json entry, `.cursor-plugin/plugin.json` examples array (CI-gated),
 a `tests/smoke/catalog.json` row, a README gallery row, hero webp (1280×720) in
 `docs/gallery/assets/` + preview webp (1200×675), then run `python scripts/build_gallery.py`.
+A check-only example wires only the `.cursor-plugin/plugin.json` entry, the
+`tests/smoke/catalog.json` row, and its README — it is deliberately absent from
+`examples/gallery.json` and `docs/gallery/`.
 Renders must conform to the gallery look spec at `docs/VISUAL-STYLE.md`.
 Render paths gate framing through the shared helper `examples/gallery_framing.py` —
 imported via a `__file__`-relative `sys.path` shim, the repo's only
