@@ -101,7 +101,14 @@ METAL_IDX = 1
 
 
 def eevee_engine_id():
-    return "BLENDER_EEVEE_NEXT" if bpy.app.version >= (4, 2, 0) else "BLENDER_EEVEE"
+    """EEVEE id: 'BLENDER_EEVEE' on 5.0+, 'BLENDER_EEVEE_NEXT' on 4.2-4.5.
+
+    Mapping matches examples/swatch-grid.get_eevee_engine_id, which asserts it
+    against the running build (copied, not imported). The old form here keyed
+    on >= (4, 2, 0) and so returned 'BLENDER_EEVEE_NEXT' on 5.x, where that id
+    does not exist — the render path raised TypeError on 5.1 and 5.2.
+    """
+    return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
 
 
 def fail(msg, code):

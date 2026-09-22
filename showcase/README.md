@@ -45,6 +45,18 @@ entry in `showcase/gallery.json`, and a rendered still.
   A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
+- **A falsifier must fail the budget it targets.** Declare the target in
+  the piece README's falsifier table — flag, target budget, exit code —
+  and make the run exit *that* code. A falsifier that trips an earlier
+  check is red for the wrong reason and proves nothing about its target.
+  Fix a collision by changing the model or the falsifier; never widen a
+  band so an ill-aimed falsifier lands. `stone-archway`'s `--flat-arch`
+  laid the voussoirs as a lintel, which is 0.62 m shorter and so failed
+  the bounding box (exit 8) instead of the intrados circle fit (exit 19);
+  `--off-circle` replaced it by keeping the whole envelope and wandering
+  only the radius. `tests/check_falsifier_targets.py` checks the
+  declaration statically, and with `--run BLENDER` executes each falsifier
+  and asserts the observed exit matches.
 - **Hygiene budgets.** Copied combinatorics from
   `examples/mesh-hygiene-audit` (do not import the example). Every piece
   asserts on the generated mesh: non-manifold edges 0, loose verts 0,
@@ -164,6 +176,46 @@ entry in `showcase/gallery.json`, and a rendered still.
   `measure_framing_deviation` and assert at the call site. Do not move
   or modify `gallery_framing.py` — import it by resolving the repo root
   (see the shipping-crate script).
+- **Contact sheet (required).** Composite the candidate hero beside the
+  pinned calibration set — canonical membership is in `CLAUDE.md`
+  § Quality Gates — commit it as
+  `docs/gallery/contact-sheets/<name>-contact-sheet.webp`, link it in the
+  PR body, and report a per-criterion verdict: stage darkness, wedge
+  warmth, subject fill, saturation, thumbnail legibility, plus mean
+  luminance against the calibration band. A claim without the committed
+  composite is not evidence.
+
+  Required because it has caught a real defect in showcase work. The
+  first sheets for `crate-stack` and `stone-archway` showed both wedge
+  pools reading as cool grey bands rather than the warm pool the house
+  style calls for; both were relit as a result. Nothing else in the
+  pipeline looks at the still beside its peers, so nothing else could
+  have seen it.
+
+- **Asset sheet (required).** Render the hero alone — neutral
+  three-quarter view, plain studio lighting, no staging tricks, no
+  labels, no comparison props — composite it beside the pinned
+  asset-quality reference set rendered the same way, commit under
+  `docs/gallery/asset-sheets/`, and report a verdict. The piece ships
+  only if it is not identifiable as the least-designed object in that
+  lineup.
+
+  Required because showcase is *entirely* game props, which is exactly
+  the scope `docs/VISUAL-STYLE.md` § Asset quality names, and because it
+  covers something no other gate here does. Budgets measure geometry
+  conformance; the contact sheet measures staged presentation. Neither
+  removes the scene, and a strong scene carries a weak model. The
+  recorded evidence is `socket-attach-points`: it passed every
+  measurable floor on its first draft — `edge90` 0.000, ten materials,
+  no default datablock names — and was then judged bad by eye and
+  rebuilt from scratch. The floors scored the bevels, not the design.
+
+  `examples/gallery_asset_quality.check_asset_quality` returns **11** on
+  violation, the same call pattern as `gallery_framing`. Showcase
+  numbering already spends 11 on the collider-triangle ceiling, so remap
+  the return at the call site rather than letting two budgets share a
+  code.
+
 - **Composition.** The README names which shipped skills and snippets the
   piece composes. Duplicated helpers stay inlined or copied; showcase
   scripts do not import snippets as a package.

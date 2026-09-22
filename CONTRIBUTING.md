@@ -223,6 +223,39 @@ Three checks that appear on PRs are deliberately **excluded**:
 The two `Socket Security` checks come from a third-party GitHub App. An
 outage or an uninstall would deadlock merges, so they are advisory.
 
+## Falsifiers must fail the budget they target
+
+Every falsifier declares the budget it aims at, and it must fail **that**
+budget. A falsifier that exits non-zero on some earlier check proves
+nothing about its target: the run is red for the wrong reason, and the
+budget it was built for was never reached.
+
+Fix a collision by changing the model or the falsifier. **Never widen a
+band so an ill-aimed falsifier lands.**
+
+Worked example. `showcase/stone-archway`'s arch falsifier began as
+`--flat-arch`, laying the voussoirs as a flat lintel. A lintel is 0.62 m
+shorter than the arch, so it tripped the bounding-box budget (exit 8) and
+never reached the intrados circle fit (exit 19) it existed to break.
+Widening the bbox tolerance to let it through would have destroyed a real
+budget to rescue a bad falsifier. It was replaced by `--off-circle`, which
+keeps the angles, joints, materials, triangle count and envelope identical
+and wanders only the intrados radius. Four other falsifiers in the same run
+needed the same treatment: a stray vertex moved inside the silhouette, a
+`--short-skids` that floats one runner of three instead of all of them, a
+`--same-seed` split into design and placement RNG streams, and a
+`--sink-keystone` that no longer changes the Y envelope.
+
+`tests/check_falsifier_targets.py` enforces the declaration. Its default
+static mode reads each showcase piece's falsifier table and asserts the
+flags are real argparse flags, the declared exit codes appear in that
+piece's exit-code table, and every falsifier names a target budget. Its
+`--run BLENDER` mode executes each falsifier and asserts the **observed**
+exit equals the declared one — the mode that catches an ill-aimed
+falsifier. Runtime costs one Blender launch per falsifier, measured at
+276 s for the whole showcase tree on one version, so it is an authoring
+and cron tool rather than a per-PR smoke step.
+
 ## Exit codes
 
 Three roles, not one global table. Do not copy a code from one script into
