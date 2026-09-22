@@ -3,7 +3,7 @@
 Witnesses Combine / Separate Bundle from ``skills/geometry-nodes-python``.
 The load-bearing RNA on 5.x is ``NodeCombineBundle`` / ``NodeSeparateBundle``,
 not ``GeometryNodeCombineBundle`` (that id is 4.5 experimental and
-**undefined** on 5.2). Tree-structure checks are vacuous: the nodes can
+**undefined** on 5.x). Tree-structure checks are vacuous: the nodes can
 exist and be linked while Separate looks up the wrong item names and
 evaluates empty.
 
@@ -23,6 +23,7 @@ this example skips there via catalog ``min_version`` 5.0. ``--force-run``
 bypasses the skip and uses the 5.x RNA so 4.5 fails for that reason.
 
     blender --background --python gn_bundle_roundtrip.py --
+    blender --background --python gn_bundle_roundtrip.py -- --mismatch-mark
 """
 import argparse
 import sys
@@ -61,7 +62,7 @@ def eval_mesh(obj):
     return coords, faces, marks
 
 
-def build_tree(pair=True, match_names=True, pack_scale=PACK_SCALE):
+def build_tree(pair=True, match_names=True, pack_scale=PACK_SCALE, match_mark=True):
     tree = bpy.data.node_groups.new("BundleRoundTrip", "GeometryNodeTree")
     tree.interface.new_socket(
         name="Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry",
@@ -84,7 +85,10 @@ def build_tree(pair=True, match_names=True, pack_scale=PACK_SCALE):
     sep.bundle_items.new("GEOMETRY", sep_mesh)
     sep.bundle_items.new("FLOAT", "Scale")
     sep.bundle_items.new("VECTOR", "Offset")
-    sep.bundle_items.new("FLOAT", "Mark")
+    # --mismatch-mark renames only the Float item: the mesh, Scale and Offset
+    # still round-trip, so count and bbox pass and only the mark is lost.
+    sep_mark = "Mark" if match_mark else "Marker"
+    sep.bundle_items.new("FLOAT", sep_mark)
 
     tree.links.new(cube.outputs["Mesh"], comb.inputs["Mesh"])
     comb.inputs["Scale"].default_value = pack_scale
@@ -106,19 +110,22 @@ def build_tree(pair=True, match_names=True, pack_scale=PACK_SCALE):
     tree.links.new(xyz.outputs["Vector"], xf.inputs["Scale"])
     tree.links.new(sep.outputs["Offset"], xf.inputs["Translation"])
     tree.links.new(xf.outputs["Geometry"], store.inputs["Geometry"])
-    tree.links.new(sep.outputs["Mark"], store.inputs["Value"])
+    tree.links.new(sep.outputs[sep_mark], store.inputs["Value"])
     tree.links.new(store.outputs["Geometry"], go.inputs["Geometry"])
     return tree
 
 
-def build(pair, match_names, pack_scale):
+def build(pair, match_names, pack_scale, match_mark=True):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     me = bpy.data.meshes.new("Carrier")
     me.vertices.add(1)
     ob = bpy.data.objects.new("Carrier", me)
     bpy.context.collection.objects.link(ob)
     mod = ob.modifiers.new("GN", "NODES")
-    mod.node_group = build_tree(pair=pair, match_names=match_names, pack_scale=pack_scale)
+    mod.node_group = build_tree(
+        pair=pair, match_names=match_names, pack_scale=pack_scale,
+        match_mark=match_mark,
+    )
     bpy.context.view_layer.update()
     return ob
 
@@ -194,6 +201,11 @@ def main():
         action="store_true",
         help="falsification: Separate item name Geom vs Combine Mesh",
     )
+    p.add_argument(
+        "--mismatch-mark",
+        action="store_true",
+        help="falsification: Separate Float item Marker vs Combine Mark",
+    )
     p.add_argument("--pack-scale", type=float, default=PACK_SCALE)
     p.add_argument(
         "--legacy-rna",
@@ -224,6 +236,7 @@ def main():
         pair=not args.bypass,
         match_names=not args.mismatch,
         pack_scale=args.pack_scale,
+        match_mark=not args.mismatch_mark,
     )
     code = check(ob)
     if code:

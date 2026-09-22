@@ -2,7 +2,7 @@
 
 Asserts budget conformance of a procedural splitting block (a hooped log
 round with a felling axe standing in it) after composing shipped pipeline
-pieces: bmesh construction, UVs, three materials, high-to-low normal bake,
+pieces: bmesh construction, UVs, four materials, high-to-low normal bake,
 LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result. They
@@ -11,9 +11,12 @@ budget: ``--skip-decimate`` skips the LOD DECIMATE stage so the LOD-ratio
 budget fails, ``--lift-z`` moves the mesh off the floor so the grounded
 budget fails, ``--stray-vert`` adds one unconnected vertex so the
 mesh-hygiene budget fails, ``--fat-haft`` widens the handle to the full
-thickness of the axe eye so the eye joint-fit budget fails, and
+thickness of the axe eye so the eye joint-fit budget fails,
 ``--round-band`` generates the iron band on a circle instead of on the
-log's own surface so the band-seat budget fails.
+log's own surface so the band-seat budget fails, ``--float-rivets`` lifts
+the lap rivets off the hoop so the rivet-seat budget fails, and
+``--round-haft`` turns the oval handle round so the haft-section budget
+fails.
 
 No RNG. The log's out-of-round profile is a closed-form sum of sines, so
 construction is deterministic. DECIMATE COLLAPSE triangle counts are not
@@ -26,6 +29,8 @@ not an exact count.
     blender --background --python chopping_block.py -- --stray-vert
     blender --background --python chopping_block.py -- --fat-haft
     blender --background --python chopping_block.py -- --round-band
+    blender --background --python chopping_block.py -- --float-rivets
+    blender --background --python chopping_block.py -- --round-haft
     blender --background --python chopping_block.py -- --output block.png
 """
 import argparse
@@ -81,6 +86,27 @@ BAND_Z1 = 0.125
 BAND_BITE = 0.004
 BAND_PROUD = 0.006
 BAND_CHAMFER = 0.0022
+# Lap joint. A hoop is a strip of iron riveted where its ends overlap; a
+# ring of constant section reads as a painted stripe. The outer end steps
+# up sharply at LAP_U0, and the lap tapers out past LAP_U1 where the hidden
+# end runs underneath. Every kink is its own band section, and none lands
+# on a log segment at either detail level (10 and 5 degrees).
+LAP_U0 = math.radians(302.5)
+LAP_STEP = math.radians(1.0)
+LAP_U1 = math.radians(316.5)
+LAP_TAPER = math.radians(4.0)
+LAP_T = 0.0025
+# Two domed rivets through the lap, each on its own band section so the
+# surface under it is exact rather than a chord.
+RIVET_US = (math.radians(307.5), math.radians(312.5))
+RIVET_R = 0.0062
+RIVET_H = 0.0042
+RIVET_BITE = 0.0015
+RIVET_SEGS = 8
+# (height as a fraction of RIVET_H, radius scale). The first ring is below
+# the band surface by RIVET_BITE; that is the seat.
+RIVET_RINGS = ((0.45, 0.86), (0.82, 0.52), (0.97, 0.22))
+FLOAT_RIVET = 0.003
 
 # (z, rim scale). The scaled rings are modelled chamfers: the rim of a sawn
 # log catches light, and modelling it costs less than bevelling 32 segments.
@@ -142,28 +168,40 @@ HEAD_CHAMFER = 0.0042
 HAFT_LEN = 0.68
 HAFT_DROP = 0.024
 HAFT_BOW = 0.020
-HAFT_SEGS = 12
-# (t along the haft, radius). The last two rings round the knob off, so the
-# haft needs no bevel of its own. The shoulder-waist-swell spread is wide on
-# purpose: a 0.68 m haft that runs 15 mm to 18 mm reads as dowel at any
-# distance a viewer will see it from.
+HAFT_SEGS = 16
+# (t along the haft, half thickness across the cheeks). The shoulder-waist-
+# swell spread is wide on purpose: a 0.68 m haft that runs 15 mm to 18 mm
+# reads as dowel at any distance a viewer will see it from. The swell holds
+# its width to within 2 mm of the butt and then rounds off: a knob that
+# tapers the whole way to its end cap reads as a pencil stub.
 HAFT_SECTIONS = (
     (0.00, 0.0192),
     (0.10, 0.0205),
     (0.32, 0.0150),
-    (0.58, 0.0132),
-    (0.80, 0.0150),
-    (0.91, 0.0225),
-    (0.97, 0.0206),
-    (1.00, 0.0124),
+    (0.58, 0.0136),
+    (0.78, 0.0150),
+    (0.88, 0.0188),
+    (0.94, 0.0226),
+    (0.975, 0.0222),
+    (0.993, 0.0192),
+    (1.00, 0.0140),
 )
+# An axe handle is oval, wider in the swing plane than across the cheeks.
+# A round section at any width is a broom handle.
+HAFT_OVAL = 1.35
+HAFT_OVAL_MIN = 1.25
+HAFT_OVAL_MAX = 1.60
+# The grip station the oval is measured at, as a fraction along the haft.
+HAFT_GRIP_T = 0.58
+# The knob hooks toward the bit, the other half of the S the bow starts.
+HAFT_HOOK = 0.016
 FAT_HAFT_SCALE = 1.85
 
-# Four closed shells: log, iron band, axe head, axe haft.
-PART_COUNT = 4
+# Six closed shells: log, iron band, axe head, axe haft, two rivets.
+PART_COUNT = 4 + len(RIVET_US)
 BBOX_TOL = 0.012
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.526, 0.526, 1.012)
+OUTER_SIZE = (0.526, 0.526, 1.006)
 # Stated real-world size of the block itself, checked separately from the
 # fitted AABB so a proportion drift is named rather than absorbed by it.
 BLOCK_DIAMETER = 0.535
@@ -182,6 +220,14 @@ BIT_INSET_MIN = 0.030
 BAND_BITE_MIN = 0.002
 BAND_BITE_MAX = 0.007
 HAFT_BLOCK_CLEAR_MIN = 0.015
+# Rivet seat, measured radially at each rivet vertex's own angle against the
+# band surface read off the mesh. A floor so the head cannot float off the
+# lap, a ceiling so it cannot sink into it, and a proud minimum so the dome
+# is actually visible.
+RIVET_SEAT_MIN = 0.0008
+RIVET_SEAT_MAX = 0.0025
+RIVET_PROUD_MIN = 0.0025
+RIVET_SPAN_MAX = 0.03
 
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
@@ -190,18 +236,18 @@ ZFIGHT_EPS = 0.0012
 ZFIGHT_COS = 0.9995
 LIFT_Z = 0.05
 
-BASE_TRIS_MIN = 1410
-BASE_TRIS_MAX = 1530
+BASE_TRIS_MIN = 1730
+BASE_TRIS_MAX = 1870
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 3
+MATERIAL_COUNT = 4
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 470
+COLLIDER_TRIS_MAX = 560
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 # Floors catch the slot-assignment wipe class and the bevel-inherits-slot-0
@@ -210,10 +256,22 @@ CAGE_EXTRUSION = 0.08
 WOOD_FACES_MIN = 160
 GRAIN_FACES_MIN = 90
 METAL_FACES_MIN = 170
+HAFT_FACES_MIN = 150
 
 WOOD_IDX = 0
 GRAIN_IDX = 1
 METAL_IDX = 2
+# The haft is hickory, not bark. Sharing the bark slot made the handle the
+# darkest wood on the piece and would fissure it with the bark texture.
+HAFT_IDX = 3
+
+# End-grain shading. The pith sits off the geometric centre, as it does in
+# nearly every real log; concentric rings about the exact centre read as a
+# target. Checks are drawn at the same angles the geometry notches.
+PITH = (0.021, -0.013)
+RING_SCALE = 38.0
+CHECK_W0 = 0.0010
+CHECK_WIDEN = 0.012
 
 
 def eevee_engine_id():
@@ -404,14 +462,67 @@ def build_log(bm, segs):
             ]
         )
     verts, rows, caps = loft(bm, rings)
-    # Bark on the sides, pale end grain on both sawn faces and their rims.
-    bark = [face for row in rows[1:body_rows - 1] for face in row]
-    grain = list(rows[0]) + list(rows[body_rows - 1])
+    # Bark on the sides and down to the ground; pale end grain on both sawn
+    # faces and the top rim. A pale bottom chamfer ran a light ring round
+    # the floor line, which is the foot of a tub, not the butt of a log.
+    bark = [face for row in rows[:body_rows - 1] for face in row]
+    grain = list(rows[body_rows - 1])
     for row in rows[body_rows:]:
         grain.extend(row)
     for cap in caps:
         grain.extend(cap)
     return verts, bark, grain
+
+
+def lap_thickness(u):
+    """Extra outer thickness of the hoop's lap joint at angle u."""
+    d = (u - LAP_U0) % (2.0 * math.pi)
+    span = LAP_U1 - LAP_U0
+    if d <= LAP_STEP:
+        return LAP_T * d / LAP_STEP
+    if d <= span:
+        return LAP_T
+    if d <= span + LAP_TAPER:
+        return LAP_T * (1.0 - (d - span) / LAP_TAPER)
+    return 0.0
+
+
+def band_mean_radius(segs):
+    mid_z = 0.5 * (BAND_Z0 + BAND_Z1)
+    return sum(
+        log_radius(i * (2.0 * math.pi / segs), mid_z) for i in range(segs)
+    ) / segs
+
+
+def band_host_radii(u, round_band, mean_r):
+    """Log radius the hoop is built on, at its bottom and top edge."""
+    if round_band:
+        return mean_r, mean_r
+    return log_radius(u, BAND_Z0), log_radius(u, BAND_Z1)
+
+
+def band_outer_radius(u, z, round_band, mean_r):
+    """The hoop's outer face at angle u and height z, lap included."""
+    r0, r1 = band_host_radii(u, round_band, mean_r)
+    za = BAND_Z0 + BAND_CHAMFER
+    zb = BAND_Z1 - BAND_CHAMFER
+    k = (z - za) / (zb - za)
+    return r0 + (r1 - r0) * k + BAND_PROUD + lap_thickness(u)
+
+
+def band_angles(segs):
+    """Log-segment angles plus every kink of the lap and every rivet."""
+    us = {i * (2.0 * math.pi / segs) for i in range(segs)}
+    us.update(
+        (
+            LAP_U0,
+            LAP_U0 + LAP_STEP,
+            LAP_U1,
+            LAP_U1 + LAP_TAPER,
+        )
+    )
+    us.update(RIVET_US)
+    return sorted(u % (2.0 * math.pi) for u in us)
 
 
 def build_band(bm, segs, round_band):
@@ -421,30 +532,68 @@ def build_band(bm, segs, round_band):
     the mean radius instead, which is exactly what made the old torus sink
     into the wood on one side and float off it on the other.
     """
-    mid_z = 0.5 * (BAND_Z0 + BAND_Z1)
-    mean_r = sum(
-        log_radius(i * (2.0 * math.pi / segs), mid_z) for i in range(segs)
-    ) / segs
+    mean_r = band_mean_radius(segs)
     sections = []
     c = BAND_CHAMFER
-    for i in range(segs):
-        u = i * (2.0 * math.pi / segs)
+    for u in band_angles(segs):
         cu, su = math.cos(u), math.sin(u)
-        if round_band:
-            r0 = r1 = mean_r
-        else:
-            r0 = log_radius(u, BAND_Z0)
-            r1 = log_radius(u, BAND_Z1)
+        r0, r1 = band_host_radii(u, round_band, mean_r)
+        lap = lap_thickness(u)
         profile = (
             (r0 - BAND_BITE, BAND_Z0),
-            (r0 + BAND_PROUD - c, BAND_Z0),
-            (r0 + BAND_PROUD, BAND_Z0 + c),
-            (r1 + BAND_PROUD, BAND_Z1 - c),
-            (r1 + BAND_PROUD - c, BAND_Z1),
+            (r0 + BAND_PROUD + lap - c, BAND_Z0),
+            (r0 + BAND_PROUD + lap, BAND_Z0 + c),
+            (r1 + BAND_PROUD + lap, BAND_Z1 - c),
+            (r1 + BAND_PROUD + lap - c, BAND_Z1),
             (r1 - BAND_BITE, BAND_Z1),
         )
         sections.append([Vector((r * cu, r * su, z)) for r, z in profile])
     return loft_cyclic(bm, sections)
+
+
+def build_rivets(bm, segs, round_band, float_out):
+    """Domed rivet heads through the lap, seated into the band's own face.
+
+    Each head is placed from ``band_outer_radius`` at its own angle, which
+    is a band section, so the seat is measured against the exact surface.
+    ``float_out`` is the falsifier: it moves every head off the lap.
+    """
+    mean_r = band_mean_radius(segs)
+    zc = 0.5 * (BAND_Z0 + BAND_Z1)
+
+    def surface_point(u, z):
+        r = band_outer_radius(u, z, round_band, mean_r)
+        return Vector((r * math.cos(u), r * math.sin(u), z))
+
+    verts, faces = [], []
+    for u in RIVET_US:
+        # Aim the head down the band's own surface normal. The log is out
+        # of round, so its surface is not square to the radial: across one
+        # head the radius falls 1.4 mm, and a radially aimed head sank on
+        # one side and lifted on the other.
+        eps = 1e-4
+        du = surface_point(u + eps, zc) - surface_point(u - eps, zc)
+        dz = surface_point(u, zc + eps) - surface_point(u, zc - eps)
+        normal = du.cross(dz).normalized()
+        if normal.dot(Vector((math.cos(u), math.sin(u), 0.0))) < 0.0:
+            normal = -normal
+        tang = du.normalized()
+        up = normal.cross(tang).normalized()
+        center = surface_point(u, zc) + normal * float_out
+        stations = ((-RIVET_BITE / RIVET_H, 1.0),) + RIVET_RINGS
+        rings = []
+        for h, scale in stations:
+            ring = []
+            for i in range(RIVET_SEGS):
+                a = i * (2.0 * math.pi / RIVET_SEGS)
+                offset = (tang * math.cos(a) + up * math.sin(a)) * (RIVET_R * scale)
+                ring.append(center + normal * (h * RIVET_H) + offset)
+            rings.append(ring)
+        v, rows, caps = loft(bm, rings)
+        verts.extend(v)
+        faces.extend(face for row in rows for face in row)
+        faces.extend(face for cap in caps for face in cap)
+    return verts, faces
 
 
 def axe_frame():
@@ -481,33 +630,57 @@ def build_head(bm, chamfer_segs):
     return verts, faces
 
 
-def haft_rings(scale, segs):
-    _f, s, _eh, haft, _poll, eye = axe_frame()
+def haft_curve():
+    """Start, control and end points of the haft's centreline Bezier."""
+    _f, _s, _eh, haft, _poll, eye = axe_frame()
     start = eye - haft * HAFT_DROP
     end = eye + haft * HAFT_LEN
     # A straight stick reads as a broom. The bow is a quadratic Bezier
     # leaning away from the bit, the way a hung haft curves.
     bit_dir = Vector((math.cos(AXE_BIT_ANGLE), 0.0, math.sin(AXE_BIT_ANGLE)))
     mid = (start + end) * 0.5 - bit_dir * HAFT_BOW
+    return start, mid, end
+
+
+def haft_point(t):
+    start, mid, end = haft_curve()
+    omt = 1.0 - t
+    p = start * (omt * omt) + mid * (2.0 * omt * t) + end * (t * t)
+    dp = (mid - start) * (2.0 * omt) + (end - mid) * (2.0 * t)
+    return p, dp.normalized()
+
+
+def haft_rings(scale, segs, oval=HAFT_OVAL):
+    f, s, _eh, _haft, _poll, _eye = axe_frame()
     rings = []
     for t, radius in HAFT_SECTIONS:
-        omt = 1.0 - t
-        p = start * (omt * omt) + mid * (2.0 * omt * t) + end * (t * t)
-        dp = (mid - start) * (2.0 * omt) + (end - mid) * (2.0 * t)
-        tangent = dp.normalized()
+        p, tangent = haft_point(t)
         side = s.cross(tangent).normalized()
         up = tangent.cross(side).normalized()
-        r = radius * scale
+        # The knob hooks toward the bit: smoothstep in over the last fifth.
+        k = min(1.0, max(0.0, (t - 0.80) / 0.20))
+        hook = HAFT_HOOK * k * k * (3.0 - 2.0 * k)
+        p = p + side * (hook if side.dot(f) > 0.0 else -hook)
+        # ``side`` lies in the swing plane, ``up`` across the cheeks; the
+        # oval is wide along the first and keeps the eye fit on the second.
+        # ``scale`` thickens across the cheeks only: that is the dimension
+        # the eye has to clear, and the one --fat-haft breaks. Scaling the
+        # swing-plane width too grew the knob past the bounding box, so
+        # the falsifier failed exit 8 instead of its own budget.
         ring = []
         for i in range(segs):
             a = i * (2.0 * math.pi / segs)
-            ring.append(p + side * (r * math.cos(a)) + up * (r * math.sin(a)))
+            ring.append(
+                p
+                + side * (radius * oval * math.cos(a))
+                + up * (radius * scale * math.sin(a))
+            )
         rings.append(ring)
     return rings
 
 
-def build_haft(bm, scale, segs):
-    verts, rows, caps = loft(bm, haft_rings(scale, segs))
+def build_haft(bm, scale, segs, oval=HAFT_OVAL):
+    verts, rows, caps = loft(bm, haft_rings(scale, segs, oval))
     faces = [face for row in rows for face in row]
     faces.extend(face for cap in caps for face in cap)
     return verts, faces
@@ -556,7 +729,8 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def build_chopping_block_mesh(name, detail=1, haft_scale=1.0, round_band=False):
+def build_chopping_block_mesh(name, detail=1, haft_scale=1.0, round_band=False,
+                              haft_oval=HAFT_OVAL, float_rivets=0.0):
     log_segs = BLOCK_SEGS * detail
     haft_segs = HAFT_SEGS * detail
     chamfer_segs = HIGH_CHAMFER_SEGS if detail > 1 else 1
@@ -564,22 +738,30 @@ def build_chopping_block_mesh(name, detail=1, haft_scale=1.0, round_band=False):
     try:
         _log_verts, bark_faces, grain_faces = build_log(bm, log_segs)
         _band_verts, band_faces = build_band(bm, log_segs, round_band)
+        _rivet_verts, rivet_faces = build_rivets(
+            bm, log_segs, round_band, float_rivets
+        )
         head_verts, head_faces = build_head(bm, chamfer_segs)
-        haft_verts, haft_faces = build_haft(bm, haft_scale, haft_segs)
+        haft_verts, haft_faces = build_haft(
+            bm, haft_scale, haft_segs, haft_oval
+        )
 
         # The axe is built in the XZ plane so the frame maths stays readable.
         spin = Matrix.Rotation(AXE_AZIMUTH, 3, "Z")
         for v in head_verts + haft_verts:
             v.co = spin @ v.co
 
-        metal = set(band_faces) | set(head_faces)
+        metal = set(band_faces) | set(head_faces) | set(rivet_faces)
         grain = set(grain_faces)
-        # Only the haft is a turned surface. Everything else is faceted: the
-        # log is flat-shaded so its out-of-round wobble and the checks in the
-        # end grain each catch their own light. Smoothed, a 36-gon log is a
-        # featureless drum and every bit of surface modelling is wasted --
-        # that is what made the round-2 block read as a canister.
-        flat = set(band_faces) | set(head_faces) | set(bark_faces) | grain
+        haft = set(haft_faces)
+        # Only the axe head is faceted. Flat-shading the log made its 36
+        # equal facets read as coopered staves and the block as a tub, and
+        # flat-shading the hoop threw a separate highlight off every facet,
+        # a row of piano keys. The wobble still reads in the silhouette;
+        # the bark and the end grain carry their surface in the material.
+        # Hard edges come from the crease angle and from every material
+        # boundary, so the sawn rim stays a crisp edge against the bark.
+        flat = set(head_faces)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -588,13 +770,19 @@ def build_chopping_block_mesh(name, detail=1, haft_scale=1.0, round_band=False):
                 face.material_index = METAL_IDX
             elif face in grain:
                 face.material_index = GRAIN_IDX
+            elif face in haft:
+                face.material_index = HAFT_IDX
             else:
                 face.material_index = WOOD_IDX
             face.smooth = face not in flat
         for edge in bm.edges:
             edge.smooth = True
             if edge.is_manifold and len(edge.link_faces) == 2:
-                if edge.calc_face_angle() > math.radians(40.0):
+                fa, fb = edge.link_faces
+                if (
+                    edge.calc_face_angle() > math.radians(40.0)
+                    or fa.material_index != fb.material_index
+                ):
                     edge.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
@@ -606,14 +794,226 @@ def build_chopping_block_mesh(name, detail=1, haft_scale=1.0, round_band=False):
     return obj
 
 
-def principled(name, color, metallic, roughness):
+def enabled_socket(sockets, name):
+    """The one enabled socket called ``name``.
+
+    Mix and Map Range carry a socket of each data type under one name, and
+    their identifiers changed in 5.2; the enabled one is unambiguous on
+    every version.
+    """
+    for sock in sockets:
+        if sock.name == name and sock.enabled:
+            return sock
+    raise KeyError(f"no enabled socket {name!r}")
+
+
+def surface(name, metallic):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = color
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Metallic"].default_value = metallic
-    bsdf.inputs["Roughness"].default_value = roughness
+    coord = nt.nodes.new("ShaderNodeTexCoord").outputs["Object"]
+    return mat, nt, bsdf, coord
+
+
+def mapping(nt, vec, scale=(1.0, 1.0, 1.0), loc=(0.0, 0.0, 0.0)):
+    node = nt.nodes.new("ShaderNodeMapping")
+    node.inputs["Scale"].default_value = scale
+    node.inputs["Location"].default_value = loc
+    nt.links.new(vec, node.inputs["Vector"])
+    return node.outputs["Vector"]
+
+
+def noise(nt, vec, scale, detail, roughness):
+    node = nt.nodes.new("ShaderNodeTexNoise")
+    node.inputs["Scale"].default_value = scale
+    node.inputs["Detail"].default_value = detail
+    node.inputs["Roughness"].default_value = roughness
+    nt.links.new(vec, node.inputs["Vector"])
+    return node.outputs["Fac"]
+
+
+def ramp(nt, fac, stops):
+    """Colour ramp over (position, rgb) stops, ascending."""
+    node = nt.nodes.new("ShaderNodeValToRGB")
+    els = node.color_ramp.elements
+    els[0].position = stops[0][0]
+    els[0].color = (*stops[0][1], 1.0)
+    els[1].position = stops[-1][0]
+    els[1].color = (*stops[-1][1], 1.0)
+    for pos, rgb in stops[1:-1]:
+        els.new(pos).color = (*rgb, 1.0)
+    nt.links.new(fac, node.inputs["Fac"])
+    return node.outputs["Color"]
+
+
+def remap(nt, value, from_lo, from_hi, to_lo, to_hi):
+    node = nt.nodes.new("ShaderNodeMapRange")
+    nt.links.new(value, enabled_socket(node.inputs, "Value"))
+    enabled_socket(node.inputs, "From Min").default_value = from_lo
+    enabled_socket(node.inputs, "From Max").default_value = from_hi
+    enabled_socket(node.inputs, "To Min").default_value = to_lo
+    enabled_socket(node.inputs, "To Max").default_value = to_hi
+    return enabled_socket(node.outputs, "Result")
+
+
+def math_node(nt, op, *inputs):
+    node = nt.nodes.new("ShaderNodeMath")
+    node.operation = op
+    for i, value in enumerate(inputs):
+        if isinstance(value, (int, float)):
+            node.inputs[i].default_value = value
+        else:
+            nt.links.new(value, node.inputs[i])
+    return node.outputs[0]
+
+
+def mix_color(nt, a, b, fac):
+    node = nt.nodes.new("ShaderNodeMix")
+    node.data_type = "RGBA"
+    nt.links.new(fac, enabled_socket(node.inputs, "Factor"))
+    for name, value in (("A", a), ("B", b)):
+        sock = enabled_socket(node.inputs, name)
+        if isinstance(value, tuple):
+            sock.default_value = (*value, 1.0)
+        else:
+            nt.links.new(value, sock)
+    return enabled_socket(node.outputs, "Result")
+
+
+def bark_material():
+    mat, nt, bsdf, coord = surface("ChopBlockBark", 0.0)
+    # Fissures run up the trunk: the noise is squeezed round the girth and
+    # stretched along it, so ridges and furrows come out vertical. At an
+    # 11:1 stretch the streaks were fine enough to read as planed timber;
+    # 4:1 at this scale gives furrows a few centimetres apart.
+    plates = noise(nt, mapping(nt, coord, scale=(8.0, 8.0, 2.0)), 3.0, 8.0, 0.64)
+    nt.links.new(
+        ramp(
+            nt,
+            plates,
+            (
+                (0.40, (0.016, 0.010, 0.006)),
+                (0.50, (0.058, 0.036, 0.021)),
+                (0.62, (0.105, 0.066, 0.039)),
+                (0.80, (0.150, 0.100, 0.062)),
+            ),
+        ),
+        bsdf.inputs["Base Color"],
+    )
+    nt.links.new(remap(nt, plates, 0.35, 0.8, 1.0, 0.78), bsdf.inputs["Roughness"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.85
+    bump.inputs["Distance"].default_value = 0.02
+    nt.links.new(plates, bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
+
+
+def grain_material():
+    mat, nt, bsdf, coord = surface("ChopBlockGrain", 0.0)
+    # Growth rings about an off-centre pith, flattened onto the sawn face.
+    flat = mapping(nt, coord, scale=(1.0, 1.0, 0.0), loc=(-PITH[0], -PITH[1], 0.0))
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "RINGS"
+    wave.rings_direction = "SPHERICAL"
+    wave.inputs["Scale"].default_value = RING_SCALE
+    wave.inputs["Distortion"].default_value = 2.6
+    wave.inputs["Detail"].default_value = 3.0
+    nt.links.new(flat, wave.inputs["Vector"])
+    rings = ramp(
+        nt,
+        wave.outputs["Fac"],
+        (
+            (0.30, (0.600, 0.450, 0.265)),
+            (0.72, (0.520, 0.370, 0.205)),
+            (0.95, (0.400, 0.268, 0.140)),
+        ),
+    )
+    weather = noise(nt, coord, 6.0, 4.0, 0.55)
+    base = mix_color(
+        nt, rings, (0.330, 0.250, 0.170), remap(nt, weather, 0.45, 0.75, 0.0, 0.45)
+    )
+    # Radial checks at the angles the geometry notches, widening toward the
+    # rim and fading out before the pith, as a drying check does.
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord, sep.inputs["Vector"])
+    x, y = sep.outputs["X"], sep.outputs["Y"]
+    ang = math_node(nt, "ARCTAN2", y, x)
+    rad = math_node(
+        nt, "SQRT", math_node(nt, "MULTIPLY_ADD", x, x, math_node(nt, "MULTIPLY", y, y))
+    )
+    width = math_node(nt, "MULTIPLY_ADD", rad, CHECK_WIDEN, CHECK_W0)
+    nearest = None
+    for angle, _depth in TOP_CRACKS:
+        wrapped = math_node(
+            nt, "WRAP", math_node(nt, "SUBTRACT", ang, angle), math.pi, -math.pi
+        )
+        arc = math_node(nt, "MULTIPLY", math_node(nt, "ABSOLUTE", wrapped), rad)
+        q = math_node(nt, "DIVIDE", arc, width)
+        nearest = q if nearest is None else math_node(nt, "MINIMUM", nearest, q)
+    line = remap(nt, nearest, 0.0, 1.0, 1.0, 0.0)
+    fade = remap(nt, rad, 0.22 * BLOCK_R, 0.55 * BLOCK_R, 0.0, 1.0)
+    crack = math_node(nt, "MULTIPLY", line, fade)
+    nt.links.new(
+        mix_color(nt, base, (0.050, 0.032, 0.020), crack), bsdf.inputs["Base Color"]
+    )
+    nt.links.new(
+        remap(nt, wave.outputs["Fac"], 0.0, 1.0, 0.58, 0.74), bsdf.inputs["Roughness"]
+    )
+    return mat
+
+
+def iron_material():
+    mat, nt, bsdf, coord = surface("ChopBlockIron", 1.0)
+    # Forged iron is never one grey: mill scale, polish where it is handled
+    # and struck, and a little rust in the low spots.
+    # Fine and low in contrast: at a coarser scale the blotches read as
+    # marbling, not as scale on forged metal.
+    blot = noise(nt, coord, 45.0, 6.0, 0.6)
+    nt.links.new(
+        ramp(
+            nt,
+            blot,
+            (
+                (0.40, (0.085, 0.082, 0.079)),
+                (0.60, (0.140, 0.136, 0.131)),
+                (0.72, (0.130, 0.100, 0.076)),
+                (0.82, (0.180, 0.096, 0.052)),
+            ),
+        ),
+        bsdf.inputs["Base Color"],
+    )
+    nt.links.new(remap(nt, blot, 0.35, 0.8, 0.34, 0.60), bsdf.inputs["Roughness"])
+    nt.links.new(remap(nt, blot, 0.66, 0.80, 1.0, 0.35), bsdf.inputs["Metallic"])
+    return mat
+
+
+def haft_material():
+    mat, nt, bsdf, coord = surface("ChopBlockHaft", 0.0)
+    # Oiled hickory: lighter than the bark by a clear margin, with handling
+    # grime breaking the colour up.
+    grime = noise(nt, coord, 24.0, 5.0, 0.55)
+    nt.links.new(
+        ramp(
+            nt,
+            grime,
+            (
+                (0.35, (0.300, 0.170, 0.075)),
+                (0.55, (0.420, 0.262, 0.120)),
+                (0.75, (0.480, 0.318, 0.155)),
+            ),
+        ),
+        bsdf.inputs["Base Color"],
+    )
+    nt.links.new(remap(nt, grime, 0.3, 0.8, 0.62, 0.42), bsdf.inputs["Roughness"])
+    return mat
+
+
+def block_materials():
+    """Materials in slot order: bark, end grain, iron, haft."""
+    return bark_material(), grain_material(), iron_material(), haft_material()
 
 
 def assign_slots(obj, *wanted):
@@ -740,6 +1140,9 @@ def classify_shells(me, groups):
     stats = []
     for group in groups:
         pts = [co[i] for i in group]
+        spans = [
+            max(p[k] for p in pts) - min(p[k] for p in pts) for k in range(3)
+        ]
         zs = [p.z for p in pts]
         stats.append(
             {
@@ -747,21 +1150,83 @@ def classify_shells(me, groups):
                 "zmin": min(zs),
                 "zmax": max(zs),
                 "zspan": max(zs) - min(zs),
+                "span": max(spans),
             }
         )
-    log = min(stats, key=lambda s: s["zmin"])
-    rest = [s for s in stats if s is not log]
+    # Rivets are the only shells a few centimetres across.
+    rivets = [s for s in stats if s["span"] < RIVET_SPAN_MAX]
+    parts = [s for s in stats if s["span"] >= RIVET_SPAN_MAX]
+    log = min(parts, key=lambda s: s["zmin"])
+    rest = [s for s in parts if s is not log]
     if len(rest) != 3:
-        return {"log": log, "band": None, "head": None, "haft": None}
+        return {
+            "log": log, "band": None, "head": None, "haft": None,
+            "rivets": rivets,
+        }
     band = min(rest, key=lambda s: s["zspan"])
     rest = [s for s in rest if s is not band]
     haft = max(rest, key=lambda s: s["zmax"])
     head = [s for s in rest if s is not haft][0]
-    return {"log": log, "band": band, "head": head, "haft": haft}
+    return {
+        "log": log, "band": band, "head": head, "haft": haft, "rivets": rivets,
+    }
+
+
+def band_outer_hit(bvh, u, z):
+    """Radius of the band's outer face at angle u and height z, read off
+    the mesh by casting from the axis and keeping the farthest hit."""
+    direction = Vector((math.cos(u), math.sin(u), 0.0))
+    origin = Vector((0.0, 0.0, z))
+    outer = None
+    for _ in range(16):
+        hit = bvh.ray_cast(origin, direction)
+        if hit[0] is None:
+            break
+        outer = math.hypot(hit[0].x, hit[0].y)
+        origin = hit[0] + direction * 1e-5
+    return outer
+
+
+def rivet_seats(me, band, rivets):
+    """(deepest seat, least proud) per rivet, measured radially at each
+    vertex's own angle against the band surface, never nearest-surface."""
+    bvh = block_bvh(me, band["idx"])
+    co = [v.co for v in me.vertices]
+    out = []
+    for rivet in rivets:
+        depths = []
+        for i in rivet["idx"]:
+            p = co[i]
+            outer = band_outer_hit(bvh, math.atan2(p.y, p.x), p.z)
+            if outer is None:
+                depths = None
+                break
+            depths.append(outer - math.hypot(p.x, p.y))
+        if depths is None:
+            out.append((-1.0, -1.0))
+        else:
+            out.append((max(depths), -min(depths)))
+    return out
+
+
+def haft_oval(haft_pts):
+    """Width across the swing plane over thickness across the cheeks, at the
+    grip station, in the construction frame. Vertices are taken from a thin
+    slab round the station so exactly one section ring is measured."""
+    _f, s, _eh, _haft, _poll, _eye = axe_frame()
+    p0, tangent = haft_point(HAFT_GRIP_T)
+    swing = s.cross(tangent).normalized()
+    slab = [q for q in haft_pts if abs((q - p0).dot(tangent)) < 0.004]
+    if not slab:
+        return 0.0
+    c = sum(slab, Vector()) / len(slab)
+    thick = max(abs((q - c).dot(s)) for q in slab)
+    wide = max(abs((q - c).dot(swing)) for q in slab)
+    return wide / thick if thick > 0.0 else 0.0
 
 
 def block_bvh(me, group):
-    """BVH over the log shell only, so contact is measured against the wood."""
+    """BVH over one shell only, so contact is measured against that part."""
     member = set(group)
     verts = [tuple(v.co) for v in me.vertices]
     polys = [
@@ -801,6 +1266,8 @@ def joint_audit(me, groups):
         "haft_clear": -1.0,
         "haft_in_log": -1,
         "plumb": 99.0,
+        "rivet_seats": [],
+        "haft_oval": 0.0,
     }
     if any(named[k] is None for k in ("band", "head", "haft")):
         return out
@@ -866,6 +1333,8 @@ def joint_audit(me, groups):
     haft_world = [co[i] for i in haft["idx"]]
     out["haft_clear"] = min(bvh.find_nearest(p)[3] for p in haft_world)
     out["haft_in_log"] = sum(1 for p in haft_world if inside_block(bvh, p))
+    out["rivet_seats"] = rivet_seats(me, band, named["rivets"])
+    out["haft_oval"] = haft_oval(haft_pts)
     return out
 
 
@@ -1005,20 +1474,17 @@ def export_unity(path, objects):
 
 
 def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
-          round_band=False):
+          round_band=False, round_haft=False, float_rivets=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    haft_scale = FAT_HAFT_SCALE if fat_haft else 1.0
-    low = build_chopping_block_mesh(
-        "ChopBlockLow",
-        detail=1,
-        haft_scale=haft_scale,
-        round_band=round_band,
-    )
+    shape = {
+        "haft_scale": FAT_HAFT_SCALE if fat_haft else 1.0,
+        "round_band": round_band,
+        "haft_oval": 1.0 if round_haft else HAFT_OVAL,
+        "float_rivets": FLOAT_RIVET if float_rivets else 0.0,
+    }
+    low = build_chopping_block_mesh("ChopBlockLow", detail=1, **shape)
     high = build_chopping_block_mesh(
-        "ChopBlockHigh",
-        detail=HIGH_SEG_SCALE,
-        haft_scale=haft_scale,
-        round_band=round_band,
+        "ChopBlockHigh", detail=HIGH_SEG_SCALE, **shape
     )
     if lift_z:
         low.location.z += LIFT_Z
@@ -1027,14 +1493,13 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
     # world_bbox reads matrix_world, which is evaluated data. Without this the
     # cached matrix hides a moved object and the grounded budget cannot fail.
     bpy.context.view_layer.update()
-    # The bark has to sit well below the sawn face or a flat-shaded log round
-    # reads as a turned wooden drum: the pale top is the whole point of the
+    # The bark has to sit well below the sawn face or a log round reads as
+    # a turned wooden drum: the pale top is the whole point of the
     # silhouette and it needs something dark to be pale against.
-    wood = principled("ChopBlockBark", (0.105, 0.058, 0.028, 1.0), 0.0, 0.86)
-    grain = principled("ChopBlockGrain", (0.560, 0.400, 0.215, 1.0), 0.0, 0.62)
-    metal = principled("ChopBlockIron", (0.20, 0.196, 0.196, 1.0), 1.0, 0.34)
-    assign_slots(low, wood, grain, metal)
-    assign_slots(high, wood, grain, metal)
+    mats = block_materials()
+    wood = mats[WOOD_IDX]
+    assign_slots(low, *mats)
+    assign_slots(high, *mats)
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("chopping block mesh did not build", 3), None, None, None, None, None
@@ -1066,12 +1531,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
-    collider_src = build_chopping_block_mesh(
-        "ChopBlockColSrc",
-        detail=1,
-        haft_scale=haft_scale,
-        round_band=round_band,
-    )
+    collider_src = build_chopping_block_mesh("ChopBlockColSrc", detail=1, **shape)
     collider = convex_hull_collider(collider_src, "ChopBlockCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
     col_tris = triangle_count(collider.data)
@@ -1084,6 +1544,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at its own temp preference, which is the working
+    # directory on a stock portable build, so gettempdir() can be the repo
+    # root. Remove the file once it is measured rather than leaving it there.
+    if os.path.isfile(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1127,6 +1592,12 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
         f"haft_in_log={joint['haft_in_log']} plumb={joint['plumb']:.7f}"
     )
     print(f"measured log diameter={log_dia:.4f} height={log_h:.4f}")
+    seats = joint["rivet_seats"]
+    print(
+        "measured rivets "
+        + " ".join(f"seat={a:.5f},proud={b:.5f}" for a, b in seats)
+        + f" haft_oval={joint['haft_oval']:.4f}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -1151,6 +1622,11 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
     if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
         return fail(
             f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
+            5,
+        ), None, None, None, None, None
+    if idx_counts.get(HAFT_IDX, 0) < HAFT_FACES_MIN:
+        return fail(
+            f"haft faces {idx_counts.get(HAFT_IDX, 0)} < {HAFT_FACES_MIN}",
             5,
         ), None, None, None, None, None
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
@@ -1266,6 +1742,17 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
             "inside the log",
             18,
         ), None, None, None, None, None
+    if len(seats) != len(RIVET_US) or any(
+        not (RIVET_SEAT_MIN <= seat <= RIVET_SEAT_MAX) or proud < RIVET_PROUD_MIN
+        for seat, proud in seats
+    ):
+        return fail(
+            "rivet seats "
+            + ", ".join(f"{a:.5f} (proud {b:.5f})" for a, b in seats)
+            + f" outside [{RIVET_SEAT_MIN}, {RIVET_SEAT_MAX}] or proud < "
+            f"{RIVET_PROUD_MIN} (--float-rivets is the designed fail)",
+            18,
+        ), None, None, None, None, None
     if joint["plumb"] > PLUMB_EPS:
         return fail(
             f"log axis out of plumb by {joint['plumb']:.7f} > {PLUMB_EPS}",
@@ -1280,6 +1767,13 @@ def check(skip_decimate, lift_z=False, stray_vert=False, fat_haft=False,
             f"{BLOCK_DIAMETER} x {BLOCK_HEIGHT} chopping block",
             19,
         ), None, None, None, None, None
+    if not (HAFT_OVAL_MIN <= joint["haft_oval"] <= HAFT_OVAL_MAX):
+        return fail(
+            f"haft section {joint['haft_oval']:.4f} wide-to-thick outside "
+            f"[{HAFT_OVAL_MIN}, {HAFT_OVAL_MAX}]: a round haft is a broom "
+            "handle (--round-haft is the designed fail)",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1289,7 +1783,11 @@ def wire_normal(mat, tex):
     nrm = nt.nodes.new("ShaderNodeNormalMap")
     nrm.inputs["Strength"].default_value = 1.0
     nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
+    # The bark's fissure bump sits on top of the baked normal, not instead
+    # of it.
+    bump = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBump"), None)
+    target = bump.inputs["Normal"] if bump else bsdf.inputs["Normal"]
+    nt.links.new(nrm.outputs["Normal"], target)
 
 
 def render_still(low, wood, tex, path, engine):
@@ -1421,6 +1919,16 @@ def main():
         action="store_true",
         help="falsification: a circular hoop on an out-of-round log",
     )
+    p.add_argument(
+        "--round-haft",
+        action="store_true",
+        help="falsification: a round haft section, failing the oval budget",
+    )
+    p.add_argument(
+        "--float-rivets",
+        action="store_true",
+        help="falsification: rivet heads lifted off the lap, failing their seat",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1429,6 +1937,8 @@ def main():
         stray_vert=args.stray_vert,
         fat_haft=args.fat_haft,
         round_band=args.round_band,
+        round_haft=args.round_haft,
+        float_rivets=args.float_rivets,
     )
     if code:
         return code

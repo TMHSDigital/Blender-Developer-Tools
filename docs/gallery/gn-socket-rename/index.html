@@ -253,7 +253,7 @@
       <img src="../assets/gn-socket-rename-hero.webp" alt="gn-socket-rename render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts</div>
+    <div class="callout"><span class="tag">witnesses</span> A_INT and Min_001 present on 4.5.11 and 5.1.2, absent on 5.2.1. --legacy-ids exits 5 only on 5.2. Evaluated 16 verts and gauge_h 1.80 on eight column verts; the still draws the column graduations from gauge_h, so an unwired Random Value renders a blank column</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gn-socket-rename/gn_socket_rename.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -272,6 +272,8 @@
 blender --background --python gn_socket_rename.py -- --legacy-ids
 blender --background --python gn_socket_rename.py -- --output gauge.png</code></pre>
 <p>The <code>--output</code> render path measures framing against the Layer 1 band via <code>examples/gallery_framing.py</code> (exit 10 on violation) before writing the still.</p>
+<h2>Render</h2>
+<p>The still witnesses both axes, not only the Compare one. The column&#x27;s graduations — a tick every 0.1 m in from each vertical corner, a heavier one every 0.5 m — are drawn by the column shader from the evaluated POINT <code>gauge_h</code> attribute, and only up to its stored height. With Compare broken the column is missing; with Random Value unwired the Store default leaves <code>gauge_h</code> at 0 and the column renders blank copper. Both were rendered to confirm it. The shader is render-path only and nothing in it feeds back into <code>check()</code>; the column is also turned to 18° for the still so two faces show, which <code>check()</code> cannot see because it reads object-space vertices.</p>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
 <p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 4 | Identifier inventory wrong for this Blender version | | 5 | Pre-5.2 identifier missing (<code>--legacy-ids</code> on 5.2) | | 6 | Enabled-name socket lookup failed | | 7 | Evaluated vert count off (Compare did not switch the column in) | | 8 | Evaluated zmax off closed form | | 9 | POINT <code>gauge_h</code> not 1.80 on eight column verts | | 10 | Gallery framing violation | | 12 | <code>--output</code> produced no file |</p>
@@ -564,8 +566,154 @@ LEGACY_CMP_B = <span class="s">&quot;B_INT&quot;</span>
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
 
+<span class="c"># Render path only. Graduations are engraved every TICK_MINOR up the column</span>
+<span class="c"># and heavier every TICK_MAJOR, measured from the plinth top.</span>
+TICK_MINOR = <span class="n">0.1</span>
+TICK_MAJOR = <span class="n">0.5</span>
+TICK_MINOR_HALF = <span class="n">0.004</span>
+TICK_MAJOR_HALF = <span class="n">0.009</span>
+<span class="c"># Ticks run in from each vertical corner, like the graduations on a gauge</span>
+<span class="c"># column. Full-width lines stacked the column into planks.</span>
+TICK_MINOR_LEN = <span class="n">0.07</span>
+TICK_MAJOR_LEN = <span class="n">0.16</span>
+
+
+<span class="k">def</span> shader_math(nt, op, *inputs):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    node.operation = op
+    <span class="k">for</span> i, value <span class="k">in</span> enumerate(inputs):
+        <span class="k">if</span> isinstance(value, (int, float)):
+            node.inputs[i].default_value = value
+        <span class="k">else</span>:
+            nt.links.new(value, node.inputs[i])
+    <span class="k">return</span> node.outputs[<span class="n">0</span>]
+
+
+<span class="k">def</span> tick_mask(nt, height, spacing, half_width):
+    <span class="s">&quot;&quot;&quot;1 within half_width of a multiple of spacing, else 0.&quot;&quot;&quot;</span>
+    frac = shader_math(nt, <span class="s">&quot;FRACT&quot;</span>, shader_math(nt, <span class="s">&quot;DIVIDE&quot;</span>, height, spacing))
+    near = shader_math(nt, <span class="s">&quot;MINIMUM&quot;</span>, frac, shader_math(nt, <span class="s">&quot;SUBTRACT&quot;</span>, <span class="n">1.0</span>, frac))
+    <span class="k">return</span> shader_math(
+        nt, <span class="s">&quot;LESS_THAN&quot;</span>, shader_math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, near, spacing), half_width
+    )
+
+
+<span class="k">def</span> dress_gauge(copper, steel):
+    <span class="s">&quot;&quot;&quot;Turn the jo-block into a height gauge, drawn from the witness.
+
+    The graduations read the evaluated POINT ``gauge_h`` attribute, so the
+    render witnesses the Random Value axis as well as the Compare axis: with
+    Random unwired, the Store default leaves ``gauge_h`` at 0 on the column
+    and the column renders blank. Nothing here feeds back into ``check``.
+    &quot;&quot;&quot;</span>
+    nt = copper.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    attr = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    attr.attribute_type = <span class="s">&quot;GEOMETRY&quot;</span>
+    attr.attribute_name = ATTR_NAME
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+
+    height = shader_math(nt, <span class="s">&quot;SUBTRACT&quot;</span>, sep.outputs[<span class="s">&quot;Z&quot;</span>], PLINTH_SIZE[<span class="n">2</span>])
+    <span class="c"># Distance in from the nearest vertical corner, from the object-space</span>
+    <span class="c"># normal: on a side face one of |nx|, |ny| is 1 and the other 0.</span>
+    onrm = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Normal&quot;</span>], onrm.inputs[<span class="s">&quot;Vector&quot;</span>])
+    across = shader_math(
+        nt,
+        <span class="s">&quot;ADD&quot;</span>,
+        shader_math(
+            nt,
+            <span class="s">&quot;MULTIPLY&quot;</span>,
+            shader_math(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, sep.outputs[<span class="s">&quot;X&quot;</span>]),
+            shader_math(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, onrm.outputs[<span class="s">&quot;Y&quot;</span>]),
+        ),
+        shader_math(
+            nt,
+            <span class="s">&quot;MULTIPLY&quot;</span>,
+            shader_math(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, sep.outputs[<span class="s">&quot;Y&quot;</span>]),
+            shader_math(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, onrm.outputs[<span class="s">&quot;X&quot;</span>]),
+        ),
+    )
+    inset = shader_math(nt, <span class="s">&quot;SUBTRACT&quot;</span>, COLUMN_XY / <span class="n">2.0</span>, across)
+    lines = shader_math(
+        nt,
+        <span class="s">&quot;MAXIMUM&quot;</span>,
+        shader_math(
+            nt,
+            <span class="s">&quot;MULTIPLY&quot;</span>,
+            tick_mask(nt, height, TICK_MINOR, TICK_MINOR_HALF),
+            shader_math(nt, <span class="s">&quot;LESS_THAN&quot;</span>, inset, TICK_MINOR_LEN),
+        ),
+        shader_math(
+            nt,
+            <span class="s">&quot;MULTIPLY&quot;</span>,
+            tick_mask(nt, height, TICK_MAJOR, TICK_MAJOR_HALF),
+            shader_math(nt, <span class="s">&quot;LESS_THAN&quot;</span>, inset, TICK_MAJOR_LEN),
+        ),
+    )
+    <span class="c"># Side faces only (the top face sits on a tick by construction), and</span>
+    <span class="c"># only up to the stored gauge height.</span>
+    side = shader_math(
+        nt, <span class="s">&quot;LESS_THAN&quot;</span>, shader_math(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, onrm.outputs[<span class="s">&quot;Z&quot;</span>]), <span class="n">0.5</span>
+    )
+    stored = attr.outputs[<span class="s">&quot;Fac&quot;</span>]
+    within = shader_math(
+        nt, <span class="s">&quot;LESS_THAN&quot;</span>, height, shader_math(nt, <span class="s">&quot;ADD&quot;</span>, stored, <span class="n">0.001</span>)
+    )
+    engraved = shader_math(
+        nt,
+        <span class="s">&quot;MULTIPLY&quot;</span>,
+        shader_math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, lines, side),
+        shader_math(nt, <span class="s">&quot;MULTIPLY&quot;</span>, within, shader_math(nt, <span class="s">&quot;GREATER_THAN&quot;</span>, stored, <span class="n">0.5</span>)),
+    )
+
+    <span class="c"># Brushed along the column: noise squeezed across it, stretched up it.</span>
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">60.0</span>, <span class="n">60.0</span>, <span class="n">1.5</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    brush = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    brush.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">4.0</span>
+    brush.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], brush.inputs[<span class="s">&quot;Vector&quot;</span>])
+    rough = shader_math(
+        nt,
+        <span class="s">&quot;MULTIPLY_ADD&quot;</span>,
+        engraved,
+        <span class="n">0.45</span>,
+        shader_math(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, brush.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.10</span>, <span class="n">0.20</span>),
+    )
+    nt.links.new(rough, bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+
+    base = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    base.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(engraved, enabled_sock(base, <span class="s">&quot;inputs&quot;</span>, <span class="s">&quot;Factor&quot;</span>))
+    enabled_sock(base, <span class="s">&quot;inputs&quot;</span>, <span class="s">&quot;A&quot;</span>).default_value = (<span class="n">0.93</span>, <span class="n">0.42</span>, <span class="n">0.08</span>, <span class="n">1.0</span>)
+    enabled_sock(base, <span class="s">&quot;inputs&quot;</span>, <span class="s">&quot;B&quot;</span>).default_value = (<span class="n">0.05</span>, <span class="n">0.018</span>, <span class="n">0.006</span>, <span class="n">1.0</span>)
+    nt.links.new(enabled_sock(base, <span class="s">&quot;outputs&quot;</span>, <span class="s">&quot;Result&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    emit = bsdf.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> bsdf.inputs[<span class="s">&quot;Emission&quot;</span>]
+    nt.links.new(enabled_sock(base, <span class="s">&quot;outputs&quot;</span>, <span class="s">&quot;Result&quot;</span>), emit)
+    <span class="c"># Brushed, the copper reflects less of the key and went brown at</span>
+    <span class="c"># thumbnail size; a little more of its own colour keeps it copper.</span>
+    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.24</span>
+
+    <span class="c"># Ground steel: lift it off the stage and give it a machined finish.</span>
+    sb = steel.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    <span class="c"># Fully metallic at 0.32 it mirrored the dark studio and read as a void.</span>
+    sb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.27</span>, <span class="n">0.28</span>, <span class="n">0.31</span>, <span class="n">1.0</span>)
+    sb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.8</span>
+    sb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
+
+
 <span class="k">def</span> render_still(obj, path, engine):
     scene = bpy.context.scene
+    dress_gauge(bpy.data.materials[<span class="s">&quot;ColumnCopper&quot;</span>], bpy.data.materials[<span class="s">&quot;PlinthSteel&quot;</span>])
+    <span class="c"># Presentation turn. At 38 degrees one column face sat square to the</span>
+    <span class="c"># camera and the gauge read as a flat card; at 18 two faces show and the</span>
+    <span class="c"># corner graduations wrap the edge. check() reads object-space vertices,</span>
+    <span class="c"># so the turn cannot reach an assertion.</span>
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">18</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -610,7 +758,10 @@ LEGACY_CMP_B = <span class="s">&quot;B_INT&quot;</span>
 
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.4</span>, -<span class="n">4.6</span>, <span class="n">5.4</span>), <span class="n">680.0</span>, <span class="n">4.2</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">3.0</span>, <span class="n">2.2</span>), <span class="n">140.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.2</span>, <span class="n">5.8</span>, <span class="n">3.4</span>), <span class="n">300.0</span>, <span class="n">3.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
+    <span class="c"># At 300 W the rim&#x27;s glossy reflection off the floor lifted the stage</span>
+    <span class="c"># right of the column to mid grey-blue (patch mean 104 against 62 with</span>
+    <span class="c"># the rim off); the column edge still separates at this level.</span>
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.2</span>, <span class="n">5.8</span>, <span class="n">3.4</span>), <span class="n">120.0</span>, <span class="n">3.2</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
     light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.8</span>, -<span class="n">4.8</span>, <span class="n">5.6</span>), <span class="n">900.0</span>, <span class="n">0.85</span>, (<span class="n">1.0</span>, <span class="n">0.90</span>, <span class="n">0.70</span>))
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
     wedge.energy = <span class="n">480.0</span>

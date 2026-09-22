@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>chopping-block — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/chopping-block/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="chopping-block — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/chopping-block/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/chopping-block-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="chopping-block — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/chopping-block-hero.webp" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
@@ -246,37 +246,43 @@
   </div>
   <header class="hero">
     <h1>chopping-block</h1>
-    <p>A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom chopping-block render">
       <img src="../assets/chopping-block-hero.webp" alt="chopping-block render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1472 tris, three materials with 252 bark / 252 grain / 288 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.012 m, LOD ratios in band, convex collider 434 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7. Joint fit: four shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.0 mm into the log on every segment. --fat-haft exits 17 on eye clearance; --round-band exits 18 on the hoop bite band.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1800 tris, four materials with 180 bark / 216 grain / 404 metal / 176 haft faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.006 m, LOD ratios in band, convex collider 538 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7, oval haft 1.35 wide-to-thick. Joint fit: six shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.2 mm into the log on every segment, two lap rivets seated 1.50 and 1.54 mm. --fat-haft exits 17 on eye clearance; --round-band and --float-rivets exit 18 on their seats; --round-haft exits 19 on the haft section.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/chopping-block/chopping_block.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural chopping block (a hooped log round with a felling axe buried in the sawn face) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>The log is an out-of-round loft whose radius is a closed-form function of angle and height; the hoop, the top rim and the drying checks are all generated from that same function, so they stay seated when a dimension changes. The axe head is one lofted shell from poll to bit with its chamfers modelled into the section profile, and the haft is swept through the eye rather than pushed into it.</p>
+<p>A showcase piece, not an example. Procedural chopping block (a log round with a riveted iron hoop and a felling axe buried in the sawn face) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>The log is an out-of-round loft whose radius is a closed-form function of angle and height; the hoop, its rivets, the top rim and the drying checks are all generated from that same function, so they stay seated when a dimension changes. The hoop is a lapped strip with two domed rivets through the lap. The axe head is one lofted shell from poll to bit with its chamfers modelled into the section profile, and the haft is swept through the eye rather than pushed into it. The haft is oval, bows away from the bit, and hooks toward it at the knob.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1410–1530 | 1472 / 1472 / 1472 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2188 / 0.2188 / 0.2188 | | Materials | exactly 3 distinct; ≥160 bark, ≥90 grain, ≥24 metal faces | 3 slots; 252 / 252 / 288 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.526, 0.526, 1.012) m ± 0.01 | (0.5264, 0.5264, 1.0117) | | Collider tris | ≤ 470 | 434 | | Export | written, size &gt; 0 | 150784 / 150784 / 150776 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 1730–1870 | 1800 / 1800 / 1800 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 | | Materials | exactly 4 distinct; ≥160 bark, ≥90 grain, ≥170 metal, ≥150 haft faces | 4 slots; 180 / 216 / 404 / 176 | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (0.526, 0.526, 1.006) m ± 0.012 | (0.5264, 0.5264, 1.0064) | | Collider tris | ≤ 560 | 538 | | Export | written, size &gt; 0 | 180588 / 180588 / 180572 bytes |</p>
+<p>The triangle band, the outer AABB and the collider ceiling were re-fitted in the quality pass that added the lap, the rivets and the 16-segment oval haft (1472 → 1800 triangles, collider 434 → 538). The triangle band is centred on the new measurement, ± 4 %.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
-<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-5 of 0 | 0.0000 | | Log axis out of plumb | ≤ 2e-4 | 0.0000000 | | Log size | 0.535 × 0.360 m ± 0.03 / ± 0.02 | 0.5464 × 0.3600 |</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Non-manifold edges | 0 | 0 | | Loose verts / edges | 0 / 0 | 0 / 0 | | Doubles merged at 1e-5 | 0 | 0 | | Zero-area faces | 0 | 0 | | N-gons | 0 | 0 | | Coplanar disjoint face pairs | 0 | 0 | | Grounded: <code>zmin</code> | within 1e-4 of 0 | 0.0000 | | Log axis out of plumb | ≤ 1e-5 | 0.0000000 | | Log size | 0.535 × 0.360 m ± 0.030 / ± 0.010 | 0.5464 × 0.3600 | | Haft section, wide over thick at the grip | 1.25–1.60 | 1.3500 |</p>
 <h3>Joint fit</h3>
-<p>Four shells that have to meet correctly: log, hoop, head, haft.</p>
-<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Shell count | exactly 4 | 4 | | Haft clearance inside the eye | ≥ 0.006 m | 0.01800 | | Haft engagement through the eye | ≥ 0.020 m | 0.08049 | | Haft breakout margin below the head | ≥ 0.006 m | 0.02351 | | Bit bury below the sawn top | ≥ 0.030 m | 0.07871 | | Bit inset from the rim | ≥ 0.030 m | 0.14647 | | Hoop bite into the log, every segment | 0.002–0.007 m | 0.00371–0.00400 | | Haft clearance above the log | ≥ 0.015 m, 0 verts inside | 0.07858, 0 |</p>
+<p>Six shells that have to meet correctly: log, hoop, head, haft, and the two rivets through the hoop&#x27;s lap.</p>
+<p>| Axis | Declared | Measured (all three) | | --- | --- | --- | | Shell count | exactly 6 | 6 | | Haft clearance inside the eye | ≥ 0.006 m | 0.01800 | | Haft engagement through the eye | ≥ 0.020 m | 0.08225 | | Haft breakout margin below the head | ≥ 0.006 m | 0.02175 | | Bit bury below the sawn top | ≥ 0.030 m | 0.07871 | | Bit inset from the rim | ≥ 0.030 m | 0.14647 | | Hoop bite into the log, every segment | 0.002–0.007 m | 0.00371–0.00422 | | Haft clearance above the log | ≥ 0.015 m, 0 verts inside | 0.07531, 0 | | Rivet seat into the hoop, each rivet | 0.0008–0.0025 m | 0.00150, 0.00154 | | Rivet dome proud of the hoop, each rivet | ≥ 0.0025 m | 0.00419, 0.00432 |</p>
 <p>The hoop bite is binned by angular segment against the log&#x27;s own radius function. A single global midpoint radius misclassifies outer chamfer vertices as inner ones on an out-of-round log, which is how a hoop that visibly floated on one side still passed.</p>
-<p>DECIMATE COLLAPSE triangle counts happen to agree across all three series here; the gate is still a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>The rivet seat is measured radially at each rivet vertex&#x27;s own angle, against the hoop&#x27;s outer face read off the mesh by a ray cast from the axis. Each rivet is aimed down the hoop&#x27;s surface normal, not the radial: the log is out of round, so across one 12 mm head its surface falls by up to 1.4 mm, and radially aimed heads seated 1.87 and 2.82 mm against a 1.5 mm design bite, one edge sunk and the other lifted.</p>
+<p>DECIMATE COLLAPSE triangle counts happen to agree across all three series here; the gate is still a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG: two runs on each binary print identical measurements, and the three binaries agree on every gated axis. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<h3>Shading and materials</h3>
+<p>Only the axe head is flat-shaded: it is a chamfered forging, and its facets are its form. The log and the hoop are smooth-shaded. Flat-shaded, the log&#x27;s 36 equal facets read as coopered staves and the block as a tub, and the hoop threw one highlight per facet. The log&#x27;s wobble still reads in the silhouette, and its surface is carried by the materials: vertical bark furrows with a bump, growth rings about an off-centre pith on the sawn face, and dark radial checks drawn at the same angles the geometry notches. Every material boundary is a hard edge, so the sawn rim stays crisp against the bark.</p>
+<p>The haft has its own material slot. It used to share the bark&#x27;s, which made the hickory handle the darkest wood on the piece.</p>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All five were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--fat-haft</code> | haft clearance inside the eye | 17 | | <code>--round-band</code> | hoop bite into the log | 18 |</p>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<p>| Flag | Budget violated | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band | 9 | | <code>--stray-vert</code> | loose vertex count is 0 | 15 | | <code>--lift-z</code> | bounding box <code>zmin</code> is 0 | 16 | | <code>--fat-haft</code> | haft clearance inside the eye | 17 | | <code>--round-band</code> | hoop bite into the log | 18 | | <code>--float-rivets</code> | rivet seat into the hoop | 18 | | <code>--round-haft</code> | haft section wide over thick | 19 |</p>
+<p><code>--fat-haft</code> thickens the haft across the cheeks only, which is the dimension the eye clearance measures. Scaling the whole oval section grew the knob 16 mm past the bounding box, so it exited 8 instead.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python chopping_block.py --
 blender --background --python chopping_block.py -- --skip-decimate
@@ -284,11 +290,13 @@ blender --background --python chopping_block.py -- --stray-vert
 blender --background --python chopping_block.py -- --lift-z
 blender --background --python chopping_block.py -- --fat-haft
 blender --background --python chopping_block.py -- --round-band
+blender --background --python chopping_block.py -- --float-rivets
+blender --background --python chopping_block.py -- --round-haft
 blender --background --python chopping_block.py -- --output chopping-block.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0 | | 17 | Axe joint fit: shell count, eye clearance, engagement, breakout, bury, inset | | 18 | Contact fit: hoop bite band, or haft fouling the log | | 19 | Log out of plumb, or off its stated real-world size |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 4 distinct slots, or a face-count floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight | | 16 | Not grounded: bounding box <code>zmin</code> off 0 | | 17 | Joint fit: shell count, eye clearance, engagement, breakout, bury, inset | | 18 | Contact fit: hoop bite band, haft fouling the log, or a rivet off its seat band | | 19 | Log out of plumb, off its stated real-world size, or a round haft section |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -300,7 +308,7 @@ blender --background --python chopping_block.py -- --output chopping-block.png</
 
 Asserts budget conformance of a procedural splitting block (a hooped log
 round with a felling axe standing in it) after composing shipped pipeline
-pieces: bmesh construction, UVs, three materials, high-to-low normal bake,
+pieces: bmesh construction, UVs, four materials, high-to-low normal bake,
 LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result. They
@@ -309,9 +317,12 @@ budget: ``--skip-decimate`` skips the LOD DECIMATE stage so the LOD-ratio
 budget fails, ``--lift-z`` moves the mesh off the floor so the grounded
 budget fails, ``--stray-vert`` adds one unconnected vertex so the
 mesh-hygiene budget fails, ``--fat-haft`` widens the handle to the full
-thickness of the axe eye so the eye joint-fit budget fails, and
+thickness of the axe eye so the eye joint-fit budget fails,
 ``--round-band`` generates the iron band on a circle instead of on the
-log&#x27;s own surface so the band-seat budget fails.
+log&#x27;s own surface so the band-seat budget fails, ``--float-rivets`` lifts
+the lap rivets off the hoop so the rivet-seat budget fails, and
+``--round-haft`` turns the oval handle round so the haft-section budget
+fails.
 
 No RNG. The log&#x27;s out-of-round profile is a closed-form sum of sines, so
 construction is deterministic. DECIMATE COLLAPSE triangle counts are not
@@ -324,6 +335,8 @@ not an exact count.
     blender --background --python chopping_block.py -- --stray-vert
     blender --background --python chopping_block.py -- --fat-haft
     blender --background --python chopping_block.py -- --round-band
+    blender --background --python chopping_block.py -- --float-rivets
+    blender --background --python chopping_block.py -- --round-haft
     blender --background --python chopping_block.py -- --output block.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
@@ -379,6 +392,27 @@ BAND_Z1 = <span class="n">0.125</span>
 BAND_BITE = <span class="n">0.004</span>
 BAND_PROUD = <span class="n">0.006</span>
 BAND_CHAMFER = <span class="n">0.0022</span>
+<span class="c"># Lap joint. A hoop is a strip of iron riveted where its ends overlap; a</span>
+<span class="c"># ring of constant section reads as a painted stripe. The outer end steps</span>
+<span class="c"># up sharply at LAP_U0, and the lap tapers out past LAP_U1 where the hidden</span>
+<span class="c"># end runs underneath. Every kink is its own band section, and none lands</span>
+<span class="c"># on a log segment at either detail level (10 and 5 degrees).</span>
+LAP_U0 = math.radians(<span class="n">302.5</span>)
+LAP_STEP = math.radians(<span class="n">1.0</span>)
+LAP_U1 = math.radians(<span class="n">316.5</span>)
+LAP_TAPER = math.radians(<span class="n">4.0</span>)
+LAP_T = <span class="n">0.0025</span>
+<span class="c"># Two domed rivets through the lap, each on its own band section so the</span>
+<span class="c"># surface under it is exact rather than a chord.</span>
+RIVET_US = (math.radians(<span class="n">307.5</span>), math.radians(<span class="n">312.5</span>))
+RIVET_R = <span class="n">0.0062</span>
+RIVET_H = <span class="n">0.0042</span>
+RIVET_BITE = <span class="n">0.0015</span>
+RIVET_SEGS = <span class="n">8</span>
+<span class="c"># (height as a fraction of RIVET_H, radius scale). The first ring is below</span>
+<span class="c"># the band surface by RIVET_BITE; that is the seat.</span>
+RIVET_RINGS = ((<span class="n">0.45</span>, <span class="n">0.86</span>), (<span class="n">0.82</span>, <span class="n">0.52</span>), (<span class="n">0.97</span>, <span class="n">0.22</span>))
+FLOAT_RIVET = <span class="n">0.003</span>
 
 <span class="c"># (z, rim scale). The scaled rings are modelled chamfers: the rim of a sawn</span>
 <span class="c"># log catches light, and modelling it costs less than bevelling 32 segments.</span>
@@ -440,28 +474,40 @@ HEAD_CHAMFER = <span class="n">0.0042</span>
 HAFT_LEN = <span class="n">0.68</span>
 HAFT_DROP = <span class="n">0.024</span>
 HAFT_BOW = <span class="n">0.020</span>
-HAFT_SEGS = <span class="n">12</span>
-<span class="c"># (t along the haft, radius). The last two rings round the knob off, so the</span>
-<span class="c"># haft needs no bevel of its own. The shoulder-waist-swell spread is wide on</span>
-<span class="c"># purpose: a 0.68 m haft that runs 15 mm to 18 mm reads as dowel at any</span>
-<span class="c"># distance a viewer will see it from.</span>
+HAFT_SEGS = <span class="n">16</span>
+<span class="c"># (t along the haft, half thickness across the cheeks). The shoulder-waist-</span>
+<span class="c"># swell spread is wide on purpose: a 0.68 m haft that runs 15 mm to 18 mm</span>
+<span class="c"># reads as dowel at any distance a viewer will see it from. The swell holds</span>
+<span class="c"># its width to within 2 mm of the butt and then rounds off: a knob that</span>
+<span class="c"># tapers the whole way to its end cap reads as a pencil stub.</span>
 HAFT_SECTIONS = (
     (<span class="n">0.00</span>, <span class="n">0.0192</span>),
     (<span class="n">0.10</span>, <span class="n">0.0205</span>),
     (<span class="n">0.32</span>, <span class="n">0.0150</span>),
-    (<span class="n">0.58</span>, <span class="n">0.0132</span>),
-    (<span class="n">0.80</span>, <span class="n">0.0150</span>),
-    (<span class="n">0.91</span>, <span class="n">0.0225</span>),
-    (<span class="n">0.97</span>, <span class="n">0.0206</span>),
-    (<span class="n">1.00</span>, <span class="n">0.0124</span>),
+    (<span class="n">0.58</span>, <span class="n">0.0136</span>),
+    (<span class="n">0.78</span>, <span class="n">0.0150</span>),
+    (<span class="n">0.88</span>, <span class="n">0.0188</span>),
+    (<span class="n">0.94</span>, <span class="n">0.0226</span>),
+    (<span class="n">0.975</span>, <span class="n">0.0222</span>),
+    (<span class="n">0.993</span>, <span class="n">0.0192</span>),
+    (<span class="n">1.00</span>, <span class="n">0.0140</span>),
 )
+<span class="c"># An axe handle is oval, wider in the swing plane than across the cheeks.</span>
+<span class="c"># A round section at any width is a broom handle.</span>
+HAFT_OVAL = <span class="n">1.35</span>
+HAFT_OVAL_MIN = <span class="n">1.25</span>
+HAFT_OVAL_MAX = <span class="n">1.60</span>
+<span class="c"># The grip station the oval is measured at, as a fraction along the haft.</span>
+HAFT_GRIP_T = <span class="n">0.58</span>
+<span class="c"># The knob hooks toward the bit, the other half of the S the bow starts.</span>
+HAFT_HOOK = <span class="n">0.016</span>
 FAT_HAFT_SCALE = <span class="n">1.85</span>
 
-<span class="c"># Four closed shells: log, iron band, axe head, axe haft.</span>
-PART_COUNT = <span class="n">4</span>
+<span class="c"># Six closed shells: log, iron band, axe head, axe haft, two rivets.</span>
+PART_COUNT = <span class="n">4</span> + len(RIVET_US)
 BBOX_TOL = <span class="n">0.012</span>
 <span class="c"># Fitted after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">0.526</span>, <span class="n">0.526</span>, <span class="n">1.012</span>)
+OUTER_SIZE = (<span class="n">0.526</span>, <span class="n">0.526</span>, <span class="n">1.006</span>)
 <span class="c"># Stated real-world size of the block itself, checked separately from the</span>
 <span class="c"># fitted AABB so a proportion drift is named rather than absorbed by it.</span>
 BLOCK_DIAMETER = <span class="n">0.535</span>
@@ -480,6 +526,14 @@ BIT_INSET_MIN = <span class="n">0.030</span>
 BAND_BITE_MIN = <span class="n">0.002</span>
 BAND_BITE_MAX = <span class="n">0.007</span>
 HAFT_BLOCK_CLEAR_MIN = <span class="n">0.015</span>
+<span class="c"># Rivet seat, measured radially at each rivet vertex&#x27;s own angle against the</span>
+<span class="c"># band surface read off the mesh. A floor so the head cannot float off the</span>
+<span class="c"># lap, a ceiling so it cannot sink into it, and a proud minimum so the dome</span>
+<span class="c"># is actually visible.</span>
+RIVET_SEAT_MIN = <span class="n">0.0008</span>
+RIVET_SEAT_MAX = <span class="n">0.0025</span>
+RIVET_PROUD_MIN = <span class="n">0.0025</span>
+RIVET_SPAN_MAX = <span class="n">0.03</span>
 
 ZMIN_EPS = <span class="n">1e-4</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
@@ -488,18 +542,18 @@ ZFIGHT_EPS = <span class="n">0.0012</span>
 ZFIGHT_COS = <span class="n">0.9995</span>
 LIFT_Z = <span class="n">0.05</span>
 
-BASE_TRIS_MIN = <span class="n">1410</span>
-BASE_TRIS_MAX = <span class="n">1530</span>
+BASE_TRIS_MIN = <span class="n">1730</span>
+BASE_TRIS_MAX = <span class="n">1870</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
 LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
-MATERIAL_COUNT = <span class="n">3</span>
+MATERIAL_COUNT = <span class="n">4</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">470</span>
+COLLIDER_TRIS_MAX = <span class="n">560</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
 <span class="c"># Floors catch the slot-assignment wipe class and the bevel-inherits-slot-0</span>
@@ -508,10 +562,22 @@ CAGE_EXTRUSION = <span class="n">0.08</span>
 WOOD_FACES_MIN = <span class="n">160</span>
 GRAIN_FACES_MIN = <span class="n">90</span>
 METAL_FACES_MIN = <span class="n">170</span>
+HAFT_FACES_MIN = <span class="n">150</span>
 
 WOOD_IDX = <span class="n">0</span>
 GRAIN_IDX = <span class="n">1</span>
 METAL_IDX = <span class="n">2</span>
+<span class="c"># The haft is hickory, not bark. Sharing the bark slot made the handle the</span>
+<span class="c"># darkest wood on the piece and would fissure it with the bark texture.</span>
+HAFT_IDX = <span class="n">3</span>
+
+<span class="c"># End-grain shading. The pith sits off the geometric centre, as it does in</span>
+<span class="c"># nearly every real log; concentric rings about the exact centre read as a</span>
+<span class="c"># target. Checks are drawn at the same angles the geometry notches.</span>
+PITH = (<span class="n">0.021</span>, -<span class="n">0.013</span>)
+RING_SCALE = <span class="n">38.0</span>
+CHECK_W0 = <span class="n">0.0010</span>
+CHECK_WIDEN = <span class="n">0.012</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -702,14 +768,67 @@ METAL_IDX = <span class="n">2</span>
             ]
         )
     verts, rows, caps = loft(bm, rings)
-    <span class="c"># Bark on the sides, pale end grain on both sawn faces and their rims.</span>
-    bark = [face <span class="k">for</span> row <span class="k">in</span> rows[<span class="n">1</span>:body_rows - <span class="n">1</span>] <span class="k">for</span> face <span class="k">in</span> row]
-    grain = list(rows[<span class="n">0</span>]) + list(rows[body_rows - <span class="n">1</span>])
+    <span class="c"># Bark on the sides and down to the ground; pale end grain on both sawn</span>
+    <span class="c"># faces and the top rim. A pale bottom chamfer ran a light ring round</span>
+    <span class="c"># the floor line, which is the foot of a tub, not the butt of a log.</span>
+    bark = [face <span class="k">for</span> row <span class="k">in</span> rows[:body_rows - <span class="n">1</span>] <span class="k">for</span> face <span class="k">in</span> row]
+    grain = list(rows[body_rows - <span class="n">1</span>])
     <span class="k">for</span> row <span class="k">in</span> rows[body_rows:]:
         grain.extend(row)
     <span class="k">for</span> cap <span class="k">in</span> caps:
         grain.extend(cap)
     <span class="k">return</span> verts, bark, grain
+
+
+<span class="k">def</span> lap_thickness(u):
+    <span class="s">&quot;&quot;&quot;Extra outer thickness of the hoop&#x27;s lap joint at angle u.&quot;&quot;&quot;</span>
+    d = (u - LAP_U0) % (<span class="n">2.0</span> * math.pi)
+    span = LAP_U1 - LAP_U0
+    <span class="k">if</span> d &lt;= LAP_STEP:
+        <span class="k">return</span> LAP_T * d / LAP_STEP
+    <span class="k">if</span> d &lt;= span:
+        <span class="k">return</span> LAP_T
+    <span class="k">if</span> d &lt;= span + LAP_TAPER:
+        <span class="k">return</span> LAP_T * (<span class="n">1.0</span> - (d - span) / LAP_TAPER)
+    <span class="k">return</span> <span class="n">0.0</span>
+
+
+<span class="k">def</span> band_mean_radius(segs):
+    mid_z = <span class="n">0.5</span> * (BAND_Z0 + BAND_Z1)
+    <span class="k">return</span> sum(
+        log_radius(i * (<span class="n">2.0</span> * math.pi / segs), mid_z) <span class="k">for</span> i <span class="k">in</span> range(segs)
+    ) / segs
+
+
+<span class="k">def</span> band_host_radii(u, round_band, mean_r):
+    <span class="s">&quot;&quot;&quot;Log radius the hoop is built on, at its bottom and top edge.&quot;&quot;&quot;</span>
+    <span class="k">if</span> round_band:
+        <span class="k">return</span> mean_r, mean_r
+    <span class="k">return</span> log_radius(u, BAND_Z0), log_radius(u, BAND_Z1)
+
+
+<span class="k">def</span> band_outer_radius(u, z, round_band, mean_r):
+    <span class="s">&quot;&quot;&quot;The hoop&#x27;s outer face at angle u and height z, lap included.&quot;&quot;&quot;</span>
+    r0, r1 = band_host_radii(u, round_band, mean_r)
+    za = BAND_Z0 + BAND_CHAMFER
+    zb = BAND_Z1 - BAND_CHAMFER
+    k = (z - za) / (zb - za)
+    <span class="k">return</span> r0 + (r1 - r0) * k + BAND_PROUD + lap_thickness(u)
+
+
+<span class="k">def</span> band_angles(segs):
+    <span class="s">&quot;&quot;&quot;Log-segment angles plus every kink of the lap and every rivet.&quot;&quot;&quot;</span>
+    us = {i * (<span class="n">2.0</span> * math.pi / segs) <span class="k">for</span> i <span class="k">in</span> range(segs)}
+    us.update(
+        (
+            LAP_U0,
+            LAP_U0 + LAP_STEP,
+            LAP_U1,
+            LAP_U1 + LAP_TAPER,
+        )
+    )
+    us.update(RIVET_US)
+    <span class="k">return</span> sorted(u % (<span class="n">2.0</span> * math.pi) <span class="k">for</span> u <span class="k">in</span> us)
 
 
 <span class="k">def</span> build_band(bm, segs, round_band):
@@ -719,30 +838,68 @@ METAL_IDX = <span class="n">2</span>
     the mean radius instead, which is exactly what made the old torus sink
     into the wood on one side and float off it on the other.
     &quot;&quot;&quot;</span>
-    mid_z = <span class="n">0.5</span> * (BAND_Z0 + BAND_Z1)
-    mean_r = sum(
-        log_radius(i * (<span class="n">2.0</span> * math.pi / segs), mid_z) <span class="k">for</span> i <span class="k">in</span> range(segs)
-    ) / segs
+    mean_r = band_mean_radius(segs)
     sections = []
     c = BAND_CHAMFER
-    <span class="k">for</span> i <span class="k">in</span> range(segs):
-        u = i * (<span class="n">2.0</span> * math.pi / segs)
+    <span class="k">for</span> u <span class="k">in</span> band_angles(segs):
         cu, su = math.cos(u), math.sin(u)
-        <span class="k">if</span> round_band:
-            r0 = r1 = mean_r
-        <span class="k">else</span>:
-            r0 = log_radius(u, BAND_Z0)
-            r1 = log_radius(u, BAND_Z1)
+        r0, r1 = band_host_radii(u, round_band, mean_r)
+        lap = lap_thickness(u)
         profile = (
             (r0 - BAND_BITE, BAND_Z0),
-            (r0 + BAND_PROUD - c, BAND_Z0),
-            (r0 + BAND_PROUD, BAND_Z0 + c),
-            (r1 + BAND_PROUD, BAND_Z1 - c),
-            (r1 + BAND_PROUD - c, BAND_Z1),
+            (r0 + BAND_PROUD + lap - c, BAND_Z0),
+            (r0 + BAND_PROUD + lap, BAND_Z0 + c),
+            (r1 + BAND_PROUD + lap, BAND_Z1 - c),
+            (r1 + BAND_PROUD + lap - c, BAND_Z1),
             (r1 - BAND_BITE, BAND_Z1),
         )
         sections.append([Vector((r * cu, r * su, z)) <span class="k">for</span> r, z <span class="k">in</span> profile])
     <span class="k">return</span> loft_cyclic(bm, sections)
+
+
+<span class="k">def</span> build_rivets(bm, segs, round_band, float_out):
+    <span class="s">&quot;&quot;&quot;Domed rivet heads through the lap, seated into the band&#x27;s own face.
+
+    Each head is placed from ``band_outer_radius`` at its own angle, which
+    is a band section, so the seat is measured against the exact surface.
+    ``float_out`` is the falsifier: it moves every head off the lap.
+    &quot;&quot;&quot;</span>
+    mean_r = band_mean_radius(segs)
+    zc = <span class="n">0.5</span> * (BAND_Z0 + BAND_Z1)
+
+    <span class="k">def</span> surface_point(u, z):
+        r = band_outer_radius(u, z, round_band, mean_r)
+        <span class="k">return</span> Vector((r * math.cos(u), r * math.sin(u), z))
+
+    verts, faces = [], []
+    <span class="k">for</span> u <span class="k">in</span> RIVET_US:
+        <span class="c"># Aim the head down the band&#x27;s own surface normal. The log is out</span>
+        <span class="c"># of round, so its surface is not square to the radial: across one</span>
+        <span class="c"># head the radius falls 1.4 mm, and a radially aimed head sank on</span>
+        <span class="c"># one side and lifted on the other.</span>
+        eps = <span class="n">1e-4</span>
+        du = surface_point(u + eps, zc) - surface_point(u - eps, zc)
+        dz = surface_point(u, zc + eps) - surface_point(u, zc - eps)
+        normal = du.cross(dz).normalized()
+        <span class="k">if</span> normal.dot(Vector((math.cos(u), math.sin(u), <span class="n">0.0</span>))) &lt; <span class="n">0.0</span>:
+            normal = -normal
+        tang = du.normalized()
+        up = normal.cross(tang).normalized()
+        center = surface_point(u, zc) + normal * float_out
+        stations = ((-RIVET_BITE / RIVET_H, <span class="n">1.0</span>),) + RIVET_RINGS
+        rings = []
+        <span class="k">for</span> h, scale <span class="k">in</span> stations:
+            ring = []
+            <span class="k">for</span> i <span class="k">in</span> range(RIVET_SEGS):
+                a = i * (<span class="n">2.0</span> * math.pi / RIVET_SEGS)
+                offset = (tang * math.cos(a) + up * math.sin(a)) * (RIVET_R * scale)
+                ring.append(center + normal * (h * RIVET_H) + offset)
+            rings.append(ring)
+        v, rows, caps = loft(bm, rings)
+        verts.extend(v)
+        faces.extend(face <span class="k">for</span> row <span class="k">in</span> rows <span class="k">for</span> face <span class="k">in</span> row)
+        faces.extend(face <span class="k">for</span> cap <span class="k">in</span> caps <span class="k">for</span> face <span class="k">in</span> cap)
+    <span class="k">return</span> verts, faces
 
 
 <span class="k">def</span> axe_frame():
@@ -779,33 +936,57 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> verts, faces
 
 
-<span class="k">def</span> haft_rings(scale, segs):
-    _f, s, _eh, haft, _poll, eye = axe_frame()
+<span class="k">def</span> haft_curve():
+    <span class="s">&quot;&quot;&quot;Start, control and end points of the haft&#x27;s centreline Bezier.&quot;&quot;&quot;</span>
+    _f, _s, _eh, haft, _poll, eye = axe_frame()
     start = eye - haft * HAFT_DROP
     end = eye + haft * HAFT_LEN
     <span class="c"># A straight stick reads as a broom. The bow is a quadratic Bezier</span>
     <span class="c"># leaning away from the bit, the way a hung haft curves.</span>
     bit_dir = Vector((math.cos(AXE_BIT_ANGLE), <span class="n">0.0</span>, math.sin(AXE_BIT_ANGLE)))
     mid = (start + end) * <span class="n">0.5</span> - bit_dir * HAFT_BOW
+    <span class="k">return</span> start, mid, end
+
+
+<span class="k">def</span> haft_point(t):
+    start, mid, end = haft_curve()
+    omt = <span class="n">1.0</span> - t
+    p = start * (omt * omt) + mid * (<span class="n">2.0</span> * omt * t) + end * (t * t)
+    dp = (mid - start) * (<span class="n">2.0</span> * omt) + (end - mid) * (<span class="n">2.0</span> * t)
+    <span class="k">return</span> p, dp.normalized()
+
+
+<span class="k">def</span> haft_rings(scale, segs, oval=HAFT_OVAL):
+    f, s, _eh, _haft, _poll, _eye = axe_frame()
     rings = []
     <span class="k">for</span> t, radius <span class="k">in</span> HAFT_SECTIONS:
-        omt = <span class="n">1.0</span> - t
-        p = start * (omt * omt) + mid * (<span class="n">2.0</span> * omt * t) + end * (t * t)
-        dp = (mid - start) * (<span class="n">2.0</span> * omt) + (end - mid) * (<span class="n">2.0</span> * t)
-        tangent = dp.normalized()
+        p, tangent = haft_point(t)
         side = s.cross(tangent).normalized()
         up = tangent.cross(side).normalized()
-        r = radius * scale
+        <span class="c"># The knob hooks toward the bit: smoothstep in over the last fifth.</span>
+        k = min(<span class="n">1.0</span>, max(<span class="n">0.0</span>, (t - <span class="n">0.80</span>) / <span class="n">0.20</span>))
+        hook = HAFT_HOOK * k * k * (<span class="n">3.0</span> - <span class="n">2.0</span> * k)
+        p = p + side * (hook <span class="k">if</span> side.dot(f) &gt; <span class="n">0.0</span> <span class="k">else</span> -hook)
+        <span class="c"># ``side`` lies in the swing plane, ``up`` across the cheeks; the</span>
+        <span class="c"># oval is wide along the first and keeps the eye fit on the second.</span>
+        <span class="c"># ``scale`` thickens across the cheeks only: that is the dimension</span>
+        <span class="c"># the eye has to clear, and the one --fat-haft breaks. Scaling the</span>
+        <span class="c"># swing-plane width too grew the knob past the bounding box, so</span>
+        <span class="c"># the falsifier failed exit 8 instead of its own budget.</span>
         ring = []
         <span class="k">for</span> i <span class="k">in</span> range(segs):
             a = i * (<span class="n">2.0</span> * math.pi / segs)
-            ring.append(p + side * (r * math.cos(a)) + up * (r * math.sin(a)))
+            ring.append(
+                p
+                + side * (radius * oval * math.cos(a))
+                + up * (radius * scale * math.sin(a))
+            )
         rings.append(ring)
     <span class="k">return</span> rings
 
 
-<span class="k">def</span> build_haft(bm, scale, segs):
-    verts, rows, caps = loft(bm, haft_rings(scale, segs))
+<span class="k">def</span> build_haft(bm, scale, segs, oval=HAFT_OVAL):
+    verts, rows, caps = loft(bm, haft_rings(scale, segs, oval))
     faces = [face <span class="k">for</span> row <span class="k">in</span> rows <span class="k">for</span> face <span class="k">in</span> row]
     faces.extend(face <span class="k">for</span> cap <span class="k">in</span> caps <span class="k">for</span> face <span class="k">in</span> cap)
     <span class="k">return</span> verts, faces
@@ -854,7 +1035,8 @@ METAL_IDX = <span class="n">2</span>
             )
 
 
-<span class="k">def</span> build_chopping_block_mesh(name, detail=<span class="n">1</span>, haft_scale=<span class="n">1.0</span>, round_band=<span class="k">False</span>):
+<span class="k">def</span> build_chopping_block_mesh(name, detail=<span class="n">1</span>, haft_scale=<span class="n">1.0</span>, round_band=<span class="k">False</span>,
+                              haft_oval=HAFT_OVAL, float_rivets=<span class="n">0.0</span>):
     log_segs = BLOCK_SEGS * detail
     haft_segs = HAFT_SEGS * detail
     chamfer_segs = HIGH_CHAMFER_SEGS <span class="k">if</span> detail &gt; <span class="n">1</span> <span class="k">else</span> <span class="n">1</span>
@@ -862,22 +1044,30 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">try</span>:
         _log_verts, bark_faces, grain_faces = build_log(bm, log_segs)
         _band_verts, band_faces = build_band(bm, log_segs, round_band)
+        _rivet_verts, rivet_faces = build_rivets(
+            bm, log_segs, round_band, float_rivets
+        )
         head_verts, head_faces = build_head(bm, chamfer_segs)
-        haft_verts, haft_faces = build_haft(bm, haft_scale, haft_segs)
+        haft_verts, haft_faces = build_haft(
+            bm, haft_scale, haft_segs, haft_oval
+        )
 
         <span class="c"># The axe is built in the XZ plane so the frame maths stays readable.</span>
         spin = Matrix.Rotation(AXE_AZIMUTH, <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>)
         <span class="k">for</span> v <span class="k">in</span> head_verts + haft_verts:
             v.co = spin @ v.co
 
-        metal = set(band_faces) | set(head_faces)
+        metal = set(band_faces) | set(head_faces) | set(rivet_faces)
         grain = set(grain_faces)
-        <span class="c"># Only the haft is a turned surface. Everything else is faceted: the</span>
-        <span class="c"># log is flat-shaded so its out-of-round wobble and the checks in the</span>
-        <span class="c"># end grain each catch their own light. Smoothed, a 36-gon log is a</span>
-        <span class="c"># featureless drum and every bit of surface modelling is wasted --</span>
-        <span class="c"># that is what made the round-2 block read as a canister.</span>
-        flat = set(band_faces) | set(head_faces) | set(bark_faces) | grain
+        haft = set(haft_faces)
+        <span class="c"># Only the axe head is faceted. Flat-shading the log made its 36</span>
+        <span class="c"># equal facets read as coopered staves and the block as a tub, and</span>
+        <span class="c"># flat-shading the hoop threw a separate highlight off every facet,</span>
+        <span class="c"># a row of piano keys. The wobble still reads in the silhouette;</span>
+        <span class="c"># the bark and the end grain carry their surface in the material.</span>
+        <span class="c"># Hard edges come from the crease angle and from every material</span>
+        <span class="c"># boundary, so the sawn rim stays a crisp edge against the bark.</span>
+        flat = set(head_faces)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -886,13 +1076,19 @@ METAL_IDX = <span class="n">2</span>
                 face.material_index = METAL_IDX
             <span class="k">elif</span> face <span class="k">in</span> grain:
                 face.material_index = GRAIN_IDX
+            <span class="k">elif</span> face <span class="k">in</span> haft:
+                face.material_index = HAFT_IDX
             <span class="k">else</span>:
                 face.material_index = WOOD_IDX
             face.smooth = face <span class="k">not</span> <span class="k">in</span> flat
         <span class="k">for</span> edge <span class="k">in</span> bm.edges:
             edge.smooth = <span class="k">True</span>
             <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
-                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">40.0</span>):
+                fa, fb = edge.link_faces
+                <span class="k">if</span> (
+                    edge.calc_face_angle() &gt; math.radians(<span class="n">40.0</span>)
+                    <span class="k">or</span> fa.material_index != fb.material_index
+                ):
                     edge.smooth = <span class="k">False</span>
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
@@ -904,14 +1100,226 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> enabled_socket(sockets, name):
+    <span class="s">&quot;&quot;&quot;The one enabled socket called ``name``.
+
+    Mix and Map Range carry a socket of each data type under one name, and
+    their identifiers changed in 5.2; the enabled one is unambiguous on
+    every version.
+    &quot;&quot;&quot;</span>
+    <span class="k">for</span> sock <span class="k">in</span> sockets:
+        <span class="k">if</span> sock.name == name <span class="k">and</span> sock.enabled:
+            <span class="k">return</span> sock
+    <span class="k">raise</span> KeyError(<span class="s">f&quot;</span><span class="s">no enabled socket </span>{name!r}<span class="s">&quot;</span>)
+
+
+<span class="k">def</span> surface(name, metallic):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>).outputs[<span class="s">&quot;Object&quot;</span>]
+    <span class="k">return</span> mat, nt, bsdf, coord
+
+
+<span class="k">def</span> mapping(nt, vec, scale=(<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), loc=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    node.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    node.inputs[<span class="s">&quot;Location&quot;</span>].default_value = loc
+    nt.links.new(vec, node.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="k">return</span> node.outputs[<span class="s">&quot;Vector&quot;</span>]
+
+
+<span class="k">def</span> noise(nt, vec, scale, detail, roughness):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    node.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    node.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = detail
+    node.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    nt.links.new(vec, node.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="k">return</span> node.outputs[<span class="s">&quot;Fac&quot;</span>]
+
+
+<span class="k">def</span> ramp(nt, fac, stops):
+    <span class="s">&quot;&quot;&quot;Colour ramp over (position, rgb) stops, ascending.&quot;&quot;&quot;</span>
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    els = node.color_ramp.elements
+    els[<span class="n">0</span>].position = stops[<span class="n">0</span>][<span class="n">0</span>]
+    els[<span class="n">0</span>].color = (*stops[<span class="n">0</span>][<span class="n">1</span>], <span class="n">1.0</span>)
+    els[<span class="n">1</span>].position = stops[-<span class="n">1</span>][<span class="n">0</span>]
+    els[<span class="n">1</span>].color = (*stops[-<span class="n">1</span>][<span class="n">1</span>], <span class="n">1.0</span>)
+    <span class="k">for</span> pos, rgb <span class="k">in</span> stops[<span class="n">1</span>:-<span class="n">1</span>]:
+        els.new(pos).color = (*rgb, <span class="n">1.0</span>)
+    nt.links.new(fac, node.inputs[<span class="s">&quot;Fac&quot;</span>])
+    <span class="k">return</span> node.outputs[<span class="s">&quot;Color&quot;</span>]
+
+
+<span class="k">def</span> remap(nt, value, from_lo, from_hi, to_lo, to_hi):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    nt.links.new(value, enabled_socket(node.inputs, <span class="s">&quot;Value&quot;</span>))
+    enabled_socket(node.inputs, <span class="s">&quot;From Min&quot;</span>).default_value = from_lo
+    enabled_socket(node.inputs, <span class="s">&quot;From Max&quot;</span>).default_value = from_hi
+    enabled_socket(node.inputs, <span class="s">&quot;To Min&quot;</span>).default_value = to_lo
+    enabled_socket(node.inputs, <span class="s">&quot;To Max&quot;</span>).default_value = to_hi
+    <span class="k">return</span> enabled_socket(node.outputs, <span class="s">&quot;Result&quot;</span>)
+
+
+<span class="k">def</span> math_node(nt, op, *inputs):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    node.operation = op
+    <span class="k">for</span> i, value <span class="k">in</span> enumerate(inputs):
+        <span class="k">if</span> isinstance(value, (int, float)):
+            node.inputs[i].default_value = value
+        <span class="k">else</span>:
+            nt.links.new(value, node.inputs[i])
+    <span class="k">return</span> node.outputs[<span class="n">0</span>]
+
+
+<span class="k">def</span> mix_color(nt, a, b, fac):
+    node = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    node.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(fac, enabled_socket(node.inputs, <span class="s">&quot;Factor&quot;</span>))
+    <span class="k">for</span> name, value <span class="k">in</span> ((<span class="s">&quot;A&quot;</span>, a), (<span class="s">&quot;B&quot;</span>, b)):
+        sock = enabled_socket(node.inputs, name)
+        <span class="k">if</span> isinstance(value, tuple):
+            sock.default_value = (*value, <span class="n">1.0</span>)
+        <span class="k">else</span>:
+            nt.links.new(value, sock)
+    <span class="k">return</span> enabled_socket(node.outputs, <span class="s">&quot;Result&quot;</span>)
+
+
+<span class="k">def</span> bark_material():
+    mat, nt, bsdf, coord = surface(<span class="s">&quot;ChopBlockBark&quot;</span>, <span class="n">0.0</span>)
+    <span class="c"># Fissures run up the trunk: the noise is squeezed round the girth and</span>
+    <span class="c"># stretched along it, so ridges and furrows come out vertical. At an</span>
+    <span class="c"># 11:1 stretch the streaks were fine enough to read as planed timber;</span>
+    <span class="c"># 4:1 at this scale gives furrows a few centimetres apart.</span>
+    plates = noise(nt, mapping(nt, coord, scale=(<span class="n">8.0</span>, <span class="n">8.0</span>, <span class="n">2.0</span>)), <span class="n">3.0</span>, <span class="n">8.0</span>, <span class="n">0.64</span>)
+    nt.links.new(
+        ramp(
+            nt,
+            plates,
+            (
+                (<span class="n">0.40</span>, (<span class="n">0.016</span>, <span class="n">0.010</span>, <span class="n">0.006</span>)),
+                (<span class="n">0.50</span>, (<span class="n">0.058</span>, <span class="n">0.036</span>, <span class="n">0.021</span>)),
+                (<span class="n">0.62</span>, (<span class="n">0.105</span>, <span class="n">0.066</span>, <span class="n">0.039</span>)),
+                (<span class="n">0.80</span>, (<span class="n">0.150</span>, <span class="n">0.100</span>, <span class="n">0.062</span>)),
+            ),
+        ),
+        bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>],
+    )
+    nt.links.new(remap(nt, plates, <span class="n">0.35</span>, <span class="n">0.8</span>, <span class="n">1.0</span>, <span class="n">0.78</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.85</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.02</span>
+    nt.links.new(plates, bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> grain_material():
+    mat, nt, bsdf, coord = surface(<span class="s">&quot;ChopBlockGrain&quot;</span>, <span class="n">0.0</span>)
+    <span class="c"># Growth rings about an off-centre pith, flattened onto the sawn face.</span>
+    flat = mapping(nt, coord, scale=(<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>), loc=(-PITH[<span class="n">0</span>], -PITH[<span class="n">1</span>], <span class="n">0.0</span>))
+    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    wave.wave_type = <span class="s">&quot;RINGS&quot;</span>
+    wave.rings_direction = <span class="s">&quot;SPHERICAL&quot;</span>
+    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = RING_SCALE
+    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">2.6</span>
+    wave.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    nt.links.new(flat, wave.inputs[<span class="s">&quot;Vector&quot;</span>])
+    rings = ramp(
+        nt,
+        wave.outputs[<span class="s">&quot;Fac&quot;</span>],
+        (
+            (<span class="n">0.30</span>, (<span class="n">0.600</span>, <span class="n">0.450</span>, <span class="n">0.265</span>)),
+            (<span class="n">0.72</span>, (<span class="n">0.520</span>, <span class="n">0.370</span>, <span class="n">0.205</span>)),
+            (<span class="n">0.95</span>, (<span class="n">0.400</span>, <span class="n">0.268</span>, <span class="n">0.140</span>)),
+        ),
+    )
+    weather = noise(nt, coord, <span class="n">6.0</span>, <span class="n">4.0</span>, <span class="n">0.55</span>)
+    base = mix_color(
+        nt, rings, (<span class="n">0.330</span>, <span class="n">0.250</span>, <span class="n">0.170</span>), remap(nt, weather, <span class="n">0.45</span>, <span class="n">0.75</span>, <span class="n">0.0</span>, <span class="n">0.45</span>)
+    )
+    <span class="c"># Radial checks at the angles the geometry notches, widening toward the</span>
+    <span class="c"># rim and fading out before the pith, as a drying check does.</span>
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord, sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    x, y = sep.outputs[<span class="s">&quot;X&quot;</span>], sep.outputs[<span class="s">&quot;Y&quot;</span>]
+    ang = math_node(nt, <span class="s">&quot;ARCTAN2&quot;</span>, y, x)
+    rad = math_node(
+        nt, <span class="s">&quot;SQRT&quot;</span>, math_node(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, x, x, math_node(nt, <span class="s">&quot;MULTIPLY&quot;</span>, y, y))
+    )
+    width = math_node(nt, <span class="s">&quot;MULTIPLY_ADD&quot;</span>, rad, CHECK_WIDEN, CHECK_W0)
+    nearest = <span class="k">None</span>
+    <span class="k">for</span> angle, _depth <span class="k">in</span> TOP_CRACKS:
+        wrapped = math_node(
+            nt, <span class="s">&quot;WRAP&quot;</span>, math_node(nt, <span class="s">&quot;SUBTRACT&quot;</span>, ang, angle), math.pi, -math.pi
+        )
+        arc = math_node(nt, <span class="s">&quot;MULTIPLY&quot;</span>, math_node(nt, <span class="s">&quot;ABSOLUTE&quot;</span>, wrapped), rad)
+        q = math_node(nt, <span class="s">&quot;DIVIDE&quot;</span>, arc, width)
+        nearest = q <span class="k">if</span> nearest <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> math_node(nt, <span class="s">&quot;MINIMUM&quot;</span>, nearest, q)
+    line = remap(nt, nearest, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>)
+    fade = remap(nt, rad, <span class="n">0.22</span> * BLOCK_R, <span class="n">0.55</span> * BLOCK_R, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    crack = math_node(nt, <span class="s">&quot;MULTIPLY&quot;</span>, line, fade)
+    nt.links.new(
+        mix_color(nt, base, (<span class="n">0.050</span>, <span class="n">0.032</span>, <span class="n">0.020</span>), crack), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>]
+    )
+    nt.links.new(
+        remap(nt, wave.outputs[<span class="s">&quot;Fac&quot;</span>], <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.58</span>, <span class="n">0.74</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>]
+    )
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> iron_material():
+    mat, nt, bsdf, coord = surface(<span class="s">&quot;ChopBlockIron&quot;</span>, <span class="n">1.0</span>)
+    <span class="c"># Forged iron is never one grey: mill scale, polish where it is handled</span>
+    <span class="c"># and struck, and a little rust in the low spots.</span>
+    <span class="c"># Fine and low in contrast: at a coarser scale the blotches read as</span>
+    <span class="c"># marbling, not as scale on forged metal.</span>
+    blot = noise(nt, coord, <span class="n">45.0</span>, <span class="n">6.0</span>, <span class="n">0.6</span>)
+    nt.links.new(
+        ramp(
+            nt,
+            blot,
+            (
+                (<span class="n">0.40</span>, (<span class="n">0.085</span>, <span class="n">0.082</span>, <span class="n">0.079</span>)),
+                (<span class="n">0.60</span>, (<span class="n">0.140</span>, <span class="n">0.136</span>, <span class="n">0.131</span>)),
+                (<span class="n">0.72</span>, (<span class="n">0.130</span>, <span class="n">0.100</span>, <span class="n">0.076</span>)),
+                (<span class="n">0.82</span>, (<span class="n">0.180</span>, <span class="n">0.096</span>, <span class="n">0.052</span>)),
+            ),
+        ),
+        bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>],
+    )
+    nt.links.new(remap(nt, blot, <span class="n">0.35</span>, <span class="n">0.8</span>, <span class="n">0.34</span>, <span class="n">0.60</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    nt.links.new(remap(nt, blot, <span class="n">0.66</span>, <span class="n">0.80</span>, <span class="n">1.0</span>, <span class="n">0.35</span>), bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> haft_material():
+    mat, nt, bsdf, coord = surface(<span class="s">&quot;ChopBlockHaft&quot;</span>, <span class="n">0.0</span>)
+    <span class="c"># Oiled hickory: lighter than the bark by a clear margin, with handling</span>
+    <span class="c"># grime breaking the colour up.</span>
+    grime = noise(nt, coord, <span class="n">24.0</span>, <span class="n">5.0</span>, <span class="n">0.55</span>)
+    nt.links.new(
+        ramp(
+            nt,
+            grime,
+            (
+                (<span class="n">0.35</span>, (<span class="n">0.300</span>, <span class="n">0.170</span>, <span class="n">0.075</span>)),
+                (<span class="n">0.55</span>, (<span class="n">0.420</span>, <span class="n">0.262</span>, <span class="n">0.120</span>)),
+                (<span class="n">0.75</span>, (<span class="n">0.480</span>, <span class="n">0.318</span>, <span class="n">0.155</span>)),
+            ),
+        ),
+        bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>],
+    )
+    nt.links.new(remap(nt, grime, <span class="n">0.3</span>, <span class="n">0.8</span>, <span class="n">0.62</span>, <span class="n">0.42</span>), bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> block_materials():
+    <span class="s">&quot;&quot;&quot;Materials in slot order: bark, end grain, iron, haft.&quot;&quot;&quot;</span>
+    <span class="k">return</span> bark_material(), grain_material(), iron_material(), haft_material()
 
 
 <span class="k">def</span> assign_slots(obj, *wanted):
@@ -1038,6 +1446,9 @@ METAL_IDX = <span class="n">2</span>
     stats = []
     <span class="k">for</span> group <span class="k">in</span> groups:
         pts = [co[i] <span class="k">for</span> i <span class="k">in</span> group]
+        spans = [
+            max(p[k] <span class="k">for</span> p <span class="k">in</span> pts) - min(p[k] <span class="k">for</span> p <span class="k">in</span> pts) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)
+        ]
         zs = [p.z <span class="k">for</span> p <span class="k">in</span> pts]
         stats.append(
             {
@@ -1045,21 +1456,83 @@ METAL_IDX = <span class="n">2</span>
                 <span class="s">&quot;zmin&quot;</span>: min(zs),
                 <span class="s">&quot;zmax&quot;</span>: max(zs),
                 <span class="s">&quot;zspan&quot;</span>: max(zs) - min(zs),
+                <span class="s">&quot;span&quot;</span>: max(spans),
             }
         )
-    log = min(stats, key=<span class="k">lambda</span> s: s[<span class="s">&quot;zmin&quot;</span>])
-    rest = [s <span class="k">for</span> s <span class="k">in</span> stats <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> log]
+    <span class="c"># Rivets are the only shells a few centimetres across.</span>
+    rivets = [s <span class="k">for</span> s <span class="k">in</span> stats <span class="k">if</span> s[<span class="s">&quot;span&quot;</span>] &lt; RIVET_SPAN_MAX]
+    parts = [s <span class="k">for</span> s <span class="k">in</span> stats <span class="k">if</span> s[<span class="s">&quot;span&quot;</span>] &gt;= RIVET_SPAN_MAX]
+    log = min(parts, key=<span class="k">lambda</span> s: s[<span class="s">&quot;zmin&quot;</span>])
+    rest = [s <span class="k">for</span> s <span class="k">in</span> parts <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> log]
     <span class="k">if</span> len(rest) != <span class="n">3</span>:
-        <span class="k">return</span> {<span class="s">&quot;log&quot;</span>: log, <span class="s">&quot;band&quot;</span>: <span class="k">None</span>, <span class="s">&quot;head&quot;</span>: <span class="k">None</span>, <span class="s">&quot;haft&quot;</span>: <span class="k">None</span>}
+        <span class="k">return</span> {
+            <span class="s">&quot;log&quot;</span>: log, <span class="s">&quot;band&quot;</span>: <span class="k">None</span>, <span class="s">&quot;head&quot;</span>: <span class="k">None</span>, <span class="s">&quot;haft&quot;</span>: <span class="k">None</span>,
+            <span class="s">&quot;rivets&quot;</span>: rivets,
+        }
     band = min(rest, key=<span class="k">lambda</span> s: s[<span class="s">&quot;zspan&quot;</span>])
     rest = [s <span class="k">for</span> s <span class="k">in</span> rest <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> band]
     haft = max(rest, key=<span class="k">lambda</span> s: s[<span class="s">&quot;zmax&quot;</span>])
     head = [s <span class="k">for</span> s <span class="k">in</span> rest <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> haft][<span class="n">0</span>]
-    <span class="k">return</span> {<span class="s">&quot;log&quot;</span>: log, <span class="s">&quot;band&quot;</span>: band, <span class="s">&quot;head&quot;</span>: head, <span class="s">&quot;haft&quot;</span>: haft}
+    <span class="k">return</span> {
+        <span class="s">&quot;log&quot;</span>: log, <span class="s">&quot;band&quot;</span>: band, <span class="s">&quot;head&quot;</span>: head, <span class="s">&quot;haft&quot;</span>: haft, <span class="s">&quot;rivets&quot;</span>: rivets,
+    }
+
+
+<span class="k">def</span> band_outer_hit(bvh, u, z):
+    <span class="s">&quot;&quot;&quot;Radius of the band&#x27;s outer face at angle u and height z, read off
+    the mesh by casting from the axis and keeping the farthest hit.&quot;&quot;&quot;</span>
+    direction = Vector((math.cos(u), math.sin(u), <span class="n">0.0</span>))
+    origin = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, z))
+    outer = <span class="k">None</span>
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">16</span>):
+        hit = bvh.ray_cast(origin, direction)
+        <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">break</span>
+        outer = math.hypot(hit[<span class="n">0</span>].x, hit[<span class="n">0</span>].y)
+        origin = hit[<span class="n">0</span>] + direction * <span class="n">1e-5</span>
+    <span class="k">return</span> outer
+
+
+<span class="k">def</span> rivet_seats(me, band, rivets):
+    <span class="s">&quot;&quot;&quot;(deepest seat, least proud) per rivet, measured radially at each
+    vertex&#x27;s own angle against the band surface, never nearest-surface.&quot;&quot;&quot;</span>
+    bvh = block_bvh(me, band[<span class="s">&quot;idx&quot;</span>])
+    co = [v.co <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    out = []
+    <span class="k">for</span> rivet <span class="k">in</span> rivets:
+        depths = []
+        <span class="k">for</span> i <span class="k">in</span> rivet[<span class="s">&quot;idx&quot;</span>]:
+            p = co[i]
+            outer = band_outer_hit(bvh, math.atan2(p.y, p.x), p.z)
+            <span class="k">if</span> outer <span class="k">is</span> <span class="k">None</span>:
+                depths = <span class="k">None</span>
+                <span class="k">break</span>
+            depths.append(outer - math.hypot(p.x, p.y))
+        <span class="k">if</span> depths <span class="k">is</span> <span class="k">None</span>:
+            out.append((-<span class="n">1.0</span>, -<span class="n">1.0</span>))
+        <span class="k">else</span>:
+            out.append((max(depths), -min(depths)))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> haft_oval(haft_pts):
+    <span class="s">&quot;&quot;&quot;Width across the swing plane over thickness across the cheeks, at the
+    grip station, in the construction frame. Vertices are taken from a thin
+    slab round the station so exactly one section ring is measured.&quot;&quot;&quot;</span>
+    _f, s, _eh, _haft, _poll, _eye = axe_frame()
+    p0, tangent = haft_point(HAFT_GRIP_T)
+    swing = s.cross(tangent).normalized()
+    slab = [q <span class="k">for</span> q <span class="k">in</span> haft_pts <span class="k">if</span> abs((q - p0).dot(tangent)) &lt; <span class="n">0.004</span>]
+    <span class="k">if</span> <span class="k">not</span> slab:
+        <span class="k">return</span> <span class="n">0.0</span>
+    c = sum(slab, Vector()) / len(slab)
+    thick = max(abs((q - c).dot(s)) <span class="k">for</span> q <span class="k">in</span> slab)
+    wide = max(abs((q - c).dot(swing)) <span class="k">for</span> q <span class="k">in</span> slab)
+    <span class="k">return</span> wide / thick <span class="k">if</span> thick &gt; <span class="n">0.0</span> <span class="k">else</span> <span class="n">0.0</span>
 
 
 <span class="k">def</span> block_bvh(me, group):
-    <span class="s">&quot;&quot;&quot;BVH over the log shell only, so contact is measured against the wood.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;BVH over one shell only, so contact is measured against that part.&quot;&quot;&quot;</span>
     member = set(group)
     verts = [tuple(v.co) <span class="k">for</span> v <span class="k">in</span> me.vertices]
     polys = [
@@ -1099,6 +1572,8 @@ METAL_IDX = <span class="n">2</span>
         <span class="s">&quot;haft_clear&quot;</span>: -<span class="n">1.0</span>,
         <span class="s">&quot;haft_in_log&quot;</span>: -<span class="n">1</span>,
         <span class="s">&quot;plumb&quot;</span>: <span class="n">99.0</span>,
+        <span class="s">&quot;rivet_seats&quot;</span>: [],
+        <span class="s">&quot;haft_oval&quot;</span>: <span class="n">0.0</span>,
     }
     <span class="k">if</span> any(named[k] <span class="k">is</span> <span class="k">None</span> <span class="k">for</span> k <span class="k">in</span> (<span class="s">&quot;band&quot;</span>, <span class="s">&quot;head&quot;</span>, <span class="s">&quot;haft&quot;</span>)):
         <span class="k">return</span> out
@@ -1164,6 +1639,8 @@ METAL_IDX = <span class="n">2</span>
     haft_world = [co[i] <span class="k">for</span> i <span class="k">in</span> haft[<span class="s">&quot;idx&quot;</span>]]
     out[<span class="s">&quot;haft_clear&quot;</span>] = min(bvh.find_nearest(p)[<span class="n">3</span>] <span class="k">for</span> p <span class="k">in</span> haft_world)
     out[<span class="s">&quot;haft_in_log&quot;</span>] = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> haft_world <span class="k">if</span> inside_block(bvh, p))
+    out[<span class="s">&quot;rivet_seats&quot;</span>] = rivet_seats(me, band, named[<span class="s">&quot;rivets&quot;</span>])
+    out[<span class="s">&quot;haft_oval&quot;</span>] = haft_oval(haft_pts)
     <span class="k">return</span> out
 
 
@@ -1303,20 +1780,17 @@ METAL_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, fat_haft=<span class="k">False</span>,
-          round_band=<span class="k">False</span>):
+          round_band=<span class="k">False</span>, round_haft=<span class="k">False</span>, float_rivets=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    haft_scale = FAT_HAFT_SCALE <span class="k">if</span> fat_haft <span class="k">else</span> <span class="n">1.0</span>
-    low = build_chopping_block_mesh(
-        <span class="s">&quot;ChopBlockLow&quot;</span>,
-        detail=<span class="n">1</span>,
-        haft_scale=haft_scale,
-        round_band=round_band,
-    )
+    shape = {
+        <span class="s">&quot;haft_scale&quot;</span>: FAT_HAFT_SCALE <span class="k">if</span> fat_haft <span class="k">else</span> <span class="n">1.0</span>,
+        <span class="s">&quot;round_band&quot;</span>: round_band,
+        <span class="s">&quot;haft_oval&quot;</span>: <span class="n">1.0</span> <span class="k">if</span> round_haft <span class="k">else</span> HAFT_OVAL,
+        <span class="s">&quot;float_rivets&quot;</span>: FLOAT_RIVET <span class="k">if</span> float_rivets <span class="k">else</span> <span class="n">0.0</span>,
+    }
+    low = build_chopping_block_mesh(<span class="s">&quot;ChopBlockLow&quot;</span>, detail=<span class="n">1</span>, **shape)
     high = build_chopping_block_mesh(
-        <span class="s">&quot;ChopBlockHigh&quot;</span>,
-        detail=HIGH_SEG_SCALE,
-        haft_scale=haft_scale,
-        round_band=round_band,
+        <span class="s">&quot;ChopBlockHigh&quot;</span>, detail=HIGH_SEG_SCALE, **shape
     )
     <span class="k">if</span> lift_z:
         low.location.z += LIFT_Z
@@ -1325,14 +1799,13 @@ METAL_IDX = <span class="n">2</span>
     <span class="c"># world_bbox reads matrix_world, which is evaluated data. Without this the</span>
     <span class="c"># cached matrix hides a moved object and the grounded budget cannot fail.</span>
     bpy.context.view_layer.update()
-    <span class="c"># The bark has to sit well below the sawn face or a flat-shaded log round</span>
-    <span class="c"># reads as a turned wooden drum: the pale top is the whole point of the</span>
+    <span class="c"># The bark has to sit well below the sawn face or a log round reads as</span>
+    <span class="c"># a turned wooden drum: the pale top is the whole point of the</span>
     <span class="c"># silhouette and it needs something dark to be pale against.</span>
-    wood = principled(<span class="s">&quot;ChopBlockBark&quot;</span>, (<span class="n">0.105</span>, <span class="n">0.058</span>, <span class="n">0.028</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.86</span>)
-    grain = principled(<span class="s">&quot;ChopBlockGrain&quot;</span>, (<span class="n">0.560</span>, <span class="n">0.400</span>, <span class="n">0.215</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>)
-    metal = principled(<span class="s">&quot;ChopBlockIron&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.196</span>, <span class="n">0.196</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.34</span>)
-    assign_slots(low, wood, grain, metal)
-    assign_slots(high, wood, grain, metal)
+    mats = block_materials()
+    wood = mats[WOOD_IDX]
+    assign_slots(low, *mats)
+    assign_slots(high, *mats)
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;chopping block mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -1364,12 +1837,7 @@ METAL_IDX = <span class="n">2</span>
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_chopping_block_mesh(
-        <span class="s">&quot;ChopBlockColSrc&quot;</span>,
-        detail=<span class="n">1</span>,
-        haft_scale=haft_scale,
-        round_band=round_band,
-    )
+    collider_src = build_chopping_block_mesh(<span class="s">&quot;ChopBlockColSrc&quot;</span>, detail=<span class="n">1</span>, **shape)
     collider = convex_hull_collider(collider_src, <span class="s">&quot;ChopBlockCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
@@ -1382,6 +1850,11 @@ METAL_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which is the working</span>
+    <span class="c"># directory on a stock portable build, so gettempdir() can be the repo</span>
+    <span class="c"># root. Remove the file once it is measured rather than leaving it there.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1425,6 +1898,12 @@ METAL_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">haft_in_log=</span>{joint[<span class="s">&#x27;haft_in_log&#x27;</span>]}<span class="s"> plumb=</span>{joint[<span class="s">&#x27;plumb&#x27;</span>]:<span class="s">.7f</span>}<span class="s">&quot;</span>
     )
     print(<span class="s">f&quot;</span><span class="s">measured log diameter=</span>{log_dia:<span class="s">.4f</span>}<span class="s"> height=</span>{log_h:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    seats = joint[<span class="s">&quot;rivet_seats&quot;</span>]
+    print(
+        <span class="s">&quot;measured rivets &quot;</span>
+        + <span class="s">&quot; &quot;</span>.join(<span class="s">f&quot;</span><span class="s">seat=</span>{a:<span class="s">.5f</span>}<span class="s">,proud=</span>{b:<span class="s">.5f</span>}<span class="s">&quot;</span> <span class="k">for</span> a, b <span class="k">in</span> seats)
+        + <span class="s">f&quot;</span><span class="s"> haft_oval=</span>{joint[<span class="s">&#x27;haft_oval&#x27;</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -1449,6 +1928,11 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> idx_counts.get(HAFT_IDX, <span class="n">0</span>) &lt; HAFT_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">haft faces </span>{idx_counts.get(HAFT_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{HAFT_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -1564,6 +2048,17 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">&quot;inside the log&quot;</span>,
             <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> len(seats) != len(RIVET_US) <span class="k">or</span> any(
+        <span class="k">not</span> (RIVET_SEAT_MIN &lt;= seat &lt;= RIVET_SEAT_MAX) <span class="k">or</span> proud &lt; RIVET_PROUD_MIN
+        <span class="k">for</span> seat, proud <span class="k">in</span> seats
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">&quot;rivet seats &quot;</span>
+            + <span class="s">&quot;, &quot;</span>.join(<span class="s">f&quot;</span>{a:<span class="s">.5f</span>}<span class="s"> (proud </span>{b:<span class="s">.5f</span>}<span class="s">)</span><span class="s">&quot;</span> <span class="k">for</span> a, b <span class="k">in</span> seats)
+            + <span class="s">f&quot;</span><span class="s"> outside [</span>{RIVET_SEAT_MIN}<span class="s">, </span>{RIVET_SEAT_MAX}<span class="s">] or proud &lt; </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{RIVET_PROUD_MIN}<span class="s"> (--float-rivets is the designed fail)</span><span class="s">&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> joint[<span class="s">&quot;plumb&quot;</span>] &gt; PLUMB_EPS:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">log axis out of plumb by </span>{joint[<span class="s">&#x27;plumb&#x27;</span>]:<span class="s">.7f</span>}<span class="s"> &gt; </span>{PLUMB_EPS}<span class="s">&quot;</span>,
@@ -1578,6 +2073,13 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span>{BLOCK_DIAMETER}<span class="s"> x </span>{BLOCK_HEIGHT}<span class="s"> chopping block</span><span class="s">&quot;</span>,
             <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> (HAFT_OVAL_MIN &lt;= joint[<span class="s">&quot;haft_oval&quot;</span>] &lt;= HAFT_OVAL_MAX):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">haft section </span>{joint[<span class="s">&#x27;haft_oval&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> wide-to-thick outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{HAFT_OVAL_MIN}<span class="s">, </span>{HAFT_OVAL_MAX}<span class="s">]: a round haft is a broom </span><span class="s">&quot;</span>
+            <span class="s">&quot;handle (--round-haft is the designed fail)&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1587,7 +2089,11 @@ METAL_IDX = <span class="n">2</span>
     nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
     nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
     nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
-    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="c"># The bark&#x27;s fissure bump sits on top of the baked normal, not instead</span>
+    <span class="c"># of it.</span>
+    bump = next((n <span class="k">for</span> n <span class="k">in</span> nt.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;ShaderNodeBump&quot;</span>), <span class="k">None</span>)
+    target = bump.inputs[<span class="s">&quot;Normal&quot;</span>] <span class="k">if</span> bump <span class="k">else</span> bsdf.inputs[<span class="s">&quot;Normal&quot;</span>]
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], target)
 
 
 <span class="k">def</span> render_still(low, wood, tex, path, engine):
@@ -1719,6 +2225,16 @@ METAL_IDX = <span class="n">2</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: a circular hoop on an out-of-round log&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--round-haft&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: a round haft section, failing the oval budget&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--float-rivets&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: rivet heads lifted off the lap, failing their seat&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1727,6 +2243,8 @@ METAL_IDX = <span class="n">2</span>
         stray_vert=args.stray_vert,
         fat_haft=args.fat_haft,
         round_band=args.round_band,
+        round_haft=args.round_haft,
+        float_rivets=args.float_rivets,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code

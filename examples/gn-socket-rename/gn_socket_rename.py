@@ -279,8 +279,154 @@ def eevee_engine_id():
     return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
 
 
+# Render path only. Graduations are engraved every TICK_MINOR up the column
+# and heavier every TICK_MAJOR, measured from the plinth top.
+TICK_MINOR = 0.1
+TICK_MAJOR = 0.5
+TICK_MINOR_HALF = 0.004
+TICK_MAJOR_HALF = 0.009
+# Ticks run in from each vertical corner, like the graduations on a gauge
+# column. Full-width lines stacked the column into planks.
+TICK_MINOR_LEN = 0.07
+TICK_MAJOR_LEN = 0.16
+
+
+def shader_math(nt, op, *inputs):
+    node = nt.nodes.new("ShaderNodeMath")
+    node.operation = op
+    for i, value in enumerate(inputs):
+        if isinstance(value, (int, float)):
+            node.inputs[i].default_value = value
+        else:
+            nt.links.new(value, node.inputs[i])
+    return node.outputs[0]
+
+
+def tick_mask(nt, height, spacing, half_width):
+    """1 within half_width of a multiple of spacing, else 0."""
+    frac = shader_math(nt, "FRACT", shader_math(nt, "DIVIDE", height, spacing))
+    near = shader_math(nt, "MINIMUM", frac, shader_math(nt, "SUBTRACT", 1.0, frac))
+    return shader_math(
+        nt, "LESS_THAN", shader_math(nt, "MULTIPLY", near, spacing), half_width
+    )
+
+
+def dress_gauge(copper, steel):
+    """Turn the jo-block into a height gauge, drawn from the witness.
+
+    The graduations read the evaluated POINT ``gauge_h`` attribute, so the
+    render witnesses the Random Value axis as well as the Compare axis: with
+    Random unwired, the Store default leaves ``gauge_h`` at 0 on the column
+    and the column renders blank. Nothing here feeds back into ``check``.
+    """
+    nt = copper.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    attr = nt.nodes.new("ShaderNodeAttribute")
+    attr.attribute_type = "GEOMETRY"
+    attr.attribute_name = ATTR_NAME
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Object"], sep.inputs["Vector"])
+
+    height = shader_math(nt, "SUBTRACT", sep.outputs["Z"], PLINTH_SIZE[2])
+    # Distance in from the nearest vertical corner, from the object-space
+    # normal: on a side face one of |nx|, |ny| is 1 and the other 0.
+    onrm = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Normal"], onrm.inputs["Vector"])
+    across = shader_math(
+        nt,
+        "ADD",
+        shader_math(
+            nt,
+            "MULTIPLY",
+            shader_math(nt, "ABSOLUTE", sep.outputs["X"]),
+            shader_math(nt, "ABSOLUTE", onrm.outputs["Y"]),
+        ),
+        shader_math(
+            nt,
+            "MULTIPLY",
+            shader_math(nt, "ABSOLUTE", sep.outputs["Y"]),
+            shader_math(nt, "ABSOLUTE", onrm.outputs["X"]),
+        ),
+    )
+    inset = shader_math(nt, "SUBTRACT", COLUMN_XY / 2.0, across)
+    lines = shader_math(
+        nt,
+        "MAXIMUM",
+        shader_math(
+            nt,
+            "MULTIPLY",
+            tick_mask(nt, height, TICK_MINOR, TICK_MINOR_HALF),
+            shader_math(nt, "LESS_THAN", inset, TICK_MINOR_LEN),
+        ),
+        shader_math(
+            nt,
+            "MULTIPLY",
+            tick_mask(nt, height, TICK_MAJOR, TICK_MAJOR_HALF),
+            shader_math(nt, "LESS_THAN", inset, TICK_MAJOR_LEN),
+        ),
+    )
+    # Side faces only (the top face sits on a tick by construction), and
+    # only up to the stored gauge height.
+    side = shader_math(
+        nt, "LESS_THAN", shader_math(nt, "ABSOLUTE", onrm.outputs["Z"]), 0.5
+    )
+    stored = attr.outputs["Fac"]
+    within = shader_math(
+        nt, "LESS_THAN", height, shader_math(nt, "ADD", stored, 0.001)
+    )
+    engraved = shader_math(
+        nt,
+        "MULTIPLY",
+        shader_math(nt, "MULTIPLY", lines, side),
+        shader_math(nt, "MULTIPLY", within, shader_math(nt, "GREATER_THAN", stored, 0.5)),
+    )
+
+    # Brushed along the column: noise squeezed across it, stretched up it.
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (60.0, 60.0, 1.5)
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    brush = nt.nodes.new("ShaderNodeTexNoise")
+    brush.inputs["Scale"].default_value = 4.0
+    brush.inputs["Detail"].default_value = 6.0
+    nt.links.new(mapping.outputs["Vector"], brush.inputs["Vector"])
+    rough = shader_math(
+        nt,
+        "MULTIPLY_ADD",
+        engraved,
+        0.45,
+        shader_math(nt, "MULTIPLY_ADD", brush.outputs["Fac"], 0.10, 0.20),
+    )
+    nt.links.new(rough, bsdf.inputs["Roughness"])
+
+    base = nt.nodes.new("ShaderNodeMix")
+    base.data_type = "RGBA"
+    nt.links.new(engraved, enabled_sock(base, "inputs", "Factor"))
+    enabled_sock(base, "inputs", "A").default_value = (0.93, 0.42, 0.08, 1.0)
+    enabled_sock(base, "inputs", "B").default_value = (0.05, 0.018, 0.006, 1.0)
+    nt.links.new(enabled_sock(base, "outputs", "Result"), bsdf.inputs["Base Color"])
+    emit = bsdf.inputs.get("Emission Color") or bsdf.inputs["Emission"]
+    nt.links.new(enabled_sock(base, "outputs", "Result"), emit)
+    # Brushed, the copper reflects less of the key and went brown at
+    # thumbnail size; a little more of its own colour keeps it copper.
+    bsdf.inputs["Emission Strength"].default_value = 0.24
+
+    # Ground steel: lift it off the stage and give it a machined finish.
+    sb = steel.node_tree.nodes["Principled BSDF"]
+    # Fully metallic at 0.32 it mirrored the dark studio and read as a void.
+    sb.inputs["Base Color"].default_value = (0.27, 0.28, 0.31, 1.0)
+    sb.inputs["Metallic"].default_value = 0.8
+    sb.inputs["Roughness"].default_value = 0.42
+
+
 def render_still(obj, path, engine):
     scene = bpy.context.scene
+    dress_gauge(bpy.data.materials["ColumnCopper"], bpy.data.materials["PlinthSteel"])
+    # Presentation turn. At 38 degrees one column face sat square to the
+    # camera and the gauge read as a flat card; at 18 two faces show and the
+    # corner graduations wrap the edge. check() reads object-space vertices,
+    # so the turn cannot reach an assertion.
+    obj.rotation_euler = (0.0, 0.0, math.radians(18))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -325,7 +471,10 @@ def render_still(obj, path, engine):
 
     light("Key", (-3.4, -4.6, 5.4), 680.0, 4.2, (1.0, 0.96, 0.9))
     light("Fill", (4.8, -3.0, 2.2), 140.0, 8.0, (0.75, 0.85, 1.0))
-    light("Rim", (0.2, 5.8, 3.4), 300.0, 3.2, (0.6, 0.78, 1.0))
+    # At 300 W the rim's glossy reflection off the floor lifted the stage
+    # right of the column to mid grey-blue (patch mean 104 against 62 with
+    # the rim off); the column edge still separates at this level.
+    light("Rim", (0.2, 5.8, 3.4), 120.0, 3.2, (0.6, 0.78, 1.0))
     light("Glint", (1.8, -4.8, 5.6), 900.0, 0.85, (1.0, 0.90, 0.70))
     wedge = bpy.data.lights.new("Wedge", "AREA")
     wedge.energy = 480.0
