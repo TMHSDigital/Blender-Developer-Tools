@@ -42,6 +42,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   coplanar-face budget fails (exit 15). `--short-stile` /
   `--short-post` lift a member out of its cup (exit 18 or 19).
   `--clip-ring` pulls a hung ring off the eye centerline (exit 18).
+  `--flush-tyre` / `--stand-posts` restore a flush surface so the
+  coplanar budget fails (exit 15). `--float-wheel` / `--float-stone`
+  lift one named support while the rest still ground the AABB (exit 16).
+  `--sink-tyre` / `--shallow-tenon` put a seat outside its band (exit
+  18). `--drop-bucket` hides the hung subject (exit 18).
+  `--skew-wheel` / `--turn-posts` break a mirror or placement budget
+  (exit 19).
   A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
@@ -187,6 +194,63 @@ entry in `showcase/gallery.json`, and a rendered still.
   The outer AABB does not cover this: on a prop with an appendage the
   AABB is the appendage, and the body can drift to any size underneath
   it.
+- **A band is hooped onto its host, never set flush against it (exit
+  15/18).** A tyre, ferrule, hoop or collar derives its **inner** radius
+  from the host's **outer** radius minus a named interference, and its
+  outer radius from the host plus its own thickness. Writing
+  `r_mid = host_out + t/2, radial_t = t/2` — the obvious spelling —
+  makes the band's inner cylinder and the host's tread the *same
+  surface*, so every segment is a coplanar cross-shell pair around the
+  whole circumference. `cart` shipped that way and measured 32 pairs
+  (16 per wheel); the speckle was visible on the committed hero and in
+  a clay pass, and no budget could see it. `--flush-tyre` restores the
+  equality and is the falsifier.
+- **A member is tenoned into its seat, never stood on it (exit
+  15/18).** A post, leg or stile whose bottom face lands exactly on its
+  host's top face puts both on one plane. Derive the member's bottom
+  from the host's top minus a named seat depth, and hold the member's
+  *top* fixed so nothing above it moves. `stone-well` stood its four
+  roof posts on the coping and measured 4 pairs, one per post.
+  Assert the seat as a **band** recomputed against the host surface read
+  off the generated mesh — `max z` over the host's material — not
+  against the constant the builder used, which witnesses nothing.
+- **Posts go under the roof's corners, not the middle of its eaves
+  (exit 19).** Where a hip or pyramid roof is carried on four posts,
+  assert each post's plan bearing against a hip corner **recomputed from
+  the generated mesh**, as a wrapped angular difference. Take the
+  corners from the *pooled* vertices at the eave line: pulling them from
+  a single shell picks one fascia board, whose own extremes sit 90° off
+  the corners it is nailed to, and the budget then fails on a correct
+  model. `stone-well` placed its posts on the axes, which cantilevered
+  the roof's corners 0.80 m and stood one post dead centre in the well
+  mouth in every orthographic view.
+- **A roof is sized from what it must cover, not from what carries it.**
+  Deriving the eave reach from the post ring plus an overhang gave
+  `stone-well` a 1.64 m roof over a 1.08 m drum — an umbrella. Derive it
+  from the covered body's own radius plus a named clearance
+  (`EAVE_HALF = R_OUTER + CURB_OUT + EAVE_CLEAR`), and let the overhang
+  fall out of that. Expect the convex-hull collider budget to move when
+  the roof does; re-fit it and say so.
+- **The subject hangs where it can be seen (exit 18).** A prop whose
+  story is one small part — a bucket on a rope, a lantern on a hook —
+  asserts that part's clearance above the body it hangs over, as a band,
+  measured against the body read off the mesh. `stone-well`'s bucket sat
+  down the shaft with only its rim level with the coping: invisible in
+  the hero and in all six orthographic views, and no budget noticed.
+  `--drop-bucket` is the falsifier.
+- **Mirrored assemblies (exit 19).** Where a prop has a left and a
+  right of the same part — two wheels, two brackets — pair the shells
+  and assert they match in the two axes they share and in their extents,
+  within a named epsilon, and are opposite in the mirrored axis. Size
+  the falsifier's displacement to stay **inside** `BBOX_TOL` so the AABB
+  gate cannot steal the failure: `cart`'s `--skew-wheel` moves one wheel
+  6 mm along a track whose tolerance is 10 mm.
+- **Segment counts are a silhouette budget, not a triangle budget.** A
+  16-gon felloe reads as a polygon at hero size, and the flat facet
+  facing the key light renders as a hard white plate. `cart` went to 24
+  and the chords disappeared. Re-fit the triangle band around the new
+  measured count rather than leaving the old one — and prefer a band
+  *narrower* than the one it replaces, centred on the measurement.
 - **Material face floors.** Every declared material asserts a named
   minimum face count on the finished mesh, recomputed from
   `polygon.material_index`. This catches the slot-assignment wipe class:

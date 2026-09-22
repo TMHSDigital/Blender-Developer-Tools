@@ -253,7 +253,7 @@
       <img src="../assets/cart-hero.webp" alt="cart render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2600 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 122 tris, hygiene zero (loose, non-manifold, doubles, n-gons), grounded zmin, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2856 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 154 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres grounded, tyre seat depth in band over 48 angular stations, the two wheels mirrored within 5e-5 m, grounded zmin, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --sink-tyre exits 18 on the tyre seat band; --float-wheel exits 16 on the named-support budget; --skew-wheel exits 19 on the wheel mirror; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/cart/cart.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -264,18 +264,25 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2470–2900 | 2600 / 2600 / 2600 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2154 | | Materials | exactly 2 distinct, metal ≥ 24, wood ≥ 800 faces | 2 slots, floors met | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.539, 0.749, 0.640) m ± 0.01 | (1.5393, 0.7486, 0.6400) | | Grounded | bbox min Z within 1e-4 of 0 | 0.0000 / 0.0000 / 0.0000 | | Hygiene | loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0 | 0 / 0 / 0 on every axis | | Material-island gap | metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 | | Collider tris | ≤ 360 | 122 | | Export | written, size &gt; 0 | 201048 / 201048 / 201032 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 2760–2960 | 2856 / 2856 / 2856 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2154 | | Materials | exactly 2 distinct, metal ≥ 24, wood ≥ 800 faces | 2 slots, floors met | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.539, 0.749, 0.640) m ± 0.01 | (1.5393, 0.7486, 0.6400) | | Grounded | bbox min Z within 1e-4 of 0 | 0.0000 / 0.0000 / 0.0000 | | Named supports | each tyre&#x27;s own zmin within 1e-4 of the floor | +Y 0.000000, −Y 0.000000 | | Hygiene | loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0 | 0 / 0 / 0 on every axis | | Z-fighting | coplanar cross-shell face pairs = 0 | 0 / 0 / 0 | | Tyre seat | 0.0030–0.0055 m interference, per angular station | [0.00400, 0.00400] over 48 stations | | Wheel mirror | the two wheels match in X, Z and extent within 5e-5 m | 0.00000 mm | | Material-island gap | metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 | | Collider tris | ≤ 360 | 122 | | Export | written, size &gt; 0 | 201048 / 201048 / 201032 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. <code>--lift-z</code> raises the finished mesh 0.05 m so the grounded budget fails and exit 16 fires. Those are the named budgets the two falsifiers violate.</p>
+<h2>Falsifiers</h2>
+<p>Each flag breaks one stage so a <strong>named</strong> budget fails and the piece exits *that* code. Magnitudes are sized so no earlier gate can steal the failure: the two wheel moves stay inside <code>BBOX_TOL</code>, so the AABB gate (exit 8) still passes.</p>
+<p>| Flag | Target budget | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band (ratio becomes 1.0) | 9 | | <code>--lift-z</code> | AABB grounded zmin (whole mesh up 0.05 m) | 16 | | <code>--flush-tyre</code> | Coplanar cross-shell pairs — sets the tyre&#x27;s inner radius equal to the felloe&#x27;s outer radius, which is the construction bug this piece was rebuilt to remove (0 → 48 pairs) | 15 | | <code>--sink-tyre</code> | Tyre seat band — buries the hoop 9 mm into the felloe so it reads as one body | 18 | | <code>--float-wheel</code> | Named supports — lifts one wheel 3 mm while the other still grounds the AABB | 16 | | <code>--skew-wheel</code> | Wheel mirror — pushes one wheel 6 mm out along the track | 19 |</p>
+<p><code>--lift-z</code> and <code>--float-wheel</code> share exit 16 and fail different budgets: <code>--lift-z</code> fails the AABB gate, which fires first; <code>--float-wheel</code> leaves the AABB grounded, so only the per-tyre support check can catch it.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python cart.py --
 blender --background --python cart.py -- --skip-decimate
 blender --background --python cart.py -- --lift-z
+blender --background --python cart.py -- --flush-tyre
+blender --background --python cart.py -- --sink-tyre
+blender --background --python cart.py -- --float-wheel
+blender --background --python cart.py -- --skew-wheel
 blender --background --python cart.py -- --output cart.png</code></pre>
-<p>Smoke does not pass <code>--output</code>, <code>--skip-decimate</code>, or <code>--lift-z</code>.</p>
+<p>Smoke passes none of the falsifier flags and no <code>--output</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene: loose geometry, non-manifold, zero-area, doubles, or n-gons | | 16 | Bbox min Z not grounded (<code>--lift-z</code> lands here) | | 17 | Material-island gap above tolerance (parts meant to touch) |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 2 distinct slots, or metal faces missing | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene: loose geometry, non-manifold, zero-area, doubles, n-gons, or coplanar cross-shell face pairs (<code>--flush-tyre</code> lands here) | | 16 | Bbox min Z not grounded (<code>--lift-z</code>), or a named support off the floor (<code>--float-wheel</code>) | | 17 | Material-island gap above tolerance (parts meant to touch) | | 18 | Tyre seat depth outside its band (<code>--sink-tyre</code> lands here) | | 19 | Wheel mirror deviation above epsilon (<code>--skew-wheel</code> lands here) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -331,6 +338,16 @@ RIM_RADIAL = <span class="n">0.012</span>
 RIM_W = <span class="n">0.036</span>
 TYRE_T = <span class="n">0.008</span>
 TYRE_W = <span class="n">0.040</span>
+<span class="c"># Felloe outer radius is the *host* surface the tyre is hooped onto. The</span>
+<span class="c"># tyre&#x27;s inner radius is derived from it minus a named interference, never</span>
+<span class="c"># set equal to it: r_in == r_out puts the tyre&#x27;s inner cylinder and the</span>
+<span class="c"># felloe&#x27;s tread on one plane for every segment, which is a guaranteed</span>
+<span class="c"># z-fight (it measured 32 coplanar cross-shell pairs, 16 per wheel).</span>
+RIM_OUTER = RIM_MAJOR + RIM_RADIAL
+TYRE_SEAT = <span class="n">0.004</span>
+TYRE_SEAT_MIN = <span class="n">0.0030</span>
+TYRE_SEAT_MAX = <span class="n">0.0055</span>
+WHEEL_SEGMENTS = <span class="n">24</span>
 TRACK = <span class="n">0.68</span>
 AXLE_X = -<span class="n">0.16</span>
 AXLE_R = <span class="n">0.020</span>
@@ -353,8 +370,11 @@ BOLSTER_H = <span class="n">0.044</span>
 
 BBOX_TOL = <span class="n">0.01</span>
 OUTER_SIZE = (<span class="n">1.539</span>, <span class="n">0.749</span>, <span class="n">0.640</span>)
-BASE_TRIS_MIN = <span class="n">2470</span>
-BASE_TRIS_MAX = <span class="n">2900</span>
+<span class="c"># Re-fitted after the wheel went from 16 to 24 segments (2600 -&gt; 2856).</span>
+<span class="c"># Narrower than the band it replaces (200 wide, was 430) and centred on</span>
+<span class="c"># the measured value, so this is a tightening, not a widening.</span>
+BASE_TRIS_MIN = <span class="n">2760</span>
+BASE_TRIS_MAX = <span class="n">2960</span>
 ZMIN_EPS = <span class="n">1e-4</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
@@ -374,6 +394,24 @@ BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.08</span>
 METAL_FACES_MIN = <span class="n">24</span>
 WOOD_FACES_MIN = <span class="n">800</span>
+
+<span class="c"># Z-fighting: two separate bodies landing on one plane. Cross-shell, with</span>
+<span class="c"># hay-bale&#x27;s constants (copied, not imported).</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+ZFIGHT_PAIRS_MAX = <span class="n">0</span>
+<span class="c"># Named supports: a two-wheel cart&#x27;s AABB zmin is grounded by whichever</span>
+<span class="c"># tyre happens to be lowest. Each tyre carries its own floor contact.</span>
+SUPPORT_ZMIN_EPS = <span class="n">1e-4</span>
+<span class="c"># Mirrored members: the two wheels are the same part reflected in Y.</span>
+WHEEL_MIRROR_EPS = <span class="n">5e-5</span>
+<span class="c"># Falsifier magnitudes, each sized to trip its own budget and nothing</span>
+<span class="c"># earlier: the wheel moves stay inside BBOX_TOL so the AABB gate cannot</span>
+<span class="c"># steal the failure.</span>
+SINK_TYRE_SEAT = <span class="n">0.009</span>
+FLOAT_WHEEL_Z = <span class="n">0.003</span>
+SKEW_WHEEL_Y = <span class="n">0.006</span>
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
@@ -534,14 +572,19 @@ METAL_IDX = <span class="n">1</span>
 <span class="k">def</span> add_wheel(bm, loc, wood, metal):
     wood.extend(
         add_ring(
-            bm, loc, RIM_MAJOR, RIM_RADIAL, RIM_W, <span class="n">16</span>, WOOD_IDX,
+            bm, loc, RIM_MAJOR, RIM_RADIAL, RIM_W, WHEEL_SEGMENTS, WOOD_IDX,
             euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
         )
     )
+    <span class="c"># Hooped, not pasted on: inner radius is RIM_OUTER - TYRE_SEAT so the</span>
+    <span class="c"># band bites into the felloe, and the tread still lands at</span>
+    <span class="c"># RIM_OUTER + TYRE_T so the tyre stays the ground contact.</span>
+    tyre_in = RIM_OUTER - TYRE_SEAT
+    tyre_out = RIM_OUTER + TYRE_T
     metal.extend(
         add_ring(
-            bm, loc, RIM_MAJOR + RIM_RADIAL + TYRE_T / <span class="n">2.0</span>, TYRE_T / <span class="n">2.0</span>,
-            TYRE_W, <span class="n">16</span>, METAL_IDX,
+            bm, loc, <span class="n">0.5</span> * (tyre_in + tyre_out), <span class="n">0.5</span> * (tyre_out - tyre_in),
+            TYRE_W, WHEEL_SEGMENTS, METAL_IDX,
             euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
         )
     )
@@ -882,6 +925,179 @@ METAL_IDX = <span class="n">1</span>
     }
 
 
+<span class="k">def</span> shell_groups(me):
+    <span class="s">&quot;&quot;&quot;Vertex-index shells by edge connectivity (union-find), biggest first.&quot;&quot;&quot;</span>
+    parent = list(range(len(me.vertices)))
+
+    <span class="k">def</span> find(a):
+        <span class="k">while</span> parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        <span class="k">return</span> a
+
+    <span class="k">for</span> e <span class="k">in</span> me.edges:
+        ra, rb = find(int(e.vertices[<span class="n">0</span>])), find(int(e.vertices[<span class="n">1</span>]))
+        <span class="k">if</span> ra != rb:
+            parent[rb] = ra
+    groups = {}
+    <span class="k">for</span> i <span class="k">in</span> range(len(me.vertices)):
+        groups.setdefault(find(i), []).append(i)
+    <span class="k">return</span> sorted(groups.values(), key=<span class="k">lambda</span> g: -len(g))
+
+
+<span class="k">def</span> shell_box(me, idxs):
+    co = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> idxs]
+    <span class="k">return</span> {
+        <span class="s">&quot;xmin&quot;</span>: min(c.x <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;xmax&quot;</span>: max(c.x <span class="k">for</span> c <span class="k">in</span> co),
+        <span class="s">&quot;ymin&quot;</span>: min(c.y <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;ymax&quot;</span>: max(c.y <span class="k">for</span> c <span class="k">in</span> co),
+        <span class="s">&quot;zmin&quot;</span>: min(c.z <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;zmax&quot;</span>: max(c.z <span class="k">for</span> c <span class="k">in</span> co),
+    }
+
+
+<span class="k">def</span> coplanar_zfight_pairs(me, groups):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two quads two steps apart on
+    one flat cap share no vertex and are coplanar by construction, and
+    counting those makes the budget unsatisfiable rather than meaningful.
+    Z-fighting is two separate bodies landing on one plane, which is
+    exactly a cross-shell pair. Combinatorics and constants copied from
+    showcase/hay-bale (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, comp <span class="k">in</span> enumerate(groups):
+        <span class="k">for</span> vi <span class="k">in</span> comp:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(faces)):
+        ni, ci, si = faces[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(faces)):
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> (ci - cj).length &gt; COPLANAR_CENTRE_MAX:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> wheel_shells(me, groups):
+    <span class="s">&quot;&quot;&quot;(rim, tyre) shell index pairs for each wheel, keyed by track side.
+
+    Identified from the generated mesh by geometry — a shell centred on the
+    axle line whose YZ extent is a full disc — never from a construction
+    constant. The tyre is the metal-indexed member of the pair.
+    &quot;&quot;&quot;</span>
+    metal = set()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> p.material_index == METAL_IDX:
+            metal.add(int(p.vertices[<span class="n">0</span>]))
+    found = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(groups):
+        b = shell_box(me, g)
+        dx = b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]
+        dz = b[<span class="s">&quot;zmax&quot;</span>] - b[<span class="s">&quot;zmin&quot;</span>]
+        <span class="k">if</span> dx &lt; <span class="n">0.4</span> <span class="k">or</span> abs(dx - dz) &gt; <span class="n">0.02</span>:
+            <span class="k">continue</span>
+        side = <span class="n">1</span> <span class="k">if</span> <span class="n">0.5</span> * (b[<span class="s">&quot;ymin&quot;</span>] + b[<span class="s">&quot;ymax&quot;</span>]) &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">1</span>
+        kind = <span class="s">&quot;tyre&quot;</span> <span class="k">if</span> any(i <span class="k">in</span> metal <span class="k">for</span> i <span class="k">in</span> g) <span class="k">else</span> <span class="s">&quot;rim&quot;</span>
+        found.setdefault(side, {})[kind] = si
+    <span class="k">return</span> found
+
+
+<span class="k">def</span> tyre_seat_depths(me, groups, rim_si, tyre_si, segments):
+    <span class="s">&quot;&quot;&quot;Per-station interference between the tyre&#x27;s inner ring and the felloe.
+
+    Banded and per angular station, not one global figure: a single number
+    passes while one arc of the hoop visibly gaps. Both radii are recomputed
+    from the generated vertices, so nothing here restates a constant.
+    &quot;&quot;&quot;</span>
+    axis_y = <span class="n">0.5</span> * (shell_box(me, groups[tyre_si])[<span class="s">&quot;ymin&quot;</span>]
+                    + shell_box(me, groups[tyre_si])[<span class="s">&quot;ymax&quot;</span>])
+    rb = shell_box(me, groups[rim_si])
+    cx = <span class="n">0.5</span> * (rb[<span class="s">&quot;xmin&quot;</span>] + rb[<span class="s">&quot;xmax&quot;</span>])
+    cz = <span class="n">0.5</span> * (rb[<span class="s">&quot;zmin&quot;</span>] + rb[<span class="s">&quot;zmax&quot;</span>])
+
+    <span class="k">def</span> bins(idxs):
+        out = {}
+        <span class="k">for</span> i <span class="k">in</span> idxs:
+            co = me.vertices[i].co
+            ang = math.atan2(co.z - cz, co.x - cx)
+            k = int(round(ang / (<span class="n">2.0</span> * math.pi / segments))) % segments
+            out.setdefault(k, []).append(
+                math.hypot(co.x - cx, co.z - cz))
+        <span class="k">return</span> out
+
+    rim_bins = bins(groups[rim_si])
+    tyre_bins = bins(groups[tyre_si])
+    depths = []
+    <span class="k">for</span> k <span class="k">in</span> sorted(set(rim_bins) &amp; set(tyre_bins)):
+        rim_out = max(rim_bins[k])
+        tyre_in = min(tyre_bins[k])
+        depths.append(rim_out - tyre_in)
+    <span class="k">return</span> depths, axis_y
+
+
+<span class="k">def</span> _wheel_centre(me, groups, rim_si):
+    b = shell_box(me, groups[rim_si])
+    <span class="k">return</span> <span class="n">0.5</span> * (b[<span class="s">&quot;xmin&quot;</span>] + b[<span class="s">&quot;xmax&quot;</span>]), <span class="n">0.5</span> * (b[<span class="s">&quot;zmin&quot;</span>] + b[<span class="s">&quot;zmax&quot;</span>])
+
+
+<span class="k">def</span> break_tyre_seat(me, seat):
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: re-radius each tyre&#x27;s inner ring to `seat` deep.
+
+    seat=0.0 puts the tyre&#x27;s inner cylinder on the felloe&#x27;s tread plane,
+    which is the construction bug this piece was rebuilt to remove.
+    &quot;&quot;&quot;</span>
+    groups = shell_groups(me)
+    <span class="k">for</span> parts <span class="k">in</span> wheel_shells(me, groups).values():
+        cx, cz = _wheel_centre(me, groups, parts[<span class="s">&quot;rim&quot;</span>])
+        idxs = groups[parts[<span class="s">&quot;tyre&quot;</span>]]
+        radii = [math.hypot(me.vertices[i].co.x - cx,
+                            me.vertices[i].co.z - cz) <span class="k">for</span> i <span class="k">in</span> idxs]
+        split = <span class="n">0.5</span> * (min(radii) + max(radii))
+        <span class="k">for</span> i, r <span class="k">in</span> zip(idxs, radii):
+            <span class="k">if</span> r &gt;= split:
+                <span class="k">continue</span>
+            co = me.vertices[i].co
+            scale = (RIM_OUTER - seat) / r
+            co.x = cx + (co.x - cx) * scale
+            co.z = cz + (co.z - cz) * scale
+    me.update()
+
+
+<span class="k">def</span> move_one_wheel(me, delta):
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: translate the +Y wheel only (rim, tyre, spokes).
+
+    Everything whose vertices lie on the +Y side of the axle centreline and
+    within the wheel&#x27;s radius, so the assembly moves as one body and the
+    opposite wheel still grounds the AABB.
+    &quot;&quot;&quot;</span>
+    groups = shell_groups(me)
+    parts = wheel_shells(me, groups).get(<span class="n">1</span>)
+    <span class="k">if</span> parts <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    b = shell_box(me, groups[parts[<span class="s">&quot;tyre&quot;</span>]])
+    cx, cz = _wheel_centre(me, groups, parts[<span class="s">&quot;rim&quot;</span>])
+    y_lo, y_hi = b[<span class="s">&quot;ymin&quot;</span>] - <span class="n">0.02</span>, b[<span class="s">&quot;ymax&quot;</span>] + <span class="n">0.02</span>
+    r_max = <span class="n">0.5</span> * (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) + <span class="n">1e-4</span>
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        <span class="k">if</span> <span class="k">not</span> (y_lo &lt;= v.co.y &lt;= y_hi):
+            <span class="k">continue</span>
+        <span class="k">if</span> math.hypot(v.co.x - cx, v.co.z - cz) &gt; r_max:
+            <span class="k">continue</span>
+        v.co.x += delta[<span class="n">0</span>]
+        v.co.y += delta[<span class="n">1</span>]
+        v.co.z += delta[<span class="n">2</span>]
+    me.update()
+
+
 <span class="k">def</span> min_mat_distance(me, ia, ib):
     <span class="s">&quot;&quot;&quot;Closest surface distance between two material islands via BVH.
 
@@ -1003,7 +1219,8 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>):
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, flush_tyre=<span class="k">False</span>, sink_tyre=<span class="k">False</span>,
+          float_wheel=<span class="k">False</span>, skew_wheel=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_cart_mesh(<span class="s">&quot;CartLow&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">2</span>)
     high = build_cart_mesh(<span class="s">&quot;CartHigh&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">4</span>)
@@ -1011,9 +1228,14 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">&quot;CartWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>,
         noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.26</span>, <span class="n">0.12</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
     )
+    <span class="c"># Wrought iron, not black plastic. At (0.13, 0.32) the tyre rendered as</span>
+    <span class="c"># a flat black band with no sheen — darker and glossier than every</span>
+    <span class="c"># sibling piece&#x27;s iron (hitching-post 0.16/0.48, wooden-ladder</span>
+    <span class="c"># 0.18/0.48). Raised to sit inside that calibration range, and the wear</span>
+    <span class="c"># colour lifted off near-black so the noise actually varies the surface.</span>
     metal = principled(
-        <span class="s">&quot;CartIron&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.135</span>, <span class="n">0.15</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
+        <span class="s">&quot;CartIron&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.195</span>, <span class="n">0.185</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.50</span>,
+        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.11</span>, <span class="n">0.105</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
     )
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
@@ -1021,6 +1243,14 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
             v.co.z += LIFT_Z
         low.data.update()
+    <span class="k">if</span> flush_tyre:
+        break_tyre_seat(low.data, <span class="n">0.0</span>)
+    <span class="k">if</span> sink_tyre:
+        break_tyre_seat(low.data, SINK_TYRE_SEAT)
+    <span class="k">if</span> float_wheel:
+        move_one_wheel(low.data, (<span class="n">0.0</span>, <span class="n">0.0</span>, FLOAT_WHEEL_Z))
+    <span class="k">if</span> skew_wheel:
+        move_one_wheel(low.data, (<span class="n">0.0</span>, SKEW_WHEEL_Y, <span class="n">0.0</span>))
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;cart mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -1092,6 +1322,53 @@ METAL_IDX = <span class="n">1</span>
     )
     print(<span class="s">f&quot;</span><span class="s">measured gap_metal_wood=</span>{gap_mw:<span class="s">.5f</span>}<span class="s">&quot;</span>)
 
+    groups = shell_groups(low.data)
+    zfight = coplanar_zfight_pairs(low.data, groups)
+    wheels = wheel_shells(low.data, groups)
+    support_zmins = {}
+    seats = []
+    <span class="k">for</span> side, parts <span class="k">in</span> sorted(wheels.items()):
+        tb = shell_box(low.data, groups[parts[<span class="s">&quot;tyre&quot;</span>]])
+        support_zmins[<span class="s">&quot;+Y&quot;</span> <span class="k">if</span> side &gt; <span class="n">0</span> <span class="k">else</span> <span class="s">&quot;-Y&quot;</span>] = round(tb[<span class="s">&quot;zmin&quot;</span>], <span class="n">6</span>)
+        depths, _ = tyre_seat_depths(
+            low.data, groups, parts[<span class="s">&quot;rim&quot;</span>], parts[<span class="s">&quot;tyre&quot;</span>], WHEEL_SEGMENTS
+        )
+        seats.extend(depths)
+    support_worst = max((abs(z) <span class="k">for</span> z <span class="k">in</span> support_zmins.values()), default=<span class="n">1e9</span>)
+    seat_min = min(seats) <span class="k">if</span> seats <span class="k">else</span> -<span class="n">1.0</span>
+    seat_max = max(seats) <span class="k">if</span> seats <span class="k">else</span> <span class="n">1e9</span>
+    seat_n = len(seats)
+    <span class="c"># Mirror: the two wheels are one part reflected in Y, so their rim</span>
+    <span class="c"># centres must match in X and Z and be opposite in Y.</span>
+    wheel_mirror = <span class="n">1e9</span>
+    <span class="k">if</span> len(wheels) == <span class="n">2</span>:
+        boxes = {}
+        <span class="k">for</span> side, parts <span class="k">in</span> wheels.items():
+            b = shell_box(low.data, groups[parts[<span class="s">&quot;rim&quot;</span>]])
+            boxes[side] = (
+                <span class="n">0.5</span> * (b[<span class="s">&quot;xmin&quot;</span>] + b[<span class="s">&quot;xmax&quot;</span>]),
+                <span class="n">0.5</span> * (b[<span class="s">&quot;ymin&quot;</span>] + b[<span class="s">&quot;ymax&quot;</span>]),
+                <span class="n">0.5</span> * (b[<span class="s">&quot;zmin&quot;</span>] + b[<span class="s">&quot;zmax&quot;</span>]),
+                b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>],
+                b[<span class="s">&quot;zmax&quot;</span>] - b[<span class="s">&quot;zmin&quot;</span>],
+            )
+        a, b2 = boxes[<span class="n">1</span>], boxes[-<span class="n">1</span>]
+        wheel_mirror = max(
+            abs(a[<span class="n">0</span>] - b2[<span class="n">0</span>]), abs(a[<span class="n">1</span>] + b2[<span class="n">1</span>]), abs(a[<span class="n">2</span>] - b2[<span class="n">2</span>]),
+            abs(a[<span class="n">3</span>] - b2[<span class="n">3</span>]), abs(a[<span class="n">4</span>] - b2[<span class="n">4</span>]),
+        )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured zfight_pairs=</span>{zfight}<span class="s"> shells=</span>{len(groups)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">support_zmin=</span>{support_zmins}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">tyre_seat=[</span>{seat_min:<span class="s">.5f</span>}<span class="s">,</span>{seat_max:<span class="s">.5f</span>}<span class="s">] over </span>{seat_n}<span class="s"> stations </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">wheel_mirror=</span>{wheel_mirror*<span class="n">1000</span>:<span class="s">.5f</span>}<span class="s">mm</span><span class="s">&quot;</span>
+    )
+
+    <span class="k">if</span> len(wheels) != <span class="n">2</span> <span class="k">or</span> any(len(p) != <span class="n">2</span> <span class="k">for</span> p <span class="k">in</span> wheels.values()):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">expected 2 wheels of (rim, tyre) shells, found </span>{wheels}<span class="s">&quot;</span>,
+            <span class="n">3</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>,
@@ -1169,10 +1446,25 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
             <span class="n">15</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> zfight &gt; ZFIGHT_PAIRS_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">coplanar cross-shell face pairs </span>{zfight}<span class="s"> &gt; </span>{ZFIGHT_PAIRS_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--flush-tyre is the designed fail: a tyre whose inner radius &quot;</span>
+            <span class="s">&quot;equals the felloe&#x27;s outer radius puts both on one plane)&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
             <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> support_worst &gt; SUPPORT_ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">named support zmin </span>{support_worst:<span class="s">.6f</span>}<span class="s"> &gt; </span>{SUPPORT_ZMIN_EPS}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">per-tyre zmin=</span>{support_zmins}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-wheel is the designed fail: one tyre off the floor &quot;</span>
+            <span class="s">&quot;while the other still grounds the AABB)&quot;</span>,
             <span class="n">16</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> gap_mw &gt; GAP_MAX:
@@ -1180,6 +1472,22 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">metal-wood gap </span>{gap_mw:<span class="s">.5f</span>}<span class="s"> &gt; </span>{GAP_MAX}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(tyres, hubs, straps, and plates must touch the wood they mount to)&quot;</span>,
             <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> seat_min &lt; TYRE_SEAT_MIN <span class="k">or</span> seat_max &gt; TYRE_SEAT_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">tyre seat depth band [</span>{seat_min:<span class="s">.5f</span>}<span class="s">, </span>{seat_max:<span class="s">.5f</span>}<span class="s">] outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{TYRE_SEAT_MIN}<span class="s">, </span>{TYRE_SEAT_MAX}<span class="s">] over </span>{seat_n}<span class="s"> stations </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--sink-tyre is the designed fail: the hoop swallowed by the &quot;</span>
+            <span class="s">&quot;felloe reads as one body, not a tyre)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> wheel_mirror &gt; WHEEL_MIRROR_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">wheel mirror deviation </span>{wheel_mirror*<span class="n">1000</span>:<span class="s">.4f</span>}<span class="s"> mm &gt; </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{WHEEL_MIRROR_EPS*<span class="n">1000</span>:<span class="s">.4f</span>}<span class="s"> mm </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--skew-wheel is the designed fail: the two wheels are one part &quot;</span>
+            <span class="s">&quot;reflected in Y and must sit at matched X and Z)&quot;</span>,
+            <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
@@ -1304,10 +1612,38 @@ METAL_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: lift the mesh so zmin fails the grounded budget&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--flush-tyre&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: tyre inner radius == felloe outer radius, so &quot;</span>
+             <span class="s">&quot;both land on one plane and the z-fight budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--sink-tyre&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: bury the tyre in the felloe so the seat band fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--float-wheel&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: lift one wheel off the floor while the other &quot;</span>
+             <span class="s">&quot;still grounds the AABB, so the named-support budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--skew-wheel&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: push one wheel out along the track so the &quot;</span>
+             <span class="s">&quot;wheel-mirror budget fails&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
-        args.skip_decimate, lift_z=args.lift_z
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        flush_tyre=args.flush_tyre,
+        sink_tyre=args.sink_tyre,
+        float_wheel=args.float_wheel,
+        skew_wheel=args.skew_wheel,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code

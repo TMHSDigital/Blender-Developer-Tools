@@ -253,7 +253,7 @@
       <img src="../assets/stone-well-hero.webp" alt="stone-well render" width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.640×1.640×1.761 m, LOD ratios in band, convex collider 306 tris, hygiene zero (loose, non-manifold, doubles, n-gons), grounded zmin, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.312×1.312×1.761 m, LOD ratios in band, convex collider 346 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, all 12 bottom-course stones on the floor, each post tenoned 18 mm into the measured coping and standing under a roof hip corner, the bucket hanging 0.10 m clear of the coping, grounded zmin, non-empty glTF. --stand-posts exits 15 on the z-fight budget; --float-stone exits 16 on the named-support budget; --shallow-tenon and --drop-bucket exit 18; --turn-posts exits 19 on post placement; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/stone-well/stone_well.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -264,18 +264,27 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 8280–9500 | 9380 / 9380 / 9380 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 3 distinct | 3 | | Material faces | stone ≥ 3000, wood ≥ 600, metal ≥ 100 | all above | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.640, 1.640, 1.761) m ± 0.01 | (1.6400, 1.6400, 1.7606) | | Grounded | bbox min Z within 1e-4 of 0 | 0.0000 / 0.0000 / 0.0000 | | Hygiene | loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0 | 0 / 0 / 0 on every axis | | Material-island gap | stone↔wood and metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 | | Collider tris | ≤ 320 | 306 | | Export | written, size &gt; 0 | 686672 / 686736 / 686724 bytes |</p>
+<p>| Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) | | --- | --- | --- | | Base triangles | 8280–9500 | 9380 / 9380 / 9380 | | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 | | LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.2198 | | Materials | exactly 3 distinct | 3 | | Material faces | stone ≥ 3000, wood ≥ 600, metal ≥ 100 | all above | | UVs | in <code>0..1</code>, AABB overlap ≤ 1e-5 | in range, overlap 0 | | Outer AABB | (1.312, 1.312, 1.761) m ± 0.01 | (1.3120, 1.3120, 1.7606) | | Grounded | bbox min Z within 1e-4 of 0 | 0.0000 / 0.0000 / 0.0000 | | Named supports | all 12 bottom-course stones on the floor within 1e-4 | 12/12, worst 0.000000 | | Hygiene | loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0 | 0 / 0 / 0 on every axis | | Z-fighting | coplanar cross-shell face pairs = 0 | 0 / 0 / 0 | | Post tenon | each post seats 0.015–0.022 m into the measured coping top | 0.01800 / 0.01800 / 0.01800 | | Post placement | each post within 0.02 rad, in plan, of a roof hip corner recomputed from the mesh | 0.00000 | | Bucket clearance | hangs 0.085–0.115 m clear of the measured coping top | 0.10000 | | Material-island gap | stone↔wood and metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 | | Collider tris | ≤ 380 | 346 | | Export | written, size &gt; 0 | 686672 / 686736 / 686724 bytes |</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size differs by a few hundred bytes across series.</p>
-<p><code>--skip-decimate</code> skips the LOD DECIMATE stage so LOD1 ratio is 1.0 and exit 9 fires. <code>--lift-z</code> raises the finished mesh 0.05 m so the grounded budget fails and exit 16 fires. Those are the named budgets the two falsifiers violate.</p>
+<h2>Falsifiers</h2>
+<p>Each flag breaks one stage so a <strong>named</strong> budget fails and the piece exits *that* code.</p>
+<p>| Flag | Target budget | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | LOD1 ratio band (ratio becomes 1.0) | 9 | | <code>--lift-z</code> | AABB grounded zmin (whole mesh up 0.05 m) | 16 | | <code>--stand-posts</code> | Coplanar cross-shell pairs — puts the posts back on the axis *and* stands them on the coping, which is the pair of choices the shipped piece made (0 → 4 pairs) | 15 | | <code>--float-stone</code> | Named supports — lifts one bottom-course stone 4 mm while the other eleven still ground the AABB | 16 | | <code>--shallow-tenon</code> | Post tenon band — seats the posts only 4 mm, too shallow to be a joint but not flush, so no faces share a plane | 18 | | <code>--drop-bucket</code> | Bucket clearance — lowers the bucket 0.26 m back down the shaft | 18 | | <code>--turn-posts</code> | Post placement — rotates the post ring one curb facet off the roof&#x27;s hip corners | 19 |</p>
+<p>Two of these had to be re-aimed, which is the point of declaring the target:</p>
+<ul><li><code>--stand-posts</code> seats the posts flush <strong>and</strong> returns them to the axis. Flush alone, at the corrected 45°, leaves no coping top face within <code>COPLANAR_CENTRE_MAX</code> of a foot, so it fell through to the tenon band (18) and witnessed nothing about z-fighting.</li><li><code>--turn-posts</code> rotates by exactly one curb facet (30°). Any other angle sets the feet down on a different part of the 12-gon coping and the stone-wood gap gate (17) steals the failure; a full 45° also swings the crank grip past the eave and fails the AABB gate (8) — the same trap <code>stone-archway</code>&#x27;s <code>--flat-arch</code> fell into. One facet is the only rotation whose local seat geometry is identical by symmetry.</li></ul>
 <h2>Run</h2>
 <pre><code>blender --background --python stone_well.py --
 blender --background --python stone_well.py -- --skip-decimate
 blender --background --python stone_well.py -- --lift-z
+blender --background --python stone_well.py -- --stand-posts
+blender --background --python stone_well.py -- --shallow-tenon
+blender --background --python stone_well.py -- --turn-posts
+blender --background --python stone_well.py -- --float-stone
+blender --background --python stone_well.py -- --drop-bucket
 blender --background --python stone_well.py -- --output well.png</code></pre>
-<p>Smoke does not pass <code>--output</code>, <code>--skip-decimate</code>, or <code>--lift-z</code>.</p>
+<p>Smoke passes none of the falsifier flags and no <code>--output</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or a material face floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene: loose geometry, non-manifold, zero-area, doubles, or n-gons | | 16 | Bbox min Z not grounded (<code>--lift-z</code> lands here) | | 17 | Material-island gap above tolerance (parts meant to touch) |</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build / no UV layer | | 4 | Base triangle count outside range | | 5 | Material count ≠ 3 distinct slots, or a material face floor missed | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | World AABB off declared outer size | | 9 | LOD ratio band (<code>--skip-decimate</code> lands here) | | 10 | Framing gate (render path only) | | 11 | Collider triangle count above ceiling | | 12 | Bake did not finish or image has no data | | 13 | Export file missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Hygiene: loose geometry, non-manifold, zero-area, doubles, n-gons, or coplanar cross-shell face pairs (<code>--stand-posts</code> lands here) | | 16 | Bbox min Z not grounded (<code>--lift-z</code>), or a named support off the floor (<code>--float-stone</code>) | | 17 | Material-island gap above tolerance (parts meant to touch) | | 18 | Post tenon depth outside its band (<code>--shallow-tenon</code>), or bucket clearance outside its band (<code>--drop-bucket</code>) | | 19 | A post not under a roof hip corner in plan (<code>--turn-posts</code> lands here) |</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -290,9 +299,14 @@ pipeline pieces: bmesh construction, UVs, three materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin hygiene budget fails.
+They are not API-contract witnesses. Each falsifier flag breaks one
+stage so a named budget fails and the piece exits that budget&#x27;s code:
+``--skip-decimate`` (LOD ratio, 9), ``--lift-z`` (AABB grounded, 16),
+``--float-stone`` (named supports, 16), ``--stand-posts`` (coplanar
+cross-shell pairs, 15), ``--shallow-tenon`` (post tenon band, 18),
+``--drop-bucket`` (bucket clearance, 18), ``--turn-posts`` (post under
+hip corner, 19). See README.md for why two of them are aimed the way
+they are.
 
 No RNG. Construction is closed-form (per-stone jitter is a deterministic
 hash). DECIMATE COLLAPSE triangle counts are not byte-identical across
@@ -300,7 +314,7 @@ Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python stone_well.py --
     blender --background --python stone_well.py -- --skip-decimate
-    blender --background --python stone_well.py -- --lift-z
+    blender --background --python stone_well.py -- --stand-posts
     blender --background --python stone_well.py -- --output well.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
@@ -344,11 +358,29 @@ CURB_OUT = <span class="n">0.045</span>
 CURB_Z = MASONRY_TOP + CURB_H / <span class="n">2.0</span>
 POST_S = <span class="n">0.068</span>
 POST_R = <span class="n">0.55</span>
-POST_H = <span class="n">0.58</span>
-POST_BOTTOM = MASONRY_TOP + CURB_H
-POST_TOP = POST_BOTTOM + POST_H
-EAVE_OVERHANG = <span class="n">0.22</span>
-EAVE_HALF = POST_R + POST_S / <span class="n">2.0</span> + EAVE_OVERHANG
+<span class="c"># Posts land under the roof&#x27;s four hip corners, not at the midpoint of each</span>
+<span class="c"># eave. A cone with 4 base verts rotated by pi/4 puts its corners on the</span>
+<span class="c"># diagonals, so the posts go on the diagonals too. At the axis-aligned</span>
+<span class="c"># angles the roof corners cantilevered 0.80 m unsupported and one post</span>
+<span class="c"># stood dead centre in the well mouth from every orthogonal view.</span>
+POST_ANGLES = tuple(math.pi / <span class="n">4.0</span> + i * math.pi / <span class="n">2.0</span> <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>))
+<span class="c"># Tenoned into the curb, not stood on it: a foot whose bottom face lands</span>
+<span class="c"># exactly on the curb&#x27;s top face puts both on one plane (it measured 4</span>
+<span class="c"># coplanar cross-shell pairs, one per post). POST_TOP is held fixed so</span>
+<span class="c"># nothing above the posts moves.</span>
+POST_SEAT = <span class="n">0.018</span>
+POST_SEAT_MIN = <span class="n">0.015</span>
+POST_SEAT_MAX = <span class="n">0.022</span>
+POST_CLEAR = <span class="n">0.58</span>
+POST_BOTTOM = MASONRY_TOP + CURB_H - POST_SEAT
+POST_TOP = MASONRY_TOP + CURB_H + POST_CLEAR
+POST_H = POST_TOP - POST_BOTTOM
+<span class="c"># The roof is sized to oversail the curb by a named clearance, measured on</span>
+<span class="c"># the flat of the eave. Deriving it from the post ring instead made the</span>
+<span class="c"># roof 1.61 m across a 1.08 m drum — an umbrella, not a well house.</span>
+EAVE_CLEAR = <span class="n">0.055</span>
+EAVE_HALF = R_OUTER + CURB_OUT + EAVE_CLEAR
+EAVE_OVERHANG = EAVE_HALF - (POST_R + POST_S / <span class="n">2.0</span>)
 EAVE_Z = POST_TOP - <span class="n">0.02</span>
 ROOF_RISE = <span class="n">0.34</span>
 PEAK_Z = EAVE_Z + ROOF_RISE
@@ -358,17 +390,26 @@ WINDLASS_R = <span class="n">0.045</span>
 <span class="c"># both posts and protrudes so the crank has something to attach to.</span>
 WINDLASS_END = POST_R + POST_S / <span class="n">2.0</span> + <span class="n">0.015</span>
 WINDLASS_LEN = <span class="n">2.0</span> * WINDLASS_END
+<span class="c"># The drum spans the first opposed pair of posts, so it shares their angle.</span>
+WINDLASS_AXIS = POST_ANGLES[<span class="n">0</span>]
 BUCKET_R_TOP = <span class="n">0.105</span>
 BUCKET_R_BOT = <span class="n">0.088</span>
 BUCKET_WALL_T = <span class="n">0.008</span>
 BUCKET_H = <span class="n">0.14</span>
-BUCKET_Z = <span class="n">0.68</span>
+<span class="c"># The bucket is the piece&#x27;s whole story, so it hangs in the open above the</span>
+<span class="c"># curb. At 0.68 it sat down the shaft with only its rim level with the</span>
+<span class="c"># coping: invisible in the hero and in every orthographic view.</span>
+CURB_TOP = MASONRY_TOP + CURB_H
+BUCKET_CLEAR = <span class="n">0.10</span>
+BUCKET_CLEAR_MIN = <span class="n">0.085</span>
+BUCKET_CLEAR_MAX = <span class="n">0.115</span>
+BUCKET_Z = CURB_TOP + BUCKET_CLEAR + BUCKET_H / <span class="n">2.0</span>
 BUCKET_RIM_Z = BUCKET_Z + BUCKET_H / <span class="n">2.0</span>
 HANDLE_BAR_Z = BUCKET_RIM_Z + <span class="n">0.03</span>
 ROPE_R = <span class="n">0.016</span>
 BBOX_TOL = <span class="n">0.01</span>
 <span class="c"># Fitted to the generated AABB after locking geometry. Recomputed from bound_box.</span>
-OUTER_SIZE = (<span class="n">1.640</span>, <span class="n">1.640</span>, <span class="n">1.761</span>)
+OUTER_SIZE = (<span class="n">1.312</span>, <span class="n">1.312</span>, <span class="n">1.761</span>)
 
 <span class="c"># Measured after locking geometry. DECIMATE COLLAPSE ratios diverge across</span>
 <span class="c"># series — bands, not exact counts. Tightened after the first 4.5/5.1/5.2 run.</span>
@@ -391,7 +432,48 @@ WOOD_FACES_MIN = <span class="n">600</span>
 METAL_FACES_MIN = <span class="n">100</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">320</span>
+<span class="c"># Grew with the roof resize: the convex hull of a 1.31 m roof over the</span>
+<span class="c"># drum measures 346 where the 1.64 m roof measured 318. Budget raised to</span>
+<span class="c"># match a deliberate geometry change, with headroom for the falsifiers.</span>
+COLLIDER_TRIS_MAX = <span class="n">380</span>
+<span class="c"># Z-fighting: two separate bodies landing on one plane. Cross-shell, with</span>
+<span class="c"># hay-bale&#x27;s constants (copied, not imported).</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+ZFIGHT_PAIRS_MAX = <span class="n">0</span>
+<span class="c"># Named supports: the AABB zmin is grounded by whichever bottom-course</span>
+<span class="c"># stone happens to be lowest, so every bottom stone carries its own floor</span>
+<span class="c"># contact. N_AROUND of them, one per bay.</span>
+SUPPORT_ZMIN_EPS = <span class="n">1e-4</span>
+SUPPORT_COUNT = N_AROUND
+<span class="c"># Posts stand under the roof&#x27;s hip corners, measured in plan against the</span>
+<span class="c"># corners recomputed from the generated roof.</span>
+<span class="c"># Angular, in radians, wrapped into [-pi, pi]. 0.02 rad is 1.15 degrees.</span>
+POST_CORNER_EPS = <span class="n">0.02</span>
+POST_COUNT = <span class="n">4</span>
+<span class="c"># Falsifier magnitudes, each sized to trip its own budget and nothing</span>
+<span class="c"># earlier: the moves stay inside BBOX_TOL so the AABB gate cannot steal</span>
+<span class="c"># the failure.</span>
+STAND_POST_SEAT = <span class="n">0.0</span>
+<span class="c"># --stand-posts must put the posts back where the shipped bug had them:</span>
+<span class="c"># on the axis, where a curb top face sits within COPLANAR_CENTRE_MAX of</span>
+<span class="c"># each foot. One facet over (15 degrees) is flush but too far from any</span>
+<span class="c"># coping top face to register, and falls through to the seat band.</span>
+<span class="c"># The crank no longer follows the post ring, so this rotation cannot</span>
+<span class="c"># swing it past the eave.</span>
+STAND_POST_TURN = math.pi / <span class="n">4.0</span>
+SHALLOW_TENON_SEAT = <span class="n">0.004</span>
+FLOAT_STONE_Z = <span class="n">0.004</span>
+<span class="c"># Exactly one curb facet. Any other angle sets the post feet down on a</span>
+<span class="c"># different part of the 12-gon coping and the stone-wood gap gate (17)</span>
+<span class="c"># steals the failure; a full 45 degrees also swings the crank grip past</span>
+<span class="c"># the eave and fails the AABB gate (8). One facet is the only rotation</span>
+<span class="c"># whose local seat geometry is identical by symmetry, so nothing but the</span>
+<span class="c"># hip-alignment budget can see it. Same mis-aimed-falsifier trap as</span>
+<span class="c"># stone-archway&#x27;s --flat-arch.</span>
+TURN_POSTS_ANGLE = <span class="n">2.0</span> * math.pi / N_AROUND
+DROP_BUCKET_Z = <span class="n">0.26</span>
 BAKE_RES = <span class="n">256</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
 
@@ -561,7 +643,8 @@ METAL_IDX = <span class="n">2</span>
         f.material_index = mat_idx
 
 
-<span class="k">def</span> build_well_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_well_mesh(name, bevel_offset, bevel_segments,
+                    post_seat=POST_SEAT, turn_posts=<span class="n">0.0</span>):
     bm = bmesh.new()
     stone_verts = []
     wood_bevel_verts = []
@@ -618,24 +701,33 @@ METAL_IDX = <span class="n">2</span>
                 clamp_overlap=<span class="k">True</span>,
             )
 
-        post_angles = (<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, math.pi, <span class="n">3.0</span> * math.pi / <span class="n">2.0</span>)
-        <span class="k">for</span> ang <span class="k">in</span> post_angles:
+        angles = tuple(a - turn_posts <span class="k">for</span> a <span class="k">in</span> POST_ANGLES)
+        post_bottom = CURB_TOP - post_seat
+        post_h = POST_TOP - post_bottom
+        <span class="k">for</span> ang <span class="k">in</span> angles:
             loc = (
                 POST_R * math.cos(ang),
                 POST_R * math.sin(ang),
-                POST_BOTTOM + POST_H / <span class="n">2.0</span>,
+                post_bottom + post_h / <span class="n">2.0</span>,
             )
             wood_bevel_verts.extend(
-                add_box(bm, loc, (POST_S, POST_S, POST_H), WOOD_IDX)
+                add_box(bm, loc, (POST_S, POST_S, post_h), WOOD_IDX,
+                        euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, ang))
             )
 
+        <span class="c"># The windlass is borne by two opposite posts, so it runs along the</span>
+        <span class="c"># post diagonal, not along X. Everything hung on it — beam, drum,</span>
+        <span class="c"># crank arm, grip — turns with it as one assembly.</span>
         beam_z = POST_TOP - <span class="n">0.05</span>
+        wax = WINDLASS_AXIS
+        ca, sa = math.cos(wax), math.sin(wax)
         wood_bevel_verts.extend(
             add_box(
                 bm,
                 (<span class="n">0.0</span>, <span class="n">0.0</span>, beam_z),
                 (POST_R * <span class="n">2.0</span> - POST_S, POST_S * <span class="n">0.85</span>, POST_S * <span class="n">0.85</span>),
                 WOOD_IDX,
+                euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, wax),
             )
         )
         add_cylinder(
@@ -645,24 +737,27 @@ METAL_IDX = <span class="n">2</span>
             WINDLASS_LEN,
             <span class="n">12</span>,
             WOOD_IDX,
-            euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
+            euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, wax),
         )
         <span class="c"># Crank: arm pinned to the protruding windlass end, grip parallel to</span>
         <span class="c"># the windlass axis at the arm&#x27;s lower end.</span>
+        arm_r = WINDLASS_END + <span class="n">0.004</span>
         add_box(
             bm,
-            (WINDLASS_END + <span class="n">0.004</span>, <span class="n">0.0</span>, beam_z - <span class="n">0.055</span>),
+            (arm_r * ca, arm_r * sa, beam_z - <span class="n">0.055</span>),
             (<span class="n">0.020</span>, <span class="n">0.022</span>, <span class="n">0.13</span>),
             METAL_IDX,
+            euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, wax),
         )
+        grip_r = WINDLASS_END + <span class="n">0.055</span>
         add_cylinder(
             bm,
-            (WINDLASS_END + <span class="n">0.055</span>, <span class="n">0.0</span>, beam_z - <span class="n">0.12</span>),
+            (grip_r * ca, grip_r * sa, beam_z - <span class="n">0.12</span>),
             <span class="n">0.014</span>,
             <span class="n">0.10</span>,
             <span class="n">10</span>,
             METAL_IDX,
-            euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>),
+            euler=(<span class="n">0.0</span>, math.pi / <span class="n">2.0</span>, wax),
         )
 
         pitch = math.atan(ROOF_RISE / EAVE_HALF)
@@ -963,6 +1058,162 @@ METAL_IDX = <span class="n">2</span>
     }
 
 
+<span class="k">def</span> shell_groups(me):
+    <span class="s">&quot;&quot;&quot;Vertex-index shells by edge connectivity (union-find), biggest first.&quot;&quot;&quot;</span>
+    parent = list(range(len(me.vertices)))
+
+    <span class="k">def</span> find(a):
+        <span class="k">while</span> parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        <span class="k">return</span> a
+
+    <span class="k">for</span> e <span class="k">in</span> me.edges:
+        ra, rb = find(int(e.vertices[<span class="n">0</span>])), find(int(e.vertices[<span class="n">1</span>]))
+        <span class="k">if</span> ra != rb:
+            parent[rb] = ra
+    groups = {}
+    <span class="k">for</span> i <span class="k">in</span> range(len(me.vertices)):
+        groups.setdefault(find(i), []).append(i)
+    <span class="k">return</span> sorted(groups.values(), key=<span class="k">lambda</span> g: -len(g))
+
+
+<span class="k">def</span> shell_box(me, idxs):
+    co = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> idxs]
+    <span class="k">return</span> {
+        <span class="s">&quot;xmin&quot;</span>: min(c.x <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;xmax&quot;</span>: max(c.x <span class="k">for</span> c <span class="k">in</span> co),
+        <span class="s">&quot;ymin&quot;</span>: min(c.y <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;ymax&quot;</span>: max(c.y <span class="k">for</span> c <span class="k">in</span> co),
+        <span class="s">&quot;zmin&quot;</span>: min(c.z <span class="k">for</span> c <span class="k">in</span> co), <span class="s">&quot;zmax&quot;</span>: max(c.z <span class="k">for</span> c <span class="k">in</span> co),
+    }
+
+
+<span class="k">def</span> coplanar_zfight_pairs(me, groups):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two quads two steps apart on
+    one flat cap share no vertex and are coplanar by construction, and
+    counting those makes the budget unsatisfiable rather than meaningful.
+    Z-fighting is two separate bodies landing on one plane, which is
+    exactly a cross-shell pair. Combinatorics and constants copied from
+    showcase/hay-bale (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, comp <span class="k">in</span> enumerate(groups):
+        <span class="k">for</span> vi <span class="k">in</span> comp:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(faces)):
+        ni, ci, si = faces[i]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(faces)):
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> (ci - cj).length &gt; COPLANAR_CENTRE_MAX:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> post_shells(me, groups):
+    <span class="s">&quot;&quot;&quot;The four roof posts, found in the generated mesh by their geometry.
+
+    A post is a wood shell that spans the curb line vertically and is
+    square and slender in plan — never looked up by a construction index.
+    &quot;&quot;&quot;</span>
+    wood = set()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> p.material_index == WOOD_IDX:
+            wood.add(int(p.vertices[<span class="n">0</span>]))
+    out = []
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(groups):
+        <span class="k">if</span> <span class="k">not</span> any(i <span class="k">in</span> wood <span class="k">for</span> i <span class="k">in</span> g):
+            <span class="k">continue</span>
+        b = shell_box(me, g)
+        dz = b[<span class="s">&quot;zmax&quot;</span>] - b[<span class="s">&quot;zmin&quot;</span>]
+        dx = b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]
+        dy = b[<span class="s">&quot;ymax&quot;</span>] - b[<span class="s">&quot;ymin&quot;</span>]
+        <span class="k">if</span> <span class="k">not</span> (<span class="n">0.4</span> &lt;= dz &lt;= <span class="n">0.8</span>) <span class="k">or</span> max(dx, dy) &gt; <span class="n">0.25</span>:
+            <span class="k">continue</span>
+        out.append((si, b))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> measured_curb_top(me):
+    <span class="s">&quot;&quot;&quot;Top of the masonry, read off the generated mesh, not from CURB_TOP.
+
+    An assertion that restates the constant the builder used witnesses
+    nothing, so the post tenon is measured against the stone the post is
+    actually tenoned into.
+    &quot;&quot;&quot;</span>
+    stone = {int(p.vertices[<span class="n">0</span>]) <span class="k">for</span> p <span class="k">in</span> me.polygons
+             <span class="k">if</span> p.material_index == STONE_IDX}
+    <span class="k">return</span> max(me.vertices[i].co.z <span class="k">for</span> i <span class="k">in</span> stone)
+
+
+<span class="k">def</span> roof_corners(me, groups):
+    <span class="s">&quot;&quot;&quot;The roof&#x27;s four hip corners, recomputed from the generated mesh.
+
+    The corner verts of the widest wood shell above the eave: its four
+    extreme XY points. Nothing here restates EAVE_HALF.
+    &quot;&quot;&quot;</span>
+    pts = [v.co <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> v.co.z &gt;= EAVE_Z - <span class="n">0.12</span>]
+    <span class="k">if</span> <span class="k">not</span> pts:
+        <span class="k">return</span> []
+    zlo = min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+    eave = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> p.z &lt;= zlo + <span class="n">0.05</span>]
+    <span class="k">if</span> <span class="k">not</span> eave:
+        <span class="k">return</span> []
+    <span class="c"># The four extreme points of the pooled eave ring are the hip corners.</span>
+    <span class="c"># Taking them from a single shell picks one fascia board instead, whose</span>
+    <span class="c"># own extremes sit 90 degrees off the corners they are nailed to.</span>
+    corners = []
+    <span class="k">for</span> qx, qy <span class="k">in</span> ((<span class="n">1</span>, <span class="n">1</span>), (-<span class="n">1</span>, <span class="n">1</span>), (-<span class="n">1</span>, -<span class="n">1</span>), (<span class="n">1</span>, -<span class="n">1</span>)):
+        corners.append(max(eave, key=<span class="k">lambda</span> p: qx * p.x + qy * p.y))
+    <span class="k">return</span> corners
+
+
+<span class="k">def</span> drop_bucket(me, dz):
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: lower the hung bucket assembly back down the shaft.
+
+    Everything inside the mouth above the curb and under the windlass —
+    which is the bucket, its hoops and its bail — moves as one body.
+    &quot;&quot;&quot;</span>
+    groups = shell_groups(me)
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        b = shell_box(me, g)
+        <span class="k">if</span> b[<span class="s">&quot;zmin&quot;</span>] &lt; CURB_TOP <span class="k">or</span> b[<span class="s">&quot;zmax&quot;</span>] &gt; POST_TOP - <span class="n">0.10</span>:
+            <span class="k">continue</span>
+        <span class="k">if</span> max(b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>], b[<span class="s">&quot;ymax&quot;</span>] - b[<span class="s">&quot;ymin&quot;</span>]) &gt; <span class="n">2.5</span> * BUCKET_R_TOP:
+            <span class="k">continue</span>
+        <span class="k">for</span> i <span class="k">in</span> g:
+            me.vertices[i].co.z -= dz
+    me.update()
+
+
+<span class="k">def</span> float_one_stone(me, dz):
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: lift one bottom-course stone off the floor.
+
+    The other bays stay down, so the AABB grounded gate still passes and
+    only the named-support budget can catch it.
+    &quot;&quot;&quot;</span>
+    groups = shell_groups(me)
+    floor_z = min(v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        b = shell_box(me, g)
+        <span class="k">if</span> b[<span class="s">&quot;zmin&quot;</span>] &gt; floor_z + <span class="n">1e-5</span> <span class="k">or</span> b[<span class="s">&quot;zmax&quot;</span>] &gt; floor_z + STONE_H * <span class="n">1.6</span>:
+            <span class="k">continue</span>
+        <span class="k">for</span> i <span class="k">in</span> g:
+            me.vertices[i].co.z += dz
+        <span class="k">break</span>
+    me.update()
+
+
 <span class="k">def</span> min_mat_distance(me, ia, ib):
     <span class="s">&quot;&quot;&quot;Closest surface distance between two material islands via BVH.
 
@@ -1090,10 +1341,28 @@ METAL_IDX = <span class="n">2</span>
     )
 
 
-<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>):
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stand_posts=<span class="k">False</span>, turn_posts=<span class="k">False</span>,
+          float_stone=<span class="k">False</span>, drop_bucket_flag=<span class="k">False</span>, shallow_tenon=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_well_mesh(<span class="s">&quot;WellLow&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">2</span>)
-    high = build_well_mesh(<span class="s">&quot;WellHigh&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">4</span>)
+    <span class="c"># --stand-posts reproduces the shipped bug exactly: posts on the axis</span>
+    <span class="c"># AND standing on the coping, which is the pair of choices that put a</span>
+    <span class="c"># foot and a curb top on one plane. Seating alone at 45 degrees leaves</span>
+    <span class="c"># no curb top face within COPLANAR_CENTRE_MAX of a foot, so it would</span>
+    <span class="c"># fall through to the seat band and witness the wrong budget.</span>
+    seat = POST_SEAT
+    <span class="k">if</span> stand_posts:
+        seat = STAND_POST_SEAT
+    <span class="k">elif</span> shallow_tenon:
+        seat = SHALLOW_TENON_SEAT
+    turn = <span class="n">0.0</span>
+    <span class="k">if</span> stand_posts:
+        turn = STAND_POST_TURN
+    <span class="k">elif</span> turn_posts:
+        turn = TURN_POSTS_ANGLE
+    low = build_well_mesh(<span class="s">&quot;WellLow&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">2</span>,
+                          post_seat=seat, turn_posts=turn)
+    high = build_well_mesh(<span class="s">&quot;WellHigh&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">4</span>,
+                           post_seat=seat, turn_posts=turn)
     stone = principled(
         <span class="s">&quot;WellStone&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.42</span>, <span class="n">0.46</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.84</span>,
         noise_scale=<span class="n">9.0</span>, wear=(<span class="n">0.29</span>, <span class="n">0.30</span>, <span class="n">0.33</span>, <span class="n">1.0</span>),
@@ -1112,6 +1381,10 @@ METAL_IDX = <span class="n">2</span>
         <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
             v.co.z += LIFT_Z
         low.data.update()
+    <span class="k">if</span> float_stone:
+        float_one_stone(low.data, FLOAT_STONE_Z)
+    <span class="k">if</span> drop_bucket_flag:
+        drop_bucket(low.data, DROP_BUCKET_Z)
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
         <span class="k">return</span> fail(<span class="s">&quot;well mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
@@ -1183,6 +1456,62 @@ METAL_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
     )
     print(<span class="s">f&quot;</span><span class="s">measured gap_stone_wood=</span>{gap_sw:<span class="s">.5f</span>}<span class="s"> gap_metal_wood=</span>{gap_mw:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+
+    groups = shell_groups(low.data)
+    zfight = coplanar_zfight_pairs(low.data, groups)
+    <span class="c"># Named supports: every bottom-course stone, not just the lowest one.</span>
+    floor_z = bb[<span class="n">2</span>]
+    supports = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        b = shell_box(low.data, g)
+        <span class="k">if</span> b[<span class="s">&quot;zmin&quot;</span>] &lt; floor_z + <span class="n">0.02</span> <span class="k">and</span> b[<span class="s">&quot;zmax&quot;</span>] &lt; floor_z + STONE_H * <span class="n">1.6</span>:
+            supports.append(b[<span class="s">&quot;zmin&quot;</span>] - floor_z)
+    n_support = len(supports)
+    support_worst = max((abs(z) <span class="k">for</span> z <span class="k">in</span> supports), default=<span class="n">1e9</span>)
+    <span class="c"># Post tenon depth, recomputed per post from the generated curb top.</span>
+    posts = post_shells(low.data, groups)
+    n_posts = len(posts)
+    curb_top = measured_curb_top(low.data)
+    seats = [curb_top - b[<span class="s">&quot;zmin&quot;</span>] <span class="k">for</span> _si, b <span class="k">in</span> posts]
+    seat_min = min(seats) <span class="k">if</span> seats <span class="k">else</span> -<span class="n">1.0</span>
+    seat_max = max(seats) <span class="k">if</span> seats <span class="k">else</span> <span class="n">1e9</span>
+    <span class="c"># Each post stands under a hip corner of the roof, in plan.</span>
+    corners = roof_corners(low.data, groups)
+    post_corner = <span class="n">1e9</span>
+    <span class="k">if</span> posts <span class="k">and</span> corners:
+        worst = <span class="n">0.0</span>
+        <span class="k">for</span> _si, b <span class="k">in</span> posts:
+            px = <span class="n">0.5</span> * (b[<span class="s">&quot;xmin&quot;</span>] + b[<span class="s">&quot;xmax&quot;</span>])
+            py = <span class="n">0.5</span> * (b[<span class="s">&quot;ymin&quot;</span>] + b[<span class="s">&quot;ymax&quot;</span>])
+            pa = math.atan2(py, px)
+            best = min(
+                abs((math.atan2(c.y, c.x) - pa + math.pi)
+                    % (<span class="n">2.0</span> * math.pi) - math.pi)
+                <span class="k">for</span> c <span class="k">in</span> corners
+            )
+            worst = max(worst, best)
+        post_corner = worst
+    <span class="c"># Bucket clearance above the curb.</span>
+    bucket_clear = -<span class="n">1.0</span>
+    metal_v = {int(p.vertices[<span class="n">0</span>]) <span class="k">for</span> p <span class="k">in</span> low.data.polygons
+               <span class="k">if</span> p.material_index == METAL_IDX}
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        b = shell_box(low.data, g)
+        <span class="k">if</span> b[<span class="s">&quot;zmin&quot;</span>] &lt; curb_top <span class="k">or</span> any(i <span class="k">in</span> metal_v <span class="k">for</span> i <span class="k">in</span> g):
+            <span class="k">continue</span>
+        <span class="k">if</span> (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) &gt; <span class="n">2.5</span> * BUCKET_R_TOP:
+            <span class="k">continue</span>
+        <span class="k">if</span> b[<span class="s">&quot;zmax&quot;</span>] - b[<span class="s">&quot;zmin&quot;</span>] &gt; BUCKET_H * <span class="n">1.4</span>:
+            <span class="k">continue</span>
+        cand = b[<span class="s">&quot;zmin&quot;</span>] - curb_top
+        <span class="k">if</span> bucket_clear &lt; <span class="n">0</span> <span class="k">or</span> cand &lt; bucket_clear:
+            bucket_clear = cand
+    print(
+        <span class="s">f&quot;</span><span class="s">measured zfight_pairs=</span>{zfight}<span class="s"> shells=</span>{len(groups)}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">grounded_stones=</span>{n_support}<span class="s"> support_worst=</span>{support_worst:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">posts=</span>{n_posts}<span class="s"> post_seat=[</span>{seat_min:<span class="s">.5f</span>}<span class="s">,</span>{seat_max:<span class="s">.5f</span>}<span class="s">] </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">post_hip_offset=</span>{post_corner:<span class="s">.5f</span>}<span class="s"> bucket_clear=</span>{bucket_clear:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -1266,10 +1595,25 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
             <span class="n">15</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> zfight &gt; ZFIGHT_PAIRS_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">coplanar cross-shell face pairs </span>{zfight}<span class="s"> &gt; </span>{ZFIGHT_PAIRS_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--stand-posts is the designed fail: a post foot standing on &quot;</span>
+            <span class="s">&quot;the coping&#x27;s top face puts both on one plane)&quot;</span>,
+            <span class="n">15</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
             <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
+            <span class="n">16</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> n_support != SUPPORT_COUNT <span class="k">or</span> support_worst &gt; SUPPORT_ZMIN_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">grounded bottom-course stones </span>{n_support}<span class="s">/</span>{SUPPORT_COUNT}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">worst zmin </span>{support_worst:<span class="s">.6f</span>}<span class="s"> &gt; </span>{SUPPORT_ZMIN_EPS}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-stone is the designed fail: one bay lifted off the &quot;</span>
+            <span class="s">&quot;floor while the rest still ground the AABB)&quot;</span>,
             <span class="n">16</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> gap_sw &gt; GAP_MAX:
@@ -1283,6 +1627,30 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">metal-wood gap </span>{gap_mw:<span class="s">.5f</span>}<span class="s"> &gt; </span>{GAP_MAX}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(crank, hoops, and bail must touch the wood they mount to)&quot;</span>,
             <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> seat_min &lt; POST_SEAT_MIN <span class="k">or</span> seat_max &gt; POST_SEAT_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">post tenon depth band [</span>{seat_min:<span class="s">.5f</span>}<span class="s">, </span>{seat_max:<span class="s">.5f</span>}<span class="s">] outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{POST_SEAT_MIN}<span class="s">, </span>{POST_SEAT_MAX}<span class="s">] over </span>{n_posts}<span class="s"> posts </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--shallow-tenon is the designed fail)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> bucket_clear &lt; BUCKET_CLEAR_MIN <span class="k">or</span> bucket_clear &gt; BUCKET_CLEAR_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">bucket clears the curb by </span>{bucket_clear:<span class="s">.5f</span>}<span class="s"> outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{BUCKET_CLEAR_MIN}<span class="s">, </span>{BUCKET_CLEAR_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--drop-bucket is the designed fail: a bucket down the shaft &quot;</span>
+            <span class="s">&quot;shows only its rim and the piece loses its subject)&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> n_posts != POST_COUNT <span class="k">or</span> post_corner &gt; POST_CORNER_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">posts </span>{n_posts}<span class="s">/</span>{POST_COUNT}<span class="s">, worst post-to-hip-corner plan </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">offset </span>{post_corner:<span class="s">.5f</span>}<span class="s"> &gt; </span>{POST_CORNER_EPS}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--turn-posts is the designed fail: posts at the midpoint of &quot;</span>
+            <span class="s">&quot;each eave leave the roof&#x27;s corners cantilevered and stand one &quot;</span>
+            <span class="s">&quot;post in the well mouth)&quot;</span>,
+            <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, stone, tex, collider
 
@@ -1407,10 +1775,45 @@ METAL_IDX = <span class="n">2</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: lift the mesh so zmin fails the grounded budget&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--stand-posts&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: stand the posts on the curb instead of tenoning &quot;</span>
+             <span class="s">&quot;them in, so foot and coping land on one plane&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--shallow-tenon&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: tenon the posts only part way into the curb so &quot;</span>
+             <span class="s">&quot;the seat band fails without putting faces on one plane&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--turn-posts&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: rotate the post ring off the roof&#x27;s hip corners &quot;</span>
+             <span class="s">&quot;to the midpoint of each eave&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--float-stone&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: lift one bottom-course stone while the rest &quot;</span>
+             <span class="s">&quot;still ground the AABB&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--drop-bucket&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: lower the bucket back down the shaft&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, stone, tex, _col = check(
-        args.skip_decimate, lift_z=args.lift_z
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stand_posts=args.stand_posts,
+        turn_posts=args.turn_posts,
+        float_stone=args.float_stone,
+        drop_bucket_flag=args.drop_bucket,
+        shallow_tenon=args.shallow_tenon,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code

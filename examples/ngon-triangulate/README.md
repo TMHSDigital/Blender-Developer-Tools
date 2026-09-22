@@ -22,6 +22,38 @@ glTF tris = 12 for a cube *or* this mesh. `--skip-triangulate` exits 4.
 No gallery still. A hexagon on a cube does not read at thumbnail
 without fake annotation.
 
+## Verified behaviour
+
+`Mesh.calc_tangents` raises `RuntimeError` on any face with more than
+four loops. The message is byte-identical on 4.5.11 LTS, 5.1.2, and
+5.2.1 LTS:
+
+```
+Error: Tangent space can only be computed for tris/quads, aborting
+```
+
+`TANGENT_ABORT` matches on the `tris/quads` substring, so the check
+survives a reword of the surrounding sentence but still fails if the
+abort stops happening at all.
+
+## Falsifiers
+
+Each flag breaks one stage and lands on the assertion that stage feeds.
+Neither announces a failure; both let a real check catch the mesh.
+
+| Flag | What it breaks | Exit |
+| --- | --- | --- |
+| `--no-dissolve` | never makes the n-gon, so the pre-assertion finds no pathology (`ngon count 0 != 1`) | 3 |
+| `--skip-triangulate` | skips `bmesh.ops.triangulate`, so the handling assertion sees the n-gon survive (`ngons=1 tris=0 quads=4`) | 4 |
+
+## API reference
+
+| Name | 4.5 LTS | 5.2 LTS |
+| --- | --- | --- |
+| `Mesh.calc_tangents` | [4.5](https://docs.blender.org/api/4.5/bpy.types.Mesh.html#bpy.types.Mesh.calc_tangents) | [5.2](https://docs.blender.org/api/current/bpy.types.Mesh.html#bpy.types.Mesh.calc_tangents) |
+| `bmesh.ops.dissolve_edges` | [4.5](https://docs.blender.org/api/4.5/bmesh.ops.html#bmesh.ops.dissolve_edges) | [5.2](https://docs.blender.org/api/current/bmesh.ops.html#bmesh.ops.dissolve_edges) |
+| `bmesh.ops.triangulate` | [4.5](https://docs.blender.org/api/4.5/bmesh.ops.html#bmesh.ops.triangulate) | [5.2](https://docs.blender.org/api/current/bmesh.ops.html#bmesh.ops.triangulate) |
+
 ## Run
 
 ```bash
@@ -41,7 +73,7 @@ against it.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Pathology missing: n-gon count, loops, or face count (`--no-dissolve` lands here) |
-| 4 | `calc_tangents` / triangulate handling (`--skip-triangulate` lands here) |
+| 4 | `calc_tangents` / triangulate handling (`--skip-triangulate` lands here, via the real handling assertion) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

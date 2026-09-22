@@ -9,7 +9,9 @@ Closed form (cube size 2, dissolve the +X+Y edge):
 
 * 5 faces, 1 n-gon, that face has 6 loops
 * ``Mesh.calc_tangents`` aborts until triangulated
-  (same abort ``triangulate-tangents`` documents)
+  (same abort ``triangulate-tangents`` documents). The message is
+  byte-identical on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS:
+  "Error: Tangent space can only be computed for tris/quads, aborting"
 * triangulate the n-gon → 4 tris + 4 quads, 28 loops, tangents succeed
 
 glTF tri count is 12 either way (hexagon+quads or a cube) — not a
@@ -117,13 +119,12 @@ def check(ob, skip_triangulate):
             file=sys.stderr,
         )
         return 4
-    if skip_triangulate:
-        print(
-            "ERROR: skip-triangulate left the n-gon; handling unrepaired",
-            file=sys.stderr,
-        )
-        return 4
-    triangulate_ngons(me)
+    # --skip-triangulate skips the repair and lets the handling assertions
+    # below catch the unrepaired mesh. Returning 4 from here instead would
+    # make the flag announce a failure rather than cause one, and the
+    # assertions it is supposed to falsify would never run.
+    if not skip_triangulate:
+        triangulate_ngons(me)
     leftover = ngons(me)
     tris = sum(1 for p in me.polygons if len(p.vertices) == 3)
     quads = sum(1 for p in me.polygons if len(p.vertices) == 4)
