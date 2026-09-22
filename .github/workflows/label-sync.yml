@@ -48,6 +48,14 @@ jobs:
             LABELS="$LABELS templates"
           fi
 
+          if echo "$FILES" | grep -q "^examples/"; then
+            LABELS="$LABELS examples"
+          fi
+
+          if echo "$FILES" | grep -q "^showcase/"; then
+            LABELS="$LABELS showcase"
+          fi
+
           if echo "$FILES" | grep -qE "(README\.md|AGENTS\.md|CLAUDE\.md|ROADMAP\.md|CHANGELOG\.md|^docs/)"; then
             LABELS="$LABELS documentation"
           fi
