@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -276,7 +281,7 @@ blender --background --python export_preset_axis.py -- --output beacon.png
 blender --background --python export_preset_axis.py -- --output beacon.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage; also exporter RNA missing expected glTF kwargs | | 3 | Source mast is not Z-dominant, or tip drifted | | 4 | glTF reimport produced no mesh | | 5 | Unity disk POSITION is not <code>(x, z, -y)</code>, or Unity node has rotation | | 6 | Godot disk POSITION is not raw Z-up; also <code>--output</code> produced no file | | 7 | Unity reimport is not standing | | 8 | Godot reimport is not lying along Y, or reimported tip mismatch | | 9 | Reimported orientations did not differ (<code>--same-axis</code> lands here) | | 10 | Gallery framing violation | | 11 | <code>--same-axis</code> did not collapse the axis difference |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also exporter RNA missing expected glTF kwargs</td></tr><tr><td>3</td><td>Source mast is not Z-dominant, or tip drifted</td></tr><tr><td>4</td><td>glTF reimport produced no mesh</td></tr><tr><td>5</td><td>Unity disk POSITION is not <code>(x, z, -y)</code>, or Unity node has rotation</td></tr><tr><td>6</td><td>Godot disk POSITION is not raw Z-up; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Unity reimport is not standing</td></tr><tr><td>8</td><td>Godot reimport is not lying along Y, or reimported tip mismatch</td></tr><tr><td>9</td><td>Reimported orientations did not differ (<code>--same-axis</code> lands here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td><code>--same-axis</code> did not collapse the axis difference</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-axis</code>.</p>
     </section>
     <section class="detail-section src">

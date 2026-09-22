@@ -191,8 +191,13 @@
     .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
     .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
     .md p { margin: 0.7rem 0; }
-    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
     .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
     .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
       border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
     .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
@@ -266,7 +271,7 @@
 <p><strong>Authoring hazards pinned while building this</strong> (probes in <code>.scratch</code>-style bisect scripts; the reasons the check code re-fetches layers by name and re-asserts flags):</p>
 <ul><li>Holding a <code>MeshUVLoopLayer</code> reference across edit-mode UV ops and then iterating its <code>.data</code> <strong>segfaults Blender 4.5.11 headless</strong> (<code>EXCEPTION_ACCESS_VIOLATION</code>, 5/5 repro); the same read survives on 5.1.2. Re-fetch <code>mesh.uv_layers[name]</code> after CustomData-reallocating calls. Second confirmation of the UV-handle lifetime hazard found authoring <code>triangulate-tangents</code>.</li><li><code>bpy.ops.uv.lightmap_pack</code> <strong>silently packs nothing</strong> (exit OK) when the active layer has no UVs yet — unwrap first, then pack.</li></ul>
 <p><strong>Pipeline arc neighbors:</strong> UV-layer authoring in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/uv-layer-grid"><code>uv-layer-grid</code></a>, tangent-space from UVs in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>, export round-trip in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>, pivot discipline in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/prop-origin-transform"><code>prop-origin-transform</code></a>.</p>
-<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance 0.00401). The UV *layout* is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 (21 parts, 3680 islands, drift 0, overlap 0, min island distance 0.00401). The UV <em>layout</em> is packer-version-dependent by design; the contracts are layout-independent invariants.</p>
 <p><strong>Render as proof:</strong> the cart beside its enlarged UV1 atlas board — the Bed&#x27;s packed lightmap built from live UV data, so a change in the atlas moves the board geometry. The falsification variant (<code>--falsify</code>) translates the second-largest island onto the largest: a big emissive-red island visibly stacked over the atlas (15 SAT hits in the check probe). The render path also gates the asset itself through <code>examples/gallery_asset_quality.py</code> (naming, material variation, edge treatment — exit 11): 21 named parts, 5 materials, right-angle share 0.069.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python lightmap_uv_channel.py --
@@ -274,7 +279,7 @@ blender --background --python lightmap_uv_channel.py -- --output atlas.png
 blender --background --python lightmap_uv_channel.py -- --falsify overlap.png</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper. <code>11</code> is the shared asset-quality helper.</p>
-<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | UV layer names ≠ UV0 / UV1 | | 4 | UVMap / UV1 render/clone flags wrong after re-assert | | 5 | Channel 0 (UV0) touched by the UV1 unwrap | | 6 | UV1 loops outside <code>[0,1]</code> | | 7 | SAT overlap self-test failed, or UV1 triangle pairs overlap | | 8 | Min island distance below margin | | 9 | Part is not watertight | | 10 | Gallery framing violation; also <code>--output</code> produced no file | | 11 | Gallery asset-quality violation |</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>UV layer names ≠ UV0 / UV1</td></tr><tr><td>4</td><td>UVMap / UV1 render/clone flags wrong after re-assert</td></tr><tr><td>5</td><td>Channel 0 (UV0) touched by the UV1 unwrap</td></tr><tr><td>6</td><td>UV1 loops outside <code>[0,1]</code></td></tr><tr><td>7</td><td>SAT overlap self-test failed, or UV1 triangle pairs overlap</td></tr><tr><td>8</td><td>Min island distance below margin</td></tr><tr><td>9</td><td>Part is not watertight</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr><tr><td>11</td><td>Gallery asset-quality violation</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--falsify</code>.</p>
     </section>
     <section class="detail-section src">
