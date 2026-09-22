@@ -1,6 +1,6 @@
 ---
 description: Flag uses of `bpy.context.copy()` to override context for an operator call. The copy-and-pass pattern was deprecated in Blender 4.x and the override semantics were removed in 5.x. Use `bpy.context.temp_override(**overrides)` as a context manager instead.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

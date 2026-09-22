@@ -77,12 +77,20 @@ showcase/
    ```yaml
    ---
    description: One-line summary for humans and tooling.
-   alwaysApply: true
+   alwaysApply: false
    globs:
      - "**/*.py"
    standards-version: <current meta-repo STANDARDS_VERSION>
    ---
    ```
+
+   `alwaysApply: false` is deliberate and is what makes `globs` load-bearing:
+   the rule enters context only when a file it matches does. `alwaysApply:
+   true` would apply the rule in every context and make `globs` decorative, so
+   the two must never both be set as if they compose. Pick globs that cover
+   every file the rule is meant to guard before setting this — a glob that is
+   too narrow means the rule silently stops firing, which is worse than
+   over-applying. Record the scope in the `CLAUDE.md` rules table to match.
 
 3. Write 30 to 80 lines: the anti-pattern, a code example showing it wrong, a code example showing it right, and a short "Why it matters" section.
 

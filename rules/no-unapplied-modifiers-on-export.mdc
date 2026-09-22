@@ -1,6 +1,6 @@
 ---
 description: Flag an export call on objects that still carry unapplied modifiers when the export arguments do not request evaluated geometry. The engine then receives the authored cage, not the modifier result.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

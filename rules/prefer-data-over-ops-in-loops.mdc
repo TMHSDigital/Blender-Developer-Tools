@@ -1,6 +1,6 @@
 ---
 description: Flag bpy.ops.* calls inside iteration over many objects, meshes, or frames. Each bpy.ops call triggers a full depsgraph evaluation and UI redraw; loops slow down by orders of magnitude. Use bpy.data.* and bmesh instead.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

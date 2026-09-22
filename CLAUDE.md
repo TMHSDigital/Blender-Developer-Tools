@@ -52,9 +52,13 @@ VERSION                        - Source of truth for the repo version
 
 ## Rules (9)
 
+Every rule sets `alwaysApply: false`, so the Scope column below is the rule's
+actual load condition, not a description: a rule enters context only when a file
+matching its `globs` does. Changing a glob changes when the rule fires.
+
 | Rule | Scope | What it flags |
 | --- | --- | --- |
-| prefer-data-over-ops-in-loops | Always on | `bpy.ops.*` calls inside iteration over many objects |
+| prefer-data-over-ops-in-loops | `*.py` | `bpy.ops.*` calls inside iteration over many objects |
 | always-free-bmesh | `*.py` | `bmesh.new()` without paired `bm.free()` in a `try`/`finally` block |
 | target-extensions-platform-format | Add-on roots | Legacy `bl_info` only add-ons missing `blender_manifest.toml` |
 | type-annotate-props-and-defend-context | `*.py` | `bpy.props` defined as assignments, unguarded `context.active_object` |
