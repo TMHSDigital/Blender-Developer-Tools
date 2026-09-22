@@ -73,6 +73,34 @@ blender --background --python examples/bmesh-gear/bmesh_gear.py --
 | Blender 5.1 | Prior stable (weekly cron; PR via `needs-5.1` or manual dispatch) |
 | Blender 4.5 LTS | Fallback supported (skills show both code paths where 4.x and 5.x APIs diverge) |
 
+## Falsifiers
+
+Every one of the 59 examples carries a **falsifier**: a flag that changes the
+input so a real assertion fails. It never disables the assertion, skips the
+check, or short-circuits to an error — it feeds the script something the
+contract says must not pass, and the same check that guards the happy path
+catches it.
+
+```bash
+# The contract holds: exit 0
+blender --background --python examples/bmesh-gear/bmesh_gear.py --
+
+# The falsifier: skip the extrude, so the topology no longer matches the
+# closed form. The topology check fires and the script exits 3.
+blender --background --python examples/bmesh-gear/bmesh_gear.py -- --no-extrude
+```
+
+This is what makes a green run mean something. An assertion that has only
+ever passed witnesses nothing — it could be comparing a constant to itself.
+Proving each one fails once, on demand, is the difference between a test
+suite and a set of scripts that print "OK". Shipping an example requires
+demonstrating the falsifier's non-zero exit and reporting the measured error.
+
+`--api`, `--check-pixels`, and `--output` are not falsifiers; they select a
+code path rather than break a contract. Full conventions, including the
+per-script exit-code model, are in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#exit-codes).
+
 ## Showcase
 
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
