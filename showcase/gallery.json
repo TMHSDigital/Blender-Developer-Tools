@@ -21,7 +21,7 @@
       "name": "stone-well",
       "dir": "showcase/stone-well",
       "teaches": "A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.640×1.640×1.761 m, LOD ratios in band, convex collider 306 tris, hygiene zero (loose, non-manifold, doubles, n-gons), grounded zmin, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
+      "witnessesFix": "Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.312×1.312×1.761 m, LOD ratios in band, convex collider 346 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, all 12 bottom-course stones on the floor, each post tenoned 18 mm into the measured coping and standing under a roof hip corner, the bucket hanging 0.10 m clear of the coping, grounded zmin, non-empty glTF. --stand-posts exits 15 on the z-fight budget; --float-stone exits 16 on the named-support budget; --shallow-tenon and --drop-bucket exit 18; --turn-posts exits 19 on post placement; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
       "hero": "docs/gallery/assets/stone-well-hero.webp",
       "preview": "showcase/stone-well/preview.webp",
       "tags": [
@@ -129,7 +129,7 @@
       "name": "cart",
       "dir": "showcase/cart",
       "teaches": "A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 2600 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 122 tris, hygiene zero (loose, non-manifold, doubles, n-gons), grounded zmin, non-empty glTF. --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
+      "witnessesFix": "Recomputed: 2856 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 154 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres grounded, tyre seat depth in band over 48 angular stations, the two wheels mirrored within 5e-5 m, grounded zmin, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --sink-tyre exits 18 on the tyre seat band; --float-wheel exits 16 on the named-support budget; --skew-wheel exits 19 on the wheel mirror; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
       "hero": "docs/gallery/assets/cart-hero.webp",
       "preview": "showcase/cart/preview.webp",
       "tags": [
