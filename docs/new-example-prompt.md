@@ -49,6 +49,21 @@ you write code:
   to infer what contract is being demonstrated. If the render would look the same
   whether the API worked or not, redesign the scene until failure would be visible.
 
+**The check-only exception.** A small, established category of examples ships with
+no render at all: no `--output` path, no `examples/gallery.json` entry, no hero or
+preview asset, no `docs/gallery/` page. The criterion is whether the contract is
+expressible in pixels. An example is check-only when its witness is a data or state
+fact that *no* scene redesign can make visible — a datablock name, the presence or
+absence of an RNA attribute, a post-exit sidecar file, a topology count, export
+metadata — so the render would be identical whether the API held or broke. The
+"redesign the scene until failure would be visible" instruction above is the test:
+attempt it first, and only when it cannot succeed in principle does the example
+become check-only. The exception is for contracts that are invisible, not for
+renders that are hard. Eight of the 59 examples currently qualify, and `CLAUDE.md`
+carries the same rule. A check-only example is otherwise a full example: it still
+asserts a real contract, still exits non-zero on failure, still carries a falsifier,
+and still takes a `tests/smoke/catalog.json` row so it runs on every PR.
+
 Where an API diverges between 4.5, 5.1, and 5.2, asserting each side's actual contract is
 part of the witness—version-gate explicitly and document the divergence rather than
 papering over it. Version-gate on the `bpy.app.version` tuple, not
@@ -73,12 +88,16 @@ The example must:
   witnesses, what failure it would catch, and any version-gated divergence between
   4.5 LTS, 5.1, and 5.2 LTS;
 - produce a deliberate, well-framed render rather than a mockup, primitive dump, or
-  placeholder.
+  placeholder — unless it meets the check-only exception above, in which case it
+  ships no render and no gallery entry, and the PR body says which criterion put it
+  there.
 
 Complete every integration required for a shipped example. Infer the exact current
 shape from neighboring examples and repository configuration, including the example
 directory, README, gallery metadata and assets, plugin manifest, smoke catalog
-(`tests/smoke/catalog.json`), top-level README, and generated gallery pages. After regenerating the gallery with
+(`tests/smoke/catalog.json`), top-level README, and generated gallery pages. A
+check-only example skips the gallery metadata, assets, and generated pages — it wires
+the plugin manifest, the smoke catalog row, and its README, and nothing else. After regenerating the gallery with
 `python scripts/build_gallery.py`, read the **generated** output character by
 character—not only `examples/gallery.json` source fields. Open
 `docs/gallery/index.html` and `docs/gallery/<name>/index.html` and inspect the
