@@ -48,7 +48,8 @@ entry in `showcase/gallery.json`, and a rendered still.
   `--sink-tyre` / `--shallow-tenon` put a seat outside its band (exit
   18). `--drop-bucket` hides the hung subject (exit 18).
   `--skew-wheel` / `--turn-posts` break a mirror or placement budget
-  (exit 19).
+  (exit 19). `--float-rivets` lifts fasteners off their host (exit 18).
+  `--round-haft` turns an oval section round (exit 19).
   A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
@@ -61,7 +62,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   laid the voussoirs as a lintel, which is 0.62 m shorter and so failed
   the bounding box (exit 8) instead of the intrados circle fit (exit 19);
   `--off-circle` replaced it by keeping the whole envelope and wandering
-  only the radius. `tests/check_falsifier_targets.py` checks the
+  only the radius. A falsifier that thickens a member scales **only the
+  axis its budget measures**: `chopping-block`'s `--fat-haft` scaled the
+  whole haft section, and once the section became an oval the swing-plane
+  width grew the knob 16 mm past the bounding box, so it exited 8
+  instead of 17 on eye clearance. Scaling across the cheeks alone
+  restored exit 17 with the identical measured clearance.
+  `tests/check_falsifier_targets.py` checks the
   declaration statically, and with `--run BLENDER` executes each falsifier
   and asserts the observed exit matches.
 - **Hygiene budgets.** Copied combinatorics from
@@ -264,10 +271,39 @@ entry in `showcase/gallery.json`, and a rendered still.
   family above: `15` hygiene, `16` grounded, `17` joint fit, `18` seat
   conformance and contact, `19` plumb and real-world size.
 - **Shading is part of the model.** A flat-shaded low-poly body and a
-  smooth-shaded one are different objects to a viewer. Smoothing a
-  wobbled 36-gon erases every bit of surface modelling in it and leaves
-  a featureless drum, so decide per part and say why. Nothing here is
-  measurable, which is exactly why it has to be looked at.
+  smooth-shaded one are different objects to a viewer, so decide per
+  part and say why. Facet what is faceted in life — a chamfered axe
+  head, a dressed stone. Do not facet an organic or turned surface with
+  equal facets: `chopping-block`'s flat-shaded 36-gon log read as
+  coopered staves and the whole block as a tub, and its flat-shaded iron
+  hoop threw one highlight per facet, a row of piano keys. Smooth those
+  and carry the surface — bark furrows, growth rings, drying checks — in
+  the material, while the wobble keeps reading in the silhouette. Mark
+  every material boundary as a hard edge so a sawn rim stays crisp
+  against the bark. Nothing here is measurable, which is exactly why it
+  has to be looked at.
+- **One substance, one material slot.** A part made of something else
+  gets its own slot and its own face floor, even when the colours are
+  close. `chopping-block`'s hickory haft shared the bark slot, which made
+  the handle the darkest wood on the piece and would have fissured it
+  with the bark texture.
+- **Fasteners are aimed down the host's surface normal (exit 18).** A
+  rivet, bolt head or stud on an out-of-round host takes its axis from
+  the normal of the host's own surface function at its station — not
+  the radial — and its station is a host section, so the surface under
+  it is exact rather than a chord. Assert the seat per fastener as a
+  band measured radially at each vertex's own angle against the host
+  read off the mesh, plus a proud minimum so the head is visible.
+  `chopping-block`'s radially aimed rivets seated 1.87 and 2.82 mm
+  against a 1.5 mm design bite, one edge sunk and the other lifted,
+  because the log's wobble drops the surface 1.4 mm across one head.
+  Aimed down the normal both seat at 1.50–1.54 mm. `--float-rivets` is
+  the falsifier.
+- **A section that carries the read is a budget (exit 19).** Where a
+  cross-section is what makes a part recognisable — an axe handle is
+  oval, a broom handle is round — assert it as a ratio band at a named
+  station, measured in the construction frame from a slab that holds
+  exactly one ring. `--round-haft` is the falsifier.
 - **Rendered still and gallery entry.** Showcase pieces are visual by
   definition. The pathology / sidecar exemption does not apply. Call
   `examples/gallery_framing.check_framing` on the `--output` path only.
