@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>terrain-scatter — Examples — Blender Developer Tools</title>
+  <title>terrain-scatter — Showcase — Blender Developer Tools</title>
   <meta name="description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="terrain-scatter — Examples — Blender Developer Tools" />
+  <meta property="og:title" content="terrain-scatter — Showcase — Blender Developer Tools" />
   <meta property="og:description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/terrain-scatter/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="terrain-scatter — Examples — Blender Developer Tools" />
+  <meta name="twitter:title" content="terrain-scatter — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/terrain-scatter-hero.webp" />
   <style>
@@ -239,7 +239,7 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
     </div>
@@ -252,7 +252,7 @@
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom terrain-scatter render">
       <img src="../assets/terrain-scatter-hero.webp" alt="terrain-scatter render" width="1280" height="720" />
     </button>
-    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1758 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.552 m, grounded zmin, 9 stones of ≥80 faces seated on sampled dirt Z (offset −35 mm, floor zmin 0.113 m), LOD ratios in band, convex collider 81 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/terrain-scatter/terrain_scatter.py --</pre>

@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>chopping-block — Examples — Blender Developer Tools</title>
+  <title>chopping-block — Showcase — Blender Developer Tools</title>
   <meta name="description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/chopping-block/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="chopping-block — Examples — Blender Developer Tools" />
+  <meta property="og:title" content="chopping-block — Showcase — Blender Developer Tools" />
   <meta property="og:description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/chopping-block/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/chopping-block-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="chopping-block — Examples — Blender Developer Tools" />
+  <meta name="twitter:title" content="chopping-block — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/chopping-block-hero.webp" />
   <style>
@@ -239,7 +239,7 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
     </div>
@@ -252,7 +252,7 @@
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom chopping-block render">
       <img src="../assets/chopping-block-hero.webp" alt="chopping-block render" width="1280" height="720" />
     </button>
-    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 1472 tris, three materials with 252 bark / 252 grain / 288 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.012 m, LOD ratios in band, convex collider 434 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7. Joint fit: four shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.0 mm into the log on every segment. --fat-haft exits 17 on eye clearance; --round-band exits 18 on the hoop bite band.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/chopping-block/chopping_block.py --</pre>

@@ -63,6 +63,16 @@ def load_gallery_entries() -> tuple[dict, list]:
     return data, entries
 
 
+def kind_noun(entry: dict) -> str:
+    """Card noun for *entry*. Showcase pieces are not examples; say so.
+
+    Both kinds share the gallery grid (``load_gallery_entries`` concatenates
+    them), so every user-facing noun has to be derived per entry rather than
+    hardcoded, or the chrome silently relabels 26 props as examples.
+    """
+    return "showcase piece" if "showcase" in (entry.get("tags") or []) else "example"
+
+
 def first_sentence(text: str) -> str:
     """First sentence of *text*, splitting on period-followed-by-whitespace.
 
@@ -418,6 +428,7 @@ INDEX_JS = """
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
+      var COUNT_LABEL = '__COUNT_LABEL__';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -473,7 +484,7 @@ INDEX_JS = """
           card.classList.toggle('hidden', !show);
           if (show) shown++;
         });
-        count.textContent = (query || state.tag) ? (shown + ' of ' + total) : (total + ' examples');
+        count.textContent = (query || state.tag) ? (shown + ' of ' + total) : COUNT_LABEL;
         noResults.hidden = shown !== 0;
         qClear.hidden = !state.q;
       }
@@ -575,14 +586,14 @@ DETAIL_JS = """
 """
 
 CARD = """      <article class="card" data-tags="__TAGS__">
-        <a class="card-media" href="__HREF__" aria-label="__NAME__ example detail page">
+        <a class="card-media" href="__HREF__" aria-label="__NAME__ __KIND__ detail page">
           <img src="__HERO__" alt="__ALT__" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="__HREF__">__NAME__</a></h2>
           <p class="teaches">__TEACHES__</p>
           <p class="witnesses"><span class="tag">witnesses</span> __WITNESSES__</p>
-          <a class="card-link" href="__HREF__">View example <span aria-hidden="true">&rarr;</span></a>
+          <a class="card-link" href="__HREF__">View __KIND__ <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>"""
 
@@ -763,6 +774,8 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
 
 
 def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
+    noun = kind_noun(ex)
+    kind_title = "Showcase" if noun == "showcase piece" else "Examples"
     name = ex["name"]
     ex_dir = REPO / ex["dir"]
     script = find_script(ex_dir)
@@ -777,7 +790,7 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
     parts.append(f'    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom {html.escape(name)} render">')
     parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(name)} render" width="1280" height="720" />')
     parts.append("    </button>")
-    parts.append('    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>')
+    parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself — click to zoom.</p>')
     parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
 
     if script is not None:
@@ -811,13 +824,13 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
     parts.append("  </div>")
 
     return shell(
-        title=f"{name} — Examples — Blender Developer Tools",
+        title=f"{name} — {kind_title} — Blender Developer Tools",
         desc=ex["teaches"],
         canonical=f"{site}/gallery/{name}/" if site else "",
         og_image=f"{site}/gallery/assets/{hero_file}" if site else "",
         site_root="../../",
         back_href="../",
-        back_label="Examples Gallery",
+        back_label="Examples and Showcase",
         repo_url=repo_root_url,
         content="\n".join(parts),
         page_js=DETAIL_JS,
@@ -826,9 +839,19 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
 def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
     examples = data["examples"]
-    title = data.get("title", "Examples Gallery")
+    title = data.get("title", "Examples and Showcase")
     desc = data.get("description", "")
     total = len(examples)
+    # Showcase pieces share this grid but are not examples. Count and
+    # label them separately; the merged total only means anything while
+    # filtering, where it is rendered as "N of M" with no noun attached.
+    showcase_total = sum(1 for ex in examples if "showcase" in (ex.get("tags") or []))
+    example_total = total - showcase_total
+    count_label = (
+        f"{example_total} examples, {showcase_total} showcase pieces"
+        if showcase_total
+        else f"{example_total} examples"
+    )
 
     all_tags = sorted({t for ex in examples for t in ex.get("tags", [])})
     chips_html = ""
@@ -838,7 +861,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
             f'<button class="chip" data-tag="{html.escape(t, quote=True)}" type="button">{html.escape(t)}</button>'
             for t in all_tags
         ]
-        chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter examples by topic">\n        '
+        chips_html = ('      <div class="chips" id="chips" role="toolbar" aria-label="Filter by topic">\n        '
                       + "\n        ".join(chips) + "\n      </div>\n")
 
     # Sticky controls bar. Every control is inert but harmless with JS
@@ -849,11 +872,11 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         '    <div class="controls-inner">\n'
         '      <div class="controls-row">\n'
         '        <div class="searchwrap">\n'
-        '          <input id="q" type="search" placeholder="Search examples (press /)"\n'
-        '            autocomplete="off" spellcheck="false" aria-label="Search examples" />\n'
+        '          <input id="q" type="search" placeholder="Search the gallery (press /)"\n'
+        '            autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />\n'
         '          <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>\n'
         '        </div>\n'
-        f'        <span class="count" id="count" role="status" aria-live="polite">{total} examples</span>\n'
+        f'        <span class="count" id="count" role="status" aria-live="polite">{html.escape(count_label)}</span>\n'
         '        <div class="density" role="group" aria-label="Card density">\n'
         '          <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>\n'
         '          <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>\n'
@@ -875,6 +898,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
             .replace("__HERO__", html.escape(page_relative(ex["hero"]), quote=True))
             .replace("__ALT__", html.escape(alt, quote=True))
             .replace("__NAME__", html.escape(ex["name"]))
+            .replace("__KIND__", kind_noun(ex))
             .replace("__TEACHES__", html.escape(ex["teaches"]))
             .replace("__WITNESSES__", html.escape(ex["witnessesFix"]))
         )
@@ -888,7 +912,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         + '  <main id="main">\n    <div class="grid" id="grid">\n'
         + "\n".join(cards)
         + "\n    </div>\n"
-        + '    <p class="noresults" id="noResults" hidden>No examples match the current filters.\n'
+        + '    <p class="noresults" id="noResults" hidden>Nothing matches the current filters.\n'
         + '      <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>\n'
         + "  </main>\n"
         + '  <button class="to-top" id="toTop" type="button"><span aria-hidden="true">&uarr;</span> Top</button>'
@@ -905,7 +929,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         back_label="Blender Developer Tools",
         repo_url=repo_root_url,
         content=content,
-        page_js=INDEX_JS,
+        page_js=INDEX_JS.replace("__COUNT_LABEL__", count_label),
         head_js=INDEX_HEADJS,
     )
 
@@ -945,7 +969,11 @@ def main() -> int:
             encoding="utf-8",
         )
 
-    print(f"Wrote {OUT_DIR / 'index.html'} + {len(examples)} detail pages")
+    n_showcase = sum(1 for ex in examples if "showcase" in (ex.get("tags") or []))
+    print(
+        f"Wrote {OUT_DIR / 'index.html'} + {len(examples)} detail pages "
+        f"({len(examples) - n_showcase} examples, {n_showcase} showcase pieces)"
+    )
     return 0
 
 

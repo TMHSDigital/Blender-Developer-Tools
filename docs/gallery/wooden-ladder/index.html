@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>wooden-ladder — Examples — Blender Developer Tools</title>
+  <title>wooden-ladder — Showcase — Blender Developer Tools</title>
   <meta name="description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="wooden-ladder — Examples — Blender Developer Tools" />
+  <meta property="og:title" content="wooden-ladder — Showcase — Blender Developer Tools" />
   <meta property="og:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-ladder/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="wooden-ladder — Examples — Blender Developer Tools" />
+  <meta name="twitter:title" content="wooden-ladder — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <style>
@@ -239,7 +239,7 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="topbar">
-    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples Gallery</a>
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
     <div class="topbar-right">
       <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
     </div>
@@ -252,7 +252,7 @@
     <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom wooden-ladder render">
       <img src="../assets/wooden-ladder-hero.webp" alt="wooden-ladder render" width="1280" height="720" />
     </button>
-    <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-ladder/wooden_ladder.py --</pre>
@@ -303,8 +303,11 @@ They are not API-contract witnesses. Each falsifier violates exactly one
 named budget: ``--skip-decimate`` skips the LOD DECIMATE stage so the
 LOD-ratio budget fails, ``--lift-z`` moves the mesh off the floor so the
 grounded budget fails, ``--stray-vert`` adds one unconnected vertex so the
-mesh-hygiene budget fails, and ``--fat-rungs`` widens the dowels to the
-full stile depth so the rung-to-stile joint-fit budget fails.
+mesh-hygiene budget fails, ``--twin-sole`` duplicates a shoe plate so the
+coplanar-face budget fails, ``--fat-rungs`` widens the tenons to the full
+stile depth so the rung-to-stile joint-fit budget fails, and
+``--short-stile`` starts the rail above the sleeve so the shoe-bite
+budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -315,7 +318,9 @@ ratio band, not an exact count.
     blender --background --python wooden_ladder.py -- --lift-z
     blender --background --python wooden_ladder.py -- --stray-vert
     blender --background --python wooden_ladder.py -- --fat-rungs
-    blender --background --python wooden_ladder.py -- --output ladder.png
+    blender --background --python wooden_ladder.py -- --short-stile
+    blender --background --python wooden_ladder.py -- --twin-sole
+    blender --background --python wooden_ladder.py -- --output preview.webp
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
 <span class="k">import</span> math
