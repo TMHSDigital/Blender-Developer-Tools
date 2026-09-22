@@ -1,6 +1,6 @@
 ---
 description: Flag bmesh.new() calls without a paired bm.free() in a try/finally block. BMesh allocates C-side memory that Python's garbage collector cannot reclaim; missing free() leaks and eventually crashes Blender.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

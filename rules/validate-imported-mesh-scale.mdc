@@ -1,6 +1,6 @@
 ---
 description: Flag a glTF or FBX import followed by mesh operations with no transform_apply and no unit-scale check. Generated files often arrive with non-identity object scale or a non-meter scene scale; mesh edits then bake the wrong size.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

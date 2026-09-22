@@ -1,6 +1,6 @@
 ---
 description: Flag Python loops that set vertex coordinates, normals, UVs, or other bulk per-element data one element at a time. For meshes of more than a few thousand elements, this is 100x to 1000x slower than `mesh.vertices.foreach_set("co", flat_array)`, which writes through to C-level storage in one pass.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

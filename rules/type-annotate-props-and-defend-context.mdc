@@ -1,6 +1,6 @@
 ---
 description: Flag two related anti-patterns. (1) bpy.props defined as class-level assignments instead of type annotations (deprecated since 2.8). (2) Code that touches bpy.context.active_object without guarding for None.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

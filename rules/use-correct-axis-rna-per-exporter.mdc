@@ -1,6 +1,6 @@
 ---
 description: Flag export_scene.gltf calls that pass FBX axis_forward or axis_up, and export_scene.fbx calls that pass glTF export_yup. The two exporters do not share axis RNA.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/*.py"
 standards-version: 1.10.0

@@ -139,10 +139,17 @@ Rules are `.mdc` files in `rules/`. Frontmatter:
 ```yaml
 ---
 description: <one-line>
-alwaysApply: true
+alwaysApply: false
+globs:
+  - "**/*.py"
 standards-version: 1.10.0
 ---
 ```
+
+`alwaysApply: false` plus `globs` is the scoping contract: the rule loads only
+when a matching file is in context. Setting `alwaysApply: true` makes `globs`
+decorative and applies the rule everywhere, so the documented scope stops
+describing behavior. Choose globs that cover every file the rule guards.
 
 Rules encode anti-patterns. Each rule should show the wrong way, the right
 way, and a one-paragraph rationale. 30 to 80 lines is the right size.

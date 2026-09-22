@@ -1,6 +1,6 @@
 ---
 description: Flag new Blender add-ons that ship only a legacy bl_info dict without a blender_manifest.toml. New add-ons must use the Extensions Platform format. bl_info may appear alongside as a fallback for backward compatibility, but the manifest is the source of truth.
-alwaysApply: true
+alwaysApply: false
 globs:
   - "**/__init__.py"
   - "**/blender_manifest.toml"
