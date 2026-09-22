@@ -5,9 +5,14 @@ pipeline pieces: bmesh construction, UVs, three materials, high-to-low
 normal bake, LOD chain, convex collider, Unity glTF export.
 
 Budgets are declared below and recomputed from the generated result.
-They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
-DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin hygiene budget fails.
+They are not API-contract witnesses. Each falsifier flag breaks one
+stage so a named budget fails and the piece exits that budget's code:
+``--skip-decimate`` (LOD ratio, 9), ``--lift-z`` (AABB grounded, 16),
+``--float-stone`` (named supports, 16), ``--stand-posts`` (coplanar
+cross-shell pairs, 15), ``--shallow-tenon`` (post tenon band, 18),
+``--drop-bucket`` (bucket clearance, 18), ``--turn-posts`` (post under
+hip corner, 19). See README.md for why two of them are aimed the way
+they are.
 
 No RNG. Construction is closed-form (per-stone jitter is a deterministic
 hash). DECIMATE COLLAPSE triangle counts are not byte-identical across
@@ -15,7 +20,7 @@ Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python stone_well.py --
     blender --background --python stone_well.py -- --skip-decimate
-    blender --background --python stone_well.py -- --lift-z
+    blender --background --python stone_well.py -- --stand-posts
     blender --background --python stone_well.py -- --output well.png
 """
 import argparse
@@ -59,11 +64,29 @@ CURB_OUT = 0.045
 CURB_Z = MASONRY_TOP + CURB_H / 2.0
 POST_S = 0.068
 POST_R = 0.55
-POST_H = 0.58
-POST_BOTTOM = MASONRY_TOP + CURB_H
-POST_TOP = POST_BOTTOM + POST_H
-EAVE_OVERHANG = 0.22
-EAVE_HALF = POST_R + POST_S / 2.0 + EAVE_OVERHANG
+# Posts land under the roof's four hip corners, not at the midpoint of each
+# eave. A cone with 4 base verts rotated by pi/4 puts its corners on the
+# diagonals, so the posts go on the diagonals too. At the axis-aligned
+# angles the roof corners cantilevered 0.80 m unsupported and one post
+# stood dead centre in the well mouth from every orthogonal view.
+POST_ANGLES = tuple(math.pi / 4.0 + i * math.pi / 2.0 for i in range(4))
+# Tenoned into the curb, not stood on it: a foot whose bottom face lands
+# exactly on the curb's top face puts both on one plane (it measured 4
+# coplanar cross-shell pairs, one per post). POST_TOP is held fixed so
+# nothing above the posts moves.
+POST_SEAT = 0.018
+POST_SEAT_MIN = 0.015
+POST_SEAT_MAX = 0.022
+POST_CLEAR = 0.58
+POST_BOTTOM = MASONRY_TOP + CURB_H - POST_SEAT
+POST_TOP = MASONRY_TOP + CURB_H + POST_CLEAR
+POST_H = POST_TOP - POST_BOTTOM
+# The roof is sized to oversail the curb by a named clearance, measured on
+# the flat of the eave. Deriving it from the post ring instead made the
+# roof 1.61 m across a 1.08 m drum — an umbrella, not a well house.
+EAVE_CLEAR = 0.055
+EAVE_HALF = R_OUTER + CURB_OUT + EAVE_CLEAR
+EAVE_OVERHANG = EAVE_HALF - (POST_R + POST_S / 2.0)
 EAVE_Z = POST_TOP - 0.02
 ROOF_RISE = 0.34
 PEAK_Z = EAVE_Z + ROOF_RISE
@@ -73,17 +96,26 @@ WINDLASS_R = 0.045
 # both posts and protrudes so the crank has something to attach to.
 WINDLASS_END = POST_R + POST_S / 2.0 + 0.015
 WINDLASS_LEN = 2.0 * WINDLASS_END
+# The drum spans the first opposed pair of posts, so it shares their angle.
+WINDLASS_AXIS = POST_ANGLES[0]
 BUCKET_R_TOP = 0.105
 BUCKET_R_BOT = 0.088
 BUCKET_WALL_T = 0.008
 BUCKET_H = 0.14
-BUCKET_Z = 0.68
+# The bucket is the piece's whole story, so it hangs in the open above the
+# curb. At 0.68 it sat down the shaft with only its rim level with the
+# coping: invisible in the hero and in every orthographic view.
+CURB_TOP = MASONRY_TOP + CURB_H
+BUCKET_CLEAR = 0.10
+BUCKET_CLEAR_MIN = 0.085
+BUCKET_CLEAR_MAX = 0.115
+BUCKET_Z = CURB_TOP + BUCKET_CLEAR + BUCKET_H / 2.0
 BUCKET_RIM_Z = BUCKET_Z + BUCKET_H / 2.0
 HANDLE_BAR_Z = BUCKET_RIM_Z + 0.03
 ROPE_R = 0.016
 BBOX_TOL = 0.01
 # Fitted to the generated AABB after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (1.640, 1.640, 1.761)
+OUTER_SIZE = (1.312, 1.312, 1.761)
 
 # Measured after locking geometry. DECIMATE COLLAPSE ratios diverge across
 # series — bands, not exact counts. Tightened after the first 4.5/5.1/5.2 run.
@@ -106,7 +138,48 @@ WOOD_FACES_MIN = 600
 METAL_FACES_MIN = 100
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 320
+# Grew with the roof resize: the convex hull of a 1.31 m roof over the
+# drum measures 346 where the 1.64 m roof measured 318. Budget raised to
+# match a deliberate geometry change, with headroom for the falsifiers.
+COLLIDER_TRIS_MAX = 380
+# Z-fighting: two separate bodies landing on one plane. Cross-shell, with
+# hay-bale's constants (copied, not imported).
+COPLANAR_NORMAL_EPS = 1e-4
+COPLANAR_PLANE_EPS = 1e-4
+COPLANAR_CENTRE_MAX = 0.05
+ZFIGHT_PAIRS_MAX = 0
+# Named supports: the AABB zmin is grounded by whichever bottom-course
+# stone happens to be lowest, so every bottom stone carries its own floor
+# contact. N_AROUND of them, one per bay.
+SUPPORT_ZMIN_EPS = 1e-4
+SUPPORT_COUNT = N_AROUND
+# Posts stand under the roof's hip corners, measured in plan against the
+# corners recomputed from the generated roof.
+# Angular, in radians, wrapped into [-pi, pi]. 0.02 rad is 1.15 degrees.
+POST_CORNER_EPS = 0.02
+POST_COUNT = 4
+# Falsifier magnitudes, each sized to trip its own budget and nothing
+# earlier: the moves stay inside BBOX_TOL so the AABB gate cannot steal
+# the failure.
+STAND_POST_SEAT = 0.0
+# --stand-posts must put the posts back where the shipped bug had them:
+# on the axis, where a curb top face sits within COPLANAR_CENTRE_MAX of
+# each foot. One facet over (15 degrees) is flush but too far from any
+# coping top face to register, and falls through to the seat band.
+# The crank no longer follows the post ring, so this rotation cannot
+# swing it past the eave.
+STAND_POST_TURN = math.pi / 4.0
+SHALLOW_TENON_SEAT = 0.004
+FLOAT_STONE_Z = 0.004
+# Exactly one curb facet. Any other angle sets the post feet down on a
+# different part of the 12-gon coping and the stone-wood gap gate (17)
+# steals the failure; a full 45 degrees also swings the crank grip past
+# the eave and fails the AABB gate (8). One facet is the only rotation
+# whose local seat geometry is identical by symmetry, so nothing but the
+# hip-alignment budget can see it. Same mis-aimed-falsifier trap as
+# stone-archway's --flat-arch.
+TURN_POSTS_ANGLE = 2.0 * math.pi / N_AROUND
+DROP_BUCKET_Z = 0.26
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.06
 
@@ -276,7 +349,8 @@ def add_open_bucket(bm, loc, r_bot, r_top, wall_t, depth, segments, mat_idx):
         f.material_index = mat_idx
 
 
-def build_well_mesh(name, bevel_offset, bevel_segments):
+def build_well_mesh(name, bevel_offset, bevel_segments,
+                    post_seat=POST_SEAT, turn_posts=0.0):
     bm = bmesh.new()
     stone_verts = []
     wood_bevel_verts = []
@@ -333,24 +407,33 @@ def build_well_mesh(name, bevel_offset, bevel_segments):
                 clamp_overlap=True,
             )
 
-        post_angles = (0.0, math.pi / 2.0, math.pi, 3.0 * math.pi / 2.0)
-        for ang in post_angles:
+        angles = tuple(a - turn_posts for a in POST_ANGLES)
+        post_bottom = CURB_TOP - post_seat
+        post_h = POST_TOP - post_bottom
+        for ang in angles:
             loc = (
                 POST_R * math.cos(ang),
                 POST_R * math.sin(ang),
-                POST_BOTTOM + POST_H / 2.0,
+                post_bottom + post_h / 2.0,
             )
             wood_bevel_verts.extend(
-                add_box(bm, loc, (POST_S, POST_S, POST_H), WOOD_IDX)
+                add_box(bm, loc, (POST_S, POST_S, post_h), WOOD_IDX,
+                        euler=(0.0, 0.0, ang))
             )
 
+        # The windlass is borne by two opposite posts, so it runs along the
+        # post diagonal, not along X. Everything hung on it — beam, drum,
+        # crank arm, grip — turns with it as one assembly.
         beam_z = POST_TOP - 0.05
+        wax = WINDLASS_AXIS
+        ca, sa = math.cos(wax), math.sin(wax)
         wood_bevel_verts.extend(
             add_box(
                 bm,
                 (0.0, 0.0, beam_z),
                 (POST_R * 2.0 - POST_S, POST_S * 0.85, POST_S * 0.85),
                 WOOD_IDX,
+                euler=(0.0, 0.0, wax),
             )
         )
         add_cylinder(
@@ -360,24 +443,27 @@ def build_well_mesh(name, bevel_offset, bevel_segments):
             WINDLASS_LEN,
             12,
             WOOD_IDX,
-            euler=(0.0, math.pi / 2.0, 0.0),
+            euler=(0.0, math.pi / 2.0, wax),
         )
         # Crank: arm pinned to the protruding windlass end, grip parallel to
         # the windlass axis at the arm's lower end.
+        arm_r = WINDLASS_END + 0.004
         add_box(
             bm,
-            (WINDLASS_END + 0.004, 0.0, beam_z - 0.055),
+            (arm_r * ca, arm_r * sa, beam_z - 0.055),
             (0.020, 0.022, 0.13),
             METAL_IDX,
+            euler=(0.0, 0.0, wax),
         )
+        grip_r = WINDLASS_END + 0.055
         add_cylinder(
             bm,
-            (WINDLASS_END + 0.055, 0.0, beam_z - 0.12),
+            (grip_r * ca, grip_r * sa, beam_z - 0.12),
             0.014,
             0.10,
             10,
             METAL_IDX,
-            euler=(0.0, math.pi / 2.0, 0.0),
+            euler=(0.0, math.pi / 2.0, wax),
         )
 
         pitch = math.atan(ROOF_RISE / EAVE_HALF)
@@ -678,6 +764,162 @@ def hygiene_audit(me):
     }
 
 
+def shell_groups(me):
+    """Vertex-index shells by edge connectivity (union-find), biggest first."""
+    parent = list(range(len(me.vertices)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    for e in me.edges:
+        ra, rb = find(int(e.vertices[0])), find(int(e.vertices[1]))
+        if ra != rb:
+            parent[rb] = ra
+    groups = {}
+    for i in range(len(me.vertices)):
+        groups.setdefault(find(i), []).append(i)
+    return sorted(groups.values(), key=lambda g: -len(g))
+
+
+def shell_box(me, idxs):
+    co = [me.vertices[i].co for i in idxs]
+    return {
+        "xmin": min(c.x for c in co), "xmax": max(c.x for c in co),
+        "ymin": min(c.y for c in co), "ymax": max(c.y for c in co),
+        "zmin": min(c.z for c in co), "zmax": max(c.z for c in co),
+    }
+
+
+def coplanar_zfight_pairs(me, groups):
+    """Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two quads two steps apart on
+    one flat cap share no vertex and are coplanar by construction, and
+    counting those makes the budget unsatisfiable rather than meaningful.
+    Z-fighting is two separate bodies landing on one plane, which is
+    exactly a cross-shell pair. Combinatorics and constants copied from
+    showcase/hay-bale (do not import across pieces).
+    """
+    owner = {}
+    for si, comp in enumerate(groups):
+        for vi in comp:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[0], -1))
+             for p in me.polygons]
+    hits = 0
+    for i in range(len(faces)):
+        ni, ci, si = faces[i]
+        for j in range(i + 1, len(faces)):
+            nj, cj, sj = faces[j]
+            if si == sj:
+                continue
+            if (ci - cj).length > COPLANAR_CENTRE_MAX:
+                continue
+            if abs(abs(ni.dot(nj)) - 1.0) > COPLANAR_NORMAL_EPS:
+                continue
+            if abs(ni.dot(cj - ci)) > COPLANAR_PLANE_EPS:
+                continue
+            hits += 1
+    return hits
+
+
+def post_shells(me, groups):
+    """The four roof posts, found in the generated mesh by their geometry.
+
+    A post is a wood shell that spans the curb line vertically and is
+    square and slender in plan — never looked up by a construction index.
+    """
+    wood = set()
+    for p in me.polygons:
+        if p.material_index == WOOD_IDX:
+            wood.add(int(p.vertices[0]))
+    out = []
+    for si, g in enumerate(groups):
+        if not any(i in wood for i in g):
+            continue
+        b = shell_box(me, g)
+        dz = b["zmax"] - b["zmin"]
+        dx = b["xmax"] - b["xmin"]
+        dy = b["ymax"] - b["ymin"]
+        if not (0.4 <= dz <= 0.8) or max(dx, dy) > 0.25:
+            continue
+        out.append((si, b))
+    return out
+
+
+def measured_curb_top(me):
+    """Top of the masonry, read off the generated mesh, not from CURB_TOP.
+
+    An assertion that restates the constant the builder used witnesses
+    nothing, so the post tenon is measured against the stone the post is
+    actually tenoned into.
+    """
+    stone = {int(p.vertices[0]) for p in me.polygons
+             if p.material_index == STONE_IDX}
+    return max(me.vertices[i].co.z for i in stone)
+
+
+def roof_corners(me, groups):
+    """The roof's four hip corners, recomputed from the generated mesh.
+
+    The corner verts of the widest wood shell above the eave: its four
+    extreme XY points. Nothing here restates EAVE_HALF.
+    """
+    pts = [v.co for v in me.vertices if v.co.z >= EAVE_Z - 0.12]
+    if not pts:
+        return []
+    zlo = min(p.z for p in pts)
+    eave = [p for p in pts if p.z <= zlo + 0.05]
+    if not eave:
+        return []
+    # The four extreme points of the pooled eave ring are the hip corners.
+    # Taking them from a single shell picks one fascia board instead, whose
+    # own extremes sit 90 degrees off the corners they are nailed to.
+    corners = []
+    for qx, qy in ((1, 1), (-1, 1), (-1, -1), (1, -1)):
+        corners.append(max(eave, key=lambda p: qx * p.x + qy * p.y))
+    return corners
+
+
+def drop_bucket(me, dz):
+    """Falsifier surgery: lower the hung bucket assembly back down the shaft.
+
+    Everything inside the mouth above the curb and under the windlass —
+    which is the bucket, its hoops and its bail — moves as one body.
+    """
+    groups = shell_groups(me)
+    for g in groups:
+        b = shell_box(me, g)
+        if b["zmin"] < CURB_TOP or b["zmax"] > POST_TOP - 0.10:
+            continue
+        if max(b["xmax"] - b["xmin"], b["ymax"] - b["ymin"]) > 2.5 * BUCKET_R_TOP:
+            continue
+        for i in g:
+            me.vertices[i].co.z -= dz
+    me.update()
+
+
+def float_one_stone(me, dz):
+    """Falsifier surgery: lift one bottom-course stone off the floor.
+
+    The other bays stay down, so the AABB grounded gate still passes and
+    only the named-support budget can catch it.
+    """
+    groups = shell_groups(me)
+    floor_z = min(v.co.z for v in me.vertices)
+    for g in groups:
+        b = shell_box(me, g)
+        if b["zmin"] > floor_z + 1e-5 or b["zmax"] > floor_z + STONE_H * 1.6:
+            continue
+        for i in g:
+            me.vertices[i].co.z += dz
+        break
+    me.update()
+
+
 def min_mat_distance(me, ia, ib):
     """Closest surface distance between two material islands via BVH.
 
@@ -805,10 +1047,28 @@ def export_unity(path, objects):
     )
 
 
-def check(skip_decimate, lift_z=False):
+def check(skip_decimate, lift_z=False, stand_posts=False, turn_posts=False,
+          float_stone=False, drop_bucket_flag=False, shallow_tenon=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    low = build_well_mesh("WellLow", bevel_offset=0.010, bevel_segments=2)
-    high = build_well_mesh("WellHigh", bevel_offset=0.010, bevel_segments=4)
+    # --stand-posts reproduces the shipped bug exactly: posts on the axis
+    # AND standing on the coping, which is the pair of choices that put a
+    # foot and a curb top on one plane. Seating alone at 45 degrees leaves
+    # no curb top face within COPLANAR_CENTRE_MAX of a foot, so it would
+    # fall through to the seat band and witness the wrong budget.
+    seat = POST_SEAT
+    if stand_posts:
+        seat = STAND_POST_SEAT
+    elif shallow_tenon:
+        seat = SHALLOW_TENON_SEAT
+    turn = 0.0
+    if stand_posts:
+        turn = STAND_POST_TURN
+    elif turn_posts:
+        turn = TURN_POSTS_ANGLE
+    low = build_well_mesh("WellLow", bevel_offset=0.010, bevel_segments=2,
+                          post_seat=seat, turn_posts=turn)
+    high = build_well_mesh("WellHigh", bevel_offset=0.010, bevel_segments=4,
+                           post_seat=seat, turn_posts=turn)
     stone = principled(
         "WellStone", (0.40, 0.42, 0.46, 1.0), 0.0, 0.84,
         noise_scale=9.0, wear=(0.29, 0.30, 0.33, 1.0),
@@ -827,6 +1087,10 @@ def check(skip_decimate, lift_z=False):
         for v in low.data.vertices:
             v.co.z += LIFT_Z
         low.data.update()
+    if float_stone:
+        float_one_stone(low.data, FLOAT_STONE_Z)
+    if drop_bucket_flag:
+        drop_bucket(low.data, DROP_BUCKET_Z)
 
     if low.data is None or len(low.data.polygons) < 6:
         return fail("well mesh did not build", 3), None, None, None, None, None
@@ -869,6 +1133,15 @@ def check(skip_decimate, lift_z=False):
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender sets TMPDIR from its own preference, which resolves to the
+    # working directory on a stock portable build — so gettempdir() is the
+    # repo root under CI and every run left a .glb behind. The budget only
+    # needs the byte count, so drop the file once it is measured.
+    if os.path.isfile(export_path):
+        try:
+            os.remove(export_path)
+        except OSError:
+            pass
 
     print(
         f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}"
@@ -898,6 +1171,62 @@ def check(skip_decimate, lift_z=False):
         f"doubles={hyg['doubles']} ngons={hyg['ngons']} euler={hyg['euler']}"
     )
     print(f"measured gap_stone_wood={gap_sw:.5f} gap_metal_wood={gap_mw:.5f}")
+
+    groups = shell_groups(low.data)
+    zfight = coplanar_zfight_pairs(low.data, groups)
+    # Named supports: every bottom-course stone, not just the lowest one.
+    floor_z = bb[2]
+    supports = []
+    for g in groups:
+        b = shell_box(low.data, g)
+        if b["zmin"] < floor_z + 0.02 and b["zmax"] < floor_z + STONE_H * 1.6:
+            supports.append(b["zmin"] - floor_z)
+    n_support = len(supports)
+    support_worst = max((abs(z) for z in supports), default=1e9)
+    # Post tenon depth, recomputed per post from the generated curb top.
+    posts = post_shells(low.data, groups)
+    n_posts = len(posts)
+    curb_top = measured_curb_top(low.data)
+    seats = [curb_top - b["zmin"] for _si, b in posts]
+    seat_min = min(seats) if seats else -1.0
+    seat_max = max(seats) if seats else 1e9
+    # Each post stands under a hip corner of the roof, in plan.
+    corners = roof_corners(low.data, groups)
+    post_corner = 1e9
+    if posts and corners:
+        worst = 0.0
+        for _si, b in posts:
+            px = 0.5 * (b["xmin"] + b["xmax"])
+            py = 0.5 * (b["ymin"] + b["ymax"])
+            pa = math.atan2(py, px)
+            best = min(
+                abs((math.atan2(c.y, c.x) - pa + math.pi)
+                    % (2.0 * math.pi) - math.pi)
+                for c in corners
+            )
+            worst = max(worst, best)
+        post_corner = worst
+    # Bucket clearance above the curb.
+    bucket_clear = -1.0
+    metal_v = {int(p.vertices[0]) for p in low.data.polygons
+               if p.material_index == METAL_IDX}
+    for g in groups:
+        b = shell_box(low.data, g)
+        if b["zmin"] < curb_top or any(i in metal_v for i in g):
+            continue
+        if (b["xmax"] - b["xmin"]) > 2.5 * BUCKET_R_TOP:
+            continue
+        if b["zmax"] - b["zmin"] > BUCKET_H * 1.4:
+            continue
+        cand = b["zmin"] - curb_top
+        if bucket_clear < 0 or cand < bucket_clear:
+            bucket_clear = cand
+    print(
+        f"measured zfight_pairs={zfight} shells={len(groups)} "
+        f"grounded_stones={n_support} support_worst={support_worst:.6f} "
+        f"posts={n_posts} post_seat=[{seat_min:.5f},{seat_max:.5f}] "
+        f"post_hip_offset={post_corner:.5f} bucket_clear={bucket_clear:.5f}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -981,10 +1310,25 @@ def check(skip_decimate, lift_z=False):
             f"doubles={hyg['doubles']} ngons={hyg['ngons']}",
             15,
         ), None, None, None, None, None
+    if zfight > ZFIGHT_PAIRS_MAX:
+        return fail(
+            f"coplanar cross-shell face pairs {zfight} > {ZFIGHT_PAIRS_MAX} "
+            "(--stand-posts is the designed fail: a post foot standing on "
+            "the coping's top face puts both on one plane)",
+            15,
+        ), None, None, None, None, None
     if abs(bb[2]) > ZMIN_EPS:
         return fail(
             f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
             "(--lift-z is the designed fail)",
+            16,
+        ), None, None, None, None, None
+    if n_support != SUPPORT_COUNT or support_worst > SUPPORT_ZMIN_EPS:
+        return fail(
+            f"grounded bottom-course stones {n_support}/{SUPPORT_COUNT}, "
+            f"worst zmin {support_worst:.6f} > {SUPPORT_ZMIN_EPS} "
+            "(--float-stone is the designed fail: one bay lifted off the "
+            "floor while the rest still ground the AABB)",
             16,
         ), None, None, None, None, None
     if gap_sw > GAP_MAX:
@@ -998,6 +1342,30 @@ def check(skip_decimate, lift_z=False):
             f"metal-wood gap {gap_mw:.5f} > {GAP_MAX} "
             "(crank, hoops, and bail must touch the wood they mount to)",
             17,
+        ), None, None, None, None, None
+    if seat_min < POST_SEAT_MIN or seat_max > POST_SEAT_MAX:
+        return fail(
+            f"post tenon depth band [{seat_min:.5f}, {seat_max:.5f}] outside "
+            f"[{POST_SEAT_MIN}, {POST_SEAT_MAX}] over {n_posts} posts "
+            "(--shallow-tenon is the designed fail)",
+            18,
+        ), None, None, None, None, None
+    if bucket_clear < BUCKET_CLEAR_MIN or bucket_clear > BUCKET_CLEAR_MAX:
+        return fail(
+            f"bucket clears the curb by {bucket_clear:.5f} outside "
+            f"[{BUCKET_CLEAR_MIN}, {BUCKET_CLEAR_MAX}] "
+            "(--drop-bucket is the designed fail: a bucket down the shaft "
+            "shows only its rim and the piece loses its subject)",
+            18,
+        ), None, None, None, None, None
+    if n_posts != POST_COUNT or post_corner > POST_CORNER_EPS:
+        return fail(
+            f"posts {n_posts}/{POST_COUNT}, worst post-to-hip-corner plan "
+            f"offset {post_corner:.5f} > {POST_CORNER_EPS} "
+            "(--turn-posts is the designed fail: posts at the midpoint of "
+            "each eave leave the roof's corners cantilevered and stand one "
+            "post in the well mouth)",
+            19,
         ), None, None, None, None, None
     return 0, low, high, stone, tex, collider
 
@@ -1122,10 +1490,45 @@ def main():
         action="store_true",
         help="falsification: lift the mesh so zmin fails the grounded budget",
     )
+    p.add_argument(
+        "--stand-posts",
+        action="store_true",
+        help="falsification: stand the posts on the curb instead of tenoning "
+             "them in, so foot and coping land on one plane",
+    )
+    p.add_argument(
+        "--shallow-tenon",
+        action="store_true",
+        help="falsification: tenon the posts only part way into the curb so "
+             "the seat band fails without putting faces on one plane",
+    )
+    p.add_argument(
+        "--turn-posts",
+        action="store_true",
+        help="falsification: rotate the post ring off the roof's hip corners "
+             "to the midpoint of each eave",
+    )
+    p.add_argument(
+        "--float-stone",
+        action="store_true",
+        help="falsification: lift one bottom-course stone while the rest "
+             "still ground the AABB",
+    )
+    p.add_argument(
+        "--drop-bucket",
+        action="store_true",
+        help="falsification: lower the bucket back down the shaft",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, stone, tex, _col = check(
-        args.skip_decimate, lift_z=args.lift_z
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stand_posts=args.stand_posts,
+        turn_posts=args.turn_posts,
+        float_stone=args.float_stone,
+        drop_bucket_flag=args.drop_bucket,
+        shallow_tenon=args.shallow_tenon,
     )
     if code:
         return code
