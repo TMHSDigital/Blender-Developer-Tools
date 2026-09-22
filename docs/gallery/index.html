@@ -1162,12 +1162,12 @@
       </article>
       <article class="card" data-tags="mesh export showcase">
         <a class="card-media" href="hay-bale/" aria-label="hay-bale showcase piece detail page">
-          <img src="assets/hay-bale-hero.webp" alt="hay-bale — A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting…" loading="lazy" decoding="async" />
+          <img src="assets/hay-bale-hero.webp" alt="hay-bale — A bound hay bale whose twine belts follow the loaf&#x27;s own raycast cross-section, asserting recomputed geometry budgets, not an API contract." loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="hay-bale/">hay-bale</a></h2>
-          <p class="teaches">A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
-          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 852 tris, two materials with 294 hay and 132 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.920×0.517×0.426 m, zmin 0, hygiene 0, hay-twine BVH gap 0.07 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.</p>
+          <p class="teaches">A bound hay bale whose twine belts follow the loaf&#x27;s own raycast cross-section, asserting recomputed geometry budgets, not an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 2012 tris, two materials with 712 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.530x0.409 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 2.6 mm, banded belt seat depth 4.0-16.8 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 14.2 mm, LOD ratios in band, convex collider 156 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt 19.</p>
           <a class="card-link" href="hay-bale/">View showcase piece <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>

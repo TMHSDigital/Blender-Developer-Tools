@@ -420,7 +420,7 @@ FRAMES = <span class="n">36</span>
     <span class="c"># the EEVEE-id mapping is asserted regardless of whether we render: the</span>
     <span class="c"># OTHER era&#x27;s id must be rejected by this build, the helper&#x27;s accepted</span>
     eid = get_eevee_engine_id()
-    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>
+    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>  <span class="c"># engine-id-exempt: the wrong-era id this example asserts is rejected</span>
     <span class="k">try</span>:
         bpy.context.scene.render.engine = wrong
         print(<span class="s">f&quot;</span><span class="s">ERROR: wrong-era EEVEE id &#x27;</span>{wrong}<span class="s">&#x27; was accepted</span><span class="s">&quot;</span>, file=sys.stderr); <span class="k">return</span> <span class="n">5</span>

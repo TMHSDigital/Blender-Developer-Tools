@@ -308,8 +308,8 @@
     {
       "name": "hay-bale",
       "dir": "showcase/hay-bale",
-      "teaches": "A procedural bound hay bale with a cinched pillow loaf, end nap, and two sisal twine belts through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 852 tris, two materials with 294 hay and 132 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.920×0.517×0.426 m, zmin 0, hygiene 0, hay-twine BVH gap 0.07 mm, LOD ratios in band, convex collider 78 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --lift-z exits 16 on grounded zmin.",
+      "teaches": "A bound hay bale whose twine belts follow the loaf's own raycast cross-section, asserting recomputed geometry budgets, not an API contract.",
+      "witnessesFix": "Recomputed: 2012 tris, two materials with 712 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.530x0.409 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 2.6 mm, banded belt seat depth 4.0-16.8 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 14.2 mm, LOD ratios in band, convex collider 156 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt 19.",
       "hero": "docs/gallery/assets/hay-bale-hero.webp",
       "preview": "showcase/hay-bale/preview.webp",
       "tags": [
@@ -318,28 +318,28 @@
       ]
     },
     {
-        "name": "crate-stack",
-        "dir": "showcase/crate-stack",
-        "teaches": "A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-        "witnessesFix": "Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
-        "hero": "docs/gallery/assets/crate-stack-hero.webp",
-        "preview": "showcase/crate-stack/preview.webp",
-        "tags": [
-            "mesh",
-            "export"
-        ]
+      "name": "crate-stack",
+      "dir": "showcase/crate-stack",
+      "teaches": "A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate's own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.",
+      "hero": "docs/gallery/assets/crate-stack-hero.webp",
+      "preview": "showcase/crate-stack/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     },
     {
-        "name": "stone-archway",
-        "dir": "showcase/stone-archway",
-        "teaches": "A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-        "witnessesFix": "Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.",
-        "hero": "docs/gallery/assets/stone-archway-hero.webp",
-        "preview": "showcase/stone-archway/preview.webp",
-        "tags": [
-            "mesh",
-            "export"
-        ]
+      "name": "stone-archway",
+      "dir": "showcase/stone-archway",
+      "teaches": "A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.",
+      "hero": "docs/gallery/assets/stone-archway-hero.webp",
+      "preview": "showcase/stone-archway/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

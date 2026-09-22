@@ -413,7 +413,14 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> eevee_engine_id():
-    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">4</span>, <span class="n">2</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span>
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.
+
+    Mapping matches examples/swatch-grid.get_eevee_engine_id, which asserts it
+    against the running build (copied, not imported). Inherited the inverted
+    form from showcase/shipping-crate; it returned &#x27;BLENDER_EEVEE_NEXT&#x27; on 5.x,
+    where that id does not exist.
+    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
 
 <span class="k">def</span> fail(msg, code):

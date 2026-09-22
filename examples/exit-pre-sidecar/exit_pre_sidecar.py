@@ -6,9 +6,14 @@ This script does **not** write ``$BDT_SMOKE_SIDECAR`` in ``main``; the
 handler writes it. The host runner (``tests/smoke/run_example.py``)
 asserts the file after the process exits.
 
-5.1+. 4.5 LTS has no ``exit_pre`` (AttributeError). Catalog
-``min_version`` 5.0 is wrong — the floor is 5.1. Skip: ``SMOKE_SKIP``.
+5.1+. 4.5 LTS has no ``exit_pre`` (AttributeError), so the catalog
+``min_version`` is 5.1 and the script skips below it (``SMOKE_SKIP``).
 ``--force-run`` bypasses the skip so 4.5 fails accessing ``exit_pre``.
+
+Re-verified 2026-09-22 on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS:
+``hasattr(bpy.app.handlers, "exit_pre")`` is False / True / True, and
+``exit_pre`` is the only exit-related name in ``bpy.app.handlers`` on
+the versions that have it.
 
 No gallery still. There is no geometry.
 
