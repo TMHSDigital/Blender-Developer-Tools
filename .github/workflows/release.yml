@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: release
@@ -178,3 +179,9 @@ jobs:
           gh release create "v${{ steps.new.outputs.version }}" \
             --title "v${{ steps.new.outputs.version }}" \
             --generate-notes
+
+      - name: Dispatch Pages
+        if: steps.check.outputs.skip == 'false' && steps.bump.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run pages.yml --ref main
