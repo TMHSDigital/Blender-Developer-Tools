@@ -139,6 +139,9 @@ jobs:
       - name: Check EEVEE engine-id mappings
         run: python3 tests/check_engine_id.py
 
+      - name: Check falsifiers declare the budget they target
+        run: python3 tests/check_falsifier_targets.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."

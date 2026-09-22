@@ -45,6 +45,18 @@ entry in `showcase/gallery.json`, and a rendered still.
   A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
+- **A falsifier must fail the budget it targets.** Declare the target in
+  the piece README's falsifier table — flag, target budget, exit code —
+  and make the run exit *that* code. A falsifier that trips an earlier
+  check is red for the wrong reason and proves nothing about its target.
+  Fix a collision by changing the model or the falsifier; never widen a
+  band so an ill-aimed falsifier lands. `stone-archway`'s `--flat-arch`
+  laid the voussoirs as a lintel, which is 0.62 m shorter and so failed
+  the bounding box (exit 8) instead of the intrados circle fit (exit 19);
+  `--off-circle` replaced it by keeping the whole envelope and wandering
+  only the radius. `tests/check_falsifier_targets.py` checks the
+  declaration statically, and with `--run BLENDER` executes each falsifier
+  and asserts the observed exit matches.
 - **Hygiene budgets.** Copied combinatorics from
   `examples/mesh-hygiene-audit` (do not import the example). Every piece
   asserts on the generated mesh: non-manifold edges 0, loose verts 0,
