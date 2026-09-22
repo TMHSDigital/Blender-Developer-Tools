@@ -556,7 +556,7 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     <span class="c"># Cycles. Witness the inversion for real: the OTHER era&#x27;s id must be rejected</span>
     <span class="c"># by this build, and the helper&#x27;s id must be accepted.</span>
     eid = get_eevee_engine_id()
-    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>
+    wrong = <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span>  <span class="c"># engine-id-exempt: the wrong-era id this example asserts is rejected</span>
     <span class="k">try</span>:
         sc.render.engine = wrong
         print(<span class="s">f&quot;</span><span class="s">ERROR: wrong-era EEVEE id &#x27;</span>{wrong}<span class="s">&#x27; was accepted by this build — </span><span class="s">&quot;</span>
