@@ -131,6 +131,12 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Cast-iron cooking cauldron on a tripod as a game-prop showcase piece~~ **SHIPPED** as `showcase/iron-cauldron/` — bulged open pot, bail, timber tripod, hook; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Wooden ladder (rungs, stiles, iron shoes) as a game-prop showcase piece~~ **SHIPPED** as `showcase/wooden-ladder/` — raked stiles, six rungs, iron shoes and straps; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Bound hay bale as a game-prop showcase piece~~ **SHIPPED** as `showcase/hay-bale/` — bevelled loaf, end nap, two sisal twine belts; `--skip-decimate` exits 9 on the LOD1 ratio band
+- ~~Stack of shipping crates as a game-prop showcase piece~~ **SHIPPED** as `showcase/crate-stack/` — one generator called three times with a per-instance seed driving yaw and plank widths, crates seated on the lid below; `--same-seed` exits 20 on the per-instance variation budget, `--float-stack` exits 18 on the seat
+- ~~Keystone archway with voussoirs as a game-prop showcase piece~~ **SHIPPED** as `showcase/stone-archway/` — coursed piers, projecting imposts, nine voussoirs, proud keystone; the intrados circle fit is recomputed from vertex positions and `--off-circle` exits 19 on it while leaving every other budget passing
+- Rope bridge (planks, rope rails, sag between anchors) as a game-prop showcase piece
+- Grain sacks (cloth sacks, some slumped, tied necks) as a game-prop showcase piece
+- Brazier (iron bowl on legs, coals, ash) as a game-prop showcase piece
+- Apothecary shelf (shelf unit, bottles and jars of varied form) as a game-prop showcase piece
 - Wooden yoke (oxbow, iron rings) as a game-prop showcase piece
 - Butter churn (staved tub, lid, dasher) as a game-prop showcase piece
 - ~~Small modular kit showcase on recognizable geometry (`modular-kit-snap` contract)~~ **SHIPPED** as `showcase/fence-kit/` — tiling post-and-rail section (AABB X is the tile width; does not re-witness the snap contract); `--skip-decimate` exits 9 on the LOD1 ratio band
