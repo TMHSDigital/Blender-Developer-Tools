@@ -592,7 +592,7 @@ passthrough.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-socket-rename/"><img src="examples/gn-socket-rename/preview.webp" alt="GN socket rename: a copper jo-block column on a steel plinth in a dark studio, the column switched in by Compare and tagged by Random Value, warm wedge on the back wall" /></a>
+<a href="examples/gn-socket-rename/"><img src="examples/gn-socket-rename/preview.webp" alt="GN socket rename: a brushed copper gauge column on a steel plinth in a dark studio, graduated every 0.1 m from its stored gauge_h attribute, warm wedge on the back wall" /></a>
 </td>
 <td valign="middle">
 

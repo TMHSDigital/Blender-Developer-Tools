@@ -52,6 +52,19 @@ The `--output` render path measures framing against the Layer 1 band via
 `examples/gallery_framing.py` (exit 10 on violation) before writing the
 still.
 
+## Render
+
+The still witnesses both axes, not only the Compare one. The column's
+graduations — a tick every 0.1 m in from each vertical corner, a heavier
+one every 0.5 m — are drawn by the column shader from the evaluated
+POINT `gauge_h` attribute, and only up to its stored height. With
+Compare broken the column is missing; with Random Value unwired the
+Store default leaves `gauge_h` at 0 and the column renders blank copper.
+Both were rendered to confirm it. The shader is render-path only and
+nothing in it feeds back into `check()`; the column is also turned to
+18° for the still so two faces show, which `check()` cannot see because
+it reads object-space vertices.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
