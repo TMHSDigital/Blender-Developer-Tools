@@ -153,7 +153,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: bump version to ${{ steps.new.outputs.version }} [skip ci]"
+            git commit -s -m "chore: bump version to ${{ steps.new.outputs.version }} [skip ci]"
             git push origin main
           fi
 
