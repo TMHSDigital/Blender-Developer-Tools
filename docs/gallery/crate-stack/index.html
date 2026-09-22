@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>crate-stack — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/crate-stack/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="crate-stack — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/crate-stack/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/crate-stack-hero.webp" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="crate-stack — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/crate-stack-hero.webp" />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
+      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>crate-stack</h1>
+    <p>A stack of three procedural shipping crates built by one generator called three times with a per-instance seed, carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom crate-stack render">
+      <img src="../assets/crate-stack-hero.webp" alt="crate-stack render" width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 4380 tris, two materials with 216 iron and 2436 timber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.658×0.524×0.704 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, three ground runners at z=0, both crate-to-crate seats overlapping, each crate&#x27;s own footprint 0.585×0.425 m measured in its own frame, yaw spread 0.026 rad and plank spread 2.05 mm across instances, LOD ratios in band, convex collider 202 tris, non-empty glTF. --float-stack exits 18 on the seat; --same-seed exits 20 on per-instance variation.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/crate-stack/crate_stack.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>!<a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/crate-stack/preview.webp">Three shipping crates stacked, each yawed and offset differently</a></p>
+<p>A stack of three shipping crates. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2>What it composes</h2>
+<p>One <code>build_crate</code> generator, invoked three times with a per-instance seed, then the shipped pipeline:</p>
+<p>| Shipped content | Used for | | --- | --- | | <code>skills/mesh-editing-and-bmesh</code> | box, bevel and UV construction in one <code>bmesh</code> | | <code>skills/procedural-materials-and-shaders</code> | two Principled materials with noise-driven wear | | <code>skills/bake-high-to-low</code> | Cycles tangent-space normal bake, high onto low | | <code>skills/engine-export-presets</code> | Unity glTF (<code>export_yup=True</code>) | | <code>skills/depsgraph-and-evaluated-data</code> | evaluated triangle counts for the LOD ratios | | <code>snippets/decimate_to_budget.py</code> | LOD1 / LOD2 COLLAPSE chain | | <code>snippets/convex_hull_collider.py</code> | convex collider | | <code>snippets/lod_chain.py</code> | LOD naming and ratio pattern | | <code>examples/mesh-hygiene-audit</code> | hygiene combinatorics (copied, not imported) |</p>
+<h2>Reuse with variation</h2>
+<p>The point of the piece. Each crate comes out of the same generator; what differs is the seed. That seed drives the yaw, the plank widths, and the board heights, so the three read as three of the same design rather than one model pasted three times.</p>
+<p>True instancing — three objects sharing one mesh datablock — and per-instance geometry variation are mutually exclusive. This piece takes the variation, and the shipped asset is the flattened single mesh an engine would receive. The generator is reused; the geometry is not.</p>
+<p>Two independent random streams keep that honest. The <strong>design</strong> stream (yaw, plank widths) is what <code>--same-seed</code> collapses. The <strong>placement</strong> stream (lateral offsets) stays per-instance either way, so a falsified stack has the same footprint as a good one and fails on the variation budget rather than on the bounding box.</p>
+<h2>Budgets</h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values below are from Blender 5.2.1; see the table at the end for the 4.5.11 / 5.1.2 figures.</p>
+<p>| Budget | Band | Measured | | --- | --- | --- | | Base triangles | 3200–7200 | 4380 | | LOD1 ratio | 0.32–0.62 | 0.5000 | | LOD2 ratio | 0.10–0.35 | 0.2005 (5.2) / 0.2199 (4.5, 5.1) | | Material slots | exactly 2, distinct | 2 | | Iron faces | ≥ 120 | 216 | | Timber faces | ≥ 600 | 2436 | | UV bounds | inside 0..1 | (0.0008, 0.0008)–(0.9992, 0.9992) | | UV AABB overlap | ≤ 1e-5 | 0.000000 | | Outer AABB | 0.658 × 0.524 × 0.704 m ± 0.020 | 0.6582 × 0.5235 × 0.7040 | | Crate body footprint | 0.585 × 0.425 m ± 0.015, in the crate&#x27;s own frame | 0.5846 × 0.4246 (all three) | | Collider triangles | ≤ 260 | 202 | | Normal bake | <code>{&#x27;FINISHED&#x27;}</code> with image data | <code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code> | | glTF export | file written, non-empty | ~340 kB | | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0 | | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 | | Ground runners | 3 named supports, each zmin ≤ 1e-3 | 3 at 0.00000 | | Crate-to-crate seat | both seats, surface gap ≤ 0.0015 m | 0.00000 (overlapping) | | Yaw band | each \|yaw\| in 0.040–0.192 rad | 0.0681, 0.0943, 0.1093 | | Per-instance variation | yaw spread ≥ 0.020 rad, plank spread ≥ 0.0008 m | 0.0262 rad, 0.00205 m |</p>
+<p>Real-world size: each crate is 0.58 × 0.42 m at the timber and 0.585 × 0.425 m over the corner iron, 0.244 m tall including runners and lid. Three stacked come to 0.70 m — knee height, wider than tall.</p>
+<h3>Why the footprint is measured in the crate&#x27;s own frame</h3>
+<p>The stack AABB is the union of three yawed boxes, so a crate could drift to any size underneath it and the outer budget would not notice. Each crate&#x27;s footprint is therefore measured after un-rotating by the yaw that crate was *measured* to have, not the yaw it was built with. All three land on 0.5846 × 0.4246 m exactly, which is what makes the un-rotation trustworthy.</p>
+<h3>Why parts are classified by principal axes</h3>
+<p>Every part is an axis-aligned box in its crate&#x27;s frame and then rotated about Z. A world-AABB shape filter measures the rotated bounding box, not the part: a 0.554 m board yawed 0.09 rad reports 0.061 m of depth instead of its 0.013 m thickness, and every filter keyed to thickness silently matches nothing. <code>xy_principal</code> recovers each box&#x27;s own axes, and hands back the yaw as a by-product — which is where the variation budget&#x27;s yaw numbers come from.</p>
+<h3>Why stack levels come from the runners</h3>
+<p>Binning parts against the declared stack pitch put a lid — which sits 8 mm below the next crate&#x27;s base — on the wrong level the moment a falsifier shifted a crate, and the seat budget then compared a crate against itself. The bands are clustered from the runner heights the mesh actually has, so they follow the geometry including when a falsifier moves it.</p>
+<h2>Determinism</h2>
+<p>Fixed seed 41; no unseeded randomness. Identical geometry across runs on one binary and across 4.5.11, 5.1.2 and 5.2.1 — every measured value above is byte-identical on the three <strong>except</strong> LOD2, where <code>DECIMATE COLLAPSE</code> produces 878 triangles on 5.2 and 934 on 4.5 and 5.1. That is why the LOD gate is a ratio band (0.10–0.35, measured 0.2005 and 0.2199) and not an exact count.</p>
+<h2>Falsifiers</h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All six were run on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.</p>
+<p>| Flag | Breaks | Exit | | --- | --- | --- | | <code>--skip-decimate</code> | drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000 | 9 | | <code>--stray-vert</code> | adds one loose vertex *inside* the silhouette, so hygiene catches it rather than the bounding box | 15 | | <code>--lift-z</code> | lifts the whole mesh 50 mm off the floor | 16 | | <code>--short-skids</code> | floats <strong>one</strong> of the three ground runners 12 mm; the other two still ground the AABB, so only the named-support budget sees it | 16 | | <code>--float-stack</code> | lifts the top crate 9 mm clear of the lid below, opening a 34 mm seat gap | 18 | | <code>--same-seed</code> | gives all three crates the same design seed; yaw spread and plank spread both go to 0 | 20 |</p>
+<h2>Exit codes</h2>
+<p>File-local and sequential. <code>9</code> is a valid check code; there is no rule against it. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
+<p>| Code | Meaning | | --- | --- | | 0 | Success | | 1 | Uncaught exception (FATAL wrapper) | | 2 | argparse / usage | | 3 | Mesh did not build, or has no UV layer | | 4 | Base triangle count outside band | | 5 | Material slots, or a material&#x27;s face floor | | 6 | UVs outside 0..1 | | 7 | UV AABB overlap above tolerance | | 8 | Outer AABB off declared size | | 9 | LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>) | | 10 | Framing gate (<code>examples/gallery_framing.py</code>, render path only) | | 11 | Collider triangles above ceiling | | 12 | Normal bake failed or produced no image data | | 13 | glTF export missing or empty | | 14 | <code>--output</code> produced no file | | 15 | Mesh hygiene (<code>--stray-vert</code>) | | 16 | Grounded zmin, or a named ground runner floating (<code>--lift-z</code>, <code>--short-skids</code>) | | 18 | Crate-to-crate seat gap (<code>--float-stack</code>) | | 19 | Crate body footprint off declared size | | 20 | Per-instance variation collapsed (<code>--same-seed</code>) |</p>
+<p><code>17</code> is unused here: this piece has no diagonal member. <code>15</code>–<code>19</code> are reserved across showcase pieces for the hygiene family, so the numbering skips rather than reuses.</p>
+<h2>Run it</h2>
+<pre><code># Budget check, no render. ~1.0 s on 4.5/5.1, ~1.2 s on 5.2.
+blender --background --python crate_stack.py --
+
+# Falsifier: the three crates become copies. Must exit 20.
+blender --background --python crate_stack.py -- --same-seed
+
+# Falsifier: the top crate floats off the lid below. Must exit 18.
+blender --background --python crate_stack.py -- --float-stack
+
+# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
+blender --background --python crate_stack.py -- --output stack.webp</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<h2>Cross-version measurements</h2>
+<p>| Value | 4.5.11 | 5.1.2 | 5.2.1 | | --- | --- | --- | --- | | Base triangles | 4380 | 4380 | 4380 | | LOD1 tris / ratio | 2190 / 0.5000 | 2190 / 0.5000 | 2190 / 0.5000 | | LOD2 tris / ratio | 934 / 0.2199 | 934 / 0.2199 | 878 / 0.2005 | | Outer AABB | 0.6582 × 0.5235 × 0.7040 | same | same | | Collider tris | 202 | 202 | 202 | | Yaws (rad) | 0.0943, −0.1093, 0.0681 | same | same | | Seat gap | 0.00000 | 0.00000 | 0.00000 | | Check wall-clock | ~0.99 s | ~1.01 s | ~1.20 s |</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/crate-stack/crate_stack.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/crate-stack/crate_stack.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready stack of three shipping crates — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural crate *stack*: one crate
+generator invoked three times with a per-instance seed, each instance
+yawed and seated on the lid of the one below, then run through the
+shipped pipeline (bmesh construction, UVs, two materials, high-to-low
+normal bake, LOD chain, convex collider, Unity glTF export).
+
+What this piece is about is **reuse with variation**. The three crates
+come out of a single ``build_crate`` call each, differing only by the
+seed handed to it. That seed drives the yaw, the lean, and the plank
+widths, so the crates read as three of the same design rather than one
+model copied three times. True instancing (three objects sharing one
+mesh datablock) and per-instance geometry variation are mutually
+exclusive; this piece takes the variation and says so, and the shipped
+asset is the flattened single mesh a game engine would receive.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--short-skids`` the named ground
+supports, ``--float-stack`` the crate-to-crate seat, ``--same-seed`` the
+per-instance variation budget.
+
+Fixed seed 41. DECIMATE COLLAPSE triangle counts are not byte-identical
+across Blender versions — the LOD gate is a ratio band, not an exact
+count.
+
+    blender --background --python crate_stack.py --
+    blender --background --python crate_stack.py -- --same-seed
+    blender --background --python crate_stack.py -- --output stack.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> random
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># One crate: 0.58 x 0.42 at the posts, 0.244 tall including skids and lid.</span>
+<span class="c"># Three stacked come to knee height, wider than they are tall.</span>
+CRATE_X = <span class="n">0.58</span>
+CRATE_Y = <span class="n">0.42</span>
+POST = <span class="n">0.034</span>
+SKID_H = <span class="n">0.024</span>
+SKID_W = <span class="n">0.052</span>
+SLAT_T = <span class="n">0.013</span>
+RAIL_H = <span class="n">0.032</span>
+TENON = <span class="n">0.008</span>
+IRON_T = <span class="n">0.0035</span>
+IRON_WRAP = <span class="n">0.052</span>
+<span class="c"># Straps bite into the timber and stop short of the rail top. Sitting them</span>
+<span class="c"># flush made the plate corner and the post corner the same point, which is</span>
+<span class="c"># a welded double, not a fixing.</span>
+IRON_BITE = <span class="n">0.0012</span>
+IRON_DROP = <span class="n">0.005</span>
+<span class="c"># The lid bites down onto the rails for the same reason: a lid resting</span>
+<span class="c"># exactly on the rail top shares that plane and those corner vertices.</span>
+LID_BITE = <span class="n">0.004</span>
+BODY_H = <span class="n">0.205</span>
+N_SIDE = <span class="n">3</span>
+N_END = <span class="n">2</span>
+N_FLOOR = <span class="n">3</span>
+N_LID = <span class="n">3</span>
+SLAT_JITTER = <span class="n">0.20</span>
+
+N_CRATES = <span class="n">3</span>
+STACK_SEED = <span class="n">41</span>
+<span class="c"># Each crate bites this far into the lid of the one below, so the seat is</span>
+<span class="c"># an overlap rather than two coincident faces (which would z-fight).</span>
+STACK_BITE = <span class="n">0.005</span>
+YAW_MIN = <span class="n">0.060</span>
+YAW_MAX = <span class="n">0.170</span>
+<span class="c"># Crates also step sideways. Three boxes stacked dead-centre read as a</span>
+<span class="c"># filing cabinet however much they are yawed.</span>
+OFFSET_MAX = <span class="n">0.030</span>
+YAW_SPREAD_MIN = <span class="n">0.020</span>
+WIDTH_SPREAD_MIN = <span class="n">0.0008</span>
+
+CRATE_H = SKID_H + BODY_H + SLAT_T - LID_BITE
+STACK_H = N_CRATES * CRATE_H - (N_CRATES - <span class="n">1</span>) * STACK_BITE
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">0.658</span>, <span class="n">0.524</span>, <span class="n">0.704</span>)
+<span class="c"># The crate body over its corner iron, measured in the crate&#x27;s own frame.</span>
+BODY_X = CRATE_X + <span class="n">2.0</span> * (IRON_T - IRON_BITE)
+BODY_Y = CRATE_Y + <span class="n">2.0</span> * (IRON_T - IRON_BITE)
+CRATE_TOL = <span class="n">0.015</span>
+
+BASE_TRIS_MIN = <span class="n">3200</span>
+BASE_TRIS_MAX = <span class="n">7200</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">2</span>
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">260</span>
+BAKE_RES = <span class="n">256</span>
+CAGE_EXTRUSION = <span class="n">0.08</span>
+METAL_FACES_MIN = <span class="n">120</span>
+WOOD_FACES_MIN = <span class="n">600</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+ZFIGHT_EPS = <span class="n">1e-4</span>
+ZFIGHT_COS = <span class="n">0.999</span>
+LIFT_Z = <span class="n">0.05</span>
+SKID_Z_MAX = <span class="n">1e-3</span>
+GROUND_SKIDS_MIN = <span class="n">3</span>
+STACK_SEAT_MAX = <span class="n">0.0015</span>
+FLOAT_LIFT = <span class="n">0.009</span>
+SHORT_SKID_LIFT = <span class="n">0.012</span>
+
+WOOD_IDX = <span class="n">0</span>
+METAL_IDX = <span class="n">1</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="k">def</span> add_box(bm, loc, scale, mat_idx, xform=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Axis-aligned box in the crate frame, optionally placed by *xform*.&quot;&quot;&quot;</span>
+    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    verts = geo[<span class="s">&quot;verts&quot;</span>]
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        p = Vector(
+            (
+                v.co.x * scale[<span class="n">0</span>] + loc[<span class="n">0</span>],
+                v.co.y * scale[<span class="n">1</span>] + loc[<span class="n">1</span>],
+                v.co.z * scale[<span class="n">2</span>] + loc[<span class="n">2</span>],
+            )
+        )
+        v.co = xform @ p <span class="k">if</span> xform <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> p
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
+    uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+    faces = list(bm.faces)
+    n = len(faces)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(n)))
+    rows = max(<span class="n">1</span>, math.ceil(n / cols))
+    cell_w = <span class="n">1.0</span> / cols
+    cell_h = <span class="n">1.0</span> / rows
+    pad_u = margin * cell_w * <span class="n">0.5</span>
+    pad_v = margin * cell_h * <span class="n">0.5</span>
+    usable_w = cell_w - <span class="n">2.0</span> * pad_u
+    usable_h = cell_h - <span class="n">2.0</span> * pad_v
+    <span class="k">for</span> i, face <span class="k">in</span> enumerate(faces):
+        col = i % cols
+        row = i // cols
+        nrm = face.normal
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
+        coords = []
+        <span class="k">for</span> loop <span class="k">in</span> face.loops:
+            co = loop.vert.co
+            <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                coords.append((co.x, co.y))
+            <span class="k">elif</span> ax &gt;= ay:
+                coords.append((co.y, co.z))
+            <span class="k">else</span>:
+                coords.append((co.x, co.z))
+        xs = [c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> coords]
+        ys = [c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> coords]
+        minx, maxx = min(xs), max(xs)
+        miny, maxy = min(ys), max(ys)
+        dx = max(maxx - minx, <span class="n">1e-8</span>)
+        dy = max(maxy - miny, <span class="n">1e-8</span>)
+        origin_u = col * cell_w + pad_u
+        origin_v = row * cell_h + pad_v
+        <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, coords):
+            loop[uv].uv = (
+                origin_u + (x - minx) / dx * usable_w,
+                origin_v + (y - miny) / dy * usable_h,
+            )
+
+
+<span class="k">def</span> _span_layout(count, span, rng, gap=<span class="n">0.009</span>):
+    <span class="s">&quot;&quot;&quot;Uneven plank widths that still fill *span* with named gaps.&quot;&quot;&quot;</span>
+    raw = [<span class="n">1.0</span> + rng.uniform(-SLAT_JITTER, SLAT_JITTER) <span class="k">for</span> _ <span class="k">in</span> range(count)]
+    s = sum(raw)
+    usable = span - gap * (count + <span class="n">1</span>)
+    widths = [usable * r / s <span class="k">for</span> r <span class="k">in</span> raw]
+    pos = -span / <span class="n">2.0</span> + gap
+    centres = []
+    <span class="k">for</span> w <span class="k">in</span> widths:
+        centres.append(pos + w / <span class="n">2.0</span>)
+        pos += w + gap
+    <span class="k">return</span> centres, widths
+
+
+<span class="k">def</span> build_crate(bm, base_z, yaw, rng, offset=(<span class="n">0.0</span>, <span class="n">0.0</span>), short_skids=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;One crate, placed with its skid underside at *base_z* and yawed.
+
+    Called once per stack level. Everything that differs between levels
+    comes out of *rng* and *yaw*; the geometry recipe itself is shared.
+    &quot;&quot;&quot;</span>
+    xform = Matrix.Translation((offset[<span class="n">0</span>], offset[<span class="n">1</span>], <span class="n">0.0</span>)) @ Matrix.Rotation(
+        yaw, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>
+    )
+    hx = CRATE_X / <span class="n">2.0</span> - POST / <span class="n">2.0</span>
+    hy = CRATE_Y / <span class="n">2.0</span> - POST / <span class="n">2.0</span>
+    skid_z0 = base_z + (SHORT_SKID_LIFT <span class="k">if</span> short_skids <span class="k">else</span> <span class="n">0.0</span>)
+    deck_z = base_z + SKID_H
+    top_z = deck_z + BODY_H
+    wood = []
+
+    <span class="c"># Two runners under the posts. These are the named ground supports on</span>
+    <span class="c"># the bottom crate and the seat feet on the ones above.</span>
+    <span class="c"># Three runners, not two: two leave a slot you can see daylight</span>
+    <span class="c"># through between stacked crates, and a centre bearer is what a crate</span>
+    <span class="c"># this wide would actually carry.</span>
+    <span class="k">for</span> si, sy <span class="k">in</span> enumerate((-hy, <span class="n">0.0</span>, hy)):
+        z0 = skid_z0 <span class="k">if</span> (short_skids <span class="k">and</span> si == <span class="n">0</span>) <span class="k">else</span> base_z
+        wood.extend(
+            add_box(
+                bm,
+                (<span class="n">0.0</span>, sy, z0 + SKID_H / <span class="n">2.0</span>),
+                (CRATE_X, SKID_W, SKID_H),
+                WOOD_IDX,
+                xform,
+            )
+        )
+    <span class="c"># Corner posts, tenoned down into the skid line so no shared plane.</span>
+    post_h = BODY_H + TENON
+    <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(
+                add_box(
+                    bm,
+                    (sxn * hx, syn * hy, deck_z - TENON + post_h / <span class="n">2.0</span>),
+                    (POST, POST, post_h),
+                    WOOD_IDX,
+                    xform,
+                )
+            )
+    <span class="c"># Top rails and bottom sills, both tenoned into the posts.</span>
+    <span class="k">for</span> zc, h <span class="k">in</span> ((top_z - RAIL_H / <span class="n">2.0</span>, RAIL_H),
+                  (deck_z - TENON + (RAIL_H + TENON) / <span class="n">2.0</span>, RAIL_H + TENON)):
+        <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(
+                add_box(
+                    bm,
+                    (<span class="n">0.0</span>, syn * hy, zc),
+                    (CRATE_X - POST + <span class="n">2.0</span> * TENON, POST, h),
+                    WOOD_IDX,
+                    xform,
+                )
+            )
+        <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(
+                add_box(
+                    bm,
+                    (sxn * hx, <span class="n">0.0</span>, zc),
+                    (POST, CRATE_Y - POST + <span class="n">2.0</span> * TENON, h),
+                    WOOD_IDX,
+                    xform,
+                )
+            )
+
+    floor_c, floor_w = _span_layout(N_FLOOR, CRATE_X - POST, rng)
+    <span class="k">for</span> c, w <span class="k">in</span> zip(floor_c, floor_w):
+        wood.extend(
+            add_box(
+                bm,
+                (c, <span class="n">0.0</span>, deck_z + SLAT_T / <span class="n">2.0</span>),
+                (w, CRATE_Y - POST + TENON, SLAT_T),
+                WOOD_IDX,
+                xform,
+            )
+        )
+    lid_c, lid_w = _span_layout(N_LID, CRATE_X, rng)
+    <span class="k">for</span> c, w <span class="k">in</span> zip(lid_c, lid_w):
+        wood.extend(
+            add_box(
+                bm,
+                (c, <span class="n">0.0</span>, top_z + SLAT_T / <span class="n">2.0</span> - LID_BITE),
+                (w, CRATE_Y, SLAT_T),
+                WOOD_IDX,
+                xform,
+            )
+        )
+
+    <span class="c"># Side and end boards. Their heights carry the per-instance jitter and</span>
+    <span class="c"># are what the variation budget recomputes.</span>
+    side_c, side_w = _span_layout(N_SIDE, BODY_H - RAIL_H * <span class="n">1.6</span>, rng)
+    band_z = deck_z + RAIL_H * <span class="n">0.8</span> + (BODY_H - RAIL_H * <span class="n">1.6</span>) / <span class="n">2.0</span>
+    <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        y = syn * (CRATE_Y / <span class="n">2.0</span> - SLAT_T / <span class="n">2.0</span> - <span class="n">0.0012</span>)
+        <span class="k">for</span> c, w <span class="k">in</span> zip(side_c, side_w):
+            wood.extend(
+                add_box(
+                    bm,
+                    (<span class="n">0.0</span>, y, band_z + c),
+                    (CRATE_X - POST + TENON, SLAT_T, w),
+                    WOOD_IDX,
+                    xform,
+                )
+            )
+    end_c, end_w = _span_layout(N_END, BODY_H - RAIL_H * <span class="n">1.6</span>, rng)
+    <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        x = sxn * (CRATE_X / <span class="n">2.0</span> - SLAT_T / <span class="n">2.0</span> - <span class="n">0.0012</span>)
+        <span class="k">for</span> c, w <span class="k">in</span> zip(end_c, end_w):
+            wood.extend(
+                add_box(
+                    bm,
+                    (x, <span class="n">0.0</span>, band_z + c),
+                    (SLAT_T, CRATE_Y - POST + TENON, w),
+                    WOOD_IDX,
+                    xform,
+                )
+            )
+
+    <span class="c"># L-straps: two plates meeting at the vertical corner edge, proud of</span>
+    <span class="c"># the post. Two plates, never three overlapping cubes.</span>
+    strap_z0 = deck_z + <span class="n">0.010</span>
+    strap_h = top_z - IRON_DROP - strap_z0
+    zc = strap_z0 + strap_h / <span class="n">2.0</span>
+    <span class="c"># Outer face of each plate, after biting into the post.</span>
+    px = CRATE_X / <span class="n">2.0</span> + IRON_T - IRON_BITE
+    py = CRATE_Y / <span class="n">2.0</span> + IRON_T - IRON_BITE
+    <span class="k">for</span> sxn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        <span class="k">for</span> syn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            add_box(
+                bm,
+                (sxn * (px - IRON_T / <span class="n">2.0</span>), syn * (py - IRON_WRAP / <span class="n">2.0</span>), zc),
+                (IRON_T, IRON_WRAP, strap_h),
+                METAL_IDX,
+                xform,
+            )
+            add_box(
+                bm,
+                (sxn * (px - IRON_WRAP / <span class="n">2.0</span>), syn * (py - IRON_T / <span class="n">2.0</span>), zc),
+                (IRON_WRAP, IRON_T, strap_h - <span class="n">2.0</span> * IRON_T),
+                METAL_IDX,
+                xform,
+            )
+    <span class="k">return</span> wood, side_w
+
+
+<span class="k">def</span> build_stack_mesh(
+    name,
+    same_seed=<span class="k">False</span>,
+    short_skids=<span class="k">False</span>,
+    float_stack=<span class="k">False</span>,
+):
+    bm = bmesh.new()
+    wood_verts = []
+    <span class="k">try</span>:
+        base_z = <span class="n">0.0</span>
+        <span class="k">for</span> i <span class="k">in</span> range(N_CRATES):
+            <span class="c"># Two streams. The design stream is what --same-seed collapses:</span>
+            <span class="c"># yaw and plank widths, the things that make each crate its own</span>
+            <span class="c"># instance. The placement stream stays per-instance either way,</span>
+            <span class="c"># so the falsified stack keeps the same footprint and fails on</span>
+            <span class="c"># the variation budget rather than on the bounding box.</span>
+            seed = STACK_SEED <span class="k">if</span> same_seed <span class="k">else</span> STACK_SEED + i * <span class="n">7</span>
+            rng = random.Random(seed)
+            place = random.Random(STACK_SEED * <span class="n">31</span> + i)
+            sign = <span class="n">1.0</span> <span class="k">if</span> i % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> -<span class="n">1.0</span>
+            yaw = sign * (YAW_MIN + rng.random() * (YAW_MAX - YAW_MIN - <span class="n">0.02</span>))
+            offset = (
+                <span class="n">0.0</span> <span class="k">if</span> i == <span class="n">0</span> <span class="k">else</span> place.uniform(-OFFSET_MAX, OFFSET_MAX),
+                <span class="n">0.0</span> <span class="k">if</span> i == <span class="n">0</span> <span class="k">else</span> place.uniform(-OFFSET_MAX, OFFSET_MAX),
+            )
+            lift = FLOAT_LIFT <span class="k">if</span> (float_stack <span class="k">and</span> i == N_CRATES - <span class="n">1</span>) <span class="k">else</span> <span class="n">0.0</span>
+            verts, _widths = build_crate(
+                bm,
+                base_z + lift,
+                yaw,
+                rng,
+                offset=offset,
+                short_skids=short_skids <span class="k">and</span> i == <span class="n">0</span>,
+            )
+            wood_verts.extend(verts)
+            base_z += CRATE_H - STACK_BITE
+
+        <span class="k">if</span> wood_verts:
+            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            <span class="k">if</span> edges:
+                bmesh.ops.bevel(
+                    bm,
+                    geom=edges,
+                    offset=<span class="n">0.0018</span>,
+                    segments=<span class="n">1</span>,
+                    profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&quot;EDGES&quot;</span>,
+                    clamp_overlap=<span class="k">True</span>,
+                )
+
+        pack_uvs(bm)
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        <span class="k">for</span> face <span class="k">in</span> bm.faces:
+            face.smooth = <span class="k">True</span>
+        <span class="k">for</span> edge <span class="k">in</span> bm.edges:
+            edge.smooth = <span class="k">True</span>
+            <span class="k">if</span> edge.is_manifold <span class="k">and</span> len(edge.link_faces) == <span class="n">2</span>:
+                <span class="k">if</span> edge.calc_face_angle() &gt; math.radians(<span class="n">35.0</span>):
+                    edge.smooth = <span class="k">False</span>
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> assign_slots(obj, wood, metal):
+    mats = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate((wood, metal)):
+        <span class="k">if</span> i &lt; len(mats):
+            mats[i] = mat
+        <span class="k">else</span>:
+            mats.append(mat)
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
+    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
+    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    <span class="s">&quot;&quot;&quot;UV bounds plus AABB overlap area, bucketed so this stays linear.&quot;&quot;&quot;</span>
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    <span class="c"># Bucket on a grid at least as coarse as the largest island, so any</span>
+    <span class="c"># overlapping pair lands in a shared cell. O(n) instead of O(n^2).</span>
+    span = max(
+        <span class="n">1e-6</span>,
+        max((a[<span class="n">2</span>] - a[<span class="n">0</span>]) <span class="k">for</span> a <span class="k">in</span> aabbs),
+        max((a[<span class="n">3</span>] - a[<span class="n">1</span>]) <span class="k">for</span> a <span class="k">in</span> aabbs),
+    )
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        c0 = int(math.floor(a[<span class="n">0</span>] / span))
+        c1 = int(math.floor(a[<span class="n">2</span>] / span))
+        r0 = int(math.floor(a[<span class="n">1</span>] / span))
+        r1 = int(math.floor(a[<span class="n">3</span>] / span))
+        <span class="k">for</span> c <span class="k">in</span> range(c0, c1 + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(r0, r1 + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                x0 = max(a[<span class="n">0</span>], b[<span class="n">0</span>])
+                y0 = max(a[<span class="n">1</span>], b[<span class="n">1</span>])
+                x1 = min(a[<span class="n">2</span>], b[<span class="n">2</span>])
+                y1 = min(a[<span class="n">3</span>], b[<span class="n">3</span>])
+                overlap += max(<span class="n">0.0</span>, x1 - x0) * max(<span class="n">0.0</span>, y1 - y0)
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    <span class="k">if</span> len(idxs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        vs = (me.vertices[idxs[i]].co, me.vertices[idxs[i + <span class="n">1</span>]].co)
+        area += (vs[<span class="n">0</span>] - v0).cross(vs[<span class="n">1</span>] - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons,
+        <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles,
+    }
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar, near-coincident face pairs that share no vertex.
+
+    Bucketed on a grid of ZFIGHT_EPS so a 2500-face stack does not cost
+    three million Python-level pair tests in smoke.
+    &quot;&quot;&quot;</span>
+    data = [
+        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
+        <span class="k">for</span> p <span class="k">in</span> me.polygons
+    ]
+    cell = ZFIGHT_EPS
+    buckets = {}
+    <span class="k">for</span> i, (c, _n, _v) <span class="k">in</span> enumerate(data):
+        key = (
+            int(math.floor(c.x / cell)),
+            int(math.floor(c.y / cell)),
+            int(math.floor(c.z / cell)),
+        )
+        buckets.setdefault(key, []).append(i)
+    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
+    count = <span class="n">0</span>
+    checked = set()
+    <span class="k">for</span> key, members <span class="k">in</span> buckets.items():
+        kx, ky, kz = key
+        near = []
+        <span class="k">for</span> dx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>):
+            <span class="k">for</span> dy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>):
+                <span class="k">for</span> dz <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>):
+                    near.extend(buckets.get((kx + dx, ky + dy, kz + dz), ()))
+        <span class="k">for</span> i <span class="k">in</span> members:
+            ci, ni, vi = data[i]
+            <span class="k">for</span> j <span class="k">in</span> near:
+                <span class="k">if</span> j == i:
+                    <span class="k">continue</span>
+                pair = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> pair <span class="k">in</span> checked:
+                    <span class="k">continue</span>
+                checked.add(pair)
+                cj, nj, vj = data[j]
+                <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+                    <span class="k">continue</span>
+                <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+                    <span class="k">continue</span>
+                <span class="k">if</span> vi &amp; vj:
+                    <span class="k">continue</span>
+                count += <span class="n">1</span>
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            current = stack.pop()
+            group.append(current)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[current]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> shell_aabb(me, group):
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> group]
+    <span class="k">return</span> (
+        min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+        max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts),
+    )
+
+
+<span class="k">def</span> mat_of(me, group, face_of_vert):
+    member = set(group)
+    <span class="k">for</span> i <span class="k">in</span> group:
+        <span class="k">for</span> fi <span class="k">in</span> face_of_vert[i]:
+            poly = me.polygons[fi]
+            <span class="k">if</span> all(v <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> poly.vertices):
+                <span class="k">return</span> poly.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> vert_faces(me):
+    table = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> fi, poly <span class="k">in</span> enumerate(me.polygons):
+        <span class="k">for</span> vi <span class="k">in</span> poly.vertices:
+            table[vi].append(fi)
+    <span class="k">return</span> table
+
+
+<span class="k">def</span> xy_principal(pts):
+    <span class="s">&quot;&quot;&quot;Long/short XY extent and orientation of a shell, free of world yaw.
+
+    Every part is an axis-aligned box in its crate&#x27;s frame, then rotated
+    about Z. A world-AABB test therefore measures the rotated bounding
+    box, not the part: a 0.554 m board yawed 0.09 rad reports 0.061 m of
+    depth instead of its 0.013 m thickness, and every shape filter keyed
+    to thickness silently matches nothing. Recovering the box&#x27;s own axes
+    by principal components makes the classification yaw-invariant, and
+    hands back the yaw as a by-product.
+    &quot;&quot;&quot;</span>
+    n = len(pts)
+    cx = sum(p.x <span class="k">for</span> p <span class="k">in</span> pts) / n
+    cy = sum(p.y <span class="k">for</span> p <span class="k">in</span> pts) / n
+    sxx = syy = sxy = <span class="n">0.0</span>
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        dx, dy = p.x - cx, p.y - cy
+        sxx += dx * dx
+        syy += dy * dy
+        sxy += dx * dy
+    theta = <span class="n">0.5</span> * math.atan2(<span class="n">2.0</span> * sxy, sxx - syy)
+    c, s = math.cos(theta), math.sin(theta)
+    us = [(p.x - cx) * c + (p.y - cy) * s <span class="k">for</span> p <span class="k">in</span> pts]
+    vs = [-(p.x - cx) * s + (p.y - cy) * c <span class="k">for</span> p <span class="k">in</span> pts]
+    e1 = max(us) - min(us)
+    e2 = max(vs) - min(vs)
+    <span class="k">if</span> e1 &lt; e2:
+        e1, e2 = e2, e1
+        theta += math.pi / <span class="n">2.0</span>
+    <span class="k">while</span> theta &gt; math.pi / <span class="n">2.0</span>:
+        theta -= math.pi
+    <span class="k">while</span> theta &lt;= -math.pi / <span class="n">2.0</span>:
+        theta += math.pi
+    <span class="k">return</span> e1, e2, theta
+
+
+<span class="k">def</span> _levels_from_runners(cands):
+    <span class="s">&quot;&quot;&quot;Stack bases, clustered from the runners the mesh actually has.
+
+    Binning against the declared pitch put a lid — which sits 8 mm below
+    the next crate&#x27;s base — on the wrong level the moment a falsifier
+    shifted a crate, and the seat budget then compared a crate against
+    itself. Clustering the measured runner heights instead makes the
+    bands follow the geometry, including when a falsifier moves it.
+    &quot;&quot;&quot;</span>
+    bases = []
+    <span class="k">for</span> z <span class="k">in</span> sorted(cands):
+        <span class="k">if</span> <span class="k">not</span> bases <span class="k">or</span> z - bases[-<span class="n">1</span>] &gt; CRATE_H * <span class="n">0.5</span>:
+            bases.append(z)
+        <span class="k">else</span>:
+            bases[-<span class="n">1</span>] = min(bases[-<span class="n">1</span>], z)
+    <span class="k">return</span> bases
+
+
+<span class="k">def</span> classify(me):
+    <span class="s">&quot;&quot;&quot;Bin every wood shell to a stack level and name the parts.
+
+    Two passes: find the runners, cluster their heights into stack bases,
+    then assign every shell to the highest base at or below it. Only the
+    identification uses the layout; every number a budget later asserts
+    on — heights, gaps, yaws, footprints — is measured from vertices.
+    &quot;&quot;&quot;</span>
+    vf = vert_faces(me)
+    wood = []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g, vf) != WOOD_IDX:
+            <span class="k">continue</span>
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        zmin = min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+        zmax = max(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+        e1, e2, theta = xy_principal(pts)
+        wood.append(
+            {
+                <span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;zmin&quot;</span>: zmin, <span class="s">&quot;dz&quot;</span>: zmax - zmin,
+                <span class="s">&quot;e1&quot;</span>: e1, <span class="s">&quot;e2&quot;</span>: e2, <span class="s">&quot;yaw&quot;</span>: theta,
+            }
+        )
+
+    <span class="c"># e2 is a band, not a ceiling: a side board is the same length and can</span>
+    <span class="c"># be thinner than a runner is tall, so an open-ended short-axis test</span>
+    <span class="c"># promotes boards to runners and floats the ground budget.</span>
+    runner_like = [
+        s <span class="k">for</span> s <span class="k">in</span> wood
+        <span class="k">if</span> s[<span class="s">&quot;dz&quot;</span>] &lt; SKID_H * <span class="n">1.25</span>
+        <span class="k">and</span> s[<span class="s">&quot;e1&quot;</span>] &gt; CRATE_X * <span class="n">0.85</span>
+        <span class="k">and</span> SKID_W * <span class="n">0.6</span> &lt; s[<span class="s">&quot;e2&quot;</span>] &lt; SKID_W * <span class="n">1.8</span>
+    ]
+    <span class="c"># Top rails share the runners&#x27; footprint and are only 2 mm taller, so</span>
+    <span class="c"># a shape filter alone puts four runners on every level. A runner is</span>
+    <span class="c"># the lowest thing in its crate; a rail is 27 cm above it.</span>
+    bases = _levels_from_runners([s[<span class="s">&quot;zmin&quot;</span>] <span class="k">for</span> s <span class="k">in</span> runner_like])
+    <span class="k">if</span> len(bases) != N_CRATES:
+        bases = [i * (CRATE_H - STACK_BITE) <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)]
+
+    <span class="k">def</span> level_of(z):
+        lvl = <span class="n">0</span>
+        <span class="k">for</span> i, b <span class="k">in</span> enumerate(bases):
+            <span class="k">if</span> z &gt;= b - <span class="n">1e-4</span>:
+                lvl = i
+        <span class="k">return</span> lvl
+
+    out = {i: {<span class="s">&quot;skids&quot;</span>: [], <span class="s">&quot;lids&quot;</span>: [], <span class="s">&quot;boards&quot;</span>: []} <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)}
+    <span class="k">for</span> s <span class="k">in</span> wood:
+        lvl = level_of(s[<span class="s">&quot;zmin&quot;</span>])
+        rel = s[<span class="s">&quot;zmin&quot;</span>] - bases[lvl]
+        <span class="k">if</span> s <span class="k">in</span> runner_like <span class="k">and</span> rel &lt; SKID_H * <span class="n">3.0</span>:
+            out[lvl][<span class="s">&quot;skids&quot;</span>].append(s)
+        <span class="k">elif</span> (
+            s[<span class="s">&quot;dz&quot;</span>] &lt; SLAT_T * <span class="n">2.2</span>
+            <span class="k">and</span> s[<span class="s">&quot;e1&quot;</span>] &gt; CRATE_Y * <span class="n">0.9</span>
+            <span class="k">and</span> rel &gt; CRATE_H * <span class="n">0.6</span>
+        ):
+            out[lvl][<span class="s">&quot;lids&quot;</span>].append(s)
+        <span class="k">elif</span> (
+            SLAT_T * <span class="n">1.5</span> &lt; s[<span class="s">&quot;dz&quot;</span>] &lt; BODY_H * <span class="n">0.7</span>
+            <span class="k">and</span> s[<span class="s">&quot;e1&quot;</span>] &gt; CRATE_X * <span class="n">0.85</span>
+            <span class="k">and</span> s[<span class="s">&quot;e2&quot;</span>] &lt; SLAT_T * <span class="n">2.2</span>
+        ):
+            out[lvl][<span class="s">&quot;boards&quot;</span>].append(dict(s, h=s[<span class="s">&quot;dz&quot;</span>]))
+    <span class="k">return</span> out, bases
+
+
+<span class="k">def</span> _bvh_gap(me, hosts, guests):
+    <span class="s">&quot;&quot;&quot;Worst surface gap from any guest shell to the host surface.
+
+    Surface-to-surface, not vertex-to-vertex: a runner crossing a lid
+    plank has no vertex near the plank&#x27;s own vertices, and a vertex
+    metric would report a large gap for parts that are in fact seated.
+    Overlapping shells return 0.
+    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="k">not</span> hosts <span class="k">or</span> <span class="k">not</span> guests:
+        <span class="k">return</span> <span class="n">99.0</span>
+    bm_h = bmesh.new()
+    <span class="k">try</span>:
+        bm_h.from_mesh(me)
+        keep = set()
+        <span class="k">for</span> g <span class="k">in</span> hosts:
+            keep.update(g)
+        drop = [f <span class="k">for</span> f <span class="k">in</span> bm_h.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_h, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_h.faces:
+            <span class="k">return</span> <span class="n">99.0</span>
+        tree = BVHTree.FromBMesh(bm_h)
+        worst = <span class="n">0.0</span>
+        <span class="k">for</span> g <span class="k">in</span> guests:
+            bm_g = bmesh.new()
+            <span class="k">try</span>:
+                bm_g.from_mesh(me)
+                member = set(g)
+                drop_g = [
+                    f <span class="k">for</span> f <span class="k">in</span> bm_g.faces
+                    <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> f.verts)
+                ]
+                <span class="k">if</span> drop_g:
+                    bmesh.ops.delete(bm_g, geom=drop_g, context=<span class="s">&quot;FACES&quot;</span>)
+                <span class="k">if</span> <span class="k">not</span> bm_g.faces:
+                    worst = max(worst, <span class="n">99.0</span>)
+                    <span class="k">continue</span>
+                tree_g = BVHTree.FromBMesh(bm_g)
+                <span class="k">if</span> tree.overlap(tree_g):
+                    <span class="k">continue</span>
+                best = <span class="n">99.0</span>
+                <span class="k">for</span> i <span class="k">in</span> g:
+                    hit = tree.find_nearest(me.vertices[i].co)
+                    <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                        <span class="k">continue</span>
+                    best = min(best, hit[<span class="n">3</span>])
+                worst = max(worst, best)
+            <span class="k">finally</span>:
+                bm_g.free()
+        <span class="k">return</span> worst
+    <span class="k">finally</span>:
+        bm_h.free()
+
+
+<span class="k">def</span> stack_audit(me):
+    <span class="s">&quot;&quot;&quot;Ground supports, crate-to-crate seats, and per-instance variation.&quot;&quot;&quot;</span>
+    by_level, bases = classify(me)
+
+    ground = by_level[<span class="n">0</span>][<span class="s">&quot;skids&quot;</span>]
+    ground_n = len(ground)
+    <span class="c"># max, not min: one planted runner would hide a floating one.</span>
+    ground_z = max((s[<span class="s">&quot;zmin&quot;</span>] <span class="k">for</span> s <span class="k">in</span> ground), default=<span class="n">99.0</span>)
+
+    seat = <span class="n">0.0</span>
+    seats_checked = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, N_CRATES):
+        hosts = [s[<span class="s">&quot;g&quot;</span>] <span class="k">for</span> s <span class="k">in</span> by_level[i - <span class="n">1</span>][<span class="s">&quot;lids&quot;</span>]]
+        guests = [s[<span class="s">&quot;g&quot;</span>] <span class="k">for</span> s <span class="k">in</span> by_level[i][<span class="s">&quot;skids&quot;</span>]]
+        <span class="k">if</span> hosts <span class="k">and</span> guests:
+            seats_checked += <span class="n">1</span>
+            seat = max(seat, _bvh_gap(me, hosts, guests))
+        <span class="k">else</span>:
+            seat = <span class="n">99.0</span>
+
+    widths = {}
+    yaws = {}
+    <span class="k">for</span> i <span class="k">in</span> range(N_CRATES):
+        widths[i] = sorted(round(b[<span class="s">&quot;h&quot;</span>], <span class="n">6</span>) <span class="k">for</span> b <span class="k">in</span> by_level[i][<span class="s">&quot;boards&quot;</span>])
+        sk = by_level[i][<span class="s">&quot;skids&quot;</span>]
+        <span class="k">if</span> sk:
+            yaws[i] = sum(s[<span class="s">&quot;yaw&quot;</span>] <span class="k">for</span> s <span class="k">in</span> sk) / len(sk)
+
+    width_spread = <span class="n">0.0</span>
+    pairs = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(N_CRATES):
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, N_CRATES):
+            wi, wj = widths.get(i) <span class="k">or</span> [], widths.get(j) <span class="k">or</span> []
+            <span class="k">if</span> wi <span class="k">and</span> len(wi) == len(wj):
+                d = max(abs(a - b) <span class="k">for</span> a, b <span class="k">in</span> zip(wi, wj))
+                width_spread = d <span class="k">if</span> pairs == <span class="n">0</span> <span class="k">else</span> min(width_spread, d)
+                pairs += <span class="n">1</span>
+
+    yaw_vals = [yaws[i] <span class="k">for</span> i <span class="k">in</span> range(N_CRATES) <span class="k">if</span> i <span class="k">in</span> yaws]
+    yaw_spread = <span class="n">0.0</span>
+    <span class="k">if</span> len(yaw_vals) == N_CRATES:
+        yaw_spread = min(
+            abs(yaw_vals[i] - yaw_vals[j])
+            <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)
+            <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, N_CRATES)
+        )
+    <span class="k">return</span> {
+        <span class="s">&quot;ground_n&quot;</span>: ground_n,
+        <span class="s">&quot;ground_z&quot;</span>: ground_z,
+        <span class="s">&quot;seat&quot;</span>: seat,
+        <span class="s">&quot;seats&quot;</span>: seats_checked,
+        <span class="s">&quot;lids&quot;</span>: sum(len(by_level[i][<span class="s">&quot;lids&quot;</span>]) <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)),
+        <span class="s">&quot;boards&quot;</span>: sum(len(by_level[i][<span class="s">&quot;boards&quot;</span>]) <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)),
+        <span class="s">&quot;board_counts&quot;</span>: [len(by_level[i][<span class="s">&quot;boards&quot;</span>]) <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)],
+        <span class="s">&quot;skid_counts&quot;</span>: [len(by_level[i][<span class="s">&quot;skids&quot;</span>]) <span class="k">for</span> i <span class="k">in</span> range(N_CRATES)],
+        <span class="s">&quot;width_spread&quot;</span>: width_spread,
+        <span class="s">&quot;width_pairs&quot;</span>: pairs,
+        <span class="s">&quot;yaw_spread&quot;</span>: yaw_spread,
+        <span class="s">&quot;yaw_min&quot;</span>: min((abs(y) <span class="k">for</span> y <span class="k">in</span> yaw_vals), default=<span class="n">0.0</span>),
+        <span class="s">&quot;yaw_max&quot;</span>: max((abs(y) <span class="k">for</span> y <span class="k">in</span> yaw_vals), default=<span class="n">9.0</span>),
+        <span class="s">&quot;yaws&quot;</span>: [round(y, <span class="n">4</span>) <span class="k">for</span> y <span class="k">in</span> yaw_vals],
+        <span class="s">&quot;bases&quot;</span>: [round(b, <span class="n">4</span>) <span class="k">for</span> b <span class="k">in</span> bases],
+    }
+
+
+<span class="k">def</span> crate_size_audit(me, yaws, bases):
+    <span class="s">&quot;&quot;&quot;Each crate&#x27;s own footprint, measured in that crate&#x27;s frame.
+
+    The stack AABB cannot cover this: it is the union of three yawed
+    boxes, so a crate could drift to any size underneath it. Un-rotating
+    by the yaw this crate was measured to have is what makes the number
+    the crate&#x27;s own width and depth rather than its rotated bounding box.
+    &quot;&quot;&quot;</span>
+    out = []
+    <span class="k">for</span> i, base <span class="k">in</span> enumerate(bases):
+        <span class="c"># Body band only. A band that reaches the crate base also picks</span>
+        <span class="c"># up the runners of the crate above, which carry a different yaw</span>
+        <span class="c"># and inflate the footprint by two centimetres.</span>
+        lo = base + SKID_H + <span class="n">0.012</span>
+        hi = base + SKID_H + BODY_H - <span class="n">0.012</span>
+        pts = [v.co <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> lo &lt;= v.co.z &lt;= hi]
+        <span class="k">if</span> <span class="k">not</span> pts <span class="k">or</span> i &gt;= len(yaws):
+            out.append((<span class="n">0.0</span>, <span class="n">0.0</span>))
+            <span class="k">continue</span>
+        c, s = math.cos(-yaws[i]), math.sin(-yaws[i])
+        us = [p.x * c - p.y * s <span class="k">for</span> p <span class="k">in</span> pts]
+        vs = [p.x * s + p.y * c <span class="k">for</span> p <span class="k">in</span> pts]
+        out.append((max(us) - min(us), max(vs) - min(vs)))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, STACK_H * <span class="n">0.5</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> convex_hull_collider(obj, name):
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(obj.data)
+        result = bmesh.ops.convex_hull(bm, input=list(bm.verts))
+        interior = result.get(<span class="s">&quot;geom_interior&quot;</span>) <span class="k">or</span> []
+        unused = result.get(<span class="s">&quot;geom_unused&quot;</span>) <span class="k">or</span> []
+        <span class="k">if</span> interior:
+            bmesh.ops.delete(bm, geom=interior, context=<span class="s">&quot;VERTS&quot;</span>)
+        <span class="k">if</span> unused:
+            bmesh.ops.delete(bm, geom=unused, context=<span class="s">&quot;VERTS&quot;</span>)
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    collider = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(collider)
+    collider.matrix_world = obj.matrix_world.copy()
+    <span class="k">return</span> collider
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
+    <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
+        <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
+    img = bpy.data.images.new(<span class="s">&quot;StackNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = WOOD_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>,
+        use_selected_to_active=<span class="k">True</span>,
+        cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>,
+        normal_space=<span class="s">&quot;TANGENT&quot;</span>,
+        margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>,
+        use_clear=<span class="k">True</span>,
+        target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path,
+        use_selection=<span class="k">True</span>,
+        export_yup=<span class="k">True</span>,
+        export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>,
+        export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(
+    skip_decimate,
+    lift_z=<span class="k">False</span>,
+    stray_vert=<span class="k">False</span>,
+    short_skids=<span class="k">False</span>,
+    float_stack=<span class="k">False</span>,
+    same_seed=<span class="k">False</span>,
+):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    flags = dict(
+        same_seed=same_seed,
+        short_skids=short_skids,
+        float_stack=float_stack,
+    )
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    low = build_stack_mesh(<span class="s">&quot;StackLow&quot;</span>, **flags)
+    high = build_stack_mesh(<span class="s">&quot;StackHigh&quot;</span>, **flags)
+    wood = principled(
+        <span class="s">&quot;StackWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>,
+        noise_scale=<span class="n">9.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.030</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;StackMetal&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.19</span>, <span class="n">0.180</span>, <span class="n">1.0</span>), <span class="n">0.88</span>, <span class="n">0.33</span>,
+        noise_scale=<span class="n">6.0</span>, wear=(<span class="n">0.10</span>, <span class="n">0.095</span>, <span class="n">0.088</span>, <span class="n">1.0</span>),
+    )
+    assign_slots(low, wood, metal)
+    assign_slots(high, wood, metal)
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+
+    <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;stack mesh did not build&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat = len(mats)
+    distinct_mats = len({id(s) <span class="k">for</span> s <span class="k">in</span> mats})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, wood)
+    <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;stack has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;StackLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;StackLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider_src = build_stack_mesh(<span class="s">&quot;StackColSrc&quot;</span>, **flags)
+    collider = convex_hull_collider(collider_src, <span class="s">&quot;StackCollider&quot;</span>)
+    bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(
+        tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_crate_stack_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>
+    )
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    st = stack_audit(low.data)
+    crates = crate_size_audit(low.data, st[<span class="s">&#x27;yaws&#x27;</span>], st[<span class="s">&#x27;bases&#x27;</span>])
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{idx_counts}<span class="s">&quot;</span>)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured stack ground_n=</span>{st[<span class="s">&#x27;ground_n&#x27;</span>]}<span class="s"> ground_z=</span>{st[<span class="s">&#x27;ground_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seats=</span>{st[<span class="s">&#x27;seats&#x27;</span>]}<span class="s"> seat_gap=</span>{st[<span class="s">&#x27;seat&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> lids=</span>{st[<span class="s">&#x27;lids&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">boards=</span>{st[<span class="s">&#x27;boards&#x27;</span>]}<span class="s"> per_level_boards=</span>{st[<span class="s">&#x27;board_counts&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">per_level_skids=</span>{st[<span class="s">&#x27;skid_counts&#x27;</span>]}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured variation yaws=</span>{st[<span class="s">&#x27;yaws&#x27;</span>]}<span class="s"> yaw_spread=</span>{st[<span class="s">&#x27;yaw_spread&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">yaw_min=</span>{st[<span class="s">&#x27;yaw_min&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> yaw_max=</span>{st[<span class="s">&#x27;yaw_max&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">width_spread=</span>{st[<span class="s">&#x27;width_spread&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> pairs=</span>{st[<span class="s">&#x27;width_pairs&#x27;</span>]}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">&quot;measured crate_footprints=&quot;</span>
+        <span class="s">f&quot;</span>{[(round(c[<span class="n">0</span>], <span class="n">4</span>), round(c[<span class="n">1</span>], <span class="n">4</span>)) <span class="k">for</span> c <span class="k">in</span> crates]}<span class="s">&quot;</span>
+    )
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>
+        ),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct_mats != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>
+        ),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (
+        abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>
+        ),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>
+        ),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>
+        ),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>
+        ),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--stray-vert is the designed fail)&quot;</span>, <span class="n">15</span>
+        ),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>
+        ),) + nothing
+    <span class="k">if</span> st[<span class="s">&quot;ground_n&quot;</span>] &lt; GROUND_SKIDS_MIN <span class="k">or</span> st[<span class="s">&quot;ground_z&quot;</span>] &gt; SKID_Z_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">ground runners </span>{st[<span class="s">&#x27;ground_n&#x27;</span>]}<span class="s"> ground_z=</span>{st[<span class="s">&#x27;ground_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-skids is the designed fail)&quot;</span>, <span class="n">16</span>
+        ),) + nothing
+    <span class="k">if</span> st[<span class="s">&quot;seats&quot;</span>] != N_CRATES - <span class="n">1</span> <span class="k">or</span> st[<span class="s">&quot;seat&quot;</span>] &gt; STACK_SEAT_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">stack seat gap </span>{st[<span class="s">&#x27;seat&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{STACK_SEAT_MAX}<span class="s"> over </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{st[<span class="s">&#x27;seats&#x27;</span>]}<span class="s"> seats (--float-stack is the designed fail)</span><span class="s">&quot;</span>, <span class="n">18</span>
+        ),) + nothing
+    <span class="k">for</span> i, (cx, cy) <span class="k">in</span> enumerate(crates):
+        <span class="k">if</span> abs(cx - BODY_X) &gt; CRATE_TOL <span class="k">or</span> abs(cy - BODY_Y) &gt; CRATE_TOL:
+            <span class="k">return</span> (fail(
+                <span class="s">f&quot;</span><span class="s">crate </span>{i}<span class="s"> body footprint (</span>{cx:<span class="s">.4f</span>}<span class="s">,</span>{cy:<span class="s">.4f</span>}<span class="s">) off </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">(</span>{BODY_X:<span class="s">.4f</span>}<span class="s">,</span>{BODY_Y:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">19</span>
+            ),) + nothing
+    <span class="k">if</span> st[<span class="s">&quot;yaw_min&quot;</span>] &lt; YAW_MIN * <span class="n">0.8</span> <span class="k">or</span> st[<span class="s">&quot;yaw_max&quot;</span>] &gt; YAW_MAX * <span class="n">1.2</span>:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">crate yaws </span>{st[<span class="s">&#x27;yaws&#x27;</span>]}<span class="s"> outside [</span>{YAW_MIN}<span class="s">, </span>{YAW_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">20</span>
+        ),) + nothing
+    <span class="k">if</span> st[<span class="s">&quot;yaw_spread&quot;</span>] &lt; YAW_SPREAD_MIN <span class="k">or</span> st[<span class="s">&quot;width_spread&quot;</span>] &lt; WIDTH_SPREAD_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">per-instance variation too small: yaw_spread=</span>{st[<span class="s">&#x27;yaw_spread&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(min </span>{YAW_SPREAD_MIN}<span class="s">) width_spread=</span>{st[<span class="s">&#x27;width_spread&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(min </span>{WIDTH_SPREAD_MIN}<span class="s">) — the three crates are copies, not </span><span class="s">&quot;</span>
+            <span class="s">&quot;instances (--same-seed is the designed fail)&quot;</span>, <span class="n">20</span>
+        ),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, wood, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(wood, tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+
+    low.rotation_euler.z = math.radians(-<span class="n">14.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">16.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.2</span>, -<span class="n">4.0</span>, <span class="n">5.2</span>), <span class="n">545.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.90</span>), (<span class="n">44</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.2</span>, -<span class="n">2.8</span>, <span class="n">1.5</span>), <span class="n">145.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.00</span>), (<span class="n">72</span>, <span class="n">0</span>, <span class="n">54</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">1.5</span>, <span class="n">3.4</span>, <span class="n">2.6</span>), <span class="n">320.0</span>, <span class="n">3.0</span>, (<span class="n">0.60</span>, <span class="n">0.78</span>, <span class="n">1.00</span>), (-<span class="n">64</span>, <span class="n">0</span>, <span class="n">200</span>))
+    <span class="c"># Wedge sits between the subject and the wall so the pool lands on the</span>
+    <span class="c"># backdrop, not across the crates.</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.1</span>, <span class="n">4.3</span>, <span class="n">1.95</span>), <span class="n">560.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.40</span>), (-<span class="n">94</span>, <span class="n">0</span>, <span class="n">194</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">52.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.62</span>, -<span class="n">2.42</span>, <span class="n">1.06</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, STACK_H * <span class="n">0.46</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = (
+        <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    )
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-skids&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-stack&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--same-seed&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, wood, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        short_skids=args.short_skids,
+        float_stack=args.float_stack,
+        same_seed=args.same_seed,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, wood, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;crate-stack OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+    <img src="../assets/crate-stack-hero.webp" alt="crate-stack render, full size" />
+  </div>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>examples/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        hero.addEventListener('click', function () { box.classList.add('open'); });
+        box.addEventListener('click', function () { box.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') box.classList.remove('open');
+        });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>26 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>28 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 26 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 28 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>26 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>28 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
@@ -135,6 +135,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
   <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: a raked timber ladder with six rungs and iron shoes on a dark studio floor" /></a>
   <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale with two sisal twine belts on a dark studio floor" /></a>
+  <a href="showcase/crate-stack/"><img src="showcase/crate-stack/preview.webp" width="24%" alt="Crate stack: three slatted shipping crates stacked and yawed, each with iron corner straps and runners, on a dark studio floor" /></a>
+  <a href="showcase/stone-archway/"><img src="showcase/stone-archway/preview.webp" width="24%" alt="Stone archway: a semicircular masonry arch with coursed piers, projecting imposts, nine voussoirs and a proud keystone, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.

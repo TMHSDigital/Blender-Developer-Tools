@@ -99,5 +99,7 @@
   {"name": "tavern-stool", "script": "showcase/tavern-stool/tavern_stool.py"},
   {"name": "iron-cauldron", "script": "showcase/iron-cauldron/iron_cauldron.py"},
   {"name": "wooden-ladder", "script": "showcase/wooden-ladder/wooden_ladder.py"},
-  {"name": "hay-bale", "script": "showcase/hay-bale/hay_bale.py"}
+  {"name": "hay-bale", "script": "showcase/hay-bale/hay_bale.py"},
+  {"name": "crate-stack", "script": "showcase/crate-stack/crate_stack.py"},
+  {"name": "stone-archway", "script": "showcase/stone-archway/stone_archway.py"}
 ]
