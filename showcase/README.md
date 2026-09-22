@@ -65,6 +65,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   the last one over faces that share **no** vertex: the triangles of one
   flat fan cap are coplanar and close-centred by construction, and
   counting those makes the budget unsatisfiable rather than meaningful.
+  Count the coplanar pairs **cross-shell**, not merely over faces that
+  share no vertex: two quads two steps apart on one flat cap share no
+  vertex and are coplanar and close-centred by construction. Counting
+  those reported 96 pairs on `hay-bale`, none of them a hazard, which is
+  the same unsatisfiable-budget trap in a second disguise. Z-fighting is
+  two separate bodies landing on one plane, and that is a cross-shell
+  pair by definition.
   Multi-body props do **not** require Euler characteristic 2 — that is a
   single-shell contract. Two boxes that share a coplanar face z-fight;
   two that share a vertex weld into one shell. Seat a joint with a named
@@ -100,6 +107,26 @@ entry in `showcase/gallery.json`, and a rendered still.
   hypot-length box rotated about its centroid. The centroid form is
   short of one host and punches through the other. `--short-brace` /
   `--float-spout` (or the piece's equivalent) is the falsifier.
+- **Even shaping terms and mirror symmetry (exit 19).** Where a prop has
+  mirrored members — two belts, two brackets, a pair of feet — every
+  closed-form term in the host's shaping function must be **even** in
+  the mirrored axis. `hay-bale` used `sin(x*24)`, which is odd, so its
+  two belt stations sampled different surface heights and the wraps
+  shipped 5.4 mm out of step; `cos` fixed it exactly. Assert it: pair the
+  mirrored shells and compare their axis positions and extents within a
+  named epsilon. A bounding box cannot see this, and neither can a
+  per-member budget that only ever looks at one member.
+- **Wrappers follow the host's profile, and the host is finished first
+  (exit 16/18).** Build, bevel and **ground the host, then** hang the
+  wrapper on the finished surface by raycasting the host's own
+  cross-section at the wrapper's station. Placing a wrapper against
+  half-built geometry and shifting everything afterwards leaves each one
+  a different distance off the floor. A constant-section rectangle on a
+  rounded host stands proud at the middle of each face and is swallowed
+  at the corners — `hay-bale`'s belts stopped 2.9–8.3 mm above the floor
+  with a visible notch, while the AABB `zmin` gate stayed green because
+  the loaf grounded the box. Assert **per wrapper shell** that the loop
+  passes under the host, not just that something touches Z=0.
 - **Seat conformance (exit 18).** A band, hoop, strap or collar wrapped
   around a host asserts a **banded** seat depth — a minimum so it cannot
   float and a maximum so it cannot sink — sampled per angular segment
@@ -110,6 +137,14 @@ entry in `showcase/gallery.json`, and a rendered still.
   vertices as inner ones the moment the host is out of round, which is
   how a hoop that visibly gapped on one side still passed.   The paired
   falsifier makes the wrapper a true circle on an out-of-round host.
+  Measure the depth **station-locally**, along the vertex's own direction
+  from the station axis — not by nearest-surface distance. A wrapper
+  seated in a concave waist has its nearest host face on the bulge
+  shoulder at a neighbouring station, and the wrap then reads as sitting
+  10 mm outside a host it is in fact hugging. Bin the samples by
+  **rounding** to the nearest station, never by flooring: a station on a
+  bin boundary puts its inner and outer rings in different bins, and the
+  inner-only bin reports the wrapper's outer offset as its seat depth.
 - **Level sole on a raked leg (exit 18).** A raked stile does not sit
   in a world-axis cube. Build the sleeve in the member frame so it
   follows the rake; add the tread after the rake as its own
