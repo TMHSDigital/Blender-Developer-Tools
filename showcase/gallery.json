@@ -236,8 +236,8 @@
     {
       "name": "chopping-block",
       "dir": "showcase/chopping-block",
-      "teaches": "A procedural log-round chopping block with an iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "witnessesFix": "Recomputed: 1472 tris, three materials with 252 bark / 252 grain / 288 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.012 m, LOD ratios in band, convex collider 434 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7. Joint fit: four shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.0 mm into the log on every segment. --fat-haft exits 17 on eye clearance; --round-band exits 18 on the hoop bite band.",
+      "teaches": "A procedural log-round chopping block with a riveted iron hoop and a felling axe buried in the sawn face, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "witnessesFix": "Recomputed: 1800 tris, four materials with 180 bark / 216 grain / 404 metal / 176 haft faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.526 x 0.526 x 1.006 m, LOD ratios in band, convex collider 538 tris, non-empty glTF. Hygiene: zero non-manifold edges, loose geometry, doubles, zero-area faces, n-gons and coplanar disjoint face pairs, grounded at zmin 0, log plumb to 1e-7, oval haft 1.35 wide-to-thick. Joint fit: six shells, 18.0 mm haft clearance in the eye, 78.7 mm bit bury, hoop biting 3.7-4.2 mm into the log on every segment, two lap rivets seated 1.50 and 1.54 mm. --fat-haft exits 17 on eye clearance; --round-band and --float-rivets exit 18 on their seats; --round-haft exits 19 on the haft section.",
       "hero": "docs/gallery/assets/chopping-block-hero.webp",
       "preview": "showcase/chopping-block/preview.webp",
       "tags": [
