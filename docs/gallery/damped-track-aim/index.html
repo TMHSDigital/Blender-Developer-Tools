@@ -672,6 +672,9 @@ LIFT = <span class="n">1.55</span>
     scene.view_settings.view_transform = <span class="s">&quot;Filmic&quot;</span>
     scene.view_settings.look = <span class="s">&quot;Medium High Contrast&quot;</span>
     scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
+    <span class="c"># Blender resolves a relative filepath against the blend-file directory, which</span>
+    <span class="c"># for a --background run with no .blend is the drive root, not the cwd.</span>
+    path = os.path.abspath(path)
     scene.render.filepath = path
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>

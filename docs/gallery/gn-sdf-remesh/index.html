@@ -402,6 +402,9 @@ both builds.
         <span class="k">try</span>: sc.eevee.taa_render_samples = <span class="n">64</span>
         <span class="k">except</span> Exception: <span class="k">pass</span>
     sc.render.resolution_x = <span class="n">1280</span>; sc.render.resolution_y = <span class="n">720</span>
+    <span class="c"># Blender resolves a relative filepath against the blend-file directory, which</span>
+    <span class="c"># for a --background run with no .blend is the drive root, not the cwd.</span>
+    path = os.path.abspath(path)
     sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>; sc.render.filepath = path
     <span class="c"># AgX would wash the crimson toward brick (docs/VISUAL-STYLE.md)</span>
     sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
