@@ -367,6 +367,9 @@ def render_still(core, needles, path, engine):
     scene.view_settings.view_transform = "Filmic"
     scene.view_settings.look = "Medium High Contrast"
     scene.render.image_settings.file_format = "PNG"
+    # Blender resolves a relative filepath against the blend-file directory, which
+    # for a --background run with no .blend is the drive root, not the cwd.
+    path = os.path.abspath(path)
     scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0

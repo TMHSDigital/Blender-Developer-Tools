@@ -98,6 +98,9 @@ def render_still(obj, path, engine):
         try: sc.eevee.taa_render_samples = 64
         except Exception: pass
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
+    # Blender resolves a relative filepath against the blend-file directory, which
+    # for a --background run with no .blend is the drive root, not the cwd.
+    path = os.path.abspath(path)
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
     # AgX would wash the crimson toward brick (docs/VISUAL-STYLE.md)
     sc.view_settings.view_transform = 'Standard'
