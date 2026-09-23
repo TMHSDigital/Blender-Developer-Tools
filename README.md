@@ -361,7 +361,7 @@ then re-reads its own render and fails unless the pixels prove the flat-vs-check
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a glossy sapphire-blue surface displaced into smooth standing-wave dunes against a black backdrop" /></a>
+<a href="examples/wave-displace/"><img src="examples/wave-displace/preview.webp" alt="Wave displace: a sapphire-blue tile whose top is displaced into smooth standing-wave dunes, standing on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 

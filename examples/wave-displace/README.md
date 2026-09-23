@@ -11,13 +11,19 @@ the flat grid gained the expected Z span (the write actually landed) and that **
 vertex matches the closed-form wave, so a stride or interleave bug in the flat buffer
 cannot hide behind a lucky probe.
 
-## Framing deviation
+## Staging
 
-Edge-to-edge field — the displaced sheet fills the frame and crops at the left,
-right, and bottom edges so the wave reads as a surface, not an object on a
-stage (measured fill 1.000x/0.817y with edge touch on three sides). If wired
-to `examples/gallery_framing.py`, call it with
-`deviation="edge-to-edge wave field; the fill is the point"`.
+The still used to be an edge-to-edge field: the sheet cropped at the left,
+right and bottom edges on a black void, so nothing showed where the surface
+ended or what it stood on. `gallery_framing` has no `deviation=` flag any more,
+so that framing could not be gated at all.
+
+The render path now stages a **copy** of the checked grid. Its boundary is
+extruded straight down to a flat base 0.30 m below the deepest trough, so the
+wave is the top face of a cast tile standing on the studio floor, framed whole.
+The checked `Wave` object is left exactly as asserted and hidden from the
+render. The copy is render-only and never enters `check()`. Measured framing on
+5.2.1: fill 0.753 x / 0.761 y, every margin ≥ 0.117.
 
 ## Run
 

@@ -86,31 +86,87 @@ def render_still(obj, path, engine):
     bsdf.inputs["Roughness"].default_value = 0.18
     obj.data.materials.append(mat)
 
+    # render-only staging: the displaced grid is the contract and stays as
+    # checked. A copy of it gets a skirt, its boundary extruded straight
+    # down to a flat base, so the wave reads as the top of a cast tile
+    # standing on the studio floor instead of a sheet bleeding off the frame.
+    base = 0.30  # base sits this far below the deepest trough
+    tile_me = obj.data.copy()
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(tile_me)
+        rim = [e for e in bm.edges if e.is_boundary]
+        ret = bmesh.ops.extrude_edge_only(bm, edges=rim)
+        skirt = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMFace)]
+        for g in ret["geom"]:
+            if isinstance(g, bmesh.types.BMVert):
+                g.co.z = -AMP - base
+        bottom = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMEdge) and g.is_boundary]
+        bmesh.ops.holes_fill(bm, edges=bottom, sides=0)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        for f in skirt:
+            f.smooth = False
+        bm.to_mesh(tile_me)
+    finally:
+        bm.free()
+    tile = bpy.data.objects.new("WaveTile", tile_me)
+    tile.location.z = AMP + base
+    scene.collection.objects.link(tile)
+    obj.hide_render = True
+
+    floor_me = bpy.data.meshes.new("Floor")
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
+        bm.to_mesh(floor_me)
+    finally:
+        bm.free()
+    fmat = bpy.data.materials.new("Studio")
+    fmat.use_nodes = True
+    fb = fmat.node_tree.nodes["Principled BSDF"]
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new("Floor", floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new("Wall", floor_me.copy())
+    wall.location = (0.0, 14.0, 0.0)
+    wall.rotation_euler = (math.radians(90), 0.0, 0.0)
+    scene.collection.objects.link(wall)
+
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
-    # grazing cool key picks out the crests; warm rim from behind
-    key = bpy.data.lights.new("Key", 'AREA'); key.energy = 2000.0; key.size = 6.0
-    key.color = (0.9, 0.95, 1.0)
-    key_ob = bpy.data.objects.new("Key", key)
-    key_ob.location = (-6.5, -5.0, 3.2)
-    key_ob.rotation_euler = (math.radians(65), 0.0, math.radians(-50))
-    scene.collection.objects.link(key_ob)
-    rim = bpy.data.lights.new("Rim", 'AREA'); rim.energy = 1300.0; rim.size = 4.0
-    rim.color = (1.0, 0.68, 0.38)
-    rim_ob = bpy.data.objects.new("Rim", rim)
-    rim_ob.location = (4.5, 6.5, 2.6)
-    rim_ob.rotation_euler = (math.radians(-68), 0.0, math.radians(148))
-    scene.collection.objects.link(rim_ob)
+    def light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, 'AREA')
+        ld.energy = energy; ld.size = size; ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        scene.collection.objects.link(ob)
 
+    # grazing cool key picks out the crests; warm rim from behind; a warm
+    # wedge rakes the back wall like the rest of the gallery stages
+    light("Key", (-8.0, -7.0, 6.5), 2400.0, 7.0, (0.9, 0.95, 1.0), (55, 0, -48))
+    light("Fill", (9.0, -6.0, 3.0), 120.0, 10.0, (0.78, 0.86, 1.0), (70, 0, 55))
+    light("Rim", (5.0, 7.5, 4.0), 1800.0, 5.0, (1.0, 0.68, 0.38), (-62, 0, 148))
+    light("Wedge", (4.0, 10.5, 7.0), 1500.0, 9.0, (1.0, 0.76, 0.5), (-65, 0, 190))
+
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = (0.0, -0.4, 0.05)
+    scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.6, 4.6)
-    cam.rotation_euler = (math.radians(62), 0.0, 0.0)
+    cam.location = (7.2, -11.8, 7.4)
+    con = cam.constraints.new('TRACK_TO')
+    con.target = aim
+    con.track_axis = 'TRACK_NEGATIVE_Z'
+    con.up_axis = 'UP_Y'
     scene.collection.objects.link(cam)
     scene.camera = cam
+    scene.view_settings.view_transform = 'Standard'
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
     if engine == 'cycles':
