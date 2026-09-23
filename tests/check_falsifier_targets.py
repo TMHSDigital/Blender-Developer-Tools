@@ -51,8 +51,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOWCASE = os.path.join(ROOT, "showcase")
 
 # Pieces that predate the falsifier-table convention. Tracked for backfill;
-# a NEW piece without a table is an error, not an entry here.
-KNOWN_UNDOCUMENTED = {"cart", "hay-bale", "stone-well"}
+# a NEW piece without a table is an error, not an entry here. Empty since
+# cart, hay-bale and stone-well gained tables (#203): a piece left listed
+# here after its table lands would be skipped silently if the table were
+# later deleted.
+KNOWN_UNDOCUMENTED: set[str] = set()
 
 # Flags that select a code path rather than break a contract. Per
 # CONTRIBUTING.md these are explicitly not falsifiers.
