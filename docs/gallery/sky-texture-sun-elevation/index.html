@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="sky-texture-sun-elevation: the example&#x27;s own headless render" />
+  <meta property="og:image:alt" content="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="sky-texture-sun-elevation — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
-  <meta name="twitter:image:alt" content="sky-texture-sun-elevation: the example&#x27;s own headless render" />
+  <meta name="twitter:image:alt" content="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25).</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom sky-texture-sun-elevation render">
-      <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="sky-texture-sun-elevation render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right.">
+      <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> AI code still assigns sky_type=&#x27;NISHITA&#x27; and dust_density on 5.1 — both are wrong (NISHITA removed; dust_density is AttributeError; use MULTIPLE_SCATTERING + aerosol_density). A near-black Background Strength alone is not a sky: Sky must link into Background Color. Elevation that does not brighten zenith fails the rise gate.</div>
@@ -858,7 +858,7 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="sky-texture-sun-elevation render, full size" />
+    <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
   </dialog>
   <footer>
     <div class="statusbar">

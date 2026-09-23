@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/light-link-studio-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="light-link-studio: the example&#x27;s own headless render" />
+  <meta property="og:image:alt" content="Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="light-link-studio — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 233% while the hero holds at 0.3% drift." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/light-link-studio-hero.webp" />
-  <meta name="twitter:image:alt" content="light-link-studio: the example&#x27;s own headless render" />
+  <meta name="twitter:image:alt" content="Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>One key, one hero: a light linked to a receiver collection lights only the hero, proven by two pixel renders in one pass. Linked: 3.6x luminance ratio; unlinked in the same check: the decoy rises 233% while the hero holds at 0.3% drift.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom light-link-studio render">
-      <img src="../assets/light-link-studio-hero.webp" alt="light-link-studio render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED.">
+      <img src="../assets/light-link-studio-hero.webp" alt="Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> The API is obj.light_linking on the light OBJECT (ld.light_linking is an AttributeError). Luminance is sampled at each sphere&#x27;s projected center; EEVEE honors linking too (probe-measured 3.8x on 4.5.11 EEVEE Next and 5.1.2 EEVEE), Cycles pinned for deterministic samples.</div>
@@ -740,7 +740,7 @@ HERO_DRIFT_MAX = <span class="n">0.05</span>             <span class="c"># hero 
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/light-link-studio-hero.webp" alt="light-link-studio render, full size" />
+    <img src="../assets/light-link-studio-hero.webp" alt="Two spheres on pedestals: a brightly lit orange sphere labelled LINKED and a dark grey sphere labelled UNLINKED." />
   </dialog>
   <footer>
     <div class="statusbar">

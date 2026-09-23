@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/uv-layer-grid-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="uv-layer-grid: the example&#x27;s own headless render" />
+  <meta property="og:image:alt" content="Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="uv-layer-grid — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/uv-layer-grid-hero.webp" />
-  <meta name="twitter:image:alt" content="uv-layer-grid: the example&#x27;s own headless render" />
+  <meta name="twitter:image:alt" content="Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The UV-layer authoring hazard — bmesh.ops.create_grid(..., calc_uvs=True) is a silent no-op unless a UV layer already exists; without one an Image Texture samples texel (0,0) everywhere.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom uv-layer-grid render">
-      <img src="../assets/uv-layer-grid-hero.webp" alt="uv-layer-grid render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker.">
+      <img src="../assets/uv-layer-grid-hero.webp" alt="Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> calc_uvs=True alone leaves 0 UV layers; pre-create + calc_uvs fills loops to the closed-form grid UVs ((x/size+1)/2, (y/size+1)/2) within 1e-6; explicit loop assignment is the calc_uvs-free fallback. The still is self-witnessing: the script re-reads its render and exits non-zero unless the hazard panel is one flat teal and the repaired panel a high-contrast checker.</div>
@@ -849,7 +849,7 @@ UV_TOL = <span class="n">1e-6</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/uv-layer-grid-hero.webp" alt="uv-layer-grid render, full size" />
+    <img src="../assets/uv-layer-grid-hero.webp" alt="Two lightbox panels: the left one flat teal with no UV layer, the right one a full magenta, cyan and green checker." />
   </dialog>
   <footer>
     <div class="statusbar">

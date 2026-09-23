@@ -49,8 +49,8 @@ OG_CARD_ALT = ("Four renders from the examples gallery: a red low-poly hatchback
                "ball, gold spikes aimed at a glowing sphere, and two spheres on pedestals "
                "labelled linked and unlinked")
 
-# Soft cap for gallery index card alt text (accessibility + layout).
-_ALT_CAP = 160
+# Upper bound for an entry's ``alt`` (one descriptive sentence, never truncated).
+ALT_MAX = 200
 
 
 def load_gallery_entries() -> tuple[dict, list]:
@@ -79,55 +79,21 @@ def kind_noun(entry: dict) -> str:
     return "showcase piece" if "showcase" in (entry.get("tags") or []) else "example"
 
 
-def first_sentence(text: str) -> str:
-    """First sentence of *text*, splitting on period-followed-by-whitespace.
+def check_alts(entries: list) -> None:
+    """Every entry needs an ``alt``: one sentence saying what its still shows.
 
-    Do not use ``str.split(".")[0]``: bpy teaches strings are full of dotted
-    API paths (``bmesh.ops.create_grid``, ``bpy.context.temp_override``), and
-    that split truncates mid-identifier.
+    Alts used to be derived from ``teaches``, which describes the API, not the
+    picture, and was cut at 160 characters (#213). A description cannot be
+    derived; it has to be written, so a missing one fails the build.
     """
-    m = re.search(r"\.\s+", text)
-    if m:
-        return text[: m.start() + 1].strip()
-    return text.strip()
-
-
-def card_alt(name: str, teaches: str, *, cap: int = _ALT_CAP) -> str:
-    """Gallery card ``<img alt>``: ``{name} — {first sentence}``, length-capped."""
-    first = first_sentence(teaches)
-    if len(first) > cap:
-        cut = first[:cap].rsplit(" ", 1)[0].rstrip(".,;: —-")
-        first = (cut if cut else first[:cap].rstrip()) + "…"
-    return f"{name} — {first}"
-
-
-def assert_alts_survive_dotted_paths(examples: list) -> None:
-    """Fail the build if any card alt is still truncated at the first ``.``.
-
-    Catches regressions of the old ``teaches.split(".")[0]`` bug for every
-    example whose first sentence contains a dotted identifier.
-    """
-    for ex in examples:
-        teaches = ex["teaches"]
-        name = ex["name"]
-        alt = card_alt(name, teaches)
-        first_dot = teaches.find(".")
-        if first_dot < 0:
-            continue
-        # First "." is a real sentence end (EOS or whitespace after it).
-        if first_dot == len(teaches) - 1 or teaches[first_dot + 1].isspace():
-            continue
-        suffix = alt.split(" — ", 1)[-1]
-        if len(suffix) <= first_dot:
-            raise SystemExit(
-                f"gallery alt truncated at dotted API path for {name!r}: {alt!r}"
-            )
-        # Old bug would have produced exactly this string:
-        legacy = f"{name} — {teaches.split('.')[0]}"
-        if alt == legacy:
-            raise SystemExit(
-                f"gallery alt still matches legacy split('.')[0] for {name!r}: {alt!r}"
-            )
+    for e in entries:
+        alt = (e.get("alt") or "").strip()
+        if not alt:
+            raise SystemExit(f"gallery entry {e['name']!r} has no 'alt': add one sentence "
+                             "describing what its still shows")
+        if len(alt) > ALT_MAX:
+            raise SystemExit(f"gallery entry {e['name']!r} alt is {len(alt)} chars "
+                             f"(max {ALT_MAX}); describe the still in one sentence")
 
 # ---------------------------------------------------------------------------
 # Shared page shell. __ROOT__ is the relative prefix from the page to the
@@ -888,8 +854,8 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
     parts.append(f'    <p>{html.escape(ex["teaches"])}</p>')
     parts.append("  </header>")
     parts.append('  <main id="main">')
-    parts.append(f'    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom {html.escape(name)} render">')
-    parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(name)} render" width="1280" height="720" />')
+    parts.append(f'    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: {html.escape(ex["alt"], quote=True)}">')
+    parts.append(f'      <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" width="1280" height="720" />')
     parts.append("    </button>")
     parts.append(f'    <p class="zoom-hint">Rendered headless by the {noun} itself — click to zoom.</p>')
     parts.append(f'    <div class="callout"><span class="tag">witnesses</span> {html.escape(ex["witnessesFix"])}</div>')
@@ -922,7 +888,7 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
     parts.append("  </main>")
     parts.append('  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">')
     parts.append('    <button class="lightbox-close" type="button" autofocus>Close</button>')
-    parts.append(f'    <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(name)} render, full size" />')
+    parts.append(f'    <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(ex["alt"], quote=True)}" />')
     parts.append("  </dialog>")
 
     return shell(
@@ -931,7 +897,7 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
         canonical=f"{site}/gallery/{name}/" if site else "",
         og_image=f"{site}/gallery/assets/{hero_file}" if site else "",
         og_size=(1280, 720),
-        og_alt=f"{name}: the {noun}'s own headless render",
+        og_alt=ex["alt"],
         site_root="../../",
         back_href="../",
         back_label="Examples and Showcase",
@@ -996,7 +962,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
 
     cards = []
     for ex in examples:
-        alt = card_alt(ex["name"], ex["teaches"])
+        alt = ex["alt"]
         cards.append(
             CARD
             .replace("__TAGS__", html.escape(" ".join(ex.get("tags", [])), quote=True))
@@ -1064,7 +1030,7 @@ def main() -> int:
             print(f"ERROR: no .py script in {ex['dir']}", file=sys.stderr)
             return 4
 
-    assert_alts_survive_dotted_paths(examples)
+    check_alts(examples)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "index.html").write_text(
