@@ -1,6 +1,6 @@
 # VSE linear modifiers attribute
 
-Pathology witness for the 5.2 removal of `Sequence.use_linear_modifiers`.
+Pathology witness for the 5.2 removal of `Strip.use_linear_modifiers`.
 A COLOR strip is enough; there is no geometry and **no gallery still**
 (same class as [`exit-pre-sidecar`](../exit-pre-sidecar/),
 [`ngon-triangulate`](../ngon-triangulate/)).
@@ -14,9 +14,16 @@ version-gated assertion shape of
 does **not** version-branch — `del` is the same on 4.5 and 5.x — so the
 gate itself is copied from `gn-modifier-inputs`, not from `del`.
 
-**What it witnesses:** `ColorStrip.use_linear_modifiers` is a bool you can
-set on 4.5.11 and 5.1.2. The same getattr/setattr is `AttributeError` on
+**What it witnesses:** `use_linear_modifiers` is a bool you can set on a
+strip on 4.5.11 and 5.1.2. The same getattr/setattr is `AttributeError` on
 5.2.1. `hasattr` then read never raises on any of the three.
+
+**The identifier is `Strip`, not `Sequence`.** Earlier text here named
+`Sequence.use_linear_modifiers`. `bpy.types.Sequence` does not exist on
+4.5.11, 5.1.2 or 5.2.1. The strip types are `Strip` / `ColorStrip`, and
+the attribute is defined on the `Strip` base (the class chain is
+`ColorStrip → EffectStrip → Strip`), so every strip type had it. Anyone
+searching the API docs for `Sequence` will not find it.
 
 **What failure each check would catch:**
 
@@ -33,6 +40,52 @@ set on 4.5.11 and 5.1.2. The same getattr/setattr is `AttributeError` on
 binary.
 
 No `SMOKE_SKIP`. Every matrix leg exercises the contract.
+
+## Who hits this
+
+Add-ons, presets and conform scripts that set
+`strip.use_linear_modifiers = True` so colour-balance and curve modifiers
+work in linear space. On 5.2 that line raises
+`AttributeError: 'ColorStrip' object has no attribute 'use_linear_modifiers'`
+(or the matching strip type), and the script stops at the first strip.
+The RNA description on 4.5 and 5.1 reads:
+
+> Calculate modifiers in linear space instead of sequencer's space
+
+The default is `False` on both. On 5.2.1 there is no replacement
+property: no identifier containing `linear` exists on `Strip` or on the
+strip modifier (`COLOR_BALANCE` listed as a representative). Guard the
+write with `hasattr`, as `guarded_read` does for the read. This example
+does not claim how 5.2 chooses the colour space for strip modifiers; it
+measures only that the switch is gone from RNA.
+
+## Re-verified
+
+| Measurement | 4.5.11 | 5.1.2 | 5.2.1 |
+| --- | --- | --- | --- |
+| `bpy.types.Sequence` exists | no | no | no |
+| Attribute defined on | `Strip` | `Strip` | — (removed) |
+| Default | `False` | `False` | — |
+| `linear`-named property on `Strip` / strip modifier | yes / no | yes / — | no / no |
+| default exit | 0 | 0 | 0 |
+| `--assume-present` exit | 0 | 0 | 4 |
+
+Exiting 0 on 4.5.11 and 5.1.2 under the falsifier is correct by design.
+The attribute exists there, so the naive read works; the falsifier
+exists to fail where it was removed.
+
+**Observed while re-verifying, outside this contract:** on 5.1.2 in
+background mode, `strip.modifiers.new(name=..., type="COLOR_BALANCE")` on
+a COLOR strip created in factory-empty crashes Blender with
+`EXCEPTION_ACCESS_VIOLATION`. The same call works on 4.5.11 and 5.2.1.
+This example never adds a modifier, so its checks are unaffected.
+
+## API reference
+
+- [`bpy.types.Strip`](https://docs.blender.org/api/current/bpy.types.Strip.html)
+  ([4.5 LTS](https://docs.blender.org/api/4.5/bpy.types.Strip.html#bpy.types.Strip.use_linear_modifiers),
+  where `use_linear_modifiers` is documented)
+- [`bpy.types.StripModifier`](https://docs.blender.org/api/current/bpy.types.StripModifier.html)
 
 ## Run
 
