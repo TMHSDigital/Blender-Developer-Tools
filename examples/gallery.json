@@ -47,7 +47,7 @@
       "name": "depsgraph-export",
       "dir": "examples/depsgraph-export",
       "teaches": "The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.",
-      "alt": "A teal cube beside a slightly faceted teal sphere on a dark studio floor.",
+      "alt": "A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor.",
       "witnessesFix": "Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.",
       "hero": "docs/gallery/assets/depsgraph-export-hero.webp",
       "preview": "examples/depsgraph-export/preview.webp",
