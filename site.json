@@ -1,7 +1,10 @@
 {
   "canonical": "https://tmhsdigital.github.io/Blender-Developer-Tools/",
   "favicon": "assets/favicon.svg",
-  "ogImage": "https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp",
+  "ogImage": "https://tmhsdigital.github.io/Blender-Developer-Tools/assets/og-card.jpg",
+  "ogImageWidth": 1200,
+  "ogImageHeight": 630,
+  "ogImageAlt": "Four renders from the examples gallery: a red low-poly hatchback, a soccer ball, gold spikes aimed at a glowing sphere, and two spheres on pedestals labelled linked and unlinked",
   "compatibility": {
     "claude": "Claude Code",
     "os": ["Windows", "macOS", "Linux"]
