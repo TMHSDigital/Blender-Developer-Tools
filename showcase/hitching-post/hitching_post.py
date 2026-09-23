@@ -13,9 +13,12 @@ mesh so the grounded-zmin budget fails. ``--stray-vert`` adds one loose
 vertex so the hygiene budget fails. ``--twin-sole`` duplicates the shoe
 plate so the coplanar-face budget fails. ``--clip-ring`` lifts a hung
 ring off the eye centerline. ``--short-post`` starts the post above the
-shoe cup so the seated-post budget fails.
+shoe cup so the seated-post budget fails. ``--sunk-bands`` builds the
+iron bands inside the post, as the piece first shipped, so the band-seat
+budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-piece wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -26,11 +29,13 @@ ratio band, not an exact count.
     blender --background --python hitching_post.py -- --twin-sole
     blender --background --python hitching_post.py -- --clip-ring
     blender --background --python hitching_post.py -- --short-post
+    blender --background --python hitching_post.py -- --sunk-bands
     blender --background --python hitching_post.py -- --output hitching-post.png
 """
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -68,6 +73,16 @@ EYE_X = 0.162
 BAND_H = 0.026
 BAND_T = 0.008
 BAND_ZS = (0.24, 0.56)
+# Bands wrap the post: inner face BAND_BITE inside the post face, so each
+# band stands BAND_T - BAND_BITE proud. The first build sized them from
+# ``half - grip`` and sank them inside the post, so only the chamfered
+# corners broke the surface, as black slits. --sunk-bands restores that.
+BAND_BITE = 0.0015
+BAND_PROUD_MIN = 0.004
+# Per-piece wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 30.0
 # Ring tube must fit through the eye: RING_MINOR < EYE_MAJOR - EYE_MINOR.
 RING_FIT = 0.004
 POST_ZMIN_LO = 0.004
@@ -469,6 +484,7 @@ def seat_audit(me):
         "shanks": 0,
         "shank_ring": 99,
         "shank_eye": 0,
+        "band_proud": -1.0,
     }
     if (
         post is None
@@ -517,6 +533,17 @@ def seat_audit(me):
     shoe = min(bands, key=lambda b: b["z0"])
     sole_shoe = len(_bvh(me, soles[0]["polys"]).overlap(_bvh(me, shoe["polys"])))
 
+    # Each band above the shoe must stand proud of the post faces: its
+    # outer half-width in plan against the post's.
+    post_x0, post_x1, post_y0, post_y1, _pz0, _pz1 = _bounds(me, post["idxs"])
+    post_half = 0.25 * ((post_x1 - post_x0) + (post_y1 - post_y0))
+    band_proud = 99.0
+    for band in bands:
+        if band is shoe:
+            continue
+        bx0, bx1, by0, by1, _bz0, _bz1 = _bounds(me, band["idxs"])
+        band_proud = min(band_proud, 0.25 * ((bx1 - bx0) + (by1 - by0)) - post_half)
+
     pos, neg = [], []
     for i in arm["idxs"]:
         co = me.vertices[i].co
@@ -543,6 +570,7 @@ def seat_audit(me):
         "shanks": len(shanks),
         "shank_ring": shank_ring,
         "shank_eye": shank_eye,
+        "band_proud": band_proud,
     })
     return out
 
@@ -674,6 +702,7 @@ def build_hitching_post_mesh(
     clip_ring=False,
     twin_sole=False,
     small_cap=False,
+    sunk_bands=False,
 ):
     """Post on a closed shoe, one rail, rings hung through eyes under the rail.
 
@@ -704,6 +733,10 @@ def build_hitching_post_mesh(
         )
         if bevel_offset > 0.0:
             edges = list({e for v in wood for e in v.link_edges if v.is_valid})
+            # set order follows memory addresses; sort so the bevel, and the
+            # face order it produces, are the same on every run
+            bm.edges.index_update()
+            edges.sort(key=lambda e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -753,8 +786,9 @@ def build_hitching_post_mesh(
             wall_z1 - wall_z0,
             METAL_IDX,
         )
+        band_in = (half - grip) if sunk_bands else (half - BAND_BITE)
         for z in BAND_ZS:
-            add_square_band(bm, z, half - grip, BAND_T, BAND_H, METAL_IDX)
+            add_square_band(bm, z, band_in, BAND_T, BAND_H, METAL_IDX)
 
         arm_bottom = ARM_Z - ARM_ZTH * 0.5
         eye_z = arm_bottom - EYE_MAJOR - EYE_MINOR - 0.004
@@ -841,6 +875,127 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], fac)
         nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    The post, the rail and the cap are each their own shell, so each gets
+    one tone and grain running along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g, _polys in _face_shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along the post and rail (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def post_materials():
+    """(wood, iron): shared by the check, the render and inspection."""
+    wood = wood_material("HitchPostWood")
+    metal = principled(
+        "HitchPostIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, metal
 
 
 def assign_slots(obj, wood, metal):
@@ -979,6 +1134,7 @@ def check(
     twin_sole=False,
     clip_ring=False,
     short_post=False,
+    sunk_bands=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_hitching_post_mesh(
@@ -988,24 +1144,14 @@ def check(
         short_post=short_post,
         clip_ring=clip_ring,
         twin_sole=twin_sole,
+        sunk_bands=sunk_bands,
     )
-    high = build_hitching_post_mesh("HitchPostHigh", bevel_offset=0.008, bevel_segments=4)
-    wood = principled(
-        "HitchPostWood",
-        (0.36, 0.19, 0.07, 1.0),
-        0.0,
-        0.62,
-        noise_scale=11.0,
-        wear=(0.24, 0.13, 0.05, 1.0),
+    high = build_hitching_post_mesh(
+        "HitchPostHigh", bevel_offset=0.008, bevel_segments=4, sunk_bands=sunk_bands,
     )
-    metal = principled(
-        "HitchPostIron",
-        (0.16, 0.155, 0.15, 1.0),
-        1.0,
-        0.48,
-        noise_scale=16.0,
-        wear=(0.09, 0.085, 0.08, 1.0),
-    )
+    wood, metal = post_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if lift_z:
@@ -1060,6 +1206,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1096,7 +1246,8 @@ def check(
         f"band_gap={seat['band_gap']:.5f} sole_shoe={seat['sole_shoe']} "
         f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
         f"parts={seat['post']}/{seat['arm']}/{seat['cap']}/"
-        f"soles={seat['soles']}/rings={seat['rings']}/eyes={seat['eyes']}/bands={seat['bands']}"
+        f"soles={seat['soles']}/rings={seat['rings']}/eyes={seat['eyes']}/bands={seat['bands']} "
+        f"band_proud={seat['band_proud']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1202,13 +1353,15 @@ def check(
         or seat["sole_shoe"] < 1
         or seat["shank_ring"]
         or seat["shank_eye"] < 1
+        or seat["band_proud"] < BAND_PROUD_MIN
     ):
         return fail(
             f"hung ring / shoe seat ring_err={seat['ring_err']:.5f} "
             f"ring_wood={seat['ring_wood']} eye_wood={seat['eye_wood']} "
             f"band_gap={seat['band_gap']:.5f} sole_shoe={seat['sole_shoe']} "
             f"shank_ring={seat['shank_ring']} shank_eye={seat['shank_eye']} "
-            "(--clip-ring is the designed fail)",
+            f"band_proud={seat['band_proud']:.5f} (min {BAND_PROUD_MIN}) "
+            "(--clip-ring / --sunk-bands are the designed fails)",
             18,
         ), None, None, None, None, None
     if (
@@ -1248,7 +1401,9 @@ def render_still(low, wood, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        # Oversized so no edge of the set can enter frame; at 14 m the wall's
+        # left edge showed as a bright band in the corner of the hero.
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1365,6 +1520,11 @@ def main():
         action="store_true",
         help="falsification: start the post above the shoe cup",
     )
+    p.add_argument(
+        "--sunk-bands",
+        action="store_true",
+        help="falsification: bands inside the post, only the corners showing",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1374,6 +1534,7 @@ def main():
         twin_sole=args.twin_sole,
         clip_ring=args.clip_ring,
         short_post=args.short_post,
+        sunk_bands=args.sunk_bands,
     )
     if code:
         return code

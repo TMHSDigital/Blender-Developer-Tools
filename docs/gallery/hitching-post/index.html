@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hitching-post-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar and two iron rings." />
+  <meta property="og:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hitching-post — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hitching-post-hero.webp" />
-  <meta name="twitter:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar and two iron rings." />
+  <meta name="twitter:image:alt" content="A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,11 +268,11 @@
     <p>A procedural hitching post (eaved cap, one rail, cup shoe, rings hung through eyes) through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A tall wooden hitching post with a pointed cap, a crossbar and two iron rings.">
-      <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar and two iron rings." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings.">
+      <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1680 tris, two materials with 114 wood and 742 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring exits 18; --short-post exits 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1680 tris, two materials with 114 wood and 742 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.500×0.149×1.246 m, zmin 0, hygiene and coplanar pairs 0, post seated at z 0.010, ring centerline error 0, bands 6.5 mm proud of the post, LOD ratios in band, convex collider 80 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --clip-ring and --sunk-bands exit 18; --short-post exits 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/hitching-post/hitching_post.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -284,11 +284,14 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–2400</td><td>1680 / 1680 / 1680</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2190 / 0.2190 / 0.2190</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥70 wood, ≥560 metal</td><td>2 slots, 114 wood, 742 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.500, 0.149, 1.246) m ± 0.01</td><td>(0.5000, 0.1490, 1.2460)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0 / 0 / 0</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/coplanar pairs = 0</td><td>all 0</td></tr><tr><td>Post seat</td><td>world zmin in (0.004, 0.014), XY centroid within 0.010 of origin, arm axis cos ≥ cos(0.5°)</td><td>0.01000, 0, 1.000</td></tr><tr><td>Hung ring</td><td>centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye</td><td>0, 0, 0, 0, 40</td></tr><tr><td>Shoe</td><td>each band overlaps the post, shoe overlaps the sole</td><td>band gap 0, sole–shoe 8</td></tr><tr><td>Wood–metal gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00075</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>80</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>127428 / 127428 / 127412 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–2400</td><td>1680 / 1680 / 1680</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2190 / 0.2190 / 0.2190</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥70 wood, ≥560 metal</td><td>2 slots, 114 wood, 742 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.500, 0.149, 1.246) m ± 0.01</td><td>(0.5000, 0.1490, 1.2460)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0 / 0 / 0</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/coplanar pairs = 0</td><td>all 0</td></tr><tr><td>Post seat</td><td>world zmin in (0.004, 0.014), XY centroid within 0.010 of origin, arm axis cos ≥ cos(0.5°)</td><td>0.01000, 0, 1.000</td></tr><tr><td>Hung ring</td><td>centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye</td><td>0, 0, 0, 0, 40</td></tr><tr><td>Shoe</td><td>each band overlaps the post, shoe overlaps the sole</td><td>band gap 0, sole–shoe 8</td></tr><tr><td><strong>Band seat</strong></td><td>each band above the shoe stands ≥ 0.004 m proud of the post faces</td><td>0.00650</td></tr><tr><td>Wood–metal gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00075</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>80</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>127424 / 127424 / 127412 bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>1598 to 1680</strong>. The old rings were faceted tori clipped into the arm; the new eyes, shanks, and 24-segment hung rings replace that mesh. Cylinder caps are triangulated so the n-gon budget stays at 0.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis. Euler is 12 (six balls and seven tori) and is not gated to 2.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run; a Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 12 (six balls and seven tori) and is not gated to 2.</p>
+<h3>Bands, wood and stage</h3>
+<p>The two iron bands were sized from <code>half - grip</code>: an inner half-width of 53 mm and an outer one of 61 mm, against a 62.5 mm post face. They sat inside the post, and only the chamfered corners broke the surface, showing as small black slits up the post. They now wrap it: the inner face bites 1.5 mm into the post (<code>BAND_BITE</code>), so each band stands 6.5 mm proud. <strong>Band seat</strong> asserts it; <code>--sunk-bands</code> restores the old bands and exits 18 (proud −0.0015 m).</p>
+<p>The post, rail and cap each carry their own tone and grain, and the iron is rusted. The stage grid grew from 14 to 60 m, because the wall&#x27;s left edge showed as a bright band in the corner of the hero. The temp <code>.glb</code> is removed after its size is measured.</p>
 <p>Each falsifier violates exactly one named budget. Proven on Blender 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries&#x27; own <code>--version</code>):</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--clip-ring</code></td><td>Hung-ring centerline</td><td>18</td><td>ring_err 0.024, ring–wood overlap 32</td></tr><tr><td><code>--short-post</code></td><td>Seated post</td><td>19</td><td>post zmin 0.030</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--clip-ring</code></td><td>Hung-ring centerline</td><td>18</td><td>ring_err 0.024, ring–wood overlap 32</td></tr><tr><td><code>--short-post</code></td><td>Seated post</td><td>19</td><td>post zmin 0.030</td></tr><tr><td><code>--sunk-bands</code></td><td>Band seat</td><td>18</td><td>band proud −0.0015</td></tr></tbody></table></div>
 <p>Default exit is 0 on all three. <code>--clip-ring</code> also overlaps the rail; the centerline gate is the one that fires.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python hitching_post.py --
@@ -298,11 +301,12 @@ blender --background --python hitching_post.py -- --twin-sole
 blender --background --python hitching_post.py -- --lift-z
 blender --background --python hitching_post.py -- --clip-ring
 blender --background --python hitching_post.py -- --short-post
+blender --background --python hitching_post.py -- --sunk-bands
 blender --background --python hitching_post.py -- --output preview.webp --engine cycles</code></pre>
 <p>Smoke does not pass <code>--output</code> or a falsifier.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Wood–metal BVH gap above 8 mm</td></tr><tr><td>18</td><td>Hung ring or shoe seat (<code>--clip-ring</code>)</td></tr><tr><td>19</td><td>Post plumb, origin, and cup seat (<code>--short-post</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Wood–metal BVH gap above 8 mm</td></tr><tr><td>18</td><td>Hung ring, shoe or band seat (<code>--clip-ring</code>, <code>--sunk-bands</code>)</td></tr><tr><td>19</td><td>Post plumb, origin, and cup seat (<code>--short-post</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -325,9 +329,12 @@ mesh so the grounded-zmin budget fails. ``--stray-vert`` adds one loose
 vertex so the hygiene budget fails. ``--twin-sole`` duplicates the shoe
 plate so the coplanar-face budget fails. ``--clip-ring`` lifts a hung
 ring off the eye centerline. ``--short-post`` starts the post above the
-shoe cup so the seated-post budget fails.
+shoe cup so the seated-post budget fails. ``--sunk-bands`` builds the
+iron bands inside the post, as the piece first shipped, so the band-seat
+budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-piece wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -338,11 +345,13 @@ ratio band, not an exact count.
     blender --background --python hitching_post.py -- --twin-sole
     blender --background --python hitching_post.py -- --clip-ring
     blender --background --python hitching_post.py -- --short-post
+    blender --background --python hitching_post.py -- --sunk-bands
     blender --background --python hitching_post.py -- --output hitching-post.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -380,6 +389,16 @@ EYE_X = <span class="n">0.162</span>
 BAND_H = <span class="n">0.026</span>
 BAND_T = <span class="n">0.008</span>
 BAND_ZS = (<span class="n">0.24</span>, <span class="n">0.56</span>)
+<span class="c"># Bands wrap the post: inner face BAND_BITE inside the post face, so each</span>
+<span class="c"># band stands BAND_T - BAND_BITE proud. The first build sized them from</span>
+<span class="c"># ``half - grip`` and sank them inside the post, so only the chamfered</span>
+<span class="c"># corners broke the surface, as black slits. --sunk-bands restores that.</span>
+BAND_BITE = <span class="n">0.0015</span>
+BAND_PROUD_MIN = <span class="n">0.004</span>
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 <span class="c"># Ring tube must fit through the eye: RING_MINOR &lt; EYE_MAJOR - EYE_MINOR.</span>
 RING_FIT = <span class="n">0.004</span>
 POST_ZMIN_LO = <span class="n">0.004</span>
@@ -781,6 +800,7 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">&quot;shanks&quot;</span>: <span class="n">0</span>,
         <span class="s">&quot;shank_ring&quot;</span>: <span class="n">99</span>,
         <span class="s">&quot;shank_eye&quot;</span>: <span class="n">0</span>,
+        <span class="s">&quot;band_proud&quot;</span>: -<span class="n">1.0</span>,
     }
     <span class="k">if</span> (
         post <span class="k">is</span> <span class="k">None</span>
@@ -829,6 +849,17 @@ METAL_IDX = <span class="n">1</span>
     shoe = min(bands, key=<span class="k">lambda</span> b: b[<span class="s">&quot;z0&quot;</span>])
     sole_shoe = len(_bvh(me, soles[<span class="n">0</span>][<span class="s">&quot;polys&quot;</span>]).overlap(_bvh(me, shoe[<span class="s">&quot;polys&quot;</span>])))
 
+    <span class="c"># Each band above the shoe must stand proud of the post faces: its</span>
+    <span class="c"># outer half-width in plan against the post&#x27;s.</span>
+    post_x0, post_x1, post_y0, post_y1, _pz0, _pz1 = _bounds(me, post[<span class="s">&quot;idxs&quot;</span>])
+    post_half = <span class="n">0.25</span> * ((post_x1 - post_x0) + (post_y1 - post_y0))
+    band_proud = <span class="n">99.0</span>
+    <span class="k">for</span> band <span class="k">in</span> bands:
+        <span class="k">if</span> band <span class="k">is</span> shoe:
+            <span class="k">continue</span>
+        bx0, bx1, by0, by1, _bz0, _bz1 = _bounds(me, band[<span class="s">&quot;idxs&quot;</span>])
+        band_proud = min(band_proud, <span class="n">0.25</span> * ((bx1 - bx0) + (by1 - by0)) - post_half)
+
     pos, neg = [], []
     <span class="k">for</span> i <span class="k">in</span> arm[<span class="s">&quot;idxs&quot;</span>]:
         co = me.vertices[i].co
@@ -855,6 +886,7 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">&quot;shanks&quot;</span>: len(shanks),
         <span class="s">&quot;shank_ring&quot;</span>: shank_ring,
         <span class="s">&quot;shank_eye&quot;</span>: shank_eye,
+        <span class="s">&quot;band_proud&quot;</span>: band_proud,
     })
     <span class="k">return</span> out
 
@@ -986,6 +1018,7 @@ METAL_IDX = <span class="n">1</span>
     clip_ring=<span class="k">False</span>,
     twin_sole=<span class="k">False</span>,
     small_cap=<span class="k">False</span>,
+    sunk_bands=<span class="k">False</span>,
 ):
     <span class="s">&quot;&quot;&quot;Post on a closed shoe, one rail, rings hung through eyes under the rail.
 
@@ -1016,6 +1049,10 @@ METAL_IDX = <span class="n">1</span>
         )
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
             edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges <span class="k">if</span> v.is_valid})
+            <span class="c"># set order follows memory addresses; sort so the bevel, and the</span>
+            <span class="c"># face order it produces, are the same on every run</span>
+            bm.edges.index_update()
+            edges.sort(key=<span class="k">lambda</span> e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -1065,8 +1102,9 @@ METAL_IDX = <span class="n">1</span>
             wall_z1 - wall_z0,
             METAL_IDX,
         )
+        band_in = (half - grip) <span class="k">if</span> sunk_bands <span class="k">else</span> (half - BAND_BITE)
         <span class="k">for</span> z <span class="k">in</span> BAND_ZS:
-            add_square_band(bm, z, half - grip, BAND_T, BAND_H, METAL_IDX)
+            add_square_band(bm, z, band_in, BAND_T, BAND_H, METAL_IDX)
 
         arm_bottom = ARM_Z - ARM_ZTH * <span class="n">0.5</span>
         eye_z = arm_bottom - EYE_MAJOR - EYE_MINOR - <span class="n">0.004</span>
@@ -1153,6 +1191,127 @@ METAL_IDX = <span class="n">1</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
         nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    The post, the rail and the cap are each their own shell, so each gets
+    one tone and grain running along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g, _polys <span class="k">in</span> _face_shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along the post and rail (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> post_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;HitchPostWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;HitchPostIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
@@ -1291,6 +1450,7 @@ METAL_IDX = <span class="n">1</span>
     twin_sole=<span class="k">False</span>,
     clip_ring=<span class="k">False</span>,
     short_post=<span class="k">False</span>,
+    sunk_bands=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_hitching_post_mesh(
@@ -1300,24 +1460,14 @@ METAL_IDX = <span class="n">1</span>
         short_post=short_post,
         clip_ring=clip_ring,
         twin_sole=twin_sole,
+        sunk_bands=sunk_bands,
     )
-    high = build_hitching_post_mesh(<span class="s">&quot;HitchPostHigh&quot;</span>, bevel_offset=<span class="n">0.008</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(
-        <span class="s">&quot;HitchPostWood&quot;</span>,
-        (<span class="n">0.36</span>, <span class="n">0.19</span>, <span class="n">0.07</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.62</span>,
-        noise_scale=<span class="n">11.0</span>,
-        wear=(<span class="n">0.24</span>, <span class="n">0.13</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+    high = build_hitching_post_mesh(
+        <span class="s">&quot;HitchPostHigh&quot;</span>, bevel_offset=<span class="n">0.008</span>, bevel_segments=<span class="n">4</span>, sunk_bands=sunk_bands,
     )
-    metal = principled(
-        <span class="s">&quot;HitchPostIron&quot;</span>,
-        (<span class="n">0.16</span>, <span class="n">0.155</span>, <span class="n">0.15</span>, <span class="n">1.0</span>),
-        <span class="n">1.0</span>,
-        <span class="n">0.48</span>,
-        noise_scale=<span class="n">16.0</span>,
-        wear=(<span class="n">0.09</span>, <span class="n">0.085</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
-    )
+    wood, metal = post_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     <span class="k">if</span> lift_z:
@@ -1372,6 +1522,10 @@ METAL_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1408,7 +1562,8 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">band_gap=</span>{seat[<span class="s">&#x27;band_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> sole_shoe=</span>{seat[<span class="s">&#x27;sole_shoe&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">shank_ring=</span>{seat[<span class="s">&#x27;shank_ring&#x27;</span>]}<span class="s"> shank_eye=</span>{seat[<span class="s">&#x27;shank_eye&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">parts=</span>{seat[<span class="s">&#x27;post&#x27;</span>]}<span class="s">/</span>{seat[<span class="s">&#x27;arm&#x27;</span>]}<span class="s">/</span>{seat[<span class="s">&#x27;cap&#x27;</span>]}<span class="s">/</span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">soles=</span>{seat[<span class="s">&#x27;soles&#x27;</span>]}<span class="s">/rings=</span>{seat[<span class="s">&#x27;rings&#x27;</span>]}<span class="s">/eyes=</span>{seat[<span class="s">&#x27;eyes&#x27;</span>]}<span class="s">/bands=</span>{seat[<span class="s">&#x27;bands&#x27;</span>]}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">soles=</span>{seat[<span class="s">&#x27;soles&#x27;</span>]}<span class="s">/rings=</span>{seat[<span class="s">&#x27;rings&#x27;</span>]}<span class="s">/eyes=</span>{seat[<span class="s">&#x27;eyes&#x27;</span>]}<span class="s">/bands=</span>{seat[<span class="s">&#x27;bands&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">band_proud=</span>{seat[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -1514,13 +1669,15 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">or</span> seat[<span class="s">&quot;sole_shoe&quot;</span>] &lt; <span class="n">1</span>
         <span class="k">or</span> seat[<span class="s">&quot;shank_ring&quot;</span>]
         <span class="k">or</span> seat[<span class="s">&quot;shank_eye&quot;</span>] &lt; <span class="n">1</span>
+        <span class="k">or</span> seat[<span class="s">&quot;band_proud&quot;</span>] &lt; BAND_PROUD_MIN
     ):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">hung ring / shoe seat ring_err=</span>{seat[<span class="s">&#x27;ring_err&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">ring_wood=</span>{seat[<span class="s">&#x27;ring_wood&#x27;</span>]}<span class="s"> eye_wood=</span>{seat[<span class="s">&#x27;eye_wood&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">band_gap=</span>{seat[<span class="s">&#x27;band_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> sole_shoe=</span>{seat[<span class="s">&#x27;sole_shoe&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">shank_ring=</span>{seat[<span class="s">&#x27;shank_ring&#x27;</span>]}<span class="s"> shank_eye=</span>{seat[<span class="s">&#x27;shank_eye&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">&quot;(--clip-ring is the designed fail)&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">band_proud=</span>{seat[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> (min </span>{BAND_PROUD_MIN}<span class="s">) </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--clip-ring / --sunk-bands are the designed fails)&quot;</span>,
             <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
@@ -1560,7 +1717,9 @@ METAL_IDX = <span class="n">1</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        <span class="c"># Oversized so no edge of the set can enter frame; at 14 m the wall&#x27;s</span>
+        <span class="c"># left edge showed as a bright band in the corner of the hero.</span>
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1677,6 +1836,11 @@ METAL_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: start the post above the shoe cup&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--sunk-bands&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: bands inside the post, only the corners showing&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1686,6 +1850,7 @@ METAL_IDX = <span class="n">1</span>
         twin_sole=args.twin_sole,
         clip_ring=args.clip_ring,
         short_post=args.short_post,
+        sunk_bands=args.sunk_bands,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1710,7 +1875,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar and two iron rings." />
+    <img src="../assets/hitching-post-hero.webp" alt="A tall wooden hitching post with a pointed cap, a crossbar, two iron bands wrapped around the post and two iron rings." />
   </dialog>
   <footer>
     <div class="statusbar">

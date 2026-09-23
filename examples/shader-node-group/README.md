@@ -12,6 +12,14 @@ per-material Tint lives on the group **node**, not inside the group — set it i
 and every material changes at once. The render is the proof: two spheres, one group, two
 colors.
 
+## Staging
+
+The still renders under the Standard view transform on the dark house
+stage; it had no view transform set, so AgX washed both tints toward
+pastel over a lighter floor. The key is larger and softer (the glossy
+spheres had mirrored it as a hard white square), and the camera aims
+at the sphere centres. Render path only.
+
 ## Run
 
 ```bash

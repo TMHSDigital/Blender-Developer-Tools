@@ -15,6 +15,12 @@ Note for real add-ons: `driver_namespace` entries do **not** persist in `.blend`
 re-register them from a `load_post` handler, or every driver that calls them fails on file
 open. Headless, registering before driver creation (as here) is enough.
 
+## Staging
+
+The camera is raised to look down about 18 degrees, so the column tops
+and their shadows read as a wave. From nearly level (86 degrees) the
+skyline flattened into a bar chart. Render path only.
+
 ## Run
 
 ```bash

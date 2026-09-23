@@ -457,6 +457,18 @@ entry in `showcase/gallery.json`, and a rendered still.
   geometry in a different face order from run to run, which the
   `mat_index_counts` print exposed on `wooden-ladder`. Call
   `bm.edges.index_update()` and sort by index first.
+- **A band wraps its host; it is never sunk into it (exit 18).**
+  `hitching-post`'s bands were sized from the post's inner offset, so they
+  sat inside the post and only the chamfered corners broke the surface,
+  as black slits. Size a band from the host's face: inner face a named
+  bite inside it, outer face proud of it. Assert the band's outer
+  half-width against the host's (`--sunk-bands`). An overlap test alone
+  passes a sunk band, because a sunk band overlaps too.
+- **Iron is not chrome.** Cast and forged iron is near-black or rusted
+  and rough. Metallic 1.0 with roughness under 0.4 reads as polished
+  steel or plastic (`hand-pump` read as chrome).
+- **The stage is bigger than the frame.** A 14 m set lets the back
+  wall's edge into the corner of a three-quarter hero. Use 60 m.
 - **A leaning prop is staged against something.** A ladder raked 12° in
   open air reads as falling. Render-only: put a wall section on the side
   it rakes toward, with its face through the top, and turn the piece so
