@@ -263,8 +263,8 @@
     <p>A fire hydrant street prop inside its compound collision shell: four convex pieces hulled by bmesh.ops.convex_hull from a coarse inflated cage. The dense render mesh is never hulled - its hull would measure 380 faces, over the 255-face per-piece engine budget. Closed-form plane tests prove containment, convexity, watertightness, outward winding, and Euler characteristic 2 per piece.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom collision-hull-proxy render">
-      <img src="../assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull.">
+      <img src="../assets/collision-hull-proxy-hero.webp" alt="A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> A hull of the dense render mesh measures 380 faces, over the 255-face per-piece budget - the cage is a coarser lathe with rings inflated by sec(pi/n) so each cage ring circumscribes its render ring exactly (containment 4.4e-08). Proud details cost cage rows; concave grooves are free under the hull. Piece budgets: body 70, caps 60+60+60, compound 250.</div>
@@ -831,7 +831,7 @@ PUMPER = <span class="n">0</span>  <span class="c"># index of the large front ou
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/collision-hull-proxy-hero.webp" alt="collision-hull-proxy render, full size" />
+    <img src="../assets/collision-hull-proxy-hero.webp" alt="A red and yellow fire hydrant wrapped in a cyan wireframe convex collision hull." />
   </dialog>
   <footer>
     <div class="statusbar">

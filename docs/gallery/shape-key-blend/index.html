@@ -263,8 +263,8 @@
     <p>A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom shape-key-blend render">
-      <img src="../assets/shape-key-blend-hero.webp" alt="shape-key-blend render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare.">
+      <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.</div>
@@ -576,7 +576,7 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/shape-key-blend-hero.webp" alt="shape-key-blend render, full size" />
+    <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -263,8 +263,8 @@
     <p>Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom degenerate-bevel-weld render">
-      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="degenerate-bevel-weld render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners.">
+      <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> At offset == min_dimension/2 the bevel band pinches to exactly 12 zero-area faces (4 edges x 3 segments); 32 degenerate triangles cross into the exported GLB, waiting for any merge-by-distance to weld them.</div>
@@ -723,7 +723,7 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="degenerate-bevel-weld render, full size" />
+    <img src="../assets/degenerate-bevel-weld-hero.webp" alt="Two teal rounded slabs labelled BEVEL 0.10 and BEVEL 0.20 = min/2, the right one with orange weld markers at its corners." />
   </dialog>
   <footer>
     <div class="statusbar">

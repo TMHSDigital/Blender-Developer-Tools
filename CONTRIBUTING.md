@@ -115,8 +115,9 @@ budget conformance, never an API contract.
    **named** budget fails.
 2. List the directory in `.cursor-plugin/plugin.json` `"showcase"` and add a
    `tests/smoke/catalog.json` row. The runner takes opaque script paths.
-3. Add a `showcase/gallery.json` `pieces[]` entry, render a still, and run
-   `python scripts/build_gallery.py`. Do not hand-edit `docs/gallery/` HTML.
+3. Add a `showcase/gallery.json` `pieces[]` entry, including an `alt`: one
+   sentence saying what the still shows (the generator fails without it).
+   Render a still, and run `python scripts/build_gallery.py`. Do not hand-edit `docs/gallery/` HTML.
 4. Update the README showcase-piece count. `validate-counts` checks it
    separately from the example total.
 

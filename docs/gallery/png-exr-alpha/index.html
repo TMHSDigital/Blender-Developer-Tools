@@ -263,8 +263,8 @@
     <p>Float-image PNG save trap — float_buffer=True Image.save() writes RGBA16 and unpremultiplies as if associated-alpha, clamping straight-authored dark values at low alpha to white (closed-form err 0.98 at RGB 0.02 / a=1/255).</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom png-exr-alpha render">
-      <img src="../assets/png-exr-alpha-hero.webp" alt="png-exr-alpha render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two monitors on a plinth labelled FLOAT to PNG and FLOAT to EXR, showing alpha and colour bar strips side by side.">
+      <img src="../assets/png-exr-alpha-hero.webp" alt="Two monitors on a plinth labelled FLOAT to PNG and FLOAT to EXR, showing alpha and colour bar strips side by side." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> float→PNG IHDR is RGBA16 and matches q16(min(1, c/q16(a))); OpenEXR round-trips within 1e-5; byte→PNG is straight RGBA8; EXR color_mode=RGB drops alpha to opaque.</div>
@@ -992,7 +992,7 @@ EXR_TOL = <span class="n">1e-5</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/png-exr-alpha-hero.webp" alt="png-exr-alpha render, full size" />
+    <img src="../assets/png-exr-alpha-hero.webp" alt="Two monitors on a plinth labelled FLOAT to PNG and FLOAT to EXR, showing alpha and colour bar strips side by side." />
   </dialog>
   <footer>
     <div class="statusbar">

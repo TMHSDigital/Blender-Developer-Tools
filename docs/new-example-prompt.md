@@ -102,8 +102,11 @@ the plugin manifest, the smoke catalog row, and its README, and nothing else. Af
 character—not only `examples/gallery.json` source fields. Open
 `docs/gallery/index.html` and `docs/gallery/<name>/index.html` and inspect the
 rendered `<img alt>` text and the witnesses callout for duplicated words,
-truncation, and generator artifacts (the previous `teaches.split(".")[0]` bug
-truncated alts at dotted API paths like `bmesh.ops`; source JSON looked fine). Keep
+truncation, and generator artifacts. The alt comes from the entry's `alt` field:
+one sentence describing what the still shows, not what the API teaches; the
+generator fails on a missing one (#213). Precedent for reading the output: the
+old `teaches.split(".")[0]` bug truncated alts at dotted API paths like
+`bmesh.ops` while the source JSON looked fine. Keep
 the ROADMAP candidate pool in sync: remove the shipped subject, and add any
 promising subjects you identified but did not build. Do not hand-edit release-owned
 version fields or generated pages; use the repository's generator.

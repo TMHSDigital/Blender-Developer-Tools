@@ -263,8 +263,8 @@
     <p>The Image pixel-buffer contract — a procedural broadcast test card written into bpy.data.images.new() with one pixels.foreach_set (589,824 floats), byte vs float_buffer storage, scale() reallocation, and the save() vs save_render() lifecycle.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom image-pixels-testcard render">
-      <img src="../assets/image-pixels-testcard-hero.webp" alt="image-pixels-testcard render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A monitor showing a colour-bar test card with a black circle and a greyscale strip.">
+      <img src="../assets/image-pixels-testcard-hero.webp" alt="A monitor showing a colour-bar test card with a black circle and a greyscale strip." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> pixels is always flat RGBA (channels == 4 even with alpha=False), byte storage quantizes at exactly ≤ 0.5/255 and strictly &gt; 0, stale-size bulk reads raise after scale() — and save() silently flips source to FILE and drops the buffer, so later pixels reads come from whatever sits on disk (proven with an imposter file).</div>
@@ -709,7 +709,7 @@ BARS = [
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/image-pixels-testcard-hero.webp" alt="image-pixels-testcard render, full size" />
+    <img src="../assets/image-pixels-testcard-hero.webp" alt="A monitor showing a colour-bar test card with a black circle and a greyscale strip." />
   </dialog>
   <footer>
     <div class="statusbar">

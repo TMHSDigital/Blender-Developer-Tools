@@ -263,8 +263,8 @@
     <p>The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom vse-gamma-cross render">
-      <img src="../assets/vse-gamma-cross-hero.webp" alt="vse-gamma-cross render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange.">
+      <img src="../assets/vse-gamma-cross-hero.webp" alt="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.115; AgX-default sampling poisons the fit (Standard is mandatory).</div>
@@ -763,7 +763,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/vse-gamma-cross-hero.webp" alt="vse-gamma-cross render, full size" />
+    <img src="../assets/vse-gamma-cross-hero.webp" alt="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." />
   </dialog>
   <footer>
     <div class="statusbar">

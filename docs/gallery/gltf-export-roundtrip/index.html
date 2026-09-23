@@ -263,8 +263,8 @@
     <p>A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gltf-export-roundtrip render">
-      <img src="../assets/gltf-export-roundtrip-hero.webp" alt="gltf-export-roundtrip render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP.">
+      <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> export_yup bakes (x, y, z) -&gt; (x, z, -y) into the vertex data with no node rotation (probed identical on 4.5.11 and 5.1.2); export_apply ships the evaluated mesh, not the base cage; exporter/importer RNA is guarded so a future kwarg rename fails loudly.</div>
@@ -941,7 +941,7 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gltf-export-roundtrip-hero.webp" alt="gltf-export-roundtrip render, full size" />
+    <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -263,8 +263,8 @@
     <p>Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="Zoom gp-lineart-contour render">
-      <img src="../assets/gp-lineart-contour-hero.webp" alt="gp-lineart-contour render" width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes.">
+      <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
@@ -761,7 +761,7 @@ RADIUS = <span class="n">0.028</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gp-lineart-contour-hero.webp" alt="gp-lineart-contour render, full size" />
+    <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." />
   </dialog>
   <footer>
     <div class="statusbar">
