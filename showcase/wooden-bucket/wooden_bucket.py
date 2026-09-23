@@ -16,7 +16,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
 supports, ``--float-handle`` bail-ear joint-fit, ``--float-bottom``
-floor-croze joint-fit, ``--round-band`` hoop seat (hoop generated on a
+floor-croze joint-fit, ``--one-piece-bottom`` bottom boards (one slab
+instead of boards), ``--round-band`` hoop seat (hoop generated on a
 circle instead of the stave chords).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
@@ -69,12 +70,23 @@ BOTTOM_T = 0.022
 CHIME = 0.008
 CROZE_BITE = 0.0025
 FLOOR_GAP_MAX = 0.008
-BAIL_R = 0.008
-BAIL_SEGS = 24
-BAIL_PIPE = 8
+BAIL_R = 0.0075
+BAIL_SEGS = 48
+# The bail is three-strand rope: a three-lobed section of ROPE_PIPE verts
+# turned one vertex step per ring, so the lobes run as helical strands.
+# Lobes reach BAIL_R * (1 + ROPE_LOBE), inside the ear ring's hole
+# (RING_MAJOR - RING_MINOR). Each end runs ROPE_TAIL on through its ring.
+# The ring centre stands ROPE_CLEAR beyond the rope's lobes off the ear
+# plate, so the rope passes the plate instead of through it.
+ROPE_PIPE = 9
+ROPE_LOBE = 0.20
+ROPE_TAIL = 0.014
+ROPE_CLEAR = 0.0005
 EAR_Z = HEIGHT - 0.016
 RING_MAJOR = 0.013
 RING_MINOR = 0.0035
+RING_OFFSET = BAIL_R * (1.0 + ROPE_LOBE) + ROPE_CLEAR
+SUNK_RING_OFFSET = RING_MAJOR * 0.25
 BAIL_GAP_MAX = 0.006
 STAVE_ZMIN_MAX = 0.001
 SHORT_STAVES_LIFT = 0.040
@@ -88,7 +100,7 @@ BODY_TOL = 0.04
 BODY_DIA = 0.335
 BODY_H = 0.360
 BBOX_TOL = 0.015
-OUTER_SIZE = (0.383, 0.346, 0.527)
+OUTER_SIZE = (0.396, 0.346, 0.534)
 
 BASE_TRIS_MIN = 4000
 BASE_TRIS_MAX = 5800
@@ -112,6 +124,19 @@ STAVE_COUNT = N_STAVES
 WOOD_IDX = 0
 METAL_IDX = 1
 ROPE_IDX = 2
+
+# The bottom is BOTTOM_BOARDS boards cut across X from the croze outline,
+# with a BOARD_SEAM between neighbours. A board is a thin wooden shell at
+# least BOARD_MIN_SPAN wide in plan (the narrowest board is 0.20).
+BOTTOM_BOARDS = 3
+BOARD_SEAM = 0.0012
+BOARD_SEAM_MIN = 0.0006
+BOARD_SEAM_MAX = 0.0025
+BOARD_MIN_SPAN = 0.15
+# Per-piece wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 45.0
 
 
 def eevee_engine_id():
@@ -272,7 +297,15 @@ def add_torus(bm, loc, major, minor, n_major, n_minor, mat_idx, euler=(0.0, 0.0,
     return verts
 
 
-def add_pipe_curve(bm, points, radius, segs, mat_idx):
+def add_rope_curve(bm, points, radius, mat_idx):
+    """Three-strand rope along a path in the XZ plane.
+
+    The section is ROPE_PIPE verts with three lobes, turned one vertex
+    step per ring, so each lobe winds along the path as a strand. The
+    frame is fixed to the path's plane (side = +Y), so the lay never
+    jumps where the path turns vertical.
+    """
+    side = Vector((0.0, 1.0, 0.0))
     rings = []
     n = len(points)
     for i, p in enumerate(points):
@@ -281,20 +314,13 @@ def add_pipe_curve(bm, points, radius, segs, mat_idx):
             tangent = (Vector(points[i + 1]) - p).normalized()
         else:
             tangent = (p - Vector(points[i - 1])).normalized()
-        side = Vector((-tangent.y, tangent.x, 0.0))
-        if side.length < 1e-6:
-            side = Vector((1.0, 0.0, 0.0))
-        else:
-            side.normalize()
         up = tangent.cross(side).normalized()
         ring = []
-        for k in range(segs):
-            a = 2.0 * math.pi * k / segs
-            ring.append(
-                bm.verts.new(
-                    p + side * (radius * math.cos(a)) + up * (radius * math.sin(a))
-                )
-            )
+        for k in range(ROPE_PIPE):
+            a = 2.0 * math.pi * k / ROPE_PIPE
+            lobe = 1.0 + ROPE_LOBE * math.cos(3.0 * a - 2.0 * math.pi * 3.0 * i / ROPE_PIPE)
+            r = radius * lobe
+            ring.append(bm.verts.new(p + side * (r * math.cos(a)) + up * (r * math.sin(a))))
         rings.append(ring)
     loft_rings(bm, rings, mat_idx, cap_start=True, cap_end=True)
 
@@ -408,7 +434,7 @@ def triangulate_ngons(bm):
         bmesh.ops.triangulate(bm, faces=faces)
 
 
-def add_ears_and_bail(bm, spans, float_handle):
+def add_ears_and_bail(bm, spans, float_handle, sunk_rope=False):
     """Ear plates + flat rings (hole along Z) and a round bail through them.
 
     Ring centres sit on the stave outer at EAR_Z. The bail is a semicircle
@@ -425,8 +451,11 @@ def add_ears_and_bail(bm, spans, float_handle):
     plate_z = HEIGHT - plate_h * 0.5 - 0.006
     x_l = -(r_l + plate_t * 0.5)
     x_r = r_r + plate_t * 0.5
-    ring_x_l = -(r_l + plate_t + RING_MAJOR * 0.25)
-    ring_x_r = r_r + plate_t + RING_MAJOR * 0.25
+    # --sunk-rope restores the old offset, a quarter of the ring's major
+    # radius: the rope's axis 3 mm off the plate, its body through it.
+    off = SUNK_RING_OFFSET if sunk_rope else RING_OFFSET
+    ring_x_l = -(r_l + plate_t + off)
+    ring_x_r = r_r + plate_t + off
     for x in (x_l, x_r):
         add_box(
             bm,
@@ -447,15 +476,21 @@ def add_ears_and_bail(bm, spans, float_handle):
         )
     rx = 0.5 * (abs(ring_x_l) + abs(ring_x_r))
     if float_handle:
+        # a smaller bail lifted by exactly what it lost, so its top and the
+        # envelope stay put and only the bail-ear gap fails
+        z0 = EAR_Z + 0.28 * rx
         rx *= 0.72
-        z0 = EAR_Z + 0.035
     else:
         z0 = EAR_Z
-    pts = []
+    # below each ring the rope runs on down ROPE_TAIL, so it passes
+    # through the ring instead of stopping inside it
+    tail = (-ROPE_TAIL, -0.5 * ROPE_TAIL)
+    pts = [(rx, 0.0, z0 + dz) for dz in tail]
     for i in range(BAIL_SEGS + 1):
         t = math.pi * i / BAIL_SEGS
         pts.append((rx * math.cos(t), 0.0, z0 + rx * math.sin(t)))
-    add_pipe_curve(bm, pts, BAIL_R, BAIL_PIPE, ROPE_IDX)
+    pts.extend((-rx, 0.0, z0 + dz) for dz in reversed(tail))
+    add_rope_curve(bm, pts, BAIL_R, ROPE_IDX)
 
 
 def pack_uvs(bm, margin=0.08):
@@ -507,6 +542,8 @@ def build_bucket_mesh(
     float_handle=False,
     round_band=False,
     float_bottom=False,
+    one_piece_bottom=False,
+    sunk_rope=False,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / max(R_TOP, 0.1)
@@ -517,13 +554,13 @@ def build_bucket_mesh(
         bot_z0 = CHIME
         bot_z1 = CHIME + BOTTOM_T
         shrink = 0.022 if float_bottom else 0.0
-        add_polygon_disk(
+        add_board_disk(
             bm, bot_z0, bot_z1,
             croze_xy(spans, 0.5 * (bot_z0 + bot_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, 1 if one_piece_bottom else BOTTOM_BOARDS,
         )
         build_hoops(bm, spans, round_band)
-        add_ears_and_bail(bm, spans, float_handle)
+        add_ears_and_bail(bm, spans, float_handle, sunk_rope)
         triangulate_ngons(bm)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -758,8 +795,7 @@ def floor_gap(me):
             continue
         a = shell_aabb(me, g)
         dz = a[5] - a[2]
-        r = 0.25 * ((a[3] - a[0]) + (a[4] - a[1]))
-        if dz < 0.05 and r > 0.08:
+        if dz < 0.05 and max(a[3] - a[0], a[4] - a[1]) >= BOARD_MIN_SPAN:
             floors.append(g)
         elif dz > 0.20:
             staves.append(g)
@@ -829,6 +865,221 @@ def bail_join(me):
         return best
     finally:
         bm_b.free()
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and every board is its own shell, so each gets one tone and
+    grain running along its own long axis (up the curved staves, across
+    the flat boards).
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def clip_x(ring, x, keep_above):
+    """Sutherland-Hodgman clip of a closed xy ring against the line X = x."""
+    out = []
+    n = len(ring)
+    for i in range(n):
+        p, q = ring[i], ring[(i + 1) % n]
+        p_in = p[0] >= x if keep_above else p[0] <= x
+        q_in = q[0] >= x if keep_above else q[0] <= x
+        if p_in:
+            out.append(p)
+        if p_in != q_in:
+            t = (x - p[0]) / (q[0] - p[0])
+            out.append((x, p[1] + t * (q[1] - p[1])))
+    # a cut landing on an existing vertex would leave a zero-length edge
+    clean = []
+    for p in out:
+        if not clean or math.dist(p, clean[-1]) > 1e-4:
+            clean.append(p)
+    if len(clean) > 2 and math.dist(clean[0], clean[-1]) <= 1e-4:
+        clean.pop()
+    return clean
+
+
+def add_board_disk(bm, z0, z1, xy_ring, mat_idx, n_boards):
+    """A disk of ``n_boards`` boards, the outline cut across X with seams between.
+
+    Each board is the croze outline clipped to its strip, so the outer
+    edge of every board is still the croze and the bottom seats exactly
+    as the one-piece disk did.
+    """
+    xs = [p[0] for p in xy_ring]
+    x_lo, x_hi = min(xs), max(xs)
+    w = (x_hi - x_lo) / n_boards
+    for k in range(n_boards):
+        ring = xy_ring
+        if k > 0:
+            ring = clip_x(ring, x_lo + k * w + BOARD_SEAM * 0.5, True)
+        if k < n_boards - 1:
+            ring = clip_x(ring, x_lo + (k + 1) * w - BOARD_SEAM * 0.5, False)
+        add_polygon_disk(bm, z0, z1, ring, mat_idx)
+
+
+def board_audit(me, z_lo, z_hi):
+    """Boards of the flat wooden disk between ``z_lo`` and ``z_hi``: count and seams.
+
+    A board is a thin wooden shell wide in plan. Sorted across X, the
+    seam is the gap between one board's max X and the next one's min X.
+    """
+    boards = []
+    for g in shells(me):
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        if a[5] - a[2] > 0.06 or max(a[3] - a[0], a[4] - a[1]) < BOARD_MIN_SPAN:
+            continue
+        if not (z_lo <= 0.5 * (a[2] + a[5]) <= z_hi):
+            continue
+        boards.append(a)
+    boards.sort(key=lambda a: a[0])
+    seams = [boards[i + 1][0] - boards[i][3] for i in range(len(boards) - 1)]
+    return len(boards), seams
+
+
+def bucket_materials():
+    """(wood, iron, rope): shared by the check, the render and inspection."""
+    wood = wood_material("BucketWood")
+    metal = principled(
+        "BucketHoop", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    rope = principled(
+        "BucketRope", (0.50, 0.40, 0.24, 1.0), 0.0, 0.80,
+        noise_scale=60.0, wear=(0.30, 0.22, 0.12, 1.0),
+    )
+    return wood, metal, rope
+
+
+def rope_through_plates(me):
+    """Rope vertices inside an ear plate's box: the rope must pass the plates.
+
+    The ear plates are the two eight-vertex iron shells high on the
+    bucket. A rope vertex strictly inside either box is rope running
+    through iron.
+    """
+    plates, rope = [], []
+    for g in shells(me):
+        mat = mat_of(me, g)
+        if mat == METAL_IDX and len(g) == 8 and shell_aabb(me, g)[2] > 0.25:
+            plates.append(shell_aabb(me, g))
+        elif mat == ROPE_IDX:
+            rope.extend(g)
+    eps = 1e-5
+    inside = 0
+    for i in rope:
+        p = me.vertices[i].co
+        for a in plates:
+            if (a[0] + eps < p.x < a[3] - eps and a[1] + eps < p.y < a[4] - eps
+                    and a[2] + eps < p.z < a[5] - eps):
+                inside += 1
+                break
+    return len(plates), inside
 
 
 def body_plan(me):
@@ -965,6 +1216,8 @@ def check(
     float_handle=False,
     round_band=False,
     float_bottom=False,
+    one_piece_bottom=False,
+    sunk_rope=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
@@ -972,21 +1225,14 @@ def check(
         float_handle=float_handle,
         round_band=round_band,
         float_bottom=float_bottom,
+        one_piece_bottom=one_piece_bottom,
+        sunk_rope=sunk_rope,
     )
     low = build_bucket_mesh("BucketLow", 0.003, 2, **flags)
     high = build_bucket_mesh("BucketHigh", 0.003, 4, **flags)
-    wood = principled(
-        "BucketWood", (0.46, 0.24, 0.09, 1.0), 0.0, 0.52,
-        noise_scale=7.0, wear=(0.28, 0.14, 0.05, 1.0),
-    )
-    metal = principled(
-        "BucketHoop", (0.55, 0.53, 0.50, 1.0), 1.0, 0.28,
-        noise_scale=5.0, wear=(0.35, 0.32, 0.28, 1.0),
-    )
-    rope = principled(
-        "BucketRope", (0.42, 0.32, 0.18, 1.0), 0.0, 0.72,
-        noise_scale=9.0, wear=(0.30, 0.22, 0.12, 1.0),
-    )
+    wood, metal, rope = bucket_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal, rope)
     assign_slots(high, wood, metal, rope)
     if stray_vert:
@@ -1020,6 +1266,8 @@ def check(
     bite_min, bite_max = hoop_seat(low.data, spans)
     bjoin = bail_join(low.data)
     fgap = floor_gap(low.data)
+    n_boards, seams = board_audit(low.data, 0.0, 0.1)
+    n_plates, rope_in_plate = rope_through_plates(low.data)
     dia, ht = body_plan(low.data)
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
@@ -1030,6 +1278,11 @@ def check(
         f"measured staves={sup['staves']} stave_z={sup['stave_z']:.5f} "
         f"hoop_bite={bite_min:.5f}..{bite_max:.5f} bail_join={bjoin:.5f} "
         f"floor_gap={fgap:.5f} body={dia:.4f}x{ht:.4f}"
+    )
+    print(
+        f"measured bottom_boards={n_boards} "
+        f"seams={min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f} "
+        f"ear_plates={n_plates} rope_in_plate={rope_in_plate}"
     )
 
     img, tex = setup_bake_image(low, wood)
@@ -1058,6 +1311,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1183,6 +1440,24 @@ def check(
         return fail(
             f"floor-croze gap {fgap:.5f} > {FLOOR_GAP_MAX} "
             "(--float-bottom is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if (
+        n_boards != BOTTOM_BOARDS
+        or min(seams, default=0.0) < BOARD_SEAM_MIN
+        or max(seams, default=99.0) > BOARD_SEAM_MAX
+    ):
+        return fail(
+            f"bottom boards {n_boards} != {BOTTOM_BOARDS}, or seams "
+            f"{min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f} "
+            f"outside [{BOARD_SEAM_MIN}, {BOARD_SEAM_MAX}] "
+            "(--one-piece-bottom is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if n_plates != 2 or rope_in_plate:
+        return fail(
+            f"ear plates {n_plates} != 2, or {rope_in_plate} rope vertices "
+            "inside a plate (--sunk-rope is the designed fail)",
             17,
         ), None, None, None, None, None
     if bite_min < HOOP_BITE_MIN or bite_max > HOOP_BITE_MAX:
@@ -1316,6 +1591,8 @@ def main():
     p.add_argument("--float-handle", action="store_true")
     p.add_argument("--float-bottom", action="store_true")
     p.add_argument("--round-band", action="store_true")
+    p.add_argument("--one-piece-bottom", action="store_true")
+    p.add_argument("--sunk-rope", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1326,6 +1603,8 @@ def main():
         float_handle=args.float_handle,
         round_band=args.round_band,
         float_bottom=args.float_bottom,
+        one_piece_bottom=args.one_piece_bottom,
+        sunk_rope=args.sunk_rope,
     )
     if code:
         return code

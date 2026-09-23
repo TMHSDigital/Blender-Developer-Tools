@@ -272,9 +272,9 @@
     {
       "name": "wooden-bucket",
       "dir": "showcase/wooden-bucket",
-      "teaches": "A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A wooden stave bucket with metal hoops and a curved wooden bail handle.",
-      "witnessesFix": "Recomputed: 4872 tris, three materials with 1424 wood, 1020 metal, and 208 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.383×0.346×0.527 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0013 m, LOD ratios in band, convex collider 302 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget.",
+      "teaches": "A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings.",
+      "witnessesFix": "Recomputed: 5458 tris, three materials with 1448 wood, 1020 metal, and 486 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.396×0.346×0.534 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0011 m, three bottom boards, no rope vertex inside an ear plate, LOD ratios in band, convex collider 276 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget; --sunk-rope exits 17 on the rope-clearance budget.",
       "hero": "docs/gallery/assets/wooden-bucket-hero.webp",
       "preview": "showcase/wooden-bucket/preview.webp",
       "tags": [
