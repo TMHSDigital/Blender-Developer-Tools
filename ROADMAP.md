@@ -2,7 +2,7 @@
 
 # Roadmap
 
-**Current:** v0.79.10
+**Current:** v0.79.11
 
 Themes are listed in order. Shipped themes note the release they landed in (for reference,
 not a commitment); upcoming themes are intentionally **not** pinned to a version number, so
