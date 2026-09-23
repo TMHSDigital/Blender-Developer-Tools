@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-zone-iterate-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Four ochre cubes in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
+  <meta property="og:image:alt" content="Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-zone-iterate — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-zone-iterate-hero.webp" />
-  <meta name="twitter:image:alt" content="Four ochre cubes in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
+  <meta name="twitter:image:alt" content="Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Repeat Zone and For Each Element only iterate after pair_with_output. Evaluated cube counts follow 8 times (1+N) and 8 times P, not tree structure.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Four ochre cubes in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone.">
-      <img src="../assets/gn-zone-iterate-hero.webp" alt="Four ochre cubes in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone.">
+      <img src="../assets/gn-zone-iterate-hero.webp" alt="Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Repeat 32/24 verts/faces with X-centers at k*1.2; For Each 48/36 with Z-centers at i*0.6+0.21. Unpaired evaluates empty; For Each main Geometry passthrough is 6 verts.</div>
@@ -601,6 +601,19 @@ FOREACH_CENTERS_Z = [i * FOREACH_STEP + FOREACH_SIZE / <span class="n">2</span> 
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
 
+<span class="k">def</span> _node_materials(ob):
+    <span class="s">&quot;&quot;&quot;Materials the object&#x27;s Geometry Nodes tree assigns (Set Material nodes).&quot;&quot;&quot;</span>
+    out = []
+    <span class="k">for</span> md <span class="k">in</span> ob.modifiers:
+        <span class="k">if</span> md.type == <span class="s">&quot;NODES&quot;</span> <span class="k">and</span> md.node_group <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            <span class="k">for</span> node <span class="k">in</span> md.node_group.nodes:
+                <span class="k">if</span> node.bl_idname == <span class="s">&quot;GeometryNodeSetMaterial&quot;</span>:
+                    mat = node.inputs[<span class="s">&quot;Material&quot;</span>].default_value
+                    <span class="k">if</span> mat <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> mat <span class="k">not</span> <span class="k">in</span> out:
+                        out.append(mat)
+    <span class="k">return</span> out
+
+
 <span class="k">def</span> render_still(rpt, fee, path, engine):
     scene = bpy.context.scene
 
@@ -640,16 +653,32 @@ FOREACH_CENTERS_Z = [i * FOREACH_STEP + FOREACH_SIZE / <span class="n">2</span> 
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">160.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">360.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">0.4</span>, -<span class="n">5.2</span>, <span class="n">5.5</span>), <span class="n">700.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.92</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">8</span>))
+    <span class="c"># Broad, not a 0.9 m spot: the small Glint blew the top tower cube out</span>
+    <span class="c"># to near-white cyan, the brightest thing in frame by a wide margin.</span>
+    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">0.4</span>, -<span class="n">5.2</span>, <span class="n">5.5</span>), <span class="n">300.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.92</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">8</span>))
+    <span class="c"># Rim from behind so the cube silhouettes separate from the dark wall.</span>
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">1.0</span>, <span class="n">4.5</span>, <span class="n">4.5</span>), <span class="n">260.0</span>, <span class="n">4.0</span>, (<span class="n">0.70</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (-<span class="n">50</span>, <span class="n">0</span>, <span class="n">180</span>))
 
+    <span class="c"># Presentation only: the check never reads materials. 0.85 metallic in a</span>
+    <span class="c"># near-black world reflected near-black, and the brass read as mustard</span>
+    <span class="c"># card. Less metal and a warmer, brighter base let the key shape it.</span>
+    <span class="k">for</span> ob, rough, metal <span class="k">in</span> ((rpt, <span class="n">0.42</span>, <span class="n">0.55</span>), (fee, <span class="n">0.38</span>, <span class="n">0.10</span>)):
+        <span class="k">for</span> mat <span class="k">in</span> _node_materials(ob):
+            bsdf = mat.node_tree.nodes.get(<span class="s">&quot;Principled BSDF&quot;</span>)
+            <span class="k">if</span> bsdf <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+                bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+
+    <span class="c"># Centred on the pair and more frontal: from (6.6, -9.3) the repeat row</span>
+    <span class="c"># foreshortened into a diagonal and the tower hugged the right edge.</span>
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.50</span>)
+    aim.location = (-<span class="n">0.10</span>, <span class="n">0.0</span>, <span class="n">1.62</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">6.6</span>, -<span class="n">9.3</span>, <span class="n">3.55</span>)
+    cam.location = (<span class="n">2.7</span>, -<span class="n">10.6</span>, <span class="n">3.1</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -731,7 +760,7 @@ FOREACH_CENTERS_Z = [i * FOREACH_STEP + FOREACH_SIZE / <span class="n">2</span> 
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-zone-iterate-hero.webp" alt="Four ochre cubes in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
+    <img src="../assets/gn-zone-iterate-hero.webp" alt="Four brass cubes evenly spaced in a row from a Repeat zone beside a vertical stack of six cyan cubes from a For Each zone." />
   </dialog>
   <footer>
     <div class="statusbar">

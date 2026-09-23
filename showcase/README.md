@@ -51,6 +51,7 @@ entry in `showcase/gallery.json`, and a rendered still.
   (exit 19). `--float-rivets` lifts fasteners off their host (exit 18).
   `--round-haft` turns an oval section round (exit 19).
   `--float-nails` lifts nail heads off their strap (exit 18).
+  `--short-mortar` stops every mortar joint shy of its stones (exit 18).
   `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
   (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
@@ -324,6 +325,26 @@ entry in `showcase/gallery.json`, and a rendered still.
   threshold taken from the plate (`IRON_WRAP * 0.5`), not from the
   fastener: a yawed 10 mm head has a world AABB wider than 10 mm, and a
   fixed 10 mm threshold silently dropped 8 of 48 nails.
+- **A joint is filled, not open (exit 18).** Masonry, brick and
+  stacked-stone pieces separate their blocks with a named joint, and a
+  joint left as air is a stack of floating blocks with daylight through
+  every course. `stone-archway` shipped that way: 7 mm bed joints and
+  9.7 mm voussoir joints, none of them touching. Fill each joint with its
+  own mortar shell, sized from the two blocks it sits between, recessed
+  behind their faces by more than the chamfer so it reads as a raked
+  joint, and biting a named depth into both. Assert every mortar shell
+  BVH-overlaps **exactly two** stones — one means a bed left hanging,
+  none means the air gap came back. Keep the mortar shells out of any
+  classifier that names stone parts; left in, a bed classifies as a
+  course and every downstream stone budget measures the wrong
+  neighbour. Add mortar after the chamfer pass, unchamfered: a 6 mm
+  chamfer on a 10 mm bed eats it.
+- **Stone is not noise stretched over a block.** A noise-driven colour
+  mix sampled so its features streak read as wood grain on
+  `stone-archway` at hero scale. Stone wants isotropic object-space
+  mottling, fine speckle driving roughness and a small bump, and a
+  seeded tone per block as a face attribute so no two stones match.
+  Chain a baked normal map *under* that bump rather than replacing it.
 - **Identical boards read as CG.** Planks cut from one material are one
   plank repeated. Give each shell a seeded tone and its own grain
   direction — its long axis, recovered from its vertices — as face

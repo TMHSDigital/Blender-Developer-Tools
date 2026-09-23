@@ -1,9 +1,10 @@
 # stone-archway
 
-![A semicircular masonry archway: coursed piers, projecting imposts, nine voussoirs and a proud keystone](preview.webp)
+![A semicircular masonry archway: coursed piers, projecting imposts, nine voussoirs and a proud keystone, laid in recessed mortar joints](preview.webp)
 
 A freestanding masonry arch — two coursed piers, projecting imposts, nine
-voussoirs turning a semicircle, and a keystone standing proud at the crown.
+voussoirs turning a semicircle, and a keystone standing proud at the crown,
+every joint filled with a recessed mortar bed.
 **A showcase piece, not an example** — it witnesses no API contract. It
 asserts that generated geometry meets declared asset budgets, recomputed
 from the finished mesh.
@@ -13,7 +14,7 @@ from the finished mesh.
 | Shipped content | Used for |
 | --- | --- |
 | `skills/mesh-editing-and-bmesh` | wedge and box construction, chamfer, UVs in one `bmesh` |
-| `skills/procedural-materials-and-shaders` | two Principled stone materials with noise-driven weathering |
+| `skills/procedural-materials-and-shaders` | ashlar, dressed stone and mortar: object-space mottling, speckle, bump, per-block tone |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, high onto low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -53,19 +54,20 @@ the end.
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 700–2600 | 924 |
+| Base triangles | 950–1450 | 1140 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
-| LOD2 ratio | 0.10–0.35 | 0.2121 (5.2) / 0.2186 (4.5, 5.1) |
-| Material slots | exactly 2, distinct | 2 |
+| LOD2 ratio | 0.10–0.35 | 0.2140 (5.2) / 0.2193 (4.5, 5.1) |
+| Material slots | exactly 3, distinct | 3 |
 | Dressed faces (keystone, imposts, plinth and head courses) | ≥ 100 | 182 |
 | Ashlar faces | ≥ 280 | 364 |
-| UV bounds | inside 0..1 | (0.0017, 0.0017)–(0.9983, 0.9983) |
+| Mortar faces | ≥ 100 | 108 |
+| UV bounds | inside 0..1 | (0.0015, 0.0015)–(0.9985, 0.9985) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
 | Outer AABB | 1.644 × 0.510 × 2.057 m ± 0.020 | 1.6440 × 0.5100 × 2.0568 |
 | Clear opening | 1.200 m ± 0.015, measured between the pier faces | 1.2033 |
 | Collider triangles | ≤ 260 | 168 |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~87 kB |
+| glTF export | file written, non-empty | ~100 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
 | Pier supports | 2 piers, each base course zmin ≤ 1e-3 | 2 at 0.00000 |
@@ -74,21 +76,54 @@ the end.
 | Mortar joints | every adjacent pair in 0.006–0.017 m | all eight at 0.00970 |
 | Intrados circle fit | every vertex within 0.004 m of R = 0.60 | 0.00097 |
 | Intrados arc span | ≥ 168° | 178.0° |
+| Mortar contact | 18 joints, each overlapping exactly 2 stones | 18, all 2 |
 
 Real-world size: a 1.20 m clear opening under a semicircular head, 1.64 m
 across the piers and 2.06 m to the top of the keystone — a garden gate arch.
+
+## Mortar
+
+Every joint used to be air. The pier courses stood 7 mm apart and the
+voussoirs 9.7 mm apart, none of them touching: each pier was a stack of
+floating blocks, with daylight through every joint in the ground-contact
+and joint close-ups. The mortar-band budget measured the gaps and passed,
+because the gaps were the right width. Nothing asked what was in them.
+
+Each joint now holds a mortar shell sized from the two blocks it sits
+between (`add_mortar`): beds between courses and under each impost, and
+wedges between voussoirs. Each is recessed `MORTAR_RECESS` (chamfer plus
+3 mm) behind the stone faces, so it reads as a raked joint, and bites
+`MORTAR_BITE` (1.5 mm) into both blocks. Mortar is added after the
+chamfer pass and left unchamfered, and `classify` skips mortar shells, so
+every stone budget — circle fit, joint band, keystone, supports — still
+measures stone against stone.
+
+`mortar_audit` asserts that each of the 18 mortar shells BVH-overlaps
+exactly two stones. `--short-mortar` stops every joint 1 mm shy of both
+blocks, so each shell touches none, and the piece exits 18.
+
+## Surface
+
+The stone used to read as wood. Its noise-driven colour mix streaked at
+hero scale into long brown grain, and under neutral light it looked like
+cream plaster. `stone_material` now samples object space with isotropic
+noise: mottling for colour, fine speckle driving roughness, and a small
+bump for pitting. A seeded `BlockTone` face attribute (`paint_blocks`)
+shades each stone differently. Dressed stone is paler and smoother than
+ashlar; mortar is a flat grey-beige. The baked normal map is chained
+under the bump (`wire_normal`) rather than replacing it.
 
 ## Determinism
 
 Fixed seed 23; no unseeded randomness. Every measured value above is
 byte-identical on 4.5.11, 5.1.2 and 5.2.1 **except** LOD2, where
-`DECIMATE COLLAPSE` produces 196 triangles on 5.2 and 202 on 4.5 and 5.1.
-That is why the LOD gate is a ratio band (0.10–0.35, measured 0.2121 and
-0.2186) and not an exact count.
+`DECIMATE COLLAPSE` produces 244 triangles on 5.2 and 250 on 4.5 and 5.1.
+That is why the LOD gate is a ratio band (0.10–0.35, measured 0.2140 and
+0.2193) and not an exact count.
 
 ## Falsifiers
 
-Each breaks one pipeline stage so a **named** budget fails. All seven were
+Each breaks one pipeline stage so a **named** budget fails. All eight were
 run on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.
 
 | Flag | Breaks | Exit |
@@ -100,6 +135,7 @@ run on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.
 | `--sink-keystone` | sinks the keystone to a quarter of its projection (8.75 mm) — the imposts still set the Y envelope, so the bounding box is unchanged | 17 |
 | `--wide-mortar` | triples the joint angle, opening every joint to 29.1 mm | 18 |
 | `--off-circle` | wanders the intrados radius ±18 mm while keeping angles, joints and envelope | 19 |
+| `--short-mortar` | stops every mortar joint 1 mm shy of both stones; each of the 18 touches none, mortar-contact budget | 18 |
 
 Three of these needed the model changed, not the budget:
 
@@ -162,13 +198,13 @@ against it. `1` is the FATAL wrapper — a crash, never a named check.
 | 15 | Mesh hygiene (`--stray-vert`) |
 | 16 | Grounded zmin, or a pier base floating (`--lift-z`, `--float-pier`) |
 | 17 | Keystone projection or springing joint (`--sink-keystone`) |
-| 18 | Mortar joint outside band (`--wide-mortar`) |
+| 18 | Mortar joint outside band (`--wide-mortar`), or a mortar shell not seated in exactly two stones (`--short-mortar`) |
 | 19 | Intrados circle fit, or clear opening (`--off-circle`) |
 
 ## Run it
 
 ```bash
-# Budget check, no render. ~0.82 s on 4.5, ~0.85 s on 5.1, ~0.98 s on 5.2.
+# Budget check, no render. ~1.1 s on 4.5, ~1.2 s on 5.1, ~1.4 s on 5.2.
 blender --background --python stone_archway.py --
 
 # Falsifier: the intrados stops being a circle. Must exit 19.
@@ -187,12 +223,13 @@ Smoke runs the check-only path. It does not pass `--output` or any falsifier.
 
 | Value | 4.5.11 | 5.1.2 | 5.2.1 |
 | --- | --- | --- | --- |
-| Base triangles | 924 | 924 | 924 |
-| LOD1 tris / ratio | 462 / 0.5000 | 462 / 0.5000 | 462 / 0.5000 |
-| LOD2 tris / ratio | 202 / 0.2186 | 202 / 0.2186 | 196 / 0.2121 |
-| Face counts (ashlar / dressed) | 364 / 182 | 364 / 182 | 364 / 182 |
+| Base triangles | 1140 | 1140 | 1140 |
+| LOD1 tris / ratio | 570 / 0.5000 | 570 / 0.5000 | 570 / 0.5000 |
+| LOD2 tris / ratio | 250 / 0.2193 | 250 / 0.2193 | 244 / 0.2140 |
+| Face counts (ashlar / dressed / mortar) | 364 / 182 / 108 | same | same |
 | Outer AABB | 1.6440 × 0.5100 × 2.0568 | same | same |
 | Collider tris | 168 | 168 | 168 |
 | Intrados deviation | 0.00097 | 0.00097 | 0.00097 |
 | Mortar joints | all 0.00970 | all 0.00970 | all 0.00970 |
-| Check wall-clock | ~0.82 s | ~0.85 s | ~0.98 s |
+| Mortar contact | 18 × 2 stones | same | same |
+| Check wall-clock | ~1.11 s | ~1.18 s | ~1.37 s |
