@@ -1,24 +1,26 @@
 """Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (U-staves and U end-caps from one radius function, contained
+stand (U-staves and solid end boards from one radius function, contained
 water, iron straps lofted on that same host, trestle legs) after
 composing shipped pipeline pieces: bmesh construction, UVs, three
 materials, high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
 
-The hull, ends, straps and water all sample the same YZ arc. End caps
-are U-boards the staves tenon into, not a bounding-box slab around the
-U. Legs run from a hull-outer station to a shoe at Z=0.
+The hull, ends, straps and water all sample the same YZ arc. Each end
+is a solid board on the hull's outer arc that the staves tenon into:
+not a bounding-box slab, not an open U-band. Legs run from a hull-outer station to a shoe at Z=0.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named shoe
 supports, ``--box-ends`` end-cap U-fit, ``--float-strap`` strap seat,
-``--narrow-hull`` hull real-world size.
+``--narrow-hull`` hull real-world size, ``--open-ends`` water
+containment.
 
-No RNG. Stave seams use closed-form ``sin(i)``. DECIMATE COLLAPSE
+Stave seams use closed-form ``sin(i)``; the only RNG is plank tone,
+seeded with ``TONE_SEED``. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
 gate is a ratio band, not an exact count.
 
@@ -29,6 +31,7 @@ gate is a ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -53,7 +56,7 @@ A_SPAN = 1.20
 END_T = 0.044
 END_OVERHANG = 0.010
 STAVE_GAP = 0.008
-STRAP_W = 0.028
+STRAP_W = 0.040
 STRAP_T = 0.008
 STRAP_BITE = 0.008
 SHOE_H = 0.028
@@ -66,15 +69,17 @@ STRETCHER_Z = 0.115
 STRETCHER_T = 0.028
 LEG_W = 0.048
 WATER_GAP = 0.004
-WATER_FILL = 0.68
+# Half full: at 0.68 the surface sat nearly flush with the rim and hid the
+# inner stave walls, so nothing said vessel.
+WATER_FILL = 0.50
 
 BBOX_TOL = 0.01
-OUTER_SIZE = (1.093, 0.552, 0.504)
+OUTER_SIZE = (1.093, 0.552, 0.5055)
 HULL_SIZE = (1.08, 0.44)
 HULL_SIZE_TOL = (0.08, 0.08)
 NARROW_HULL_R = 0.12
-BASE_TRIS_MIN = 3300
-BASE_TRIS_MAX = 4000
+BASE_TRIS_MIN = 2800
+BASE_TRIS_MAX = 3500
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -107,6 +112,15 @@ PLUMB_MAX = 0.010
 WOOD_IDX = 0
 METAL_IDX = 1
 WATER_IDX = 2
+
+# Water containment: rays cast outward along X from points across each end
+# face of the water must hit an end board within this reach. The ends used
+# to be open U-bands; the water's own end face showed where a board belongs
+# and nothing held it in.
+CONTAIN_REACH = END_T * 1.5
+CONTAIN_FRACS = (0.0, 0.5, 0.9)
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 61
 
 
 def eevee_engine_id():
@@ -227,6 +241,38 @@ def add_stave(bm, a0, a1, x0, x1, r_in, r_out, zc, mat_idx):
     return r0 + r1
 
 
+def add_end_board(bm, x0, x1, r_arc, z_top, n_seg, zc, a_span, mat_idx):
+    """A solid end board: the hull's own outer arc below, a level top above.
+
+    The profile is closed with vertical strips from each arc point up to
+    ``z_top``, so every face is a quad and there is no n-gon to fan. The
+    bottom follows the hull arc, which is what separates it from the
+    bounding-box slab ``--box-ends`` builds.
+    """
+    def ring(x):
+        arc = []
+        top = []
+        for i in range(n_seg + 1):
+            a = -a_span + 2.0 * a_span * i / n_seg
+            p = _arc_point(a, r_arc, x, zc)
+            arc.append(bm.verts.new(p))
+            top.append(bm.verts.new((x, p.y, z_top)))
+        return arc, top
+
+    arc0, top0 = ring(x0)
+    arc1, top1 = ring(x1)
+    verts = arc0 + top0 + arc1 + top1
+    for i in range(n_seg):
+        j = i + 1
+        _face(bm, (arc0[i], top0[i], top0[j], arc0[j]), mat_idx)
+        _face(bm, (arc1[j], top1[j], top1[i], arc1[i]), mat_idx)
+        _face(bm, (arc0[j], arc1[j], arc1[i], arc0[i]), mat_idx)
+        _face(bm, (top0[i], top1[i], top1[j], top0[j]), mat_idx)
+    _face(bm, (arc0[0], arc1[0], top1[0], top0[0]), mat_idx)
+    _face(bm, (arc0[n_seg], top0[n_seg], top1[n_seg], arc1[n_seg]), mat_idx)
+    return verts
+
+
 def add_box_end(bm, x_mid, radius, zc, a_span, thick, mat_idx):
     y_span = 2.0 * radius * math.sin(a_span)
     z_lo = zc - radius
@@ -317,6 +363,7 @@ def build_trough_mesh(
     float_strap=False,
     short_legs=False,
     narrow_hull=False,
+    open_ends=False,
 ):
     bm = bmesh.new()
     try:
@@ -345,19 +392,26 @@ def build_trough_mesh(
             )
             a = a1 + STAVE_GAP
 
-        if not box_ends:
-            r_cap_in = r_in - 0.006
-            r_cap_out = r_out + END_OVERHANG
-            wood.extend(
-                add_u_shell(
-                    bm, x_cap_l0, x_cap_l1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+        r_cap_in = r_in - 0.006
+        r_cap_out = r_out + END_OVERHANG
+        if open_ends:
+            # The pre-pass end: a U-band the staves tenon into, open in the
+            # middle. --open-ends restores it as the containment falsifier.
+            for xa, xb in ((x_cap_l0, x_cap_l1), (x_cap_r0, x_cap_r1)):
+                wood.extend(
+                    add_u_shell(
+                        bm, xa, xb, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+                    )
                 )
-            )
-            wood.extend(
-                add_u_shell(
-                    bm, x_cap_r0, x_cap_r1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+        elif not box_ends:
+            # Top sits at the band's inner rim, 6 mm proud of the staves.
+            z_top = zc - r_cap_in * math.cos(A_SPAN)
+            for xa, xb in ((x_cap_l0, x_cap_l1), (x_cap_r0, x_cap_r1)):
+                wood.extend(
+                    add_end_board(
+                        bm, xa, xb, r_cap_out, z_top, N_STAVES, zc, A_SPAN, WOOD_IDX
+                    )
                 )
-            )
 
         top_z = hull_z_at_y(LEG_TOP_Y, r_out, zc)
         bot_z = SHOE_H * 0.55
@@ -370,7 +424,21 @@ def build_trough_mesh(
                 bot_pt = Vector((sx, ysign * LEG_BOT_Y, bot_z))
                 direction = (top_pt - bot_pt).normalized()
                 top_pt = top_pt + direction * (STAVE_T * 0.35)
-                wood.extend(add_oriented_box(bm, top_pt, bot_pt, (LEG_W, 0.034), WOOD_IDX))
+                leg = add_oriented_box(bm, top_pt, bot_pt, (LEG_W, 0.034), WOOD_IDX)
+                if short_legs:
+                    # The legs, not the shoes, must plant: stretch each leg's
+                    # foot down to the floor so the lifted shoes float while
+                    # the piece keeps the same floor and envelope. Lifting the
+                    # shoes alone let the whole piece re-ground on the legs,
+                    # shrinking the AABB ~10 mm; that sat 0.4 mm inside the
+                    # bbox tolerance and tipped to exit 8 on a 1.5 mm model
+                    # change.
+                    zmid = 0.5 * (top_pt.z + bot_pt.z)
+                    foot = [v for v in leg if v.co.z < zmid]
+                    drop = min(v.co.z for v in foot)
+                    for v in foot:
+                        v.co.z -= drop
+                wood.extend(leg)
             t_st = (STRETCHER_Z - bot_z) / max(top_z - bot_z, 1e-6)
             y_leg = LEG_BOT_Y + t_st * (LEG_TOP_Y - LEG_BOT_Y)
             # Inner face of the diagonal leg, not through its volume.
@@ -394,7 +462,12 @@ def build_trough_mesh(
         )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood for e in v.link_edges})
+            # Flat edges (the strip seams across an end board's face) are
+            # not corners; chamfering one creases a flat face.
+            edges = [
+                e for e in {e for v in wood for e in v.link_edges}
+                if not (len(e.link_faces) == 2 and e.calc_face_angle(0.0) < 1e-4)
+            ]
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -479,9 +552,56 @@ def build_trough_mesh(
             poly.use_smooth = False
     finally:
         bm.free()
+    paint_planks(me)
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     return out
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    n = len(pts)
+    c = sum(pts, Vector()) / n
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell tone and grain direction, as face attributes.
+
+    Staves, end boards and legs came out of one flat material, so every
+    board was the same board. The wood shader stretches its grain along
+    ``GrainDir`` (each shell's own long axis) and shades by ``PlankTone``.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(1.0, 0.0, 0.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((1.0, 0.0, 0.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
 
 
 def principled(name, color, metallic, roughness, roughness_var=0.0):
@@ -505,6 +625,119 @@ def principled(name, color, metallic, roughness, roughness_var=0.0):
         nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
         nt.links.new(ramp.outputs["Color"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each board (``GrainDir``), tone per board (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 30.0
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.13, 0.062, 0.024, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.40, 0.21, 0.085, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def water_material(name):
+    """Dark, clear-reading water with a faint ripple.
+
+    The old flat 0.08-roughness teal was a mirror: under the key it went
+    near-white and, with open ends, read as a stretched fabric sling. A
+    darker body and a small noise bump break the reflection into a surface.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    bsdf.inputs["Roughness"].default_value = 0.06
+    bsdf.inputs["IOR"].default_value = 1.33
+    # Deep body where the view looks straight down, a pale sky tint toward
+    # grazing angles. A light placed to reflect in the surface was
+    # all-or-nothing (white mirror or nothing) and flooded the dark stage;
+    # a facing-ratio tint gives the sheen without touching the lighting.
+    facing = nt.nodes.new("ShaderNodeLayerWeight")
+    facing.inputs["Blend"].default_value = 0.55
+    tint = nt.nodes.new("ShaderNodeMix")
+    tint.data_type = "RGBA"
+    _sock(tint.inputs, "A_Color").default_value = (0.010, 0.040, 0.046, 1.0)
+    _sock(tint.inputs, "B_Color").default_value = (0.20, 0.27, 0.29, 1.0)
+    nt.links.new(facing.outputs["Facing"], _sock(tint.inputs, "Factor_Float"))
+    nt.links.new(_sock(tint.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 22.0
+    noise.inputs["Detail"].default_value = 3.0
+    nt.links.new(coord.outputs["Object"], noise.inputs["Vector"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.08
+    bump.inputs["Distance"].default_value = 0.004
+    nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def trough_materials():
+    """(wood, iron, water): shared by the check, the render and inspection."""
+    wood = wood_material("TroughWood")
+    metal = principled("TroughIron", (0.16, 0.155, 0.15, 1.0), 0.85, 0.42, roughness_var=0.10)
+    water = water_material("TroughWater")
+    return wood, metal, water
 
 
 def assign_slots(obj, wood, metal, water):
@@ -779,6 +1012,43 @@ def joint_audit(me):
     }
 
 
+def containment_audit(me):
+    """Rays outward along X from across each water end face must hit a board.
+
+    Samples each end face at its perimeter vertices and at points drawn
+    toward the face centroid (CONTAIN_FRACS), so the middle of the section
+    is tested, not only the rim a U-band would cover. A miss is water with
+    nothing holding it in.
+    """
+    water_v = {i for p in me.polygons if p.material_index == WATER_IDX for i in p.vertices}
+    if not water_v:
+        return {"rays": 0, "misses": 1}
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        drop = [f for f in bm.faces if f.material_index != WOOD_IDX]
+        bmesh.ops.delete(bm, geom=drop, context="FACES")
+        tree = BVHTree.FromBMesh(bm)
+    finally:
+        bm.free()
+    pts = [me.vertices[i].co for i in water_v]
+    xmin = min(p.x for p in pts)
+    xmax = max(p.x for p in pts)
+    rays = misses = 0
+    for x_end, out in ((xmin, -1.0), (xmax, 1.0)):
+        face = [p for p in pts if abs(p.x - x_end) < 1e-5]
+        c = sum(face, Vector()) / len(face)
+        for p in face:
+            for t in CONTAIN_FRACS:
+                q = c + (p - c) * t
+                origin = Vector((x_end - out * 1e-4, q.y, q.z))
+                hit = tree.ray_cast(origin, Vector((out, 0.0, 0.0)), CONTAIN_REACH)
+                rays += 1
+                if hit[0] is None:
+                    misses += 1
+    return {"rays": rays, "misses": misses}
+
+
 def add_stray_vert(me):
     bm = bmesh.new()
     try:
@@ -884,6 +1154,7 @@ def check(
     float_strap=False,
     short_legs=False,
     narrow_hull=False,
+    open_ends=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_trough_mesh(
@@ -894,6 +1165,7 @@ def check(
         float_strap=float_strap,
         short_legs=short_legs,
         narrow_hull=narrow_hull,
+        open_ends=open_ends,
     )
     high = build_trough_mesh(
         "TroughHigh",
@@ -903,10 +1175,9 @@ def check(
         float_strap=float_strap,
         short_legs=short_legs,
         narrow_hull=narrow_hull,
+        open_ends=open_ends,
     )
-    wood = principled("TroughWood", (0.40, 0.22, 0.08, 1.0), 0.0, 0.58, roughness_var=0.10)
-    metal = principled("TroughIron", (0.10, 0.105, 0.12, 1.0), 1.0, 0.32, roughness_var=0.08)
-    water = principled("TroughWater", (0.06, 0.16, 0.18, 1.0), 0.0, 0.08)
+    wood, metal, water = trough_materials()
     assign_slots(low, wood, metal, water)
     assign_slots(high, wood, metal, water)
 
@@ -937,6 +1208,7 @@ def check(
     zf = zfight_pairs(low.data)
     sup = support_audit(low.data)
     jnt = joint_audit(low.data)
+    con = containment_audit(low.data)
 
     img, tex = setup_bake_image(low, wood)
     if img is None:
@@ -964,6 +1236,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at its own temp preference, which on a portable
+    # build is the working directory, so the export must not outlive this.
+    if os.path.isfile(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -993,6 +1269,7 @@ def check(
         f"water_gap={jnt['water_gap']:.5f} hull_xy={jnt['hull_xy']} "
         f"ends={jnt['ends']} straps={jnt['straps']}"
     )
+    print(f"measured containment rays={con['rays']} misses={con['misses']}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -1106,6 +1383,13 @@ def check(
     if jnt["water_gap"] > WATER_CONTACT_MAX:
         return fail(
             f"water-hull gap {jnt['water_gap']:.5f}",
+            18,
+        ), None, None, None, None, None
+    if con["rays"] == 0 or con["misses"]:
+        return fail(
+            f"water not contained: {con['misses']} of {con['rays']} outward rays "
+            "from the water end faces hit no end board "
+            "(--open-ends is the designed fail)",
             18,
         ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
@@ -1228,6 +1512,7 @@ def main():
     p.add_argument("--box-ends", action="store_true")
     p.add_argument("--float-strap", action="store_true")
     p.add_argument("--narrow-hull", action="store_true")
+    p.add_argument("--open-ends", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1238,6 +1523,7 @@ def main():
         float_strap=args.float_strap,
         short_legs=args.short_legs,
         narrow_hull=args.narrow_hull,
+        open_ends=args.open_ends,
     )
     if code:
         return code
