@@ -38,9 +38,10 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Post seat | world zmin in (0.004, 0.014), XY centroid within 0.010 of origin, arm axis cos ≥ cos(0.5°) | 0.01000, 0, 1.000 |
 | Hung ring | centerline error ≤ 0.008 m, ring–wood overlap 0, eye–wood overlap 0, shank–ring overlap 0, shank bites the eye | 0, 0, 0, 0, 40 |
 | Shoe | each band overlaps the post, shoe overlaps the sole | band gap 0, sole–shoe 8 |
+| **Band seat** | each band above the shoe stands ≥ 0.004 m proud of the post faces | 0.00650 |
 | Wood–metal gap | BVH surface < 0.008 m | 0.00075 |
 | Collider tris | ≤ 280 | 80 |
-| Export | written, size > 0 | 127428 / 127428 / 127412 bytes |
+| Export | written, size > 0 | 127424 / 127424 / 127412 bytes |
 
 Base triangles rose from **1598 to 1680**. The old rings were faceted
 tori clipped into the arm; the new eyes, shanks, and 24-segment hung
@@ -50,9 +51,25 @@ budget stays at 0.
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. On this mesh the three
 binaries agreed. Bake pixels are stochastic; the gate is `has_data`
-plus operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a
-gated axis. Euler is 12 (six balls and seven tori) and is not gated to 2.
+plus operator `FINISHED`, not byte-identity. Construction is
+closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on
+every run; a Python set of edges handed to the bevel had made it vary.
+Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 12 (six balls and seven tori) and is not gated to 2.
+
+### Bands, wood and stage
+
+The two iron bands were sized from `half - grip`: an inner half-width of
+53 mm and an outer one of 61 mm, against a 62.5 mm post face. They sat
+inside the post, and only the chamfered corners broke the surface,
+showing as small black slits up the post. They now wrap it: the inner
+face bites 1.5 mm into the post (`BAND_BITE`), so each band stands
+6.5 mm proud. **Band seat** asserts it; `--sunk-bands` restores the old
+bands and exits 18 (proud −0.0015 m).
+
+The post, rail and cap each carry their own tone and grain, and the
+iron is rusted. The stage grid grew from 14 to 60 m, because the wall's
+left edge showed as a bright band in the corner of the hero. The temp
+`.glb` is removed after its size is measured.
 
 Each falsifier violates exactly one named budget. Proven on Blender
 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries' own `--version`):
@@ -65,6 +82,7 @@ Each falsifier violates exactly one named budget. Proven on Blender
 | `--lift-z` | Grounded zmin | 16 | zmin 0.050000 |
 | `--clip-ring` | Hung-ring centerline | 18 | ring_err 0.024, ring–wood overlap 32 |
 | `--short-post` | Seated post | 19 | post zmin 0.030 |
+| `--sunk-bands` | Band seat | 18 | band proud −0.0015 |
 
 Default exit is 0 on all three. `--clip-ring` also overlaps the rail;
 the centerline gate is the one that fires.
@@ -79,6 +97,7 @@ blender --background --python hitching_post.py -- --twin-sole
 blender --background --python hitching_post.py -- --lift-z
 blender --background --python hitching_post.py -- --clip-ring
 blender --background --python hitching_post.py -- --short-post
+blender --background --python hitching_post.py -- --sunk-bands
 blender --background --python hitching_post.py -- --output preview.webp --engine cycles
 ```
 
@@ -109,5 +128,5 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 15 | Hygiene, including coplanar pairs (`--stray-vert`, `--twin-sole`) |
 | 16 | Grounded zmin (`--lift-z`) |
 | 17 | Wood–metal BVH gap above 8 mm |
-| 18 | Hung ring or shoe seat (`--clip-ring`) |
+| 18 | Hung ring, shoe or band seat (`--clip-ring`, `--sunk-bands`) |
 | 19 | Post plumb, origin, and cup seat (`--short-post`) |

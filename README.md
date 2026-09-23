@@ -124,7 +124,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a wooden tray with walls of stacked boards and iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
   <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
   <a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" width="24%" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
-  <a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" width="24%" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands, and two hitching rings on a dark studio floor" /></a>
+  <a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" width="24%" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands wrapped around it, and two hitching rings on a dark studio floor" /></a>
   <a href="showcase/grindstone/"><img src="showcase/grindstone/preview.webp" width="24%" alt="Grindstone: a stone wheel on a timber A-frame with an iron axle, hubs, crank, and tray on a dark studio floor" /></a>
   <a href="showcase/hand-pump/"><img src="showcase/hand-pump/preview.webp" width="24%" alt="Hand pump: a cast-iron village pump on a wooden plinth with a spout and handle on a dark studio floor" /></a>
   <a href="showcase/signpost/"><img src="showcase/signpost/preview.webp" width="24%" alt="Signpost: a timber post with two painted fingerboards, iron straps, and a pyramidal cap on a dark studio floor" /></a>
@@ -169,7 +169,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`water-trough`](showcase/water-trough/) — procedural watertight water trough on a timber stand through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`hitching-post`](showcase/hitching-post/) — procedural timber hitching post with a cross-arm and iron rings through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`hitching-post`](showcase/hitching-post/) — procedural timber hitching post with a cross-arm, wrapped iron bands and iron rings through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--sunk-bands` exits 18.
 
 [`grindstone`](showcase/grindstone/) — procedural grindstone on a timber trestle with iron axle and crank through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
