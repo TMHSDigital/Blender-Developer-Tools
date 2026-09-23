@@ -2,7 +2,7 @@
 
 A showcase piece, not an example. Geometry Nodes sine-hill Mesh Grid
 with an Index-jittered Instance-on-Points scatter, realized cubes
-replaced by closed-form displaced icospheres seated on sampled dirt Z,
+replaced by closed-form cleaved, faceted stones seated on sampled dirt Z,
 then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal
 bake, LOD chain, convex collider, Unity glTF export.
 
@@ -24,7 +24,7 @@ imported as a package). Hygiene combinatorics match
 `examples/mesh-hygiene-audit` (copied, not imported).
 
 Intended size: 1.80 m square hill tile, ~0.16 m sine amplitude, nine
-seated stones; outer AABB 1.800 × 1.800 × 0.552 m.
+seated stones; outer AABB 1.800 × 1.800 × 0.584 m.
 
 ## Budgets
 
@@ -38,9 +38,9 @@ materials, UVs, evaluated LOD, collider, or export file.
 | LOD2 ratio | 0.10–0.35 of base | 0.2196 / 0.2196 / 0.2196 |
 | Materials | exactly 2 distinct, ≥24 stone faces | 2 slots, 720 stone |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.800, 1.800, 0.552) m ± 0.015 | (1.8000, 1.8000, 0.5523), zmin 0 |
-| Collider tris | ≤ 120 | 81 |
-| Export | written, size > 0 | 158156 / 158156 / 158140 bytes |
+| Outer AABB | (1.800, 1.800, 0.584) m ± 0.015 | (1.8000, 1.8000, 0.5838), zmin 0 |
+| Collider tris | ≤ 120 | 72 |
+| Export | written, size > 0 | 157476 / 157476 / 157460 bytes |
 
 Base triangles rose from **1194 to 1758** in the quality pass: 9-vert hill
 became a 21-vert grid, and bevelled cubes became subdiv-2 icospheres.
@@ -51,7 +51,8 @@ DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh matched
 on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is
 `has_data` plus operator `FINISHED`, not byte-identity. Construction uses
-no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not
+no RNG: jitter, cleave planes and relaxation are all closed form or fixed
+iteration. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not
 a gated axis.
 
 ### Hygiene
@@ -69,8 +70,39 @@ Recomputed from the generated mesh, not asserted about the script.
 | Grounded: `zmin` | within 1e-4 of 0 | 0.0000 |
 | Stone shells | 9 | 9 |
 | Per-stone faces | ≥ 40 | 80 |
-| Stone floor `zmin` | ≥ 0.012 m | 0.11334 |
-| Seat offset (`zmin` − dirt Z) | ≤ 0.02 m | −0.03500 |
+| Stone floor `zmin` | ≥ 0.012 m | 0.11112 |
+| Seat offset (`zmin` − dirt Z) | ≤ 0.02 m | −0.00745 |
+| Interpenetrating stone pairs (BVH overlap) | 0 | 0 |
+
+### Why the stones are cleaved, relaxed and faceted
+
+The committed stones were smooth-shaded, near-white ellipsoids with a
+gentle sine bump: eggs or marshmallows on a pale clay slab. Two pairs
+also interpenetrated, because the GN scatter jitters by up to 0.22 m on a
+0.575 m grid, and no budget compared stone to stone.
+
+- **Cleaved.** Each ellipsoid is cut by `N_CLEAVES` planes whose normals
+  and depths come from the stone's own centre, closed form. Every vertex
+  beyond a plane is projected onto it, which leaves flat broken faces.
+  Stones are shaded flat, because broken rock is faceted; smooth shading
+  turned the cleaved stones back into eggs.
+- **Scaled.** Cleaving takes about a third off each stone, and at the old
+  size they read as pebbles, so every semi-axis is `ROCK_SCALE` = 1.35×.
+- **Relaxed.** Stone centres are pushed apart to
+  `2 × STONE_R_BOUND + STONE_CLEAR` over a fixed number of symmetric
+  passes, and clamped so each stone's bound stays on the tile.
+  `STONE_R_BOUND` is derived from `ROCK_SCALE` and the largest semi-axis,
+  bump and tilt, so scaling the stones widens the spacing with them. With
+  today's numbers the unrelaxed scatter would also clear; the relaxation
+  is what keeps that true when the scatter or the sizes change.
+- **Materials.** Dark mottled soil and grey weathered stone, with
+  roughness and a small bump from fine object-space noise.
+
+`stone_overlap_audit` BVH-tests every stone pair. `--pile-rocks` skips
+the relaxation and draws the scatter in to 40% so neighbours collide: 6
+pairs interpenetrate on 5.2.1, and the piece exits 20. Skipping the
+relaxation alone would prove nothing, because the cleaved stones miss
+each other unrelaxed.
 
 ### Falsifiers
 
@@ -85,6 +117,7 @@ and returned the same code on each.
 | `--poke-rock` | stone floor `zmin` | 17 |
 | `--float-rocks` | seat offset vs sampled dirt Z | 18 |
 | `--box-rocks` | per-stone face floor | 19 |
+| `--pile-rocks` | stone-to-stone interpenetration is 0 | 20 |
 
 ## Run
 
@@ -96,6 +129,7 @@ blender --background --python terrain_scatter.py -- --lift-z
 blender --background --python terrain_scatter.py -- --poke-rock
 blender --background --python terrain_scatter.py -- --float-rocks
 blender --background --python terrain_scatter.py -- --box-rocks
+blender --background --python terrain_scatter.py -- --pile-rocks
 blender --background --python terrain_scatter.py -- --output terrain.png
 ```
 
@@ -129,3 +163,4 @@ hygiene and joint-fit family.
 | 17 | Stone floor poke (`--poke-rock`) |
 | 18 | Float above host (`--float-rocks`) |
 | 19 | Stone shell faces (`--box-rocks`) |
+| 20 | Stone pairs interpenetrate (`--pile-rocks`) |

@@ -53,7 +53,8 @@ entry in `showcase/gallery.json`, and a rendered still.
   `--float-nails` lifts nail heads off their strap (exit 18).
   `--short-mortar` stops every mortar joint shy of its stones (exit 18).
   `--open-ends` restores open U-band ends so the water is not contained
-  (exit 18).
+  (exit 18). `--pile-rocks` draws scattered stones together so they
+  interpenetrate (file-local code; `terrain-scatter` uses 20).
   `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
   (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
@@ -349,6 +350,19 @@ entry in `showcase/gallery.json`, and a rendered still.
   exposed face of the contents — perimeter **and** interior points, since
   a rim band covers the perimeter only — and require every ray to hit the
   vessel within a named reach. `--open-ends` is the falsifier.
+- **Scattered parts do not interpenetrate (file-local code).** Jittered
+  scatter pushes neighbours into each other, and nothing else in the
+  hygiene family compares one scattered part with another. BVH-test every
+  pair and assert **0** overlaps. Space the parts structurally: relax
+  their centres apart to twice a radius bound **derived** from the same
+  constants that size them, so scaling the parts widens the spacing too.
+  A falsifier that only skips the relaxation proves nothing if the parts
+  happen to miss anyway; `terrain-scatter`'s `--pile-rocks` also draws
+  the scatter inward so collisions are guaranteed.
+- **Rock is broken, not smooth.** A smooth-shaded ellipsoid is an egg.
+  Cleave it with a few closed-form planes (project every vertex beyond a
+  plane onto it) and shade it flat, so it reads as broken stone. Cleaving
+  takes volume off, so re-check scale against the host afterwards.
 - **Keep a falsifier's envelope still.** A falsifier that moves the
   support the piece grounds on re-grounds the whole piece and moves the
   AABB with it. `water-trough`'s `--short-legs` lifted the shoes; the
