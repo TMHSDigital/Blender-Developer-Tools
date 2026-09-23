@@ -438,6 +438,25 @@ entry in `showcase/gallery.json`, and a rendered still.
   off the plate and its body through it. Size the offset from the thing
   passing through, and assert that no vertex of it lies inside the mount.
   `--sunk-rope` restores the old offset.
+- **A ring is threaded across its hole, never in its plane (exit 17).**
+  `iron-cauldron`'s ear rings stood in the bail's own plane, so the bail
+  ran through each ring's tube. Orient a ring so its hole axis follows
+  whatever passes through it at that point. Assert that no ring vertex
+  lies inside the thing passing through, by the nearest face's normal,
+  and that it passes within the hole. `--edge-on-ears` is the falsifier.
+- **A vessel has a base and a belly (exit 19).** A profile interpolated
+  from a tiny bottom radius runs to a point: the cauldron was an onion.
+  Build the belly from a stated base radius and belly height, offset the
+  inner wall along the profile's normal (a sideways offset thins the
+  wall to nothing where it runs flat), and assert the base radius and
+  where the widest ring sits. `--pointed-pot` is the falsifier.
+- **Stones are lumps, and no two match (file-local code).** A curved
+  brick with a flat top reads as a kerb. Loft a chamfered section that
+  swells mid-stone and pinches at capped ends, with seeded radial offset
+  and a crown on the top course. Keep the beds flat so courses still
+  seat. Assert the spread of stone radii (and top-course crowns) clears a
+  floor; the falsifier gives every stone the same draw at the jitter's
+  upper bound, so the envelope stays put (`--uniform-stones`).
 - **A section that carries the read is a budget (exit 19).** Where a
   cross-section is what makes a part recognisable — an axe handle is
   oval, a broom handle is round — assert it as a ratio band at a named
