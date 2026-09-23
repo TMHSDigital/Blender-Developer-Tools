@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/text-version-stamp-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="The word BLENDER above the Blender version number in large gold 3D characters." />
+  <meta property="og:image:alt" content="The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="text-version-stamp — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The TextCurve data API — curves.new(type=&#x27;FONT&#x27;), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/text-version-stamp-hero.webp" />
-  <meta name="twitter:image:alt" content="The word BLENDER above the Blender version number in large gold 3D characters." />
+  <meta name="twitter:image:alt" content="The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The TextCurve data API — curves.new(type=&#x27;FONT&#x27;), live body text from bpy.app.version_string, extrude and bevel_depth solids, and evaluated-mesh conversion — so every render self-documents which Blender produced it.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: The word BLENDER above the Blender version number in large gold 3D characters.">
-      <img src="../assets/text-version-stamp-hero.webp" alt="The word BLENDER above the Blender version number in large gold 3D characters." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face.">
+      <img src="../assets/text-version-stamp-hero.webp" alt="The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> TextCurve solids are exactly predictable: evaluated z-extent = 2 × (extrude + bevel_depth), bevel widens the outline by 2 × bevel_depth, editing body regenerates geometry — and version_string is not bare semver on LTS (&quot;4.5.11 LTS&quot;), so parse bpy.app.version instead.</div>
@@ -281,6 +281,8 @@
 <p>A runnable example that builds a beveled 3D stamp of the running Blender version — a <code>TextCurve</code> (<code>bpy.data.curves.new(type=&#x27;FONT&#x27;)</code>) whose <code>body</code> is the live <code>bpy.app.version_string</code>, so every render self-documents which Blender produced it. CI artifacts made this way are self-labeling.</p>
 <p><strong>What it witnesses:</strong> the TextCurve data-API contract. <code>curves.new(type=&#x27;FONT&#x27;)</code> returns a Curve subclass, the built-in font (&quot;Bfont Regular&quot;) is always loaded even headless, <code>body</code> is plain assignable text that regenerates geometry on edit (more characters → strictly wider evaluated mesh), and <code>extrude</code> / <code>bevel_depth</code> produce exactly predictable solids: the evaluated mesh z-extent equals 2 × (extrude + bevel_depth) and the round bevel widens the outline in-plane by 2 × bevel_depth. Flat text (no extrude, no bevel) is already <em>filled</em> — faces exist — but strictly planar. The check also witnesses the depsgraph lifetime hazard: after <code>to_mesh_clear()</code> the returned Mesh reference is dead and any access raises <code>ReferenceError</code>.</p>
 <p><strong>Version divergence:</strong> the string format itself differs — <code>&quot;5.1.2&quot;</code> on 5.x but <code>&quot;4.5.11 LTS&quot;</code> on 4.5 (the suffix is part of <code>version_string</code>). The check therefore asserts the contract that holds on both: <code>version_string</code> starts with the dotted <code>bpy.app.version</code> tuple. Code that parses <code>version_string</code> as a bare semver breaks on every LTS build; branch on the <code>bpy.app.version</code> tuple instead.</p>
+<h2>Staging</h2>
+<p>The numerals stand on a dark plinth, with the steel caption set into the plinth&#x27;s front face. The caption used to float in the air above the stamp, and an emissive bar lay along the bottom edge of the frame. The still renders under the Standard view transform on the house stage. Render path only; the checked text body and its extents are unchanged.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python text_version_stamp.py --
@@ -464,7 +466,12 @@ TOL = <span class="n">1e-4</span>
     s = <span class="n">3.1</span> / width
     obj.scale = (s, s, s)
     obj.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, s * height / <span class="n">2</span> + <span class="n">0.02</span>)
+    <span class="c"># The stamp stands on a dark plinth, and the caption is set into the</span>
+    <span class="c"># plinth&#x27;s front face. It used to float in the air above the stamp,</span>
+    <span class="c"># with a glowing bar along the bottom edge of the frame.</span>
+    plinth_h = <span class="n">0.30</span>
+    plinth_d = <span class="n">0.56</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, plinth_h + s * height / <span class="n">2</span> + <span class="n">0.02</span>)
 
     <span class="c"># small steel caption above, also a TextCurve</span>
     cap = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, type=<span class="s">&#x27;FONT&#x27;</span>)
@@ -480,28 +487,29 @@ TOL = <span class="n">1e-4</span>
     cap.materials.append(cmat)
     cap_obj = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cap)
     cap_obj.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    cap_obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, s * height + <span class="n">0.62</span>)
+    cap_obj.location = (<span class="n">0.0</span>, -plinth_d / <span class="n">2</span> - cap.extrude, plinth_h / <span class="n">2</span>)
     scene.collection.objects.link(cap_obj)
 
-    <span class="c"># teal emissive underline bar grounding the stamp</span>
     <span class="k">import</span> bmesh
-    bar_me = bpy.data.meshes.new(<span class="s">&quot;Bar&quot;</span>)
+    plinth_me = bpy.data.meshes.new(<span class="s">&quot;Plinth&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-        bm.to_mesh(bar_me)
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.012</span>, segments=<span class="n">2</span>,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(plinth_me)
     <span class="k">finally</span>:
         bm.free()
-    bmat = bpy.data.materials.new(<span class="s">&quot;Glow&quot;</span>)
-    bmat.use_nodes = <span class="k">True</span>
-    bb = bmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bb.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.1</span>, <span class="n">0.9</span>, <span class="n">0.8</span>, <span class="n">1.0</span>)
-    bb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">14.0</span>
-    bar_me.materials.append(bmat)
-    bar = bpy.data.objects.new(<span class="s">&quot;Bar&quot;</span>, bar_me)
-    bar.scale = (<span class="n">3.9</span>, <span class="n">0.06</span>, <span class="n">0.02</span>)
-    bar.location = (<span class="n">0.0</span>, -<span class="n">0.35</span>, <span class="n">0.02</span>)
-    scene.collection.objects.link(bar)
+    pmat = bpy.data.materials.new(<span class="s">&quot;Plinth&quot;</span>)
+    pmat.use_nodes = <span class="k">True</span>
+    pb = pmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    plinth_me.materials.append(pmat)
+    plinth = bpy.data.objects.new(<span class="s">&quot;Plinth&quot;</span>, plinth_me)
+    plinth.scale = (<span class="n">3.5</span>, plinth_d, plinth_h)
+    plinth.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, plinth_h / <span class="n">2</span>)
+    scene.collection.objects.link(plinth)
 
     <span class="c"># dark studio: floor + back wall</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -514,8 +522,8 @@ TOL = <span class="n">1e-4</span>
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.05</span>, <span class="n">0.055</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -548,10 +556,10 @@ TOL = <span class="n">1e-4</span>
     <span class="c"># Reframed: the old (0,-8.5,1.15) fixed 86.5° pitch left the stamp at</span>
     <span class="c"># 0.663 fill with a dead lower third; moved in with an aim on the stamp&#x27;s</span>
     <span class="c"># vertical center so text, caption, and underline bar balance the frame.</span>
-    cam.location = (<span class="n">0.0</span>, -<span class="n">6.0</span>, <span class="n">1.5</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">5.45</span>, <span class="n">1.55</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.62</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = aim
@@ -571,13 +579,15 @@ TOL = <span class="n">1e-4</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX would dull the brass toward tan (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact. The hero</span>
-    <span class="c"># is the version stamp; caption and underline bar count for margins.</span>
+    <span class="c"># is the version stamp; caption and plinth count for margins.</span>
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj, cap_obj, bar],
+        elements=[obj, cap_obj, plinth],
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -625,7 +635,7 @@ TOL = <span class="n">1e-4</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/text-version-stamp-hero.webp" alt="The word BLENDER above the Blender version number in large gold 3D characters." />
+    <img src="../assets/text-version-stamp-hero.webp" alt="The Blender version number in large gold 3D characters standing on a dark plinth, the word BLENDER set into its face." />
   </dialog>
   <footer>
     <div class="statusbar">

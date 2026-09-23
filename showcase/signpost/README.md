@@ -41,7 +41,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.260, 0.142, 1.551) m ± 0.015 | (1.2600, 0.1420, 1.5510), zmin 0 |
 | Collider tris | ≤ 180 | 52 |
-| Export | written, size > 0 | 35688 / 35688 / 35676 bytes |
+| Export | written, size > 0 | 35648 / 35648 / 35640 bytes |
 
 Base triangles dropped from **504 to 376** in the quality pass: glued
 diamond cubes and a solid shoe block became wedges and a four-plate
@@ -50,9 +50,22 @@ collar. Outer AABB tightened from 1.368 × 0.201 × 1.566 m.
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 5.2.1 is leaner on LOD1 and LOD2. The gate is a ratio band, not an
 exact count. Bake pixels are stochastic; the gate is `has_data` plus
-operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a
-gated axis.
+operator `FINISHED`, not byte-identity. Construction is closed-form;
+the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted
+by edge index, so the face order is the same on every run. Export byte
+counts differ on 5.2.1 (glTF serializer), not a gated axis.
+
+### Surface and stage
+
+The quality pass found no geometric defect: the boards, straps, bands
+and shoe seat as their budgets say. The defects were surface. The finger
+boards were flat pale yellow; they are now cream paint worn through to
+the wood by a noise mask, a shade apart per board. The iron read as
+chrome (metallic 1.0, roughness 0.38) and is now rusted. The post has its
+own tone and grain. The stage grid grew from 14 to 60 m, because the
+wall's left edge showed in the corner of the hero. The temp `.glb` is
+removed after its size is measured. With no new geometric defect, there
+is no new budget.
 
 ### Hygiene
 

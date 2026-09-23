@@ -14,7 +14,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
 supports, ``--float-anvil`` foot-on-head joint-fit, ``--round-band``
-hoop seat (hoop generated on a circle instead of the stave chords).
+hoop seat (hoop generated on a circle instead of the stave chords),
+``--round-waist`` anvil form (the waist lofted from ellipses, a funnel).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -83,6 +84,18 @@ WAIST_H = 0.100
 HARDY_HALF = 0.015
 PRITCHEL_R = 0.007
 N_SECTION = 16
+# The waist is a forged block, not a turned cone: a superellipse section
+# (exponent WAIST_P) lofted through five stations that flare from the foot
+# in to a pinch and out to the body. Corner reach, the most a section vertex
+# fills its bounding rectangle's corner, is 0.707 for an ellipse and about
+# 0.86 here; WAIST_REACH_MIN is the floor. --round-waist sets the exponent to
+# 2, the old elliptical funnel.
+WAIST_P = 4.5
+WAIST_REACH_MIN = 0.80
+# Per-piece wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 30.0
 
 AREA_EPS = 1e-10
 DOUBLES_EPS = 1e-5
@@ -465,7 +478,7 @@ def build_staves(bm, spans, z0, bevel_offset, bevel_segments):
     return stave_verts
 
 
-def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments):
+def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, round_waist=False):
     z_foot0 = z_head - FOOT_BITE + (FLOAT_ANVIL if float_anvil else 0.0)
     z_foot1 = z_foot0 + FOOT_H
     z_body0 = z_foot1 + WAIST_H
@@ -527,16 +540,27 @@ def build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments):
     )
     pinch_hy = 0.028
     pinch_hx = 0.055
-    waist_mid = z_foot1 + WAIST_H * 0.48
-    waist_z = (z_foot1, waist_mid, z_body0 + 0.002)
-    waist_hy = (FOOT_XY[1] * 0.46, pinch_hy, hy * 0.42)
-    waist_hx = (FOOT_XY[0] * 0.42, pinch_hx, FACE_LEN * 0.22)
+    t_pinch = 0.48
+    foot_hx, foot_hy = FOOT_XY[0] * 0.42, FOOT_XY[1] * 0.46
+    body_hx, body_hy = FACE_LEN * 0.22, hy * 0.42
+    expo = 2.0 if round_waist else WAIST_P
     real_waist = []
-    for z, hx, hy_w in zip(waist_z, waist_hx, waist_hy):
+    for t in (0.0, 0.24, t_pinch, 0.74, 1.0):
+        # concave flare: quadratic from the pinch out to each end
+        if t <= t_pinch:
+            k = ((t_pinch - t) / t_pinch) ** 2
+            hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
+        else:
+            k = ((t - t_pinch) / (1.0 - t_pinch)) ** 2
+            hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
+        z = z_foot1 + (z_body0 + 0.002 - z_foot1) * t
         ring = []
         for i in range(N_SECTION):
-            t = i * (2.0 * math.pi / N_SECTION)
-            ring.append(Vector((hx * math.cos(t), hy_w * math.sin(t), z)))
+            a = i * (2.0 * math.pi / N_SECTION)
+            c, sn = math.cos(a), math.sin(a)
+            x = hx * math.copysign(abs(c) ** (2.0 / expo), c)
+            y = hy_w * math.copysign(abs(sn) ** (2.0 / expo), sn)
+            ring.append(Vector((x, y, z)))
         real_waist.append(ring)
     loft_open(bm, real_waist, METAL_IDX, cap0=True, cap1=True)
     return z_foot0, z_face, list(horn_verts)
@@ -598,6 +622,7 @@ def build_anvil_mesh(
     short_staves=False,
     float_anvil=False,
     round_band=False,
+    round_waist=False,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / R_BOT
@@ -612,7 +637,7 @@ def build_anvil_mesh(
             croze_xy(spans, 0.5 * (head_z0 + head_z1), 0.004, 0.0),
             WOOD_IDX,
         )
-        build_anvil_iron(bm, head_z1, float_anvil, bevel_offset, bevel_segments)
+        build_anvil_iron(bm, head_z1, float_anvil, bevel_offset, bevel_segments, round_waist)
         build_hoops(bm, spans, round_band)
         bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-5)
         bmesh.ops.dissolve_degenerate(bm, dist=1e-6)
@@ -890,6 +915,168 @@ def anvil_seat(me):
         bm_s.free()
 
 
+def waist_reach(me):
+    """Corner reach of the anvil waist at its pinch, from the mesh.
+
+    The waist is the iron shell with the most Z levels holding exactly
+    N_SECTION vertices (its lofted rings). At the narrowest ring, each
+    vertex's reach is min(|dx| / half-width, |dy| / half-depth); the
+    waist's reach is the largest. An ellipse gives 0.707, a squared forging
+    much more.
+    """
+    best, best_levels = None, 0
+    for g in shells(me):
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        levels = {}
+        for i in g:
+            levels.setdefault(round(me.vertices[i].co.z, 5), []).append(i)
+        rings = [r for r in levels.values() if len(r) == N_SECTION]
+        if len(rings) > best_levels:
+            best, best_levels = rings, len(rings)
+    if not best or best_levels < 3:
+        return 0.0
+
+    def half_x(r):
+        xs = [me.vertices[i].co.x for i in r]
+        return 0.5 * (max(xs) - min(xs))
+
+    ring = min(best, key=half_x)
+    cx = sum(me.vertices[i].co.x for i in ring) / len(ring)
+    cy = sum(me.vertices[i].co.y for i in ring) / len(ring)
+    hx = max(abs(me.vertices[i].co.x - cx) for i in ring)
+    hy = max(abs(me.vertices[i].co.y - cy) for i in ring)
+    return max(
+        min(abs(me.vertices[i].co.x - cx) / hx, abs(me.vertices[i].co.y - cy) / hy)
+        for i in ring
+    )
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and the head is its own shell, so each gets one tone and
+    grain running along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def anvil_materials():
+    """(wood, steel): shared by the check, the render and inspection.
+
+    Forged steel is dark and rough with a worn, brighter face; the first
+    build was satin metal (metallic 0.92, roughness 0.32) and read as chrome.
+    """
+    wood = wood_material("AnvilStump")
+    metal = principled(
+        "AnvilSteel", (0.06, 0.062, 0.066, 1.0), 0.70, 0.50,
+        noise_scale=20.0, wear=(0.13, 0.08, 0.05, 1.0),
+    )
+    return wood, metal
+
+
 def body_plan(me):
     groups = shells(me)
     xs, z0s, z1s = [], [], []
@@ -1022,19 +1209,18 @@ def check(
     short_staves=False,
     float_anvil=False,
     round_band=False,
+    round_waist=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    flags = dict(short_staves=short_staves, float_anvil=float_anvil, round_band=round_band)
+    flags = dict(
+        short_staves=short_staves, float_anvil=float_anvil, round_band=round_band,
+        round_waist=round_waist,
+    )
     low = build_anvil_mesh("AnvilLow", 0.004, 2, **flags)
     high = build_anvil_mesh("AnvilHigh", 0.004, 4, **flags)
-    wood = principled(
-        "AnvilStump", (0.34, 0.18, 0.07, 1.0), 0.0, 0.62,
-        noise_scale=6.5, wear=(0.22, 0.12, 0.05, 1.0),
-    )
-    metal = principled(
-        "AnvilSteel", (0.18, 0.18, 0.19, 1.0), 0.92, 0.32,
-        noise_scale=5.5, wear=(0.10, 0.10, 0.11, 1.0),
-    )
+    wood, metal = anvil_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -1068,6 +1254,7 @@ def check(
     bite_min, bite_max = hoop_seat(low.data, spans)
     seat = anvil_seat(low.data)
     blen, bht = body_plan(low.data)
+    reach = waist_reach(low.data)
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
         f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
@@ -1078,6 +1265,7 @@ def check(
         f"hoop_bite={bite_min:.5f}..{bite_max:.5f} seat={seat:.5f} "
         f"body={blen:.4f}x{bht:.4f}"
     )
+    print(f"measured waist_reach={reach:.4f}")
 
     img, tex = setup_bake_image(low, wood)
     if img is None:
@@ -1105,6 +1293,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1216,6 +1408,12 @@ def check(
             f"anvil body {blen:.4f}x{bht:.4f} off {BODY_LEN}x{BODY_H}",
             19,
         ), None, None, None, None, None
+    if reach < WAIST_REACH_MIN:
+        return fail(
+            f"waist corner reach {reach:.4f} < {WAIST_REACH_MIN}: a round funnel, "
+            "not a forged waist (--round-waist is the designed fail)",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1232,7 +1430,8 @@ def render_still(low, _wood, _tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        # Oversized so no edge of the set can enter frame.
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1327,6 +1526,7 @@ def main():
     p.add_argument("--short-staves", action="store_true")
     p.add_argument("--float-anvil", action="store_true")
     p.add_argument("--round-band", action="store_true")
+    p.add_argument("--round-waist", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1336,6 +1536,7 @@ def main():
         short_staves=args.short_staves,
         float_anvil=args.float_anvil,
         round_band=args.round_band,
+        round_waist=args.round_waist,
     )
     if code:
         return code
