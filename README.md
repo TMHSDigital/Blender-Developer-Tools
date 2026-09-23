@@ -307,7 +307,7 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: terracotta jar diptych on a dark floor — left panel low sun at 8 degrees with a deep blue zenith and warm horizon limb, right panel high sun at 55 degrees with a brighter cyan sky, proving ShaderNodeTexSky sun_elevation" /></a>
+<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: pale glazed jar diptych on a dark floor — left panel low sun at 8 degrees, the jar dim twilight blue under a deep blue zenith, right panel high sun at 55 degrees, the jar bright under a pale daylight sky" /></a>
 </td>
 <td valign="middle">
 
