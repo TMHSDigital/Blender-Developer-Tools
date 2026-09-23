@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wooden-barrel — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural wine-cask with croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-barrel/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wooden-barrel — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural wine-cask with croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-barrel/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-barrel-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden stave barrel bound by three metal hoops." />
+  <meta property="og:image:alt" content="A wooden stave barrel bound by four iron hoops, its head made of boards." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-barrel — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural wine-cask with croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-barrel-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden stave barrel bound by three metal hoops." />
+  <meta name="twitter:image:alt" content="A wooden stave barrel bound by four iron hoops, its head made of boards." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,36 +265,38 @@
   </div>
   <header class="hero">
     <h1>wooden-barrel</h1>
-    <p>A procedural wine-cask with croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural wine-cask with boarded, croze-seated heads and chord-lofted hoops through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden stave barrel bound by three metal hoops.">
-      <img src="../assets/wooden-barrel-hero.webp" alt="A wooden stave barrel bound by three metal hoops." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden stave barrel bound by four iron hoops, its head made of boards.">
+      <img src="../assets/wooden-barrel-hero.webp" alt="A wooden stave barrel bound by four iron hoops, its head made of boards." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 7216 tris, two materials with 2512 wood and 1440 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.714×0.880 m, 20 grounded staves, hoop bite 0.003 m, head-croze gap 0.007 m, LOD ratios in band, convex collider 238 tris, non-empty glTF. --skip-decimate exits 9; --round-band exits 18 on the hoop-seat budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 7312 tris, two materials with 2584 wood and 1440 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.714×0.880 m, 20 grounded staves, hoop bite 0.003 m, head-croze gap 0.007 m, four boards per head with 1.5 mm seams, LOD ratios in band, convex collider 238 tris, non-empty glTF. --skip-decimate exits 9; --round-band exits 18 on the hoop-seat budget; --one-piece-head exits 17 on the head-board budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-barrel/wooden_barrel.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural wine-cask (20 staves with seeded width jitter, heads seated in a croze below a chime, iron hoops lofted on the stave faces, a bung) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>Hoops evaluate the same <code>host_outer_r</code> chord as the stave flats. <code>--round-band</code> is the falsifier: a circle of <code>radius_at(z)</code> instead of the chord, which is what made the old capped cylinder float off every face. Heads follow the inner stave polygon, not a circle, so they fill the croze instead of leaving triangular slots at every joint.</p>
+<p>A showcase piece, not an example. Procedural wine-cask (20 staves with seeded width jitter, heads of four boards seated in a croze below a chime, iron hoops lofted on the stave faces, a bung) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>Hoops evaluate the same <code>host_outer_r</code> chord as the stave flats. <code>--round-band</code> is the falsifier: a circle of <code>radius_at(z)</code> instead of the chord, which is what made the old capped cylinder float off every face. Heads follow the inner stave polygon, not a circle, so they fill the croze instead of leaving triangular slots at every joint. Each head is that outline cut across into four boards with a 1.5 mm seam, so the seat is unchanged and the head no longer reads as a lid.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>6000–8500</td><td>7216 / 7216 / 7216</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.2198</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥200 metal faces</td><td>2 slots; 2512 / 1440</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.722, 0.714, 0.880) m ± 0.015</td><td>(0.7220, 0.7142, 0.8800), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 400</td><td>238</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>544140 / 544140 / 544124 bytes</td></tr></tbody></table></div>
-<p>Base triangles rose from <strong>4312 to 7216</strong> in the quality pass: 12 identical staves with 5 mm daylight and circular hoops became 20 jittered staves, 8-ring bulge, chord-seated hoops, polygonal croze heads, and a bung.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>6000–8500</td><td>7312 / 7312 / 7312</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2199</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥200 metal faces</td><td>2 slots; 2584 / 1440</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.722, 0.714, 0.880) m ± 0.015</td><td>(0.7220, 0.7142, 0.8800), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 400</td><td>238</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>552456 / 552456 / 552440 bytes</td></tr></tbody></table></div>
+<p>Base triangles rose from <strong>4312 to 7216</strong> in the quality pass: 12 identical staves with 5 mm daylight and circular hoops became 20 jittered staves, 8-ring bulge, chord-seated hoops, polygonal croze heads, and a bung. Cutting each head into four boards added 96 more (7312).</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 20 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>20, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.714 m dia × 0.880 m high ± 0.04</td><td>0.7142 × 0.8800</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Head-croze rim BVH gap</td><td>≤ 0.010 m</td><td>0.00698</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0012–0.008 m</td><td>0.00300</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Head-croze rim BVH gap</td><td>≤ 0.010 m</td><td>0.00710</td></tr><tr><td>Head boards</td><td>4 per head; every seam 0.0008–0.003 m</td><td>4 + 4; 0.00150</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0012–0.008 m</td><td>0.00300</td></tr></tbody></table></div>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All six were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-head</code></td><td>head-croze gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr></tbody></table></div>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-head</code></td><td>head-croze gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--one-piece-head</code></td><td>head boards: 4 per head</td><td>17</td></tr></tbody></table></div>
+<h2>Surface</h2>
+<p>The staves were one flat tone and the hoops bright polished steel. Each stave and each head board now carries a seeded <code>PlankTone</code> and a <code>GrainDir</code> (its own long axis) as face attributes. <code>wood_material</code> stretches grain along that axis, so it runs up the curved staves and across the head boards. The hoops are dark rusted iron, the same recipe as <code>shipping-crate</code>. The temp <code>.glb</code> is removed once its size is measured.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wooden_barrel.py --
 blender --background --python wooden_barrel.py -- --skip-decimate
@@ -303,11 +305,12 @@ blender --background --python wooden_barrel.py -- --lift-z
 blender --background --python wooden_barrel.py -- --short-staves
 blender --background --python wooden_barrel.py -- --float-head
 blender --background --python wooden_barrel.py -- --round-band
+blender --background --python wooden_barrel.py -- --one-piece-head
 blender --background --python wooden_barrel.py -- --output barrel.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: head-croze gap (<code>--float-head</code>)</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body diameter or height off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: head-croze gap (<code>--float-head</code>), or head boards and seams (<code>--one-piece-head</code>)</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body diameter or height off the stated real-world size</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -330,8 +333,9 @@ Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
-supports, ``--float-head`` head-croze joint-fit, ``--round-band`` hoop
-seat (hoop generated on a circle instead of the stave chords).
+supports, ``--float-head`` head-croze joint-fit, ``--one-piece-head``
+head boards (one slab instead of boards), ``--round-band`` hoop seat
+(hoop generated on a circle instead of the stave chords).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -419,6 +423,19 @@ STAVE_COUNT = N_STAVES
 
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
+
+<span class="c"># Each head is HEAD_BOARDS boards cut across X from the croze outline, with</span>
+<span class="c"># a BOARD_SEAM between neighbours. A board is a thin wooden shell at least</span>
+<span class="c"># BOARD_MIN_SPAN wide in plan (the bung is 0.05, the narrowest board 0.36).</span>
+HEAD_BOARDS = <span class="n">4</span>
+BOARD_SEAM = <span class="n">0.0015</span>
+BOARD_SEAM_MIN = <span class="n">0.0008</span>
+BOARD_SEAM_MAX = <span class="n">0.003</span>
+BOARD_MIN_SPAN = <span class="n">0.30</span>
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -722,6 +739,7 @@ METAL_IDX = <span class="n">1</span>
     short_staves=<span class="k">False</span>,
     float_head=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
+    one_piece_head=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / R_MID
@@ -734,15 +752,16 @@ METAL_IDX = <span class="n">1</span>
         bot_z1 = CHIME + LID_T
         top_z0 = HEIGHT - CHIME - LID_T
         top_z1 = HEIGHT - CHIME
-        add_polygon_disk(
+        n_boards = <span class="n">1</span> <span class="k">if</span> one_piece_head <span class="k">else</span> HEAD_BOARDS
+        add_board_disk(
             bm, bot_z0, bot_z1,
             croze_xy(spans, <span class="n">0.5</span> * (bot_z0 + bot_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, n_boards,
         )
-        add_polygon_disk(
+        add_board_disk(
             bm, top_z0, top_z1,
             croze_xy(spans, <span class="n">0.5</span> * (top_z0 + top_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, n_boards,
         )
         add_bung(bm, <span class="n">0.5</span> * (spans[<span class="n">0</span>][<span class="n">0</span>] + spans[<span class="n">0</span>][<span class="n">1</span>]), BUNG_Z, spans)
         build_hoops(bm, spans, round_band)
@@ -980,8 +999,7 @@ METAL_IDX = <span class="n">1</span>
             <span class="k">continue</span>
         a = shell_aabb(me, g)
         dz = a[<span class="n">5</span>] - a[<span class="n">2</span>]
-        r = <span class="n">0.25</span> * ((a[<span class="n">3</span>] - a[<span class="n">0</span>]) + (a[<span class="n">4</span>] - a[<span class="n">1</span>]))
-        <span class="k">if</span> dz &lt; <span class="n">0.06</span> <span class="k">and</span> r &gt; <span class="n">0.15</span>:
+        <span class="k">if</span> dz &lt; <span class="n">0.06</span> <span class="k">and</span> max(a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]) &gt;= BOARD_MIN_SPAN:
             heads.append(g)
         <span class="k">elif</span> dz &gt; <span class="n">0.50</span>:
             staves.append(g)
@@ -1016,6 +1034,191 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">return</span> worst
     <span class="k">finally</span>:
         bm_s.free()
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and every board is its own shell, so each gets one tone and
+    grain running along its own long axis (up the curved staves, across
+    the flat boards).
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> clip_x(ring, x, keep_above):
+    <span class="s">&quot;&quot;&quot;Sutherland-Hodgman clip of a closed xy ring against the line X = x.&quot;&quot;&quot;</span>
+    out = []
+    n = len(ring)
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        p, q = ring[i], ring[(i + <span class="n">1</span>) % n]
+        p_in = p[<span class="n">0</span>] &gt;= x <span class="k">if</span> keep_above <span class="k">else</span> p[<span class="n">0</span>] &lt;= x
+        q_in = q[<span class="n">0</span>] &gt;= x <span class="k">if</span> keep_above <span class="k">else</span> q[<span class="n">0</span>] &lt;= x
+        <span class="k">if</span> p_in:
+            out.append(p)
+        <span class="k">if</span> p_in != q_in:
+            t = (x - p[<span class="n">0</span>]) / (q[<span class="n">0</span>] - p[<span class="n">0</span>])
+            out.append((x, p[<span class="n">1</span>] + t * (q[<span class="n">1</span>] - p[<span class="n">1</span>])))
+    <span class="c"># a cut landing on an existing vertex would leave a zero-length edge</span>
+    clean = []
+    <span class="k">for</span> p <span class="k">in</span> out:
+        <span class="k">if</span> <span class="k">not</span> clean <span class="k">or</span> math.dist(p, clean[-<span class="n">1</span>]) &gt; <span class="n">1e-4</span>:
+            clean.append(p)
+    <span class="k">if</span> len(clean) &gt; <span class="n">2</span> <span class="k">and</span> math.dist(clean[<span class="n">0</span>], clean[-<span class="n">1</span>]) &lt;= <span class="n">1e-4</span>:
+        clean.pop()
+    <span class="k">return</span> clean
+
+
+<span class="k">def</span> add_board_disk(bm, z0, z1, xy_ring, mat_idx, n_boards):
+    <span class="s">&quot;&quot;&quot;A head of ``n_boards`` boards, the outline cut across X with seams between.
+
+    Each board is the croze outline clipped to its strip, so the outer
+    edge of every board is still the croze and the head seats exactly
+    as the one-piece disk did.
+    &quot;&quot;&quot;</span>
+    xs = [p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> xy_ring]
+    x_lo, x_hi = min(xs), max(xs)
+    w = (x_hi - x_lo) / n_boards
+    <span class="k">for</span> k <span class="k">in</span> range(n_boards):
+        ring = xy_ring
+        <span class="k">if</span> k &gt; <span class="n">0</span>:
+            ring = clip_x(ring, x_lo + k * w + BOARD_SEAM * <span class="n">0.5</span>, <span class="k">True</span>)
+        <span class="k">if</span> k &lt; n_boards - <span class="n">1</span>:
+            ring = clip_x(ring, x_lo + (k + <span class="n">1</span>) * w - BOARD_SEAM * <span class="n">0.5</span>, <span class="k">False</span>)
+        add_polygon_disk(bm, z0, z1, ring, mat_idx)
+
+
+<span class="k">def</span> board_audit(me, z_lo, z_hi):
+    <span class="s">&quot;&quot;&quot;Boards of the flat wooden disk between ``z_lo`` and ``z_hi``: count and seams.
+
+    A board is a thin wooden shell wide in plan. Sorted across X, the
+    seam is the gap between one board&#x27;s max X and the next one&#x27;s min X.
+    &quot;&quot;&quot;</span>
+    boards = []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        <span class="k">if</span> a[<span class="n">5</span>] - a[<span class="n">2</span>] &gt; <span class="n">0.06</span> <span class="k">or</span> max(a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]) &lt; BOARD_MIN_SPAN:
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="k">not</span> (z_lo &lt;= <span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>]) &lt;= z_hi):
+            <span class="k">continue</span>
+        boards.append(a)
+    boards.sort(key=<span class="k">lambda</span> a: a[<span class="n">0</span>])
+    seams = [boards[i + <span class="n">1</span>][<span class="n">0</span>] - boards[i][<span class="n">3</span>] <span class="k">for</span> i <span class="k">in</span> range(len(boards) - <span class="n">1</span>)]
+    <span class="k">return</span> len(boards), seams
+
+
+<span class="k">def</span> barrel_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;BarrelWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;BarrelHoop&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
 
 
 <span class="k">def</span> body_plan(me):
@@ -1151,23 +1354,20 @@ METAL_IDX = <span class="n">1</span>
     short_staves=<span class="k">False</span>,
     float_head=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
+    one_piece_head=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     flags = dict(
         short_staves=short_staves,
         float_head=float_head,
         round_band=round_band,
+        one_piece_head=one_piece_head,
     )
     low = build_barrel_mesh(<span class="s">&quot;BarrelLow&quot;</span>, <span class="n">0.004</span>, <span class="n">2</span>, **flags)
     high = build_barrel_mesh(<span class="s">&quot;BarrelHigh&quot;</span>, <span class="n">0.004</span>, <span class="n">4</span>, **flags)
-    wood = principled(
-        <span class="s">&quot;BarrelWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>,
-        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;BarrelHoop&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.53</span>, <span class="n">0.50</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.35</span>, <span class="n">0.32</span>, <span class="n">0.28</span>, <span class="n">1.0</span>),
-    )
+    wood, metal = barrel_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     <span class="k">if</span> stray_vert:
@@ -1200,6 +1400,9 @@ METAL_IDX = <span class="n">1</span>
     sup = support_audit(low.data)
     bite_min, bite_max = hoop_seat(low.data, spans)
     hgap = head_gap(low.data, spans)
+    boards_bot, seams_bot = board_audit(low.data, <span class="n">0.0</span>, <span class="n">0.2</span>)
+    boards_top, seams_top = board_audit(low.data, HEIGHT - <span class="n">0.2</span>, HEIGHT + <span class="n">0.2</span>)
+    seams = seams_bot + seams_top
     dia, ht = body_plan(low.data)
     print(
         <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
@@ -1210,6 +1413,10 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">measured staves=</span>{sup[<span class="s">&#x27;staves&#x27;</span>]}<span class="s"> stave_z=</span>{sup[<span class="s">&#x27;stave_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">hoop_bite=</span>{bite_min:<span class="s">.5f</span>}<span class="s">..</span>{bite_max:<span class="s">.5f</span>}<span class="s"> head_gap=</span>{hgap:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">body=</span>{dia:<span class="s">.4f</span>}<span class="s">x</span>{ht:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured head_boards=</span>{boards_bot}<span class="s">+</span>{boards_top}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seams=</span>{min(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s">..</span>{max(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
     img, tex = setup_bake_image(low, wood)
@@ -1238,6 +1445,10 @@ METAL_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1350,6 +1561,19 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">head-croze gap </span>{hgap:<span class="s">.5f</span>}<span class="s"> &gt; </span>{HEAD_GAP_MAX}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--float-head is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        boards_bot != HEAD_BOARDS
+        <span class="k">or</span> boards_top != HEAD_BOARDS
+        <span class="k">or</span> min(seams, default=<span class="n">0.0</span>) &lt; BOARD_SEAM_MIN
+        <span class="k">or</span> max(seams, default=<span class="n">99.0</span>) &gt; BOARD_SEAM_MAX
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">head boards </span>{boards_bot}<span class="s">+</span>{boards_top}<span class="s"> != </span>{HEAD_BOARDS}<span class="s"> each, or </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">seams </span>{min(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s">..</span>{max(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">outside [</span>{BOARD_SEAM_MIN}<span class="s">, </span>{BOARD_SEAM_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--one-piece-head is the designed fail)&quot;</span>,
             <span class="n">17</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> bite_min &lt; HOOP_BITE_MIN <span class="k">or</span> bite_max &gt; HOOP_BITE_MAX:
@@ -1482,6 +1706,7 @@ METAL_IDX = <span class="n">1</span>
     p.add_argument(<span class="s">&quot;--short-staves&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-head&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--round-band&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--one-piece-head&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1491,6 +1716,7 @@ METAL_IDX = <span class="n">1</span>
         short_staves=args.short_staves,
         float_head=args.float_head,
         round_band=args.round_band,
+        one_piece_head=args.one_piece_head,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1515,7 +1741,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wooden-barrel-hero.webp" alt="A wooden stave barrel bound by three metal hoops." />
+    <img src="../assets/wooden-barrel-hero.webp" alt="A wooden stave barrel bound by four iron hoops, its head made of boards." />
   </dialog>
   <footer>
     <div class="statusbar">

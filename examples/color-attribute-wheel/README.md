@@ -19,6 +19,16 @@ match the closed-form HSV value for the vertex they reference. A separate check
 in the render path confirms the `Attribute` node is actually linked to Base
 Color, not just present in the node tree.
 
+## Staging
+
+The disc is zero-thickness, and the still used to show it as a paper-thin oval
+hovering 8 cm above the floor. The render path now gives it a render-only
+Solidify body (5 cm) and stands it at the same 52° lean on a dark plinth, with
+a strut behind it, easel-style. The height is computed so the lowest point of
+the rim rests on the plinth. The mesh `check()` asserts is unchanged: the
+modifier is added after the check and only in the render path. Measured
+framing on 5.2.1: fill 0.794 y, every margin ≥ 0.094.
+
 ## Run
 
 ```bash

@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wooden-bucket — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-bucket/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wooden-bucket — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wooden-bucket/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-bucket-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden stave bucket with metal hoops and a curved wooden bail handle." />
+  <meta property="og:image:alt" content="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-bucket — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-bucket-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden stave bucket with metal hoops and a curved wooden bail handle." />
+  <meta name="twitter:image:alt" content="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,36 +265,41 @@
   </div>
   <header class="hero">
     <h1>wooden-bucket</h1>
-    <p>A procedural coopered pail with a croze-seated floor, chord-lofted hoops, and a round bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural coopered pail with a boarded, croze-seated floor, chord-lofted hoops, and a three-strand rope bail through the ear rings through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden stave bucket with metal hoops and a curved wooden bail handle.">
-      <img src="../assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with metal hoops and a curved wooden bail handle." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings.">
+      <img src="../assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 4872 tris, three materials with 1424 wood, 1020 metal, and 208 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.383×0.346×0.527 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0013 m, LOD ratios in band, convex collider 302 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 5458 tris, three materials with 1448 wood, 1020 metal, and 486 rope faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.396×0.346×0.534 m, 16 grounded staves, hoop bite 0.0025 m, bail-ear gap 0.0011 m, three bottom boards, no rope vertex inside an ear plate, LOD ratios in band, convex collider 276 tris, non-empty glTF. --skip-decimate exits 9; --float-handle exits 17 on the bail-ear budget; --sunk-rope exits 17 on the rope-clearance budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-bucket/wooden_bucket.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural coopered pail (16 staves with seeded width jitter, a bottom seated in a croze above a chime, iron hoops lofted on the stave faces, ear plates and rings, a round rope bail through the rings) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>Hoops evaluate the same <code>host_outer_r</code> chord as the stave flats. <code>--round-band</code> is the falsifier: a circle of <code>radius_at(z)</code> instead of the chord. The floor follows the inner stave polygon. Ear plates sit on the outer stave face below the rim; the bail is a semicircle whose ends pass through the rings. <code>--float-handle</code> shrinks that semicircle so the bar sits on the ring; <code>--float-bottom</code> shrinks the floor out of the croze.</p>
+<p>A showcase piece, not an example. Procedural coopered pail (16 staves with seeded width jitter, a bottom of three boards seated in a croze above a chime, iron hoops lofted on the stave faces, ear plates and rings, a three-strand rope bail through the rings) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>Hoops evaluate the same <code>host_outer_r</code> chord as the stave flats. <code>--round-band</code> is the falsifier: a circle of <code>radius_at(z)</code> instead of the chord. The floor follows the inner stave polygon. Ear plates sit on the outer stave face below the rim; the bail is a semicircle whose ends pass through the rings and run on below them. <code>--float-handle</code> shrinks that semicircle and lifts it by what it lost, so the envelope stays put and only the bail-ear gap fails; <code>--float-bottom</code> shrinks the floor out of the croze.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>4000–5800</td><td>4872 / 4872 / 4872</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2196 / 0.2196 / 0.2188</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥350 wood, ≥180 metal, ≥40 rope</td><td>3 slots; 1424 / 1020 / 208</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.383, 0.346, 0.527) m ± 0.015</td><td>(0.3832, 0.3462, 0.5271), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 420</td><td>302</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>378296 / 378296 / 378276 bytes</td></tr></tbody></table></div>
-<p>Base triangles rose from <strong>4272 to 4872</strong> in the quality pass: overlapping identical staves, circular hoops, and a 12-box bail became 16 jittered staves, chord-seated hoops, a polygonal croze floor, and a round bail through the ear rings.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 4 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17. Export byte counts differ by 20 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>4000–5800</td><td>5458 / 5458 / 5458</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4998 / 0.4998 / 0.4998</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2191</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥350 wood, ≥180 metal, ≥40 rope</td><td>3 slots; 1448 / 1020 / 486</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.396, 0.346, 0.534) m ± 0.015</td><td>(0.3957, 0.3462, 0.5338), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 420</td><td>276</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>420984 / 420984 / 420976 bytes</td></tr></tbody></table></div>
+<p>Base triangles rose from <strong>4272 to 4872</strong> in the quality pass: overlapping identical staves, circular hoops, and a 12-box bail became 16 jittered staves, chord-seated hoops, a polygonal croze floor, and a round bail through the ear rings. The second pass took it to <strong>5458</strong>: the bail became three-strand rope (48 segments of a nine-vertex lobed section, running on through the rings) and the floor three boards.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series, so LOD2 ratios differ slightly between versions. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 16 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>16, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.335 m dia × 0.360 m high ± 0.04</td><td>0.3349 × 0.3600</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Bail-ear BVH gap</td><td>≤ 0.006 m</td><td>0.00125</td></tr><tr><td>Floor-croze rim BVH gap</td><td>≤ 0.008 m</td><td>0.00458</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0010–0.007 m</td><td>0.00250</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Bail-ear BVH gap</td><td>≤ 0.006 m</td><td>0.00107</td></tr><tr><td>Floor-croze rim BVH gap</td><td>≤ 0.008 m</td><td>0.00474</td></tr><tr><td>Bottom boards</td><td>3; every seam 0.0006–0.0025 m</td><td>3; 0.00120</td></tr><tr><td>Rope clears the ear plates</td><td>2 plates; 0 rope vertices inside either</td><td>2; 0</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0010–0.007 m</td><td>0.00250</td></tr></tbody></table></div>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-handle</code></td><td>bail-ear gap</td><td>17</td></tr><tr><td><code>--float-bottom</code></td><td>floor-croze gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr></tbody></table></div>
+<p>Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-handle</code></td><td>bail-ear gap</td><td>17</td></tr><tr><td><code>--float-bottom</code></td><td>floor-croze gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--one-piece-bottom</code></td><td>bottom boards: 3</td><td>17</td></tr><tr><td><code>--sunk-rope</code></td><td>rope clears the ear plates</td><td>17</td></tr></tbody></table></div>
+<h2>Rope and ears</h2>
+<p>The bail was a smooth eight-sided tube in a rope material, and it read as a plastic hose. It is now laid rope: a three-lobed section turned one vertex step per ring, so the lobes wind along the bail as strands. The section&#x27;s frame is fixed to the bail&#x27;s plane, so the lay does not jump where the ends turn vertical.</p>
+<p>The ring offset from the ear plate was <code>RING_MAJOR * 0.25</code>, which put the rope&#x27;s axis 3.25 mm off the plate and its body through it (hidden by the ring in the old stills). The offset is now sized from the rope&#x27;s lobes plus 0.5 mm, and <strong>Rope clears the ear plates</strong> asserts it. <code>--sunk-rope</code> restores the old offset and puts 19 rope vertices inside a plate. The outer AABB was re-fitted to the honest envelope: 12.5 mm wider across the ears and 6 mm taller.</p>
+<h2>Surface</h2>
+<p>Every stave and board carries a seeded <code>PlankTone</code> and a <code>GrainDir</code> (its own long axis) as face attributes, and <code>wood_material</code> stretches grain along that axis. The hoops, plates and rings are dark rusted iron. The temp <code>.glb</code> is removed once its size is measured.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wooden_bucket.py --
 blender --background --python wooden_bucket.py -- --skip-decimate
@@ -304,11 +309,13 @@ blender --background --python wooden_bucket.py -- --short-staves
 blender --background --python wooden_bucket.py -- --float-handle
 blender --background --python wooden_bucket.py -- --float-bottom
 blender --background --python wooden_bucket.py -- --round-band
+blender --background --python wooden_bucket.py -- --one-piece-bottom
+blender --background --python wooden_bucket.py -- --sunk-rope
 blender --background --python wooden_bucket.py -- --output bucket.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: bail-ear gap or floor-croze gap</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body diameter or height off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: bail-ear gap, floor-croze gap, bottom boards and seams, or rope through an ear plate</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body diameter or height off the stated real-world size</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -334,7 +341,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
 supports, ``--float-handle`` bail-ear joint-fit, ``--float-bottom``
-floor-croze joint-fit, ``--round-band`` hoop seat (hoop generated on a
+floor-croze joint-fit, ``--one-piece-bottom`` bottom boards (one slab
+instead of boards), ``--round-band`` hoop seat (hoop generated on a
 circle instead of the stave chords).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
@@ -387,12 +395,23 @@ BOTTOM_T = <span class="n">0.022</span>
 CHIME = <span class="n">0.008</span>
 CROZE_BITE = <span class="n">0.0025</span>
 FLOOR_GAP_MAX = <span class="n">0.008</span>
-BAIL_R = <span class="n">0.008</span>
-BAIL_SEGS = <span class="n">24</span>
-BAIL_PIPE = <span class="n">8</span>
+BAIL_R = <span class="n">0.0075</span>
+BAIL_SEGS = <span class="n">48</span>
+<span class="c"># The bail is three-strand rope: a three-lobed section of ROPE_PIPE verts</span>
+<span class="c"># turned one vertex step per ring, so the lobes run as helical strands.</span>
+<span class="c"># Lobes reach BAIL_R * (1 + ROPE_LOBE), inside the ear ring&#x27;s hole</span>
+<span class="c"># (RING_MAJOR - RING_MINOR). Each end runs ROPE_TAIL on through its ring.</span>
+<span class="c"># The ring centre stands ROPE_CLEAR beyond the rope&#x27;s lobes off the ear</span>
+<span class="c"># plate, so the rope passes the plate instead of through it.</span>
+ROPE_PIPE = <span class="n">9</span>
+ROPE_LOBE = <span class="n">0.20</span>
+ROPE_TAIL = <span class="n">0.014</span>
+ROPE_CLEAR = <span class="n">0.0005</span>
 EAR_Z = HEIGHT - <span class="n">0.016</span>
 RING_MAJOR = <span class="n">0.013</span>
 RING_MINOR = <span class="n">0.0035</span>
+RING_OFFSET = BAIL_R * (<span class="n">1.0</span> + ROPE_LOBE) + ROPE_CLEAR
+SUNK_RING_OFFSET = RING_MAJOR * <span class="n">0.25</span>
 BAIL_GAP_MAX = <span class="n">0.006</span>
 STAVE_ZMIN_MAX = <span class="n">0.001</span>
 SHORT_STAVES_LIFT = <span class="n">0.040</span>
@@ -406,7 +425,7 @@ BODY_TOL = <span class="n">0.04</span>
 BODY_DIA = <span class="n">0.335</span>
 BODY_H = <span class="n">0.360</span>
 BBOX_TOL = <span class="n">0.015</span>
-OUTER_SIZE = (<span class="n">0.383</span>, <span class="n">0.346</span>, <span class="n">0.527</span>)
+OUTER_SIZE = (<span class="n">0.396</span>, <span class="n">0.346</span>, <span class="n">0.534</span>)
 
 BASE_TRIS_MIN = <span class="n">4000</span>
 BASE_TRIS_MAX = <span class="n">5800</span>
@@ -430,6 +449,19 @@ STAVE_COUNT = N_STAVES
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
 ROPE_IDX = <span class="n">2</span>
+
+<span class="c"># The bottom is BOTTOM_BOARDS boards cut across X from the croze outline,</span>
+<span class="c"># with a BOARD_SEAM between neighbours. A board is a thin wooden shell at</span>
+<span class="c"># least BOARD_MIN_SPAN wide in plan (the narrowest board is 0.20).</span>
+BOTTOM_BOARDS = <span class="n">3</span>
+BOARD_SEAM = <span class="n">0.0012</span>
+BOARD_SEAM_MIN = <span class="n">0.0006</span>
+BOARD_SEAM_MAX = <span class="n">0.0025</span>
+BOARD_MIN_SPAN = <span class="n">0.15</span>
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">45.0</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -590,7 +622,15 @@ ROPE_IDX = <span class="n">2</span>
     <span class="k">return</span> verts
 
 
-<span class="k">def</span> add_pipe_curve(bm, points, radius, segs, mat_idx):
+<span class="k">def</span> add_rope_curve(bm, points, radius, mat_idx):
+    <span class="s">&quot;&quot;&quot;Three-strand rope along a path in the XZ plane.
+
+    The section is ROPE_PIPE verts with three lobes, turned one vertex
+    step per ring, so each lobe winds along the path as a strand. The
+    frame is fixed to the path&#x27;s plane (side = +Y), so the lay never
+    jumps where the path turns vertical.
+    &quot;&quot;&quot;</span>
+    side = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))
     rings = []
     n = len(points)
     <span class="k">for</span> i, p <span class="k">in</span> enumerate(points):
@@ -599,20 +639,13 @@ ROPE_IDX = <span class="n">2</span>
             tangent = (Vector(points[i + <span class="n">1</span>]) - p).normalized()
         <span class="k">else</span>:
             tangent = (p - Vector(points[i - <span class="n">1</span>])).normalized()
-        side = Vector((-tangent.y, tangent.x, <span class="n">0.0</span>))
-        <span class="k">if</span> side.length &lt; <span class="n">1e-6</span>:
-            side = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-        <span class="k">else</span>:
-            side.normalize()
         up = tangent.cross(side).normalized()
         ring = []
-        <span class="k">for</span> k <span class="k">in</span> range(segs):
-            a = <span class="n">2.0</span> * math.pi * k / segs
-            ring.append(
-                bm.verts.new(
-                    p + side * (radius * math.cos(a)) + up * (radius * math.sin(a))
-                )
-            )
+        <span class="k">for</span> k <span class="k">in</span> range(ROPE_PIPE):
+            a = <span class="n">2.0</span> * math.pi * k / ROPE_PIPE
+            lobe = <span class="n">1.0</span> + ROPE_LOBE * math.cos(<span class="n">3.0</span> * a - <span class="n">2.0</span> * math.pi * <span class="n">3.0</span> * i / ROPE_PIPE)
+            r = radius * lobe
+            ring.append(bm.verts.new(p + side * (r * math.cos(a)) + up * (r * math.sin(a))))
         rings.append(ring)
     loft_rings(bm, rings, mat_idx, cap_start=<span class="k">True</span>, cap_end=<span class="k">True</span>)
 
@@ -726,7 +759,7 @@ ROPE_IDX = <span class="n">2</span>
         bmesh.ops.triangulate(bm, faces=faces)
 
 
-<span class="k">def</span> add_ears_and_bail(bm, spans, float_handle):
+<span class="k">def</span> add_ears_and_bail(bm, spans, float_handle, sunk_rope=<span class="k">False</span>):
     <span class="s">&quot;&quot;&quot;Ear plates + flat rings (hole along Z) and a round bail through them.
 
     Ring centres sit on the stave outer at EAR_Z. The bail is a semicircle
@@ -743,8 +776,11 @@ ROPE_IDX = <span class="n">2</span>
     plate_z = HEIGHT - plate_h * <span class="n">0.5</span> - <span class="n">0.006</span>
     x_l = -(r_l + plate_t * <span class="n">0.5</span>)
     x_r = r_r + plate_t * <span class="n">0.5</span>
-    ring_x_l = -(r_l + plate_t + RING_MAJOR * <span class="n">0.25</span>)
-    ring_x_r = r_r + plate_t + RING_MAJOR * <span class="n">0.25</span>
+    <span class="c"># --sunk-rope restores the old offset, a quarter of the ring&#x27;s major</span>
+    <span class="c"># radius: the rope&#x27;s axis 3 mm off the plate, its body through it.</span>
+    off = SUNK_RING_OFFSET <span class="k">if</span> sunk_rope <span class="k">else</span> RING_OFFSET
+    ring_x_l = -(r_l + plate_t + off)
+    ring_x_r = r_r + plate_t + off
     <span class="k">for</span> x <span class="k">in</span> (x_l, x_r):
         add_box(
             bm,
@@ -765,15 +801,21 @@ ROPE_IDX = <span class="n">2</span>
         )
     rx = <span class="n">0.5</span> * (abs(ring_x_l) + abs(ring_x_r))
     <span class="k">if</span> float_handle:
+        <span class="c"># a smaller bail lifted by exactly what it lost, so its top and the</span>
+        <span class="c"># envelope stay put and only the bail-ear gap fails</span>
+        z0 = EAR_Z + <span class="n">0.28</span> * rx
         rx *= <span class="n">0.72</span>
-        z0 = EAR_Z + <span class="n">0.035</span>
     <span class="k">else</span>:
         z0 = EAR_Z
-    pts = []
+    <span class="c"># below each ring the rope runs on down ROPE_TAIL, so it passes</span>
+    <span class="c"># through the ring instead of stopping inside it</span>
+    tail = (-ROPE_TAIL, -<span class="n">0.5</span> * ROPE_TAIL)
+    pts = [(rx, <span class="n">0.0</span>, z0 + dz) <span class="k">for</span> dz <span class="k">in</span> tail]
     <span class="k">for</span> i <span class="k">in</span> range(BAIL_SEGS + <span class="n">1</span>):
         t = math.pi * i / BAIL_SEGS
         pts.append((rx * math.cos(t), <span class="n">0.0</span>, z0 + rx * math.sin(t)))
-    add_pipe_curve(bm, pts, BAIL_R, BAIL_PIPE, ROPE_IDX)
+    pts.extend((-rx, <span class="n">0.0</span>, z0 + dz) <span class="k">for</span> dz <span class="k">in</span> reversed(tail))
+    add_rope_curve(bm, pts, BAIL_R, ROPE_IDX)
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -825,6 +867,8 @@ ROPE_IDX = <span class="n">2</span>
     float_handle=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
     float_bottom=<span class="k">False</span>,
+    one_piece_bottom=<span class="k">False</span>,
+    sunk_rope=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / max(R_TOP, <span class="n">0.1</span>)
@@ -835,13 +879,13 @@ ROPE_IDX = <span class="n">2</span>
         bot_z0 = CHIME
         bot_z1 = CHIME + BOTTOM_T
         shrink = <span class="n">0.022</span> <span class="k">if</span> float_bottom <span class="k">else</span> <span class="n">0.0</span>
-        add_polygon_disk(
+        add_board_disk(
             bm, bot_z0, bot_z1,
             croze_xy(spans, <span class="n">0.5</span> * (bot_z0 + bot_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, <span class="n">1</span> <span class="k">if</span> one_piece_bottom <span class="k">else</span> BOTTOM_BOARDS,
         )
         build_hoops(bm, spans, round_band)
-        add_ears_and_bail(bm, spans, float_handle)
+        add_ears_and_bail(bm, spans, float_handle, sunk_rope)
         triangulate_ngons(bm)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -1076,8 +1120,7 @@ ROPE_IDX = <span class="n">2</span>
             <span class="k">continue</span>
         a = shell_aabb(me, g)
         dz = a[<span class="n">5</span>] - a[<span class="n">2</span>]
-        r = <span class="n">0.25</span> * ((a[<span class="n">3</span>] - a[<span class="n">0</span>]) + (a[<span class="n">4</span>] - a[<span class="n">1</span>]))
-        <span class="k">if</span> dz &lt; <span class="n">0.05</span> <span class="k">and</span> r &gt; <span class="n">0.08</span>:
+        <span class="k">if</span> dz &lt; <span class="n">0.05</span> <span class="k">and</span> max(a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]) &gt;= BOARD_MIN_SPAN:
             floors.append(g)
         <span class="k">elif</span> dz &gt; <span class="n">0.20</span>:
             staves.append(g)
@@ -1147,6 +1190,221 @@ ROPE_IDX = <span class="n">2</span>
         <span class="k">return</span> best
     <span class="k">finally</span>:
         bm_b.free()
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and every board is its own shell, so each gets one tone and
+    grain running along its own long axis (up the curved staves, across
+    the flat boards).
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> clip_x(ring, x, keep_above):
+    <span class="s">&quot;&quot;&quot;Sutherland-Hodgman clip of a closed xy ring against the line X = x.&quot;&quot;&quot;</span>
+    out = []
+    n = len(ring)
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        p, q = ring[i], ring[(i + <span class="n">1</span>) % n]
+        p_in = p[<span class="n">0</span>] &gt;= x <span class="k">if</span> keep_above <span class="k">else</span> p[<span class="n">0</span>] &lt;= x
+        q_in = q[<span class="n">0</span>] &gt;= x <span class="k">if</span> keep_above <span class="k">else</span> q[<span class="n">0</span>] &lt;= x
+        <span class="k">if</span> p_in:
+            out.append(p)
+        <span class="k">if</span> p_in != q_in:
+            t = (x - p[<span class="n">0</span>]) / (q[<span class="n">0</span>] - p[<span class="n">0</span>])
+            out.append((x, p[<span class="n">1</span>] + t * (q[<span class="n">1</span>] - p[<span class="n">1</span>])))
+    <span class="c"># a cut landing on an existing vertex would leave a zero-length edge</span>
+    clean = []
+    <span class="k">for</span> p <span class="k">in</span> out:
+        <span class="k">if</span> <span class="k">not</span> clean <span class="k">or</span> math.dist(p, clean[-<span class="n">1</span>]) &gt; <span class="n">1e-4</span>:
+            clean.append(p)
+    <span class="k">if</span> len(clean) &gt; <span class="n">2</span> <span class="k">and</span> math.dist(clean[<span class="n">0</span>], clean[-<span class="n">1</span>]) &lt;= <span class="n">1e-4</span>:
+        clean.pop()
+    <span class="k">return</span> clean
+
+
+<span class="k">def</span> add_board_disk(bm, z0, z1, xy_ring, mat_idx, n_boards):
+    <span class="s">&quot;&quot;&quot;A disk of ``n_boards`` boards, the outline cut across X with seams between.
+
+    Each board is the croze outline clipped to its strip, so the outer
+    edge of every board is still the croze and the bottom seats exactly
+    as the one-piece disk did.
+    &quot;&quot;&quot;</span>
+    xs = [p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> xy_ring]
+    x_lo, x_hi = min(xs), max(xs)
+    w = (x_hi - x_lo) / n_boards
+    <span class="k">for</span> k <span class="k">in</span> range(n_boards):
+        ring = xy_ring
+        <span class="k">if</span> k &gt; <span class="n">0</span>:
+            ring = clip_x(ring, x_lo + k * w + BOARD_SEAM * <span class="n">0.5</span>, <span class="k">True</span>)
+        <span class="k">if</span> k &lt; n_boards - <span class="n">1</span>:
+            ring = clip_x(ring, x_lo + (k + <span class="n">1</span>) * w - BOARD_SEAM * <span class="n">0.5</span>, <span class="k">False</span>)
+        add_polygon_disk(bm, z0, z1, ring, mat_idx)
+
+
+<span class="k">def</span> board_audit(me, z_lo, z_hi):
+    <span class="s">&quot;&quot;&quot;Boards of the flat wooden disk between ``z_lo`` and ``z_hi``: count and seams.
+
+    A board is a thin wooden shell wide in plan. Sorted across X, the
+    seam is the gap between one board&#x27;s max X and the next one&#x27;s min X.
+    &quot;&quot;&quot;</span>
+    boards = []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        <span class="k">if</span> a[<span class="n">5</span>] - a[<span class="n">2</span>] &gt; <span class="n">0.06</span> <span class="k">or</span> max(a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]) &lt; BOARD_MIN_SPAN:
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="k">not</span> (z_lo &lt;= <span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>]) &lt;= z_hi):
+            <span class="k">continue</span>
+        boards.append(a)
+    boards.sort(key=<span class="k">lambda</span> a: a[<span class="n">0</span>])
+    seams = [boards[i + <span class="n">1</span>][<span class="n">0</span>] - boards[i][<span class="n">3</span>] <span class="k">for</span> i <span class="k">in</span> range(len(boards) - <span class="n">1</span>)]
+    <span class="k">return</span> len(boards), seams
+
+
+<span class="k">def</span> bucket_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron, rope): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;BucketWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;BucketHoop&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    rope = principled(
+        <span class="s">&quot;BucketRope&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.40</span>, <span class="n">0.24</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.80</span>,
+        noise_scale=<span class="n">60.0</span>, wear=(<span class="n">0.30</span>, <span class="n">0.22</span>, <span class="n">0.12</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal, rope
+
+
+<span class="k">def</span> rope_through_plates(me):
+    <span class="s">&quot;&quot;&quot;Rope vertices inside an ear plate&#x27;s box: the rope must pass the plates.
+
+    The ear plates are the two eight-vertex iron shells high on the
+    bucket. A rope vertex strictly inside either box is rope running
+    through iron.
+    &quot;&quot;&quot;</span>
+    plates, rope = [], []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        mat = mat_of(me, g)
+        <span class="k">if</span> mat == METAL_IDX <span class="k">and</span> len(g) == <span class="n">8</span> <span class="k">and</span> shell_aabb(me, g)[<span class="n">2</span>] &gt; <span class="n">0.25</span>:
+            plates.append(shell_aabb(me, g))
+        <span class="k">elif</span> mat == ROPE_IDX:
+            rope.extend(g)
+    eps = <span class="n">1e-5</span>
+    inside = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> rope:
+        p = me.vertices[i].co
+        <span class="k">for</span> a <span class="k">in</span> plates:
+            <span class="k">if</span> (a[<span class="n">0</span>] + eps &lt; p.x &lt; a[<span class="n">3</span>] - eps <span class="k">and</span> a[<span class="n">1</span>] + eps &lt; p.y &lt; a[<span class="n">4</span>] - eps
+                    <span class="k">and</span> a[<span class="n">2</span>] + eps &lt; p.z &lt; a[<span class="n">5</span>] - eps):
+                inside += <span class="n">1</span>
+                <span class="k">break</span>
+    <span class="k">return</span> len(plates), inside
 
 
 <span class="k">def</span> body_plan(me):
@@ -1283,6 +1541,8 @@ ROPE_IDX = <span class="n">2</span>
     float_handle=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
     float_bottom=<span class="k">False</span>,
+    one_piece_bottom=<span class="k">False</span>,
+    sunk_rope=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     flags = dict(
@@ -1290,21 +1550,14 @@ ROPE_IDX = <span class="n">2</span>
         float_handle=float_handle,
         round_band=round_band,
         float_bottom=float_bottom,
+        one_piece_bottom=one_piece_bottom,
+        sunk_rope=sunk_rope,
     )
     low = build_bucket_mesh(<span class="s">&quot;BucketLow&quot;</span>, <span class="n">0.003</span>, <span class="n">2</span>, **flags)
     high = build_bucket_mesh(<span class="s">&quot;BucketHigh&quot;</span>, <span class="n">0.003</span>, <span class="n">4</span>, **flags)
-    wood = principled(
-        <span class="s">&quot;BucketWood&quot;</span>, (<span class="n">0.46</span>, <span class="n">0.24</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.52</span>,
-        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.14</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;BucketHoop&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.53</span>, <span class="n">0.50</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.35</span>, <span class="n">0.32</span>, <span class="n">0.28</span>, <span class="n">1.0</span>),
-    )
-    rope = principled(
-        <span class="s">&quot;BucketRope&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.32</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.72</span>,
-        noise_scale=<span class="n">9.0</span>, wear=(<span class="n">0.30</span>, <span class="n">0.22</span>, <span class="n">0.12</span>, <span class="n">1.0</span>),
-    )
+    wood, metal, rope = bucket_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal, rope)
     assign_slots(high, wood, metal, rope)
     <span class="k">if</span> stray_vert:
@@ -1338,6 +1591,8 @@ ROPE_IDX = <span class="n">2</span>
     bite_min, bite_max = hoop_seat(low.data, spans)
     bjoin = bail_join(low.data)
     fgap = floor_gap(low.data)
+    n_boards, seams = board_audit(low.data, <span class="n">0.0</span>, <span class="n">0.1</span>)
+    n_plates, rope_in_plate = rope_through_plates(low.data)
     dia, ht = body_plan(low.data)
     print(
         <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
@@ -1348,6 +1603,11 @@ ROPE_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">measured staves=</span>{sup[<span class="s">&#x27;staves&#x27;</span>]}<span class="s"> stave_z=</span>{sup[<span class="s">&#x27;stave_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">hoop_bite=</span>{bite_min:<span class="s">.5f</span>}<span class="s">..</span>{bite_max:<span class="s">.5f</span>}<span class="s"> bail_join=</span>{bjoin:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">floor_gap=</span>{fgap:<span class="s">.5f</span>}<span class="s"> body=</span>{dia:<span class="s">.4f</span>}<span class="s">x</span>{ht:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured bottom_boards=</span>{n_boards}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seams=</span>{min(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s">..</span>{max(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">ear_plates=</span>{n_plates}<span class="s"> rope_in_plate=</span>{rope_in_plate}<span class="s">&quot;</span>
     )
 
     img, tex = setup_bake_image(low, wood)
@@ -1376,6 +1636,10 @@ ROPE_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1501,6 +1765,24 @@ ROPE_IDX = <span class="n">2</span>
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">floor-croze gap </span>{fgap:<span class="s">.5f</span>}<span class="s"> &gt; </span>{FLOOR_GAP_MAX}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--float-bottom is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        n_boards != BOTTOM_BOARDS
+        <span class="k">or</span> min(seams, default=<span class="n">0.0</span>) &lt; BOARD_SEAM_MIN
+        <span class="k">or</span> max(seams, default=<span class="n">99.0</span>) &gt; BOARD_SEAM_MAX
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">bottom boards </span>{n_boards}<span class="s"> != </span>{BOTTOM_BOARDS}<span class="s">, or seams </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{min(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s">..</span>{max(seams, default=<span class="n">0.0</span>):<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">outside [</span>{BOARD_SEAM_MIN}<span class="s">, </span>{BOARD_SEAM_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--one-piece-bottom is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> n_plates != <span class="n">2</span> <span class="k">or</span> rope_in_plate:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">ear plates </span>{n_plates}<span class="s"> != 2, or </span>{rope_in_plate}<span class="s"> rope vertices </span><span class="s">&quot;</span>
+            <span class="s">&quot;inside a plate (--sunk-rope is the designed fail)&quot;</span>,
             <span class="n">17</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> bite_min &lt; HOOP_BITE_MIN <span class="k">or</span> bite_max &gt; HOOP_BITE_MAX:
@@ -1634,6 +1916,8 @@ ROPE_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--float-handle&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-bottom&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--round-band&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--one-piece-bottom&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--sunk-rope&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1644,6 +1928,8 @@ ROPE_IDX = <span class="n">2</span>
         float_handle=args.float_handle,
         round_band=args.round_band,
         float_bottom=args.float_bottom,
+        one_piece_bottom=args.one_piece_bottom,
+        sunk_rope=args.sunk_rope,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1668,7 +1954,7 @@ ROPE_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with metal hoops and a curved wooden bail handle." />
+    <img src="../assets/wooden-bucket-hero.webp" alt="A wooden stave bucket with three iron hoops and a twisted rope handle through iron ear rings." />
   </dialog>
   <footer>
     <div class="statusbar">
