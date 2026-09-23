@@ -73,10 +73,56 @@ def render_still(obj, path, engine):
     wall.rotation_euler = (1.5708, 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
-    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.5); bpy.context.collection.objects.link(aim)
-    # off-axis and low: the remesh facets are the API evidence, and they only
-    # read when a raking key skims them from the side
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (2.6, -5.2, 1.5)
+    # Input beside output. Alone, the remeshed torus read as a glossy inner
+    # tube with blotchy highlights: nothing said "remeshed". The source torus
+    # (a modifier-free copy of the same datablock) on the left and the SDF
+    # result on the right, each under a cage of its own edges, show the
+    # thing the check measures: UV-ring topology in, voxel-grid topology
+    # out. Render-path scaffolding only; the check ran before this.
+    obj.location.x = 1.85
+    src = bpy.data.objects.new("SourceTorus", obj.data.copy())
+    src.location = (-1.85, obj.location.y, obj.location.z)
+    bpy.context.collection.objects.link(src)
+    # build() centres the torus at z=0.55 with a 0.5 minor radius, so both
+    # hovered 5 cm over the floor. Ground each on its own measured bottom:
+    # the SDF surface is not exactly the source surface.
+    dg0 = bpy.context.evaluated_depsgraph_get()
+    em = obj.evaluated_get(dg0).to_mesh()
+    obj.location.z -= obj.location.z + min(v.co.z for v in em.vertices)
+    obj.evaluated_get(dg0).to_mesh_clear()
+    src.location.z = -min(v.co.z for v in src.data.vertices)
+    cage_mat = bpy.data.materials.new("Cage"); cage_mat.use_nodes = True
+    cb = cage_mat.node_tree.nodes.get('Principled BSDF')
+    cb.inputs['Base Color'].default_value = (0.92, 0.82, 0.62, 1)
+    cb.inputs['Roughness'].default_value = 0.4
+    cages = []
+    dg = bpy.context.evaluated_depsgraph_get()
+    for host, remeshed in ((src, False), (obj, True)):
+        # The remeshed cage is the evaluated result frozen into a plain mesh:
+        # a live copy of the tree would re-apply its Set Material and paint
+        # the cage crimson.
+        data = (bpy.data.meshes.new_from_object(obj.evaluated_get(dg))
+                if remeshed else obj.data.copy())
+        cage = bpy.data.objects.new(host.name + "Cage", data)
+        cage.data.materials.clear(); cage.data.materials.append(cage_mat)
+        for poly in cage.data.polygons:
+            poly.material_index = 0
+        cage.location = host.location
+        wire = cage.modifiers.new("cage", 'WIREFRAME')
+        wire.thickness = 0.012; wire.offset = 1.0; wire.use_even_offset = True
+        wire.material_offset = 0
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+    # Softer than 0.16: at that gloss every voxel facet threw its own hard
+    # glint and the highlight broke into blocks that read as artifacts.
+    for m in obj.data.materials:
+        if m is not None and m.node_tree is not None:
+            bsdf = m.node_tree.nodes.get('Principled BSDF')
+            if bsdf is not None:
+                bsdf.inputs['Roughness'].default_value = 0.32
+    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 0.45); bpy.context.collection.objects.link(aim)
+    # Raised so both donut holes read, and pulled back to hold the pair.
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (1.5, -10.8, 5.5)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
     # low raking warm key so every facet catches a distinct glint, faint cool

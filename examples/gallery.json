@@ -34,7 +34,7 @@
       "name": "gn-sdf-remesh",
       "dir": "examples/gn-sdf-remesh",
       "teaches": "A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.",
-      "alt": "A glossy red torus with visibly blocky voxel faceting from the SDF remesh.",
+      "alt": "Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid.",
       "witnessesFix": "An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.",
       "hero": "docs/gallery/assets/gn-sdf-remesh-hero.webp",
       "preview": "examples/gn-sdf-remesh/preview.webp",
