@@ -257,7 +257,7 @@ the compositor on and is exactly zero with it off — and that EEVEE has no `use
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel disc with a white center fading into a vivid rainbow rim, leaning upright toward the camera on a dark studio floor with a warm light pool behind it" /></a>
+<a href="examples/color-attribute-wheel/"><img src="examples/color-attribute-wheel/preview.webp" alt="Color attribute wheel: an HSV color wheel board with a white center fading into a vivid rainbow rim, leaning back on a dark plinth on a dark studio floor with a warm light pool behind it" /></a>
 </td>
 <td valign="middle">
 

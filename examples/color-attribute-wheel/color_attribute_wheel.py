@@ -23,6 +23,7 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, colorsys, argparse
 from array import array
+from mathutils import Vector
 
 RINGS = 14
 SEGMENTS = 72
@@ -197,8 +198,54 @@ def render_still(obj, path, engine):
     # stand the disc up toward the camera like an easel: the wheel is the
     # subject, so it should present nearly face-on and fill the frame instead
     # of lying foreshortened on the floor.
-    obj.location = (0.0, 0.0, 1.34)
-    obj.rotation_euler = (math.radians(52), 0.0, math.radians(10))
+    # render-only: a Solidify body so the disc reads as a painted board, not
+    # a zero-thickness sheet, resting on a dark plinth and propped from
+    # behind by a strut, easel-style, instead of hovering above the floor.
+    disc_t = 0.05
+    plinth_h = 0.12
+    tilt = math.radians(52)
+    solid = obj.modifiers.new("Board", 'SOLIDIFY')
+    solid.thickness = disc_t
+    solid.offset = -1.0
+    # lowest rim point sits R_OUTER * sin(tilt) below the centre, and the
+    # board's back face another disc_t * cos(tilt) below that
+    obj.location = (0.0, 0.0, plinth_h + R_OUTER * math.sin(tilt) + disc_t * math.cos(tilt))
+    obj.rotation_euler = (tilt, 0.0, math.radians(10))
+
+    stand_mat = bpy.data.materials.new("Stand")
+    stand_mat.use_nodes = True
+    sb = stand_mat.node_tree.nodes["Principled BSDF"]
+    sb.inputs["Base Color"].default_value = (0.012, 0.012, 0.014, 1.0)
+    sb.inputs["Roughness"].default_value = 0.45
+
+    def stand_part(name, build):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            build(bm)
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(stand_mat)
+        ob = bpy.data.objects.new(name, me)
+        scene.collection.objects.link(ob)
+        return ob
+
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    rim_low = mw @ Vector((0.0, -R_OUTER, 0.0))
+    plinth = stand_part("Plinth", lambda bm: bmesh.ops.create_cube(bm, size=1.0))
+    plinth.scale = (1.5, 0.9, plinth_h)
+    plinth.location = (rim_low.x, rim_low.y + 0.25, plinth_h / 2.0)
+    plinth.rotation_euler = (0.0, 0.0, math.radians(10))
+    # the strut runs from the board's back, above centre, down to the plinth
+    top = mw @ Vector((0.0, 0.45, -disc_t))
+    foot = Vector((top.x, top.y + 0.95, plinth_h))
+    span = top - foot
+    strut = stand_part("Strut", lambda bm: bmesh.ops.create_cone(
+        bm, cap_ends=True, segments=16, radius1=0.035, radius2=0.035, depth=span.length))
+    strut.location = (top + foot) / 2.0
+    strut.rotation_euler = Vector((0.0, 0.0, 1.0)).rotation_difference(span).to_euler()
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -247,13 +294,13 @@ def render_still(obj, path, engine):
     light("Wedge", (2.0, 5.2, 3.6), 220.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = obj.location
+    aim.location = obj.location - Vector((0.0, 0.0, 0.2))
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.0, 2.4)
+    cam.location = (0.0, -9.4, 2.5)
     con = cam.constraints.new('TRACK_TO')
     con.target = aim
     con.track_axis = 'TRACK_NEGATIVE_Z'

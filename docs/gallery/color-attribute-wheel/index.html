@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/color-attribute-wheel-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A disc painted with a full hue wheel that fades to white at the centre." />
+  <meta property="og:image:alt" content="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="color-attribute-wheel — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/color-attribute-wheel-hero.webp" />
-  <meta name="twitter:image:alt" content="A disc painted with a full hue wheel that fades to white at the centre." />
+  <meta name="twitter:image:alt" content="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A disc painted with a full hue wheel that fades to white at the centre.">
-      <img src="../assets/color-attribute-wheel-hero.webp" alt="A disc painted with a full hue wheel that fades to white at the centre." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth.">
+      <img src="../assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> CORNER-domain attributes are sized to loop count, not vertex count; the check asserts the sizing, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.</div>
@@ -280,6 +280,8 @@
     <section class="detail-section md">
 <p>A runnable example that builds an HSV color wheel disc entirely with <code>bmesh</code> and colors it with <code>Mesh.color_attributes.new()</code> — the modern attributes API, not the deprecated <code>Mesh.vertex_colors</code> alias AI code keeps reaching for. It witnesses the domain trap that comes with it: a <code>CORNER</code>-domain attribute is sized to <code>len(mesh.loops)</code>, not <code>len(mesh.vertices)</code>, so per-vertex data has to be expanded across face corners before it is written. The material wires the same attribute into a Shader <code>Attribute</code> node (<code>attribute_type=&#x27;GEOMETRY&#x27;</code>) feeding Base Color — the step AI code most often skips, leaving the mesh gray even when the attribute data is correct.</p>
 <p><strong>What it witnesses:</strong> a <code>FLOAT_COLOR</code> attribute on the <code>CORNER</code> domain, filled with one <code>foreach_get</code> (loop → vertex index) and one <code>foreach_set</code> (loop color), never a per-loop Python assignment. The check asserts the attribute is sized to the loop count and <em>not</em> the vertex count, that it is <code>color_attributes.active_color</code> (so a renderer or exporter actually picks it up), and that several probe loops match the closed-form HSV value for the vertex they reference. A separate check in the render path confirms the <code>Attribute</code> node is actually linked to Base Color, not just present in the node tree.</p>
+<h2>Staging</h2>
+<p>The disc is zero-thickness, and the still used to show it as a paper-thin oval hovering 8 cm above the floor. The render path now gives it a render-only Solidify body (5 cm) and stands it at the same 52° lean on a dark plinth, with a strut behind it, easel-style. The height is computed so the lowest point of the rim rests on the plinth. The mesh <code>check()</code> asserts is unchanged: the modifier is added after the check and only in the render path. Measured framing on 5.2.1: fill 0.794 y, every margin ≥ 0.094.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python color_attribute_wheel.py --
@@ -326,6 +328,7 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, colorsys, argparse
 <span class="k">from</span> array <span class="k">import</span> array
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 RINGS = <span class="n">14</span>
 SEGMENTS = <span class="n">72</span>
@@ -500,8 +503,54 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     <span class="c"># stand the disc up toward the camera like an easel: the wheel is the</span>
     <span class="c"># subject, so it should present nearly face-on and fill the frame instead</span>
     <span class="c"># of lying foreshortened on the floor.</span>
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.34</span>)
-    obj.rotation_euler = (math.radians(<span class="n">52</span>), <span class="n">0.0</span>, math.radians(<span class="n">10</span>))
+    <span class="c"># render-only: a Solidify body so the disc reads as a painted board, not</span>
+    <span class="c"># a zero-thickness sheet, resting on a dark plinth and propped from</span>
+    <span class="c"># behind by a strut, easel-style, instead of hovering above the floor.</span>
+    disc_t = <span class="n">0.05</span>
+    plinth_h = <span class="n">0.12</span>
+    tilt = math.radians(<span class="n">52</span>)
+    solid = obj.modifiers.new(<span class="s">&quot;Board&quot;</span>, <span class="s">&#x27;SOLIDIFY&#x27;</span>)
+    solid.thickness = disc_t
+    solid.offset = -<span class="n">1.0</span>
+    <span class="c"># lowest rim point sits R_OUTER * sin(tilt) below the centre, and the</span>
+    <span class="c"># board&#x27;s back face another disc_t * cos(tilt) below that</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, plinth_h + R_OUTER * math.sin(tilt) + disc_t * math.cos(tilt))
+    obj.rotation_euler = (tilt, <span class="n">0.0</span>, math.radians(<span class="n">10</span>))
+
+    stand_mat = bpy.data.materials.new(<span class="s">&quot;Stand&quot;</span>)
+    stand_mat.use_nodes = <span class="k">True</span>
+    sb = stand_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    sb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.012</span>, <span class="n">0.014</span>, <span class="n">1.0</span>)
+    sb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+
+    <span class="k">def</span> stand_part(name, build):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            build(bm)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(stand_mat)
+        ob = bpy.data.objects.new(name, me)
+        scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    rim_low = mw @ Vector((<span class="n">0.0</span>, -R_OUTER, <span class="n">0.0</span>))
+    plinth = stand_part(<span class="s">&quot;Plinth&quot;</span>, <span class="k">lambda</span> bm: bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>))
+    plinth.scale = (<span class="n">1.5</span>, <span class="n">0.9</span>, plinth_h)
+    plinth.location = (rim_low.x, rim_low.y + <span class="n">0.25</span>, plinth_h / <span class="n">2.0</span>)
+    plinth.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">10</span>))
+    <span class="c"># the strut runs from the board&#x27;s back, above centre, down to the plinth</span>
+    top = mw @ Vector((<span class="n">0.0</span>, <span class="n">0.45</span>, -disc_t))
+    foot = Vector((top.x, top.y + <span class="n">0.95</span>, plinth_h))
+    span = top - foot
+    strut = stand_part(<span class="s">&quot;Strut&quot;</span>, <span class="k">lambda</span> bm: bmesh.ops.create_cone(
+        bm, cap_ends=<span class="k">True</span>, segments=<span class="n">16</span>, radius1=<span class="n">0.035</span>, radius2=<span class="n">0.035</span>, depth=span.length))
+    strut.location = (top + foot) / <span class="n">2.0</span>
+    strut.rotation_euler = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(span).to_euler()
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -550,13 +599,13 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.0</span>, <span class="n">5.2</span>, <span class="n">3.6</span>), <span class="n">220.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = obj.location
+    aim.location = obj.location - Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.2</span>))
     scene.collection.objects.link(aim)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.0</span>, <span class="n">2.4</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">9.4</span>, <span class="n">2.5</span>)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = aim
     con.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
@@ -618,7 +667,7 @@ ATTR_NAME = <span class="s">&quot;Hue&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/color-attribute-wheel-hero.webp" alt="A disc painted with a full hue wheel that fades to white at the centre." />
+    <img src="../assets/color-attribute-wheel-hero.webp" alt="A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth." />
   </dialog>
   <footer>
     <div class="statusbar">

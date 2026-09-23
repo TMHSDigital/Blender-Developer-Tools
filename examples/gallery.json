@@ -205,7 +205,7 @@
       "name": "color-attribute-wheel",
       "dir": "examples/color-attribute-wheel",
       "teaches": "The modern color-attributes API — mesh.color_attributes.new() on the CORNER domain, filled by expanding per-vertex HSV across face corners with foreach_get/foreach_set, then wired into a shader Attribute node.",
-      "alt": "A disc painted with a full hue wheel that fades to white at the centre.",
+      "alt": "A board painted with a full hue wheel that fades to white at the centre, leaning on a dark plinth.",
       "witnessesFix": "CORNER-domain attributes are sized to loop count, not vertex count; the check asserts the sizing, that active_color points at it, and that the Attribute node is actually linked to Base Color, not just present.",
       "hero": "docs/gallery/assets/color-attribute-wheel-hero.webp",
       "preview": "examples/color-attribute-wheel/preview.webp",
