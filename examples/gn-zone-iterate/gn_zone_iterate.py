@@ -298,6 +298,19 @@ def eevee_engine_id():
     return "BLENDER_EEVEE" if bpy.app.version >= (5, 0, 0) else "BLENDER_EEVEE_NEXT"
 
 
+def _node_materials(ob):
+    """Materials the object's Geometry Nodes tree assigns (Set Material nodes)."""
+    out = []
+    for md in ob.modifiers:
+        if md.type == "NODES" and md.node_group is not None:
+            for node in md.node_group.nodes:
+                if node.bl_idname == "GeometryNodeSetMaterial":
+                    mat = node.inputs["Material"].default_value
+                    if mat is not None and mat not in out:
+                        out.append(mat)
+    return out
+
+
 def render_still(rpt, fee, path, engine):
     scene = bpy.context.scene
 
@@ -337,16 +350,32 @@ def render_still(rpt, fee, path, engine):
     light("Key", (-4.0, -5.0, 6.0), 520.0, 5.0, (1.0, 0.96, 0.9), (46, 0, -35))
     light("Fill", (5.0, -3.5, 3.0), 160.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
     light("Wedge", (2.5, 5.5, 4.0), 360.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
-    light("Glint", (0.4, -5.2, 5.5), 700.0, 0.9, (1.0, 0.92, 0.75), (42, 0, 8))
+    # Broad, not a 0.9 m spot: the small Glint blew the top tower cube out
+    # to near-white cyan, the brightest thing in frame by a wide margin.
+    light("Glint", (0.4, -5.2, 5.5), 300.0, 3.0, (1.0, 0.92, 0.75), (42, 0, 8))
+    # Rim from behind so the cube silhouettes separate from the dark wall.
+    light("Rim", (-1.0, 4.5, 4.5), 260.0, 4.0, (0.70, 0.82, 1.0), (-50, 0, 180))
 
+    # Presentation only: the check never reads materials. 0.85 metallic in a
+    # near-black world reflected near-black, and the brass read as mustard
+    # card. Less metal and a warmer, brighter base let the key shape it.
+    for ob, rough, metal in ((rpt, 0.42, 0.55), (fee, 0.38, 0.10)):
+        for mat in _node_materials(ob):
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            if bsdf is not None:
+                bsdf.inputs["Metallic"].default_value = metal
+                bsdf.inputs["Roughness"].default_value = rough
+
+    # Centred on the pair and more frontal: from (6.6, -9.3) the repeat row
+    # foreshortened into a diagonal and the tower hugged the right edge.
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.50)
+    aim.location = (-0.10, 0.0, 1.62)
     aim.hide_render = True
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (6.6, -9.3, 3.55)
+    cam.location = (2.7, -10.6, 3.1)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
