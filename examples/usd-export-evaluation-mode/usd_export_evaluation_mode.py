@@ -18,6 +18,7 @@ check. Pass --output to also render a still:
     blender --background --python usd_export_evaluation_mode.py -- --output u.png
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile
+from mathutils import Vector
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True
@@ -222,6 +223,19 @@ def render_still(obj, path, engine):
     rm.render_levels = LEVEL_RD
     for poly in right.data.polygons:
         poly.use_smooth = True
+    # Subdivision pulls the surface inside the 2 m cage, so at z = 1.0 both
+    # ingots hovered above the floor. Rest each on z = 0 from its own
+    # evaluated bounds (level 1 and level 2 shrink by different amounts).
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    for ob in (left, right):
+        ev = ob.evaluated_get(dg)
+        em = ev.to_mesh()
+        try:
+            zmin = min((ev.matrix_world @ v.co).z for v in em.vertices)
+        finally:
+            ev.to_mesh_clear()
+        ob.location.z -= zmin
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -255,12 +269,12 @@ def render_still(obj, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.0), 200.0, 7.0, (1.0, 0.96, 0.9), (46, 0, -35))
+    light("Key", (-4.0, -5.0, 6.0), 420.0, 5.0, (1.0, 0.96, 0.9), (46, 0, -35))
     light("Fill", (5.0, -3.5, 3.0), 180.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
     light("Wedge", (2.5, 5.5, 4.0), 360.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.0)
+    aim.location = (0.0, 0.0, 0.78)
     aim.hide_render = True
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")

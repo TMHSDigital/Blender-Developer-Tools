@@ -26,8 +26,11 @@ between.
 - exit 5 — BEST_MATCH stopped writing the cage
 - exit 6 — RENDER and VIEWPORT files are identical
 
-The still depicts viewport vs render tessellation of the same SUBSURF cube
-(flat-shaded L1 vs smoothed L2). The USDA point counts are the evidence.
+Staging: Catmull-Clark pulls the surface inside the 2 m cage, and level 1
+and level 2 shrink by different amounts, so both balls used to hover about
+0.16 m over the floor at the cage's z = 1.0. The render path now rests each
+one on the floor from its own evaluated vertices (measured zmin 0.000000
+for both), after the check has run.
 
 Probed on the CI Linux portables **Blender 5.2.1 LTS** (`9e2066aef7ef`) and
 **Blender 4.5.13 LTS** (`daeeeca98fb0`): `wm.usd_export` exists, `poll()` is

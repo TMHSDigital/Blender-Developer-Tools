@@ -645,7 +645,7 @@
       "name": "usd-export-evaluation-mode",
       "dir": "examples/usd-export-evaluation-mode",
       "teaches": "The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.",
-      "alt": "Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right.",
+      "alt": "Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right.",
       "witnessesFix": "TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.",
       "hero": "docs/gallery/assets/usd-export-evaluation-mode-hero.webp",
       "preview": "examples/usd-export-evaluation-mode/preview.webp",

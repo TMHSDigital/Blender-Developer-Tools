@@ -450,7 +450,7 @@ three. `--assume-distinct-names` is red only on 5.2.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/usd-export-evaluation-mode/"><img src="examples/usd-export-evaluation-mode/preview.webp" alt="USD export evaluation_mode: two steel SUBSURF cubes on a dark studio floor — left faceted viewport tessellation, right smoother render tessellation, warm wedge on the back wall" /></a>
+<a href="examples/usd-export-evaluation-mode/"><img src="examples/usd-export-evaluation-mode/preview.webp" alt="USD export evaluation_mode: two steel SUBSURF cubes resting on a dark studio floor — left faceted viewport tessellation, right smoother render tessellation, warm wedge on the back wall" /></a>
 </td>
 <td valign="middle">
 

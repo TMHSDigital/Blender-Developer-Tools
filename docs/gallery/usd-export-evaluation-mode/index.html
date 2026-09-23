@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/usd-export-evaluation-mode-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+  <meta property="og:image:alt" content="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="usd-export-evaluation-mode — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/usd-export-evaluation-mode-hero.webp" />
-  <meta name="twitter:image:alt" content="Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+  <meta name="twitter:image:alt" content="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The USD exporter evaluation_mode chooses viewport versus render modifier quality. TESSELLATE makes the split observable; BEST_MATCH writes the cage and the mode is silent.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right.">
-      <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right.">
+      <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> TESSELLATE+VIEWPORT writes 26/24; TESSELLATE+RENDER writes 98/96 subdivisionScheme=none; BEST_MATCH writes the 8-vert catmullClark cage. --evaluation-mode VIEWPORT and --subdivision BEST_MATCH exit 4.</div>
@@ -283,7 +283,7 @@
 <p>The still is numeric-adjacent: left is viewport tessellation (flat-shaded L1), right is render tessellation (smoothed L2). The USDA point counts are the evidence; the two balls depict the two qualities the exporter chooses between.</p>
 <p><strong>What failure each check would catch:</strong></p>
 <ul><li>exit 3 — VIEWPORT TESSELLATE did not write the L1 closed form</li><li>exit 4 — RENDER TESSELLATE wrote viewport quality or the BEST_MATCH cage (<code>--evaluation-mode VIEWPORT</code> measured 26/24; <code>--subdivision BEST_MATCH</code> measured 8/6 <code>catmullClark</code>)</li><li>exit 5 — BEST_MATCH stopped writing the cage</li><li>exit 6 — RENDER and VIEWPORT files are identical</li></ul>
-<p>The still depicts viewport vs render tessellation of the same SUBSURF cube (flat-shaded L1 vs smoothed L2). The USDA point counts are the evidence.</p>
+<p>Staging: Catmull-Clark pulls the surface inside the 2 m cage, and level 1 and level 2 shrink by different amounts, so both balls used to hover about 0.16 m over the floor at the cage&#x27;s z = 1.0. The render path now rests each one on the floor from its own evaluated vertices (measured zmin 0.000000 for both), after the check has run.</p>
 <p>Probed on the CI Linux portables <strong>Blender 5.2.1 LTS</strong> (<code>9e2066aef7ef</code>) and <strong>Blender 4.5.13 LTS</strong> (<code>daeeeca98fb0</code>): <code>wm.usd_export</code> exists, <code>poll()</code> is true in <code>--background</code>, <code>evaluation_mode</code> is <code>{RENDER, VIEWPORT}</code>. The <code>--output</code> render path measures framing via <code>examples/gallery_framing.py</code> (exit 10 on violation).</p>
 <h2>Run</h2>
 <pre><code>blender --background --python usd_export_evaluation_mode.py --
@@ -319,6 +319,7 @@ check. Pass --output to also render a still:
     blender --background --python usd_export_evaluation_mode.py -- --output u.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse, tempfile
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>
@@ -523,6 +524,19 @@ LEVEL_RD = <span class="n">2</span>
     rm.render_levels = LEVEL_RD
     <span class="k">for</span> poly <span class="k">in</span> right.data.polygons:
         poly.use_smooth = <span class="k">True</span>
+    <span class="c"># Subdivision pulls the surface inside the 2 m cage, so at z = 1.0 both</span>
+    <span class="c"># ingots hovered above the floor. Rest each on z = 0 from its own</span>
+    <span class="c"># evaluated bounds (level 1 and level 2 shrink by different amounts).</span>
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    <span class="k">for</span> ob <span class="k">in</span> (left, right):
+        ev = ob.evaluated_get(dg)
+        em = ev.to_mesh()
+        <span class="k">try</span>:
+            zmin = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> em.vertices)
+        <span class="k">finally</span>:
+            ev.to_mesh_clear()
+        ob.location.z -= zmin
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -556,12 +570,12 @@ LEVEL_RD = <span class="n">2</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">200.0</span>, <span class="n">7.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">180.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">360.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.78</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
@@ -649,7 +663,7 @@ LEVEL_RD = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two grey spheres: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
+    <img src="../assets/usd-export-evaluation-mode-hero.webp" alt="Two steel balls resting on the floor: a coarse, flat-shaded one on the left and a smooth, subdivided one on the right." />
   </dialog>
   <footer>
     <div class="statusbar">
