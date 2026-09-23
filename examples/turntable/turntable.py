@@ -117,6 +117,9 @@ def render_still(obj, path, engine):
     # arbitrary turntable frame can land face-away and read as broken geometry.
     sc.frame_set(4)
     sc.render.resolution_x = 1280; sc.render.resolution_y = 720
+    # Blender resolves a relative filepath against the blend-file directory, which
+    # for a --background run with no .blend is the drive root, not the cwd.
+    path = os.path.abspath(path)
     sc.render.image_settings.file_format = 'PNG'; sc.render.filepath = path
     # AgX would wash the copper toward beige (docs/VISUAL-STYLE.md)
     sc.view_settings.view_transform = 'Standard'
