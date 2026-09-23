@@ -22,6 +22,14 @@ asserts the contract that holds on both: `version_string` starts with the dotted
 `bpy.app.version` tuple. Code that parses `version_string` as a bare semver breaks
 on every LTS build; branch on the `bpy.app.version` tuple instead.
 
+## Staging
+
+The numerals stand on a dark plinth, with the steel caption set into the
+plinth's front face. The caption used to float in the air above the
+stamp, and an emissive bar lay along the bottom edge of the frame. The
+still renders under the Standard view transform on the house stage.
+Render path only; the checked text body and its extents are unchanged.
+
 ## Run
 
 ```bash

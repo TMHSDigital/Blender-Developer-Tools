@@ -159,7 +159,12 @@ def render_still(obj, path, engine):
     s = 3.1 / width
     obj.scale = (s, s, s)
     obj.rotation_euler = (math.radians(90), 0.0, 0.0)
-    obj.location = (0.0, 0.0, s * height / 2 + 0.02)
+    # The stamp stands on a dark plinth, and the caption is set into the
+    # plinth's front face. It used to float in the air above the stamp,
+    # with a glowing bar along the bottom edge of the frame.
+    plinth_h = 0.30
+    plinth_d = 0.56
+    obj.location = (0.0, 0.0, plinth_h + s * height / 2 + 0.02)
 
     # small steel caption above, also a TextCurve
     cap = bpy.data.curves.new("Caption", type='FONT')
@@ -175,28 +180,29 @@ def render_still(obj, path, engine):
     cap.materials.append(cmat)
     cap_obj = bpy.data.objects.new("Caption", cap)
     cap_obj.rotation_euler = (math.radians(90), 0.0, 0.0)
-    cap_obj.location = (0.0, 0.0, s * height + 0.62)
+    cap_obj.location = (0.0, -plinth_d / 2 - cap.extrude, plinth_h / 2)
     scene.collection.objects.link(cap_obj)
 
-    # teal emissive underline bar grounding the stamp
     import bmesh
-    bar_me = bpy.data.meshes.new("Bar")
+    plinth_me = bpy.data.meshes.new("Plinth")
     bm = bmesh.new()
     try:
         bmesh.ops.create_cube(bm, size=1.0)
-        bm.to_mesh(bar_me)
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.012, segments=2,
+                        profile=0.5, affect="EDGES", clamp_overlap=True)
+        bm.to_mesh(plinth_me)
     finally:
         bm.free()
-    bmat = bpy.data.materials.new("Glow")
-    bmat.use_nodes = True
-    bb = bmat.node_tree.nodes["Principled BSDF"]
-    bb.inputs["Emission Color"].default_value = (0.1, 0.9, 0.8, 1.0)
-    bb.inputs["Emission Strength"].default_value = 14.0
-    bar_me.materials.append(bmat)
-    bar = bpy.data.objects.new("Bar", bar_me)
-    bar.scale = (3.9, 0.06, 0.02)
-    bar.location = (0.0, -0.35, 0.02)
-    scene.collection.objects.link(bar)
+    pmat = bpy.data.materials.new("Plinth")
+    pmat.use_nodes = True
+    pb = pmat.node_tree.nodes["Principled BSDF"]
+    pb.inputs["Base Color"].default_value = (0.045, 0.045, 0.05, 1.0)
+    pb.inputs["Roughness"].default_value = 0.45
+    plinth_me.materials.append(pmat)
+    plinth = bpy.data.objects.new("Plinth", plinth_me)
+    plinth.scale = (3.5, plinth_d, plinth_h)
+    plinth.location = (0.0, 0.0, plinth_h / 2)
+    scene.collection.objects.link(plinth)
 
     # dark studio: floor + back wall
     floor_me = bpy.data.meshes.new("Floor")
@@ -209,8 +215,8 @@ def render_still(obj, path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.05, 0.055, 0.065, 1.0)
-    fb.inputs["Roughness"].default_value = 0.35
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -243,10 +249,10 @@ def render_still(obj, path, engine):
     # Reframed: the old (0,-8.5,1.15) fixed 86.5° pitch left the stamp at
     # 0.663 fill with a dead lower third; moved in with an aim on the stamp's
     # vertical center so text, caption, and underline bar balance the frame.
-    cam.location = (0.0, -6.0, 1.5)
+    cam.location = (0.0, -5.45, 1.55)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.05)
+    aim.location = (0.0, 0.0, 0.62)
     scene.collection.objects.link(aim)
     con = cam.constraints.new('TRACK_TO')
     con.target = aim
@@ -266,13 +272,15 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would dull the brass toward tan (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact. The hero
-    # is the version stamp; caption and underline bar count for margins.
+    # is the version stamp; caption and plinth count for margins.
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj, cap_obj, bar],
+        elements=[obj, cap_obj, plinth],
         stage=[floor, wall],
     )
     if fcode:
