@@ -11,6 +11,12 @@ and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts
 1028 faces for these resolution settings) with a Z span that rests on the floor
 (`[0, 2 × bevel]`) and an X span of `2 × radius + 2 × bevel`.
 
+Staging: both ends of the semicircle face −Y, so the still looks from −Y and
+shows both filled caps (`use_fill_caps`, the witness) face-on, with the arc
+sweeping behind them. The old angle showed one cap and the other end edge-on.
+The cap's 12-sided outline is the pinned tessellation (`bevel_resolution` 4,
+locked by the 1044-vertex gate), not a presentation choice.
+
 ## Run
 
 ```bash

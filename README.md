@@ -389,7 +389,7 @@ A relative Tall shape key that lifts and flares the top face — authored throug
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor" /></a>
+<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor, both filled end caps facing the camera" /></a>
 </td>
 <td valign="middle">
 

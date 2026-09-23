@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A magenta beveled curve tube sweeping in an arc across a dark floor, with a capped end." />
+  <meta property="og:image:alt" content="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
-  <meta name="twitter:image:alt" content="A magenta beveled curve tube sweeping in an arc across a dark floor, with a capped end." />
+  <meta name="twitter:image:alt" content="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A magenta beveled curve tube sweeping in an arc across a dark floor, with a capped end.">
-      <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube sweeping in an arc across a dark floor, with a capped end." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera.">
+      <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.</div>
@@ -280,6 +280,7 @@
     <section class="detail-section md">
 <p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, <code>bevel_depth</code>, and <code>use_fill_caps</code> — so the curve renders as a solid tube without a prior mesh conversion.</p>
 <p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.15</code>, <code>use_fill_caps</code>, and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts, 1028 faces for these resolution settings) with a Z span that rests on the floor (<code>[0, 2 × bevel]</code>) and an X span of <code>2 × radius + 2 × bevel</code>.</p>
+<p>Staging: both ends of the semicircle face −Y, so the still looks from −Y and shows both filled caps (<code>use_fill_caps</code>, the witness) face-on, with the arc sweeping behind them. The old angle showed one cap and the other end edge-on. The cap&#x27;s 12-sided outline is the pinned tessellation (<code>bevel_resolution</code> 4, locked by the 1044-vertex gate), not a presentation choice.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python curve_bevel_arc.py --
@@ -434,7 +435,9 @@ EXPECT_FACES = <span class="n">1028</span>
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.95</span>, <span class="n">0.10</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)  <span class="c"># rose</span>
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.24</span>
     obj.data.materials.append(mat)
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">18</span>))
+    <span class="c"># both capped ends face -Y with the arc unrotated, so the camera on -Y</span>
+    <span class="c"># sees the two caps (the witness) face-on and the arc sweeping behind</span>
+    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">8</span>))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -462,7 +465,7 @@ EXPECT_FACES = <span class="n">1028</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.35</span>, BEVEL)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.55</span>, BEVEL)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -494,7 +497,7 @@ EXPECT_FACES = <span class="n">1028</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">2.55</span>, -<span class="n">3.62</span>, <span class="n">1.78</span>)
+    cam.location = (<span class="n">1.1</span>, -<span class="n">4.3</span>, <span class="n">2.55</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -569,7 +572,7 @@ EXPECT_FACES = <span class="n">1028</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube sweeping in an arc across a dark floor, with a capped end." />
+    <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
   </dialog>
   <footer>
     <div class="statusbar">

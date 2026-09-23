@@ -131,7 +131,9 @@ def render_still(obj, path, engine):
     bsdf.inputs["Base Color"].default_value = (0.95, 0.10, 0.38, 1.0)  # rose
     bsdf.inputs["Roughness"].default_value = 0.24
     obj.data.materials.append(mat)
-    obj.rotation_euler = (0.0, 0.0, math.radians(-18))
+    # both capped ends face -Y with the arc unrotated, so the camera on -Y
+    # sees the two caps (the witness) face-on and the arc sweeping behind
+    obj.rotation_euler = (0.0, 0.0, math.radians(-8))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -159,7 +161,7 @@ def render_still(obj, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.35, BEVEL)
+    aim.location = (0.0, 0.55, BEVEL)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -191,7 +193,7 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.55, -3.62, 1.78)
+    cam.location = (1.1, -4.3, 2.55)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
