@@ -13,8 +13,9 @@ Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
-supports, ``--float-head`` head-croze joint-fit, ``--round-band`` hoop
-seat (hoop generated on a circle instead of the stave chords).
+supports, ``--float-head`` head-croze joint-fit, ``--one-piece-head``
+head boards (one slab instead of boards), ``--round-band`` hoop seat
+(hoop generated on a circle instead of the stave chords).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -102,6 +103,19 @@ STAVE_COUNT = N_STAVES
 
 WOOD_IDX = 0
 METAL_IDX = 1
+
+# Each head is HEAD_BOARDS boards cut across X from the croze outline, with
+# a BOARD_SEAM between neighbours. A board is a thin wooden shell at least
+# BOARD_MIN_SPAN wide in plan (the bung is 0.05, the narrowest board 0.36).
+HEAD_BOARDS = 4
+BOARD_SEAM = 0.0015
+BOARD_SEAM_MIN = 0.0008
+BOARD_SEAM_MAX = 0.003
+BOARD_MIN_SPAN = 0.30
+# Per-piece wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 30.0
 
 
 def eevee_engine_id():
@@ -405,6 +419,7 @@ def build_barrel_mesh(
     short_staves=False,
     float_head=False,
     round_band=False,
+    one_piece_head=False,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / R_MID
@@ -417,15 +432,16 @@ def build_barrel_mesh(
         bot_z1 = CHIME + LID_T
         top_z0 = HEIGHT - CHIME - LID_T
         top_z1 = HEIGHT - CHIME
-        add_polygon_disk(
+        n_boards = 1 if one_piece_head else HEAD_BOARDS
+        add_board_disk(
             bm, bot_z0, bot_z1,
             croze_xy(spans, 0.5 * (bot_z0 + bot_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, n_boards,
         )
-        add_polygon_disk(
+        add_board_disk(
             bm, top_z0, top_z1,
             croze_xy(spans, 0.5 * (top_z0 + top_z1), CROZE_BITE, shrink),
-            WOOD_IDX,
+            WOOD_IDX, n_boards,
         )
         add_bung(bm, 0.5 * (spans[0][0] + spans[0][1]), BUNG_Z, spans)
         build_hoops(bm, spans, round_band)
@@ -663,8 +679,7 @@ def head_gap(me, spans):
             continue
         a = shell_aabb(me, g)
         dz = a[5] - a[2]
-        r = 0.25 * ((a[3] - a[0]) + (a[4] - a[1]))
-        if dz < 0.06 and r > 0.15:
+        if dz < 0.06 and max(a[3] - a[0], a[4] - a[1]) >= BOARD_MIN_SPAN:
             heads.append(g)
         elif dz > 0.50:
             staves.append(g)
@@ -699,6 +714,191 @@ def head_gap(me, spans):
         return worst
     finally:
         bm_s.free()
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and every board is its own shell, so each gets one tone and
+    grain running along its own long axis (up the curved staves, across
+    the flat boards).
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def clip_x(ring, x, keep_above):
+    """Sutherland-Hodgman clip of a closed xy ring against the line X = x."""
+    out = []
+    n = len(ring)
+    for i in range(n):
+        p, q = ring[i], ring[(i + 1) % n]
+        p_in = p[0] >= x if keep_above else p[0] <= x
+        q_in = q[0] >= x if keep_above else q[0] <= x
+        if p_in:
+            out.append(p)
+        if p_in != q_in:
+            t = (x - p[0]) / (q[0] - p[0])
+            out.append((x, p[1] + t * (q[1] - p[1])))
+    # a cut landing on an existing vertex would leave a zero-length edge
+    clean = []
+    for p in out:
+        if not clean or math.dist(p, clean[-1]) > 1e-4:
+            clean.append(p)
+    if len(clean) > 2 and math.dist(clean[0], clean[-1]) <= 1e-4:
+        clean.pop()
+    return clean
+
+
+def add_board_disk(bm, z0, z1, xy_ring, mat_idx, n_boards):
+    """A head of ``n_boards`` boards, the outline cut across X with seams between.
+
+    Each board is the croze outline clipped to its strip, so the outer
+    edge of every board is still the croze and the head seats exactly
+    as the one-piece disk did.
+    """
+    xs = [p[0] for p in xy_ring]
+    x_lo, x_hi = min(xs), max(xs)
+    w = (x_hi - x_lo) / n_boards
+    for k in range(n_boards):
+        ring = xy_ring
+        if k > 0:
+            ring = clip_x(ring, x_lo + k * w + BOARD_SEAM * 0.5, True)
+        if k < n_boards - 1:
+            ring = clip_x(ring, x_lo + (k + 1) * w - BOARD_SEAM * 0.5, False)
+        add_polygon_disk(bm, z0, z1, ring, mat_idx)
+
+
+def board_audit(me, z_lo, z_hi):
+    """Boards of the flat wooden disk between ``z_lo`` and ``z_hi``: count and seams.
+
+    A board is a thin wooden shell wide in plan. Sorted across X, the
+    seam is the gap between one board's max X and the next one's min X.
+    """
+    boards = []
+    for g in shells(me):
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        if a[5] - a[2] > 0.06 or max(a[3] - a[0], a[4] - a[1]) < BOARD_MIN_SPAN:
+            continue
+        if not (z_lo <= 0.5 * (a[2] + a[5]) <= z_hi):
+            continue
+        boards.append(a)
+    boards.sort(key=lambda a: a[0])
+    seams = [boards[i + 1][0] - boards[i][3] for i in range(len(boards) - 1)]
+    return len(boards), seams
+
+
+def barrel_materials():
+    """(wood, iron): shared by the check, the render and inspection."""
+    wood = wood_material("BarrelWood")
+    metal = principled(
+        "BarrelHoop", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, metal
 
 
 def body_plan(me):
@@ -834,23 +1034,20 @@ def check(
     short_staves=False,
     float_head=False,
     round_band=False,
+    one_piece_head=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         short_staves=short_staves,
         float_head=float_head,
         round_band=round_band,
+        one_piece_head=one_piece_head,
     )
     low = build_barrel_mesh("BarrelLow", 0.004, 2, **flags)
     high = build_barrel_mesh("BarrelHigh", 0.004, 4, **flags)
-    wood = principled(
-        "BarrelWood", (0.48, 0.22, 0.07, 1.0), 0.0, 0.50,
-        noise_scale=7.0, wear=(0.28, 0.14, 0.05, 1.0),
-    )
-    metal = principled(
-        "BarrelHoop", (0.55, 0.53, 0.50, 1.0), 1.0, 0.28,
-        noise_scale=5.0, wear=(0.35, 0.32, 0.28, 1.0),
-    )
+    wood, metal = barrel_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -883,6 +1080,9 @@ def check(
     sup = support_audit(low.data)
     bite_min, bite_max = hoop_seat(low.data, spans)
     hgap = head_gap(low.data, spans)
+    boards_bot, seams_bot = board_audit(low.data, 0.0, 0.2)
+    boards_top, seams_top = board_audit(low.data, HEIGHT - 0.2, HEIGHT + 0.2)
+    seams = seams_bot + seams_top
     dia, ht = body_plan(low.data)
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
@@ -893,6 +1093,10 @@ def check(
         f"measured staves={sup['staves']} stave_z={sup['stave_z']:.5f} "
         f"hoop_bite={bite_min:.5f}..{bite_max:.5f} head_gap={hgap:.5f} "
         f"body={dia:.4f}x{ht:.4f}"
+    )
+    print(
+        f"measured head_boards={boards_bot}+{boards_top} "
+        f"seams={min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f}"
     )
 
     img, tex = setup_bake_image(low, wood)
@@ -921,6 +1125,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1033,6 +1241,19 @@ def check(
         return fail(
             f"head-croze gap {hgap:.5f} > {HEAD_GAP_MAX} "
             "(--float-head is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if (
+        boards_bot != HEAD_BOARDS
+        or boards_top != HEAD_BOARDS
+        or min(seams, default=0.0) < BOARD_SEAM_MIN
+        or max(seams, default=99.0) > BOARD_SEAM_MAX
+    ):
+        return fail(
+            f"head boards {boards_bot}+{boards_top} != {HEAD_BOARDS} each, or "
+            f"seams {min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f} "
+            f"outside [{BOARD_SEAM_MIN}, {BOARD_SEAM_MAX}] "
+            "(--one-piece-head is the designed fail)",
             17,
         ), None, None, None, None, None
     if bite_min < HOOP_BITE_MIN or bite_max > HOOP_BITE_MAX:
@@ -1165,6 +1386,7 @@ def main():
     p.add_argument("--short-staves", action="store_true")
     p.add_argument("--float-head", action="store_true")
     p.add_argument("--round-band", action="store_true")
+    p.add_argument("--one-piece-head", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1174,6 +1396,7 @@ def main():
         short_staves=args.short_staves,
         float_head=args.float_head,
         round_band=args.round_band,
+        one_piece_head=args.one_piece_head,
     )
     if code:
         return code

@@ -111,7 +111,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
-  <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with croze-seated heads, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
+  <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
   <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course stone fire ring with a tripod of logs on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
@@ -143,7 +143,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`stone-well`](showcase/stone-well/) — procedural round stone well, shingled roof, windlass, rope and bucket through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`wooden-barrel`](showcase/wooden-barrel/) — procedural 20-stave wine-cask with croze-seated heads and chord-lofted hoops through the same pipeline. Falsifier `--round-band` exits 18.
+[`wooden-barrel`](showcase/wooden-barrel/) — procedural 20-stave wine-cask with boarded, croze-seated heads and chord-lofted hoops through the same pipeline. Falsifiers `--round-band` exits 18, `--one-piece-head` exits 17.
 
 [`campfire`](showcase/campfire/) — procedural cobble ring, logs, and ash through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
