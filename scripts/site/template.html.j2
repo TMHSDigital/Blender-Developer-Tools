@@ -25,7 +25,13 @@
   {% if og_image %}<meta name="twitter:image" content="{{ og_image }}" />
   {% if site.ogImageAlt %}<meta name="twitter:image:alt" content="{{ site.ogImageAlt }}" />{% endif %}{% endif %}
   <style>
-    /* ---- fonts (self-hosted, copied to docs/fonts/ by build_site.py) ---- */
+    /* ---- fonts (self-hosted, copied to docs/fonts/ by build_site.py) ----
+       Subset to the code points the built pages use plus Latin-1 and General
+       Punctuation (#216); a character outside that set falls back to the next
+       family in the stack. To re-subset after content adds new symbols, collect
+       the pages' characters into a U+XXXX list and run, per original font:
+       python -m fontTools.subset ORIG.woff2 --unicodes-file=LIST
+         --layout-features='*' --flavor=woff2 --output-file=fonts/NAME.woff2 */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 500; font-display: swap;
       src: url('fonts/barlow-condensed-500.woff2') format('woff2'); }
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
