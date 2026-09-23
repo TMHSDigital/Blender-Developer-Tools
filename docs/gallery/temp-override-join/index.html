@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three orange cubes joined into a single diagonal staircase object." />
+  <meta property="og:image:alt" content="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="temp-override-join — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
-  <meta name="twitter:image:alt" content="Three orange cubes joined into a single diagonal staircase object." />
+  <meta name="twitter:image:alt" content="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three orange cubes joined into a single diagonal staircase object.">
-      <img src="../assets/temp-override-join-hero.webp" alt="Three orange cubes joined into a single diagonal staircase object." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths.">
+      <img src="../assets/temp-override-join-hero.webp" alt="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.</div>
@@ -427,6 +427,34 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     <span class="c"># center the staircase footprint; origin is step-0 center</span>
     obj.location = (-(STEPS - <span class="n">1</span>) * CUBE_SIZE / <span class="n">2</span>, <span class="n">0.0</span>, HALF)
 
+    <span class="c"># Stepped plinths under steps 1 and up. The joined steps meet only</span>
+    <span class="c"># along an edge (the geometry the check asserts), so without support</span>
+    <span class="c"># the upper cubes hung in the air. Render-only scaffolding, slimmer</span>
+    <span class="c"># than a step and stopping 2 mm short so no face is shared.</span>
+    plinth_mat = bpy.data.materials.new(<span class="s">&quot;Plinth&quot;</span>)
+    plinth_mat.use_nodes = <span class="k">True</span>
+    pb = plinth_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.11</span>, <span class="n">0.115</span>, <span class="n">0.125</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.75</span>
+    plinths = []
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, STEPS):
+        top = i * CUBE_SIZE - <span class="n">0.002</span>
+        pme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>)
+        pbm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(pbm, size=<span class="n">1.0</span>)
+            bmesh.ops.scale(pbm, vec=(CUBE_SIZE * <span class="n">0.86</span>, CUBE_SIZE * <span class="n">0.86</span>, top),
+                            verts=pbm.verts)
+            bmesh.ops.translate(pbm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, top / <span class="n">2.0</span>), verts=pbm.verts)
+            pbm.to_mesh(pme)
+        <span class="k">finally</span>:
+            pbm.free()
+        pme.materials.append(plinth_mat)
+        pob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>, pme)
+        pob.location = (obj.location.x + i * CUBE_SIZE, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        scene.collection.objects.link(pob)
+        plinths.append(pob)
+
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -453,7 +481,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, STEPS * CUBE_SIZE / <span class="n">2</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, STEPS * CUBE_SIZE * <span class="n">0.4</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -469,14 +497,19 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">1500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">340.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">2.5</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    <span class="c"># 1500 W was tuned under the default AgX view; under Standard it lifted</span>
+    <span class="c"># the frame above the calibration luma band.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">950.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
+    <span class="c"># Fill and rim softened: at 340 / 480 they threw a hot pool onto the</span>
+    <span class="c"># floor to the right of the steps, the brightest thing in frame.</span>
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">200.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">2.5</span>), <span class="n">220.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">5.0</span>, -<span class="n">6.4</span>, <span class="n">4.6</span>)
+    <span class="c"># Pulled back so the plinths, which reach the floor, clear the bottom edge.</span>
+    cam.location = (<span class="n">5.7</span>, -<span class="n">7.3</span>, <span class="n">5.1</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -496,6 +529,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>  <span class="c"># docs/VISUAL-STYLE.md</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
 
@@ -546,7 +580,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/temp-override-join-hero.webp" alt="Three orange cubes joined into a single diagonal staircase object." />
+    <img src="../assets/temp-override-join-hero.webp" alt="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
   </dialog>
   <footer>
     <div class="statusbar">
