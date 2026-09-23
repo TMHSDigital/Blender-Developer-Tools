@@ -14,13 +14,24 @@
   <meta property="og:description" content="{{ plugin.description }}" />
   {% if site.canonical %}<meta property="og:url" content="{{ site.canonical }}" />{% endif %}
   {% set og_image = site.ogImage | default('', true) %}
-  {% if og_image %}<meta property="og:image" content="{{ og_image }}" />{% endif %}
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}" />
+  {% if site.ogImageWidth %}<meta property="og:image:width" content="{{ site.ogImageWidth }}" />
+  <meta property="og:image:height" content="{{ site.ogImageHeight }}" />{% endif %}
+  {% if site.ogImageAlt %}<meta property="og:image:alt" content="{{ site.ogImageAlt }}" />{% endif %}{% endif %}
+  <meta property="og:site_name" content="{{ plugin.displayName }}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{{ plugin.displayName }} — Blender Python that actually runs" />
   <meta name="twitter:description" content="{{ plugin.description }}" />
-  {% if og_image %}<meta name="twitter:image" content="{{ og_image }}" />{% endif %}
+  {% if og_image %}<meta name="twitter:image" content="{{ og_image }}" />
+  {% if site.ogImageAlt %}<meta name="twitter:image:alt" content="{{ site.ogImageAlt }}" />{% endif %}{% endif %}
   <style>
-    /* ---- fonts (self-hosted, copied to docs/fonts/ by build_site.py) ---- */
+    /* ---- fonts (self-hosted, copied to docs/fonts/ by build_site.py) ----
+       Subset to the code points the built pages use plus Latin-1 and General
+       Punctuation (#216); a character outside that set falls back to the next
+       family in the stack. To re-subset after content adds new symbols, collect
+       the pages' characters into a U+XXXX list and run, per original font:
+       python -m fontTools.subset ORIG.woff2 --unicodes-file=LIST
+         --layout-features='*' --flavor=woff2 --output-file=fonts/NAME.woff2 */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 500; font-display: swap;
       src: url('fonts/barlow-condensed-500.woff2') format('woff2'); }
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;

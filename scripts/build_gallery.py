@@ -43,6 +43,12 @@ DATA = REPO / "examples" / "gallery.json"
 SHOWCASE_DATA = REPO / "showcase" / "gallery.json"
 OUT_DIR = REPO / "docs" / "gallery"
 
+# Social card for the gallery index, shared with the landing page (site.json).
+OG_CARD_SIZE = (1200, 630)
+OG_CARD_ALT = ("Four renders from the examples gallery: a red low-poly hatchback, a soccer "
+               "ball, gold spikes aimed at a glowing sphere, and two spheres on pedestals "
+               "labelled linked and unlinked")
+
 # Soft cap for gallery index card alt text (accessibility + layout).
 _ALT_CAP = 160
 
@@ -145,10 +151,15 @@ SHELL = """<!DOCTYPE html>
   <meta property="og:description" content="__DESC__" />
   <meta property="og:url" content="__CANONICAL__" />
   <meta property="og:image" content="__OGIMAGE__" />
+  <meta property="og:image:width" content="__OGW__" />
+  <meta property="og:image:height" content="__OGH__" />
+  <meta property="og:image:alt" content="__OGALT__" />
+  <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="__TITLE__" />
   <meta name="twitter:description" content="__DESC__" />
   <meta name="twitter:image" content="__OGIMAGE__" />
+  <meta name="twitter:image:alt" content="__OGALT__" />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -838,6 +849,7 @@ def make_resolver(repo_base: str, ex_dir: str):
 
 
 def shell(*, title: str, desc: str, canonical: str, og_image: str,
+          og_size: tuple[int, int], og_alt: str,
           site_root: str, back_href: str, back_label: str, repo_url: str,
           content: str, page_js: str, head_js: str = "",
           sources: tuple[str, ...] = ("examples/gallery.json",)) -> str:
@@ -846,6 +858,9 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
             .replace("__DESC__", html.escape(desc, quote=True))
             .replace("__CANONICAL__", html.escape(canonical, quote=True))
             .replace("__OGIMAGE__", html.escape(og_image, quote=True))
+            .replace("__OGW__", str(og_size[0]))
+            .replace("__OGH__", str(og_size[1]))
+            .replace("__OGALT__", html.escape(og_alt, quote=True))
             .replace("__SITEROOT__", site_root)
             .replace("__BACKHREF__", back_href)
             .replace("__BACKLABEL__", html.escape(back_label))
@@ -915,6 +930,8 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
         desc=ex["teaches"],
         canonical=f"{site}/gallery/{name}/" if site else "",
         og_image=f"{site}/gallery/assets/{hero_file}" if site else "",
+        og_size=(1280, 720),
+        og_alt=f"{name}: the {noun}'s own headless render",
         site_root="../../",
         back_href="../",
         back_label="Examples and Showcase",
@@ -1007,12 +1024,15 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         + '  <button class="to-top" id="toTop" type="button"><span aria-hidden="true">&uarr;</span> Top</button>'
     )
 
-    og_image = f"{site}/gallery/assets/{page_relative(examples[0]['hero']).split('/')[-1]}" if site else ""
+    # The landing build copies repo-root assets/ (og-card.jpg included) to docs/assets/.
+    # A 1200x630 JPEG is the size and format every link-preview scraper accepts.
     return shell(
         title=f"{title} — Blender Developer Tools",
         desc=desc,
         canonical=f"{site}/gallery/" if site else "",
-        og_image=og_image,
+        og_image=f"{site}/assets/og-card.jpg" if site else "",
+        og_size=OG_CARD_SIZE,
+        og_alt=OG_CARD_ALT,
         site_root="../",
         back_href="../",
         back_label="Blender Developer Tools",
