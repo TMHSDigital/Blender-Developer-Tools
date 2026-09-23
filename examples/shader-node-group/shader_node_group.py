@@ -135,8 +135,8 @@ def render_still(objs, path, engine):
     fmat = bpy.data.materials.new("Studio")
     fmat.use_nodes = True
     fb = fmat.node_tree.nodes["Principled BSDF"]
-    fb.inputs["Base Color"].default_value = (0.055, 0.06, 0.07, 1.0)
-    fb.inputs["Roughness"].default_value = 0.5
+    fb.inputs["Base Color"].default_value = (0.03, 0.032, 0.037, 1.0)
+    fb.inputs["Roughness"].default_value = 0.7
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -147,7 +147,7 @@ def render_still(objs, path, engine):
 
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.008, 0.009, 0.012, 1.0)
+    world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.021, 0.025, 1.0)
     scene.world = world
 
     def light(name, loc, energy, size, col, rot):
@@ -158,16 +158,26 @@ def render_still(objs, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -5.0, 6.5), 1400.0, 5.5, (1.0, 0.98, 0.94), (46, 0, -35))
+    # a large soft key: at 5.5 m the glossy spheres mirrored it as a hard
+    # white square
+    light("Key", (-4.0, -5.0, 6.5), 1100.0, 9.0, (1.0, 0.98, 0.94), (46, 0, -35))
     light("Fill", (5.5, -4.0, 3.0), 280.0, 8.0, (0.82, 0.88, 1.0), (63, 0, 48))
     light("Rim", (0.5, 6.0, 4.0), 900.0, 3.5, (1.0, 0.74, 0.46), (-62, 0, 175))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 58.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.7, 2.6)
-    cam.rotation_euler = (math.radians(78), 0.0, 0.0)
+    cam.location = (0.0, -8.4, 3.3)
     scene.collection.objects.link(cam)
+    # aim at the spheres' centres so they sit mid-frame, not above a band of
+    # empty floor
+    aim = bpy.data.objects.new("Aim", None)
+    aim.location = (0.0, 0.0, 1.0)
+    scene.collection.objects.link(aim)
+    track = cam.constraints.new('TRACK_TO')
+    track.target = aim
+    track.track_axis = 'TRACK_NEGATIVE_Z'
+    track.up_axis = 'UP_Y'
     scene.camera = cam
 
     scene.render.engine = 'CYCLES' if engine == 'cycles' else eevee_engine_id()
@@ -182,6 +192,8 @@ def render_still(objs, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX would wash both tints toward pastel (docs/VISUAL-STYLE.md)
+    scene.view_settings.view_transform = 'Standard'
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact.
     fcode = gallery_framing.check_framing(
