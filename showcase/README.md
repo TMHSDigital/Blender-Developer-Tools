@@ -464,6 +464,14 @@ entry in `showcase/gallery.json`, and a rendered still.
   bite inside it, outer face proud of it. Assert the band's outer
   half-width against the host's (`--sunk-bands`). An overlap test alone
   passes a sunk band, because a sunk band overlaps too.
+- **A forging is not a turning (exit 19).** A lathed, elliptical waist
+  under a rectangular anvil face reads as a funnel. Loft forged parts from
+  a squared section (a superellipse) and assert it: corner reach, how far
+  a section vertex fills its bounding rectangle's corner, is 0.707 for an
+  ellipse. `--round-waist` is the falsifier.
+- **Paint wears through to what is under it.** A painted board is one
+  flat colour until a mask lets the wood show at the edges and pores;
+  shade the paint per board.
 - **Iron is not chrome.** Cast and forged iron is near-black or rusted
   and rough. Metallic 1.0 with roughness under 0.4 reads as polished
   steel or plastic (`hand-pump` read as chrome).
