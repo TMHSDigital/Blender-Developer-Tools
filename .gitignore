@@ -36,6 +36,7 @@ docs/site-upgrade-plan.md
 # Landing-page build outputs (generated at deploy time by scripts/site/build_site.py;
 # docs/gallery/ stays committed)
 docs/index.html
+docs/404.html
 docs/fonts/
 docs/assets/
 

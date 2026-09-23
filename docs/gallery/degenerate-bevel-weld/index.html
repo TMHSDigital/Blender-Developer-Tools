@@ -8,6 +8,7 @@
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/degenerate-bevel-weld/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="degenerate-bevel-weld — Examples — Blender Developer Tools" />
   <meta property="og:description" content="Bevel offset &gt;= half the min box dimension collapses the band into zero-area faces — and they ship: a stdlib GLB re-parse counts the degenerate triangles crossing the export boundary. Dual tray: rounded edge versus knife seam, markers from live mesh data." />
@@ -30,6 +31,7 @@
 
     /* Blender-viewport system, shared with the landing page. Dark only. */
     :root {
+      color-scheme: dark;
       --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
       --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
       --select: #ff8c19; --ok: #6dc96d;
@@ -171,6 +173,8 @@
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
     .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
     .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
       border-left: 3px solid var(--select); border-radius: var(--radius);
       background: color-mix(in srgb, var(--select) 7%, var(--surface));
@@ -213,10 +217,15 @@
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
 
-    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
-      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
-    .lightbox.open { display: flex; }
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
     .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
 
     footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
     footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
@@ -712,9 +721,10 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
 </pre>
     </section>
   </main>
-  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <button class="lightbox-close" type="button" autofocus>Close</button>
     <img src="../assets/degenerate-bevel-weld-hero.webp" alt="degenerate-bevel-weld render, full size" />
-  </div>
+  </dialog>
   <footer>
     <div class="statusbar">
       <span>generated from <code>examples/gallery.json</code></span>
@@ -728,11 +738,10 @@ EXPECT_LOOPS = <span class="n">384</span>              <span class="c"># 96 vert
       var hero = document.getElementById('heroZoom');
       var box = document.getElementById('lightbox');
       if (hero && box) {
-        hero.addEventListener('click', function () { box.classList.add('open'); });
-        box.addEventListener('click', function () { box.classList.remove('open'); });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') box.classList.remove('open');
-        });
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
       }
       var copy = document.getElementById('copyRun');
       if (copy) {

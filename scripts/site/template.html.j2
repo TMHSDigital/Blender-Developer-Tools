@@ -8,6 +8,7 @@
   {% if site.canonical %}<link rel="canonical" href="{{ site.canonical }}" />{% endif %}
   {% if site.favicon %}<link rel="icon" href="{{ site.favicon }}" />{% endif %}
   <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="{{ plugin.displayName }} — Blender Python that actually runs" />
   <meta property="og:description" content="{{ plugin.description }}" />
@@ -36,6 +37,7 @@
     /* ---- tokens: Blender's own UI grays; selection orange is THE accent;
            axis colors appear only in the gizmo and the grid origin lines ---- */
     :root {
+      color-scheme: dark;
       --bg: #1a1b1e; --panel: #222327; --panel-2: #2a2b30; --border: #3a3b40;
       --text: #e8e9eb; --dim: #9698a0;
       --select: #ff8c19;
@@ -164,6 +166,8 @@
     .skill-row { display: flex; flex-direction: column; padding: 0.55rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); }
     .skill-row .name { font-family: var(--font-mono); font-size: 0.8rem; color: var(--select); }
     .skill-row .desc { color: var(--dim); font-size: 0.85rem; margin-top: 0.15rem; }
+    .skill-row .desc code, .rules-table td code { font-family: var(--font-mono); font-size: 0.85em;
+      color: var(--text); }
 
     /* rules */
     .rules-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -321,20 +325,21 @@
   {% endif %}
 
   {% if showcase %}
+  {% set shown_showcase = featured_showcase if featured_showcase else showcase %}
   <section class="panel" id="showcase">
     <div class="panel-head">
       <span class="caret" aria-hidden="true">&#9662;</span>
       <span class="hud">Showcase</span>
-      <span class="hud count">{{ showcase_count }} pieces</span>
+      <span class="hud count">{% if featured_showcase %}{{ featured_showcase | length }} of {% endif %}{{ showcase_count }} pieces</span>
     </div>
     <div class="panel-body">
       <h2>Budget-conformance props, not API contracts.</h2>
       <p class="lede">Showcase pieces compose shipped skills into a recognizable asset and assert
         declared budgets — triangle counts, materials, UVs, LODs, colliders, exports. They are not
         examples. A still that merely rendered is not an assertion.</p>
-      <p class="cta-row"><a class="btn-cta" href="gallery/#tag=showcase">Open the showcase in the gallery &rarr;</a></p>
+      <p class="cta-row"><a class="btn-cta" href="gallery/#tag=showcase">See all {{ showcase_count }} showcase pieces in the gallery &rarr;</a></p>
       <div class="render-grid">
-        {% for ex in showcase %}
+        {% for ex in shown_showcase %}
         <a class="render-card" href="gallery/{{ ex.name }}/">
           <img src="{{ ex.heroSite }}" alt="{{ ex.name }} render" loading="lazy" width="1280" height="720" />
           <div class="render-meta">
@@ -364,7 +369,7 @@
         {% for skill in skills %}
         <div class="skill-row">
           <span class="name">{{ skill.category }}</span>
-          <span class="desc">{{ skill.description }}</span>
+          <span class="desc">{{ skill.description | inline_code }}</span>
         </div>
         {% endfor %}
       </div>
@@ -390,7 +395,7 @@
           <tr>
             <td class="r-name">{{ rule.slug | default(rule.name) }}</td>
             <td class="r-scope">{{ rule.scope }}</td>
-            <td>{{ rule.description }}</td>
+            <td>{{ rule.description | inline_code }}</td>
           </tr>
           {% endfor %}
         </tbody>

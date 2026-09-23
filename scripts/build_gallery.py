@@ -139,6 +139,7 @@ SHELL = """<!DOCTYPE html>
   <link rel="canonical" href="__CANONICAL__" />
   <link rel="icon" href="__SITEROOT__assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="__TITLE__" />
   <meta property="og:description" content="__DESC__" />
@@ -161,6 +162,7 @@ SHELL = """<!DOCTYPE html>
 
     /* Blender-viewport system, shared with the landing page. Dark only. */
     :root {
+      color-scheme: dark;
       --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
       --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
       --select: #ff8c19; --ok: #6dc96d;
@@ -302,6 +304,8 @@ SHELL = """<!DOCTYPE html>
       background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
     .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
     .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
     .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
       border-left: 3px solid var(--select); border-radius: var(--radius);
       background: color-mix(in srgb, var(--select) 7%, var(--surface));
@@ -344,10 +348,15 @@ SHELL = """<!DOCTYPE html>
       flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
     .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
 
-    .lightbox { position: fixed; inset: 0; z-index: 50; display: none; align-items: center;
-      justify-content: center; background: rgba(0,0,0,0.85); padding: 2rem; cursor: zoom-out; }
-    .lightbox.open { display: flex; }
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
     .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
 
     footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
     footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
@@ -383,7 +392,7 @@ SHELL = """<!DOCTYPE html>
 __CONTENT__
   <footer>
     <div class="statusbar">
-      <span>generated from <code>examples/gallery.json</code></span>
+      <span>generated from __SOURCE__</span>
       <span>CC-BY-NC-ND-4.0</span>
       <span style="color: var(--ok);">exit 0</span>
     </div>
@@ -467,6 +476,9 @@ INDEX_JS = """
           c.classList.toggle('active', (c.getAttribute('data-tag') || '') === state.tag);
         });
         tagsToggle.classList.toggle('has-active', !!state.tag);
+        // The chip row is collapsed on narrow screens; name the active tag
+        // on the toggle so a shared #tag= link is visibly filtered.
+        tagsToggle.textContent = state.tag ? 'Tags: ' + state.tag : 'Tags';
       }
 
       function applyDensity() {
@@ -571,11 +583,10 @@ DETAIL_JS = """
       var hero = document.getElementById('heroZoom');
       var box = document.getElementById('lightbox');
       if (hero && box) {
-        hero.addEventListener('click', function () { box.classList.add('open'); });
-        box.addEventListener('click', function () { box.classList.remove('open'); });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') box.classList.remove('open');
-        });
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
       }
       var copy = document.getElementById('copyRun');
       if (copy) {
@@ -591,14 +602,14 @@ DETAIL_JS = """
 """
 
 CARD = """      <article class="card" data-tags="__TAGS__">
-        <a class="card-media" href="__HREF__" aria-label="__NAME__ __KIND__ detail page">
+        <a class="card-media" href="__HREF__" tabindex="-1" aria-hidden="true">
           <img src="__HERO__" alt="__ALT__" loading="lazy" decoding="async" />
         </a>
         <div class="card-body">
           <h2><a href="__HREF__">__NAME__</a></h2>
           <p class="teaches">__TEACHES__</p>
           <p class="witnesses"><span class="tag">witnesses</span> __WITNESSES__</p>
-          <a class="card-link" href="__HREF__">View __KIND__ <span aria-hidden="true">&rarr;</span></a>
+          <a class="card-link" href="__HREF__">View __KIND__<span class="sr-only"> __NAME__</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>"""
 
@@ -828,7 +839,8 @@ def make_resolver(repo_base: str, ex_dir: str):
 
 def shell(*, title: str, desc: str, canonical: str, og_image: str,
           site_root: str, back_href: str, back_label: str, repo_url: str,
-          content: str, page_js: str, head_js: str = "") -> str:
+          content: str, page_js: str, head_js: str = "",
+          sources: tuple[str, ...] = ("examples/gallery.json",)) -> str:
     return (SHELL
             .replace("__TITLE__", html.escape(title))
             .replace("__DESC__", html.escape(desc, quote=True))
@@ -838,9 +850,13 @@ def shell(*, title: str, desc: str, canonical: str, og_image: str,
             .replace("__BACKHREF__", back_href)
             .replace("__BACKLABEL__", html.escape(back_label))
             .replace("__REPO__", html.escape(repo_url, quote=True))
-            .replace("__CONTENT__", content)
+            .replace("__SOURCE__", " + ".join(
+                f"<code>{html.escape(s)}</code>" for s in sources))
             .replace("__PAGEJS__", page_js)
-            .replace("__HEADJS__", head_js))
+            .replace("__HEADJS__", head_js)
+            # Content last, so README and source text are never scanned for
+            # the other placeholders.
+            .replace("__CONTENT__", content))
 
 
 def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
@@ -889,9 +905,10 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
         parts.append("    </section>")
 
     parts.append("  </main>")
-    parts.append('  <div class="lightbox" id="lightbox" role="dialog" aria-label="Full-size render">')
+    parts.append('  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">')
+    parts.append('    <button class="lightbox-close" type="button" autofocus>Close</button>')
     parts.append(f'    <img src="../assets/{html.escape(hero_file)}" alt="{html.escape(name)} render, full size" />')
-    parts.append("  </div>")
+    parts.append("  </dialog>")
 
     return shell(
         title=f"{name} — {kind_title} — Blender Developer Tools",
@@ -904,6 +921,8 @@ def build_detail(ex: dict, *, base: str, repo_root_url: str, site: str) -> str:
         repo_url=repo_root_url,
         content="\n".join(parts),
         page_js=DETAIL_JS,
+        sources=(("showcase/gallery.json",) if noun == "showcase piece"
+                 else ("examples/gallery.json",)),
     )
 
 
@@ -1001,6 +1020,7 @@ def build_index(data: dict, *, base: str, repo_root_url: str, site: str) -> str:
         content=content,
         page_js=INDEX_JS.replace("__COUNT_LABEL__", count_label),
         head_js=INDEX_HEADJS,
+        sources=("examples/gallery.json", "showcase/gallery.json"),
     )
 
 
