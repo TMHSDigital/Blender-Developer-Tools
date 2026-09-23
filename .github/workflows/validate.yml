@@ -142,6 +142,20 @@ jobs:
       - name: Check falsifiers declare the budget they target
         run: python3 tests/check_falsifier_targets.py
 
+      - name: Check committed gallery matches its generator
+        # docs/gallery/ is committed, but pages.yml regenerates it at deploy, so a
+        # stale commit ships fine and drifts silently. Regenerate and require no diff.
+        run: |
+          python3 scripts/build_gallery.py
+          drift=$(git status --porcelain -- docs/gallery)
+          if [ -n "$drift" ]; then
+            echo "::error::docs/gallery/ is stale. Run 'python scripts/build_gallery.py' and commit the result."
+            echo "$drift"
+            git --no-pager diff --stat -- docs/gallery
+            exit 1
+          fi
+          echo "docs/gallery/ matches scripts/build_gallery.py output."
+
       - name: Check gallery hero and preview sizes
         run: python3 tests/check_gallery_images.py
 

@@ -432,7 +432,7 @@
       "tags": [
         "world",
         "sky",
-        "render"
+        "rendering"
       ]
     },
     {
@@ -469,7 +469,7 @@
       "hero": "docs/gallery/assets/prop-origin-transform-hero.webp",
       "preview": "examples/prop-origin-transform/preview.webp",
       "tags": [
-        "transform",
+        "transforms",
         "parenting",
         "game-pipeline"
       ]
@@ -551,7 +551,7 @@
       "tags": [
         "uv",
         "game-pipeline",
-        "render"
+        "rendering"
       ]
     },
     {
@@ -579,7 +579,7 @@
         "mesh",
         "attributes",
         "game-pipeline",
-        "render"
+        "rendering"
       ]
     },
     {

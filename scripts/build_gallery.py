@@ -1059,6 +1059,16 @@ def main() -> int:
             encoding="utf-8",
         )
 
+    # A renamed or removed entry would otherwise leave its old page published
+    # forever. Only folders this generator wrote qualify: a lone index.html
+    # and nothing else, so assets/, contact-sheets/ and asset-sheets/ are safe.
+    names = {ex["name"] for ex in examples}
+    for d in sorted(p for p in OUT_DIR.iterdir() if p.is_dir() and p.name not in names):
+        if [c.name for c in d.iterdir()] == ["index.html"]:
+            (d / "index.html").unlink()
+            d.rmdir()
+            print(f"Removed stale page {d.relative_to(REPO)}")
+
     n_showcase = sum(1 for ex in examples if "showcase" in (ex.get("tags") or []))
     print(
         f"Wrote {OUT_DIR / 'index.html'} + {len(examples)} detail pages "
