@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Not found — {{ plugin.displayName }}</title>
+  <meta name="robots" content="noindex" />
+  {% if site.favicon %}<link rel="icon" href="{{ base }}{{ site.favicon }}" />{% endif %}
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <style>
+    /* Served for any missing path at any depth, so every URL is root-absolute. */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('{{ base }}fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('{{ base }}fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('{{ base }}fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+    :root { color-scheme: dark; --bg: #1a1b1e; --panel: #232428; --border: #3a3b40;
+      --text: #e8e9eb; --dim: #9698a0; --select: #ff8c19; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 1.25rem;
+      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif; line-height: 1.6; }
+    main { max-width: 34rem; width: 100%; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2rem 1.75rem; }
+    .hud { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; font-size: 0.6875rem;
+      letter-spacing: 0.04em; color: var(--dim); text-transform: uppercase; }
+    h1 { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 600;
+      text-transform: uppercase; font-size: 2.4rem; line-height: 1; margin: 0.5rem 0 0.75rem; }
+    p { color: var(--dim); }
+    nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+    nav a { color: var(--select); text-decoration: none; font-weight: 500; padding: 0.25rem 0; }
+    nav a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="hud">exit 1 &middot; 404</p>
+    <h1>Nothing at this path.</h1>
+    <p>The page may have moved, or an example may have been renamed. The gallery lists
+      every example and showcase piece that ships today.</p>
+    <nav>
+      <a href="{{ base }}gallery/">Open the gallery &rarr;</a>
+      <a href="{{ base }}">Home</a>
+      <a href="{{ site.links.github | default(plugin.repository) }}">GitHub</a>
+    </nav>
+  </main>
+</body>
+</html>

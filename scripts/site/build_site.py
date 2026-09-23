@@ -12,8 +12,10 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader
+from markupsafe import Markup, escape
 
 
 def load_json(path: Path) -> dict | list:
@@ -99,6 +101,38 @@ def _truncate_words(text: str, limit: int) -> str:
     return cut + "…"
 
 
+# Sentence end: terminal punctuation followed by whitespace and a capital,
+# backtick or bracket. Dotted API paths (`bpy.types.Operator`) and "e.g."
+# never match, so they cannot end a sentence early.
+_SENTENCE_END = re.compile(r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)[.!?](?=\s+[A-Z`(\"'])")
+
+DESCRIPTION_LIMIT = 340
+
+
+def _summarize(text: str, limit: int = DESCRIPTION_LIMIT) -> str:
+    """Return *text* whole when it fits, else the longest run of whole
+    sentences under *limit*; a single over-long sentence falls back to a
+    word-boundary cut with an ellipsis."""
+    text = text.strip().strip("\"'")
+    if len(text) <= limit:
+        return text
+    fit = ""
+    for m in _SENTENCE_END.finditer(text):
+        if m.end() > limit:
+            break
+        fit = text[:m.end()]
+    return fit or _truncate_words(text, limit)
+
+
+def inline_code(text: str) -> Markup:
+    """Escape *text* and render its `backtick` spans as <code> elements."""
+    parts = str(escape(text)).split("`")
+    if len(parts) % 2 == 0:  # unbalanced backticks: leave them literal
+        return Markup("`".join(parts))
+    return Markup("".join(
+        f"<code>{part}</code>" if i % 2 else part for i, part in enumerate(parts)))
+
+
 def parse_skills(repo_root: Path) -> list[dict]:
     skills_dir = repo_root / "skills"
     if not skills_dir.is_dir():
@@ -116,7 +150,7 @@ def parse_skills(repo_root: Path) -> list[dict]:
         name = meta.get("name", "").replace("-", " ").replace("_", " ").title()
         if not name:
             name = skill_dir.name.replace("-", " ").replace("_", " ").title()
-        description = _truncate_words(meta.get("description", ""), 200)
+        description = _summarize(meta.get("description", ""))
 
         if not description:
             for line in body.splitlines():
@@ -163,7 +197,7 @@ def parse_rules(repo_root: Path) -> list[dict]:
         fm_lines = text[: len(text) - len(body)].splitlines()
 
         name = rule_file.stem.replace("-", " ").replace("_", " ").title()
-        description = _truncate_words(meta.get("description", ""), 200)
+        description = _summarize(meta.get("description", ""))
         if not description:
             for line in body.splitlines():
                 stripped = line.strip()
@@ -416,6 +450,7 @@ def main():
         "featured_count": len(featured),
         "showcase": showcase,
         "showcase_count": len(showcase),
+        "featured_showcase": pick_featured(showcase),
         "snippet_count": len(plugin.get("snippets", [])),
         "template_count": len(plugin.get("templates", [])),
         # basenames for display: snippets/foo-bar.py -> foo-bar
@@ -440,12 +475,22 @@ def main():
         autoescape=True,
         keep_trailing_newline=True,
     )
+    env.filters["inline_code"] = inline_code
     template = env.get_template("template.html.j2")
     html = template.render(**context)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "index.html").write_text(html, encoding="utf-8")
     print(f"Wrote {out_dir / 'index.html'}")
+
+    # GitHub Pages serves 404.html for any missing path at any depth, so its
+    # links are root-absolute: the path component of the canonical URL.
+    base = urlparse(site.get("canonical", "")).path or "/"
+    if not base.endswith("/"):
+        base += "/"
+    not_found = env.get_template("404.html.j2").render(site=site, plugin=plugin, base=base)
+    (out_dir / "404.html").write_text(not_found, encoding="utf-8")
+    print(f"Wrote {out_dir / '404.html'}")
 
     fonts_src = template_dir / "fonts"
     fonts_dst = out_dir / "fonts"

@@ -27,7 +27,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 1
     },
     {
       "name": "wooden-barrel",
@@ -63,7 +64,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 2
     },
     {
       "name": "street-lantern",
@@ -135,7 +137,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 4
     },
     {
       "name": "park-bench",
@@ -147,7 +150,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 5
     },
     {
       "name": "wheelbarrow",
@@ -267,7 +271,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 3
     },
     {
       "name": "tavern-stool",
@@ -339,7 +344,8 @@
       "tags": [
         "mesh",
         "export"
-      ]
+      ],
+      "featured_rank": 6
     }
   ]
 }
