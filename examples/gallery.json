@@ -152,7 +152,7 @@
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
       "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
-      "alt": "Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare.",
+      "alt": "Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it.",
       "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",

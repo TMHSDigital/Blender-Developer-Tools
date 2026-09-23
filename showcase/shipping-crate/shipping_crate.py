@@ -1,7 +1,8 @@
 """Game-ready shipping crate — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural crate (skids, corner posts,
-tenoned slats with seeded width jitter, L-straps, iron bail handles)
+tenoned slats with seeded width jitter, nailed single-shell L-straps,
+iron bail handles on one end board each)
 after composing shipped pipeline pieces: bmesh construction, UVs, two
 materials, high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
@@ -15,9 +16,10 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-skids`` named skid
 supports, ``--float-handle`` handle-to-end joint-fit, ``--omit-slats``
-slat-to-post seat.
+slat-to-post seat, ``--float-nails`` nail seat, ``--straddle-handle``
+handle plates on one board.
 
-Fixed seed 17 for slat-width jitter. DECIMATE COLLAPSE triangle counts
+Fixed seed 17 for slat-width jitter, 29 for plank tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -35,7 +37,7 @@ import traceback
 
 import bmesh
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 _REPO = os.path.abspath(
@@ -70,8 +72,8 @@ OUTER_SIZE = (1.146, 0.726, 0.612)
 BODY_X, BODY_Y, BODY_Z = 1.056, 0.716, 0.576
 BODY_TOL = 0.05
 
-BASE_TRIS_MIN = 1200
-BASE_TRIS_MAX = 2800
+BASE_TRIS_MIN = 2900
+BASE_TRIS_MAX = 3900
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -84,8 +86,8 @@ UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 220
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
-METAL_FACES_MIN = 48
-WOOD_FACES_MIN = 200
+METAL_FACES_MIN = 600
+WOOD_FACES_MIN = 900
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
 AREA_EPS = 1e-10
@@ -98,6 +100,30 @@ SLAT_JOIN = 0.006
 
 WOOD_IDX = 0
 METAL_IDX = 1
+
+# Straps bite into the post rather than sitting flush on it: a flush plate
+# puts its inner face on the post's outer face, one plane shared by two
+# shells. Chamfered at their own fine offset, a single L-section shell each.
+IRON_BITE = 0.0012
+IRON_BEVEL = 0.0008
+# Clout nails through each strap into the post, seated a named bite deep.
+NAIL_R = 0.0050
+NAIL_R_TOP = 0.0036
+NAIL_H = 0.0024
+NAIL_BITE = 0.0006
+NAIL_SEGS = 6
+NAIL_ZS = (0.12, 0.50, 0.88)
+NAIL_BITE_MIN = 0.0003
+NAIL_BITE_MAX = 0.0010
+NAIL_PROUD_MIN = 0.0010
+NAIL_EXTENT_MAX = IRON_WRAP * 0.5
+N_NAILS = 4 * 2 * len(NAIL_ZS)
+FLOAT_NAIL_LIFT = 0.0015
+# Handle mounting plates must sit on one end board, clear of both edges.
+PLATE_H = 0.044
+PLATE_BOARD_MARGIN = 0.004
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
 
 
 def eevee_engine_id():
@@ -296,6 +322,8 @@ def build_crate_mesh(
     short_skids=False,
     float_handle=False,
     omit_slats=False,
+    float_nails=False,
+    straddle_handle=False,
 ):
     ix, iy, iz = INNER
     hx = ix / 2.0 + POST / 2.0
@@ -427,6 +455,7 @@ def build_crate_mesh(
                         )
                     )
         end_c, end_w = _span_layout(N_END, iz - 0.04, rng)
+        end_z0 = SKID_H + 0.02 + iz / 2.0
         for sign in (-1.0, 1.0):
             x = sign * (ix / 2.0 + POST - SLAT_T / 2.0 - 0.001)
             for c, w in zip(end_c, end_w):
@@ -452,43 +481,46 @@ def build_crate_mesh(
                     clamp_overlap=True,
                 )
 
-        # L-straps: two plates meeting at a vertical edge, proud of the
-        # post. Not three overlapping cubes — those leave window holes.
-        wrap = IRON_WRAP
+        # L-straps: one extruded L-section shell per corner, biting into the
+        # post. Two boxes put a seam down the outer corner and, flush on
+        # the post, shared the post's face plane.
         strap_z0 = 0.006
         strap_h = top_z - strap_z0
-        zc = strap_z0 + strap_h / 2.0
+        px = hx + POST / 2.0 + IRON_T - IRON_BITE
+        py = hy + POST / 2.0 + IRON_T - IRON_BITE
+        iron = []
         for sxn in (-1.0, 1.0):
             for syn in (-1.0, 1.0):
-                ox = sxn * (hx + POST / 2.0 + IRON_T / 2.0)
-                oy = syn * (hy + POST / 2.0 + IRON_T / 2.0)
-                add_box(
-                    bm,
-                    (ox, syn * (hy + POST / 2.0 - wrap / 2.0 + IRON_T / 2.0), zc),
-                    (IRON_T, wrap, strap_h),
-                    METAL_IDX,
-                )
-                add_box(
-                    bm,
-                    (sxn * (hx + POST / 2.0 - wrap / 2.0 + IRON_T / 2.0), oy, zc),
-                    (wrap - IRON_T, IRON_T, strap_h),
-                    METAL_IDX,
-                )
+                iron.extend(add_strap(bm, sxn, syn, px, py, strap_z0, strap_h))
+                for fz in NAIL_ZS:
+                    z = strap_z0 + strap_h * fz
+                    add_nail(bm, Vector((sxn * px, syn * (py - IRON_WRAP * 0.5), z)),
+                             Vector((sxn, 0.0, 0.0)), float_nails)
+                    add_nail(bm, Vector((sxn * (px - IRON_WRAP * 0.5), syn * py, z)),
+                             Vector((0.0, syn, 0.0)), float_nails)
 
-        hz = SKID_H + post_h * 0.52
+        # The handle rides on the end board nearest mid-height, centred on
+        # it, so its mounting plates are screwed to wood, not to a gap.
+        # --straddle-handle puts it on the gap between two boards instead.
+        want = SKID_H + post_h * 0.52
+        k = min(range(N_END), key=lambda i: abs(end_z0 + end_c[i] - want))
+        hz = end_z0 + end_c[k]
+        if straddle_handle:
+            j = k + 1 if k + 1 < N_END else k - 1
+            hz = end_z0 + 0.5 * (end_c[k] + end_c[j])
         for sxn in (-1.0, 1.0):
             x_plate = sxn * (ix / 2.0 + POST - SLAT_T / 2.0)
             x_in = sxn * (ix / 2.0 + POST - SLAT_T - 0.008)
             x_out = sxn * (ix / 2.0 + POST + HANDLE_OUT)
             y0, y1 = -0.11, 0.11
-            add_box(
+            iron.extend(add_box(
                 bm, (x_plate, y0, hz),
-                (SLAT_T + IRON_T * 2.0, 0.034, 0.044), METAL_IDX,
-            )
-            add_box(
+                (SLAT_T + IRON_T * 2.0, 0.034, PLATE_H), METAL_IDX,
+            ))
+            iron.extend(add_box(
                 bm, (x_plate, y1, hz),
-                (SLAT_T + IRON_T * 2.0, 0.034, 0.044), METAL_IDX,
-            )
+                (SLAT_T + IRON_T * 2.0, 0.034, PLATE_H), METAL_IDX,
+            ))
             if float_handle:
                 add_box(
                     bm, (x_out, 0.0, hz), (0.020, 0.020, 0.020), METAL_IDX,
@@ -497,6 +529,19 @@ def build_crate_mesh(
                 add_handle_bail(
                     bm, x_in, x_out, y0, y1, hz, HANDLE_R, 8, METAL_IDX,
                 )
+
+        # Chamfer the straps and mounting plates at their own offset; the
+        # flat diagonal inside each L cap is not a corner. material= keeps
+        # the chamfer faces iron (bevel otherwise hands them slot 0).
+        iron_edges = [
+            e for e in {e for v in iron if v.is_valid for e in v.link_edges}
+            if len(e.link_faces) == 2 and e.calc_face_angle(0.0) > 1e-3
+        ]
+        if iron_edges:
+            bmesh.ops.bevel(
+                bm, geom=iron_edges, offset=IRON_BEVEL, segments=1, profile=0.5,
+                affect="EDGES", clamp_overlap=True, material=METAL_IDX,
+            )
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
@@ -512,9 +557,173 @@ def build_crate_mesh(
         me.update()
     finally:
         bm.free()
+    paint_planks(me)
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     return obj
+
+
+def add_strap(bm, sxn, syn, px, py, z0, h):
+    """One L-section corner strap as a single closed shell (copied from crate-stack).
+
+    Each cap is two convex quads meeting on the inner-corner diagonal, so
+    there is no n-gon; the bottom cap is wound opposite the top.
+    """
+    outline = [
+        (px, py - IRON_WRAP),
+        (px, py),
+        (px - IRON_WRAP, py),
+        (px - IRON_WRAP, py - IRON_T),
+        (px - IRON_T, py - IRON_T),
+        (px - IRON_T, py - IRON_WRAP),
+    ]
+    rings = [[bm.verts.new((sxn * x, syn * y, z)) for x, y in outline] for z in (z0, z0 + h)]
+    lo, hi = rings
+    faces = []
+    for ring, flip in ((lo, True), (hi, False)):
+        for quad in ((0, 1, 4, 5), (1, 2, 3, 4)):
+            vs = [ring[k] for k in quad]
+            faces.append(bm.faces.new(vs[::-1] if flip else vs))
+    for i in range(len(outline)):
+        j = (i + 1) % len(outline)
+        faces.append(bm.faces.new((lo[i], lo[j], hi[j], hi[i])))
+    for f in faces:
+        f.material_index = METAL_IDX
+    return lo + hi
+
+
+def add_nail(bm, face_pt, nrm, lift=False):
+    """A frustum nail head seated NAIL_BITE into the plate at *face_pt*."""
+    geo = bmesh.ops.create_cone(
+        bm, cap_ends=True, cap_tris=True, segments=NAIL_SEGS,
+        radius1=NAIL_R, radius2=NAIL_R_TOP, depth=NAIL_H,
+    )
+    orient = nrm.to_track_quat("Z", "Y").to_matrix().to_4x4()
+    up = FLOAT_NAIL_LIFT if lift else 0.0
+    seat = Matrix.Translation(face_pt + nrm * up) @ orient @ Matrix.Translation(
+        (0.0, 0.0, NAIL_H / 2.0 - NAIL_BITE)
+    )
+    for v in geo["verts"]:
+        v.co = seat @ v.co
+    for f in {f for v in geo["verts"] for f in v.link_faces}:
+        f.material_index = METAL_IDX
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader."""
+    tone = [0.5] * len(me.polygons)
+    grain = [(1.0, 0.0, 0.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((1.0, 0.0, 0.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each board (``GrainDir``), tone per board (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 30.0
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def crate_materials():
+    """(wood, iron): shared by the check, the render and inspection."""
+    wood = wood_material("CrateWood")
+    metal = principled(
+        "CrateMetal", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, metal
 
 
 def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
@@ -799,6 +1008,72 @@ def slat_join(me):
     return _bvh_gap(me, posts, slats)
 
 
+def nail_audit(me):
+    """Seat of every nail head in its strap (copied from crate-stack).
+
+    Nails are the small iron shells; every other iron shell is a host.
+    Signed distance to the host surface per nail vertex: the deepest is
+    the bite (banded), the highest is how proud the head stands.
+    """
+    nails, hosts = [], []
+    for g in shells(me):
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        a = shell_aabb(me, g)
+        ext = max(a[3] - a[0], a[4] - a[1], a[5] - a[2])
+        (nails if ext < NAIL_EXTENT_MAX else hosts).append(g)
+    if not nails or not hosts:
+        return {"n": len(nails), "bite_min": 0.0, "bite_max": 0.0, "proud_min": 0.0}
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        keep = {i for g in hosts for i in g}
+        drop = [f for f in bm.faces if not all(v.index in keep for v in f.verts)]
+        bmesh.ops.delete(bm, geom=drop, context="FACES")
+        tree = BVHTree.FromBMesh(bm)
+    finally:
+        bm.free()
+    bites, prouds = [], []
+    for g in nails:
+        signed = []
+        for i in g:
+            co = me.vertices[i].co
+            loc, nrm, _idx, _d = tree.find_nearest(co)
+            signed.append(99.0 if loc is None else (co - loc).dot(nrm))
+        bites.append(-min(signed))
+        prouds.append(max(signed))
+    return {"n": len(nails), "bite_min": min(bites), "bite_max": max(bites),
+            "proud_min": min(prouds)}
+
+
+def plate_board_audit(me):
+    """Worst clearance of a handle mounting plate inside a single end board.
+
+    End boards are the thin wood shells standing across an end of the
+    crate; mounting plates are the iron shells PLATE_H tall. For each plate
+    the clearance is how far its z-range sits inside the best-fitting
+    board's z-range, at both edges. Negative means the plate hangs over a
+    board edge, onto the gap.
+    """
+    boards, plates = [], []
+    for g in shells(me):
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        m = mat_of(me, g)
+        if m == WOOD_IDX and dx < SLAT_T * 2.5 and dy > INNER[1] * 0.8 and dz < INNER[2] * 0.5:
+            boards.append(a)
+        elif m == METAL_IDX and abs(dz - PLATE_H) < 0.004 and dy < 0.05:
+            plates.append(a)
+    worst = 99.0
+    for pa in plates:
+        side = [b for b in boards if abs(0.5 * (b[0] + b[3]) - 0.5 * (pa[0] + pa[3])) < 0.05]
+        best = max(
+            (min(pa[2] - b[2], b[5] - pa[5]) for b in side), default=-99.0
+        )
+        worst = min(worst, best)
+    return {"plates": len(plates), "boards": len(boards), "clear": worst}
+
+
 def add_stray_vert(me):
     bm = bmesh.new()
     try:
@@ -905,23 +1180,20 @@ def check(
     short_skids=False,
     float_handle=False,
     omit_slats=False,
+    float_nails=False,
+    straddle_handle=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         short_skids=short_skids,
         float_handle=float_handle,
         omit_slats=omit_slats,
+        float_nails=float_nails,
+        straddle_handle=straddle_handle,
     )
     low = build_crate_mesh("CrateLow", **flags)
     high = build_crate_mesh("CrateHigh", **flags)
-    wood = principled(
-        "CrateWood", (0.48, 0.22, 0.07, 1.0), 0.0, 0.50,
-        noise_scale=7.0, wear=(0.28, 0.14, 0.05, 1.0),
-    )
-    metal = principled(
-        "CrateMetal", (0.18, 0.17, 0.16, 1.0), 0.86, 0.36,
-        noise_scale=5.0, wear=(0.10, 0.09, 0.08, 1.0),
-    )
+    wood, metal = crate_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -975,6 +1247,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at its own temp preference, which on a portable
+    # build is the working directory, so the export must not outlive this.
+    if os.path.isfile(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -982,6 +1258,8 @@ def check(
     body = body_audit(low.data)
     hj = handle_join(low.data)
     sj = slat_join(low.data)
+    nails = nail_audit(low.data)
+    pb = plate_board_audit(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1009,6 +1287,11 @@ def check(
         f"measured supports skids={sup['skids']} skid_z={sup['skid_z']:.5f} "
         f"body=({body['dx']:.4f},{body['dy']:.4f},{body['dz']:.4f}) "
         f"handle_join={hj:.5f} slat_join={sj:.5f}"
+    )
+    print(
+        f"measured nails n={nails['n']} bite=[{nails['bite_min']:.5f}, "
+        f"{nails['bite_max']:.5f}] proud_min={nails['proud_min']:.5f} "
+        f"plates={pb['plates']} boards={pb['boards']} plate_clear={pb['clear']:.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1108,10 +1391,31 @@ def check(
             "(--omit-slats is the designed fail)",
             18,
         ), None, None, None, None, None
+    if (
+        nails["n"] != N_NAILS
+        or nails["bite_min"] < NAIL_BITE_MIN
+        or nails["bite_max"] > NAIL_BITE_MAX
+        or nails["proud_min"] < NAIL_PROUD_MIN
+    ):
+        return fail(
+            f"nail seat: {nails['n']} of {N_NAILS} nails, bite "
+            f"[{nails['bite_min']:.5f}, {nails['bite_max']:.5f}] outside "
+            f"[{NAIL_BITE_MIN}, {NAIL_BITE_MAX}] or proud "
+            f"{nails['proud_min']:.5f} < {NAIL_PROUD_MIN} "
+            "(--float-nails is the designed fail)",
+            18,
+        ), None, None, None, None, None
     if abs(body["dx"] - BODY_X) > BODY_TOL:
         return fail(f"body dx {body['dx']:.4f} off {BODY_X}", 19), None, None, None, None, None
     if abs(body["dy"] - BODY_Y) > BODY_TOL:
         return fail(f"body dy {body['dy']:.4f} off {BODY_Y}", 19), None, None, None, None, None
+    if pb["plates"] != 4 or pb["clear"] < PLATE_BOARD_MARGIN:
+        return fail(
+            f"handle plates {pb['plates']} clear of board edges by "
+            f"{pb['clear']:.5f} < {PLATE_BOARD_MARGIN} "
+            "(--straddle-handle is the designed fail)",
+            20,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1231,6 +1535,8 @@ def main():
     p.add_argument("--short-skids", action="store_true")
     p.add_argument("--float-handle", action="store_true")
     p.add_argument("--omit-slats", action="store_true")
+    p.add_argument("--float-nails", action="store_true")
+    p.add_argument("--straddle-handle", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1240,6 +1546,8 @@ def main():
         short_skids=args.short_skids,
         float_handle=args.float_handle,
         omit_slats=args.omit_slats,
+        float_nails=args.float_nails,
+        straddle_handle=args.straddle_handle,
     )
     if code:
         return code

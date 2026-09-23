@@ -157,6 +157,30 @@ def render_still(obj, path, engine):
         ob.rotation_euler = (0.0, 0.0, math.radians(28))
         blocks.append(ob)
 
+    # Endpoint cages on the checked block: its Basis and its full Tall key as
+    # pale wireframes, so the solid visibly sits halfway between the two —
+    # the closed-form blend the check asserts, not just "a taller box".
+    # Render-only copies with their own key value; `obj` is untouched.
+    cage_mat = bpy.data.materials.new("Cage")
+    cage_mat.use_nodes = True
+    cbsdf = cage_mat.node_tree.nodes["Principled BSDF"]
+    cbsdf.inputs["Base Color"].default_value = (0.92, 0.84, 1.0, 1.0)
+    cbsdf.inputs["Roughness"].default_value = 0.4
+    cages = []
+    for end in (0.0, 1.0):
+        me = obj.data.copy()
+        me.materials.clear()
+        me.materials.append(cage_mat)
+        me.shape_keys.key_blocks["Tall"].value = end
+        cage = bpy.data.objects.new(f"Cage_{end}", me)
+        cage.location = obj.location
+        cage.rotation_euler = obj.rotation_euler
+        wire = cage.modifiers.new("cage", "WIREFRAME")
+        wire.thickness = 0.02
+        wire.use_even_offset = True
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
@@ -184,7 +208,9 @@ def render_still(obj, path, engine):
 
     world_top = HALF + EXPECT_TOP_Z
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, world_top / 2)
+    # Aimed above the checked block's middle: the full-key cage over it is
+    # taller than any solid, and centring on the solids clipped it.
+    aim.location = (0.35, 0.0, world_top * 0.62)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -217,7 +243,8 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.8, 2.05)
+    # Pulled back so the full-key cage on the right block stays in frame.
+    cam.location = (0.35, -10.4, 2.5)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')

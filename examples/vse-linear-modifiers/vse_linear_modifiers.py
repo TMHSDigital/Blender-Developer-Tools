@@ -1,6 +1,8 @@
 """VSE strip.use_linear_modifiers removal — a runnable example.
 
-Witnesses the 5.2 removal of ``Sequence.use_linear_modifiers``. Access is a
+Witnesses the 5.2 removal of ``Strip.use_linear_modifiers`` (the RNA
+type is ``Strip`` on every targeted version; ``bpy.types.Sequence`` does
+not exist on 4.5, 5.1 or 5.2). Access is a
 bool on 4.5 LTS and 5.1; the same getattr/setattr raises AttributeError on
 5.2. Version-guarded code (``hasattr`` then read) does not raise on any of
 the three. Pathology: no geometry, no gallery still.

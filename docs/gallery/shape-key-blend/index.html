@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." />
+  <meta property="og:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="shape-key-blend — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shape-key-blend-hero.webp" />
-  <meta name="twitter:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." />
+  <meta name="twitter:image:alt" content="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare.">
-      <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it.">
+      <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.</div>
@@ -460,6 +460,30 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
         ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">28</span>))
         blocks.append(ob)
 
+    <span class="c"># Endpoint cages on the checked block: its Basis and its full Tall key as</span>
+    <span class="c"># pale wireframes, so the solid visibly sits halfway between the two —</span>
+    <span class="c"># the closed-form blend the check asserts, not just &quot;a taller box&quot;.</span>
+    <span class="c"># Render-only copies with their own key value; `obj` is untouched.</span>
+    cage_mat = bpy.data.materials.new(<span class="s">&quot;Cage&quot;</span>)
+    cage_mat.use_nodes = <span class="k">True</span>
+    cbsdf = cage_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    cbsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.92</span>, <span class="n">0.84</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    cbsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.4</span>
+    cages = []
+    <span class="k">for</span> end <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">1.0</span>):
+        me = obj.data.copy()
+        me.materials.clear()
+        me.materials.append(cage_mat)
+        me.shape_keys.key_blocks[<span class="s">&quot;Tall&quot;</span>].value = end
+        cage = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Cage_</span>{end}<span class="s">&quot;</span>, me)
+        cage.location = obj.location
+        cage.rotation_euler = obj.rotation_euler
+        wire = cage.modifiers.new(<span class="s">&quot;cage&quot;</span>, <span class="s">&quot;WIREFRAME&quot;</span>)
+        wire.thickness = <span class="n">0.02</span>
+        wire.use_even_offset = <span class="k">True</span>
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -487,7 +511,9 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
 
     world_top = HALF + EXPECT_TOP_Z
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, world_top / <span class="n">2</span>)
+    <span class="c"># Aimed above the checked block&#x27;s middle: the full-key cage over it is</span>
+    <span class="c"># taller than any solid, and centring on the solids clipped it.</span>
+    aim.location = (<span class="n">0.35</span>, <span class="n">0.0</span>, world_top * <span class="n">0.62</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -520,7 +546,8 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.8</span>, <span class="n">2.05</span>)
+    <span class="c"># Pulled back so the full-key cage on the right block stays in frame.</span>
+    cam.location = (<span class="n">0.35</span>, -<span class="n">10.4</span>, <span class="n">2.5</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -581,7 +608,7 @@ EXPECT_TOP_HALF = HALF + BLEND * FLARE  <span class="c"># |x| and |y| of top ver
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts, from a plain cube to a strong flare." />
+    <img src="../assets/shape-key-blend-hero.webp" alt="Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it." />
   </dialog>
   <footer>
     <div class="statusbar">
