@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/stone-archway-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A freestanding stone archway of coursed piers and a semicircular arch with a keystone." />
+  <meta property="og:image:alt" content="A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="stone-archway — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/stone-archway-hero.webp" />
-  <meta name="twitter:image:alt" content="A freestanding stone archway of coursed piers and a semicircular arch with a keystone." />
+  <meta name="twitter:image:alt" content="A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A procedural masonry archway — coursed piers, projecting imposts, nine voussoirs and a proud keystone — carried through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A freestanding stone archway of coursed piers and a semicircular arch with a keystone.">
-      <img src="../assets/stone-archway-hero.webp" alt="A freestanding stone archway of coursed piers and a semicircular arch with a keystone." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints.">
+      <img src="../assets/stone-archway-hero.webp" alt="A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 924 tris, two materials with 182 dressed and 364 ashlar faces re-stamped after the chamfer, UVs in 0..1 with zero AABB overlap, outer AABB 1.644×0.510×2.057 m, clear opening 1.203 m, zmin 0, hygiene 0 including zero coplanar disjoint pairs, both piers grounded, the springing joint an overlap, all eight mortar joints at 9.70 mm inside the 6–17 mm band, and every intrados vertex within 0.97 mm of the declared 0.60 m radius over 178°. --off-circle exits 19 on the circle fit; --wide-mortar exits 18 on the joint band.</div>
@@ -278,9 +278,9 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A freestanding masonry arch — two coursed piers, projecting imposts, nine voussoirs turning a semicircle, and a keystone standing proud at the crown. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<p>A freestanding masonry arch — two coursed piers, projecting imposts, nine voussoirs turning a semicircle, and a keystone standing proud at the crown, every joint filled with a recessed mortar bed. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
 <h2>What it composes</h2>
-<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>wedge and box construction, chamfer, UVs in one <code>bmesh</code></td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>two Principled stone materials with noise-driven weathering</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>convex collider</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>wedge and box construction, chamfer, UVs in one <code>bmesh</code></td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>ashlar, dressed stone and mortar: object-space mottling, speckle, bump, per-block tone</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>convex collider</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
 <h2>The budget that matters</h2>
 <p>An arch can fail invisibly. Nine wedge blocks laid in a row are still nine wedge blocks; the thing that makes them an arch is that their <strong>intrados vertices sit on a circle</strong>. So the piece recomputes that circle from vertex positions — not from the angles the generator used — and asserts every intrados vertex lands within 4 mm of the declared 0.60 m radius, over an arc spanning at least 168°.</p>
 <p><code>--off-circle</code> is the falsifier built for exactly this. It keeps the angles, the joints, the materials, the triangle count and the bounding box identical, and only wanders the intrados radius by ±18 mm. Every other budget in the piece still passes. Only the circle fit sees it.</p>
@@ -288,22 +288,28 @@
 <p>The first attempt selected intrados vertices by radius. That swept in the chamfer vertices sitting one bevel-width out on each radial face and reported a 5.1 mm error on a true arch. The fit now runs over the vertices of faces that actually face the springing centre — normal inward in XZ <em>and</em> with a small Y component, which is what excludes the chamfer strips running along the intrados edges.</p>
 <h2>Budgets</h2>
 <p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; the cross-version table is at the end.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>700–2600</td><td>924</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2121 (5.2) / 0.2186 (4.5, 5.1)</td></tr><tr><td>Material slots</td><td>exactly 2, distinct</td><td>2</td></tr><tr><td>Dressed faces (keystone, imposts, plinth and head courses)</td><td>≥ 100</td><td>182</td></tr><tr><td>Ashlar faces</td><td>≥ 280</td><td>364</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0017, 0.0017)–(0.9983, 0.9983)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>1.644 × 0.510 × 2.057 m ± 0.020</td><td>1.6440 × 0.5100 × 2.0568</td></tr><tr><td>Clear opening</td><td>1.200 m ± 0.015, measured between the pier faces</td><td>1.2033</td></tr><tr><td>Collider triangles</td><td>≤ 260</td><td>168</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~87 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Pier supports</td><td>2 piers, each base course zmin ≤ 1e-3</td><td>2 at 0.00000</td></tr><tr><td>Keystone proud of the wall face</td><td>≥ 0.020 m</td><td>0.03500</td></tr><tr><td>Springing joint</td><td>overlap, surface gap ≤ 1e-4</td><td>0.00000</td></tr><tr><td>Mortar joints</td><td>every adjacent pair in 0.006–0.017 m</td><td>all eight at 0.00970</td></tr><tr><td>Intrados circle fit</td><td>every vertex within 0.004 m of R = 0.60</td><td>0.00097</td></tr><tr><td>Intrados arc span</td><td>≥ 168°</td><td>178.0°</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>950–1450</td><td>1140</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2140 (5.2) / 0.2193 (4.5, 5.1)</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Dressed faces (keystone, imposts, plinth and head courses)</td><td>≥ 100</td><td>182</td></tr><tr><td>Ashlar faces</td><td>≥ 280</td><td>364</td></tr><tr><td>Mortar faces</td><td>≥ 100</td><td>108</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0015, 0.0015)–(0.9985, 0.9985)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>1.644 × 0.510 × 2.057 m ± 0.020</td><td>1.6440 × 0.5100 × 2.0568</td></tr><tr><td>Clear opening</td><td>1.200 m ± 0.015, measured between the pier faces</td><td>1.2033</td></tr><tr><td>Collider triangles</td><td>≤ 260</td><td>168</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~100 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Pier supports</td><td>2 piers, each base course zmin ≤ 1e-3</td><td>2 at 0.00000</td></tr><tr><td>Keystone proud of the wall face</td><td>≥ 0.020 m</td><td>0.03500</td></tr><tr><td>Springing joint</td><td>overlap, surface gap ≤ 1e-4</td><td>0.00000</td></tr><tr><td>Mortar joints</td><td>every adjacent pair in 0.006–0.017 m</td><td>all eight at 0.00970</td></tr><tr><td>Intrados circle fit</td><td>every vertex within 0.004 m of R = 0.60</td><td>0.00097</td></tr><tr><td>Intrados arc span</td><td>≥ 168°</td><td>178.0°</td></tr><tr><td>Mortar contact</td><td>18 joints, each overlapping exactly 2 stones</td><td>18, all 2</td></tr></tbody></table></div>
 <p>Real-world size: a 1.20 m clear opening under a semicircular head, 1.64 m across the piers and 2.06 m to the top of the keystone — a garden gate arch.</p>
+<h2>Mortar</h2>
+<p>Every joint used to be air. The pier courses stood 7 mm apart and the voussoirs 9.7 mm apart, none of them touching: each pier was a stack of floating blocks, with daylight through every joint in the ground-contact and joint close-ups. The mortar-band budget measured the gaps and passed, because the gaps were the right width. Nothing asked what was in them.</p>
+<p>Each joint now holds a mortar shell sized from the two blocks it sits between (<code>add_mortar</code>): beds between courses and under each impost, and wedges between voussoirs. Each is recessed <code>MORTAR_RECESS</code> (chamfer plus 3 mm) behind the stone faces, so it reads as a raked joint, and bites <code>MORTAR_BITE</code> (1.5 mm) into both blocks. Mortar is added after the chamfer pass and left unchamfered, and <code>classify</code> skips mortar shells, so every stone budget — circle fit, joint band, keystone, supports — still measures stone against stone.</p>
+<p><code>mortar_audit</code> asserts that each of the 18 mortar shells BVH-overlaps exactly two stones. <code>--short-mortar</code> stops every joint 1 mm shy of both blocks, so each shell touches none, and the piece exits 18.</p>
+<h2>Surface</h2>
+<p>The stone used to read as wood. Its noise-driven colour mix streaked at hero scale into long brown grain, and under neutral light it looked like cream plaster. <code>stone_material</code> now samples object space with isotropic noise: mottling for colour, fine speckle driving roughness, and a small bump for pitting. A seeded <code>BlockTone</code> face attribute (<code>paint_blocks</code>) shades each stone differently. Dressed stone is paler and smoother than ashlar; mortar is a flat grey-beige. The baked normal map is chained under the bump (<code>wire_normal</code>) rather than replacing it.</p>
 <h2>Determinism</h2>
-<p>Fixed seed 23; no unseeded randomness. Every measured value above is byte-identical on 4.5.11, 5.1.2 and 5.2.1 <strong>except</strong> LOD2, where <code>DECIMATE COLLAPSE</code> produces 196 triangles on 5.2 and 202 on 4.5 and 5.1. That is why the LOD gate is a ratio band (0.10–0.35, measured 0.2121 and 0.2186) and not an exact count.</p>
+<p>Fixed seed 23; no unseeded randomness. Every measured value above is byte-identical on 4.5.11, 5.1.2 and 5.2.1 <strong>except</strong> LOD2, where <code>DECIMATE COLLAPSE</code> produces 244 triangles on 5.2 and 250 on 4.5 and 5.1. That is why the LOD gate is a ratio band (0.10–0.35, measured 0.2140 and 0.2193) and not an exact count.</p>
 <h2>Falsifiers</h2>
-<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>adds one loose vertex inside the opening, so hygiene catches it rather than the bounding box</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>lifts the whole mesh 50 mm off the floor</td><td>16</td></tr><tr><td><code>--float-pier</code></td><td>floats one pier 12 mm; the other still grounds the AABB, so only the named-support budget sees it</td><td>16</td></tr><tr><td><code>--sink-keystone</code></td><td>sinks the keystone to a quarter of its projection (8.75 mm) — the imposts still set the Y envelope, so the bounding box is unchanged</td><td>17</td></tr><tr><td><code>--wide-mortar</code></td><td>triples the joint angle, opening every joint to 29.1 mm</td><td>18</td></tr><tr><td><code>--off-circle</code></td><td>wanders the intrados radius ±18 mm while keeping angles, joints and envelope</td><td>19</td></tr></tbody></table></div>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All eight were run on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>adds one loose vertex inside the opening, so hygiene catches it rather than the bounding box</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>lifts the whole mesh 50 mm off the floor</td><td>16</td></tr><tr><td><code>--float-pier</code></td><td>floats one pier 12 mm; the other still grounds the AABB, so only the named-support budget sees it</td><td>16</td></tr><tr><td><code>--sink-keystone</code></td><td>sinks the keystone to a quarter of its projection (8.75 mm) — the imposts still set the Y envelope, so the bounding box is unchanged</td><td>17</td></tr><tr><td><code>--wide-mortar</code></td><td>triples the joint angle, opening every joint to 29.1 mm</td><td>18</td></tr><tr><td><code>--off-circle</code></td><td>wanders the intrados radius ±18 mm while keeping angles, joints and envelope</td><td>19</td></tr><tr><td><code>--short-mortar</code></td><td>stops every mortar joint 1 mm shy of both stones; each of the 18 touches none, mortar-contact budget</td><td>18</td></tr></tbody></table></div>
 <p>Three of these needed the model changed, not the budget:</p>
 <ul><li><strong><code>--sink-keystone</code></strong> originally removed the projection outright, which shrank the Y bounding box by 70 mm and tripped the AABB gate first. The imposts were added so the envelope no longer depends on the keystone — and an impost course is correct masonry the arch was missing anyway.</li><li><strong><code>--off-circle</code></strong> began as <code>--flat-arch</code>, laying the voussoirs as a lintel. That is 0.62 m shorter and fails on the bounding box, proving nothing about the circle fit. Wandering the radius inside the same envelope is the honest version.</li><li><strong><code>--float-pier</code></strong> tripped the z-fight budget rather than the support budget, because the impost was pinned to an absolute height while the courses under it rose into it. The impost now rides on its own pier.</li></ul>
 <h2>Findings the budgets forced</h2>
 <ul><li><strong>The chamfer pass silently repainted the mesh.</strong> <code>bmesh.ops.bevel</code> gives every face it creates <code>material_index</code> 0, so chamfering nineteen blocks left 30 faces on the dressed slot and moved 464 to ashlar. The slot count and the distinct-material check both still passed. Only the per-material face floor caught it, which is exactly the class <code>showcase/README.md</code> warns about. Materials are now re-stamped after the bevel, per block, by nearest recorded centroid.</li><li><strong>The impost landed exactly on the top course.</strong> Same footprint, same plane, two coincident face centres — a z-fight. It now sits on its own mortar bed, which is why the pier lays <code>N_COURSE</code> beds rather than <code>N_COURSE - 1</code>.</li><li><strong><code>find_nearest</code> is unsigned.</strong> A voussoir seated <em>inside</em> the pier head reported a 5.4 mm gap where there was none, because the distance to the host&#x27;s skin is positive from inside too. Joint gaps now test BVH overlap first and return zero when two blocks interpenetrate.</li><li><strong>Joint gaps have to be measured both ways.</strong> The keystone&#x27;s radial faces are wider in Y than its neighbours&#x27;, so every keystone vertex on the joint lies outside the neighbour and read 33 mm instead of the 9.7 mm joint. The metric is the closest approach of the two surfaces, min of both directions.</li></ul>
 <h2>Exit codes</h2>
 <p>File-local and sequential. <code>9</code> is a valid check code; there is no rule against it. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a pier base floating (<code>--lift-z</code>, <code>--float-pier</code>)</td></tr><tr><td>17</td><td>Keystone projection or springing joint (<code>--sink-keystone</code>)</td></tr><tr><td>18</td><td>Mortar joint outside band (<code>--wide-mortar</code>)</td></tr><tr><td>19</td><td>Intrados circle fit, or clear opening (<code>--off-circle</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a pier base floating (<code>--lift-z</code>, <code>--float-pier</code>)</td></tr><tr><td>17</td><td>Keystone projection or springing joint (<code>--sink-keystone</code>)</td></tr><tr><td>18</td><td>Mortar joint outside band (<code>--wide-mortar</code>), or a mortar shell not seated in exactly two stones (<code>--short-mortar</code>)</td></tr><tr><td>19</td><td>Intrados circle fit, or clear opening (<code>--off-circle</code>)</td></tr></tbody></table></div>
 <h2>Run it</h2>
-<pre><code># Budget check, no render. ~0.82 s on 4.5, ~0.85 s on 5.1, ~0.98 s on 5.2.
+<pre><code># Budget check, no render. ~1.1 s on 4.5, ~1.2 s on 5.1, ~1.4 s on 5.2.
 blender --background --python stone_archway.py --
 
 # Falsifier: the intrados stops being a circle. Must exit 19.
@@ -316,7 +322,7 @@ blender --background --python stone_archway.py -- --wide-mortar
 blender --background --python stone_archway.py -- --output arch.webp</code></pre>
 <p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
 <h2>Cross-version measurements</h2>
-<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>924</td><td>924</td><td>924</td></tr><tr><td>LOD1 tris / ratio</td><td>462 / 0.5000</td><td>462 / 0.5000</td><td>462 / 0.5000</td></tr><tr><td>LOD2 tris / ratio</td><td>202 / 0.2186</td><td>202 / 0.2186</td><td>196 / 0.2121</td></tr><tr><td>Face counts (ashlar / dressed)</td><td>364 / 182</td><td>364 / 182</td><td>364 / 182</td></tr><tr><td>Outer AABB</td><td>1.6440 × 0.5100 × 2.0568</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>168</td><td>168</td><td>168</td></tr><tr><td>Intrados deviation</td><td>0.00097</td><td>0.00097</td><td>0.00097</td></tr><tr><td>Mortar joints</td><td>all 0.00970</td><td>all 0.00970</td><td>all 0.00970</td></tr><tr><td>Check wall-clock</td><td>~0.82 s</td><td>~0.85 s</td><td>~0.98 s</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>1140</td><td>1140</td><td>1140</td></tr><tr><td>LOD1 tris / ratio</td><td>570 / 0.5000</td><td>570 / 0.5000</td><td>570 / 0.5000</td></tr><tr><td>LOD2 tris / ratio</td><td>250 / 0.2193</td><td>250 / 0.2193</td><td>244 / 0.2140</td></tr><tr><td>Face counts (ashlar / dressed / mortar)</td><td>364 / 182 / 108</td><td>same</td><td>same</td></tr><tr><td>Outer AABB</td><td>1.6440 × 0.5100 × 2.0568</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>168</td><td>168</td><td>168</td></tr><tr><td>Intrados deviation</td><td>0.00097</td><td>0.00097</td><td>0.00097</td></tr><tr><td>Mortar joints</td><td>all 0.00970</td><td>all 0.00970</td><td>all 0.00970</td></tr><tr><td>Mortar contact</td><td>18 × 2 stones</td><td>same</td><td>same</td></tr><tr><td>Check wall-clock</td><td>~1.11 s</td><td>~1.18 s</td><td>~1.37 s</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -328,7 +334,7 @@ blender --background --python stone_archway.py -- --output arch.webp</code></pre
 
 Asserts budget conformance of a procedural masonry arch: two coursed
 piers, nine voussoirs turning a semicircle, and a proud keystone, carried
-through UVs, two materials, a high-to-low normal bake, an LOD chain, a
+through UVs, three materials (ashlar, dressed stone, mortar), a high-to-low normal bake, an LOD chain, a
 convex collider, and a Unity glTF export.
 
 The budget that matters here is the one an arch can fail invisibly: the
@@ -342,7 +348,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-pier`` the named pier
 supports, ``--sink-keystone`` the keystone joint, ``--wide-mortar`` the
-mortar-joint band, ``--off-circle`` the intrados circle fit.
+mortar-joint band, ``--off-circle`` the intrados circle fit,
+``--short-mortar`` the mortar-contact budget.
 
 Fixed seed 23 for course and block weathering. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
@@ -413,15 +420,15 @@ OUTER_SIZE = (<span class="n">1.644</span>, <span class="n">0.510</span>, <span 
 SPAN_TOL = <span class="n">0.015</span>
 OPENING_W = <span class="n">2.0</span> * R_IN
 
-BASE_TRIS_MIN = <span class="n">700</span>
-BASE_TRIS_MAX = <span class="n">2600</span>
+BASE_TRIS_MIN = <span class="n">950</span>
+BASE_TRIS_MAX = <span class="n">1450</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
 LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
-MATERIAL_COUNT = <span class="n">2</span>
+MATERIAL_COUNT = <span class="n">3</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">260</span>
@@ -449,6 +456,19 @@ FLOAT_PIER_LIFT = <span class="n">0.012</span>
 
 ASHLAR_IDX = <span class="n">0</span>
 DRESSED_IDX = <span class="n">1</span>
+MORTAR_IDX = <span class="n">2</span>
+
+<span class="c"># Mortar fills every joint. Each bed or wedge is built from the two blocks</span>
+<span class="c"># it sits between: recessed behind their faces (deeper than the chamfer, so</span>
+<span class="c"># it reads as a raked joint rather than a filled one) and biting into both.</span>
+<span class="c"># Without it every course floated on 7 mm of air and daylight showed</span>
+<span class="c"># through each joint.</span>
+MORTAR_RECESS = CHAMFER + <span class="n">0.003</span>
+MORTAR_BITE = <span class="n">0.0015</span>
+SHORT_MORTAR_CLEAR = <span class="n">0.001</span>
+N_MORTAR = <span class="n">2</span> * N_COURSE + (N_VOUSSOIR - <span class="n">1</span>)
+MORTAR_FACES_MIN = <span class="n">100</span>
+BLOCK_TONE_JITTER = <span class="n">0.25</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -606,6 +626,9 @@ DRESSED_IDX = <span class="n">1</span>
     heights = [usable * r / total <span class="k">for</span> r <span class="k">in</span> raw]
     verts = []
     blocks = []
+    <span class="c"># (width, depth, zmin, zmax) per block, bottom up, impost last: what</span>
+    <span class="c"># the mortar beds between them are sized from.</span>
+    stack = []
     z = FLOAT_PIER_LIFT <span class="k">if</span> (float_pier <span class="k">and</span> sign &lt; <span class="n">0</span>) <span class="k">else</span> <span class="n">0.0</span>
     <span class="k">for</span> i, h <span class="k">in</span> enumerate(heights):
         <span class="c"># Courses weather back a little as they rise; the jitter also keeps</span>
@@ -621,6 +644,7 @@ DRESSED_IDX = <span class="n">1</span>
         )
         verts.extend(vs)
         blocks.append(block)
+        stack.append((T_V - inset, depth, z, z + h))
         z += h + COURSE_MORTAR
     <span class="c"># The impost rides on the courses rather than sitting at an absolute</span>
     <span class="c"># height: pinned to H_SPRING it stays put while --float-pier lifts the</span>
@@ -633,7 +657,8 @@ DRESSED_IDX = <span class="n">1</span>
     )
     verts.extend(vs)
     blocks.append(block)
-    <span class="k">return</span> verts, blocks
+    stack.append((T_V + <span class="n">2.0</span> * IMPOST_OUT, WALL_Y + <span class="n">2.0</span> * IMPOST_PROUD, z, z + IMPOST_H))
+    <span class="k">return</span> verts, blocks, stack
 
 
 <span class="k">def</span> build_arch(bm, rng, off_circle=<span class="k">False</span>, sink_keystone=<span class="k">False</span>, wide_mortar=<span class="k">False</span>):
@@ -643,6 +668,7 @@ DRESSED_IDX = <span class="n">1</span>
     cz = H_SPRING - SPRING_BITE
     verts = []
     blocks = []
+    wedges = []
     <span class="k">for</span> k <span class="k">in</span> range(N_VOUSSOIR):
         is_key = k == KEY_INDEX
         widen = KEY_WIDEN <span class="k">if</span> is_key <span class="k">else</span> <span class="n">0.0</span>
@@ -668,7 +694,43 @@ DRESSED_IDX = <span class="n">1</span>
         vs, block = add_wedge(bm, cz, a0, a1, r0, r1, hy, mat)
         verts.extend(vs)
         blocks.append(block)
-    <span class="k">return</span> verts, blocks
+        wedges.append((a0, a1, r0, r1, hy))
+    <span class="k">return</span> verts, blocks, wedges
+
+
+<span class="k">def</span> add_mortar(bm, sign, stack, wedges, short=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Beds between pier courses and wedges between voussoirs.
+
+    Every dimension comes from the two blocks the joint sits between, so a
+    course that weathers back or a voussoir that rises takes its mortar with
+    it. ``short`` stops each joint SHORT_MORTAR_CLEAR shy of both blocks —
+    the falsifier for the mortar-contact budget.
+    &quot;&quot;&quot;</span>
+    bite = -SHORT_MORTAR_CLEAR <span class="k">if</span> short <span class="k">else</span> MORTAR_BITE
+    <span class="k">if</span> stack <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        x = sign * (R_IN + T_V / <span class="n">2.0</span>)
+        <span class="k">for</span> (w0, d0, _z0, top), (w1, d1, bot, _z1) <span class="k">in</span> zip(stack, stack[<span class="n">1</span>:]):
+            h = (bot - top) + <span class="n">2.0</span> * bite
+            add_box(
+                bm,
+                (x, <span class="n">0.0</span>, <span class="n">0.5</span> * (top + bot)),
+                (min(w0, w1) - <span class="n">2.0</span> * MORTAR_RECESS,
+                 min(d0, d1) - <span class="n">2.0</span> * MORTAR_RECESS, h),
+                MORTAR_IDX,
+            )
+    <span class="k">if</span> wedges <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        cz = H_SPRING - SPRING_BITE
+        <span class="k">for</span> (_a0, a1, r0a, r1a, hya), (b0, _b1, r0b, r1b, hyb) <span class="k">in</span> zip(wedges, wedges[<span class="n">1</span>:]):
+            ri = max(r0a, r0b) + MORTAR_RECESS
+            <span class="c"># Angular bite taken at the inner radius, so it is never less</span>
+            <span class="c"># than MORTAR_BITE anywhere along the joint.</span>
+            da = bite / ri
+            add_wedge(
+                bm, cz, a1 - da, b0 + da, ri,
+                min(r1a, r1b) - MORTAR_RECESS,
+                min(hya, hyb) - MORTAR_RECESS,
+                MORTAR_IDX,
+            )
 
 
 <span class="k">def</span> build_arch_mesh(
@@ -677,15 +739,18 @@ DRESSED_IDX = <span class="n">1</span>
     sink_keystone=<span class="k">False</span>,
     wide_mortar=<span class="k">False</span>,
     float_pier=<span class="k">False</span>,
+    short_mortar=<span class="k">False</span>,
 ):
     rng = random.Random(ARCH_SEED)
     bm = bmesh.new()
     <span class="k">try</span>:
         blocks = []
+        stacks = []
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            _v, bl = build_pier(bm, sign, rng, float_pier=float_pier)
+            _v, bl, st = build_pier(bm, sign, rng, float_pier=float_pier)
             blocks.extend(bl)
-        _v, bl = build_arch(
+            stacks.append((sign, st))
+        _v, bl, wedges = build_arch(
             bm,
             rng,
             off_circle=off_circle,
@@ -705,6 +770,12 @@ DRESSED_IDX = <span class="n">1</span>
                 clamp_overlap=<span class="k">True</span>,
             )
         assign_materials_by_block(bm, blocks)
+        <span class="c"># Mortar after the chamfer: it sits recessed behind the stone and a</span>
+        <span class="c"># chamfer on a 10 mm bed would eat it. It also stays out of the</span>
+        <span class="c"># block re-stamp, which only knows stone.</span>
+        <span class="k">for</span> sign, st <span class="k">in</span> stacks:
+            add_mortar(bm, sign, st, <span class="k">None</span>, short=short_mortar)
+        add_mortar(bm, <span class="n">0.0</span>, <span class="k">None</span>, wedges, short=short_mortar)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
@@ -714,44 +785,123 @@ DRESSED_IDX = <span class="n">1</span>
         me.update()
     <span class="k">finally</span>:
         bm.free()
+    paint_blocks(me)
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
+<span class="k">def</span> paint_blocks(me):
+    <span class="s">&quot;&quot;&quot;A seeded tone per stone, as the ``BlockTone`` face attribute.
+
+    Nineteen blocks out of one material are one block repeated; a quarried
+    arch has every stone a shade apart. Mortar keeps the neutral 0.5.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    mortar = mortar_verts(me)
+    owner = {}
+    rng = random.Random(ARCH_SEED * <span class="n">17</span>)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        t = <span class="n">0.5</span> <span class="k">if</span> g[<span class="n">0</span>] <span class="k">in</span> mortar <span class="k">else</span> <span class="n">0.5</span> + rng.uniform(-BLOCK_TONE_JITTER, BLOCK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = t
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        tone[p.index] = owner[p.vertices[<span class="n">0</span>]]
+    attr = me.attributes.new(<span class="s">&quot;BlockTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    attr.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> stone_material(name, light, dark, roughness, mottle, speck, bump):
+    <span class="s">&quot;&quot;&quot;Stone, not timber: isotropic mottling, fine speckle and pitting.
+
+    The old noise-driven mix read as long brown streaks at hero scale, and
+    the ashlar looked like wood grain. Everything here samples object space
+    with isotropic noise, so nothing in the pattern has a direction.
+    &quot;&quot;&quot;</span>
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
-    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
-        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
-        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">9.0</span>
-        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
-        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
-        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
-        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
-        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
-        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
-        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
-        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
-        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
-        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
-        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
-        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.16</span>)
-        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
-        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
-        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mot = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    mot.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = mottle
+    mot.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    mot.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mot.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.32</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = dark
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = light
+    nt.links.new(mot.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    spk = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    spk.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = speck
+    spk.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], spk.inputs[<span class="s">&quot;Vector&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    gain.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.82</span>
+    gain.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.12</span>
+    nt.links.new(spk.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="s">&quot;Value&quot;</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Result&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    <span class="c"># Per-stone shade from the BlockTone face attribute (paint_blocks).</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;BlockTone&quot;</span>
+    shade = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    shade.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    shade.inputs[<span class="n">1</span>].default_value = <span class="n">0.8</span>
+    shade.inputs[<span class="n">2</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shade.inputs[<span class="n">0</span>])
+    mix2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix2.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix2.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix2.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(mix2.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(shade.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix2.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix2.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = roughness - <span class="n">0.06</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.08</span>)
+    nt.links.new(spk.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">if</span> bump &gt; <span class="n">0.0</span>:
+        bmp = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+        bmp.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = bump
+        bmp.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+        nt.links.new(spk.outputs[<span class="s">&quot;Fac&quot;</span>], bmp.inputs[<span class="s">&quot;Height&quot;</span>])
+        nt.links.new(bmp.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> assign_slots(obj, ashlar, dressed):
+<span class="k">def</span> arch_materials():
+    <span class="s">&quot;&quot;&quot;(ashlar, dressed, mortar): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    ashlar = stone_material(
+        <span class="s">&quot;ArchAshlar&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.355</span>, <span class="n">0.285</span>, <span class="n">1.0</span>), (<span class="n">0.235</span>, <span class="n">0.205</span>, <span class="n">0.160</span>, <span class="n">1.0</span>),
+        <span class="n">0.86</span>, mottle=<span class="n">5.0</span>, speck=<span class="n">140.0</span>, bump=<span class="n">0.30</span>,
+    )
+    dressed = stone_material(
+        <span class="s">&quot;ArchDressed&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.50</span>, <span class="n">0.405</span>, <span class="n">1.0</span>), (<span class="n">0.40</span>, <span class="n">0.355</span>, <span class="n">0.285</span>, <span class="n">1.0</span>),
+        <span class="n">0.66</span>, mottle=<span class="n">3.0</span>, speck=<span class="n">220.0</span>, bump=<span class="n">0.12</span>,
+    )
+    mortar = stone_material(
+        <span class="s">&quot;ArchMortar&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.485</span>, <span class="n">0.450</span>, <span class="n">1.0</span>), (<span class="n">0.40</span>, <span class="n">0.385</span>, <span class="n">0.355</span>, <span class="n">1.0</span>),
+        <span class="n">0.95</span>, mottle=<span class="n">12.0</span>, speck=<span class="n">300.0</span>, bump=<span class="n">0.0</span>,
+    )
+    <span class="k">return</span> ashlar, dressed, mortar
+
+
+<span class="k">def</span> assign_slots(obj, ashlar, dressed, mortar):
     mats = obj.data.materials
-    <span class="k">for</span> i, mat <span class="k">in</span> enumerate((ashlar, dressed)):
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate((ashlar, dressed, mortar)):
         <span class="k">if</span> i &lt; len(mats):
             mats[i] = mat
         <span class="k">else</span>:
@@ -947,10 +1097,25 @@ DRESSED_IDX = <span class="n">1</span>
     <span class="k">return</span> best
 
 
+<span class="k">def</span> mortar_verts(me):
+    <span class="s">&quot;&quot;&quot;Vertices of mortar faces. Mortar is its own shells; stone budgets skip it.&quot;&quot;&quot;</span>
+    <span class="k">return</span> {
+        i <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.material_index == MORTAR_IDX <span class="k">for</span> i <span class="k">in</span> p.vertices
+    }
+
+
 <span class="k">def</span> classify(me):
-    <span class="s">&quot;&quot;&quot;Name the shells: pier courses by side, voussoirs by crown angle.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Name the stone shells: pier courses by side, voussoirs by crown angle.
+
+    Mortar shells are skipped. Left in, a pier bed classifies as a course
+    and a voussoir wedge as a voussoir, and every stone budget after this
+    measures the wrong neighbours.
+    &quot;&quot;&quot;</span>
     out = {<span class="s">&quot;left&quot;</span>: [], <span class="s">&quot;right&quot;</span>: [], <span class="s">&quot;voussoirs&quot;</span>: []}
+    mortar = mortar_verts(me)
     <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> g[<span class="n">0</span>] <span class="k">in</span> mortar:
+            <span class="k">continue</span>
         pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
         zmin = min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
         zmax = max(p.z <span class="k">for</span> p <span class="k">in</span> pts)
@@ -1074,6 +1239,31 @@ DRESSED_IDX = <span class="n">1</span>
         <span class="s">&quot;piers&quot;</span>: piers,
         <span class="s">&quot;pier_worst&quot;</span>: pier_worst,
         <span class="s">&quot;gaps&quot;</span>: [round(g, <span class="n">5</span>) <span class="k">for</span> g <span class="k">in</span> gaps],
+    }
+
+
+<span class="k">def</span> mortar_audit(me):
+    <span class="s">&quot;&quot;&quot;Every mortar shell must be seated in exactly two stones.
+
+    A joint that touches one stone is a bed left hanging; one that touches
+    none is the air gap the mortar exists to fill. Overlap is the metric:
+    each bed bites MORTAR_BITE into both blocks by construction, so the
+    BVH trees must intersect, and a bed that stops short of a block does
+    not.
+    &quot;&quot;&quot;</span>
+    mortar = mortar_verts(me)
+    stone_trees, mortar_trees = [], []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> len(g) &lt; <span class="n">4</span>:
+            <span class="k">continue</span>
+        (mortar_trees <span class="k">if</span> g[<span class="n">0</span>] <span class="k">in</span> mortar <span class="k">else</span> stone_trees).append(shell_tree(me, g))
+    seats = []
+    <span class="k">for</span> mt <span class="k">in</span> mortar_trees:
+        seats.append(sum(<span class="n">1</span> <span class="k">for</span> st <span class="k">in</span> stone_trees <span class="k">if</span> st <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> mt.overlap(st)))
+    <span class="k">return</span> {
+        <span class="s">&quot;n&quot;</span>: len(mortar_trees),
+        <span class="s">&quot;seat_min&quot;</span>: min(seats, default=<span class="n">0</span>),
+        <span class="s">&quot;seat_max&quot;</span>: max(seats, default=<span class="n">0</span>),
     }
 
 
@@ -1201,6 +1391,7 @@ DRESSED_IDX = <span class="n">1</span>
     sink_keystone=<span class="k">False</span>,
     wide_mortar=<span class="k">False</span>,
     off_circle=<span class="k">False</span>,
+    short_mortar=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     flags = dict(
@@ -1208,20 +1399,14 @@ DRESSED_IDX = <span class="n">1</span>
         sink_keystone=sink_keystone,
         wide_mortar=wide_mortar,
         float_pier=float_pier,
+        short_mortar=short_mortar,
     )
     nothing = (<span class="k">None</span>,) * <span class="n">5</span>
     low = build_arch_mesh(<span class="s">&quot;ArchLow&quot;</span>, **flags)
     high = build_arch_mesh(<span class="s">&quot;ArchHigh&quot;</span>, **flags)
-    ashlar = principled(
-        <span class="s">&quot;ArchAshlar&quot;</span>, (<span class="n">0.300</span>, <span class="n">0.219</span>, <span class="n">0.126</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.80</span>,
-        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.168</span>, <span class="n">0.113</span>, <span class="n">0.055</span>, <span class="n">1.0</span>),
-    )
-    dressed = principled(
-        <span class="s">&quot;ArchDressed&quot;</span>, (<span class="n">0.452</span>, <span class="n">0.348</span>, <span class="n">0.205</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
-        noise_scale=<span class="n">8.0</span>, wear=(<span class="n">0.262</span>, <span class="n">0.196</span>, <span class="n">0.108</span>, <span class="n">1.0</span>),
-    )
-    assign_slots(low, ashlar, dressed)
-    assign_slots(high, ashlar, dressed)
+    ashlar, dressed, mortar = arch_materials()
+    assign_slots(low, ashlar, dressed, mortar)
+    assign_slots(high, ashlar, dressed, mortar)
     <span class="k">if</span> stray_vert:
         add_stray_vert(low.data)
     <span class="k">if</span> lift_z:
@@ -1269,11 +1454,16 @@ DRESSED_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
     ar = arch_audit(low.data)
     opening = opening_audit(low.data)
+    mo = mortar_audit(low.data)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{idx_counts}<span class="s">&quot;</span>)
@@ -1305,6 +1495,9 @@ DRESSED_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">key_proud=</span>{ar[<span class="s">&#x27;key_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> spring_gap=</span>{ar[<span class="s">&#x27;spring_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">pier_worst=</span>{ar[<span class="s">&#x27;pier_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> gaps=</span>{ar[<span class="s">&#x27;gaps&#x27;</span>]}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured mortar n=</span>{mo[<span class="s">&#x27;n&#x27;</span>]}<span class="s"> seats=[</span>{mo[<span class="s">&#x27;seat_min&#x27;</span>]}<span class="s">, </span>{mo[<span class="s">&#x27;seat_max&#x27;</span>]}<span class="s">]</span><span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> (fail(
@@ -1321,6 +1514,10 @@ DRESSED_IDX = <span class="n">1</span>
     <span class="k">if</span> idx_counts.get(ASHLAR_IDX, <span class="n">0</span>) &lt; ASHLAR_FACES_MIN:
         <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">ashlar faces </span>{idx_counts.get(ASHLAR_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{ASHLAR_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> idx_counts.get(MORTAR_IDX, <span class="n">0</span>) &lt; MORTAR_FACES_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">mortar faces </span>{idx_counts.get(MORTAR_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{MORTAR_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
         ),) + nothing
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
         <span class="k">return</span> (fail(
@@ -1384,6 +1581,12 @@ DRESSED_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">mortar joints (</span>{ar[<span class="s">&#x27;gap_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">, </span>{ar[<span class="s">&#x27;gap_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) outside </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">[</span>{MORTAR_MIN}<span class="s">, </span>{MORTAR_MAX}<span class="s">] (--wide-mortar is the designed fail)</span><span class="s">&quot;</span>, <span class="n">18</span>
         ),) + nothing
+    <span class="k">if</span> mo[<span class="s">&quot;n&quot;</span>] != N_MORTAR <span class="k">or</span> mo[<span class="s">&quot;seat_min&quot;</span>] != <span class="n">2</span> <span class="k">or</span> mo[<span class="s">&quot;seat_max&quot;</span>] != <span class="n">2</span>:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">mortar contact: </span>{mo[<span class="s">&#x27;n&#x27;</span>]}<span class="s"> of </span>{N_MORTAR}<span class="s"> joints, stones seated per </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">joint [</span>{mo[<span class="s">&#x27;seat_min&#x27;</span>]}<span class="s">, </span>{mo[<span class="s">&#x27;seat_max&#x27;</span>]}<span class="s">], need exactly 2 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-mortar is the designed fail)&quot;</span>, <span class="n">18</span>
+        ),) + nothing
     <span class="k">if</span> ar[<span class="s">&quot;arc_dev&quot;</span>] &gt; ARC_TOL <span class="k">or</span> ar[<span class="s">&quot;arc_span&quot;</span>] &lt; ARC_SPAN_MIN:
         <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">intrados off circle by </span>{ar[<span class="s">&#x27;arc_dev&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{ARC_TOL}<span class="s"> or spans </span><span class="s">&quot;</span>
@@ -1399,12 +1602,17 @@ DRESSED_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> wire_normal(mat, tex):
+    <span class="s">&quot;&quot;&quot;Baked normal map into the BSDF, under the pitting bump if there is one.&quot;&quot;&quot;</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
     nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
     nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
-    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    bump = next((n <span class="k">for</span> n <span class="k">in</span> nt.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;ShaderNodeBump&quot;</span>), <span class="k">None</span>)
+    <span class="k">if</span> bump <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bump.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">else</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
 <span class="k">def</span> render_still(low, ashlar, tex, path, engine):
@@ -1515,6 +1723,7 @@ DRESSED_IDX = <span class="n">1</span>
     p.add_argument(<span class="s">&quot;--sink-keystone&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--wide-mortar&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--off-circle&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-mortar&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, ashlar, tex, _col = check(
@@ -1525,6 +1734,7 @@ DRESSED_IDX = <span class="n">1</span>
         sink_keystone=args.sink_keystone,
         wide_mortar=args.wide_mortar,
         off_circle=args.off_circle,
+        short_mortar=args.short_mortar,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1549,7 +1759,7 @@ DRESSED_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/stone-archway-hero.webp" alt="A freestanding stone archway of coursed piers and a semicircular arch with a keystone." />
+    <img src="../assets/stone-archway-hero.webp" alt="A freestanding grey stone archway of coursed piers and a semicircular arch with a keystone, laid in pale recessed mortar joints." />
   </dialog>
   <footer>
     <div class="statusbar">

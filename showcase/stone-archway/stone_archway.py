@@ -2,7 +2,7 @@
 
 Asserts budget conformance of a procedural masonry arch: two coursed
 piers, nine voussoirs turning a semicircle, and a proud keystone, carried
-through UVs, two materials, a high-to-low normal bake, an LOD chain, a
+through UVs, three materials (ashlar, dressed stone, mortar), a high-to-low normal bake, an LOD chain, a
 convex collider, and a Unity glTF export.
 
 The budget that matters here is the one an arch can fail invisibly: the
@@ -16,7 +16,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-pier`` the named pier
 supports, ``--sink-keystone`` the keystone joint, ``--wide-mortar`` the
-mortar-joint band, ``--off-circle`` the intrados circle fit.
+mortar-joint band, ``--off-circle`` the intrados circle fit,
+``--short-mortar`` the mortar-contact budget.
 
 Fixed seed 23 for course and block weathering. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
@@ -87,15 +88,15 @@ OUTER_SIZE = (1.644, 0.510, 2.057)
 SPAN_TOL = 0.015
 OPENING_W = 2.0 * R_IN
 
-BASE_TRIS_MIN = 700
-BASE_TRIS_MAX = 2600
+BASE_TRIS_MIN = 950
+BASE_TRIS_MAX = 1450
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
 LOD2_RATIO_MAX = 0.35
 LOD1_TARGET = 0.50
 LOD2_TARGET = 0.22
-MATERIAL_COUNT = 2
+MATERIAL_COUNT = 3
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 260
@@ -123,6 +124,19 @@ FLOAT_PIER_LIFT = 0.012
 
 ASHLAR_IDX = 0
 DRESSED_IDX = 1
+MORTAR_IDX = 2
+
+# Mortar fills every joint. Each bed or wedge is built from the two blocks
+# it sits between: recessed behind their faces (deeper than the chamfer, so
+# it reads as a raked joint rather than a filled one) and biting into both.
+# Without it every course floated on 7 mm of air and daylight showed
+# through each joint.
+MORTAR_RECESS = CHAMFER + 0.003
+MORTAR_BITE = 0.0015
+SHORT_MORTAR_CLEAR = 0.001
+N_MORTAR = 2 * N_COURSE + (N_VOUSSOIR - 1)
+MORTAR_FACES_MIN = 100
+BLOCK_TONE_JITTER = 0.25
 
 
 def eevee_engine_id():
@@ -280,6 +294,9 @@ def build_pier(bm, sign, rng, float_pier=False):
     heights = [usable * r / total for r in raw]
     verts = []
     blocks = []
+    # (width, depth, zmin, zmax) per block, bottom up, impost last: what
+    # the mortar beds between them are sized from.
+    stack = []
     z = FLOAT_PIER_LIFT if (float_pier and sign < 0) else 0.0
     for i, h in enumerate(heights):
         # Courses weather back a little as they rise; the jitter also keeps
@@ -295,6 +312,7 @@ def build_pier(bm, sign, rng, float_pier=False):
         )
         verts.extend(vs)
         blocks.append(block)
+        stack.append((T_V - inset, depth, z, z + h))
         z += h + COURSE_MORTAR
     # The impost rides on the courses rather than sitting at an absolute
     # height: pinned to H_SPRING it stays put while --float-pier lifts the
@@ -307,7 +325,8 @@ def build_pier(bm, sign, rng, float_pier=False):
     )
     verts.extend(vs)
     blocks.append(block)
-    return verts, blocks
+    stack.append((T_V + 2.0 * IMPOST_OUT, WALL_Y + 2.0 * IMPOST_PROUD, z, z + IMPOST_H))
+    return verts, blocks, stack
 
 
 def build_arch(bm, rng, off_circle=False, sink_keystone=False, wide_mortar=False):
@@ -317,6 +336,7 @@ def build_arch(bm, rng, off_circle=False, sink_keystone=False, wide_mortar=False
     cz = H_SPRING - SPRING_BITE
     verts = []
     blocks = []
+    wedges = []
     for k in range(N_VOUSSOIR):
         is_key = k == KEY_INDEX
         widen = KEY_WIDEN if is_key else 0.0
@@ -342,7 +362,43 @@ def build_arch(bm, rng, off_circle=False, sink_keystone=False, wide_mortar=False
         vs, block = add_wedge(bm, cz, a0, a1, r0, r1, hy, mat)
         verts.extend(vs)
         blocks.append(block)
-    return verts, blocks
+        wedges.append((a0, a1, r0, r1, hy))
+    return verts, blocks, wedges
+
+
+def add_mortar(bm, sign, stack, wedges, short=False):
+    """Beds between pier courses and wedges between voussoirs.
+
+    Every dimension comes from the two blocks the joint sits between, so a
+    course that weathers back or a voussoir that rises takes its mortar with
+    it. ``short`` stops each joint SHORT_MORTAR_CLEAR shy of both blocks —
+    the falsifier for the mortar-contact budget.
+    """
+    bite = -SHORT_MORTAR_CLEAR if short else MORTAR_BITE
+    if stack is not None:
+        x = sign * (R_IN + T_V / 2.0)
+        for (w0, d0, _z0, top), (w1, d1, bot, _z1) in zip(stack, stack[1:]):
+            h = (bot - top) + 2.0 * bite
+            add_box(
+                bm,
+                (x, 0.0, 0.5 * (top + bot)),
+                (min(w0, w1) - 2.0 * MORTAR_RECESS,
+                 min(d0, d1) - 2.0 * MORTAR_RECESS, h),
+                MORTAR_IDX,
+            )
+    if wedges is not None:
+        cz = H_SPRING - SPRING_BITE
+        for (_a0, a1, r0a, r1a, hya), (b0, _b1, r0b, r1b, hyb) in zip(wedges, wedges[1:]):
+            ri = max(r0a, r0b) + MORTAR_RECESS
+            # Angular bite taken at the inner radius, so it is never less
+            # than MORTAR_BITE anywhere along the joint.
+            da = bite / ri
+            add_wedge(
+                bm, cz, a1 - da, b0 + da, ri,
+                min(r1a, r1b) - MORTAR_RECESS,
+                min(hya, hyb) - MORTAR_RECESS,
+                MORTAR_IDX,
+            )
 
 
 def build_arch_mesh(
@@ -351,15 +407,18 @@ def build_arch_mesh(
     sink_keystone=False,
     wide_mortar=False,
     float_pier=False,
+    short_mortar=False,
 ):
     rng = random.Random(ARCH_SEED)
     bm = bmesh.new()
     try:
         blocks = []
+        stacks = []
         for sign in (-1.0, 1.0):
-            _v, bl = build_pier(bm, sign, rng, float_pier=float_pier)
+            _v, bl, st = build_pier(bm, sign, rng, float_pier=float_pier)
             blocks.extend(bl)
-        _v, bl = build_arch(
+            stacks.append((sign, st))
+        _v, bl, wedges = build_arch(
             bm,
             rng,
             off_circle=off_circle,
@@ -379,6 +438,12 @@ def build_arch_mesh(
                 clamp_overlap=True,
             )
         assign_materials_by_block(bm, blocks)
+        # Mortar after the chamfer: it sits recessed behind the stone and a
+        # chamfer on a 10 mm bed would eat it. It also stays out of the
+        # block re-stamp, which only knows stone.
+        for sign, st in stacks:
+            add_mortar(bm, sign, st, None, short=short_mortar)
+        add_mortar(bm, 0.0, None, wedges, short=short_mortar)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         for face in bm.faces:
@@ -388,44 +453,123 @@ def build_arch_mesh(
         me.update()
     finally:
         bm.free()
+    paint_blocks(me)
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     return obj
 
 
-def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
+def paint_blocks(me):
+    """A seeded tone per stone, as the ``BlockTone`` face attribute.
+
+    Nineteen blocks out of one material are one block repeated; a quarried
+    arch has every stone a shade apart. Mortar keeps the neutral 0.5.
+    """
+    tone = [0.5] * len(me.polygons)
+    mortar = mortar_verts(me)
+    owner = {}
+    rng = random.Random(ARCH_SEED * 17)
+    for g in shells(me):
+        t = 0.5 if g[0] in mortar else 0.5 + rng.uniform(-BLOCK_TONE_JITTER, BLOCK_TONE_JITTER)
+        for i in g:
+            owner[i] = t
+    for p in me.polygons:
+        tone[p.index] = owner[p.vertices[0]]
+    attr = me.attributes.new("BlockTone", "FLOAT", "FACE")
+    attr.data.foreach_set("value", tone)
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def stone_material(name, light, dark, roughness, mottle, speck, bump):
+    """Stone, not timber: isotropic mottling, fine speckle and pitting.
+
+    The old noise-driven mix read as long brown streaks at hero scale, and
+    the ashlar looked like wood grain. Everything here samples object space
+    with isotropic noise, so nothing in the pattern has a direction.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = color
-    bsdf.inputs["Metallic"].default_value = metallic
-    bsdf.inputs["Roughness"].default_value = roughness
-    if noise_scale > 0.0 and wear is not None:
-        tex = nt.nodes.new("ShaderNodeTexNoise")
-        tex.inputs["Scale"].default_value = noise_scale
-        tex.inputs["Detail"].default_value = 9.0
-        tex.inputs["Roughness"].default_value = 0.6
-        mix = nt.nodes.new("ShaderNodeMix")
-        mix.data_type = "RGBA"
-        mix.inputs["A"].default_value = color
-        mix.inputs["B"].default_value = wear
-        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
-        nt.links.new(tex.outputs["Fac"], fac)
-        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
-        rmix = nt.nodes.new("ShaderNodeMix")
-        rmix.data_type = "FLOAT"
-        rmix.inputs["A"].default_value = roughness
-        rmix.inputs["B"].default_value = min(1.0, roughness + 0.16)
-        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
-        nt.links.new(tex.outputs["Fac"], rfac)
-        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mot = nt.nodes.new("ShaderNodeTexNoise")
+    mot.inputs["Scale"].default_value = mottle
+    mot.inputs["Detail"].default_value = 4.0
+    mot.inputs["Roughness"].default_value = 0.55
+    nt.links.new(coord.outputs["Object"], mot.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.32
+    ramp.color_ramp.elements[0].color = dark
+    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[1].color = light
+    nt.links.new(mot.outputs["Fac"], ramp.inputs["Fac"])
+    spk = nt.nodes.new("ShaderNodeTexNoise")
+    spk.inputs["Scale"].default_value = speck
+    spk.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], spk.inputs["Vector"])
+    gain = nt.nodes.new("ShaderNodeMapRange")
+    gain.inputs["To Min"].default_value = 0.82
+    gain.inputs["To Max"].default_value = 1.12
+    nt.links.new(spk.outputs["Fac"], gain.inputs["Value"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Result"], _sock(mix.inputs, "B_Color"))
+    # Per-stone shade from the BlockTone face attribute (paint_blocks).
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "BlockTone"
+    shade = nt.nodes.new("ShaderNodeMath")
+    shade.operation = "MULTIPLY_ADD"
+    shade.inputs[1].default_value = 0.8
+    shade.inputs[2].default_value = 0.6
+    nt.links.new(tone.outputs["Fac"], shade.inputs[0])
+    mix2 = nt.nodes.new("ShaderNodeMix")
+    mix2.data_type = "RGBA"
+    mix2.blend_type = "MULTIPLY"
+    _sock(mix2.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(mix2.inputs, "A_Color"))
+    nt.links.new(shade.outputs["Value"], _sock(mix2.inputs, "B_Color"))
+    nt.links.new(_sock(mix2.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = roughness - 0.06
+    rough.inputs["To Max"].default_value = min(1.0, roughness + 0.08)
+    nt.links.new(spk.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    if bump > 0.0:
+        bmp = nt.nodes.new("ShaderNodeBump")
+        bmp.inputs["Strength"].default_value = bump
+        bmp.inputs["Distance"].default_value = 0.002
+        nt.links.new(spk.outputs["Fac"], bmp.inputs["Height"])
+        nt.links.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
     return mat
 
 
-def assign_slots(obj, ashlar, dressed):
+def arch_materials():
+    """(ashlar, dressed, mortar): shared by the check, the render and inspection."""
+    ashlar = stone_material(
+        "ArchAshlar", (0.40, 0.355, 0.285, 1.0), (0.235, 0.205, 0.160, 1.0),
+        0.86, mottle=5.0, speck=140.0, bump=0.30,
+    )
+    dressed = stone_material(
+        "ArchDressed", (0.56, 0.50, 0.405, 1.0), (0.40, 0.355, 0.285, 1.0),
+        0.66, mottle=3.0, speck=220.0, bump=0.12,
+    )
+    mortar = stone_material(
+        "ArchMortar", (0.50, 0.485, 0.450, 1.0), (0.40, 0.385, 0.355, 1.0),
+        0.95, mottle=12.0, speck=300.0, bump=0.0,
+    )
+    return ashlar, dressed, mortar
+
+
+def assign_slots(obj, ashlar, dressed, mortar):
     mats = obj.data.materials
-    for i, mat in enumerate((ashlar, dressed)):
+    for i, mat in enumerate((ashlar, dressed, mortar)):
         if i < len(mats):
             mats[i] = mat
         else:
@@ -621,10 +765,25 @@ def pair_gap(me, tree_a, group_b, tree_b=None):
     return best
 
 
+def mortar_verts(me):
+    """Vertices of mortar faces. Mortar is its own shells; stone budgets skip it."""
+    return {
+        i for p in me.polygons if p.material_index == MORTAR_IDX for i in p.vertices
+    }
+
+
 def classify(me):
-    """Name the shells: pier courses by side, voussoirs by crown angle."""
+    """Name the stone shells: pier courses by side, voussoirs by crown angle.
+
+    Mortar shells are skipped. Left in, a pier bed classifies as a course
+    and a voussoir wedge as a voussoir, and every stone budget after this
+    measures the wrong neighbours.
+    """
     out = {"left": [], "right": [], "voussoirs": []}
+    mortar = mortar_verts(me)
     for g in shells(me):
+        if g[0] in mortar:
+            continue
         pts = [me.vertices[i].co for i in g]
         zmin = min(p.z for p in pts)
         zmax = max(p.z for p in pts)
@@ -748,6 +907,31 @@ def arch_audit(me):
         "piers": piers,
         "pier_worst": pier_worst,
         "gaps": [round(g, 5) for g in gaps],
+    }
+
+
+def mortar_audit(me):
+    """Every mortar shell must be seated in exactly two stones.
+
+    A joint that touches one stone is a bed left hanging; one that touches
+    none is the air gap the mortar exists to fill. Overlap is the metric:
+    each bed bites MORTAR_BITE into both blocks by construction, so the
+    BVH trees must intersect, and a bed that stops short of a block does
+    not.
+    """
+    mortar = mortar_verts(me)
+    stone_trees, mortar_trees = [], []
+    for g in shells(me):
+        if len(g) < 4:
+            continue
+        (mortar_trees if g[0] in mortar else stone_trees).append(shell_tree(me, g))
+    seats = []
+    for mt in mortar_trees:
+        seats.append(sum(1 for st in stone_trees if st is not None and mt.overlap(st)))
+    return {
+        "n": len(mortar_trees),
+        "seat_min": min(seats, default=0),
+        "seat_max": max(seats, default=0),
     }
 
 
@@ -875,6 +1059,7 @@ def check(
     sink_keystone=False,
     wide_mortar=False,
     off_circle=False,
+    short_mortar=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
@@ -882,20 +1067,14 @@ def check(
         sink_keystone=sink_keystone,
         wide_mortar=wide_mortar,
         float_pier=float_pier,
+        short_mortar=short_mortar,
     )
     nothing = (None,) * 5
     low = build_arch_mesh("ArchLow", **flags)
     high = build_arch_mesh("ArchHigh", **flags)
-    ashlar = principled(
-        "ArchAshlar", (0.300, 0.219, 0.126, 1.0), 0.0, 0.80,
-        noise_scale=14.0, wear=(0.168, 0.113, 0.055, 1.0),
-    )
-    dressed = principled(
-        "ArchDressed", (0.452, 0.348, 0.205, 1.0), 0.0, 0.62,
-        noise_scale=8.0, wear=(0.262, 0.196, 0.108, 1.0),
-    )
-    assign_slots(low, ashlar, dressed)
-    assign_slots(high, ashlar, dressed)
+    ashlar, dressed, mortar = arch_materials()
+    assign_slots(low, ashlar, dressed, mortar)
+    assign_slots(high, ashlar, dressed, mortar)
     if stray_vert:
         add_stray_vert(low.data)
     if lift_z:
@@ -943,11 +1122,16 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at its own temp preference, which on a portable
+    # build is the working directory, so the export must not outlive this.
+    if os.path.isfile(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
     ar = arch_audit(low.data)
     opening = opening_audit(low.data)
+    mo = mortar_audit(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(f"measured mat_index_counts={idx_counts}")
@@ -979,6 +1163,9 @@ def check(
         f"key_proud={ar['key_proud']:.5f} spring_gap={ar['spring_gap']:.5f} "
         f"pier_worst={ar['pier_worst']:.5f} gaps={ar['gaps']}"
     )
+    print(
+        f"measured mortar n={mo['n']} seats=[{mo['seat_min']}, {mo['seat_max']}]"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return (fail(
@@ -995,6 +1182,10 @@ def check(
     if idx_counts.get(ASHLAR_IDX, 0) < ASHLAR_FACES_MIN:
         return (fail(
             f"ashlar faces {idx_counts.get(ASHLAR_IDX, 0)} < {ASHLAR_FACES_MIN}", 5
+        ),) + nothing
+    if idx_counts.get(MORTAR_IDX, 0) < MORTAR_FACES_MIN:
+        return (fail(
+            f"mortar faces {idx_counts.get(MORTAR_IDX, 0)} < {MORTAR_FACES_MIN}", 5
         ),) + nothing
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
         return (fail(
@@ -1058,6 +1249,12 @@ def check(
             f"mortar joints ({ar['gap_min']:.5f}, {ar['gap_max']:.5f}) outside "
             f"[{MORTAR_MIN}, {MORTAR_MAX}] (--wide-mortar is the designed fail)", 18
         ),) + nothing
+    if mo["n"] != N_MORTAR or mo["seat_min"] != 2 or mo["seat_max"] != 2:
+        return (fail(
+            f"mortar contact: {mo['n']} of {N_MORTAR} joints, stones seated per "
+            f"joint [{mo['seat_min']}, {mo['seat_max']}], need exactly 2 "
+            "(--short-mortar is the designed fail)", 18
+        ),) + nothing
     if ar["arc_dev"] > ARC_TOL or ar["arc_span"] < ARC_SPAN_MIN:
         return (fail(
             f"intrados off circle by {ar['arc_dev']:.5f} > {ARC_TOL} or spans "
@@ -1073,12 +1270,17 @@ def check(
 
 
 def wire_normal(mat, tex):
+    """Baked normal map into the BSDF, under the pitting bump if there is one."""
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     nrm = nt.nodes.new("ShaderNodeNormalMap")
     nrm.inputs["Strength"].default_value = 1.0
     nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
+    bump = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBump"), None)
+    if bump is not None:
+        nt.links.new(nrm.outputs["Normal"], bump.inputs["Normal"])
+    else:
+        nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
 def render_still(low, ashlar, tex, path, engine):
@@ -1189,6 +1391,7 @@ def main():
     p.add_argument("--sink-keystone", action="store_true")
     p.add_argument("--wide-mortar", action="store_true")
     p.add_argument("--off-circle", action="store_true")
+    p.add_argument("--short-mortar", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, ashlar, tex, _col = check(
@@ -1199,6 +1402,7 @@ def main():
         sink_keystone=args.sink_keystone,
         wide_mortar=args.wide_mortar,
         off_circle=args.off_circle,
+        short_mortar=args.short_mortar,
     )
     if code:
         return code
