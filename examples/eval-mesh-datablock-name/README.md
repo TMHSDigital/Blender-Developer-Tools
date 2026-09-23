@@ -39,6 +39,55 @@ which is red on every binary.
 
 No `SMOKE_SKIP`. Every matrix leg exercises the contract.
 
+## Who hits this
+
+Exporters, bakers and measurement scripts that receive "some mesh" and
+decide whether it is the evaluated result or the original by comparing
+names: `if mesh.name != obj.data.name: # evaluated`. On 5.2 that branch
+never fires for a modified object, and nothing raises. The script
+silently treats evaluated geometry as original: it writes the
+modifier-free count into a report, or skips a `to_mesh_clear()` it
+thinks it does not owe.
+
+**It was never a reliable test.** Re-measured with the modifier removed,
+`evaluated_get().data.name` equals the source name on **all three**
+binaries, 4.5.11 included. On 4.5 and 5.1 the inequality held only for
+objects whose modifiers produced a new mesh. The 5.2 change removed the
+last case where it happened to work.
+
+**What to do instead.** Do not infer "evaluated" from the datablock. The
+caller knows which object it evaluated: keep that reference and branch on
+where the mesh came from, not on what it is called. Two obvious ID
+properties are no substitute. In a probe on the same SUBSURF cube,
+`ID.is_evaluated` read `False` on the evaluated mesh, and `ID.original`
+did not compare equal to the source mesh, on 4.5.11, 5.1.2 and 5.2.1
+alike. Neither is offered here as a replacement.
+
+## Re-verified
+
+| Measurement | 4.5.11 | 5.1.2 | 5.2.1 |
+| --- | --- | --- | --- |
+| `evaluated_get().data.name`, SUBSURF | `Mesh` | `Mesh` | `SourceMesh` |
+| `evaluated_get().data.name`, no modifier | `SourceMesh` | `SourceMesh` | `SourceMesh` |
+| `to_mesh().name` | `SourceMesh` | `SourceMesh` | `SourceMesh` |
+| Evaluated verts (SUBSURF / none) | 26 / 8 | 26 / 8 | 26 / 8 |
+| default exit | 0 | 0 | 0 |
+| `--assume-distinct-names` exit | 0 | 0 | 6 |
+
+Exiting 0 on 4.5.11 and 5.1.2 under the falsifier is correct by design.
+The naive assumption holds there for this modified cube, so there is
+nothing to catch. The falsifier exists to fail where the assumption
+broke.
+
+## API reference
+
+- [`Object.evaluated_get`](https://docs.blender.org/api/current/bpy.types.Object.html#bpy.types.Object.evaluated_get)
+  ([4.5 LTS](https://docs.blender.org/api/4.5/bpy.types.Object.html#bpy.types.Object.evaluated_get))
+- [`Object.to_mesh`](https://docs.blender.org/api/current/bpy.types.Object.html#bpy.types.Object.to_mesh)
+  and [`Object.to_mesh_clear`](https://docs.blender.org/api/current/bpy.types.Object.html#bpy.types.Object.to_mesh_clear)
+- [`ID.is_evaluated`](https://docs.blender.org/api/current/bpy.types.ID.html#bpy.types.ID.is_evaluated),
+  [`ID.original`](https://docs.blender.org/api/current/bpy.types.ID.html#bpy.types.ID.original)
+
 ## Run
 
 ```bash

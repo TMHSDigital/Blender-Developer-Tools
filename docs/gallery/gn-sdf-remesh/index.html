@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-sdf-remesh-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A glossy red torus with visibly blocky voxel faceting from the SDF remesh." />
+  <meta property="og:image:alt" content="Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-sdf-remesh — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-sdf-remesh-hero.webp" />
-  <meta name="twitter:image:alt" content="A glossy red torus with visibly blocky voxel faceting from the SDF remesh." />
+  <meta name="twitter:image:alt" content="Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A Geometry Nodes SDF remesh (MeshToSDFGrid → GridToMesh at the SDF zero-level), with a Set Material node carrying the material through the remesh.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A glossy red torus with visibly blocky voxel faceting from the SDF remesh.">
-      <img src="../assets/gn-sdf-remesh-hero.webp" alt="A glossy red torus with visibly blocky voxel faceting from the SDF remesh." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid.">
+      <img src="../assets/gn-sdf-remesh-hero.webp" alt="Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> An SDF grid is meshed with Grid to Mesh, not Volume to Mesh; GN geometry needs Set Material or it renders untextured.</div>
@@ -377,10 +377,56 @@ both builds.
     wall.rotation_euler = (<span class="n">1.5708</span>, <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
     w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>); sc.world = w
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.5</span>); bpy.context.collection.objects.link(aim)
-    <span class="c"># off-axis and low: the remesh facets are the API evidence, and they only</span>
-    <span class="c"># read when a raking key skims them from the side</span>
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">2.6</span>, -<span class="n">5.2</span>, <span class="n">1.5</span>)
+    <span class="c"># Input beside output. Alone, the remeshed torus read as a glossy inner</span>
+    <span class="c"># tube with blotchy highlights: nothing said &quot;remeshed&quot;. The source torus</span>
+    <span class="c"># (a modifier-free copy of the same datablock) on the left and the SDF</span>
+    <span class="c"># result on the right, each under a cage of its own edges, show the</span>
+    <span class="c"># thing the check measures: UV-ring topology in, voxel-grid topology</span>
+    <span class="c"># out. Render-path scaffolding only; the check ran before this.</span>
+    obj.location.x = <span class="n">1.85</span>
+    src = bpy.data.objects.new(<span class="s">&quot;SourceTorus&quot;</span>, obj.data.copy())
+    src.location = (-<span class="n">1.85</span>, obj.location.y, obj.location.z)
+    bpy.context.collection.objects.link(src)
+    <span class="c"># build() centres the torus at z=0.55 with a 0.5 minor radius, so both</span>
+    <span class="c"># hovered 5 cm over the floor. Ground each on its own measured bottom:</span>
+    <span class="c"># the SDF surface is not exactly the source surface.</span>
+    dg0 = bpy.context.evaluated_depsgraph_get()
+    em = obj.evaluated_get(dg0).to_mesh()
+    obj.location.z -= obj.location.z + min(v.co.z <span class="k">for</span> v <span class="k">in</span> em.vertices)
+    obj.evaluated_get(dg0).to_mesh_clear()
+    src.location.z = -min(v.co.z <span class="k">for</span> v <span class="k">in</span> src.data.vertices)
+    cage_mat = bpy.data.materials.new(<span class="s">&quot;Cage&quot;</span>); cage_mat.use_nodes = <span class="k">True</span>
+    cb = cage_mat.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
+    cb.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (<span class="n">0.92</span>, <span class="n">0.82</span>, <span class="n">0.62</span>, <span class="n">1</span>)
+    cb.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.4</span>
+    cages = []
+    dg = bpy.context.evaluated_depsgraph_get()
+    <span class="k">for</span> host, remeshed <span class="k">in</span> ((src, <span class="k">False</span>), (obj, <span class="k">True</span>)):
+        <span class="c"># The remeshed cage is the evaluated result frozen into a plain mesh:</span>
+        <span class="c"># a live copy of the tree would re-apply its Set Material and paint</span>
+        <span class="c"># the cage crimson.</span>
+        data = (bpy.data.meshes.new_from_object(obj.evaluated_get(dg))
+                <span class="k">if</span> remeshed <span class="k">else</span> obj.data.copy())
+        cage = bpy.data.objects.new(host.name + <span class="s">&quot;Cage&quot;</span>, data)
+        cage.data.materials.clear(); cage.data.materials.append(cage_mat)
+        <span class="k">for</span> poly <span class="k">in</span> cage.data.polygons:
+            poly.material_index = <span class="n">0</span>
+        cage.location = host.location
+        wire = cage.modifiers.new(<span class="s">&quot;cage&quot;</span>, <span class="s">&#x27;WIREFRAME&#x27;</span>)
+        wire.thickness = <span class="n">0.012</span>; wire.offset = <span class="n">1.0</span>; wire.use_even_offset = <span class="k">True</span>
+        wire.material_offset = <span class="n">0</span>
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+    <span class="c"># Softer than 0.16: at that gloss every voxel facet threw its own hard</span>
+    <span class="c"># glint and the highlight broke into blocks that read as artifacts.</span>
+    <span class="k">for</span> m <span class="k">in</span> obj.data.materials:
+        <span class="k">if</span> m <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> m.node_tree <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            bsdf = m.node_tree.nodes.get(<span class="s">&#x27;Principled BSDF&#x27;</span>)
+            <span class="k">if</span> bsdf <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                bsdf.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.32</span>
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.45</span>); bpy.context.collection.objects.link(aim)
+    <span class="c"># Raised so both donut holes read, and pulled back to hold the pair.</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">1.5</span>, -<span class="n">10.8</span>, <span class="n">5.5</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     <span class="c"># low raking warm key so every facet catches a distinct glint, faint cool</span>
@@ -466,7 +512,7 @@ both builds.
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-sdf-remesh-hero.webp" alt="A glossy red torus with visibly blocky voxel faceting from the SDF remesh." />
+    <img src="../assets/gn-sdf-remesh-hero.webp" alt="Two red tori side by side under pale edge cages: the source with even ring topology, and its SDF remesh covered in a dense irregular voxel grid." />
   </dialog>
   <footer>
     <div class="statusbar">

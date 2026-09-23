@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A curved wooden water trough on crossed trestle legs, filled with dark green water." />
+  <meta property="og:image:alt" content="A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="water-trough — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/water-trough-hero.webp" />
-  <meta name="twitter:image:alt" content="A curved wooden water trough on crossed trestle legs, filled with dark green water." />
+  <meta name="twitter:image:alt" content="A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A curved wooden water trough on crossed trestle legs, filled with dark green water.">
-      <img src="../assets/water-trough-hero.webp" alt="A curved wooden water trough on crossed trestle legs, filled with dark green water." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water.">
+      <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 3700 tris, three materials with 1674 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093×0.552×0.504 m, zmin 0, four shoes planted, U end-cap rim span 5 mm, strap BVH gap 0, water-hull gap 2.6 mm, hull 1.045×0.466 m, LOD ratios in band, convex collider 64 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap 18; --narrow-hull 19.</div>
@@ -278,26 +278,31 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, U end-caps, contained water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>The hull, ends, straps and water all sample the same YZ arc. End caps are U-boards the staves tenon into, not a bounding-box slab around the U. Straps sit at <code>STRAP_X</code>, offset from <code>LEG_X</code>, so the trestle does not punch through the iron. Stretchers span the inner faces of the legs. <code>--round-band</code> is not used; <code>--float-strap</code> is the seat falsifier.</p>
+<p>A showcase piece, not an example. Procedural staved water trough on a timber stand (watertight U-hull, solid end boards, contained water, iron straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>The hull, ends, straps and water all sample the same YZ arc. Each end is a solid board whose bottom follows the hull&#x27;s outer arc and whose top is level, and the staves tenon into it. It is neither a bounding-box slab around the U (<code>--box-ends</code>) nor an open U-band (<code>--open-ends</code>). Straps sit at <code>STRAP_X</code>, offset from <code>LEG_X</code>, so the trestle does not punch through the iron. Stretchers span the inner faces of the legs. <code>--round-band</code> is not used; <code>--float-strap</code> is the seat falsifier.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
-<p>Intended size: 1.08 m tray length, 0.44 m across the U, 0.50 m overall height; outer AABB 1.093 × 0.552 × 0.504 m.</p>
+<p>Intended size: 1.08 m tray length, 0.44 m across the U, 0.50 m overall height; outer AABB 1.093 × 0.552 × 0.5055 m.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>3300–4000</td><td>3700 / 3700 / 3700</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2200 / 0.2200 / 0.2200</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water</td><td>3 slots; 1674 / 156 / 29</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.093, 0.552, 0.504) m ± 0.01</td><td>(1.0932, 0.5520, 0.5040), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 80</td><td>64</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>268840 / 268840 / 268824 bytes</td></tr></tbody></table></div>
-<p>Base triangles rose from <strong>2484 to 3700</strong> in the quality pass: box end slabs and a single extruded U became ten jittered staves, U end-caps, continuous straps offset from the legs, and stretchers that meet the inner faces.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses closed-form <code>sin(i)</code>, no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2800–3500</td><td>3124 / 3124 / 3124</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2200 / 0.2200 / 0.2200</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water</td><td>3 slots; 1386 / 156 / 29</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.093, 0.552, 0.5055) m ± 0.01</td><td>(1.0932, 0.5520, 0.5055), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 80</td><td>64</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>228520 / 228520 / 228504 bytes</td></tr></tbody></table></div>
+<p>Base triangles rose from <strong>2484 to 3700</strong> in the first quality pass: box end slabs and a single extruded U became ten jittered staves, U end-caps, continuous straps offset from the legs, and stretchers that meet the inner faces. The second pass took them to <strong>3124</strong>: the open U-band ends became solid end boards, which close the section with fewer faces.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses closed-form <code>sin(i)</code>; plank tone is the only RNG, seeded (<code>TONE_SEED</code>). Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <p>The hull-size budget (exit 19) runs <strong>before</strong> the outer AABB budget (exit 8) so <code>--narrow-hull</code> is not swallowed by a moved bounding box.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 4 shoes</td><td>each <code>zmin</code> ≤ 0.001</td><td>4, shoe_z 0.00000</td></tr><tr><td>Hull plan</td><td>1.08 m × 0.44 m ± 0.08</td><td>1.0448 × 0.4661</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>End-cap rim Z-span</td><td>≤ 0.080 m</td><td>0.0050</td></tr><tr><td>Strap-to-hull BVH gap</td><td>≤ 0.008 m</td><td>0.00000</td></tr><tr><td>Water-to-hull BVH gap</td><td>≤ 0.008 m</td><td>0.00260</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>End-cap rim Z-span</td><td>≤ 0.080 m</td><td>0.0050</td></tr><tr><td>Strap-to-hull BVH gap</td><td>≤ 0.008 m</td><td>0.00000</td></tr><tr><td>Water-to-hull BVH gap</td><td>≤ 0.008 m</td><td>0.00260</td></tr><tr><td>Water contained by the end boards</td><td>0 misses over 66 outward rays</td><td>0 of 66</td></tr></tbody></table></div>
+<h3>Why the ends are solid boards</h3>
+<p>The first pass made each end a U-shaped band the staves tenoned into. That closed the rim and nothing else: the water&#x27;s own flat end face sat exposed where a board belongs, visible in the end orthos and the end-cap close-ups. Water in that trough would pour straight out, and with the ends open the piece read as a hammock or sling. The strap and water gap budgets passed throughout, because the water did touch the hull; nothing asked whether anything held it in at the ends.</p>
+<p><code>containment_audit</code> asks. From each water end face it casts rays outward along X, from the face&#x27;s perimeter vertices and from points drawn 50% and 90% of the way in from the centroid, so the middle of the section is tested and not only the rim a band would cover. Every ray must hit timber within <code>1.5 × END_T</code>. <code>--open-ends</code> restores the U-bands: all 66 rays miss, and the piece exits 18.</p>
+<h3>Surface</h3>
+<p>Staves, boards and legs came out of one flat material, so every board was the same board. <code>paint_planks</code> writes a seeded <code>PlankTone</code> and each shell&#x27;s own long axis as <code>GrainDir</code>, as face attributes. The wood shader stretches its grain along that axis. The water was a 0.08-roughness mirror that went near-white under the key. It is now a dark body with a facing-ratio sky tint toward grazing angles and a faint ripple bump. A light placed to reflect in the surface was tried first and rejected: it either mirrored as a white sheet or showed nothing, and its spill lifted the dark stage. The fill dropped from 68% to 50%, so the inner stave walls show above the waterline; at 68% the surface sat nearly flush with the rim and read as felt in a frame. Straps widened from 28 to 40 mm.</p>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--box-ends</code></td><td>end-cap rim span</td><td>17</td></tr><tr><td><code>--float-strap</code></td><td>strap-to-hull gap</td><td>18</td></tr><tr><td><code>--narrow-hull</code></td><td>hull plan vs stated size</td><td>19</td></tr></tbody></table></div>
-<p><code>--short-legs</code> lifts the shoes only, so AABB <code>zmin</code> stays 0 (the legs still plant) and the named-support gate is what fires.</p>
+<p>Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--box-ends</code></td><td>end-cap rim span</td><td>17</td></tr><tr><td><code>--float-strap</code></td><td>strap-to-hull gap</td><td>18</td></tr><tr><td><code>--narrow-hull</code></td><td>hull plan vs stated size</td><td>19</td></tr><tr><td><code>--open-ends</code></td><td>water contained by the end boards (restores the open U-band ends)</td><td>18</td></tr></tbody></table></div>
+<p><code>--short-legs</code> lifts the shoes and stretches each leg&#x27;s foot down to the floor, so AABB <code>zmin</code> stays 0 (the legs still plant) and the named-support gate is what fires. Lifting the shoes alone used to let the whole piece re-ground on the legs. That shrank the AABB by ~10 mm, 0.4 mm inside the bounding-box tolerance, and a 1.5 mm model change in this pass tipped it to exit 8. With the feet stretched, the envelope moves 1.6 mm.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python water_trough.py --
 blender --background --python water_trough.py -- --skip-decimate
@@ -307,11 +312,12 @@ blender --background --python water_trough.py -- --short-legs
 blender --background --python water_trough.py -- --box-ends
 blender --background --python water_trough.py -- --float-strap
 blender --background --python water_trough.py -- --narrow-hull
+blender --background --python water_trough.py -- --open-ends
 blender --background --python water_trough.py -- --output trough.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: end-cap U-rim span (<code>--box-ends</code>)</td></tr><tr><td>18</td><td>Seat: strap or water BVH gap (<code>--float-strap</code>)</td></tr><tr><td>19</td><td>Hull length or width off the stated real-world size (<code>--narrow-hull</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: end-cap U-rim span (<code>--box-ends</code>)</td></tr><tr><td>18</td><td>Seat: strap or water BVH gap (<code>--float-strap</code>), or water not contained by the end boards (<code>--open-ends</code>)</td></tr><tr><td>19</td><td>Hull length or width off the stated real-world size (<code>--narrow-hull</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -322,24 +328,26 @@ blender --background --python water_trough.py -- --output trough.png</code></pre
       <pre><span class="s">&quot;&quot;&quot;Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (U-staves and U end-caps from one radius function, contained
+stand (U-staves and solid end boards from one radius function, contained
 water, iron straps lofted on that same host, trestle legs) after
 composing shipped pipeline pieces: bmesh construction, UVs, three
 materials, high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
 
-The hull, ends, straps and water all sample the same YZ arc. End caps
-are U-boards the staves tenon into, not a bounding-box slab around the
-U. Legs run from a hull-outer station to a shoe at Z=0.
+The hull, ends, straps and water all sample the same YZ arc. Each end
+is a solid board on the hull&#x27;s outer arc that the staves tenon into:
+not a bounding-box slab, not an open U-band. Legs run from a hull-outer station to a shoe at Z=0.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named shoe
 supports, ``--box-ends`` end-cap U-fit, ``--float-strap`` strap seat,
-``--narrow-hull`` hull real-world size.
+``--narrow-hull`` hull real-world size, ``--open-ends`` water
+containment.
 
-No RNG. Stave seams use closed-form ``sin(i)``. DECIMATE COLLAPSE
+Stave seams use closed-form ``sin(i)``; the only RNG is plank tone,
+seeded with ``TONE_SEED``. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
 gate is a ratio band, not an exact count.
 
@@ -350,6 +358,7 @@ gate is a ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -374,7 +383,7 @@ A_SPAN = <span class="n">1.20</span>
 END_T = <span class="n">0.044</span>
 END_OVERHANG = <span class="n">0.010</span>
 STAVE_GAP = <span class="n">0.008</span>
-STRAP_W = <span class="n">0.028</span>
+STRAP_W = <span class="n">0.040</span>
 STRAP_T = <span class="n">0.008</span>
 STRAP_BITE = <span class="n">0.008</span>
 SHOE_H = <span class="n">0.028</span>
@@ -387,15 +396,17 @@ STRETCHER_Z = <span class="n">0.115</span>
 STRETCHER_T = <span class="n">0.028</span>
 LEG_W = <span class="n">0.048</span>
 WATER_GAP = <span class="n">0.004</span>
-WATER_FILL = <span class="n">0.68</span>
+<span class="c"># Half full: at 0.68 the surface sat nearly flush with the rim and hid the</span>
+<span class="c"># inner stave walls, so nothing said vessel.</span>
+WATER_FILL = <span class="n">0.50</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.093</span>, <span class="n">0.552</span>, <span class="n">0.504</span>)
+OUTER_SIZE = (<span class="n">1.093</span>, <span class="n">0.552</span>, <span class="n">0.5055</span>)
 HULL_SIZE = (<span class="n">1.08</span>, <span class="n">0.44</span>)
 HULL_SIZE_TOL = (<span class="n">0.08</span>, <span class="n">0.08</span>)
 NARROW_HULL_R = <span class="n">0.12</span>
-BASE_TRIS_MIN = <span class="n">3300</span>
-BASE_TRIS_MAX = <span class="n">4000</span>
+BASE_TRIS_MIN = <span class="n">2800</span>
+BASE_TRIS_MAX = <span class="n">3500</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -428,6 +439,15 @@ PLUMB_MAX = <span class="n">0.010</span>
 WOOD_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
 WATER_IDX = <span class="n">2</span>
+
+<span class="c"># Water containment: rays cast outward along X from points across each end</span>
+<span class="c"># face of the water must hit an end board within this reach. The ends used</span>
+<span class="c"># to be open U-bands; the water&#x27;s own end face showed where a board belongs</span>
+<span class="c"># and nothing held it in.</span>
+CONTAIN_REACH = END_T * <span class="n">1.5</span>
+CONTAIN_FRACS = (<span class="n">0.0</span>, <span class="n">0.5</span>, <span class="n">0.9</span>)
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">61</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -548,6 +568,38 @@ WATER_IDX = <span class="n">2</span>
     <span class="k">return</span> r0 + r1
 
 
+<span class="k">def</span> add_end_board(bm, x0, x1, r_arc, z_top, n_seg, zc, a_span, mat_idx):
+    <span class="s">&quot;&quot;&quot;A solid end board: the hull&#x27;s own outer arc below, a level top above.
+
+    The profile is closed with vertical strips from each arc point up to
+    ``z_top``, so every face is a quad and there is no n-gon to fan. The
+    bottom follows the hull arc, which is what separates it from the
+    bounding-box slab ``--box-ends`` builds.
+    &quot;&quot;&quot;</span>
+    <span class="k">def</span> ring(x):
+        arc = []
+        top = []
+        <span class="k">for</span> i <span class="k">in</span> range(n_seg + <span class="n">1</span>):
+            a = -a_span + <span class="n">2.0</span> * a_span * i / n_seg
+            p = _arc_point(a, r_arc, x, zc)
+            arc.append(bm.verts.new(p))
+            top.append(bm.verts.new((x, p.y, z_top)))
+        <span class="k">return</span> arc, top
+
+    arc0, top0 = ring(x0)
+    arc1, top1 = ring(x1)
+    verts = arc0 + top0 + arc1 + top1
+    <span class="k">for</span> i <span class="k">in</span> range(n_seg):
+        j = i + <span class="n">1</span>
+        _face(bm, (arc0[i], top0[i], top0[j], arc0[j]), mat_idx)
+        _face(bm, (arc1[j], top1[j], top1[i], arc1[i]), mat_idx)
+        _face(bm, (arc0[j], arc1[j], arc1[i], arc0[i]), mat_idx)
+        _face(bm, (top0[i], top1[i], top1[j], top0[j]), mat_idx)
+    _face(bm, (arc0[<span class="n">0</span>], arc1[<span class="n">0</span>], top1[<span class="n">0</span>], top0[<span class="n">0</span>]), mat_idx)
+    _face(bm, (arc0[n_seg], top0[n_seg], top1[n_seg], arc1[n_seg]), mat_idx)
+    <span class="k">return</span> verts
+
+
 <span class="k">def</span> add_box_end(bm, x_mid, radius, zc, a_span, thick, mat_idx):
     y_span = <span class="n">2.0</span> * radius * math.sin(a_span)
     z_lo = zc - radius
@@ -638,6 +690,7 @@ WATER_IDX = <span class="n">2</span>
     float_strap=<span class="k">False</span>,
     short_legs=<span class="k">False</span>,
     narrow_hull=<span class="k">False</span>,
+    open_ends=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -666,19 +719,26 @@ WATER_IDX = <span class="n">2</span>
             )
             a = a1 + STAVE_GAP
 
-        <span class="k">if</span> <span class="k">not</span> box_ends:
-            r_cap_in = r_in - <span class="n">0.006</span>
-            r_cap_out = r_out + END_OVERHANG
-            wood.extend(
-                add_u_shell(
-                    bm, x_cap_l0, x_cap_l1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+        r_cap_in = r_in - <span class="n">0.006</span>
+        r_cap_out = r_out + END_OVERHANG
+        <span class="k">if</span> open_ends:
+            <span class="c"># The pre-pass end: a U-band the staves tenon into, open in the</span>
+            <span class="c"># middle. --open-ends restores it as the containment falsifier.</span>
+            <span class="k">for</span> xa, xb <span class="k">in</span> ((x_cap_l0, x_cap_l1), (x_cap_r0, x_cap_r1)):
+                wood.extend(
+                    add_u_shell(
+                        bm, xa, xb, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+                    )
                 )
-            )
-            wood.extend(
-                add_u_shell(
-                    bm, x_cap_r0, x_cap_r1, r_cap_in, r_cap_out, N_STAVES, zc, A_SPAN, WOOD_IDX
+        <span class="k">elif</span> <span class="k">not</span> box_ends:
+            <span class="c"># Top sits at the band&#x27;s inner rim, 6 mm proud of the staves.</span>
+            z_top = zc - r_cap_in * math.cos(A_SPAN)
+            <span class="k">for</span> xa, xb <span class="k">in</span> ((x_cap_l0, x_cap_l1), (x_cap_r0, x_cap_r1)):
+                wood.extend(
+                    add_end_board(
+                        bm, xa, xb, r_cap_out, z_top, N_STAVES, zc, A_SPAN, WOOD_IDX
+                    )
                 )
-            )
 
         top_z = hull_z_at_y(LEG_TOP_Y, r_out, zc)
         bot_z = SHOE_H * <span class="n">0.55</span>
@@ -691,7 +751,21 @@ WATER_IDX = <span class="n">2</span>
                 bot_pt = Vector((sx, ysign * LEG_BOT_Y, bot_z))
                 direction = (top_pt - bot_pt).normalized()
                 top_pt = top_pt + direction * (STAVE_T * <span class="n">0.35</span>)
-                wood.extend(add_oriented_box(bm, top_pt, bot_pt, (LEG_W, <span class="n">0.034</span>), WOOD_IDX))
+                leg = add_oriented_box(bm, top_pt, bot_pt, (LEG_W, <span class="n">0.034</span>), WOOD_IDX)
+                <span class="k">if</span> short_legs:
+                    <span class="c"># The legs, not the shoes, must plant: stretch each leg&#x27;s</span>
+                    <span class="c"># foot down to the floor so the lifted shoes float while</span>
+                    <span class="c"># the piece keeps the same floor and envelope. Lifting the</span>
+                    <span class="c"># shoes alone let the whole piece re-ground on the legs,</span>
+                    <span class="c"># shrinking the AABB ~10 mm; that sat 0.4 mm inside the</span>
+                    <span class="c"># bbox tolerance and tipped to exit 8 on a 1.5 mm model</span>
+                    <span class="c"># change.</span>
+                    zmid = <span class="n">0.5</span> * (top_pt.z + bot_pt.z)
+                    foot = [v <span class="k">for</span> v <span class="k">in</span> leg <span class="k">if</span> v.co.z &lt; zmid]
+                    drop = min(v.co.z <span class="k">for</span> v <span class="k">in</span> foot)
+                    <span class="k">for</span> v <span class="k">in</span> foot:
+                        v.co.z -= drop
+                wood.extend(leg)
             t_st = (STRETCHER_Z - bot_z) / max(top_z - bot_z, <span class="n">1e-6</span>)
             y_leg = LEG_BOT_Y + t_st * (LEG_TOP_Y - LEG_BOT_Y)
             <span class="c"># Inner face of the diagonal leg, not through its volume.</span>
@@ -715,7 +789,12 @@ WATER_IDX = <span class="n">2</span>
         )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># Flat edges (the strip seams across an end board&#x27;s face) are</span>
+            <span class="c"># not corners; chamfering one creases a flat face.</span>
+            edges = [
+                e <span class="k">for</span> e <span class="k">in</span> {e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges}
+                <span class="k">if</span> <span class="k">not</span> (len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &lt; <span class="n">1e-4</span>)
+            ]
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -800,9 +879,56 @@ WATER_IDX = <span class="n">2</span>
             poly.use_smooth = <span class="k">False</span>
     <span class="k">finally</span>:
         bm.free()
+    paint_planks(me)
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     <span class="k">return</span> out
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    n = len(pts)
+    c = sum(pts, Vector()) / n
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell tone and grain direction, as face attributes.
+
+    Staves, end boards and legs came out of one flat material, so every
+    board was the same board. The wood shader stretches its grain along
+    ``GrainDir`` (each shell&#x27;s own long axis) and shades by ``PlankTone``.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
 
 
 <span class="k">def</span> principled(name, color, metallic, roughness, roughness_var=<span class="n">0.0</span>):
@@ -826,6 +952,119 @@ WATER_IDX = <span class="n">2</span>
         nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
         nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each board (``GrainDir``), tone per board (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">30.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.13</span>, <span class="n">0.062</span>, <span class="n">0.024</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.40</span>, <span class="n">0.21</span>, <span class="n">0.085</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> water_material(name):
+    <span class="s">&quot;&quot;&quot;Dark, clear-reading water with a faint ripple.
+
+    The old flat 0.08-roughness teal was a mirror: under the key it went
+    near-white and, with open ends, read as a stretched fabric sling. A
+    darker body and a small noise bump break the reflection into a surface.
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+    bsdf.inputs[<span class="s">&quot;IOR&quot;</span>].default_value = <span class="n">1.33</span>
+    <span class="c"># Deep body where the view looks straight down, a pale sky tint toward</span>
+    <span class="c"># grazing angles. A light placed to reflect in the surface was</span>
+    <span class="c"># all-or-nothing (white mirror or nothing) and flooded the dark stage;</span>
+    <span class="c"># a facing-ratio tint gives the sheen without touching the lighting.</span>
+    facing = nt.nodes.new(<span class="s">&quot;ShaderNodeLayerWeight&quot;</span>)
+    facing.inputs[<span class="s">&quot;Blend&quot;</span>].default_value = <span class="n">0.55</span>
+    tint = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    tint.data_type = <span class="s">&quot;RGBA&quot;</span>
+    _sock(tint.inputs, <span class="s">&quot;A_Color&quot;</span>).default_value = (<span class="n">0.010</span>, <span class="n">0.040</span>, <span class="n">0.046</span>, <span class="n">1.0</span>)
+    _sock(tint.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.20</span>, <span class="n">0.27</span>, <span class="n">0.29</span>, <span class="n">1.0</span>)
+    nt.links.new(facing.outputs[<span class="s">&quot;Facing&quot;</span>], _sock(tint.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(_sock(tint.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">22.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.08</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.004</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> trough_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron, water): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;TroughWood&quot;</span>)
+    metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.155</span>, <span class="n">0.15</span>, <span class="n">1.0</span>), <span class="n">0.85</span>, <span class="n">0.42</span>, roughness_var=<span class="n">0.10</span>)
+    water = water_material(<span class="s">&quot;TroughWater&quot;</span>)
+    <span class="k">return</span> wood, metal, water
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal, water):
@@ -1100,6 +1339,43 @@ WATER_IDX = <span class="n">2</span>
     }
 
 
+<span class="k">def</span> containment_audit(me):
+    <span class="s">&quot;&quot;&quot;Rays outward along X from across each water end face must hit a board.
+
+    Samples each end face at its perimeter vertices and at points drawn
+    toward the face centroid (CONTAIN_FRACS), so the middle of the section
+    is tested, not only the rim a U-band would cover. A miss is water with
+    nothing holding it in.
+    &quot;&quot;&quot;</span>
+    water_v = {i <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.material_index == WATER_IDX <span class="k">for</span> i <span class="k">in</span> p.vertices}
+    <span class="k">if</span> <span class="k">not</span> water_v:
+        <span class="k">return</span> {<span class="s">&quot;rays&quot;</span>: <span class="n">0</span>, <span class="s">&quot;misses&quot;</span>: <span class="n">1</span>}
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        drop = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> f.material_index != WOOD_IDX]
+        bmesh.ops.delete(bm, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        tree = BVHTree.FromBMesh(bm)
+    <span class="k">finally</span>:
+        bm.free()
+    pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> water_v]
+    xmin = min(p.x <span class="k">for</span> p <span class="k">in</span> pts)
+    xmax = max(p.x <span class="k">for</span> p <span class="k">in</span> pts)
+    rays = misses = <span class="n">0</span>
+    <span class="k">for</span> x_end, out <span class="k">in</span> ((xmin, -<span class="n">1.0</span>), (xmax, <span class="n">1.0</span>)):
+        face = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> abs(p.x - x_end) &lt; <span class="n">1e-5</span>]
+        c = sum(face, Vector()) / len(face)
+        <span class="k">for</span> p <span class="k">in</span> face:
+            <span class="k">for</span> t <span class="k">in</span> CONTAIN_FRACS:
+                q = c + (p - c) * t
+                origin = Vector((x_end - out * <span class="n">1e-4</span>, q.y, q.z))
+                hit = tree.ray_cast(origin, Vector((out, <span class="n">0.0</span>, <span class="n">0.0</span>)), CONTAIN_REACH)
+                rays += <span class="n">1</span>
+                <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+                    misses += <span class="n">1</span>
+    <span class="k">return</span> {<span class="s">&quot;rays&quot;</span>: rays, <span class="s">&quot;misses&quot;</span>: misses}
+
+
 <span class="k">def</span> add_stray_vert(me):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -1205,6 +1481,7 @@ WATER_IDX = <span class="n">2</span>
     float_strap=<span class="k">False</span>,
     short_legs=<span class="k">False</span>,
     narrow_hull=<span class="k">False</span>,
+    open_ends=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_trough_mesh(
@@ -1215,6 +1492,7 @@ WATER_IDX = <span class="n">2</span>
         float_strap=float_strap,
         short_legs=short_legs,
         narrow_hull=narrow_hull,
+        open_ends=open_ends,
     )
     high = build_trough_mesh(
         <span class="s">&quot;TroughHigh&quot;</span>,
@@ -1224,10 +1502,9 @@ WATER_IDX = <span class="n">2</span>
         float_strap=float_strap,
         short_legs=short_legs,
         narrow_hull=narrow_hull,
+        open_ends=open_ends,
     )
-    wood = principled(<span class="s">&quot;TroughWood&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>, roughness_var=<span class="n">0.10</span>)
-    metal = principled(<span class="s">&quot;TroughIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>, roughness_var=<span class="n">0.08</span>)
-    water = principled(<span class="s">&quot;TroughWater&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.16</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.08</span>)
+    wood, metal, water = trough_materials()
     assign_slots(low, wood, metal, water)
     assign_slots(high, wood, metal, water)
 
@@ -1258,6 +1535,7 @@ WATER_IDX = <span class="n">2</span>
     zf = zfight_pairs(low.data)
     sup = support_audit(low.data)
     jnt = joint_audit(low.data)
+    con = containment_audit(low.data)
 
     img, tex = setup_bake_image(low, wood)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
@@ -1285,6 +1563,10 @@ WATER_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1314,6 +1596,7 @@ WATER_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">water_gap=</span>{jnt[<span class="s">&#x27;water_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> hull_xy=</span>{jnt[<span class="s">&#x27;hull_xy&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">ends=</span>{jnt[<span class="s">&#x27;ends&#x27;</span>]}<span class="s"> straps=</span>{jnt[<span class="s">&#x27;straps&#x27;</span>]}<span class="s">&quot;</span>
     )
+    print(<span class="s">f&quot;</span><span class="s">measured containment rays=</span>{con[<span class="s">&#x27;rays&#x27;</span>]}<span class="s"> misses=</span>{con[<span class="s">&#x27;misses&#x27;</span>]}<span class="s">&quot;</span>)
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -1427,6 +1710,13 @@ WATER_IDX = <span class="n">2</span>
     <span class="k">if</span> jnt[<span class="s">&quot;water_gap&quot;</span>] &gt; WATER_CONTACT_MAX:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">water-hull gap </span>{jnt[<span class="s">&#x27;water_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>,
+            <span class="n">18</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> con[<span class="s">&quot;rays&quot;</span>] == <span class="n">0</span> <span class="k">or</span> con[<span class="s">&quot;misses&quot;</span>]:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">water not contained: </span>{con[<span class="s">&#x27;misses&#x27;</span>]}<span class="s"> of </span>{con[<span class="s">&#x27;rays&#x27;</span>]}<span class="s"> outward rays </span><span class="s">&quot;</span>
+            <span class="s">&quot;from the water end faces hit no end board &quot;</span>
+            <span class="s">&quot;(--open-ends is the designed fail)&quot;</span>,
             <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
@@ -1549,6 +1839,7 @@ WATER_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--box-ends&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-strap&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--narrow-hull&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--open-ends&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1559,6 +1850,7 @@ WATER_IDX = <span class="n">2</span>
         float_strap=args.float_strap,
         short_legs=args.short_legs,
         narrow_hull=args.narrow_hull,
+        open_ends=args.open_ends,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1583,7 +1875,7 @@ WATER_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/water-trough-hero.webp" alt="A curved wooden water trough on crossed trestle legs, filled with dark green water." />
+    <img src="../assets/water-trough-hero.webp" alt="A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water." />
   </dialog>
   <footer>
     <div class="statusbar">
