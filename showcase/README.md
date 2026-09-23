@@ -50,6 +50,9 @@ entry in `showcase/gallery.json`, and a rendered still.
   `--skew-wheel` / `--turn-posts` break a mirror or placement budget
   (exit 19). `--float-rivets` lifts fasteners off their host (exit 18).
   `--round-haft` turns an oval section round (exit 19).
+  `--float-nails` lifts nail heads off their strap (exit 18).
+  `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
+  (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
   prove each one fails once, and check the exit code, not just
   non-zero.
@@ -299,6 +302,34 @@ entry in `showcase/gallery.json`, and a rendered still.
   because the log's wobble drops the surface 1.4 mm across one head.
   Aimed down the normal both seat at 1.50–1.54 mm. `--float-rivets` is
   the falsifier.
+- **Edge treatment: no right angles (file-local code).** Real objects
+  have chamfers that catch light. Where every box in a piece is
+  chamfered, count manifold edges whose faces meet within 5° of 90° and
+  assert **0** — a one-segment chamfer turns every 90° edge into two 45°
+  ones, so a survivor is a bevel pass that was skipped. Chamfer thin
+  stock at its own offset: `crate-stack`'s 3.5 mm iron takes 0.8 mm,
+  where the timber's 1.8 mm would leave no flat. Pass `material=` to
+  `bmesh.ops.bevel`: left at its default the chamfer faces took slot 0,
+  and the iron plates rendered — and were classified — as timber.
+  `--sharp-iron` is the falsifier. 15–19 are reserved, so the code is
+  the piece's next free one.
+- **An L-section is one shell, not two boxes (exit 15).** Two
+  overlapping boxes for the legs of an angle strap share the outer
+  corner edge; chamfer them and both lay a strip on the same line — a
+  coplanar cross-shell pair at every corner (`crate-stack`: 12). Extrude
+  the L profile once, each cap as two convex quads meeting on the
+  inner-corner diagonal, and skip that flat diagonal in the bevel.
+- **Classify small parts by a size derived from the host.** A nail,
+  rivet or stud told apart from its plate by world-AABB extent needs a
+  threshold taken from the plate (`IRON_WRAP * 0.5`), not from the
+  fastener: a yawed 10 mm head has a world AABB wider than 10 mm, and a
+  fixed 10 mm threshold silently dropped 8 of 48 nails.
+- **Identical boards read as CG.** Planks cut from one material are one
+  plank repeated. Give each shell a seeded tone and its own grain
+  direction — its long axis, recovered from its vertices — as face
+  attributes, and have the shader stretch its grain along that axis
+  rather than a world axis, which a yawed member is off by its yaw.
+  Nothing here is an assertion; it is found on the inspection sheet.
 - **A section that carries the read is a budget (exit 19).** Where a
   cross-section is what makes a part recognisable — an axe handle is
   oval, a broom handle is round — assert it as a ratio band at a named
