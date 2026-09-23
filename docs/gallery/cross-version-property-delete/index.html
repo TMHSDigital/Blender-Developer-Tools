@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two framed display panels on a stand: the left shows a lit cyan screen, the right a blank grey one." />
+  <meta property="og:image:alt" content="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="cross-version-property-delete — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cross-version-property-delete-hero.webp" />
-  <meta name="twitter:image:alt" content="Two framed display panels on a stand: the left shows a lit cyan screen, the right a blank grey one." />
+  <meta name="twitter:image:alt" content="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Custom ID properties are removed with del, not property_unset. The IDs are built through bpy.data.objects.new so the check does not depend on active_object.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two framed display panels on a stand: the left shows a lit cyan screen, the right a blank grey one.">
-      <img src="../assets/cross-version-property-delete-hero.webp" alt="Two framed display panels on a stand: the left shows a lit cyan screen, the right a blank grey one." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket.">
+      <img src="../assets/cross-version-property-delete-hero.webp" alt="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Factory-empty has no active_object; property_unset raises TypeError and leaves the key; del removes it (clear_has=False). --skip-delete and --unset-instead exit 7.</div>
@@ -283,6 +283,8 @@
 <p><strong>What it witnesses:</strong> <code>property_unset</code> is a TypeError on a custom ID key and does <strong>not</strong> remove it. <code>del id_block[key]</code> does. After factory-empty, there is no <code>active_object</code>.</p>
 <p><strong>What failure each check would catch:</strong></p>
 <ul><li>exit 2 — someone set an active object; the snippet <code>__main__</code> would have been the only path</li><li>exit 3 — the ID property never landed</li><li>exit 4 — <code>property_unset</code> removed the key or failed to raise</li><li>exit 7 — <code>del</code> did not run (<code>--skip-delete</code> / <code>--unset-instead</code> falsify this: measured <code>clear_has=True</code>)</li></ul>
+<h2>Staging</h2>
+<p>The two tags now hang from the stand&#x27;s bar on steel rods. The bar used to run 0.17 m behind the plates with nothing joining them, and the &quot;rings&quot; were solid discs, so the plates hung on air. The bar spans both plates, the post rises to it, and the base is as wide as what it carries. Render path only: the check reads ID properties, never geometry.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python cross_version_property_delete.py --
 blender --background --python cross_version_property_delete.py -- --output tags.png</code></pre>
@@ -508,6 +510,31 @@ VALUE = <span class="n">42</span>
     <span class="k">for</span> ob <span class="k">in</span> stand:
         assign(ob, steel)
 
+    <span class="c"># Render-only staging: the check reads ID properties, never geometry.</span>
+    <span class="c"># The build left the bar 0.17 m behind the plates with nothing joining</span>
+    <span class="c"># them, and the &quot;rings&quot; are solid discs, so the plates hung on air.</span>
+    <span class="c"># Here the bar runs in the plates&#x27; plane above their tops, spans both,</span>
+    <span class="c"># and each plate hangs from it on two rods; the post rises to the bar</span>
+    <span class="c"># and the base is as wide as what it carries.</span>
+    post, base, bar = stand
+    plate_top = keep_plate.location.z + <span class="n">0.525</span>
+    bar_z = plate_top + <span class="n">0.16</span>
+    bar.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, bar_z)
+    bar.scale.x = <span class="n">4.4</span> / <span class="n">2.6</span>
+    post.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span> * bar_z)
+    post.scale.z = bar_z / <span class="n">1.55</span>
+    base.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.06</span>)
+    base.scale.x = <span class="n">4.6</span> / <span class="n">3.4</span>
+    hangers = []
+    <span class="k">for</span> plate <span class="k">in</span> (keep_plate, clear_plate):
+        <span class="k">for</span> dx <span class="k">in</span> (-<span class="n">0.62</span>, <span class="n">0.62</span>):
+            rod = cylinder(<span class="s">f&quot;</span><span class="s">Hanger</span>{len(hangers)}<span class="s">&quot;</span>, <span class="n">0.018</span>, bar_z - plate_top + <span class="n">0.05</span>,
+                           (plate.location.x + dx, <span class="n">0.0</span>, <span class="n">0.5</span> * (plate_top - <span class="n">0.03</span> + bar_z)), segs=<span class="n">12</span>)
+            assign(rod, steel)
+            hangers.append(rod)
+    <span class="k">for</span> ring <span class="k">in</span> (keep_ring, clear_ring):
+        ring.hide_render = <span class="k">True</span>
+
     inlay = <span class="k">None</span>
     <span class="k">if</span> KEY <span class="k">in</span> keep_plate.keys():
         inlay = add_inlay(<span class="s">&quot;Keep&quot;</span>, keep_plate)
@@ -554,13 +581,13 @@ VALUE = <span class="n">42</span>
     light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.6</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">850.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.7</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">18</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.95</span>)
     aim.hide_render = <span class="k">True</span>
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.55</span>, -<span class="n">6.59</span>, <span class="n">3.30</span>)
+    cam.location = (<span class="n">3.95</span>, -<span class="n">7.35</span>, <span class="n">3.3</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -582,7 +609,7 @@ VALUE = <span class="n">42</span>
     scene.render.filepath = path
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
-    hero = [keep_plate, clear_plate, keep_ring, clear_ring] + list(stand)
+    hero = [keep_plate, clear_plate] + list(stand) + hangers
     <span class="k">if</span> inlay <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
         hero.append(inlay)
     fcode = gallery_framing.check_framing(
@@ -646,7 +673,7 @@ VALUE = <span class="n">42</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/cross-version-property-delete-hero.webp" alt="Two framed display panels on a stand: the left shows a lit cyan screen, the right a blank grey one." />
+    <img src="../assets/cross-version-property-delete-hero.webp" alt="Two brass tags hanging from a stand on steel rods: the left shows a lit cyan inlay, the right a blank grey pocket." />
   </dialog>
   <footer>
     <div class="statusbar">

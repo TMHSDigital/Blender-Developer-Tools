@@ -24,6 +24,15 @@ no `active_object`.
 - exit 7 — `del` did not run (`--skip-delete` / `--unset-instead` falsify
   this: measured `clear_has=True`)
 
+## Staging
+
+The two tags now hang from the stand's bar on steel rods. The bar used
+to run 0.17 m behind the plates with nothing joining them, and the
+"rings" were solid discs, so the plates hung on air. The bar spans both
+plates, the post rises to it, and the base is as wide as what it
+carries. Render path only: the check reads ID properties, never
+geometry.
+
 ## Run
 
 ```bash

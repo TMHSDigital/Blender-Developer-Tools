@@ -207,6 +207,31 @@ def render_still(keep_parts, clear_parts, stand, path, engine):
     for ob in stand:
         assign(ob, steel)
 
+    # Render-only staging: the check reads ID properties, never geometry.
+    # The build left the bar 0.17 m behind the plates with nothing joining
+    # them, and the "rings" are solid discs, so the plates hung on air.
+    # Here the bar runs in the plates' plane above their tops, spans both,
+    # and each plate hangs from it on two rods; the post rises to the bar
+    # and the base is as wide as what it carries.
+    post, base, bar = stand
+    plate_top = keep_plate.location.z + 0.525
+    bar_z = plate_top + 0.16
+    bar.location = (0.0, 0.0, bar_z)
+    bar.scale.x = 4.4 / 2.6
+    post.location = (0.0, 0.0, 0.5 * bar_z)
+    post.scale.z = bar_z / 1.55
+    base.location = (0.0, 0.0, 0.06)
+    base.scale.x = 4.6 / 3.4
+    hangers = []
+    for plate in (keep_plate, clear_plate):
+        for dx in (-0.62, 0.62):
+            rod = cylinder(f"Hanger{len(hangers)}", 0.018, bar_z - plate_top + 0.05,
+                           (plate.location.x + dx, 0.0, 0.5 * (plate_top - 0.03 + bar_z)), segs=12)
+            assign(rod, steel)
+            hangers.append(rod)
+    for ring in (keep_ring, clear_ring):
+        ring.hide_render = True
+
     inlay = None
     if KEY in keep_plate.keys():
         inlay = add_inlay("Keep", keep_plate)
@@ -253,13 +278,13 @@ def render_still(keep_parts, clear_parts, stand, path, engine):
     light("Glint", (1.6, -5.0, 6.0), 850.0, 0.9, (1.0, 0.9, 0.7), (40, 0, 18))
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 1.15)
+    aim.location = (0.0, 0.0, 0.95)
     aim.hide_render = True
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.55, -6.59, 3.30)
+    cam.location = (3.95, -7.35, 3.3)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
@@ -281,7 +306,7 @@ def render_still(keep_parts, clear_parts, stand, path, engine):
     scene.render.filepath = path
     scene.view_settings.view_transform = "Standard"
 
-    hero = [keep_plate, clear_plate, keep_ring, clear_ring] + list(stand)
+    hero = [keep_plate, clear_plate] + list(stand) + hangers
     if inlay is not None:
         hero.append(inlay)
     fcode = gallery_framing.check_framing(
