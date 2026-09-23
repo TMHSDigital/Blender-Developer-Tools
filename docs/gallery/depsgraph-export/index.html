@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/depsgraph-export-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A teal cube beside a slightly faceted teal sphere on a dark studio floor." />
+  <meta property="og:image:alt" content="A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="depsgraph-export — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/depsgraph-export-hero.webp" />
-  <meta name="twitter:image:alt" content="A teal cube beside a slightly faceted teal sphere on a dark studio floor." />
+  <meta name="twitter:image:alt" content="A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The depsgraph lifetime contract — evaluated_get().to_mesh() paired with to_mesh_clear() — measured against an OBJ export of the same object.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A teal cube beside a slightly faceted teal sphere on a dark studio floor.">
-      <img src="../assets/depsgraph-export-hero.webp" alt="A teal cube beside a slightly faceted teal sphere on a dark studio floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor.">
+      <img src="../assets/depsgraph-export-hero.webp" alt="A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Exports ship evaluated geometry: the exported vertex count equals the subsurf-applied count and is strictly greater than the base mesh.</div>
@@ -431,6 +431,28 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
     <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
         poly.use_smooth = <span class="k">True</span>
 
+    <span class="c"># Edge cages over both: the check compares vertex counts, and two teal</span>
+    <span class="c"># silhouettes alone read as &quot;a cube and a ball&quot;. The base cage shows the</span>
+    <span class="c"># 8 verts the datablock holds; the evaluated cage is the same SUBSURF</span>
+    <span class="c"># followed by WIREFRAME, so it draws exactly the edges the OBJ ships.</span>
+    <span class="c"># Render-path scaffolding only: separate objects, added after check().</span>
+    cage_mat = principled(<span class="s">&quot;Cage&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.80</span>, <span class="n">0.56</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.35</span>)
+    cages = []
+    <span class="k">for</span> src, subsurf <span class="k">in</span> ((base_obj, <span class="k">False</span>), (obj, <span class="k">True</span>)):
+        cage = bpy.data.objects.new(src.name + <span class="s">&quot;Cage&quot;</span>, obj.data.copy())
+        cage.data.materials.clear()
+        cage.data.materials.append(cage_mat)
+        cage.location = src.location
+        cage.rotation_euler = src.rotation_euler
+        <span class="k">if</span> subsurf:
+            cage.modifiers.new(<span class="s">&quot;ss&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>).levels = <span class="n">2</span>
+        wire = cage.modifiers.new(<span class="s">&quot;cage&quot;</span>, <span class="s">&#x27;WIREFRAME&#x27;</span>)
+        wire.thickness = <span class="n">0.035</span> <span class="k">if</span> <span class="k">not</span> subsurf <span class="k">else</span> <span class="n">0.018</span>
+        wire.offset = <span class="n">1.0</span>  <span class="c"># grow outward so the lines sit on the surface</span>
+        wire.use_even_offset = <span class="k">True</span>
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -505,7 +527,7 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[base_obj, obj],
-        elements=[base_obj, obj],
+        elements=[base_obj, obj] + cages,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -554,7 +576,7 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/depsgraph-export-hero.webp" alt="A teal cube beside a slightly faceted teal sphere on a dark studio floor." />
+    <img src="../assets/depsgraph-export-hero.webp" alt="A teal cube outlined by its twelve edges beside a faceted teal sphere covered in a dense pale wire grid, on a dark studio floor." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -123,6 +123,28 @@ def render_still(obj, path, engine):
     for poly in obj.data.polygons:
         poly.use_smooth = True
 
+    # Edge cages over both: the check compares vertex counts, and two teal
+    # silhouettes alone read as "a cube and a ball". The base cage shows the
+    # 8 verts the datablock holds; the evaluated cage is the same SUBSURF
+    # followed by WIREFRAME, so it draws exactly the edges the OBJ ships.
+    # Render-path scaffolding only: separate objects, added after check().
+    cage_mat = principled("Cage", (0.92, 0.80, 0.56, 1.0), 0.0, 0.35)
+    cages = []
+    for src, subsurf in ((base_obj, False), (obj, True)):
+        cage = bpy.data.objects.new(src.name + "Cage", obj.data.copy())
+        cage.data.materials.clear()
+        cage.data.materials.append(cage_mat)
+        cage.location = src.location
+        cage.rotation_euler = src.rotation_euler
+        if subsurf:
+            cage.modifiers.new("ss", 'SUBSURF').levels = 2
+        wire = cage.modifiers.new("cage", 'WIREFRAME')
+        wire.thickness = 0.035 if not subsurf else 0.018
+        wire.offset = 1.0  # grow outward so the lines sit on the surface
+        wire.use_even_offset = True
+        bpy.context.collection.objects.link(cage)
+        cages.append(cage)
+
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
@@ -197,7 +219,7 @@ def render_still(obj, path, engine):
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[base_obj, obj],
-        elements=[base_obj, obj],
+        elements=[base_obj, obj] + cages,
         stage=[floor, wall],
     )
     if fcode:
