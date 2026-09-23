@@ -142,6 +142,9 @@ jobs:
       - name: Check falsifiers declare the budget they target
         run: python3 tests/check_falsifier_targets.py
 
+      - name: Check gallery hero and preview sizes
+        run: python3 tests/check_gallery_images.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."
