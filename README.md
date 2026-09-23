@@ -122,7 +122,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/cart/"><img src="showcase/cart/preview.webp" width="24%" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
   <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
   <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a wooden tray with walls of stacked boards and iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
-  <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
+  <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a dark forged-steel London-pattern anvil with a flared, squared waist on a hooped timber stump on a dark studio floor" /></a>
   <a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" width="24%" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
   <a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" width="24%" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands wrapped around it, and two hitching rings on a dark studio floor" /></a>
   <a href="showcase/grindstone/"><img src="showcase/grindstone/preview.webp" width="24%" alt="Grindstone: a stone wheel on a timber A-frame with an iron axle, hubs, crank, and tray on a dark studio floor" /></a>
@@ -165,7 +165,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`wheelbarrow`](showcase/wheelbarrow/) — procedural wheelbarrow with board-built tray walls, a spoked wheel, iron straps, legs, and handles through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--wide-seams` exits 17.
 
-[`anvil`](showcase/anvil/) — procedural London-pattern anvil on a timber stump through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`anvil`](showcase/anvil/) — procedural London-pattern anvil on a timber stump through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--round-waist` exits 19.
 
 [`water-trough`](showcase/water-trough/) — procedural watertight water trough on a timber stand through the same pipeline. Falsifier `--skip-decimate` exits 9.
 

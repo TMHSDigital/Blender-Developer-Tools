@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A black iron anvil mounted on a hooped timber stump." />
+  <meta property="og:image:alt" content="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="anvil — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/anvil-hero.webp" />
-  <meta name="twitter:image:alt" content="A black iron anvil mounted on a hooped timber stump." />
+  <meta name="twitter:image:alt" content="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,11 +268,11 @@
     <p>A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron anvil mounted on a hooped timber stump.">
-      <img src="../assets/anvil-hero.webp" alt="A black iron anvil mounted on a hooped timber stump." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump.">
+      <img src="../assets/anvil-hero.webp" alt="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2988 tris, two materials with 1040 wood and 822 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3052 tris, two materials with 1040 wood and 854 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/anvil/anvil.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -284,17 +284,20 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>2988 / 2988 / 2988</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2195 / 0.2195 / 0.2195</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 822</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.489) m ± 0.015</td><td>(0.6210, 0.4137, 0.4890), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>134</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>244052 / 244052 / 244036 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2500–4500</td><td>3052 / 3052 / 3052</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2195 / 0.2195 / 0.2195</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥400 wood, ≥400 metal faces</td><td>2 slots; 1040 / 854</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.621, 0.414, 0.489) m ± 0.015</td><td>(0.6210, 0.4137, 0.4890), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>134</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>248532 / 248532 / 248516 bytes</td></tr></tbody></table></div>
 <p>Base triangles dropped from <strong>6616 to 2988</strong> in the quality pass: overlapping face boxes and a beveled superellipse horn became one slotted slab plus a circular oval loft. Hidden coincident faces were the waste.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Stave-width jitter uses fixed seed 17, and the per-piece wood tone its own seed. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 16 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>16, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.621 m long × 0.180 m high ± 0.05</td><td>0.6210 × 0.1800</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 16 staves</td><td>each <code>zmin</code> ≤ 0.001</td><td>16, stave_z 0.00000</td></tr><tr><td>Body plan</td><td>0.621 m long × 0.180 m high ± 0.05</td><td>0.6210 × 0.1800</td></tr><tr><td><strong>Waist form</strong></td><td>corner reach at the pinch ≥ 0.80 (an ellipse is 0.707)</td><td>0.8572</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Foot-on-head BVH gap</td><td>≤ 0.006 m</td><td>0.00300</td></tr><tr><td>Hoop bite (host r − inner hoop r)</td><td>0.0012–0.008 m</td><td>0.00300</td></tr></tbody></table></div>
+<h3>Waist, steel and stump</h3>
+<p>The waist was lofted from ellipses, so under the rectangular face it read as a turned funnel, not a forged anvil. It is now a superellipse section (exponent 4.5) through five stations that flare from the foot in to a pinch and out to the body. <strong>Waist form</strong> measures corner reach at the narrowest ring: how far a section vertex fills its bounding rectangle&#x27;s corner. <code>--round-waist</code> restores the ellipse and exits 19 (0.7071).</p>
+<p>The steel was satin (metallic 0.92, roughness 0.32) and read as chrome; it is now dark forged steel with rust. Staves and head carry their own wood tone and grain. The stage grid grew from 14 to 60 m. The temp <code>.glb</code> is removed after its size is measured.</p>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All six were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-anvil</code></td><td>foot-on-head gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr></tbody></table></div>
+<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-staves</code></td><td>named stave supports at Z=0</td><td>16</td></tr><tr><td><code>--float-anvil</code></td><td>foot-on-head gap</td><td>17</td></tr><tr><td><code>--round-band</code></td><td>hoop bite band</td><td>18</td></tr><tr><td><code>--round-waist</code></td><td>waist form</td><td>19</td></tr></tbody></table></div>
 <h2>Run</h2>
 <pre><code>blender --background --python anvil.py --
 blender --background --python anvil.py -- --skip-decimate
@@ -303,11 +306,12 @@ blender --background --python anvil.py -- --lift-z
 blender --background --python anvil.py -- --short-staves
 blender --background --python anvil.py -- --float-anvil
 blender --background --python anvil.py -- --round-band
+blender --background --python anvil.py -- --round-waist
 blender --background --python anvil.py -- --output anvil.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: foot-on-head gap (<code>--float-anvil</code>)</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body length or height off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named stave floats</td></tr><tr><td>17</td><td>Joint fit: foot-on-head gap (<code>--float-anvil</code>)</td></tr><tr><td>18</td><td>Seat: hoop bite band (<code>--round-band</code>)</td></tr><tr><td>19</td><td>Body length or height off the stated real-world size, or waist form (<code>--round-waist</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -331,7 +335,8 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-staves`` named stave
 supports, ``--float-anvil`` foot-on-head joint-fit, ``--round-band``
-hoop seat (hoop generated on a circle instead of the stave chords).
+hoop seat (hoop generated on a circle instead of the stave chords),
+``--round-waist`` anvil form (the waist lofted from ellipses, a funnel).
 
 Fixed seed 17 for stave-width jitter. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -400,6 +405,18 @@ WAIST_H = <span class="n">0.100</span>
 HARDY_HALF = <span class="n">0.015</span>
 PRITCHEL_R = <span class="n">0.007</span>
 N_SECTION = <span class="n">16</span>
+<span class="c"># The waist is a forged block, not a turned cone: a superellipse section</span>
+<span class="c"># (exponent WAIST_P) lofted through five stations that flare from the foot</span>
+<span class="c"># in to a pinch and out to the body. Corner reach, the most a section vertex</span>
+<span class="c"># fills its bounding rectangle&#x27;s corner, is 0.707 for an ellipse and about</span>
+<span class="c"># 0.86 here; WAIST_REACH_MIN is the floor. --round-waist sets the exponent to</span>
+<span class="c"># 2, the old elliptical funnel.</span>
+WAIST_P = <span class="n">4.5</span>
+WAIST_REACH_MIN = <span class="n">0.80</span>
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 AREA_EPS = <span class="n">1e-10</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
@@ -782,7 +799,7 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> stave_verts
 
 
-<span class="k">def</span> build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments):
+<span class="k">def</span> build_anvil_iron(bm, z_head, float_anvil, bevel_offset, bevel_segments, round_waist=<span class="k">False</span>):
     z_foot0 = z_head - FOOT_BITE + (FLOAT_ANVIL <span class="k">if</span> float_anvil <span class="k">else</span> <span class="n">0.0</span>)
     z_foot1 = z_foot0 + FOOT_H
     z_body0 = z_foot1 + WAIST_H
@@ -844,16 +861,27 @@ METAL_IDX = <span class="n">1</span>
     )
     pinch_hy = <span class="n">0.028</span>
     pinch_hx = <span class="n">0.055</span>
-    waist_mid = z_foot1 + WAIST_H * <span class="n">0.48</span>
-    waist_z = (z_foot1, waist_mid, z_body0 + <span class="n">0.002</span>)
-    waist_hy = (FOOT_XY[<span class="n">1</span>] * <span class="n">0.46</span>, pinch_hy, hy * <span class="n">0.42</span>)
-    waist_hx = (FOOT_XY[<span class="n">0</span>] * <span class="n">0.42</span>, pinch_hx, FACE_LEN * <span class="n">0.22</span>)
+    t_pinch = <span class="n">0.48</span>
+    foot_hx, foot_hy = FOOT_XY[<span class="n">0</span>] * <span class="n">0.42</span>, FOOT_XY[<span class="n">1</span>] * <span class="n">0.46</span>
+    body_hx, body_hy = FACE_LEN * <span class="n">0.22</span>, hy * <span class="n">0.42</span>
+    expo = <span class="n">2.0</span> <span class="k">if</span> round_waist <span class="k">else</span> WAIST_P
     real_waist = []
-    <span class="k">for</span> z, hx, hy_w <span class="k">in</span> zip(waist_z, waist_hx, waist_hy):
+    <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.24</span>, t_pinch, <span class="n">0.74</span>, <span class="n">1.0</span>):
+        <span class="c"># concave flare: quadratic from the pinch out to each end</span>
+        <span class="k">if</span> t &lt;= t_pinch:
+            k = ((t_pinch - t) / t_pinch) ** <span class="n">2</span>
+            hx, hy_w = pinch_hx + (foot_hx - pinch_hx) * k, pinch_hy + (foot_hy - pinch_hy) * k
+        <span class="k">else</span>:
+            k = ((t - t_pinch) / (<span class="n">1.0</span> - t_pinch)) ** <span class="n">2</span>
+            hx, hy_w = pinch_hx + (body_hx - pinch_hx) * k, pinch_hy + (body_hy - pinch_hy) * k
+        z = z_foot1 + (z_body0 + <span class="n">0.002</span> - z_foot1) * t
         ring = []
         <span class="k">for</span> i <span class="k">in</span> range(N_SECTION):
-            t = i * (<span class="n">2.0</span> * math.pi / N_SECTION)
-            ring.append(Vector((hx * math.cos(t), hy_w * math.sin(t), z)))
+            a = i * (<span class="n">2.0</span> * math.pi / N_SECTION)
+            c, sn = math.cos(a), math.sin(a)
+            x = hx * math.copysign(abs(c) ** (<span class="n">2.0</span> / expo), c)
+            y = hy_w * math.copysign(abs(sn) ** (<span class="n">2.0</span> / expo), sn)
+            ring.append(Vector((x, y, z)))
         real_waist.append(ring)
     loft_open(bm, real_waist, METAL_IDX, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>)
     <span class="k">return</span> z_foot0, z_face, list(horn_verts)
@@ -915,6 +943,7 @@ METAL_IDX = <span class="n">1</span>
     short_staves=<span class="k">False</span>,
     float_anvil=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
+    round_waist=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     gap_ang = GAP_M / R_BOT
@@ -929,7 +958,7 @@ METAL_IDX = <span class="n">1</span>
             croze_xy(spans, <span class="n">0.5</span> * (head_z0 + head_z1), <span class="n">0.004</span>, <span class="n">0.0</span>),
             WOOD_IDX,
         )
-        build_anvil_iron(bm, head_z1, float_anvil, bevel_offset, bevel_segments)
+        build_anvil_iron(bm, head_z1, float_anvil, bevel_offset, bevel_segments, round_waist)
         build_hoops(bm, spans, round_band)
         bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=<span class="n">1e-5</span>)
         bmesh.ops.dissolve_degenerate(bm, dist=<span class="n">1e-6</span>)
@@ -1207,6 +1236,168 @@ METAL_IDX = <span class="n">1</span>
         bm_s.free()
 
 
+<span class="k">def</span> waist_reach(me):
+    <span class="s">&quot;&quot;&quot;Corner reach of the anvil waist at its pinch, from the mesh.
+
+    The waist is the iron shell with the most Z levels holding exactly
+    N_SECTION vertices (its lofted rings). At the narrowest ring, each
+    vertex&#x27;s reach is min(|dx| / half-width, |dy| / half-depth); the
+    waist&#x27;s reach is the largest. An ellipse gives 0.707, a squared forging
+    much more.
+    &quot;&quot;&quot;</span>
+    best, best_levels = <span class="k">None</span>, <span class="n">0</span>
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g) != METAL_IDX:
+            <span class="k">continue</span>
+        levels = {}
+        <span class="k">for</span> i <span class="k">in</span> g:
+            levels.setdefault(round(me.vertices[i].co.z, <span class="n">5</span>), []).append(i)
+        rings = [r <span class="k">for</span> r <span class="k">in</span> levels.values() <span class="k">if</span> len(r) == N_SECTION]
+        <span class="k">if</span> len(rings) &gt; best_levels:
+            best, best_levels = rings, len(rings)
+    <span class="k">if</span> <span class="k">not</span> best <span class="k">or</span> best_levels &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+
+    <span class="k">def</span> half_x(r):
+        xs = [me.vertices[i].co.x <span class="k">for</span> i <span class="k">in</span> r]
+        <span class="k">return</span> <span class="n">0.5</span> * (max(xs) - min(xs))
+
+    ring = min(best, key=half_x)
+    cx = sum(me.vertices[i].co.x <span class="k">for</span> i <span class="k">in</span> ring) / len(ring)
+    cy = sum(me.vertices[i].co.y <span class="k">for</span> i <span class="k">in</span> ring) / len(ring)
+    hx = max(abs(me.vertices[i].co.x - cx) <span class="k">for</span> i <span class="k">in</span> ring)
+    hy = max(abs(me.vertices[i].co.y - cy) <span class="k">for</span> i <span class="k">in</span> ring)
+    <span class="k">return</span> max(
+        min(abs(me.vertices[i].co.x - cx) / hx, abs(me.vertices[i].co.y - cy) / hy)
+        <span class="k">for</span> i <span class="k">in</span> ring
+    )
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stave and the head is its own shell, so each gets one tone and
+    grain running along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> anvil_materials():
+    <span class="s">&quot;&quot;&quot;(wood, steel): shared by the check, the render and inspection.
+
+    Forged steel is dark and rough with a worn, brighter face; the first
+    build was satin metal (metallic 0.92, roughness 0.32) and read as chrome.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;AnvilStump&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;AnvilSteel&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.062</span>, <span class="n">0.066</span>, <span class="n">1.0</span>), <span class="n">0.70</span>, <span class="n">0.50</span>,
+        noise_scale=<span class="n">20.0</span>, wear=(<span class="n">0.13</span>, <span class="n">0.08</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
+
+
 <span class="k">def</span> body_plan(me):
     groups = shells(me)
     xs, z0s, z1s = [], [], []
@@ -1339,19 +1530,18 @@ METAL_IDX = <span class="n">1</span>
     short_staves=<span class="k">False</span>,
     float_anvil=<span class="k">False</span>,
     round_band=<span class="k">False</span>,
+    round_waist=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    flags = dict(short_staves=short_staves, float_anvil=float_anvil, round_band=round_band)
+    flags = dict(
+        short_staves=short_staves, float_anvil=float_anvil, round_band=round_band,
+        round_waist=round_waist,
+    )
     low = build_anvil_mesh(<span class="s">&quot;AnvilLow&quot;</span>, <span class="n">0.004</span>, <span class="n">2</span>, **flags)
     high = build_anvil_mesh(<span class="s">&quot;AnvilHigh&quot;</span>, <span class="n">0.004</span>, <span class="n">4</span>, **flags)
-    wood = principled(
-        <span class="s">&quot;AnvilStump&quot;</span>, (<span class="n">0.34</span>, <span class="n">0.18</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
-        noise_scale=<span class="n">6.5</span>, wear=(<span class="n">0.22</span>, <span class="n">0.12</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;AnvilSteel&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.18</span>, <span class="n">0.19</span>, <span class="n">1.0</span>), <span class="n">0.92</span>, <span class="n">0.32</span>,
-        noise_scale=<span class="n">5.5</span>, wear=(<span class="n">0.10</span>, <span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">1.0</span>),
-    )
+    wood, metal = anvil_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     <span class="k">if</span> stray_vert:
@@ -1385,6 +1575,7 @@ METAL_IDX = <span class="n">1</span>
     bite_min, bite_max = hoop_seat(low.data, spans)
     seat = anvil_seat(low.data)
     blen, bht = body_plan(low.data)
+    reach = waist_reach(low.data)
     print(
         <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
@@ -1395,6 +1586,7 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">hoop_bite=</span>{bite_min:<span class="s">.5f</span>}<span class="s">..</span>{bite_max:<span class="s">.5f</span>}<span class="s"> seat=</span>{seat:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">body=</span>{blen:<span class="s">.4f</span>}<span class="s">x</span>{bht:<span class="s">.4f</span>}<span class="s">&quot;</span>
     )
+    print(<span class="s">f&quot;</span><span class="s">measured waist_reach=</span>{reach:<span class="s">.4f</span>}<span class="s">&quot;</span>)
 
     img, tex = setup_bake_image(low, wood)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
@@ -1422,6 +1614,10 @@ METAL_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1533,6 +1729,12 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">f&quot;</span><span class="s">anvil body </span>{blen:<span class="s">.4f</span>}<span class="s">x</span>{bht:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_LEN}<span class="s">x</span>{BODY_H}<span class="s">&quot;</span>,
             <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> reach &lt; WAIST_REACH_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">waist corner reach </span>{reach:<span class="s">.4f</span>}<span class="s"> &lt; </span>{WAIST_REACH_MIN}<span class="s">: a round funnel, </span><span class="s">&quot;</span>
+            <span class="s">&quot;not a forged waist (--round-waist is the designed fail)&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1549,7 +1751,8 @@ METAL_IDX = <span class="n">1</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        <span class="c"># Oversized so no edge of the set can enter frame.</span>
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1644,6 +1847,7 @@ METAL_IDX = <span class="n">1</span>
     p.add_argument(<span class="s">&quot;--short-staves&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-anvil&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--round-band&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--round-waist&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1653,6 +1857,7 @@ METAL_IDX = <span class="n">1</span>
         short_staves=args.short_staves,
         float_anvil=args.float_anvil,
         round_band=args.round_band,
+        round_waist=args.round_waist,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1677,7 +1882,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/anvil-hero.webp" alt="A black iron anvil mounted on a hooped timber stump." />
+    <img src="../assets/anvil-hero.webp" alt="A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump." />
   </dialog>
   <footer>
     <div class="statusbar">

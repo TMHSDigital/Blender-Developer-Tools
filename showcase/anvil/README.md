@@ -28,14 +28,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2500–4500 | 2988 / 2988 / 2988 |
+| Base triangles | 2500–4500 | 3052 / 3052 / 3052 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
 | LOD2 ratio | 0.10–0.35 of base | 0.2195 / 0.2195 / 0.2195 |
-| Materials | exactly 2 distinct; ≥400 wood, ≥400 metal faces | 2 slots; 1040 / 822 |
+| Materials | exactly 2 distinct; ≥400 wood, ≥400 metal faces | 2 slots; 1040 / 854 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (0.621, 0.414, 0.489) m ± 0.015 | (0.6210, 0.4137, 0.4890), zmin 0 |
 | Collider tris | ≤ 280 | 134 |
-| Export | written, size > 0 | 244052 / 244052 / 244036 bytes |
+| Export | written, size > 0 | 248532 / 248532 / 248516 bytes |
 
 Base triangles dropped from **6616 to 2988** in the quality pass:
 overlapping face boxes and a beveled superellipse horn became one
@@ -45,8 +45,9 @@ the waste.
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. Bake pixels are
 stochastic; the gate is `has_data` plus operator `FINISHED`, not
-byte-identity. Stave-width jitter uses fixed seed 17. Export byte counts
-differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.
+byte-identity. Stave-width jitter uses fixed seed 17, and the per-piece
+wood tone its own seed. Export byte counts differ on 5.2.1 (glTF
+serializer), not a gated axis.
 
 ### Hygiene
 
@@ -63,6 +64,7 @@ Recomputed from the generated mesh, not asserted about the script.
 | Grounded: `zmin` | within 1e-4 of 0 | 0.0000 |
 | Named supports: 16 staves | each `zmin` ≤ 0.001 | 16, stave_z 0.00000 |
 | Body plan | 0.621 m long × 0.180 m high ± 0.05 | 0.6210 × 0.1800 |
+| **Waist form** | corner reach at the pinch ≥ 0.80 (an ellipse is 0.707) | 0.8572 |
 
 ### Joint fit and seat
 
@@ -71,9 +73,23 @@ Recomputed from the generated mesh, not asserted about the script.
 | Foot-on-head BVH gap | ≤ 0.006 m | 0.00300 |
 | Hoop bite (host r − inner hoop r) | 0.0012–0.008 m | 0.00300 |
 
+### Waist, steel and stump
+
+The waist was lofted from ellipses, so under the rectangular face it read
+as a turned funnel, not a forged anvil. It is now a superellipse section
+(exponent 4.5) through five stations that flare from the foot in to a
+pinch and out to the body. **Waist form** measures corner reach at the
+narrowest ring: how far a section vertex fills its bounding rectangle's
+corner. `--round-waist` restores the ellipse and exits 19 (0.7071).
+
+The steel was satin (metallic 0.92, roughness 0.32) and read as chrome;
+it is now dark forged steel with rust. Staves and head carry their own
+wood tone and grain. The stage grid grew from 14 to 60 m. The temp `.glb`
+is removed after its size is measured.
+
 ### Falsifiers
 
-Each violates one named budget. All six were run on 4.5.11, 5.1.2 and
+Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and
 5.2.1 and returned the same code on each.
 
 | Flag | Budget violated | Exit |
@@ -84,6 +100,7 @@ Each violates one named budget. All six were run on 4.5.11, 5.1.2 and
 | `--short-staves` | named stave supports at Z=0 | 16 |
 | `--float-anvil` | foot-on-head gap | 17 |
 | `--round-band` | hoop bite band | 18 |
+| `--round-waist` | waist form | 19 |
 
 ## Run
 
@@ -95,6 +112,7 @@ blender --background --python anvil.py -- --lift-z
 blender --background --python anvil.py -- --short-staves
 blender --background --python anvil.py -- --float-anvil
 blender --background --python anvil.py -- --round-band
+blender --background --python anvil.py -- --round-waist
 blender --background --python anvil.py -- --output anvil.png
 ```
 
@@ -127,4 +145,4 @@ hygiene and joint-fit family.
 | 16 | Not grounded: bounding box `zmin` off 0, or a named stave floats |
 | 17 | Joint fit: foot-on-head gap (`--float-anvil`) |
 | 18 | Seat: hoop bite band (`--round-band`) |
-| 19 | Body length or height off the stated real-world size |
+| 19 | Body length or height off the stated real-world size, or waist form (`--round-waist`) |

@@ -182,8 +182,8 @@
       "name": "anvil",
       "dir": "showcase/anvil",
       "teaches": "A procedural blacksmith anvil on a timber stump through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A black iron anvil mounted on a hooped timber stump.",
-      "witnessesFix": "Recomputed: 2988 tris, two materials with 1040 wood and 822 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18.",
+      "alt": "A dark forged-steel anvil with a flared, squared waist, mounted on a hooped timber stump.",
+      "witnessesFix": "Recomputed: 3052 tris, two materials with 1040 wood and 854 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.621×0.414×0.489 m, LOD ratios in band, convex collider 134 tris, hygiene 0, 16 grounded staves, hoop bite 0.003 m, foot-on-head gap 0.003 m, waist corner reach 0.8572, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-staves 16; --float-anvil 17; --round-band 18; --round-waist 19.",
       "hero": "docs/gallery/assets/anvil-hero.webp",
       "preview": "showcase/anvil/preview.webp",
       "tags": [
