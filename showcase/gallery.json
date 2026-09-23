@@ -49,8 +49,8 @@
       "name": "campfire",
       "dir": "showcase/campfire",
       "teaches": "A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A campfire of crossed logs in a teepee inside a ring of grey stone blocks.",
-      "witnessesFix": "Recomputed: 2200 tris, three materials with 216 wood, 48 ash and 1304 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.807×0.808×0.404 m, LOD ratios in band, convex collider 198 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00001 m, course seat 0, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18.",
+      "alt": "A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones.",
+      "witnessesFix": "Recomputed: 2760 tris, three materials with 216 wood, 48 ash and 1416 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.802×0.802×0.404 m, LOD ratios in band, convex collider 162 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00034 m, course seat 0, stone variation 0.01269 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18; --uniform-stones 20.",
       "hero": "docs/gallery/assets/campfire-hero.webp",
       "preview": "showcase/campfire/preview.webp",
       "tags": [
