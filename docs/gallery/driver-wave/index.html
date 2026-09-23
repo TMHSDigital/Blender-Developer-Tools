@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/driver-wave-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A row of orange bars whose heights rise and fall in a wave, low in the middle and tall at both ends." />
+  <meta property="og:image:alt" content="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="driver-wave — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/driver-wave-hero.webp" />
-  <meta name="twitter:image:alt" content="A row of orange bars whose heights rise and fall in a wave, low in the middle and tall at both ends." />
+  <meta name="twitter:image:alt" content="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A driver_namespace function driving sixteen column heights through SCRIPTED drivers — the sine skyline is entirely driver-evaluated.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A row of orange bars whose heights rise and fall in a wave, low in the middle and tall at both ends.">
-      <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars whose heights rise and fall in a wave, low in the middle and tall at both ends." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor.">
+      <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Driven values appear after a view-layer update in two places that must agree: the evaluated copy and the original datablock the animation system flushes for display.</div>
@@ -281,6 +281,8 @@
 <p>A runnable example that drives sixteen column heights from a custom function registered in <code>bpy.app.driver_namespace</code> — the pattern from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/drivers-and-app-handlers/SKILL.md"><code>drivers-and-app-handlers</code></a>. Each column gets a SCRIPTED driver on Z scale whose expression calls <code>wave_scale(i)</code>, producing a sine skyline.</p>
 <p><strong>What it witnesses:</strong> the driver evaluation contract. Driven values appear only after a view-layer update, and they land in <strong>two</strong> places that must agree: the depsgraph-evaluated copy (<code>evaluated_get(dg).scale</code>) and the original datablock, which the animation system flushes for display. The check asserts both against the closed-form profile.</p>
 <p>Note for real add-ons: <code>driver_namespace</code> entries do <strong>not</strong> persist in <code>.blend</code> files — re-register them from a <code>load_post</code> handler, or every driver that calls them fails on file open. Headless, registering before driver creation (as here) is enough.</p>
+<h2>Staging</h2>
+<p>The camera is raised to look down about 18 degrees, so the column tops and their shadows read as a wave. From nearly level (86 degrees) the skyline flattened into a bar chart. Render path only.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python driver_wave.py --
@@ -457,8 +459,10 @@ BASE = <span class="n">0.28</span>
     <span class="c"># the frame with a small margin -- the skyline must not clip</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>); cam_data.lens = <span class="n">42.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">15.0</span>, <span class="n">2.0</span>)
-    cam.rotation_euler = (math.radians(<span class="n">86</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    <span class="c"># raised so the column tops and their shadows read as a wave; from</span>
+    <span class="c"># nearly level (86 deg) it flattened into a bar chart</span>
+    cam.location = (<span class="n">0.0</span>, -<span class="n">14.2</span>, <span class="n">5.6</span>)
+    cam.rotation_euler = (math.radians(<span class="n">72</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
@@ -528,7 +532,7 @@ BASE = <span class="n">0.28</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars whose heights rise and fall in a wave, low in the middle and tall at both ends." />
+    <img src="../assets/driver-wave-hero.webp" alt="A row of orange bars seen from above, their heights rising and falling in a wave, low in the middle and tall at both ends, each casting a shadow on the floor." />
   </dialog>
   <footer>
     <div class="statusbar">

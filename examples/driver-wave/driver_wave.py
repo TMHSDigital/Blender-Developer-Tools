@@ -153,8 +153,10 @@ def render_still(objs, path, engine):
     # the frame with a small margin -- the skyline must not clip
     cam_data = bpy.data.cameras.new("Cam"); cam_data.lens = 42.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -15.0, 2.0)
-    cam.rotation_euler = (math.radians(86), 0.0, 0.0)
+    # raised so the column tops and their shadows read as a wave; from
+    # nearly level (86 deg) it flattened into a bar chart
+    cam.location = (0.0, -14.2, 5.6)
+    cam.rotation_euler = (math.radians(72), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
 
