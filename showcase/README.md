@@ -52,6 +52,8 @@ entry in `showcase/gallery.json`, and a rendered still.
   `--round-haft` turns an oval section round (exit 19).
   `--float-nails` lifts nail heads off their strap (exit 18).
   `--short-mortar` stops every mortar joint shy of its stones (exit 18).
+  `--open-ends` restores open U-band ends so the water is not contained
+  (exit 18).
   `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
   (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
@@ -339,6 +341,22 @@ entry in `showcase/gallery.json`, and a rendered still.
   course and every downstream stone budget measures the wrong
   neighbour. Add mortar after the chamfer pass, unchamfered: a 6 mm
   chamfer on a 10 mm bed eats it.
+- **A vessel holds its contents (exit 18).** A trough, tub, barrel or
+  bucket that shows a liquid must close every side of it. Touching the
+  hull is not holding: `water-trough` passed a water-to-hull gap budget
+  for a whole release with open U-band ends and the water's flat end face
+  on show. Assert containment by casting rays outward from across each
+  exposed face of the contents — perimeter **and** interior points, since
+  a rim band covers the perimeter only — and require every ray to hit the
+  vessel within a named reach. `--open-ends` is the falsifier.
+- **Keep a falsifier's envelope still.** A falsifier that moves the
+  support the piece grounds on re-grounds the whole piece and moves the
+  AABB with it. `water-trough`'s `--short-legs` lifted the shoes; the
+  piece re-grounded on the legs and shrank 10 mm against a 10 mm
+  tolerance, so a 1.5 mm model change tipped it from exit 16 to exit 8.
+  Make the falsifier move only what its budget measures — the shoes
+  float, the legs stretch to the floor — and check its AABB delta against
+  the tolerance, not just its exit code.
 - **Stone is not noise stretched over a block.** A noise-driven colour
   mix sampled so its features streak read as wood grain on
   `stone-archway` at hero scale. Stone wants isotropic object-space
