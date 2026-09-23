@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden ladder with tapered stiles and round rungs, leaning at an angle." />
+  <meta property="og:image:alt" content="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wooden-ladder — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wooden-ladder-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden ladder with tapered stiles and round rungs, leaning at an angle." />
+  <meta name="twitter:image:alt" content="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,11 +268,11 @@
     <p>A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden ladder with tapered stiles and round rungs, leaning at an angle.">
-      <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and round rungs, leaning at an angle." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section.">
+      <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wooden-ladder/wooden_ladder.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
@@ -284,12 +284,15 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported). Coplanar-pair counting matches <code>showcase/signpost</code>.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1800–2800</td><td>2536 / 2536 / 2536</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2192 / 0.2192 / 0.2192</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥280 wood, ≥180 metal</td><td>2 slots, 612 wood, 736 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.490, 0.376, 1.487) m ± 0.01</td><td>(0.4897, 0.3760, 1.4870)</td></tr><tr><td>Grounded</td><td><code>abs(zmin)</code> ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m</td><td>zmin 0, sole 0, rail 0.02037</td></tr><tr><td>Mesh hygiene</td><td>non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0</td><td>all 0</td></tr><tr><td>Parts</td><td>16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles)</td><td>16 (2 / 6 / 2 / 2)</td></tr><tr><td>Rung depth clearance</td><td>≥ 0.003 m inside the stile faces</td><td>0.00800</td></tr><tr><td>Tenon engagement</td><td>≥ 0.008 m past the stile inner face</td><td>0.01399</td></tr><tr><td>Tenon breakout margin</td><td>≥ 0.008 m short of the stile outer face</td><td>0.03780</td></tr><tr><td>Shoe bite / cover</td><td>bite ≥ 0.010 m, cover ≥ 0.016 m</td><td>0.02000 / 0.03800</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>24</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>187528 / 187528 / 187504 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1800–2800</td><td>2536 / 2536 / 2536</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2192 / 0.2192 / 0.2192</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥280 wood, ≥180 metal</td><td>2 slots, 612 wood, 736 metal</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.490, 0.376, 1.487) m ± 0.01</td><td>(0.4897, 0.3760, 1.4870)</td></tr><tr><td>Grounded</td><td><code>abs(zmin)</code> ≤ 1e-4, each sole at 0, rail end ≥ 0.012 m</td><td>zmin 0, sole 0, rail 0.02037</td></tr><tr><td>Mesh hygiene</td><td>non-manifold, loose v/e, doubles at 1e-5, zero-area, n-gons, coplanar pairs all 0</td><td>all 0</td></tr><tr><td>Parts</td><td>16 shells (2 stiles, 6 rungs, 2 sleeves, 2 cap sleeves, 2 plates, 2 soles)</td><td>16 (2 / 6 / 2 / 2)</td></tr><tr><td>Rung depth clearance</td><td>≥ 0.003 m inside the stile faces</td><td>0.00800</td></tr><tr><td>Tenon engagement</td><td>≥ 0.008 m past the stile inner face</td><td>0.01399</td></tr><tr><td>Tenon breakout margin</td><td>≥ 0.008 m short of the stile outer face</td><td>0.03780</td></tr><tr><td>Shoe bite / cover</td><td>bite ≥ 0.010 m, cover ≥ 0.016 m</td><td>0.02000 / 0.03800</td></tr><tr><td><strong>Rung pitch</strong></td><td>6 rungs; every rung-to-rung gap within 0.002 m of the mean</td><td>6; 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>24</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>187524 / 187524 / 187504 bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>936 to 2536</strong>. The previous mesh was two boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon and barrel in one shell) plus ferrule collars and chamfered soles added the triangles. Nothing was removed as a hidden face.</p>
 <p>The joint budgets are measured per rung against each stile, from vertex positions in the un-raked construction frame, and the reported value is the worst case. Clearance is the tenon, not the barrel: the barrel is thicker only between the stiles.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 24 B on 5.2.1 (glTF serializer), not a gated axis. Euler is 24 (multi-body) and is not gated to 2.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. On this mesh the three binaries agreed. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run; a Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 24 (multi-body) and is not gated to 2.</p>
+<h3>Rungs, wood and staging</h3>
+<p>The rung heights were jittered on purpose (up to ±18 mm, <code>RUNG_Z_OFFSETS</code>) and the barrel thickness varied from 0.82× to 1.22×. That is variation put into function: a climber&#x27;s feet find rungs blind, so an even pitch is part of what a ladder is. The rungs now sit at one pitch, and the turning varies by a few percent. <strong>Rung pitch</strong> asserts it; <code>--drift-rungs</code> restores the old heights and exits 19 (worst gap 0.03287 m off the mean). Tone and grain now vary per rail and rung instead. The temp <code>.glb</code> is removed after its size is measured.</p>
+<p>The hero stood the ladder at its 12° rake with nothing to lean on. The render path now adds a render-only wall section on the side the rails rake toward, with its face through the rail tops, and turns the ladder so that side faces away from the camera.</p>
 <p>Each falsifier violates exactly one named budget. Proven on Blender 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries&#x27; own <code>--version</code>):</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--fat-rungs</code></td><td>Rung depth clearance</td><td>17</td><td>clearance 0</td></tr><tr><td><code>--short-stile</code></td><td>Shoe bite / cover</td><td>18</td><td>bite 0.070, cover −0.012</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Falsifier</th><th scope="col">Budget violated</th><th scope="col">Exit</th><th scope="col">Measured failure</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td><td>ratio 1.0000</td></tr><tr><td><code>--stray-vert</code></td><td>Mesh hygiene, loose verts</td><td>15</td><td><code>loose_v=1</code></td></tr><tr><td><code>--twin-sole</code></td><td>Coplanar face pairs</td><td>15</td><td><code>zfight=6</code></td></tr><tr><td><code>--lift-z</code></td><td>Grounded zmin</td><td>16</td><td>zmin 0.050000</td></tr><tr><td><code>--fat-rungs</code></td><td>Rung depth clearance</td><td>17</td><td>clearance 0</td></tr><tr><td><code>--short-stile</code></td><td>Shoe bite / cover</td><td>18</td><td>bite 0.070, cover −0.012</td></tr><tr><td><code>--drift-rungs</code></td><td>Rung pitch</td><td>19</td><td>worst gap 0.03287 off the mean</td></tr></tbody></table></div>
 <p>Default exit is 0 on all three.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wooden_ladder.py --
@@ -299,11 +302,12 @@ blender --background --python wooden_ladder.py -- --twin-sole
 blender --background --python wooden_ladder.py -- --lift-z
 blender --background --python wooden_ladder.py -- --fat-rungs
 blender --background --python wooden_ladder.py -- --short-stile
+blender --background --python wooden_ladder.py -- --drift-rungs
 blender --background --python wooden_ladder.py -- --output preview.webp --engine cycles</code></pre>
 <p>Smoke passes no flags: no <code>--output</code>, no falsifier.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a rail end sitting in the tread (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Part count or rung-to-stile joint fit (<code>--fat-rungs</code>)</td></tr><tr><td>18</td><td>Shoe bite / cover (<code>--short-stile</code>)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene, including coplanar pairs (<code>--stray-vert</code>, <code>--twin-sole</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a rail end sitting in the tread (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Part count or rung-to-stile joint fit (<code>--fat-rungs</code>)</td></tr><tr><td>18</td><td>Shoe bite / cover (<code>--short-stile</code>)</td></tr><tr><td>19</td><td>Rung pitch (<code>--drift-rungs</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -324,11 +328,13 @@ LOD-ratio budget fails, ``--lift-z`` moves the mesh off the floor so the
 grounded budget fails, ``--stray-vert`` adds one unconnected vertex so the
 mesh-hygiene budget fails, ``--twin-sole`` duplicates a shoe plate so the
 coplanar-face budget fails, ``--fat-rungs`` widens the tenons to the full
-stile depth so the rung-to-stile joint-fit budget fails, and
-``--short-stile`` starts the rail above the sleeve so the shoe-bite
-budget fails.
+stile depth so the rung-to-stile joint-fit budget fails,
+``--drift-rungs`` restores the old jittered rung heights so the rung-pitch
+budget fails, and ``--short-stile`` starts the rail above the sleeve so the
+shoe-bite budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-piece wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -339,11 +345,13 @@ ratio band, not an exact count.
     blender --background --python wooden_ladder.py -- --fat-rungs
     blender --background --python wooden_ladder.py -- --short-stile
     blender --background --python wooden_ladder.py -- --twin-sole
+    blender --background --python wooden_ladder.py -- --drift-rungs
     blender --background --python wooden_ladder.py -- --output preview.webp
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -374,8 +382,17 @@ RUNG_R = <span class="n">0.011</span>
 BARREL_RATIO = <span class="n">1.34</span>
 RUNG_SEGS = <span class="n">12</span>
 RUNG_TENON = <span class="n">0.014</span>
-RUNG_BARREL_SCALE = (<span class="n">1.00</span>, <span class="n">1.16</span>, <span class="n">0.86</span>, <span class="n">1.22</span>, <span class="n">0.82</span>, <span class="n">1.10</span>)
-RUNG_Z_OFFSETS = (<span class="n">0.0</span>, <span class="n">0.016</span>, -<span class="n">0.012</span>, <span class="n">0.014</span>, -<span class="n">0.018</span>, <span class="n">0.008</span>)
+<span class="c"># Rungs sit at one even pitch: a climber&#x27;s feet find them blind, so height</span>
+<span class="c"># jitter is a defect, not variation. Variation lives in the turning (a few</span>
+<span class="c"># percent of barrel) and the wood tone. --drift-rungs restores the old</span>
+<span class="c"># jittered heights; the rung-pitch budget (exit 19) catches it.</span>
+RUNG_BARREL_SCALE = (<span class="n">1.00</span>, <span class="n">1.04</span>, <span class="n">0.97</span>, <span class="n">1.03</span>, <span class="n">0.98</span>, <span class="n">1.02</span>)
+DRIFT_Z_OFFSETS = (<span class="n">0.0</span>, <span class="n">0.016</span>, -<span class="n">0.012</span>, <span class="n">0.014</span>, -<span class="n">0.018</span>, <span class="n">0.008</span>)
+RUNG_PITCH_TOL = <span class="n">0.002</span>
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">34.0</span>
 BAND_Z0 = <span class="n">0.0</span>
 BAND_H = <span class="n">0.058</span>
 BAND_T = <span class="n">0.007</span>
@@ -665,6 +682,7 @@ METAL_IDX = <span class="n">1</span>
     rung_radius=RUNG_R,
     short_stile=<span class="k">False</span>,
     twin_sole=<span class="k">False</span>,
+    drift_rungs=<span class="k">False</span>,
 ):
     <span class="s">&quot;&quot;&quot;Raked tapered rails, turned rungs, sleeve shoes with level soles.
 
@@ -696,7 +714,7 @@ METAL_IDX = <span class="n">1</span>
         z_hi = STILE_H - <span class="n">0.20</span>
         <span class="k">for</span> i <span class="k">in</span> range(N_RUNGS):
             t = i / (N_RUNGS - <span class="n">1</span>)
-            z = z_lo + t * (z_hi - z_lo) + RUNG_Z_OFFSETS[i]
+            z = z_lo + t * (z_hi - z_lo) + (DRIFT_Z_OFFSETS[i] <span class="k">if</span> drift_rungs <span class="k">else</span> <span class="n">0.0</span>)
             add_turned_rung(
                 bm,
                 z,
@@ -718,6 +736,10 @@ METAL_IDX = <span class="n">1</span>
                     <span class="k">if</span> vertex.is_valid
                 }
             )
+            <span class="c"># set order follows memory addresses; sort so the bevel, and</span>
+            <span class="c"># the face order it produces, are the same on every run</span>
+            bm.edges.index_update()
+            edges.sort(key=<span class="k">lambda</span> e: e.index)
             <span class="k">if</span> edges:
                 bmesh.ops.bevel(
                     bm,
@@ -790,6 +812,10 @@ METAL_IDX = <span class="n">1</span>
                     <span class="k">if</span> vertex.is_valid
                 }
             )
+            <span class="c"># set order follows memory addresses; sort so the bevel, and</span>
+            <span class="c"># the face order it produces, are the same on every run</span>
+            bm.edges.index_update()
+            metal_edges.sort(key=<span class="k">lambda</span> e: e.index)
             <span class="k">if</span> metal_edges:
                 bevelled = bmesh.ops.bevel(
                     bm,
@@ -850,6 +876,10 @@ METAL_IDX = <span class="n">1</span>
                     <span class="k">if</span> vertex.is_valid
                 }
             )
+            <span class="c"># set order follows memory addresses; sort so the bevel, and</span>
+            <span class="c"># the face order it produces, are the same on every run</span>
+            bm.edges.index_update()
+            sole_edges.sort(key=<span class="k">lambda</span> e: e.index)
             <span class="k">if</span> sole_edges:
                 bevelled = bmesh.ops.bevel(
                     bm,
@@ -1144,6 +1174,173 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> empty
 
 
+<span class="k">def</span> _vertex_shells(me):
+    <span class="s">&quot;&quot;&quot;Connected vertex groups, as lists of vertex indices.&quot;&quot;&quot;</span>
+    nbr = [[] <span class="k">for</span> _ <span class="k">in</span> me.vertices]
+    <span class="k">for</span> e <span class="k">in</span> me.edges:
+        a, b = e.vertices
+        nbr[a].append(b)
+        nbr[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> st <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[st]:
+            <span class="k">continue</span>
+        seen[st] = <span class="k">True</span>
+        stack, g = [st], []
+        <span class="k">while</span> stack:
+            c = stack.pop()
+            g.append(c)
+            <span class="k">for</span> n <span class="k">in</span> nbr[c]:
+                <span class="k">if</span> <span class="k">not</span> seen[n]:
+                    seen[n] = <span class="k">True</span>
+                    stack.append(n)
+        groups.append(g)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> rung_pitch(me):
+    <span class="s">&quot;&quot;&quot;Worst deviation of a rung-to-rung gap from the mean gap, metres.
+
+    Rungs are the wooden shells wide across X and short in Z; each one&#x27;s
+    height is the mean Z of its vertices.
+    &quot;&quot;&quot;</span>
+    zs = []
+    <span class="k">for</span> g <span class="k">in</span> _vertex_shells(me):
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        dx = max(p.x <span class="k">for</span> p <span class="k">in</span> pts) - min(p.x <span class="k">for</span> p <span class="k">in</span> pts)
+        dz = max(p.z <span class="k">for</span> p <span class="k">in</span> pts) - min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+        <span class="k">if</span> dx &gt; <span class="n">0.25</span> <span class="k">and</span> dz &lt; <span class="n">0.08</span>:
+            zs.append(sum(p.z <span class="k">for</span> p <span class="k">in</span> pts) / len(pts))
+    zs.sort()
+    <span class="k">if</span> len(zs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> len(zs), <span class="n">99.0</span>
+    gaps = [b - a <span class="k">for</span> a, b <span class="k">in</span> zip(zs, zs[<span class="n">1</span>:])]
+    mean = sum(gaps) / len(gaps)
+    <span class="k">return</span> len(zs), max(abs(g - mean) <span class="k">for</span> g <span class="k">in</span> gaps)
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every rail and rung is its own shell, so each gets one tone and grain
+    running along its own long axis (up the rails, across the rungs).
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> _vertex_shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each rail and rung (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> ladder_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;LadderWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;LadderMetal&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
+
+
 <span class="k">def</span> add_stray_vert(me):
     <span class="c"># Falsification only: one unconnected vertex, placed inside the existing</span>
     <span class="c"># bounds so the bbox budget still passes and the hygiene budget is the</span>
@@ -1282,6 +1479,7 @@ METAL_IDX = <span class="n">1</span>
     fat_rungs=<span class="k">False</span>,
     short_stile=<span class="k">False</span>,
     twin_sole=<span class="k">False</span>,
+    drift_rungs=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     <span class="c"># Falsification: a tenon as deep as the stile, which breaks the front</span>
@@ -1294,6 +1492,7 @@ METAL_IDX = <span class="n">1</span>
         rung_radius=rung_radius,
         short_stile=short_stile,
         twin_sole=twin_sole,
+        drift_rungs=drift_rungs,
     )
     high = build_ladder_mesh(
         <span class="s">&quot;LadderHigh&quot;</span>,
@@ -1302,6 +1501,7 @@ METAL_IDX = <span class="n">1</span>
         rung_radius=rung_radius,
         short_stile=short_stile,
         twin_sole=twin_sole,
+        drift_rungs=drift_rungs,
     )
     <span class="k">if</span> lift_z:
         low.location.z += LIFT_Z
@@ -1310,22 +1510,9 @@ METAL_IDX = <span class="n">1</span>
     <span class="c"># world_bbox reads matrix_world, which is evaluated data. Without this the</span>
     <span class="c"># cached matrix hides a moved object and the grounded budget cannot fail.</span>
     bpy.context.view_layer.update()
-    wood = principled(
-        <span class="s">&quot;LadderWood&quot;</span>,
-        (<span class="n">0.40</span>, <span class="n">0.22</span>, <span class="n">0.09</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.62</span>,
-        noise_scale=<span class="n">9.0</span>,
-        wear=(<span class="n">0.28</span>, <span class="n">0.15</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;LadderMetal&quot;</span>,
-        (<span class="n">0.18</span>, <span class="n">0.175</span>, <span class="n">0.16</span>, <span class="n">1.0</span>),
-        <span class="n">1.0</span>,
-        <span class="n">0.48</span>,
-        noise_scale=<span class="n">18.0</span>,
-        wear=(<span class="n">0.10</span>, <span class="n">0.09</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
-    )
+    wood, metal = ladder_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -1372,6 +1559,10 @@ METAL_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     print(
         <span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>
@@ -1401,6 +1592,8 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">euler=</span>{hyg[<span class="s">&#x27;euler&#x27;</span>]}<span class="s">&quot;</span>
     )
     joint = joint_audit(low.data)
+    n_rungs, pitch_dev = rung_pitch(low.data)
+    print(<span class="s">f&quot;</span><span class="s">measured rung_pitch rungs=</span>{n_rungs}<span class="s"> worst_dev=</span>{pitch_dev:<span class="s">.5f</span>}<span class="s">&quot;</span>)
     print(
         <span class="s">f&quot;</span><span class="s">measured joints parts=</span>{joint[<span class="s">&#x27;parts&#x27;</span>]}<span class="s"> stiles=</span>{joint[<span class="s">&#x27;stiles&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">rungs=</span>{joint[<span class="s">&#x27;rungs&#x27;</span>]}<span class="s"> bands=</span>{joint[<span class="s">&#x27;bands&#x27;</span>]}<span class="s"> soles=</span>{joint[<span class="s">&#x27;soles&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
@@ -1529,6 +1722,12 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">&quot;(--short-stile is the designed fail)&quot;</span>,
             <span class="n">18</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> n_rungs != N_RUNGS <span class="k">or</span> pitch_dev &gt; RUNG_PITCH_TOL:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">rung pitch: </span>{n_rungs}<span class="s"> rungs, worst gap </span>{pitch_dev:<span class="s">.5f</span>}<span class="s"> off the mean </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">&gt; </span>{RUNG_PITCH_TOL}<span class="s"> (--drift-rungs is the designed fail)</span><span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1549,7 +1748,37 @@ METAL_IDX = <span class="n">1</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
-    low.rotation_euler.z = math.radians(-<span class="n">28.0</span>)
+    <span class="c"># A leaning ladder needs something to lean on. Render-only: a wall</span>
+    <span class="c"># section on the side the rails rake toward, its face through the</span>
+    <span class="c"># rail tops, in the ladder&#x27;s own frame and turned with it. The ladder</span>
+    <span class="c"># is turned so that side faces away from the camera.</span>
+    me = low.data
+    ztop = max(v.co.z <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    top = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> v.co.z &gt; ztop - <span class="n">0.08</span>]
+    foot = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices <span class="k">if</span> v.co.z &lt; <span class="n">0.08</span>]
+    lean = <span class="n">1.0</span> <span class="k">if</span> sum(top) / len(top) &gt; sum(foot) / len(foot) <span class="k">else</span> -<span class="n">1.0</span>
+    top_y = max(top) <span class="k">if</span> lean &gt; <span class="n">0</span> <span class="k">else</span> min(top)
+    low.rotation_euler.z = math.radians(-<span class="n">28.0</span> <span class="k">if</span> lean &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">152.0</span>)
+    panel_me = bpy.data.meshes.new(<span class="s">&quot;LeanWall&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x *= <span class="n">1.4</span>
+            v.co.y = top_y + lean * (v.co.y + <span class="n">0.5</span>) * <span class="n">0.10</span>
+            v.co.z = (v.co.z + <span class="n">0.5</span>) * <span class="n">1.75</span>
+        bm.to_mesh(panel_me)
+    <span class="k">finally</span>:
+        bm.free()
+    pmat = bpy.data.materials.new(<span class="s">&quot;LeanWall&quot;</span>)
+    pmat.use_nodes = <span class="k">True</span>
+    pb = pmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.034</span>, <span class="n">0.032</span>, <span class="n">0.031</span>, <span class="n">1.0</span>)
+    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
+    panel_me.materials.append(pmat)
+    panel = bpy.data.objects.new(<span class="s">&quot;LeanWall&quot;</span>, panel_me)
+    panel.rotation_euler.z = low.rotation_euler.z
+    scene.collection.objects.link(panel)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -1628,7 +1857,7 @@ METAL_IDX = <span class="n">1</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
-        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+        scene, cam, hero=[low], elements=[low], stage=[floor, wall, panel],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -1673,6 +1902,11 @@ METAL_IDX = <span class="n">1</span>
         action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;falsification: duplicate a sole so a coplanar pair z-fights&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--drift-rungs&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: the old jittered rung heights&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1682,6 +1916,7 @@ METAL_IDX = <span class="n">1</span>
         fat_rungs=args.fat_rungs,
         short_stile=args.short_stile,
         twin_sole=args.twin_sole,
+        drift_rungs=args.drift_rungs,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1706,7 +1941,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and round rungs, leaning at an angle." />
+    <img src="../assets/wooden-ladder-hero.webp" alt="A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section." />
   </dialog>
   <footer>
     <div class="statusbar">

@@ -438,6 +438,29 @@ entry in `showcase/gallery.json`, and a rendered still.
   off the plate and its body through it. Size the offset from the thing
   passing through, and assert that no vertex of it lies inside the mount.
   `--sunk-rope` restores the old offset.
+- **Variation goes into surface, never into function (exit 19).** A
+  ladder's rung heights were jittered up to ±18 mm for "variation"; a
+  climber's feet find rungs blind, so the pitch is part of what a ladder
+  is. Jitter tone, grain and a few percent of turning, not spacing that
+  something uses. Assert the pitch (every gap within a tolerance of the
+  mean); `--drift-rungs` restores the old heights.
+- **A plank wall is boards, and extra boards are paid for (exit 17).** A
+  tray wall cut from one slab beside a planked floor reads as a box.
+  Stack it from boards with a named seam, let the audits that find walls
+  take the union of a wall's boards, and assert count and seam. If that
+  breaks the triangle ceiling, take the triangles back from faces nobody
+  sees (bottoms buried in a seat, undersides facing the chassis) rather
+  than raising the ceiling. The falsifier keeps the triangles
+  (`--wide-seams`), so it cannot trip the triangle floor instead.
+- **Sort bmesh operator inputs.** A Python `set` of `BMEdge`s iterates in
+  memory-address order. Handed to `bmesh.ops.bevel` it gives the same
+  geometry in a different face order from run to run, which the
+  `mat_index_counts` print exposed on `wooden-ladder`. Call
+  `bm.edges.index_update()` and sort by index first.
+- **A leaning prop is staged against something.** A ladder raked 12° in
+  open air reads as falling. Render-only: put a wall section on the side
+  it rakes toward, with its face through the top, and turn the piece so
+  that side faces away from the camera.
 - **A ring is threaded across its hole, never in its plane (exit 17).**
   `iron-cauldron`'s ear rings stood in the bail's own plane, so the bail
   ran through each ring's tube. Orient a ring so its hole axis follows

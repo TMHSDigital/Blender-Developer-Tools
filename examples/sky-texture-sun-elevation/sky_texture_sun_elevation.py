@@ -124,16 +124,21 @@ def _mesh_obj(sc, name, build_bm, loc, mat, smooth=True):
 
 
 def build_ceramic(sc):
-    """A turned terracotta jar — saturated clay + pale glaze lid."""
-    clay = _principled("Clay", (0.78, 0.22, 0.08), rough=0.52, metallic=0.0, specular=0.2)
-    glaze = _principled("Glaze", (0.55, 0.18, 0.06), rough=0.28, metallic=0.0, specular=0.4)
+    """A turned jar in pale glaze, so it takes the colour of the sky's light.
+
+    Saturated terracotta looked the same under both skies: the clay's own
+    orange swamped the change in the light, which is the thing on show.
+    """
+    clay = _principled("Clay", (0.80, 0.78, 0.74), rough=0.38, metallic=0.0, specular=0.4)
+    glaze = _principled("Glaze", (0.60, 0.58, 0.55), rough=0.22, metallic=0.0, specular=0.5)
 
     def body(bm):
         bmesh.ops.create_cone(
             bm, cap_ends=True, cap_tris=False,
             segments=64, radius1=0.62, radius2=0.42, depth=1.35,
         )
-        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, 0.68))
+        # base on the floor (the cone is centred on its depth)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, 0.675))
 
     vessel = _mesh_obj(sc, "Vessel", body, (0.0, 0.0, 0.0), clay)
     bev = vessel.modifiers.new("Bev", "BEVEL")
@@ -387,7 +392,7 @@ def _stage_for_still(sc, world, sky, elevation):
     else:
         sky.dust_density = 0.45
     bg = world.node_tree.nodes["Background"]
-    bg.inputs["Strength"].default_value = 0.08
+    bg.inputs["Strength"].default_value = 0.14
     sc.world = world
 
     # Remove prior still lights / cams from earlier calls
@@ -411,9 +416,10 @@ def _stage_for_still(sc, world, sky, elevation):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         sc.collection.objects.link(ob)
 
-    area("Key", (-3.0, -3.5, 4.0), 420.0, 4.0, (1.0, 0.95, 0.88), (50, 0, -32))
-    area("Fill", (3.5, -2.2, 1.8), 55.0, 8.0, (0.7, 0.82, 1.0), (70, 0, 42))
-    area("Rim", (-0.5, 3.8, 2.5), 120.0, 3.5, (0.55, 0.72, 1.0), (-55, 0, 185))
+    # The sky is the light under test, so the studio lights only model the
+    # form. At 420 W the key drowned the sky and both panels matched.
+    area("Key", (-3.0, -3.5, 4.0), 70.0, 4.0, (1.0, 1.0, 1.0), (50, 0, -32))
+    area("Fill", (3.5, -2.2, 1.8), 10.0, 8.0, (1.0, 1.0, 1.0), (70, 0, 42))
 
     aim = bpy.data.objects.new("Aim", None)
     aim.location = (0.0, 0.0, 0.8)

@@ -121,7 +121,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" width="24%" alt="Watchtower: a timber lookout with X-braces, hatch ladder, plank platform, and a coursed shake roof on a dark studio floor" /></a>
   <a href="showcase/cart/"><img src="showcase/cart/preview.webp" width="24%" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
   <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
-  <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a staved wooden tray with iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
+  <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a wooden tray with walls of stacked boards and iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
   <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a London-pattern anvil on a hooped timber stump on a dark studio floor" /></a>
   <a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" width="24%" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
   <a href="showcase/hitching-post/"><img src="showcase/hitching-post/preview.webp" width="24%" alt="Hitching post: a square timber post with a pyramidal cap, cross-arm, iron bands, and two hitching rings on a dark studio floor" /></a>
@@ -133,7 +133,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" width="24%" alt="Wall torch: a dressed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
   <a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" width="24%" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
   <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a round-bellied cast-iron pot hanging by its bail from a timber tripod on a dark studio floor" /></a>
-  <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: a raked timber ladder with six rungs and iron shoes on a dark studio floor" /></a>
+  <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: a raked timber ladder with six evenly spaced rungs and iron shoes, leaning against a dark wall section" /></a>
   <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale with two sisal twine belts on a dark studio floor" /></a>
   <a href="showcase/crate-stack/"><img src="showcase/crate-stack/preview.webp" width="24%" alt="Crate stack: three slatted shipping crates stacked and yawed, each with iron corner straps and runners, on a dark studio floor" /></a>
   <a href="showcase/stone-archway/"><img src="showcase/stone-archway/preview.webp" width="24%" alt="Stone archway: a semicircular masonry arch with coursed piers, projecting imposts, nine voussoirs and a proud keystone, on a dark studio floor" /></a>
@@ -163,7 +163,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`park-bench`](showcase/park-bench/) — procedural wrought-iron park bench with scrolled legs and slatted seat through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`wheelbarrow`](showcase/wheelbarrow/) — procedural staved wheelbarrow with a spoked wheel, iron straps, legs, and handles through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`wheelbarrow`](showcase/wheelbarrow/) — procedural wheelbarrow with board-built tray walls, a spoked wheel, iron straps, legs, and handles through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--wide-seams` exits 17.
 
 [`anvil`](showcase/anvil/) — procedural London-pattern anvil on a timber stump through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -187,7 +187,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`iron-cauldron`](showcase/iron-cauldron/) — procedural round-bellied iron cauldron on a timber tripod through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--pointed-pot` exits 19.
 
-[`wooden-ladder`](showcase/wooden-ladder/) — procedural timber ladder with raked stiles, rungs, and iron shoes through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`wooden-ladder`](showcase/wooden-ladder/) — procedural timber ladder with raked stiles, evenly pitched rungs, and iron shoes through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--drift-rungs` exits 19.
 
 [`hay-bale`](showcase/hay-bale/) — procedural bound hay bale with sisal twine through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -307,7 +307,7 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: terracotta jar diptych on a dark floor — left panel low sun at 8 degrees with a deep blue zenith and warm horizon limb, right panel high sun at 55 degrees with a brighter cyan sky, proving ShaderNodeTexSky sun_elevation" /></a>
+<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: pale glazed jar diptych on a dark floor — left panel low sun at 8 degrees, the jar dim twilight blue under a deep blue zenith, right panel high sun at 55 degrees, the jar bright under a pale daylight sky" /></a>
 </td>
 <td valign="middle">
 
@@ -389,7 +389,7 @@ A relative Tall shape key that lifts and flares the top face — authored throug
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor" /></a>
+<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor, both filled end caps facing the camera" /></a>
 </td>
 <td valign="middle">
 

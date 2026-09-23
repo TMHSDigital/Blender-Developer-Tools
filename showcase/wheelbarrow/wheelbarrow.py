@@ -15,8 +15,11 @@ the AABB. ``--fat-spokes`` thickens the spokes to the hub diameter so
 joint-fit fails. ``--pipe-rim`` swaps the flat felloe/tyre for a torus
 so the tread-aspect seat budget fails. ``--float-walls`` lifts the
 tray walls off the floor so the wall-floor seat budget fails.
+``--wide-seams`` opens the seams between wall boards to 8 mm so the
+wall-board budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-board wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -27,6 +30,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -79,6 +83,17 @@ SLAT_GAP = -0.003
 WALL_H = 0.22
 WALL_T = 0.022
 WALL_SEAT = 0.012
+# Side and front walls are WALL_BOARDS boards stacked with a WALL_SEAM
+# between them, held by the iron straps; the low rear wall is one board.
+WALL_BOARDS = 2
+WALL_SEAM = 0.002
+WALL_SEAM_MIN = 0.001
+WALL_SEAM_MAX = 0.004
+WIDE_SEAM = 0.008
+# Per-board wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 30.0
 HANDLE_SEAT = 0.055
 FRONT_H = 0.26
 REAR_H = 0.10
@@ -391,9 +406,23 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
+def add_board_stack(bm, center, size, n, seam, mat_idx):
+    """A wall of ``n`` boards stacked in Z with ``seam`` between them."""
+    cx, cy, cz = center
+    sx, sy, sz = size
+    h = (sz - (n - 1) * seam) / n
+    z = cz - sz / 2.0 + h / 2.0
+    verts = []
+    for _ in range(n):
+        verts.extend(add_box(bm, (cx, cy, z), (sx, sy, h), mat_idx))
+        z += h + seam
+    return verts
+
+
 def build_barrow_mesh(
     name, bevel_offset, bevel_segments,
     pipe_rim=False, fat_spokes=False, short_legs=False, float_walls=False,
+    wide_seams=False,
 ):
     bm = bmesh.new()
     try:
@@ -489,9 +518,13 @@ def build_barrow_mesh(
         # Slats run under the side walls; walls sit on the floor, not
         # beside a through-gap at the inner arris.
         slat_y = TRAY_W + WALL_T
+        # Tray parts whose lowest edges are buried or face the ground: the
+        # wall bottoms sit WALL_SEAT into the floor and the slat undersides
+        # face the shafts. Those edges get no bevel; nobody sees them.
+        tray = []
         for i in range(N_FLOOR):
             x = TRAY_X0 + slat_w / 2.0 + i * (slat_w + SLAT_GAP)
-            body.extend(
+            tray.extend(
                 add_box(
                     bm,
                     (x, 0.0, floor_z),
@@ -499,24 +532,26 @@ def build_barrow_mesh(
                     WOOD_IDX,
                 )
             )
+        # --wide-seams: the same boards and triangles, seams past the band
+        seam_w = WIDE_SEAM if wide_seams else WALL_SEAM
         for ysign in (-1.0, 1.0):
-            body.extend(
-                add_box(
+            tray.extend(
+                add_board_stack(
                     bm,
                     (0.5 * (TRAY_X0 + TRAY_X1), ysign * (TRAY_W / 2.0), wall_z),
                     (TRAY_L, WALL_T, WALL_H),
-                    WOOD_IDX,
+                    WALL_BOARDS, seam_w, WOOD_IDX,
                 )
             )
-        body.extend(
-            add_box(
+        tray.extend(
+            add_board_stack(
                 bm,
                 (TRAY_X1, 0.0, front_z),
                 (WALL_T, TRAY_W + WALL_T, FRONT_H),
-                WOOD_IDX,
+                WALL_BOARDS, seam_w, WOOD_IDX,
             )
         )
-        body.extend(
+        tray.extend(
             add_box(
                 bm,
                 (TRAY_X0, 0.0, rear_z),
@@ -524,6 +559,8 @@ def build_barrow_mesh(
                 WOOD_IDX,
             )
         )
+        body.extend(tray)
+        tray_set = set(tray)
 
         strap_r_y = TRAY_W / 2.0 + WALL_T / 2.0 + 0.004
         for sx in (TRAY_X0 + TRAY_L * 0.28, TRAY_X0 + TRAY_L * 0.72):
@@ -551,8 +588,15 @@ def build_barrow_mesh(
 
         if bevel_offset > 0.0:
             edges = []
-            for e in {e for v in body for e in v.link_edges}:
+            # set order follows memory addresses; sort so the bevel, and
+            # the face order it produces, are the same on every run
+            bm.edges.index_update()
+            for e in sorted({e for v in body for e in v.link_edges}, key=lambda e: e.index):
                 if min(v.co.z for v in e.verts) < shoe_top + 0.008:
+                    continue
+                if all(v in tray_set for v in e.verts) and max(
+                    v.co.z for v in e.verts
+                ) < floor_top - 1e-4:
                     continue
                 edges.append(e)
             if edges:
@@ -567,6 +611,11 @@ def build_barrow_mesh(
                 )
                 for f in ret.get("faces") or []:
                     f.material_index = WOOD_IDX
+                # a face beveled on some edges and not others comes out an
+                # n-gon; split those, the triangle count is the same
+                ngons = [f for f in bm.faces if len(f.verts) > 4]
+                if ngons:
+                    bmesh.ops.triangulate(bm, faces=ngons)
 
         wood_wheel = []
         wheel_z = (
@@ -814,12 +863,20 @@ def tray_size(me):
             continue
         a = shell_aabb(me, g)
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
-        if abs(dx - TRAY_L) < 0.10 and dy < 0.06 and abs(dz - WALL_H) < 0.08:
+        if abs(dx - TRAY_L) < 0.10 and dy < 0.06 and 0.05 < dz < WALL_H + 0.08:
             walls.append(a)
-    if len(walls) < 2:
+    # A side wall is one or more boards: the union of the boards on a side.
+    sides = {}
+    for a in walls:
+        k = 1 if a[1] + a[4] > 0.0 else -1
+        b = sides.get(k)
+        sides[k] = a if b is None else (
+            min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2]),
+            max(a[3], b[3]), max(a[4], b[4]), max(a[5], b[5]),
+        )
+    if len(sides) < 2:
         return (0.0, 0.0, 0.0)
-    left = min(walls, key=lambda a: a[1])
-    right = max(walls, key=lambda a: a[1])
+    left, right = sides[-1], sides[1]
     return (
         0.5 * ((left[3] - left[0]) + (right[3] - right[0])),
         right[4] - left[1],
@@ -846,13 +903,162 @@ def wall_floor_seat(me):
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
         if dz < FLOOR_T * 2.2 and dy > TRAY_W * 0.5:
             floors.append(a)
-        if abs(dx - TRAY_L) < 0.10 and dy < WALL_T * 4.0 and abs(dz - WALL_H) < 0.08:
+        if abs(dx - TRAY_L) < 0.10 and dy < WALL_T * 4.0 and 0.05 < dz < WALL_H + 0.08:
             walls.append(a)
     if not floors or not walls:
         return -1.0
     floor_top = max(a[5] for a in floors)
     wall_bot = min(a[2] for a in walls)
     return floor_top - wall_bot
+
+
+def wall_boards(me):
+    """Boards per side wall and in the front wall, and the seams between them.
+
+    Side boards are long in X and thin in Y; front boards are thin in X,
+    wide in Y and the ones nearer the wheel (the rear wall is one low
+    board). Seams are the gaps between vertically adjacent boards.
+    """
+    sides = {-1: [], 1: []}
+    ends = []
+    for g in shells(me):
+        faces = [p for p in me.polygons if all(i in set(g) for i in p.vertices)]
+        if not faces or faces[0].material_index != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if abs(dx - TRAY_L) < 0.10 and dy < 0.06 and 0.05 < dz < WALL_H + 0.08:
+            sides[1 if a[1] + a[4] > 0.0 else -1].append(a)
+        elif dx < 0.06 and dy > TRAY_W * 0.6 and dz > 0.05:
+            ends.append(a)
+    front_x = max((0.5 * (a[0] + a[3]) for a in ends), default=0.0)
+    front = [a for a in ends if abs(0.5 * (a[0] + a[3]) - front_x) < 0.01]
+    seams = []
+    for stack in (sides[-1], sides[1], front):
+        stack = sorted(stack, key=lambda a: a[2])
+        seams.extend(b[2] - a[5] for a, b in zip(stack, stack[1:]))
+    return len(sides[-1]), len(sides[1]), len(front), seams
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every board, shaft, leg and spoke is its own shell, so each gets one
+    tone and grain running along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each board and shaft (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def barrow_materials():
+    """(wood, iron): shared by the check, the render and inspection."""
+    wood = wood_material("BarrowWood")
+    metal = principled(
+        "BarrowIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, metal
 
 
 def handle_join_gap(me):
@@ -1085,22 +1291,19 @@ def export_unity(path, objects):
 def check(
     skip_decimate, lift_z=False, stray_vert=False,
     fat_spokes=False, pipe_rim=False, short_legs=False, float_walls=False,
+    wide_seams=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         pipe_rim=pipe_rim, fat_spokes=fat_spokes,
         short_legs=short_legs, float_walls=float_walls,
+        wide_seams=wide_seams,
     )
     low = build_barrow_mesh("BarrowLow", 0.004, 2, **flags)
     high = build_barrow_mesh("BarrowHigh", 0.004, 4, **flags)
-    wood = principled(
-        "BarrowWood", (0.40, 0.22, 0.09, 1.0), 0.0, 0.58,
-        noise_scale=7.0, wear=(0.24, 0.12, 0.04, 1.0),
-    )
-    metal = principled(
-        "BarrowIron", (0.11, 0.115, 0.13, 1.0), 1.0, 0.32,
-        noise_scale=5.0, wear=(0.05, 0.05, 0.06, 1.0),
-    )
+    wood, metal = barrow_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -1154,6 +1357,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1164,6 +1371,7 @@ def check(
     aspect = tread_aspect(low.data)
     gap_mw = min_mat_distance(low.data, METAL_IDX, WOOD_IDX)
     seat = wall_floor_seat(low.data)
+    n_left, n_right, n_front, seams = wall_boards(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1196,6 +1404,10 @@ def check(
         f"handle_gap={hgap:.5f} spoke_clear={sclear:.5f} "
         f"tread_aspect={aspect:.3f} gap_metal_wood={gap_mw:.5f} "
         f"wall_floor_seat={seat:.5f}"
+    )
+    print(
+        f"measured wall_boards left={n_left} right={n_right} front={n_front} "
+        f"seams={min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1308,6 +1520,19 @@ def check(
         return fail(
             f"wall-floor seat {seat:.5f} < {WALL_SEAT_MIN} "
             "(--float-walls is the designed fail)",
+            17,
+        ), None, None, None, None, None
+    if (
+        (n_left, n_right, n_front) != (WALL_BOARDS,) * 3
+        or min(seams, default=0.0) < WALL_SEAM_MIN
+        or max(seams, default=99.0) > WALL_SEAM_MAX
+    ):
+        return fail(
+            f"wall boards left={n_left} right={n_right} front={n_front} "
+            f"!= {WALL_BOARDS}, or seams "
+            f"{min(seams, default=0.0):.5f}..{max(seams, default=0.0):.5f} "
+            f"outside [{WALL_SEAM_MIN}, {WALL_SEAM_MAX}] "
+            "(--wide-seams is the designed fail)",
             17,
         ), None, None, None, None, None
     if gap_mw > GAP_MAX:
@@ -1479,6 +1704,11 @@ def main():
         action="store_true",
         help="falsification: walls kiss the floor so the seat budget fails",
     )
+    p.add_argument(
+        "--wide-seams",
+        action="store_true",
+        help="falsification: 8 mm seams between wall boards",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1489,6 +1719,7 @@ def main():
         pipe_rim=args.pipe_rim,
         short_legs=args.short_legs,
         float_walls=args.float_walls,
+        wide_seams=args.wide_seams,
     )
     if code:
         return code

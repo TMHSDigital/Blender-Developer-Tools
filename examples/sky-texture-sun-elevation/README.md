@@ -37,16 +37,22 @@ World carries a Nishita / multiple-scattering Sky Texture instead of the
 default near-black Background — the contract *is* the sky. Gallery still is a
 dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at
 thumbnail scale. Layer 1 still holds: `view_transform='Standard'`, designed
-terracotta materials, chosen camera, no helpers in frame.
+materials, chosen camera, no helpers in frame.
+
+The jar is pale glaze, and the studio key and fill only model its form
+(70 W and 10 W). With saturated terracotta and a 420 W key, the studio lights
+lit the jar and both panels looked the same: the sky, the thing under test,
+was not what lit it. Now the jar reads dim twilight blue under the 8° sun and
+bright under the 55° sun. Mean luma is about 0.35, above the dark-stage band,
+which is information under this deviation, not a failure.
 
 ## Framing deviation
 
 The hero is the sky itself — a world contract, not an object on the stage.
-The silhouette matte can only measure the cone reference props (0.369x /
-0.489y), so the out-of-band number is a measurement artifact, not the
-composition; if ever wired to `examples/gallery_framing.py`, this example
-reports with `deviation="world-contract subject; matte sees only the cone
-props"` rather than enforcing.
+The silhouette matte can only measure the jar in each 640 px panel (about
+0.37 x / 0.49 y), so an out-of-band number would be a measurement artifact,
+not the composition. The diptych is not wired to `examples/gallery_framing.py`;
+the helper has no `deviation=` flag to report through.
 
 ## Run
 

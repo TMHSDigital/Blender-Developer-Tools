@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
+  <meta property="og:image:alt" content="Split view of a pale glazed jar under a procedural sky: dim twilight blue at sun elevation 8 degrees on the left, bright daylight at 55 degrees on the right." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="sky-texture-sun-elevation — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/sky-texture-sun-elevation-hero.webp" />
-  <meta name="twitter:image:alt" content="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
+  <meta name="twitter:image:alt" content="Split view of a pale glazed jar under a procedural sky: dim twilight blue at sun elevation 8 degrees on the left, bright daylight at 55 degrees on the right." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>World ShaderNodeTexSky driving Background Color — the sky contract across 4.5 LTS and 5.1. sky_type is NISHITA on 4.5 and MULTIPLE_SCATTERING on 5.1 (NISHITA gone); dust_density exists only on 4.5 (aerosol_density on 5.1). Two tiny Cycles OPEN_EXR zenith probes prove sun_elevation 8 deg to 55 deg brightens zenith (rise 2.25x on 5.1.2, 1.50x on 4.5.11, gate &gt;= 1.25).</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right.">
-      <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Split view of a pale glazed jar under a procedural sky: dim twilight blue at sun elevation 8 degrees on the left, bright daylight at 55 degrees on the right.">
+      <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of a pale glazed jar under a procedural sky: dim twilight blue at sun elevation 8 degrees on the left, bright daylight at 55 degrees on the right." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> AI code still assigns sky_type=&#x27;NISHITA&#x27; and dust_density on 5.1 — both are wrong (NISHITA removed; dust_density is AttributeError; use MULTIPLE_SCATTERING + aerosol_density). A near-black Background Strength alone is not a sky: Sky must link into Background Color. Elevation that does not brighten zenith fails the rise gate.</div>
@@ -284,9 +284,10 @@
 <p><strong>What each check catches on failure:</strong> broken Sky→Background link (exit 6), wrong <code>sky_type</code> for the running version (exit 3), lost <code>sun_elevation</code> round-trip (exit 4), <code>dust_density</code> / <code>NISHITA</code> present on the wrong side of 5.0 (exit 5), a non-working sky (zenith floor, exit 7), and an elevation that does not brighten zenith (exit 8 — rise below 1.25).</p>
 <p><strong>Version witness:</strong> <code>sky_type</code> and the dust/aerosol rename are the divergence; <code>sun_elevation</code> itself is stable. Zenith rise differs by model (Nishita vs multiple scattering) but clears the same gate on both binaries.</p>
 <h2>Stage deviation</h2>
-<p>World carries a Nishita / multiple-scattering Sky Texture instead of the default near-black Background — the contract <em>is</em> the sky. Gallery still is a dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at thumbnail scale. Layer 1 still holds: <code>view_transform=&#x27;Standard&#x27;</code>, designed terracotta materials, chosen camera, no helpers in frame.</p>
+<p>World carries a Nishita / multiple-scattering Sky Texture instead of the default near-black Background — the contract <em>is</em> the sky. Gallery still is a dual-elevation diptych (8° | 55°) so failure (identical panels) is visible at thumbnail scale. Layer 1 still holds: <code>view_transform=&#x27;Standard&#x27;</code>, designed materials, chosen camera, no helpers in frame.</p>
+<p>The jar is pale glaze, and the studio key and fill only model its form (70 W and 10 W). With saturated terracotta and a 420 W key, the studio lights lit the jar and both panels looked the same: the sky, the thing under test, was not what lit it. Now the jar reads dim twilight blue under the 8° sun and bright under the 55° sun. Mean luma is about 0.35, above the dark-stage band, which is information under this deviation, not a failure.</p>
 <h2>Framing deviation</h2>
-<p>The hero is the sky itself — a world contract, not an object on the stage. The silhouette matte can only measure the cone reference props (0.369x / 0.489y), so the out-of-band number is a measurement artifact, not the composition; if ever wired to <code>examples/gallery_framing.py</code>, this example reports with <code>deviation=&quot;world-contract subject; matte sees only the cone props&quot;</code> rather than enforcing.</p>
+<p>The hero is the sky itself — a world contract, not an object on the stage. The silhouette matte can only measure the jar in each 640 px panel (about 0.37 x / 0.49 y), so an out-of-band number would be a measurement artifact, not the composition. The diptych is not wired to <code>examples/gallery_framing.py</code>; the helper has no <code>deviation=</code> flag to report through.</p>
 <h2>Run</h2>
 <pre><code># Zenith-luminance correctness check (tiny Cycles CPU EXR probes) — the CI check:
 blender --background --python sky_texture_sun_elevation.py --
@@ -433,16 +434,21 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
 
 
 <span class="k">def</span> build_ceramic(sc):
-    <span class="s">&quot;&quot;&quot;A turned terracotta jar — saturated clay + pale glaze lid.&quot;&quot;&quot;</span>
-    clay = _principled(<span class="s">&quot;Clay&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.22</span>, <span class="n">0.08</span>), rough=<span class="n">0.52</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.2</span>)
-    glaze = _principled(<span class="s">&quot;Glaze&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.18</span>, <span class="n">0.06</span>), rough=<span class="n">0.28</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.4</span>)
+    <span class="s">&quot;&quot;&quot;A turned jar in pale glaze, so it takes the colour of the sky&#x27;s light.
+
+    Saturated terracotta looked the same under both skies: the clay&#x27;s own
+    orange swamped the change in the light, which is the thing on show.
+    &quot;&quot;&quot;</span>
+    clay = _principled(<span class="s">&quot;Clay&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.78</span>, <span class="n">0.74</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.4</span>)
+    glaze = _principled(<span class="s">&quot;Glaze&quot;</span>, (<span class="n">0.60</span>, <span class="n">0.58</span>, <span class="n">0.55</span>), rough=<span class="n">0.22</span>, metallic=<span class="n">0.0</span>, specular=<span class="n">0.5</span>)
 
     <span class="k">def</span> body(bm):
         bmesh.ops.create_cone(
             bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>,
             segments=<span class="n">64</span>, radius1=<span class="n">0.62</span>, radius2=<span class="n">0.42</span>, depth=<span class="n">1.35</span>,
         )
-        bmesh.ops.translate(bm, verts=bm.verts, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.68</span>))
+        <span class="c"># base on the floor (the cone is centred on its depth)</span>
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.675</span>))
 
     vessel = _mesh_obj(sc, <span class="s">&quot;Vessel&quot;</span>, body, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), clay)
     bev = vessel.modifiers.new(<span class="s">&quot;Bev&quot;</span>, <span class="s">&quot;BEVEL&quot;</span>)
@@ -696,7 +702,7 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
     <span class="k">else</span>:
         sky.dust_density = <span class="n">0.45</span>
     bg = world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>]
-    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.08</span>
+    bg.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.14</span>
     sc.world = world
 
     <span class="c"># Remove prior still lights / cams from earlier calls</span>
@@ -720,9 +726,10 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         sc.collection.objects.link(ob)
 
-    area(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.0</span>, -<span class="n">3.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">32</span>))
-    area(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.5</span>, -<span class="n">2.2</span>, <span class="n">1.8</span>), <span class="n">55.0</span>, <span class="n">8.0</span>, (<span class="n">0.7</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">42</span>))
-    area(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.5</span>, <span class="n">3.8</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">3.5</span>, (<span class="n">0.55</span>, <span class="n">0.72</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">185</span>))
+    <span class="c"># The sky is the light under test, so the studio lights only model the</span>
+    <span class="c"># form. At 420 W the key drowned the sky and both panels matched.</span>
+    area(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.0</span>, -<span class="n">3.5</span>, <span class="n">4.0</span>), <span class="n">70.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">32</span>))
+    area(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.5</span>, -<span class="n">2.2</span>, <span class="n">1.8</span>), <span class="n">10.0</span>, <span class="n">8.0</span>, (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">42</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.8</span>)
@@ -858,7 +865,7 @@ HIGH_ZENITH_MIN = <span class="n">0.05</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of an orange cone under a procedural sky: sun elevation 8 degrees on the left, 55 degrees on the right." />
+    <img src="../assets/sky-texture-sun-elevation-hero.webp" alt="Split view of a pale glazed jar under a procedural sky: dim twilight blue at sun elevation 8 degrees on the left, bright daylight at 55 degrees on the right." />
   </dialog>
   <footer>
     <div class="statusbar">

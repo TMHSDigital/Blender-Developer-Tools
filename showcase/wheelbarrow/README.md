@@ -2,7 +2,7 @@
 
 A showcase piece, not an example. Procedural wooden wheelbarrow (two
 chassis shafts that are the handles, box tray with overlapping floor
-slats, iron straps, single flat-tread spoked wheel, rear legs) then the
+slats and walls of stacked boards, iron straps, single flat-tread spoked wheel, rear legs) then the
 shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD
 chain, convex collider, Unity glTF export.
 
@@ -27,14 +27,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2300–2800 | 2500 / 2500 / 2500 |
+| Base triangles | 2300–2800 | 2536 / 2536 / 2536 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2104 |
-| Materials | exactly 2 distinct; ≥700 wood, ≥180 metal faces | 2 slots; 1094 / 190 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2192 / 0.2192 / 0.2098 |
+| Materials | exactly 2 distinct; ≥700 wood, ≥180 metal faces | 2 slots; 1157 / 190 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.558, 0.630, 0.574) m ± 0.015 | (1.5556, 0.6300, 0.5720), zmin 0 |
 | Collider tris | ≤ 220 | 90 |
-| Export | written, size > 0 | 187576 / 187576 / 187560 bytes |
+| Export | written, size > 0 | 193036 / 193036 / 193020 bytes |
 
 ### Hygiene
 
@@ -61,16 +61,38 @@ Recomputed from the generated mesh, not asserted about the script.
 | Wall-floor seat | ≥ 0.005 m | 0.01200 |
 | Metal-wood BVH gap | ≤ 0.010 m | 0.00000 |
 | Tread aspect (tyre width / radial) | ≥ 2.5 | 5.111 |
+| **Wall boards** | 2 boards per side wall and in the front wall; every seam 0.001–0.004 m | 2 / 2 / 2; 0.00200 |
 
-DECIMATE COLLAPSE triangle counts are **not** identical across series —
-5.2.1 is leaner on LOD2. The gate is a ratio band, not an exact count.
-Bake pixels are stochastic; the gate is `has_data` plus operator
-`FINISHED`, not byte-identity. Construction uses no RNG. Export byte
-counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.
+DECIMATE COLLAPSE triangle counts are **not** identical across series,
+so LOD2 ratios differ slightly. The gate is a ratio band, not an exact
+count. Bake pixels are stochastic; the gate is `has_data` plus operator
+`FINISHED`, not byte-identity. Construction is closed-form; the only RNG
+is the seeded per-board wood tone. Bevel inputs are
+sorted by edge index, so the face order is the same on every run; a
+Python set of edges handed to the bevel had made it vary. Export byte counts differ on 5.2.1
+(glTF serializer), not a gated axis.
+
+### Walls, wood and iron
+
+Each tray wall was one plain slab beside a floor of planks, and every
+piece was one flat tone. Side and front walls are now two boards
+stacked with a 2 mm seam, held by the existing straps; the low rear
+wall stays one board. `tray_size` and `wall_floor_seat` now take a side
+wall as the union of its boards. **Wall boards** asserts the count and
+the seam; `--wide-seams` opens the seams to 8 mm (same boards, same
+triangles) and exits 17.
+
+The extra boards cost 324 triangles, which would have broken the
+2800 ceiling. They are paid for with faces nobody sees: wall bottoms
+buried in the floor and slat undersides no longer get a bevel (faces
+beveled on some edges come out n-gons and are split, at the same
+triangle count). Base triangles went from 2500 to 2536. Wood has a tone
+and grain per board and shaft; the iron is dark and rusted instead of
+glossy black. The temp `.glb` is removed after its size is measured.
 
 ### Falsifiers
 
-Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
+Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and
 5.2.1 and returned the same code on each.
 
 | Flag | Budget violated | Exit |
@@ -82,6 +104,7 @@ Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
 | `--fat-spokes` | spoke clearance inside the hub | 17 |
 | `--float-walls` | wall-floor seat | 17 |
 | `--pipe-rim` | tread aspect (torus on a flat felloe) | 18 |
+| `--wide-seams` | wall boards (seam band) | 17 |
 
 ## Run
 
@@ -94,6 +117,7 @@ blender --background --python wheelbarrow.py -- --short-legs
 blender --background --python wheelbarrow.py -- --fat-spokes
 blender --background --python wheelbarrow.py -- --float-walls
 blender --background --python wheelbarrow.py -- --pipe-rim
+blender --background --python wheelbarrow.py -- --wide-seams
 blender --background --python wheelbarrow.py -- --output barrow.png
 ```
 
@@ -124,6 +148,6 @@ hygiene and joint-fit family.
 | 14 | `--output` produced no file |
 | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight |
 | 16 | Not grounded: bounding box `zmin` off 0, or a named shoe/tyre floats |
-| 17 | Joint fit: spoke clearance, handle join, wall-floor seat, or metal-wood gap |
+| 17 | Joint fit: spoke clearance, handle join, wall-floor seat, metal-wood gap, or wall boards and seams |
 | 18 | Seat: tread aspect of the tyre |
 | 19 | Tray size off the stated real-world dimensions |
