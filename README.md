@@ -132,7 +132,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wooden-bucket/"><img src="showcase/wooden-bucket/preview.webp" width="24%" alt="Wooden bucket: a coopered pail with a three-strand rope bail through iron ear rings and chord-lofted iron hoops on a dark studio floor" /></a>
   <a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" width="24%" alt="Wall torch: a dressed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
   <a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" width="24%" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
-  <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
+  <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a round-bellied cast-iron pot hanging by its bail from a timber tripod on a dark studio floor" /></a>
   <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: a raked timber ladder with six rungs and iron shoes on a dark studio floor" /></a>
   <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale with two sisal twine belts on a dark studio floor" /></a>
   <a href="showcase/crate-stack/"><img src="showcase/crate-stack/preview.webp" width="24%" alt="Crate stack: three slatted shipping crates stacked and yawed, each with iron corner straps and runners, on a dark studio floor" /></a>
@@ -185,7 +185,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`tavern-stool`](showcase/tavern-stool/) — procedural tavern stool with turned legs, stretchers, and iron ferrules through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`iron-cauldron`](showcase/iron-cauldron/) — procedural hanging iron cauldron on a timber tripod through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`iron-cauldron`](showcase/iron-cauldron/) — procedural round-bellied iron cauldron on a timber tripod through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--pointed-pot` exits 19.
 
 [`wooden-ladder`](showcase/wooden-ladder/) — procedural timber ladder with raked stiles, rungs, and iron shoes through the same pipeline. Falsifier `--skip-decimate` exits 9.
 

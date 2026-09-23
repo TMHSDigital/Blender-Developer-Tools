@@ -15,9 +15,12 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named ferrule
 supports, ``--float-hook`` hook-bail joint-fit, ``--pipe-ferrule``
-ferrule-cup seat (pole starts above the well).
+ferrule-cup seat (pole starts above the well), ``--pointed-pot`` pot
+form (the old quadratic profile that ran to a point), ``--edge-on-ears``
+bail through the ears (the old rings stood in the bail's own plane).
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-pole wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -28,6 +31,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -51,9 +55,24 @@ POT_H = 0.320
 POT_THICK = 0.012
 N_AROUND = 32
 N_RINGS = 12
-R_BOT = 0.028
+R_BOT = 0.075
 R_MID = 0.185
-R_TOP = 0.148
+R_TOP = 0.128
+# The pot is a round belly on a small flat base: a superellipse quadrant
+# from the base (radius R_BOT) out to the belly (R_BELLY at BELLY_Z), then
+# a circular shoulder in to the mouth (R_TOP). --pointed-pot restores the
+# old quadratic profile, which ran from a 28 mm tip.
+R_BELLY = 0.180
+BELLY_Z = 0.42 * 0.320
+BELLY_P = 2.4
+N_LOWER = 7
+POINTED_R_BOT = 0.028
+POT_BASE_MIN = 0.05
+POT_BELLY_MAX = 0.60
+# Per-pole wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 40.0
 POT_Z0 = 0.155
 APEX_Z = 0.860
 TRIPOD_R = 0.560
@@ -73,6 +92,10 @@ BAIL_R = 0.007
 HOOK_R = 0.006
 EAR_MAJOR = 0.018
 EAR_MINOR = 0.0045
+# Ear rings lie flat (hole along Z) so the bail, vertical where it passes,
+# threads the hole. Each ring bites EAR_BITE into the rim's outer edge.
+EAR_BITE = 0.002
+RIM_OUT = 0.018
 POLE_OFFSET = math.radians(18.0)
 
 BBOX_TOL = 0.015
@@ -379,13 +402,48 @@ def pack_uvs(bm, margin=0.08):
             )
 
 
-def pot_radius(z_local):
+def pointed_radius(z_local):
+    """The old profile: a quadratic from a 28 mm tip (``--pointed-pot``)."""
     t = max(0.0, min(1.0, z_local / POT_H))
     return (
-        (1.0 - t) ** 2 * R_BOT
+        (1.0 - t) ** 2 * POINTED_R_BOT
         + 2.0 * t * (1.0 - t) * (R_MID * 1.32)
         + t ** 2 * R_TOP
     )
+
+
+def pot_profile(pointed=False):
+    """Outer and inner (z_local, r) rings of the pot wall, base to mouth.
+
+    The inner wall is the outer offset POT_THICK along the profile's
+    inward normal, so the wall keeps its thickness where it runs nearly
+    flat under the belly; a horizontal offset thins it to nothing there.
+    """
+    if pointed:
+        zs = [POT_H * i / (N_RINGS - 1) for i in range(N_RINGS)]
+        outer = [(z, pointed_radius(z)) for z in zs]
+        return outer, [(z, max(r - POT_THICK, 0.014)) for z, r in outer]
+    outer = []
+    for k in range(N_LOWER):
+        th = 0.5 * math.pi * k / (N_LOWER - 1)
+        sn = max(0.0, math.sin(th)) ** (2.0 / BELLY_P)
+        cs = max(0.0, math.cos(th)) ** (2.0 / BELLY_P)
+        outer.append((BELLY_Z * (1.0 - cs), R_BOT + (R_BELLY - R_BOT) * sn))
+    n_up = N_RINGS - N_LOWER + 1
+    for k in range(1, n_up):
+        th = 0.5 * math.pi * k / (n_up - 1)
+        outer.append((
+            BELLY_Z + (POT_H - BELLY_Z) * math.sin(th),
+            R_TOP + (R_BELLY - R_TOP) * math.cos(th),
+        ))
+    inner = []
+    for i, (z, r) in enumerate(outer):
+        z0, r0 = outer[max(i - 1, 0)]
+        z1, r1 = outer[min(i + 1, len(outer) - 1)]
+        tr, tz = r1 - r0, z1 - z0
+        ln = math.hypot(tr, tz)
+        inner.append((z + POT_THICK * tr / ln, r - POT_THICK * tz / ln))
+    return outer, inner
 
 
 def pole_feet():
@@ -401,6 +459,8 @@ def build_cauldron_mesh(
     short_legs=False,
     float_hook=False,
     pipe_ferrule=False,
+    pointed_pot=False,
+    edge_on_ears=False,
 ):
     bm = bmesh.new()
     wood_verts = []
@@ -408,7 +468,7 @@ def build_cauldron_mesh(
         # Dual-wall lathe plus a rolled rim. No overlapping torus, no
         # extra bottom cylinder — those left a hole in the floor and a
         # faceted lip sitting on the mouth.
-        zs = [POT_H * i / (N_RINGS - 1) for i in range(N_RINGS)]
+        prof_out, prof_in = pot_profile(pointed_pot)
         rim = (
             (POT_H + 0.004, R_TOP + 0.012),
             (POT_H + 0.010, R_TOP + 0.018),
@@ -416,15 +476,14 @@ def build_cauldron_mesh(
             (POT_H + 0.011, R_TOP + 0.006),
         )
         outers, inners = [], []
-        for z_local in zs:
+        for (z_local, r), (zi_local, ri) in zip(prof_out, prof_in):
             z = POT_Z0 + z_local
-            r = pot_radius(z_local)
-            ri = max(r - POT_THICK, 0.014)
+            zi = POT_Z0 + zi_local
             oring, iring = [], []
             for i in range(N_AROUND):
                 a = 2.0 * math.pi * i / N_AROUND
                 oring.append(bm.verts.new((r * math.cos(a), r * math.sin(a), z)))
-                iring.append(bm.verts.new((ri * math.cos(a), ri * math.sin(a), z)))
+                iring.append(bm.verts.new((ri * math.cos(a), ri * math.sin(a), zi)))
             outers.append(oring)
             inners.append(iring)
         for z_off, r in rim:
@@ -464,8 +523,16 @@ def build_cauldron_mesh(
             ibot.material_index = METAL_IDX
 
         mouth_z = POT_Z0 + POT_H
-        # Vertical rings (hole along Y) so the XZ bail can thread them.
-        ear_x = R_TOP + 0.008
+        # Flat rings (hole along Z): the bail is vertical where it passes
+        # the ear, so it threads the hole. The old rings were stood up in
+        # the bail's own XZ plane, so the bail ran through the ring's tube;
+        # --edge-on-ears restores them at the old position.
+        if edge_on_ears:
+            ear_x = R_TOP + 0.008
+            ear_euler = (math.pi / 2.0, 0.0, 0.0)
+        else:
+            ear_x = R_TOP + RIM_OUT + EAR_MAJOR + EAR_MINOR - EAR_BITE
+            ear_euler = (0.0, 0.0, 0.0)
         ear_z = mouth_z + 0.002
         for sign in (-1.0, 1.0):
             add_torus(
@@ -476,17 +543,22 @@ def build_cauldron_mesh(
                 14,
                 6,
                 METAL_IDX,
-                euler=(math.pi / 2.0, 0.0, 0.0),
+                euler=ear_euler,
             )
-        # Semicircle through the ear holes, ends past the rings.
+        # Semicircle through the ear holes. Past each ear the curve is
+        # mirrored about the ear, so the ends hook outward and down instead
+        # of hanging into the pot's mouth.
         t0 = -0.42
         t1 = math.pi + 0.42
         bail_pts = []
         for i in range(BAIL_SEGS + 1):
             t = t0 + (t1 - t0) * i / BAIL_SEGS
-            bail_pts.append(
-                (ear_x * math.cos(t), 0.0, ear_z + ear_x * math.sin(t))
-            )
+            x = ear_x * math.cos(t)
+            if t < 0.0:
+                x = 2.0 * ear_x - x
+            elif t > math.pi:
+                x = -2.0 * ear_x - x
+            bail_pts.append((x, 0.0, ear_z + ear_x * math.sin(t)))
         add_pipe_curve(bm, bail_pts, BAIL_R, BAIL_PIPE, METAL_IDX)
         bail_peak = Vector(bail_pts[len(bail_pts) // 2])
         hook_z = bail_peak.z + (0.08 if float_hook else 0.0)
@@ -609,6 +681,131 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], rfac)
         nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every pole and the crown is its own shell, so each gets one tone and
+    grain running along its own long axis (along each pole).
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each pole (``GrainDir``), tone per pole (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def cauldron_materials():
+    """(wood, iron): shared by the check, the render and inspection.
+
+    Cast iron is near-black and rough, with rust in the pores, not the
+    satin grey metal the pot first shipped with.
+    """
+    wood = wood_material("TripodWood")
+    metal = principled(
+        "CauldronIron", (0.075, 0.072, 0.070, 1.0), 0.80, 0.58,
+        noise_scale=22.0, wear=(0.10, 0.055, 0.03, 1.0),
+    )
+    return wood, metal
 
 
 def assign_slots(obj, wood, metal):
@@ -798,6 +995,85 @@ def support_audit(me):
             cups.append(a)
     cup_z = min((a[2] for a in cups), default=99.0)
     return {"cups": len(cups), "cup_z": cup_z}
+
+
+def pot_form(me):
+    """Base radius and belly height of the pot, from its outer wall.
+
+    The pot is the tallest wide iron shell. Its base radius is the widest
+    vertex on the lowest ring (the base centre excluded); the belly is
+    where the wall is widest, as a fraction of the pot's height. A pot
+    that runs to a point has a base of a few millimetres.
+    """
+    best, best_r = None, -1.0
+    for g in shells(me):
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        a = shell_aabb(me, g)
+        r = 0.25 * ((a[3] - a[0]) + (a[4] - a[1]))
+        if a[5] - a[2] > 0.20 and r > best_r:
+            best, best_r = (g, a), r
+    if best is None:
+        return 0.0, 1.0
+    g, a = best
+    z0 = a[2]
+    base = max(
+        (math.hypot(me.vertices[i].co.x, me.vertices[i].co.y) for i in g
+         if me.vertices[i].co.z < z0 + 1e-4),
+        default=0.0,
+    )
+    widest = max(g, key=lambda i: math.hypot(me.vertices[i].co.x, me.vertices[i].co.y))
+    belly = (me.vertices[widest].co.z - z0) / max(POT_H, 1e-6)
+    return base, belly
+
+
+def ear_threading(me):
+    """How the bail passes the two ear rings.
+
+    The ear rings are the two small iron shells level with the mouth;
+    the bail is the iron shell spanning the pot. A ring vertex inside
+    the bail (by the nearest face's normal) is bail running through the
+    ring's tube; the bail must also come within the ring's hole of its
+    centre. Returns (rings, ring verts inside the bail, worst centre gap).
+    """
+    rings, bail = [], None
+    mouth = POT_Z0 + POT_H
+    for g in shells(me):
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if max(dx, dy, dz) < 0.06 and abs(0.5 * (a[2] + a[5]) - mouth) < 0.03:
+            rings.append(g)
+        elif dx > 0.25 and dy < 0.05 and a[2] > POT_Z0:
+            bail = g
+    if bail is None or len(rings) != 2:
+        return len(rings), 99, 99.0
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep = set(bail)
+        drop = [f for f in bm_b.faces if not all(v.index in keep for v in f.verts)]
+        if drop:
+            bmesh.ops.delete(bm_b, geom=drop, context="FACES")
+        bm_b.normal_update()
+        tree = BVHTree.FromBMesh(bm_b)
+        inside, worst = 0, 0.0
+        for g in rings:
+            c = Vector()
+            for i in g:
+                c += me.vertices[i].co
+            c /= len(g)
+            for i in g:
+                p = me.vertices[i].co
+                loc, nrm, _idx, _d = tree.find_nearest(p)
+                if loc is not None and nrm.dot(p - loc) < 0.0:
+                    inside += 1
+            loc, _n, _i, d = tree.find_nearest(c)
+            worst = max(worst, d if loc is not None else 99.0)
+        return len(rings), inside, worst
+    finally:
+        bm_b.free()
 
 
 def pot_audit(me):
@@ -1046,23 +1322,22 @@ def check(
     short_legs=False,
     float_hook=False,
     pipe_ferrule=False,
+    pointed_pot=False,
+    edge_on_ears=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         short_legs=short_legs,
         float_hook=float_hook,
         pipe_ferrule=pipe_ferrule,
+        pointed_pot=pointed_pot,
+        edge_on_ears=edge_on_ears,
     )
     low = build_cauldron_mesh("CauldronLow", **flags)
     high = build_cauldron_mesh("CauldronHigh", **flags)
-    wood = principled(
-        "TripodWood", (0.38, 0.22, 0.09, 1.0), 0.0, 0.58,
-        noise_scale=6.0, wear=(0.22, 0.12, 0.05, 1.0),
-    )
-    metal = principled(
-        "CauldronIron", (0.10, 0.095, 0.09, 1.0), 0.92, 0.40,
-        noise_scale=5.0, wear=(0.18, 0.16, 0.14, 1.0),
-    )
+    wood, metal = cauldron_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -1124,6 +1399,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1131,6 +1410,8 @@ def check(
     pot = pot_audit(low.data)
     hj = hook_bail_join(low.data)
     bite = ferrule_bite(low.data)
+    base_r, belly = pot_form(low.data)
+    n_ears, ear_in, ear_gap = ear_threading(low.data)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1159,6 +1440,8 @@ def check(
         f"pot_dia={pot['dia']:.4f} pot_h={pot['height']:.4f} "
         f"hook_join={hj:.5f} ferrule_bite={bite:.5f}"
     )
+    print(f"measured pot_base_r={base_r:.4f} belly_at={belly:.3f}")
+    print(f"measured ears={n_ears} ring_verts_in_bail={ear_in} ear_centre_gap={ear_gap:.5f}")
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
         return fail(
@@ -1251,6 +1534,13 @@ def check(
             "(--float-hook is the designed fail)",
             17,
         ), None, None, None, None, None
+    if n_ears != 2 or ear_in or ear_gap > EAR_MAJOR - EAR_MINOR:
+        return fail(
+            f"ears {n_ears}: {ear_in} ring vertices inside the bail, bail "
+            f"{ear_gap:.5f} from a ring centre (hole {EAR_MAJOR - EAR_MINOR:.4f}) "
+            "(--edge-on-ears is the designed fail)",
+            17,
+        ), None, None, None, None, None
     if not (FERRULE_BITE_MIN <= bite <= FERRULE_BITE_MAX):
         return fail(
             f"ferrule bite {bite:.5f} not in "
@@ -1266,6 +1556,13 @@ def check(
     if abs(pot["height"] - BODY_H) > BODY_H_TOL:
         return fail(
             f"pot height {pot['height']:.4f} off {BODY_H}",
+            19,
+        ), None, None, None, None, None
+    if base_r < POT_BASE_MIN or belly > POT_BELLY_MAX:
+        return fail(
+            f"pot form: base radius {base_r:.4f} < {POT_BASE_MIN} or belly at "
+            f"{belly:.3f} of the height > {POT_BELLY_MAX} "
+            "(--pointed-pot is the designed fail)",
             19,
         ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
@@ -1387,6 +1684,8 @@ def main():
     p.add_argument("--short-legs", action="store_true")
     p.add_argument("--float-hook", action="store_true")
     p.add_argument("--pipe-ferrule", action="store_true")
+    p.add_argument("--pointed-pot", action="store_true")
+    p.add_argument("--edge-on-ears", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1396,6 +1695,8 @@ def main():
         short_legs=args.short_legs,
         float_hook=args.float_hook,
         pipe_ferrule=args.pipe_ferrule,
+        pointed_pot=args.pointed_pot,
+        edge_on_ears=args.edge_on_ears,
     )
     if code:
         return code
