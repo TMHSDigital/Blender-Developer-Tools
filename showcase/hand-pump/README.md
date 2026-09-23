@@ -49,9 +49,23 @@ longer beveled with the plinth. Outer AABB is 0.610 × 0.382 × 1.052 m
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 5.2.1 is slightly leaner on LOD2. The gate is a ratio band, not an
 exact count. Bake pixels are stochastic; the gate is `has_data` plus
-operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a
-gated axis.
+operator `FINISHED`, not byte-identity. Construction is closed-form;
+the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on
+every run; a Python set of edges handed to the bevel had made it vary.
+Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.
+
+### Surface and stage
+
+The quality pass found no geometric defect: every joint checked in the
+inspection sheet (spout root, flange bolts, head and handle pivot,
+column step, plinth) seats as the joint budgets say. The defects were
+on the surface. The iron was polished metal (metallic 1.0, roughness
+0.38) and read as chrome; it is now near-black painted cast iron with
+dark rust in the pores. The plinth slabs and the handle grip carry their
+own wood tone and grain. The stage grid grew from 14 to 60 m, because
+the wall's left edge showed in the corner of the hero. The temp `.glb`
+is removed after its size is measured. With no new geometric defect,
+there is no new budget.
 
 ### Hygiene
 
