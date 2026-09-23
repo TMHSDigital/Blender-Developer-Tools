@@ -49,8 +49,8 @@
       "name": "campfire",
       "dir": "showcase/campfire",
       "teaches": "A procedural campfire through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A campfire of crossed logs in a teepee inside a ring of grey stone blocks.",
-      "witnessesFix": "Recomputed: 2200 tris, three materials with 216 wood, 48 ash and 1304 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.807×0.808×0.404 m, LOD ratios in band, convex collider 198 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00001 m, course seat 0, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18.",
+      "alt": "A campfire of crossed logs in a teepee, embers in the ash, inside a two-course ring of rounded grey fieldstones.",
+      "witnessesFix": "Recomputed: 2760 tris, three materials with 216 wood, 48 ash and 1416 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.802×0.802×0.404 m, LOD ratios in band, convex collider 162 tris, hygiene 0, 14 grounded bottom stones, teepee kiss 0.00034 m, course seat 0, stone variation 0.01269 m, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-stones 16; --float-logs 17; --gap-courses 18; --uniform-stones 20.",
       "hero": "docs/gallery/assets/campfire-hero.webp",
       "preview": "showcase/campfire/preview.webp",
       "tags": [
@@ -312,9 +312,9 @@
     {
       "name": "iron-cauldron",
       "dir": "showcase/iron-cauldron",
-      "teaches": "A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A black iron cauldron hanging from a tripod of wooden poles.",
-      "witnessesFix": "Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.046 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, mesh hygiene all zero, LOD ratios in band, convex collider 250 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook 17; --pipe-ferrule 18.",
+      "teaches": "A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles.",
+      "witnessesFix": "Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.053 m, pot base radius 0.075 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, bail threads both ear rings, mesh hygiene all zero, LOD ratios in band, convex collider 246 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook/--edge-on-ears 17; --pipe-ferrule 18; --pointed-pot 19.",
       "hero": "docs/gallery/assets/iron-cauldron-hero.webp",
       "preview": "showcase/iron-cauldron/preview.webp",
       "tags": [

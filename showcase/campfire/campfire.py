@@ -52,7 +52,17 @@ R_OUTER = 0.39
 R_MID = 0.5 * (R_INNER + R_OUTER)
 STONE_H = 0.078
 STONE_SEED = 17
-STONE_JITTER = 0.10
+STONE_JITTER = 0.22
+# Each ring stone is a lofted chamfered section, not a curved brick: a
+# seeded belly and radial offset, rounded ends pinched to END_PINCH, and
+# (upper course only) a domed crown. Beds stay flat so the courses seat.
+STONE_R_JITTER = 0.012
+STONE_BULGE = 0.14
+STONE_WOBBLE = 0.05
+STONE_DOME = 0.020
+END_PINCH = 0.62
+STONE_CHAMFER = 0.28
+STONE_VARY_MIN = 0.006
 GAP_ANG = 0.004
 N_COBBLES = 12
 COBBLE_H = 0.016
@@ -80,7 +90,7 @@ ZFIGHT_EPS = 1e-4
 ZFIGHT_COS = 0.998
 BODY_TOL = 0.04
 RING_DIA = 0.807
-RING_H = 0.156
+RING_H = 0.176
 BBOX_TOL = 0.015
 OUTER_SIZE = (0.807, 0.808, 0.404)
 
@@ -106,6 +116,11 @@ BOTTOM_COUNT = N_AROUND
 STONE_IDX = 0
 WOOD_IDX = 1
 ASH_IDX = 2
+
+# Per-piece tone jitter and wood grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.25
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 45.0
 
 
 def eevee_engine_id():
@@ -147,46 +162,52 @@ def stone_spans(n, gap_ang, jitter, seed):
     return spans
 
 
-def add_wedge(bm, a0, a1, r_in, r_out, z0, z1, mat_idx, lump=0.0):
-    mid_z = 0.5 * (z0 + z1)
-    mid_ang = 0.5 * (a0 + a1)
-    layers = (
-        (z0, 0.985, 0.0),
-        (mid_z, 1.025, lump),
-        (z1, 0.97, 0.0),
-    )
+def add_stone(bm, a0, a1, z0, z1, rng, crown, stations, mat_idx):
+    """One ring stone: a chamfered octagon section lofted from a0 to a1.
+
+    The section's width swells to a seeded belly mid-stone and pinches to
+    END_PINCH at the ends, which are capped, so each stone is a rounded
+    lump rather than a curved brick. The bed (z0) is flat on every stone.
+    The crown is flat at z1 on the lower course, which the upper course
+    sits on, and domed by a seeded ``crown`` on the upper course.
+    """
+    r_in = R_INNER + rng.uniform(-STONE_R_JITTER, STONE_R_JITTER)
+    r_out = R_OUTER + rng.uniform(-STONE_R_JITTER, STONE_R_JITTER)
+    bulge = rng.uniform(0.3, 1.0) * STONE_BULGE
+    phase = rng.uniform(0.0, 2.0 * math.pi)
+    top = z1 + crown
     rings = []
-    for z, r_scale, lp in layers:
-        ring = []
-        for ang, r in (
-            (a0, r_in),
-            (a1, r_in),
-            (a1, r_out * r_scale),
-            (a0, r_out * r_scale),
-        ):
-            x = r * math.cos(ang)
-            y = r * math.sin(ang)
-            if lp > 0.0 and r > 0.5 * (r_in + r_out):
-                h = math.sin(ang * 5.0 + z * 17.0 + mid_ang * 3.0)
-                scale = 1.0 + lp * max(-0.7, min(0.7, h))
-                x *= scale
-                y *= scale
-            ring.append(bm.verts.new((x, y, z)))
-        rings.append(ring)
-    verts = [v for ring in rings for v in ring]
-    for k in range(len(rings) - 1):
+    for k in range(stations):
+        t = k / (stations - 1)
+        ang = a0 + (a1 - a0) * t
+        sw = math.sin(math.pi * t)
+        pinch = END_PINCH + (1.0 - END_PINCH) * math.sqrt(sw)
+        cr = 0.5 * (r_in + r_out)
+        hw = 0.5 * (r_out - r_in) * pinch * (1.0 + bulge * sw)
+        lo = cr - hw
+        hi = cr + hw * (1.0 + STONE_WOBBLE * math.sin(phase + 3.0 * math.pi * t))
+        zt = z0 + (top - z0) * (0.80 + 0.20 * sw)
+        c = STONE_CHAMFER * min(hi - lo, zt - z0) * 0.5
+        section = (
+            (lo + c, z0), (hi - c, z0), (hi, z0 + c), (hi, zt - c),
+            (hi - c, zt), (lo + c, zt), (lo, zt - c), (lo, z0 + c),
+        )
+        ca, sa = math.cos(ang), math.sin(ang)
+        rings.append([bm.verts.new((r * ca, r * sa, z)) for r, z in section])
+    n = len(rings[0])
+    for k in range(stations - 1):
         a, b = rings[k], rings[k + 1]
-        for i in range(4):
-            j = (i + 1) % 4
-            face = bm.faces.new((a[i], a[j], b[j], b[i]))
-            face.material_index = mat_idx
-    bot = rings[0]
-    top = rings[-1]
-    face = bm.faces.new((bot[0], bot[3], bot[2], bot[1]))
-    face.material_index = mat_idx
-    face = bm.faces.new((top[0], top[1], top[2], top[3]))
-    face.material_index = mat_idx
-    return verts
+        for i in range(n):
+            j = (i + 1) % n
+            f = bm.faces.new((a[i], a[j], b[j], b[i]))
+            f.material_index = mat_idx
+    for ring, flip in ((rings[0], False), (rings[-1], True)):
+        hub = bm.verts.new(sum((v.co for v in ring), Vector()) / n)
+        for i in range(n):
+            vs = (hub, ring[(i + 1) % n], ring[i])
+            f = bm.faces.new(tuple(reversed(vs)) if flip else vs)
+            f.material_index = mat_idx
+    return [v for ring in rings for v in ring]
 
 
 def add_cyl_between(bm, a, b, r0, r1, segs, mat_idx):
@@ -292,6 +313,7 @@ def build_campfire_mesh(
     short_stones=False,
     float_logs=False,
     gap_courses=False,
+    uniform_stones=False,
 ):
     bm = bmesh.new()
     spans = stone_spans(N_AROUND, GAP_ANG, STONE_JITTER, STONE_SEED)
@@ -299,48 +321,27 @@ def build_campfire_mesh(
     extra = COURSE_GAP if gap_courses else 0.0
     stone_verts = []
     try:
+        # --uniform-stones gives every stone the same draw: each jitter at its
+        # upper bound, so the stones are identical but the ring keeps the
+        # envelope of its widest seeded stone.
+        class _Flat:
+            def uniform(self, a, b):
+                return b
+
+        stations = 3 + bevel_segments
         for row in range(N_ROWS):
             z0 = z_ground + row * STONE_H + (extra if row else 0.0)
             z1 = z0 + STONE_H
             rot_off = (row % 2) * (math.pi / N_AROUND)
-            for a0, a1 in spans:
+            for idx, (a0, a1) in enumerate(spans):
+                rng = _Flat() if uniform_stones else random.Random(STONE_SEED * 31 + row * 101 + idx)
+                crown = STONE_DOME * rng.uniform(0.35, 1.0) if row == N_ROWS - 1 else 0.0
                 stone_verts.extend(
-                    add_wedge(
-                        bm,
-                        a0 + rot_off,
-                        a1 + rot_off,
-                        R_INNER,
-                        R_OUTER,
-                        z0,
-                        z1,
-                        STONE_IDX,
-                        lump=0.022,
+                    add_stone(
+                        bm, a0 + rot_off, a1 + rot_off, z0, z1, rng, crown,
+                        stations, STONE_IDX,
                     )
                 )
-
-        if bevel_offset > 0.0:
-            vertical = []
-            seen = set()
-            for v in stone_verts:
-                for e in v.link_edges:
-                    if e in seen:
-                        continue
-                    seen.add(e)
-                    a, b = e.verts
-                    if abs(a.co.z - b.co.z) > 0.02:
-                        vertical.append(e)
-            if vertical:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=vertical,
-                    offset=min(bevel_offset, 0.008),
-                    segments=bevel_segments,
-                    profile=0.5,
-                    affect="EDGES",
-                    clamp_overlap=True,
-                )
-                for f in ret.get("faces") or []:
-                    f.material_index = STONE_IDX
 
         add_ash_disk(bm, ASH_R, ASH_H, 16, ASH_IDX)
         rng = random.Random(STONE_SEED)
@@ -701,6 +702,244 @@ def teepee_kiss(me):
             bm_s.free()
 
 
+def stone_variation(me):
+    """Spread of the ring stones' crowns and outer radii, in metres.
+
+    Identical stones read instantly as CG. Across the stones of each
+    course, the spread (max - min) of each stone's top and of its outer
+    radius is measured from the mesh; the smaller of the two spreads,
+    over both courses, must clear STONE_VARY_MIN.
+    """
+    courses = {}
+    for g in shells(me):
+        if mat_of(me, g) != STONE_IDX:
+            continue
+        a = shell_aabb(me, g)
+        if a[5] - a[2] < 0.05:
+            continue
+        top = a[5]
+        r_out = max(math.hypot(me.vertices[i].co.x, me.vertices[i].co.y) for i in g)
+        row = 0 if 0.5 * (a[2] + a[5]) < STONE_H else 1
+        courses.setdefault(row, []).append((top, r_out))
+    spreads = []
+    for row, vals in courses.items():
+        tops = [v[0] for v in vals]
+        radii = [v[1] for v in vals]
+        if row == N_ROWS - 1:
+            spreads.append(max(tops) - min(tops))
+        spreads.append(max(radii) - min(radii))
+    return min(spreads, default=0.0)
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_pieces(me):
+    """Per-shell ``PieceTone`` and ``GrainDir`` face attributes.
+
+    Every stone, stick and log is its own shell, so each gets one tone,
+    and the wood shader runs grain along each piece's own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PieceTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stick and log (``GrainDir``), tone per piece (``PieceTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PieceTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def stone_material(name, light, dark, roughness, mottle, speck, bump):
+    """Fieldstone: isotropic mottling, speckle and pitting, a tone per stone.
+
+    Copied from stone-archway, reading ``PieceTone`` for the per-stone
+    shade. Nothing in the pattern has a direction, so it cannot read as
+    wood grain the way stretched noise does.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mot = nt.nodes.new("ShaderNodeTexNoise")
+    mot.inputs["Scale"].default_value = mottle
+    mot.inputs["Detail"].default_value = 4.0
+    mot.inputs["Roughness"].default_value = 0.55
+    nt.links.new(coord.outputs["Object"], mot.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.32
+    ramp.color_ramp.elements[0].color = dark
+    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[1].color = light
+    nt.links.new(mot.outputs["Fac"], ramp.inputs["Fac"])
+    spk = nt.nodes.new("ShaderNodeTexNoise")
+    spk.inputs["Scale"].default_value = speck
+    spk.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], spk.inputs["Vector"])
+    gain = nt.nodes.new("ShaderNodeMapRange")
+    gain.inputs["To Min"].default_value = 0.82
+    gain.inputs["To Max"].default_value = 1.12
+    nt.links.new(spk.outputs["Fac"], gain.inputs["Value"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Result"], _sock(mix.inputs, "B_Color"))
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PieceTone"
+    shade = nt.nodes.new("ShaderNodeMath")
+    shade.operation = "MULTIPLY_ADD"
+    shade.inputs[1].default_value = 0.8
+    shade.inputs[2].default_value = 0.6
+    nt.links.new(tone.outputs["Fac"], shade.inputs[0])
+    mix2 = nt.nodes.new("ShaderNodeMix")
+    mix2.data_type = "RGBA"
+    mix2.blend_type = "MULTIPLY"
+    _sock(mix2.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(_sock(mix.outputs, "Result_Color"), _sock(mix2.inputs, "A_Color"))
+    nt.links.new(shade.outputs["Value"], _sock(mix2.inputs, "B_Color"))
+    nt.links.new(_sock(mix2.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = roughness - 0.06
+    rough.inputs["To Max"].default_value = min(1.0, roughness + 0.08)
+    nt.links.new(spk.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    if bump > 0.0:
+        bmp = nt.nodes.new("ShaderNodeBump")
+        bmp.inputs["Strength"].default_value = bump
+        bmp.inputs["Distance"].default_value = 0.002
+        nt.links.new(spk.outputs["Fac"], bmp.inputs["Height"])
+        nt.links.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def ash_material(name):
+    """Grey ash with a few embers: sparse orange emission from a noise threshold."""
+    mat = principled(name, (0.11, 0.105, 0.10, 1.0), 0.0, 0.95,
+                     noise_scale=10.0, wear=(0.05, 0.045, 0.04, 1.0))
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    hot = nt.nodes.new("ShaderNodeTexNoise")
+    hot.inputs["Scale"].default_value = 28.0
+    hot.inputs["Detail"].default_value = 3.0
+    nt.links.new(coord.outputs["Object"], hot.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.62
+    ramp.color_ramp.elements[0].color = (0.0, 0.0, 0.0, 1.0)
+    ramp.color_ramp.elements[1].position = 0.74
+    ramp.color_ramp.elements[1].color = (1.0, 0.32, 0.06, 1.0)
+    nt.links.new(hot.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Emission Color"])
+    bsdf.inputs["Emission Strength"].default_value = 2.5
+    return mat
+
+
+def campfire_materials():
+    """(stone, wood, ash): shared by the check, the render and inspection."""
+    stone = stone_material(
+        "CampfireStone", (0.44, 0.42, 0.38, 1.0), (0.22, 0.215, 0.20, 1.0),
+        0.86, mottle=6.0, speck=160.0, bump=0.35,
+    )
+    wood = wood_material("CampfireWood")
+    ash = ash_material("CampfireAsh")
+    return stone, wood, ash
+
+
 def body_plan(me):
     groups = shells(me)
     xs, ys, z0s, z1s = [], [], [], []
@@ -834,27 +1073,20 @@ def check(
     short_stones=False,
     float_logs=False,
     gap_courses=False,
+    uniform_stones=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         short_stones=short_stones,
         float_logs=float_logs,
         gap_courses=gap_courses,
+        uniform_stones=uniform_stones,
     )
     low = build_campfire_mesh("CampfireLow", 0.006, 2, **flags)
     high = build_campfire_mesh("CampfireHigh", 0.006, 4, **flags)
-    stone = principled(
-        "CampfireStone", (0.40, 0.42, 0.46, 1.0), 0.0, 0.84,
-        noise_scale=8.0, wear=(0.28, 0.27, 0.24, 1.0),
-    )
-    wood = principled(
-        "CampfireWood", (0.38, 0.18, 0.07, 1.0), 0.0, 0.62,
-        noise_scale=6.0, wear=(0.18, 0.09, 0.04, 1.0),
-    )
-    ash = principled(
-        "CampfireAsh", (0.12, 0.11, 0.10, 1.0), 0.0, 0.94,
-        noise_scale=10.0, wear=(0.08, 0.07, 0.06, 1.0),
-    )
+    stone, wood, ash = campfire_materials()
+    paint_pieces(low.data)
+    paint_pieces(high.data)
     assign_slots(low, stone, wood, ash)
     assign_slots(high, stone, wood, ash)
     if stray_vert:
@@ -886,6 +1118,7 @@ def check(
     sup = support_audit(low.data)
     cseat = course_seat(low.data)
     kiss = teepee_kiss(low.data)
+    vary = stone_variation(low.data)
     dia, ht = body_plan(low.data)
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
@@ -896,6 +1129,7 @@ def check(
         f"measured stones={sup['stones']} stone_z={sup['stone_z']:.5f} "
         f"course_seat={cseat:.5f} kiss={kiss:.5f} body={dia:.4f}x{ht:.4f}"
     )
+    print(f"measured stone_variation={vary:.5f}")
 
     img, tex = setup_bake_image(low, stone)
     if img is None:
@@ -923,6 +1157,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1038,6 +1276,12 @@ def check(
             f"ring {dia:.4f}x{ht:.4f} off {RING_DIA}x{RING_H}",
             19,
         ), None, None, None, None, None
+    if vary < STONE_VARY_MIN:
+        return fail(
+            f"stone variation {vary:.5f} < {STONE_VARY_MIN}: the ring stones are "
+            "identical (--uniform-stones is the designed fail)",
+            20,
+        ), None, None, None, None, None
     return 0, low, high, stone, tex, collider
 
 
@@ -1148,6 +1392,7 @@ def main():
     p.add_argument("--short-stones", action="store_true")
     p.add_argument("--float-logs", action="store_true")
     p.add_argument("--gap-courses", action="store_true")
+    p.add_argument("--uniform-stones", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, stone, tex, _col = check(
@@ -1157,6 +1402,7 @@ def main():
         short_stones=args.short_stones,
         float_logs=args.float_logs,
         gap_courses=args.gap_courses,
+        uniform_stones=args.uniform_stones,
     )
     if code:
         return code

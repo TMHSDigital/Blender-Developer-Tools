@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>iron-cauldron — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/iron-cauldron/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="iron-cauldron — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/iron-cauldron/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/iron-cauldron-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A black iron cauldron hanging from a tripod of wooden poles." />
+  <meta property="og:image:alt" content="A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="iron-cauldron — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/iron-cauldron-hero.webp" />
-  <meta name="twitter:image:alt" content="A black iron cauldron hanging from a tripod of wooden poles." />
+  <meta name="twitter:image:alt" content="A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,36 +265,40 @@
   </div>
   <header class="hero">
     <h1>iron-cauldron</h1>
-    <p>A procedural hanging iron cauldron with a bulged open pot, bail, and timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural hanging iron cauldron with a round-bellied pot, a bail threaded through flat ear rings, and a timber tripod through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron cauldron hanging from a tripod of wooden poles.">
-      <img src="../assets/iron-cauldron-hero.webp" alt="A black iron cauldron hanging from a tripod of wooden poles." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles.">
+      <img src="../assets/iron-cauldron-hero.webp" alt="A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.046 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, mesh hygiene all zero, LOD ratios in band, convex collider 250 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook 17; --pipe-ferrule 18.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3664 tris, two materials with 224 wood and 1768 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.987×0.961×0.860 m, pot–leg clearance 0.053 m, pot base radius 0.075 m, 3 coaxial ferrules at zmin 0, ferrule bite −0.00185 m, hook-bail join 0, bail threads both ear rings, mesh hygiene all zero, LOD ratios in band, convex collider 246 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --float-hook/--edge-on-ears 17; --pipe-ferrule 18; --pointed-pot 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/iron-cauldron/iron_cauldron.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural hanging cauldron (lathed iron pot with a rolled rim, pipe bail through vertical ear rings, timber tripod tenoned into a turned crown, iron ferrule cups coaxial with the poles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. Procedural hanging cauldron (a round-bellied iron pot on a small flat base with a rolled rim, a pipe bail threaded through flat ear rings, timber tripod tenoned into a turned crown, iron ferrule cups coaxial with the poles) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
 <p>Ferrules are lofted along the pole axis and shifted so the downhill rim sits at Z=0. A world-Z bucket lets a leaning pole slice the lip. <code>ferrule_bite</code> is measured in that same frame, and only samples wood inside the cup&#x27;s own axis span — a pole hovering above the well cannot fake a seat.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2800–4200</td><td>3664 / 3664 / 3664</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2200 / 0.2200 / 0.2200</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥80 wood, ≥200 metal faces</td><td>2 slots; 224 / 1768</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.987, 0.961, 0.860) m ± 0.015</td><td>(0.9866, 0.9605, 0.8600), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>250</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>287916 / 287916 / 287904 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2800–4200</td><td>3664 / 3664 / 3664</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2200 / 0.2200 / 0.2200</td></tr><tr><td>Materials</td><td>exactly 2 distinct; ≥80 wood, ≥200 metal faces</td><td>2 slots; 224 / 1768</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.987, 0.961, 0.860) m ± 0.015</td><td>(0.9866, 0.9605, 0.8600), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 280</td><td>246</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>287380 / 287380 / 287368 bytes</td></tr></tbody></table></div>
 <p>Base triangles rose from <strong>3388 to 3664</strong> in the quality pass: coaxial ferrule cups and a dual-wall lathe with a rolled rim replaced the old cone-tripod / overlapping-torus construction.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 3 ferrules</td><td>each <code>zmin</code> ≤ 1e-3</td><td>3, cup_z 0.00000</td></tr><tr><td>Pot size</td><td>0.355 m dia × 0.334 m high ± 0.04</td><td>0.3545 × 0.3340</td></tr><tr><td>Pot–leg clearance</td><td>≥ 0.04 m</td><td>0.0464</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 3 ferrules</td><td>each <code>zmin</code> ≤ 1e-3</td><td>3, cup_z 0.00000</td></tr><tr><td>Pot size</td><td>0.355 m dia × 0.334 m high ± 0.04</td><td>0.3600 × 0.3340</td></tr><tr><td><strong>Pot form</strong></td><td>base radius ≥ 0.05 m; widest point in the lower 60%</td><td>0.0750; at 0.420 of the height</td></tr><tr><td>Pot–leg clearance</td><td>≥ 0.04 m</td><td>0.0528</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Hook-bail BVH gap</td><td>≤ 0.010 m</td><td>0.00000</td></tr><tr><td>Ferrule bite (pole r − inner wall, pole frame)</td><td>−0.006–0.000 m</td><td>−0.00185</td></tr></tbody></table></div>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Hook-bail BVH gap</td><td>≤ 0.010 m</td><td>0.00000</td></tr><tr><td><strong>Bail through the ears</strong></td><td>2 rings; 0 ring vertices inside the bail; bail within the hole (&lt; 0.0135 m of the ring centre)</td><td>2; 0; 0.00641</td></tr><tr><td>Ferrule bite (pole r − inner wall, pole frame)</td><td>−0.006–0.000 m</td><td>−0.00185</td></tr></tbody></table></div>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-pole wood tone. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
+<h3>Pot, ears and surface</h3>
+<p>The pot was a quadratic profile from a 28 mm tip: an onion that ran to a point. It is now a superellipse belly from a 75 mm flat base out to 0.180 m at 0.42 of the height, then a rounded shoulder in to a 0.128 m mouth. The inner wall is offset along the profile&#x27;s normal, not sideways, so it keeps its thickness where the wall runs nearly flat. <strong>Pot form</strong> asserts it; <code>--pointed-pot</code> restores the old profile (base 0.028 m, widest at 0.727 of the height) and exits 19.</p>
+<p>The ear rings stood in the bail&#x27;s own XZ plane, so the bail ran through the ring&#x27;s tube rather than its hole, and its ends hung into the pot&#x27;s mouth. The rings now lie flat, bite 2 mm into the rim&#x27;s outer edge, and the bail (vertical where it passes) threads them. Past each ear the bail is mirrored about the ring, so its ends hook outward. <strong>Bail through the ears</strong> asserts it; <code>--edge-on-ears</code> restores the old rings (36 ring vertices inside the bail) and exits 17.</p>
+<p>Cast iron is near-black and rough with rust in the pores; each pole has its own tone and grain along its axis. The temp <code>.glb</code> is removed after its size is measured.</p>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All seven were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named ferrule supports at Z=0</td><td>16</td></tr><tr><td><code>--float-hook</code></td><td>hook-bail gap</td><td>17</td></tr><tr><td><code>--pipe-ferrule</code></td><td>ferrule bite (pole starts above the well)</td><td>18</td></tr></tbody></table></div>
+<p>Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named ferrule supports at Z=0</td><td>16</td></tr><tr><td><code>--float-hook</code></td><td>hook-bail gap</td><td>17</td></tr><tr><td><code>--pipe-ferrule</code></td><td>ferrule bite (pole starts above the well)</td><td>18</td></tr><tr><td><code>--pointed-pot</code></td><td>pot form</td><td>19</td></tr><tr><td><code>--edge-on-ears</code></td><td>bail through the ears</td><td>17</td></tr></tbody></table></div>
 <h2>Run</h2>
 <pre><code>blender --background --python iron_cauldron.py --
 blender --background --python iron_cauldron.py -- --skip-decimate
@@ -303,11 +307,13 @@ blender --background --python iron_cauldron.py -- --lift-z
 blender --background --python iron_cauldron.py -- --short-legs
 blender --background --python iron_cauldron.py -- --float-hook
 blender --background --python iron_cauldron.py -- --pipe-ferrule
+blender --background --python iron_cauldron.py -- --pointed-pot
+blender --background --python iron_cauldron.py -- --edge-on-ears
 blender --background --python iron_cauldron.py -- --output cauldron.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer / pot clips tripod</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named ferrule floats</td></tr><tr><td>17</td><td>Joint fit: hook-bail gap</td></tr><tr><td>18</td><td>Seat: ferrule bite band</td></tr><tr><td>19</td><td>Pot diameter or height off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer / pot clips tripod</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named ferrule floats</td></tr><tr><td>17</td><td>Joint fit: hook-bail gap, or the bail not threading the ear rings</td></tr><tr><td>18</td><td>Seat: ferrule bite band</td></tr><tr><td>19</td><td>Pot diameter or height off the stated real-world size, or pot form (base radius, belly height)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -332,9 +338,12 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named ferrule
 supports, ``--float-hook`` hook-bail joint-fit, ``--pipe-ferrule``
-ferrule-cup seat (pole starts above the well).
+ferrule-cup seat (pole starts above the well), ``--pointed-pot`` pot
+form (the old quadratic profile that ran to a point), ``--edge-on-ears``
+bail through the ears (the old rings stood in the bail&#x27;s own plane).
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-pole wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -345,6 +354,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -368,9 +378,24 @@ POT_H = <span class="n">0.320</span>
 POT_THICK = <span class="n">0.012</span>
 N_AROUND = <span class="n">32</span>
 N_RINGS = <span class="n">12</span>
-R_BOT = <span class="n">0.028</span>
+R_BOT = <span class="n">0.075</span>
 R_MID = <span class="n">0.185</span>
-R_TOP = <span class="n">0.148</span>
+R_TOP = <span class="n">0.128</span>
+<span class="c"># The pot is a round belly on a small flat base: a superellipse quadrant</span>
+<span class="c"># from the base (radius R_BOT) out to the belly (R_BELLY at BELLY_Z), then</span>
+<span class="c"># a circular shoulder in to the mouth (R_TOP). --pointed-pot restores the</span>
+<span class="c"># old quadratic profile, which ran from a 28 mm tip.</span>
+R_BELLY = <span class="n">0.180</span>
+BELLY_Z = <span class="n">0.42</span> * <span class="n">0.320</span>
+BELLY_P = <span class="n">2.4</span>
+N_LOWER = <span class="n">7</span>
+POINTED_R_BOT = <span class="n">0.028</span>
+POT_BASE_MIN = <span class="n">0.05</span>
+POT_BELLY_MAX = <span class="n">0.60</span>
+<span class="c"># Per-pole wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">40.0</span>
 POT_Z0 = <span class="n">0.155</span>
 APEX_Z = <span class="n">0.860</span>
 TRIPOD_R = <span class="n">0.560</span>
@@ -390,6 +415,10 @@ BAIL_R = <span class="n">0.007</span>
 HOOK_R = <span class="n">0.006</span>
 EAR_MAJOR = <span class="n">0.018</span>
 EAR_MINOR = <span class="n">0.0045</span>
+<span class="c"># Ear rings lie flat (hole along Z) so the bail, vertical where it passes,</span>
+<span class="c"># threads the hole. Each ring bites EAR_BITE into the rim&#x27;s outer edge.</span>
+EAR_BITE = <span class="n">0.002</span>
+RIM_OUT = <span class="n">0.018</span>
 POLE_OFFSET = math.radians(<span class="n">18.0</span>)
 
 BBOX_TOL = <span class="n">0.015</span>
@@ -696,13 +725,48 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
-<span class="k">def</span> pot_radius(z_local):
+<span class="k">def</span> pointed_radius(z_local):
+    <span class="s">&quot;&quot;&quot;The old profile: a quadratic from a 28 mm tip (``--pointed-pot``).&quot;&quot;&quot;</span>
     t = max(<span class="n">0.0</span>, min(<span class="n">1.0</span>, z_local / POT_H))
     <span class="k">return</span> (
-        (<span class="n">1.0</span> - t) ** <span class="n">2</span> * R_BOT
+        (<span class="n">1.0</span> - t) ** <span class="n">2</span> * POINTED_R_BOT
         + <span class="n">2.0</span> * t * (<span class="n">1.0</span> - t) * (R_MID * <span class="n">1.32</span>)
         + t ** <span class="n">2</span> * R_TOP
     )
+
+
+<span class="k">def</span> pot_profile(pointed=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Outer and inner (z_local, r) rings of the pot wall, base to mouth.
+
+    The inner wall is the outer offset POT_THICK along the profile&#x27;s
+    inward normal, so the wall keeps its thickness where it runs nearly
+    flat under the belly; a horizontal offset thins it to nothing there.
+    &quot;&quot;&quot;</span>
+    <span class="k">if</span> pointed:
+        zs = [POT_H * i / (N_RINGS - <span class="n">1</span>) <span class="k">for</span> i <span class="k">in</span> range(N_RINGS)]
+        outer = [(z, pointed_radius(z)) <span class="k">for</span> z <span class="k">in</span> zs]
+        <span class="k">return</span> outer, [(z, max(r - POT_THICK, <span class="n">0.014</span>)) <span class="k">for</span> z, r <span class="k">in</span> outer]
+    outer = []
+    <span class="k">for</span> k <span class="k">in</span> range(N_LOWER):
+        th = <span class="n">0.5</span> * math.pi * k / (N_LOWER - <span class="n">1</span>)
+        sn = max(<span class="n">0.0</span>, math.sin(th)) ** (<span class="n">2.0</span> / BELLY_P)
+        cs = max(<span class="n">0.0</span>, math.cos(th)) ** (<span class="n">2.0</span> / BELLY_P)
+        outer.append((BELLY_Z * (<span class="n">1.0</span> - cs), R_BOT + (R_BELLY - R_BOT) * sn))
+    n_up = N_RINGS - N_LOWER + <span class="n">1</span>
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, n_up):
+        th = <span class="n">0.5</span> * math.pi * k / (n_up - <span class="n">1</span>)
+        outer.append((
+            BELLY_Z + (POT_H - BELLY_Z) * math.sin(th),
+            R_TOP + (R_BELLY - R_TOP) * math.cos(th),
+        ))
+    inner = []
+    <span class="k">for</span> i, (z, r) <span class="k">in</span> enumerate(outer):
+        z0, r0 = outer[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        z1, r1 = outer[min(i + <span class="n">1</span>, len(outer) - <span class="n">1</span>)]
+        tr, tz = r1 - r0, z1 - z0
+        ln = math.hypot(tr, tz)
+        inner.append((z + POT_THICK * tr / ln, r - POT_THICK * tz / ln))
+    <span class="k">return</span> outer, inner
 
 
 <span class="k">def</span> pole_feet():
@@ -718,6 +782,8 @@ METAL_IDX = <span class="n">1</span>
     short_legs=<span class="k">False</span>,
     float_hook=<span class="k">False</span>,
     pipe_ferrule=<span class="k">False</span>,
+    pointed_pot=<span class="k">False</span>,
+    edge_on_ears=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     wood_verts = []
@@ -725,7 +791,7 @@ METAL_IDX = <span class="n">1</span>
         <span class="c"># Dual-wall lathe plus a rolled rim. No overlapping torus, no</span>
         <span class="c"># extra bottom cylinder — those left a hole in the floor and a</span>
         <span class="c"># faceted lip sitting on the mouth.</span>
-        zs = [POT_H * i / (N_RINGS - <span class="n">1</span>) <span class="k">for</span> i <span class="k">in</span> range(N_RINGS)]
+        prof_out, prof_in = pot_profile(pointed_pot)
         rim = (
             (POT_H + <span class="n">0.004</span>, R_TOP + <span class="n">0.012</span>),
             (POT_H + <span class="n">0.010</span>, R_TOP + <span class="n">0.018</span>),
@@ -733,15 +799,14 @@ METAL_IDX = <span class="n">1</span>
             (POT_H + <span class="n">0.011</span>, R_TOP + <span class="n">0.006</span>),
         )
         outers, inners = [], []
-        <span class="k">for</span> z_local <span class="k">in</span> zs:
+        <span class="k">for</span> (z_local, r), (zi_local, ri) <span class="k">in</span> zip(prof_out, prof_in):
             z = POT_Z0 + z_local
-            r = pot_radius(z_local)
-            ri = max(r - POT_THICK, <span class="n">0.014</span>)
+            zi = POT_Z0 + zi_local
             oring, iring = [], []
             <span class="k">for</span> i <span class="k">in</span> range(N_AROUND):
                 a = <span class="n">2.0</span> * math.pi * i / N_AROUND
                 oring.append(bm.verts.new((r * math.cos(a), r * math.sin(a), z)))
-                iring.append(bm.verts.new((ri * math.cos(a), ri * math.sin(a), z)))
+                iring.append(bm.verts.new((ri * math.cos(a), ri * math.sin(a), zi)))
             outers.append(oring)
             inners.append(iring)
         <span class="k">for</span> z_off, r <span class="k">in</span> rim:
@@ -781,8 +846,16 @@ METAL_IDX = <span class="n">1</span>
             ibot.material_index = METAL_IDX
 
         mouth_z = POT_Z0 + POT_H
-        <span class="c"># Vertical rings (hole along Y) so the XZ bail can thread them.</span>
-        ear_x = R_TOP + <span class="n">0.008</span>
+        <span class="c"># Flat rings (hole along Z): the bail is vertical where it passes</span>
+        <span class="c"># the ear, so it threads the hole. The old rings were stood up in</span>
+        <span class="c"># the bail&#x27;s own XZ plane, so the bail ran through the ring&#x27;s tube;</span>
+        <span class="c"># --edge-on-ears restores them at the old position.</span>
+        <span class="k">if</span> edge_on_ears:
+            ear_x = R_TOP + <span class="n">0.008</span>
+            ear_euler = (math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+        <span class="k">else</span>:
+            ear_x = R_TOP + RIM_OUT + EAR_MAJOR + EAR_MINOR - EAR_BITE
+            ear_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
         ear_z = mouth_z + <span class="n">0.002</span>
         <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             add_torus(
@@ -793,17 +866,22 @@ METAL_IDX = <span class="n">1</span>
                 <span class="n">14</span>,
                 <span class="n">6</span>,
                 METAL_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                euler=ear_euler,
             )
-        <span class="c"># Semicircle through the ear holes, ends past the rings.</span>
+        <span class="c"># Semicircle through the ear holes. Past each ear the curve is</span>
+        <span class="c"># mirrored about the ear, so the ends hook outward and down instead</span>
+        <span class="c"># of hanging into the pot&#x27;s mouth.</span>
         t0 = -<span class="n">0.42</span>
         t1 = math.pi + <span class="n">0.42</span>
         bail_pts = []
         <span class="k">for</span> i <span class="k">in</span> range(BAIL_SEGS + <span class="n">1</span>):
             t = t0 + (t1 - t0) * i / BAIL_SEGS
-            bail_pts.append(
-                (ear_x * math.cos(t), <span class="n">0.0</span>, ear_z + ear_x * math.sin(t))
-            )
+            x = ear_x * math.cos(t)
+            <span class="k">if</span> t &lt; <span class="n">0.0</span>:
+                x = <span class="n">2.0</span> * ear_x - x
+            <span class="k">elif</span> t &gt; math.pi:
+                x = -<span class="n">2.0</span> * ear_x - x
+            bail_pts.append((x, <span class="n">0.0</span>, ear_z + ear_x * math.sin(t)))
         add_pipe_curve(bm, bail_pts, BAIL_R, BAIL_PIPE, METAL_IDX)
         bail_peak = Vector(bail_pts[len(bail_pts) // <span class="n">2</span>])
         hook_z = bail_peak.z + (<span class="n">0.08</span> <span class="k">if</span> float_hook <span class="k">else</span> <span class="n">0.0</span>)
@@ -926,6 +1004,131 @@ METAL_IDX = <span class="n">1</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
         nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every pole and the crown is its own shell, so each gets one tone and
+    grain running along its own long axis (along each pole).
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each pole (``GrainDir``), tone per pole (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> cauldron_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.
+
+    Cast iron is near-black and rough, with rust in the pores, not the
+    satin grey metal the pot first shipped with.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;TripodWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;CauldronIron&quot;</span>, (<span class="n">0.075</span>, <span class="n">0.072</span>, <span class="n">0.070</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.58</span>,
+        noise_scale=<span class="n">22.0</span>, wear=(<span class="n">0.10</span>, <span class="n">0.055</span>, <span class="n">0.03</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
@@ -1115,6 +1318,85 @@ METAL_IDX = <span class="n">1</span>
             cups.append(a)
     cup_z = min((a[<span class="n">2</span>] <span class="k">for</span> a <span class="k">in</span> cups), default=<span class="n">99.0</span>)
     <span class="k">return</span> {<span class="s">&quot;cups&quot;</span>: len(cups), <span class="s">&quot;cup_z&quot;</span>: cup_z}
+
+
+<span class="k">def</span> pot_form(me):
+    <span class="s">&quot;&quot;&quot;Base radius and belly height of the pot, from its outer wall.
+
+    The pot is the tallest wide iron shell. Its base radius is the widest
+    vertex on the lowest ring (the base centre excluded); the belly is
+    where the wall is widest, as a fraction of the pot&#x27;s height. A pot
+    that runs to a point has a base of a few millimetres.
+    &quot;&quot;&quot;</span>
+    best, best_r = <span class="k">None</span>, -<span class="n">1.0</span>
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g) != METAL_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        r = <span class="n">0.25</span> * ((a[<span class="n">3</span>] - a[<span class="n">0</span>]) + (a[<span class="n">4</span>] - a[<span class="n">1</span>]))
+        <span class="k">if</span> a[<span class="n">5</span>] - a[<span class="n">2</span>] &gt; <span class="n">0.20</span> <span class="k">and</span> r &gt; best_r:
+            best, best_r = (g, a), r
+    <span class="k">if</span> best <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">1.0</span>
+    g, a = best
+    z0 = a[<span class="n">2</span>]
+    base = max(
+        (math.hypot(me.vertices[i].co.x, me.vertices[i].co.y) <span class="k">for</span> i <span class="k">in</span> g
+         <span class="k">if</span> me.vertices[i].co.z &lt; z0 + <span class="n">1e-4</span>),
+        default=<span class="n">0.0</span>,
+    )
+    widest = max(g, key=<span class="k">lambda</span> i: math.hypot(me.vertices[i].co.x, me.vertices[i].co.y))
+    belly = (me.vertices[widest].co.z - z0) / max(POT_H, <span class="n">1e-6</span>)
+    <span class="k">return</span> base, belly
+
+
+<span class="k">def</span> ear_threading(me):
+    <span class="s">&quot;&quot;&quot;How the bail passes the two ear rings.
+
+    The ear rings are the two small iron shells level with the mouth;
+    the bail is the iron shell spanning the pot. A ring vertex inside
+    the bail (by the nearest face&#x27;s normal) is bail running through the
+    ring&#x27;s tube; the bail must also come within the ring&#x27;s hole of its
+    centre. Returns (rings, ring verts inside the bail, worst centre gap).
+    &quot;&quot;&quot;</span>
+    rings, bail = [], <span class="k">None</span>
+    mouth = POT_Z0 + POT_H
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, g) != METAL_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> max(dx, dy, dz) &lt; <span class="n">0.06</span> <span class="k">and</span> abs(<span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>]) - mouth) &lt; <span class="n">0.03</span>:
+            rings.append(g)
+        <span class="k">elif</span> dx &gt; <span class="n">0.25</span> <span class="k">and</span> dy &lt; <span class="n">0.05</span> <span class="k">and</span> a[<span class="n">2</span>] &gt; POT_Z0:
+            bail = g
+    <span class="k">if</span> bail <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(rings) != <span class="n">2</span>:
+        <span class="k">return</span> len(rings), <span class="n">99</span>, <span class="n">99.0</span>
+    bm_b = bmesh.new()
+    <span class="k">try</span>:
+        bm_b.from_mesh(me)
+        keep = set(bail)
+        drop = [f <span class="k">for</span> f <span class="k">in</span> bm_b.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm_b, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        bm_b.normal_update()
+        tree = BVHTree.FromBMesh(bm_b)
+        inside, worst = <span class="n">0</span>, <span class="n">0.0</span>
+        <span class="k">for</span> g <span class="k">in</span> rings:
+            c = Vector()
+            <span class="k">for</span> i <span class="k">in</span> g:
+                c += me.vertices[i].co
+            c /= len(g)
+            <span class="k">for</span> i <span class="k">in</span> g:
+                p = me.vertices[i].co
+                loc, nrm, _idx, _d = tree.find_nearest(p)
+                <span class="k">if</span> loc <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> nrm.dot(p - loc) &lt; <span class="n">0.0</span>:
+                    inside += <span class="n">1</span>
+            loc, _n, _i, d = tree.find_nearest(c)
+            worst = max(worst, d <span class="k">if</span> loc <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="n">99.0</span>)
+        <span class="k">return</span> len(rings), inside, worst
+    <span class="k">finally</span>:
+        bm_b.free()
 
 
 <span class="k">def</span> pot_audit(me):
@@ -1363,23 +1645,22 @@ METAL_IDX = <span class="n">1</span>
     short_legs=<span class="k">False</span>,
     float_hook=<span class="k">False</span>,
     pipe_ferrule=<span class="k">False</span>,
+    pointed_pot=<span class="k">False</span>,
+    edge_on_ears=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     flags = dict(
         short_legs=short_legs,
         float_hook=float_hook,
         pipe_ferrule=pipe_ferrule,
+        pointed_pot=pointed_pot,
+        edge_on_ears=edge_on_ears,
     )
     low = build_cauldron_mesh(<span class="s">&quot;CauldronLow&quot;</span>, **flags)
     high = build_cauldron_mesh(<span class="s">&quot;CauldronHigh&quot;</span>, **flags)
-    wood = principled(
-        <span class="s">&quot;TripodWood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.22</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>,
-        noise_scale=<span class="n">6.0</span>, wear=(<span class="n">0.22</span>, <span class="n">0.12</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;CauldronIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.095</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">0.92</span>, <span class="n">0.40</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.18</span>, <span class="n">0.16</span>, <span class="n">0.14</span>, <span class="n">1.0</span>),
-    )
+    wood, metal = cauldron_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     <span class="k">if</span> stray_vert:
@@ -1441,6 +1722,10 @@ METAL_IDX = <span class="n">1</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1448,6 +1733,8 @@ METAL_IDX = <span class="n">1</span>
     pot = pot_audit(low.data)
     hj = hook_bail_join(low.data)
     bite = ferrule_bite(low.data)
+    base_r, belly = pot_form(low.data)
+    n_ears, ear_in, ear_gap = ear_threading(low.data)
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1476,6 +1763,8 @@ METAL_IDX = <span class="n">1</span>
         <span class="s">f&quot;</span><span class="s">pot_dia=</span>{pot[<span class="s">&#x27;dia&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> pot_h=</span>{pot[<span class="s">&#x27;height&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">hook_join=</span>{hj:<span class="s">.5f</span>}<span class="s"> ferrule_bite=</span>{bite:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
+    print(<span class="s">f&quot;</span><span class="s">measured pot_base_r=</span>{base_r:<span class="s">.4f</span>}<span class="s"> belly_at=</span>{belly:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured ears=</span>{n_ears}<span class="s"> ring_verts_in_bail=</span>{ear_in}<span class="s"> ear_centre_gap=</span>{ear_gap:<span class="s">.5f</span>}<span class="s">&quot;</span>)
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -1568,6 +1857,13 @@ METAL_IDX = <span class="n">1</span>
             <span class="s">&quot;(--float-hook is the designed fail)&quot;</span>,
             <span class="n">17</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> n_ears != <span class="n">2</span> <span class="k">or</span> ear_in <span class="k">or</span> ear_gap &gt; EAR_MAJOR - EAR_MINOR:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">ears </span>{n_ears}<span class="s">: </span>{ear_in}<span class="s"> ring vertices inside the bail, bail </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{ear_gap:<span class="s">.5f</span>}<span class="s"> from a ring centre (hole </span>{EAR_MAJOR - EAR_MINOR:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--edge-on-ears is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> <span class="k">not</span> (FERRULE_BITE_MIN &lt;= bite &lt;= FERRULE_BITE_MAX):
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">ferrule bite </span>{bite:<span class="s">.5f</span>}<span class="s"> not in </span><span class="s">&quot;</span>
@@ -1583,6 +1879,13 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">if</span> abs(pot[<span class="s">&quot;height&quot;</span>] - BODY_H) &gt; BODY_H_TOL:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">pot height </span>{pot[<span class="s">&#x27;height&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{BODY_H}<span class="s">&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> base_r &lt; POT_BASE_MIN <span class="k">or</span> belly &gt; POT_BELLY_MAX:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">pot form: base radius </span>{base_r:<span class="s">.4f</span>}<span class="s"> &lt; </span>{POT_BASE_MIN}<span class="s"> or belly at </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{belly:<span class="s">.3f</span>}<span class="s"> of the height &gt; </span>{POT_BELLY_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--pointed-pot is the designed fail)&quot;</span>,
             <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
@@ -1704,6 +2007,8 @@ METAL_IDX = <span class="n">1</span>
     p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-hook&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--pipe-ferrule&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--pointed-pot&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--edge-on-ears&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1713,6 +2018,8 @@ METAL_IDX = <span class="n">1</span>
         short_legs=args.short_legs,
         float_hook=args.float_hook,
         pipe_ferrule=args.pipe_ferrule,
+        pointed_pot=args.pointed_pot,
+        edge_on_ears=args.edge_on_ears,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1737,7 +2044,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/iron-cauldron-hero.webp" alt="A black iron cauldron hanging from a tripod of wooden poles." />
+    <img src="../assets/iron-cauldron-hero.webp" alt="A round-bellied black iron cauldron hanging by its bail from a tripod of wooden poles." />
   </dialog>
   <footer>
     <div class="statusbar">

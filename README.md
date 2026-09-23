@@ -112,7 +112,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
   <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
-  <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course stone fire ring with a tripod of logs on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course ring of rounded fieldstones around a tripod of logs and glowing ash on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
   <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
@@ -132,7 +132,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wooden-bucket/"><img src="showcase/wooden-bucket/preview.webp" width="24%" alt="Wooden bucket: a coopered pail with a three-strand rope bail through iron ear rings and chord-lofted iron hoops on a dark studio floor" /></a>
   <a href="showcase/wall-torch/"><img src="showcase/wall-torch/preview.webp" width="24%" alt="Wall torch: a dressed stone plaque with an iron sconce, wooden haft, and flame on a dark studio floor" /></a>
   <a href="showcase/tavern-stool/"><img src="showcase/tavern-stool/preview.webp" width="24%" alt="Tavern stool: a round wooden seat on turned splayed legs with stretchers and iron ferrules on a dark studio floor" /></a>
-  <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a bulged iron pot hanging from a timber tripod on a dark studio floor" /></a>
+  <a href="showcase/iron-cauldron/"><img src="showcase/iron-cauldron/preview.webp" width="24%" alt="Iron cauldron: a round-bellied cast-iron pot hanging by its bail from a timber tripod on a dark studio floor" /></a>
   <a href="showcase/wooden-ladder/"><img src="showcase/wooden-ladder/preview.webp" width="24%" alt="Wooden ladder: a raked timber ladder with six rungs and iron shoes on a dark studio floor" /></a>
   <a href="showcase/hay-bale/"><img src="showcase/hay-bale/preview.webp" width="24%" alt="Hay bale: a bound straw bale with two sisal twine belts on a dark studio floor" /></a>
   <a href="showcase/crate-stack/"><img src="showcase/crate-stack/preview.webp" width="24%" alt="Crate stack: three slatted shipping crates stacked and yawed, each with iron corner straps and runners, on a dark studio floor" /></a>
@@ -145,7 +145,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`wooden-barrel`](showcase/wooden-barrel/) — procedural 20-stave wine-cask with boarded, croze-seated heads and chord-lofted hoops through the same pipeline. Falsifiers `--round-band` exits 18, `--one-piece-head` exits 17.
 
-[`campfire`](showcase/campfire/) — procedural cobble ring, logs, and ash through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`campfire`](showcase/campfire/) — procedural fieldstone ring, logs, and ash through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--uniform-stones` exits 20.
 
 [`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -185,7 +185,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`tavern-stool`](showcase/tavern-stool/) — procedural tavern stool with turned legs, stretchers, and iron ferrules through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`iron-cauldron`](showcase/iron-cauldron/) — procedural hanging iron cauldron on a timber tripod through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`iron-cauldron`](showcase/iron-cauldron/) — procedural round-bellied iron cauldron on a timber tripod through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--pointed-pot` exits 19.
 
 [`wooden-ladder`](showcase/wooden-ladder/) — procedural timber ladder with raked stiles, rungs, and iron shoes through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -450,7 +450,7 @@ three. `--assume-distinct-names` is red only on 5.2.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/usd-export-evaluation-mode/"><img src="examples/usd-export-evaluation-mode/preview.webp" alt="USD export evaluation_mode: two steel SUBSURF cubes on a dark studio floor — left faceted viewport tessellation, right smoother render tessellation, warm wedge on the back wall" /></a>
+<a href="examples/usd-export-evaluation-mode/"><img src="examples/usd-export-evaluation-mode/preview.webp" alt="USD export evaluation_mode: two steel SUBSURF cubes resting on a dark studio floor — left faceted viewport tessellation, right smoother render tessellation, warm wedge on the back wall" /></a>
 </td>
 <td valign="middle">
 
@@ -562,7 +562,7 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
+<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three separate cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
 </td>
 <td valign="middle">
 
