@@ -14,7 +14,7 @@ then the shipped pipeline:
 | Shipped content | Used for |
 | --- | --- |
 | `skills/mesh-editing-and-bmesh` | box, bevel and UV construction in one `bmesh` |
-| `skills/procedural-materials-and-shaders` | two Principled materials with noise-driven wear |
+| `skills/procedural-materials-and-shaders` | attribute-driven timber (per-plank tone, grain along each board) and rusted iron |
 | `skills/bake-high-to-low` | Cycles tangent-space normal bake, high onto low |
 | `skills/engine-export-presets` | Unity glTF (`export_yup=True`) |
 | `skills/depsgraph-and-evaluated-data` | evaluated triangle counts for the LOD ratios |
@@ -49,28 +49,30 @@ for the 4.5.11 / 5.1.2 figures.
 
 | Budget | Band | Measured |
 | --- | --- | --- |
-| Base triangles | 3200–7200 | 4380 |
+| Base triangles | 5200–7000 | 6060 |
 | LOD1 ratio | 0.32–0.62 | 0.5000 |
-| LOD2 ratio | 0.10–0.35 | 0.2005 (5.2) / 0.2199 (4.5, 5.1) |
+| LOD2 ratio | 0.10–0.35 | 0.2198 |
 | Material slots | exactly 2, distinct | 2 |
-| Iron faces | ≥ 120 | 216 |
-| Timber faces | ≥ 600 | 2436 |
-| UV bounds | inside 0..1 | (0.0008, 0.0008)–(0.9992, 0.9992) |
+| Iron faces | ≥ 900 | 1344 |
+| Timber faces | ≥ 1800 | 2418 |
+| UV bounds | inside 0..1 | (0.0006, 0.0007)–(0.9994, 0.9993) |
 | UV AABB overlap | ≤ 1e-5 | 0.000000 |
-| Outer AABB | 0.658 × 0.524 × 0.704 m ± 0.020 | 0.6582 × 0.5235 × 0.7040 |
-| Crate body footprint | 0.585 × 0.425 m ± 0.015, in the crate's own frame | 0.5846 × 0.4246 (all three) |
-| Collider triangles | ≤ 260 | 202 |
+| Outer AABB | 0.658 × 0.524 × 0.704 m ± 0.020 | 0.6583 × 0.5235 × 0.7040 |
+| Crate body footprint | 0.588 × 0.428 m ± 0.015, in the crate's own frame | 0.5882 × 0.4282 (all three) |
+| Collider triangles | ≤ 260 | 230 |
 | Normal bake | `{'FINISHED'}` with image data | `{'FINISHED'}`, `has_data=True` |
-| glTF export | file written, non-empty | ~340 kB |
+| glTF export | file written, non-empty | ~490 kB |
 | Hygiene | all zero | loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar disjoint pairs 0 |
 | Grounded AABB | \|zmin\| ≤ 1e-4 | 0.00000 |
 | Ground runners | 3 named supports, each zmin ≤ 1e-3 | 3 at 0.00000 |
 | Crate-to-crate seat | both seats, surface gap ≤ 0.0015 m | 0.00000 (overlapping) |
 | Yaw band | each \|yaw\| in 0.040–0.192 rad | 0.0681, 0.0943, 0.1093 |
 | Per-instance variation | yaw spread ≥ 0.020 rad, plank spread ≥ 0.0008 m | 0.0262 rad, 0.00205 m |
+| Nail seat | 48 nails; bite 0.3–1.0 mm into the strap, head ≥ 1.0 mm proud | 48; bite 0.60 mm, proud 1.80 mm |
+| Edge treatment | manifold edges within 5° of a right angle: 0 | timber 0, iron 0 |
 
-Real-world size: each crate is 0.58 × 0.42 m at the timber and 0.585 × 0.425 m
-over the corner iron, 0.244 m tall including runners and lid. Three stacked
+Real-world size: each crate is 0.58 × 0.42 m at the timber and 0.588 × 0.428 m
+over the corner iron and its nail heads, 0.244 m tall including runners and lid. Three stacked
 come to 0.70 m — knee height, wider than tall.
 
 ### Why the footprint is measured in the crate's own frame
@@ -79,7 +81,7 @@ The stack AABB is the union of three yawed boxes, so a crate could drift to
 any size underneath it and the outer budget would not notice. Each crate's
 footprint is therefore measured after un-rotating by the yaw that crate was
 *measured* to have, not the yaw it was built with. All three land on
-0.5846 × 0.4246 m exactly, which is what makes the un-rotation trustworthy.
+0.5882 × 0.4282 m exactly, which is what makes the un-rotation trustworthy.
 
 ### Why parts are classified by principal axes
 
@@ -98,18 +100,48 @@ shifted a crate, and the seat budget then compared a crate against itself.
 The bands are clustered from the runner heights the mesh actually has, so
 they follow the geometry including when a falsifier moves it.
 
+### Why the corner iron is one shell
+
+Each strap used to be two overlapping boxes, one per leg of the L. Both
+boxes had a vertical edge on the strap's outer corner, and once the iron
+was chamfered each box laid a chamfer strip on that same line: a coplanar
+cross-shell pair at all twelve corners, which the z-fight budget caught.
+The strap is now a single L-section extrusion — each cap two convex quads
+meeting on the inner-corner diagonal, so no n-gon — with one outer corner.
+The iron bevel passes `material=METAL_IDX`; left to its default, bevel
+gave the chamfer faces slot 0 and the plates rendered and classified as
+timber.
+
+### Why nails are told from plates by the strap's size
+
+Nail and plate shells are both iron; the nail audit separates them by
+world-AABB extent. The threshold is `IRON_WRAP * 0.5`, derived from the
+strap. A fixed 10 mm threshold dropped 8 of 48 nails as soon as the heads
+grew to 10 mm, because a yawed head's world AABB is wider than the head.
+
+### Timber surface
+
+`paint_planks` writes two face attributes: `PlankTone`, a seeded tone per
+shell, and `GrainDir`, the shell's own long axis recovered from its
+vertices. The wood shader samples noise in object space with the
+component along `GrainDir` compressed, so the grain streaks run along
+each board whatever the crate's yaw, and scales the colour by the plank's
+tone. Neither attribute is a budget: a tone cannot be seen by an
+assertion, which is why the inspection sheet looked at it.
+
 ## Determinism
 
 Fixed seed 41; no unseeded randomness. Identical geometry across runs on one
 binary and across 4.5.11, 5.1.2 and 5.2.1 — every measured value above is
-byte-identical on the three **except** LOD2, where `DECIMATE COLLAPSE`
-produces 878 triangles on 5.2 and 934 on 4.5 and 5.1. That is why the LOD
-gate is a ratio band (0.10–0.35, measured 0.2005 and 0.2199) and not an exact
-count.
+byte-identical on the three. LOD2 used to differ — `DECIMATE COLLAPSE`
+produced 878 triangles on 5.2 and 934 on 4.5 and 5.1 on the earlier mesh —
+and on the current mesh lands on 1332 on all three. The LOD gate stays a
+ratio band (0.10–0.35) rather than an exact count, because that agreement
+is a property of this mesh, not of the modifier.
 
 ## Falsifiers
 
-Each breaks one pipeline stage so a **named** budget fails. All six were run
+Each breaks one pipeline stage so a **named** budget fails. All eight were run
 on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.
 
 | Flag | Breaks | Exit |
@@ -120,6 +152,8 @@ on 4.5.11, 5.1.2 and 5.2.1 and produced the same exit code on all three.
 | `--short-skids` | floats **one** of the three ground runners 12 mm; the other two still ground the AABB, so only the named-support budget sees it | 16 |
 | `--float-stack` | lifts the top crate 9 mm clear of the lid below, opening a 34 mm seat gap | 18 |
 | `--same-seed` | gives all three crates the same design seed; yaw spread and plank spread both go to 0 | 20 |
+| `--float-nails` | lifts every nail head 1.5 mm along its plate normal; bite goes to −0.90 mm, nail seat budget | 18 |
+| `--sharp-iron` | skips the iron chamfer pass; 216 right-angle iron edges, edge-treatment budget | 21 |
 
 ## Exit codes
 
@@ -145,9 +179,10 @@ against it. `1` is the FATAL wrapper — a crash, never a named check.
 | 14 | `--output` produced no file |
 | 15 | Mesh hygiene (`--stray-vert`) |
 | 16 | Grounded zmin, or a named ground runner floating (`--lift-z`, `--short-skids`) |
-| 18 | Crate-to-crate seat gap (`--float-stack`) |
+| 18 | Crate-to-crate seat gap (`--float-stack`), or a nail head off its strap seat band (`--float-nails`) |
 | 19 | Crate body footprint off declared size |
 | 20 | Per-instance variation collapsed (`--same-seed`) |
+| 21 | A manifold edge within 5° of a right angle: a chamfer pass skipped (`--sharp-iron`) |
 
 `17` is unused here: this piece has no diagonal member. `15`–`19` are
 reserved across showcase pieces for the hygiene family, so the numbering
@@ -156,7 +191,7 @@ skips rather than reuses.
 ## Run it
 
 ```bash
-# Budget check, no render. ~1.0 s on 4.5/5.1, ~1.2 s on 5.2.
+# Budget check, no render. ~1.4-1.7 s on 4.5 / 5.1 / 5.2.
 blender --background --python crate_stack.py --
 
 # Falsifier: the three crates become copies. Must exit 20.
@@ -175,11 +210,13 @@ Smoke runs the check-only path. It does not pass `--output` or any falsifier.
 
 | Value | 4.5.11 | 5.1.2 | 5.2.1 |
 | --- | --- | --- | --- |
-| Base triangles | 4380 | 4380 | 4380 |
-| LOD1 tris / ratio | 2190 / 0.5000 | 2190 / 0.5000 | 2190 / 0.5000 |
-| LOD2 tris / ratio | 934 / 0.2199 | 934 / 0.2199 | 878 / 0.2005 |
-| Outer AABB | 0.6582 × 0.5235 × 0.7040 | same | same |
-| Collider tris | 202 | 202 | 202 |
+| Base triangles | 6060 | 6060 | 6060 |
+| LOD1 tris / ratio | 3030 / 0.5000 | 3030 / 0.5000 | 3030 / 0.5000 |
+| LOD2 tris / ratio | 1332 / 0.2198 | 1332 / 0.2198 | 1332 / 0.2198 |
+| Outer AABB | 0.6583 × 0.5235 × 0.7040 | same | same |
+| Collider tris | 230 | 230 | 230 |
 | Yaws (rad) | 0.0943, −0.1093, 0.0681 | same | same |
 | Seat gap | 0.00000 | 0.00000 | 0.00000 |
-| Check wall-clock | ~0.99 s | ~1.01 s | ~1.20 s |
+| Nails / bite / proud | 48 / 0.60 mm / 1.80 mm | same | same |
+| Right-angle edges | 0 | 0 | 0 |
+| Check wall-clock | ~1.59 s | ~1.41 s | ~1.65 s |
