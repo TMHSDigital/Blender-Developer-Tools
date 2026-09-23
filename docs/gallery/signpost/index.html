@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/signpost-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden signpost with two pointed finger boards and dark iron bands on the post." />
+  <meta property="og:image:alt" content="A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="signpost — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber fingerboard signpost through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/signpost-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden signpost with two pointed finger boards and dark iron bands on the post." />
+  <meta name="twitter:image:alt" content="A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A procedural timber fingerboard signpost through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden signpost with two pointed finger boards and dark iron bands on the post.">
-      <img src="../assets/signpost-hero.webp" alt="A wooden signpost with two pointed finger boards and dark iron bands on the post." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post.">
+      <img src="../assets/signpost-hero.webp" alt="A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 376 tris, three materials with 108 metal, 22 board and 60 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.260×0.142×1.551 m at zmin 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD1/LOD2), convex collider 52 tris, non-empty glTF. Hygiene all zero. Board-to-post gap 5 mm, strap gap 3 mm, board AABB Y 28 mm. --skip-decimate exits 9; --stray-vert 15; --lift-z / --short-shoe 16; --gap-board 17; --float-strap 18; --yaw-boards 19.</div>
@@ -285,9 +285,11 @@
 <p>Intended size: 1.48 m post, boards 0.62 m and 0.54 m, 0.118 m post stock; outer AABB 1.260 × 0.142 × 1.551 m.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>320–480</td><td>376 / 376 / 376</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.4681</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2181 / 0.2181 / 0.1649</td></tr><tr><td>Materials</td><td>exactly 3 distinct, ≥24 metal, ≥12 board, ≥12 wood</td><td>3 slots, 108 metal, 22 board, 60 wood</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.260, 0.142, 1.551) m ± 0.015</td><td>(1.2600, 0.1420, 1.5510), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>52</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>35688 / 35688 / 35676 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>320–480</td><td>376 / 376 / 376</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.4681</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2181 / 0.2181 / 0.1649</td></tr><tr><td>Materials</td><td>exactly 3 distinct, ≥24 metal, ≥12 board, ≥12 wood</td><td>3 slots, 108 metal, 22 board, 60 wood</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.260, 0.142, 1.551) m ± 0.015</td><td>(1.2600, 0.1420, 1.5510), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>52</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>35648 / 35648 / 35640 bytes</td></tr></tbody></table></div>
 <p>Base triangles dropped from <strong>504 to 376</strong> in the quality pass: glued diamond cubes and a solid shoe block became wedges and a four-plate collar. Outer AABB tightened from 1.368 × 0.201 × 1.566 m.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD1 and LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD1 and LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are sorted by edge index, so the face order is the same on every run. Export byte counts differ on 5.2.1 (glTF serializer), not a gated axis.</p>
+<h3>Surface and stage</h3>
+<p>The quality pass found no geometric defect: the boards, straps, bands and shoe seat as their budgets say. The defects were surface. The finger boards were flat pale yellow; they are now cream paint worn through to the wood by a noise mask, a shade apart per board. The iron read as chrome (metallic 1.0, roughness 0.38) and is now rusted. The post has its own tone and grain. The stage grid grew from 14 to 60 m, because the wall&#x27;s left edge showed in the corner of the hero. The temp <code>.glb</code> is removed after its size is measured. With no new geometric defect, there is no new budget.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named shoe plates</td><td>≥1, each <code>zmin</code> ≤ 0.002</td><td>4, 0.00000</td></tr></tbody></table></div>
@@ -331,7 +333,8 @@ the post half plus overhang, added after bevel. The post stays on the
 origin. Hygiene family 15–19: ``--stray-vert``, ``--short-shoe``,
 ``--gap-board``, ``--float-strap``, ``--yaw-boards``.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-piece wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -342,6 +345,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -402,6 +406,11 @@ BOARD_FACES_MIN = <span class="n">12</span>
 WOOD_IDX = <span class="n">0</span>
 BOARD_IDX = <span class="n">1</span>
 METAL_IDX = <span class="n">2</span>
+
+<span class="c"># Per-piece wood tone jitter and grain frequency, as in shipping-crate.</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">29</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
@@ -587,6 +596,10 @@ BOARD_DY_MAX = <span class="n">0.055</span>
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
             edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># set order follows memory addresses; sort so the bevel, and the</span>
+            <span class="c"># face order it produces, are the same on every run</span>
+            bm.edges.index_update()
+            edges.sort(key=<span class="k">lambda</span> e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -699,6 +712,165 @@ BOARD_DY_MAX = <span class="n">0.055</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
         nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    The post and each finger board is its own shell, so each gets one
+    tone and grain running along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along the post (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> board_material(name):
+    <span class="s">&quot;&quot;&quot;Painted finger boards, weathered: cream paint worn through to wood.
+
+    A noise mask on object coordinates picks where the paint has gone and
+    the wood grain shows; ``PlankTone`` shifts each board&#x27;s paint so the
+    two boards are not one board twice.
+    &quot;&quot;&quot;</span>
+    mat = wood_material(name)
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    grain = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].links[<span class="n">0</span>].from_socket
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    wear = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    wear.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">18.0</span>
+    wear.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    wear.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.65</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], wear.inputs[<span class="s">&quot;Vector&quot;</span>])
+    mask = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    mask.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.58</span>
+    mask.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.66</span>
+    nt.links.new(wear.outputs[<span class="s">&quot;Fac&quot;</span>], mask.inputs[<span class="s">&quot;Fac&quot;</span>])
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    paint = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    paint.data_type = <span class="s">&quot;RGBA&quot;</span>
+    _sock(paint.inputs, <span class="s">&quot;A_Color&quot;</span>).default_value = (<span class="n">0.62</span>, <span class="n">0.56</span>, <span class="n">0.42</span>, <span class="n">1.0</span>)
+    _sock(paint.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.74</span>, <span class="n">0.68</span>, <span class="n">0.52</span>, <span class="n">1.0</span>)
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(paint.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(mask.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(_sock(paint.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(grain, _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> signpost_materials():
+    <span class="s">&quot;&quot;&quot;(wood, board, iron): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;SignpostWood&quot;</span>)
+    board = board_material(<span class="s">&quot;SignpostBoard&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;SignpostIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, board, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, board, metal):
@@ -1033,18 +1205,9 @@ BOARD_DY_MAX = <span class="n">0.055</span>
     )
     low = build_signpost_mesh(<span class="s">&quot;SignpostLow&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">2</span>, **kw)
     high = build_signpost_mesh(<span class="s">&quot;SignpostHigh&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">4</span>, **kw)
-    wood = principled(
-        <span class="s">&quot;SignpostWood&quot;</span>, (<span class="n">0.34</span>, <span class="n">0.18</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
-        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.22</span>, <span class="n">0.10</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
-    )
-    board = principled(
-        <span class="s">&quot;SignpostBoard&quot;</span>, (<span class="n">0.76</span>, <span class="n">0.58</span>, <span class="n">0.22</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.52</span>,
-        noise_scale=<span class="n">10.0</span>, wear=(<span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.14</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;SignpostIron&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.145</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.38</span>,
-        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.22</span>, <span class="n">0.18</span>, <span class="n">0.14</span>, <span class="n">1.0</span>),
-    )
+    wood, board, metal = signpost_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, board, metal)
     assign_slots(high, wood, board, metal)
 
@@ -1100,6 +1263,10 @@ BOARD_DY_MAX = <span class="n">0.055</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at the working directory, so the export must not</span>
+    <span class="c"># outlive the measurement.</span>
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1263,7 +1430,9 @@ BOARD_DY_MAX = <span class="n">0.055</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        <span class="c"># Oversized so no edge of the set can enter frame; at 14 m the wall&#x27;s</span>
+        <span class="c"># left edge showed in the corner of the hero.</span>
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1391,7 +1560,7 @@ BOARD_DY_MAX = <span class="n">0.055</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/signpost-hero.webp" alt="A wooden signpost with two pointed finger boards and dark iron bands on the post." />
+    <img src="../assets/signpost-hero.webp" alt="A wooden signpost with two pointed finger boards in worn cream paint and rusted iron bands on the post." />
   </dialog>
   <footer>
     <div class="statusbar">

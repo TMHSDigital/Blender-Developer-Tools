@@ -11,7 +11,8 @@ the post half plus overhang, added after bevel. The post stays on the
 origin. Hygiene family 15–19: ``--stray-vert``, ``--short-shoe``,
 ``--gap-board``, ``--float-strap``, ``--yaw-boards``.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is the seeded per-piece wood
+tone. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -22,6 +23,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -82,6 +84,11 @@ BOARD_FACES_MIN = 12
 WOOD_IDX = 0
 BOARD_IDX = 1
 METAL_IDX = 2
+
+# Per-piece wood tone jitter and grain frequency, as in shipping-crate.
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 29
+WOOD_GRAIN_SCALE = 30.0
 
 DOUBLES_EPS = 1e-5
 AREA_EPS = 1e-10
@@ -267,6 +274,10 @@ def build_signpost_mesh(
 
         if bevel_offset > 0.0:
             edges = list({e for v in wood for e in v.link_edges})
+            # set order follows memory addresses; sort so the bevel, and the
+            # face order it produces, are the same on every run
+            bm.edges.index_update()
+            edges.sort(key=lambda e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -379,6 +390,165 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], fac)
         nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    The post and each finger board is its own shell, so each gets one
+    tone and grain running along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along the post (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def board_material(name):
+    """Painted finger boards, weathered: cream paint worn through to wood.
+
+    A noise mask on object coordinates picks where the paint has gone and
+    the wood grain shows; ``PlankTone`` shifts each board's paint so the
+    two boards are not one board twice.
+    """
+    mat = wood_material(name)
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    grain = bsdf.inputs["Base Color"].links[0].from_socket
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    wear = nt.nodes.new("ShaderNodeTexNoise")
+    wear.inputs["Scale"].default_value = 18.0
+    wear.inputs["Detail"].default_value = 8.0
+    wear.inputs["Roughness"].default_value = 0.65
+    nt.links.new(coord.outputs["Object"], wear.inputs["Vector"])
+    mask = nt.nodes.new("ShaderNodeValToRGB")
+    mask.color_ramp.elements[0].position = 0.58
+    mask.color_ramp.elements[1].position = 0.66
+    nt.links.new(wear.outputs["Fac"], mask.inputs["Fac"])
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    paint = nt.nodes.new("ShaderNodeMix")
+    paint.data_type = "RGBA"
+    _sock(paint.inputs, "A_Color").default_value = (0.62, 0.56, 0.42, 1.0)
+    _sock(paint.inputs, "B_Color").default_value = (0.74, 0.68, 0.52, 1.0)
+    nt.links.new(tone.outputs["Fac"], _sock(paint.inputs, "Factor_Float"))
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    nt.links.new(mask.outputs["Color"], _sock(mix.inputs, "Factor_Float"))
+    nt.links.new(_sock(paint.outputs, "Result_Color"), _sock(mix.inputs, "A_Color"))
+    nt.links.new(grain, _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    return mat
+
+
+def signpost_materials():
+    """(wood, board, iron): shared by the check, the render and inspection."""
+    wood = wood_material("SignpostWood")
+    board = board_material("SignpostBoard")
+    metal = principled(
+        "SignpostIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, board, metal
 
 
 def assign_slots(obj, wood, board, metal):
@@ -713,18 +883,9 @@ def check(
     )
     low = build_signpost_mesh("SignpostLow", bevel_offset=0.004, bevel_segments=2, **kw)
     high = build_signpost_mesh("SignpostHigh", bevel_offset=0.004, bevel_segments=4, **kw)
-    wood = principled(
-        "SignpostWood", (0.34, 0.18, 0.07, 1.0), 0.0, 0.62,
-        noise_scale=14.0, wear=(0.22, 0.10, 0.04, 1.0),
-    )
-    board = principled(
-        "SignpostBoard", (0.76, 0.58, 0.22, 1.0), 0.0, 0.52,
-        noise_scale=10.0, wear=(0.55, 0.38, 0.14, 1.0),
-    )
-    metal = principled(
-        "SignpostIron", (0.14, 0.145, 0.155, 1.0), 1.0, 0.38,
-        noise_scale=18.0, wear=(0.22, 0.18, 0.14, 1.0),
-    )
+    wood, board, metal = signpost_materials()
+    paint_planks(low.data)
+    paint_planks(high.data)
     assign_slots(low, wood, board, metal)
     assign_slots(high, wood, board, metal)
 
@@ -780,6 +941,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at the working directory, so the export must not
+    # outlive the measurement.
+    if os.path.exists(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -943,7 +1108,9 @@ def render_still(low, wood, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        # Oversized so no edge of the set can enter frame; at 14 m the wall's
+        # left edge showed in the corner of the hero.
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
