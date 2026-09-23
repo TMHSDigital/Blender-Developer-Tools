@@ -187,8 +187,33 @@ def render_still(obj, path, engine):
     # tip the grid so depth reads; cubes already rest on the floor via the tree
     obj.rotation_euler = (0.0, 0.0, math.radians(24))
 
+    # The source Mesh Grid drawn as a faint lattice on the floor, turned with
+    # the instances, so the still shows grid points in and one cube per
+    # point out. Render-only: the same GRID_SIZE / GRID_X / GRID_Y the tree
+    # uses, as a wireframe 1 mm above the floor.
+    lat_me = bpy.data.meshes.new("Lattice")
+    lbm = bmesh.new()
+    try:
+        bmesh.ops.create_grid(lbm, x_segments=GRID_X - 1, y_segments=GRID_Y - 1,
+                              size=GRID_HALF)
+        lbm.to_mesh(lat_me)
+    finally:
+        lbm.free()
+    lat_mat = bpy.data.materials.new("Lattice")
+    lat_mat.use_nodes = True
+    lb = lat_mat.node_tree.nodes["Principled BSDF"]
+    lb.inputs["Base Color"].default_value = (0.30, 0.42, 0.26, 1.0)
+    lb.inputs["Roughness"].default_value = 0.6
+    lat_me.materials.append(lat_mat)
+    lattice = bpy.data.objects.new("Lattice", lat_me)
+    lattice.location = (0.0, 0.0, 0.001)
+    lattice.rotation_euler = obj.rotation_euler
+    wire = lattice.modifiers.new("lattice", "WIREFRAME")
+    wire.thickness = 0.018
+    scene.collection.objects.link(lattice)
+
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, CUBE_SIZE / 2)
+    aim.location = (-0.12, 0.0, 0.0)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -220,7 +245,9 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.7, -4.3, 2.7)
+    # Higher, so the 3 x 3 layout reads as a grid: from 2.7 m the perspective
+    # scrambled the rows and the right column crowded the frame edge.
+    cam.location = (3.4, -4.6, 4.3)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
