@@ -22,6 +22,7 @@ on:
       - "scripts/build_gallery.py"
       - "scripts/site/**"
       - "CHANGELOG.md"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +34,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # A push that will cut a release gets its deploy from release.yml, which dispatches
+  # this workflow after committing the version bump. Deploying on the push too only
+  # built a page that the dispatch then cancelled (8 of 9 push runs measured, #215).
+  # The pattern mirrors release.yml's "Determine bump type" step exactly. If that
+  # release fails, redeploy by hand: Actions > Deploy GitHub Pages > Run workflow.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.decide.outputs.deploy }}
+    steps:
+      - id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+        run: |
+          deploy=true
+          if [ "$EVENT" = "push" ] && echo "$COMMITS" \
+              | jq -r '.[].message | split("\n")[0]' \
+              | grep -qiE '^(feat|feature|fix)(\(.+\))?!?:|BREAKING[ -]CHANGE'; then
+            deploy=false
+            echo "Release-worthy push: release.yml dispatches Pages after the version bump."
+          fi
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          echo "deploy=$deploy"
+
   build-and-deploy:
+    needs: gate
+    if: needs.gate.outputs.deploy == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
