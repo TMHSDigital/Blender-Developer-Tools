@@ -156,6 +156,9 @@ jobs:
           fi
           echo "docs/gallery/ matches scripts/build_gallery.py output."
 
+      - name: Check gallery hero and preview sizes
+        run: python3 tests/check_gallery_images.py
+
       - name: Validate template Python syntax
         run: |
           echo "Checking template Python syntax..."
