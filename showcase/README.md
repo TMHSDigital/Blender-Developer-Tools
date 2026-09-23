@@ -56,7 +56,9 @@ entry in `showcase/gallery.json`, and a rendered still.
   (exit 18). `--pile-rocks` draws scattered stones together so they
   interpenetrate (file-local code; `terrain-scatter` uses 20).
   `--straddle-handle` mounts a fixture across a board gap (file-local
-  code; `shipping-crate` uses 20).
+  code; `shipping-crate` uses 20). `--odd-loaf` breaks a body's own
+  mirror symmetry (exit 19). `--lift-lid-bands` floats bands off a
+  curved host (exit 18).
   `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
   (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
@@ -361,6 +363,26 @@ entry in `showcase/gallery.json`, and a rendered still.
   A falsifier that only skips the relaxation proves nothing if the parts
   happen to miss anyway; `terrain-scatter`'s `--pile-rocks` also draws
   the scatter inward so collisions are guaranteed.
+- **Assert a body's symmetry on the body (exit 19).** Where mirrored
+  parts are hung on a body, the body itself must be mirror-symmetric:
+  give every vertex a partner at its mirror position within a named
+  epsilon (a KD-tree lookup). A budget on the hung parts sees an odd
+  shaping term only second-hand. **Triangulate non-planar quads along
+  their short diagonals** before raycasting a body or shipping it: a
+  fixed split is not mirror-symmetric, and `hay-bale` sampled surfaces
+  5.6 mm apart at mirrored stations on vertices that matched to 71 um.
+  Apply an odd-term falsifier *after* any angle-selected bevel, or the
+  asymmetry changes which edges the bevel picks and the bounding box
+  fires first.
+- **Bands on a curved host are built on the host's arc (exit 18).** A
+  band on a vault, drum or hoop is one slab on the host's own radius
+  function, with the host's segment count, not a chain of boxes rotated
+  per segment. Rotating a box to a circle's tangent at angle `t` about X
+  needs `-t` when the arc is parameterised as `(sin t, cos t)`, and
+  `treasure-chest`'s `+t` fanned every segment out like feathers. Assert
+  the band radially in the host's construction frame, un-rotating any
+  hinge swing and undoing any re-centring from a part known to be
+  symmetric.
 - **A fixture is mounted on a member, not across a gap (file-local
   code).** Handles, hinges, hasps and plates screwed to planked faces
   must land on one board. A height fixed as a fraction of the frame lands

@@ -124,6 +124,34 @@ def render_still(obj, path, engine):
     # center the staircase footprint; origin is step-0 center
     obj.location = (-(STEPS - 1) * CUBE_SIZE / 2, 0.0, HALF)
 
+    # Stepped plinths under steps 1 and up. The joined steps meet only
+    # along an edge (the geometry the check asserts), so without support
+    # the upper cubes hung in the air. Render-only scaffolding, slimmer
+    # than a step and stopping 2 mm short so no face is shared.
+    plinth_mat = bpy.data.materials.new("Plinth")
+    plinth_mat.use_nodes = True
+    pb = plinth_mat.node_tree.nodes["Principled BSDF"]
+    pb.inputs["Base Color"].default_value = (0.11, 0.115, 0.125, 1.0)
+    pb.inputs["Roughness"].default_value = 0.75
+    plinths = []
+    for i in range(1, STEPS):
+        top = i * CUBE_SIZE - 0.002
+        pme = bpy.data.meshes.new(f"Plinth{i}")
+        pbm = bmesh.new()
+        try:
+            bmesh.ops.create_cube(pbm, size=1.0)
+            bmesh.ops.scale(pbm, vec=(CUBE_SIZE * 0.86, CUBE_SIZE * 0.86, top),
+                            verts=pbm.verts)
+            bmesh.ops.translate(pbm, vec=(0.0, 0.0, top / 2.0), verts=pbm.verts)
+            pbm.to_mesh(pme)
+        finally:
+            pbm.free()
+        pme.materials.append(plinth_mat)
+        pob = bpy.data.objects.new(f"Plinth{i}", pme)
+        pob.location = (obj.location.x + i * CUBE_SIZE, 0.0, 0.0)
+        scene.collection.objects.link(pob)
+        plinths.append(pob)
+
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
@@ -150,7 +178,7 @@ def render_still(obj, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, STEPS * CUBE_SIZE / 2)
+    aim.location = (0.0, 0.0, STEPS * CUBE_SIZE * 0.4)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -166,14 +194,19 @@ def render_still(obj, path, engine):
         lc.track_axis = 'TRACK_NEGATIVE_Z'
         lc.up_axis = 'UP_Y'
 
-    light("Key", (-4.0, -5.0, 6.0), 1500.0, 6.0, (1.0, 0.98, 0.94))
-    light("Fill", (5.0, -3.5, 3.0), 340.0, 8.0, (0.8, 0.87, 1.0))
-    light("Rim", (1.5, 5.0, 2.5), 480.0, 4.0, (1.0, 0.75, 0.45))
+    # 1500 W was tuned under the default AgX view; under Standard it lifted
+    # the frame above the calibration luma band.
+    light("Key", (-4.0, -5.0, 6.0), 950.0, 6.0, (1.0, 0.98, 0.94))
+    # Fill and rim softened: at 340 / 480 they threw a hot pool onto the
+    # floor to the right of the steps, the brightest thing in frame.
+    light("Fill", (5.0, -3.5, 3.0), 200.0, 8.0, (0.8, 0.87, 1.0))
+    light("Rim", (1.5, 5.0, 2.5), 220.0, 4.0, (1.0, 0.75, 0.45))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (5.0, -6.4, 4.6)
+    # Pulled back so the plinths, which reach the floor, clear the bottom edge.
+    cam.location = (5.7, -7.3, 5.1)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new('TRACK_TO')
@@ -193,6 +226,7 @@ def render_still(obj, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    scene.view_settings.view_transform = 'Standard'  # docs/VISUAL-STYLE.md
     bpy.ops.render.render(write_still=True)
     return os.path.exists(path) and os.path.getsize(path) > 0
 

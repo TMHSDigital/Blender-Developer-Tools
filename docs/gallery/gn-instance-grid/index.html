@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A three-by-three grid of green instanced cubes on a dark floor." />
+  <meta property="og:image:alt" content="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-instance-grid — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
-  <meta name="twitter:image:alt" content="A three-by-three grid of green instanced cubes on a dark floor." />
+  <meta name="twitter:image:alt" content="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A three-by-three grid of green instanced cubes on a dark floor.">
-      <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes on a dark floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor.">
+      <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.</div>
@@ -490,8 +490,33 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     <span class="c"># tip the grid so depth reads; cubes already rest on the floor via the tree</span>
     obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">24</span>))
 
+    <span class="c"># The source Mesh Grid drawn as a faint lattice on the floor, turned with</span>
+    <span class="c"># the instances, so the still shows grid points in and one cube per</span>
+    <span class="c"># point out. Render-only: the same GRID_SIZE / GRID_X / GRID_Y the tree</span>
+    <span class="c"># uses, as a wireframe 1 mm above the floor.</span>
+    lat_me = bpy.data.meshes.new(<span class="s">&quot;Lattice&quot;</span>)
+    lbm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(lbm, x_segments=GRID_X - <span class="n">1</span>, y_segments=GRID_Y - <span class="n">1</span>,
+                              size=GRID_HALF)
+        lbm.to_mesh(lat_me)
+    <span class="k">finally</span>:
+        lbm.free()
+    lat_mat = bpy.data.materials.new(<span class="s">&quot;Lattice&quot;</span>)
+    lat_mat.use_nodes = <span class="k">True</span>
+    lb = lat_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    lb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.30</span>, <span class="n">0.42</span>, <span class="n">0.26</span>, <span class="n">1.0</span>)
+    lb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    lat_me.materials.append(lat_mat)
+    lattice = bpy.data.objects.new(<span class="s">&quot;Lattice&quot;</span>, lat_me)
+    lattice.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.001</span>)
+    lattice.rotation_euler = obj.rotation_euler
+    wire = lattice.modifiers.new(<span class="s">&quot;lattice&quot;</span>, <span class="s">&quot;WIREFRAME&quot;</span>)
+    wire.thickness = <span class="n">0.018</span>
+    scene.collection.objects.link(lattice)
+
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
+    aim.location = (-<span class="n">0.12</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -523,7 +548,9 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.7</span>, -<span class="n">4.3</span>, <span class="n">2.7</span>)
+    <span class="c"># Higher, so the 3 x 3 layout reads as a grid: from 2.7 m the perspective</span>
+    <span class="c"># scrambled the rows and the right column crowded the frame edge.</span>
+    cam.location = (<span class="n">3.4</span>, -<span class="n">4.6</span>, <span class="n">4.3</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -584,7 +611,7 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes on a dark floor." />
+    <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
   </dialog>
   <footer>
     <div class="statusbar">
