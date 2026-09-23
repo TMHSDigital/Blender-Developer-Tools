@@ -9,9 +9,10 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named foot
 supports, ``--float-hinge`` lid-hinge joint-fit, ``--narrow-bands``
-band-wall seat.
+band-wall seat, ``--lift-lid-bands`` lid bands on the vault.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the only RNG is plank tone, seeded with
+``TONE_SEED``. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -22,6 +23,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -65,7 +67,7 @@ BODY_W = OUTER_W
 BODY_D = OUTER_D
 BODY_W_TOL = 0.04
 BODY_D_TOL = 0.04
-OUTER_SIZE = (0.764, 0.542, 0.691)
+OUTER_SIZE = (0.764, 0.524, 0.696)
 
 BASE_TRIS_MIN = 3600
 BASE_TRIS_MAX = 4500
@@ -95,6 +97,17 @@ BAND_SEAT = 0.008
 
 WOOD_IDX = 0
 METAL_IDX = 1
+
+# Lid bands are arc slabs on the lid's own vault: inner radius a named bite
+# inside the lid's outer surface, outer radius BAND_T beyond that, over
+# the lid's full angular span with the lid's own segment count.
+LID_SEGS = 10
+LID_BAND_BITE = 0.002
+LID_BAND_RTOL = 1e-4
+N_LID_BANDS = 3
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 43
+LID_BAND_LIFT = 0.005
 
 
 def eevee_engine_id():
@@ -208,6 +221,7 @@ def pack_uvs(bm, margin=0.08):
 def build_chest_mesh(
     name, bevel_offset, bevel_segments,
     short_legs=False, float_hinge=False, narrow_bands=False,
+    lift_lid_bands=False,
 ):
     bm = bmesh.new()
     try:
@@ -404,34 +418,34 @@ def build_chest_mesh(
                 bm, cz, a_front, a_back,
                 VAULT_R, VAULT_R + LID_T,
                 -hx + 0.008, hx - 0.008,
-                10, WOOD_IDX,
+                LID_SEGS, WOOD_IDX,
             )
         )
 
-        n_band_seg = 8
-        bspan = (a_back - a_front) / n_band_seg
-        r_band = VAULT_R + LID_T + BAND_T / 2.0 + 0.002
+        # Each lid band is one arc slab on the lid's vault. It used to be
+        # eight boxes rotated about X by +t, but at angle t the arc's tangent
+        # in (y, z) is (cos t, -sin t), which is a rotation of -t: every
+        # segment sat 2t off the tangent and the bands fanned out from the
+        # lid like feathers. --lift-lid-bands floats them off the vault.
+        r_band_in = VAULT_R + LID_T - LID_BAND_BITE
         for bx in band_xs:
-            for i in range(n_band_seg):
-                tmid = a_front + (i + 0.5) * bspan
-                y = r_band * math.sin(tmid)
-                z = cz + r_band * math.cos(tmid)
-                chord = r_band * bspan + 0.003
-                lid_metal.extend(
-                    add_box(
-                        bm, (bx, y, z),
-                        (BAND_W, chord, BAND_T),
-                        METAL_IDX, euler=(tmid, 0.0, 0.0),
-                    )
+            lift = LID_BAND_LIFT if lift_lid_bands else 0.0
+            lid_metal.extend(
+                add_arc_slab(
+                    bm, cz, a_front, a_back, r_band_in + lift, r_band_in + lift + BAND_T,
+                    bx - BAND_W / 2.0, bx + BAND_W / 2.0, LID_SEGS, METAL_IDX,
                 )
+            )
+            # The cap turning down over the lid's front edge: rotated by -t
+            # so its thickness lies along the edge's normal (the tangent).
             tmid = a_front
-            y = r_band * math.sin(tmid)
-            z = cz + r_band * math.cos(tmid)
+            y = r_band_in * math.sin(tmid)
+            z = cz + r_band_in * math.cos(tmid)
             lid_metal.extend(
                 add_box(
                     bm, (bx, y - 0.008, z - 0.006),
                     (BAND_W, BAND_T, LID_T + 0.016),
-                    METAL_IDX, euler=(tmid, 0.0, 0.0),
+                    METAL_IDX, euler=(-tmid, 0.0, 0.0),
                 )
             )
 
@@ -443,7 +457,7 @@ def build_chest_mesh(
             add_box(
                 bm, (0.0, y - 0.018, z - 0.010),
                 (0.038, 0.010, 0.055),
-                METAL_IDX, euler=(tmid, 0.0, 0.0),
+                METAL_IDX, euler=(-tmid, 0.0, 0.0),
             )
         )
 
@@ -531,9 +545,127 @@ def build_chest_mesh(
         me.update()
     finally:
         bm.free()
+    paint_planks(me)
     obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     return obj
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader."""
+    tone = [0.5] * len(me.polygons)
+    grain = [(1.0, 0.0, 0.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((1.0, 0.0, 0.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each board (``GrainDir``), tone per board (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 30.0
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def chest_materials():
+    """(wood, iron): shared by the check, the render and inspection."""
+    wood = wood_material("ChestWood")
+    metal = principled(
+        "ChestMetal", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, metal
 
 
 def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
@@ -852,6 +984,59 @@ def band_wall_gap(me):
         bm_wood.free()
 
 
+def lid_band_audit(me):
+    """Lid bands: how many span the vault, and how true they sit on it.
+
+    Un-rotates every vertex about the hinge by -LID_ANGLE, back into the
+    frame the lid was built in, and takes each iron shell's radius from the
+    vault axis. A lid band is an iron shell spanning at least 60% of the
+    lid's arc; for those, every vertex radius must lie between the band's
+    inner and outer radius. The feathered segments never span the arc, so
+    they are not bands at all.
+    """
+    hy = OUTER_D / 2.0
+    body_top = FOOT_H + BOTTOM + CAVITY_H
+    cz = body_top - math.sqrt(max(VAULT_R * VAULT_R - hy * hy, 1e-6))
+    a_front = math.atan2(-hy, body_top - cz)
+    a_back = math.atan2(hy, body_top - cz)
+    hinge = Vector((0.0, hy, body_top))
+    unrot = Euler((-LID_ANGLE, 0.0, 0.0)).to_matrix()
+    r_lo = VAULT_R + LID_T - LID_BAND_BITE
+    r_hi = r_lo + BAND_T
+    # The builder re-centres the whole mesh on its AABB after swinging the
+    # lid, so the hinge is no longer where it was built. The body is
+    # symmetric about its construction centre: its own Y-centre is the shift.
+    # The feet only: everything else low on the body includes the hasp,
+    # which hangs from the lid down the front and is not symmetric.
+    # Measured from the mesh's own lowest point, so a falsifier that lifts
+    # the whole mesh still finds the feet.
+    z0 = min(v.co.z for v in me.vertices)
+    body_ys = [v.co.y for v in me.vertices if v.co.z < z0 + FOOT_H * 0.8]
+    hinge = hinge + Vector((0.0, 0.5 * (min(body_ys) + max(body_ys)), 0.0))
+    cz_shift = hinge.y - hy
+    n = 0
+    worst = 0.0
+    for g in shells(me):
+        if mat_of(me, g) != METAL_IDX:
+            continue
+        pts = [unrot @ (me.vertices[i].co - hinge) + hinge for i in g]
+        # Lid iron only: above the body, around the vault's own radius.
+        if min(p.z for p in pts) < body_top - 0.01:
+            continue
+        mean_r = sum(math.hypot(p.y, p.z - cz) for p in pts) / len(pts)
+        if not (VAULT_R < mean_r < VAULT_R + LID_T + 0.05):
+            continue
+        pts = [Vector((p.x, p.y - cz_shift, p.z)) for p in pts]
+        angs = [math.atan2(p.y, p.z - cz) for p in pts]
+        if max(angs) - min(angs) < 0.6 * (a_back - a_front):
+            continue
+        n += 1
+        for p in pts:
+            r = math.hypot(p.y, p.z - cz)
+            worst = max(worst, r_lo - r, r - r_hi)
+    return {"bands": n, "worst": max(worst, 0.0)}
+
+
 def add_stray_vert(me):
     bm = bmesh.new()
     try:
@@ -954,21 +1139,16 @@ def export_unity(path, objects):
 def check(
     skip_decimate, lift_z=False, stray_vert=False,
     short_legs=False, float_hinge=False, narrow_bands=False,
+    lift_lid_bands=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         short_legs=short_legs, float_hinge=float_hinge, narrow_bands=narrow_bands,
+        lift_lid_bands=lift_lid_bands,
     )
     low = build_chest_mesh("ChestLow", 0.003, 2, **flags)
     high = build_chest_mesh("ChestHigh", 0.003, 4, **flags)
-    wood = principled(
-        "ChestWood", (0.40, 0.18, 0.06, 1.0), 0.0, 0.54,
-        noise_scale=6.5, wear=(0.22, 0.10, 0.04, 1.0),
-    )
-    metal = principled(
-        "ChestMetal", (0.18, 0.19, 0.22, 1.0), 1.0, 0.32,
-        noise_scale=5.0, wear=(0.08, 0.08, 0.09, 1.0),
-    )
+    wood, metal = chest_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     if stray_vert:
@@ -1022,6 +1202,10 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender points TMPDIR at its own temp preference, which on a portable
+    # build is the working directory, so the export must not outlive this.
+    if os.path.isfile(export_path):
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1029,6 +1213,8 @@ def check(
     body = body_audit(low.data)
     hj = hinge_join(low.data)
     bg = band_wall_gap(low.data)
+    lb = lid_band_audit(low.data)
+    print(f"measured lid_bands={lb['bands']} lid_band_worst={lb['worst']:.6f}")
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1153,6 +1339,13 @@ def check(
         return fail(
             f"band-wall gap {bg:.5f} > {BAND_SEAT} "
             "(--narrow-bands is the designed fail)",
+            18,
+        ), None, None, None, None, None
+    if lb["bands"] != N_LID_BANDS or lb["worst"] > LID_BAND_RTOL:
+        return fail(
+            f"lid bands: {lb['bands']} of {N_LID_BANDS} span the vault, worst "
+            f"radial excursion {lb['worst']:.6f} > {LID_BAND_RTOL} "
+            "(--lift-lid-bands is the designed fail)",
             18,
         ), None, None, None, None, None
     if abs(body["w"] - BODY_W) > BODY_W_TOL:
@@ -1284,6 +1477,7 @@ def main():
     p.add_argument("--short-legs", action="store_true")
     p.add_argument("--float-hinge", action="store_true")
     p.add_argument("--narrow-bands", action="store_true")
+    p.add_argument("--lift-lid-bands", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1293,6 +1487,7 @@ def main():
         short_legs=args.short_legs,
         float_hinge=args.float_hinge,
         narrow_bands=args.narrow_bands,
+        lift_lid_bands=args.lift_lid_bands,
     )
     if code:
         return code
