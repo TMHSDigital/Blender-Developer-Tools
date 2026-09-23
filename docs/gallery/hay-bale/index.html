@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hay-bale-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A rectangular hay bale bound by two twine belts." />
+  <meta property="og:image:alt" content="A golden fibrous hay bale bound by two thin twine cords with knotted loops on top." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="hay-bale — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A bound hay bale whose twine belts follow the loaf&#x27;s own raycast cross-section, asserting recomputed geometry budgets, not an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/hay-bale-hero.webp" />
-  <meta name="twitter:image:alt" content="A rectangular hay bale bound by two twine belts." />
+  <meta name="twitter:image:alt" content="A golden fibrous hay bale bound by two thin twine cords with knotted loops on top." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A bound hay bale whose twine belts follow the loaf&#x27;s own raycast cross-section, asserting recomputed geometry budgets, not an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A rectangular hay bale bound by two twine belts.">
-      <img src="../assets/hay-bale-hero.webp" alt="A rectangular hay bale bound by two twine belts." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A golden fibrous hay bale bound by two thin twine cords with knotted loops on top.">
+      <img src="../assets/hay-bale-hero.webp" alt="A golden fibrous hay bale bound by two thin twine cords with knotted loops on top." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 2012 tris, two materials with 712 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.530x0.409 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 2.6 mm, banded belt seat depth 4.0-16.8 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 14.2 mm, LOD ratios in band, convex collider 156 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt 19.</div>
@@ -288,15 +288,19 @@
 <p>Every closed-form term in the loaf shaping is <strong>even in x</strong>. An odd term (<code>sin(x*24)</code>) put the two belt stations on different surface heights and left the wraps 5.4 mm out of step, which no budget could see.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file. Measurements below are identical on 4.5.11, 5.1.2 and 5.2.1 — construction uses no RNG and no version-dependent operator.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1700–2400</td><td>2012 on all three</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2197</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥24 hay, ≥24 twine</td><td>2 slots, 712 hay, 304 twine</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.922, 0.530, 0.409) m ± 0.01</td><td>(0.9208, 0.5295, 0.4087)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0.000000</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/<strong>z-fight</strong> = 0</td><td>all 0</td></tr><tr><td>Shell count</td><td>exactly 5 (loaf, 2 belts, 2 loops)</td><td>5</td></tr><tr><td><strong>Belt wrap zmin</strong></td><td>each belt shell ≤ 0.006 m</td><td>0.002628 both</td></tr><tr><td><strong>Belt seat depth</strong></td><td>every station in [0.002, 0.020] m</td><td>0.00400..0.01676 over 20/20 stations, both belts</td></tr><tr><td><strong>Mirror symmetry</strong></td><td>belts and loops matched within 5e-4 m</td><td>0.000000</td></tr><tr><td><strong>Cinch depth</strong></td><td>mid-span minus waist in [0.006, 0.020] m</td><td>0.01420</td></tr><tr><td>Loaf X × Z</td><td>(0.922, 0.409) m ± 0.02</td><td>(0.9208, 0.4087)</td></tr><tr><td>Hay–twine gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00002</td></tr><tr><td>Collider tris</td><td>≤ 400</td><td>156</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>156664 / 156664 / 156656 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1700–2400</td><td>2012 on all three</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2197</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥24 hay, ≥24 twine</td><td>2 slots, 1404 hay, 304 twine</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.922, 0.530, 0.409) m ± 0.01</td><td>(0.9208, 0.5295, 0.4087)</td></tr><tr><td>Grounded zmin</td><td>within 1e-4 of 0</td><td>0.000000</td></tr><tr><td>Hygiene</td><td>loose/nonman/zero-area/doubles/n-gons/<strong>z-fight</strong> = 0</td><td>all 0</td></tr><tr><td>Shell count</td><td>exactly 5 (loaf, 2 belts, 2 loops)</td><td>5</td></tr><tr><td><strong>Belt wrap zmin</strong></td><td>each belt shell ≤ 0.006 m</td><td>0.002846 both</td></tr><tr><td><strong>Belt seat depth</strong></td><td>every station in [0.002, 0.020] m</td><td>0.00400..0.00903 over 20/20 stations, both belts</td></tr><tr><td><strong>Mirror symmetry</strong></td><td>belts and loops matched within 5e-4 m</td><td>0.000000</td></tr><tr><td><strong>Loaf mirror</strong></td><td>every loaf vertex has an X-mirror partner within 2e-4 m</td><td>0.000071</td></tr><tr><td><strong>Cinch depth</strong></td><td>mid-span minus waist in [0.006, 0.020] m</td><td>0.01420</td></tr><tr><td>Loaf X × Z</td><td>(0.922, 0.409) m ± 0.02</td><td>(0.9208, 0.4087)</td></tr><tr><td>Hay–twine gap</td><td>BVH surface &lt; 0.008 m</td><td>0.00002</td></tr><tr><td>Collider tris</td><td>≤ 400</td><td>120</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>197504 / 197504 / 197496 bytes</td></tr></tbody></table></div>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), which is not a gated axis; every geometric figure above is identical on all three binaries.</p>
 <p>The export is deleted once its size is measured. Blender sets <code>TMPDIR</code> from its own preference, which resolves to the working directory on a stock portable build, so <code>tempfile.gettempdir()</code> is the repo root under CI and every run used to leave a <code>.glb</code> behind.</p>
 <h3>Why these budgets and not an AABB</h3>
 <p><code>zmin</code> alone cannot see a belt that stops at the bottom edge: the loaf still grounds the box. A single global hay-twine gap cannot see a wrap that hugs one side and gaps the other. A bounding box cannot see two belts 5.4 mm out of step, or a flank with no waist in it. Each of the five budgets in bold above exists because a defect got past everything else and had to be found by looking at a render.</p>
 <p>The z-fight count is taken over <strong>cross-shell</strong> face pairs, not merely over faces that share no vertex: two quads two steps apart on one flat cap share no vertex and are coplanar by construction, and counting those reported 96 pairs, none of them a hazard.</p>
+<h3>Why the loaf is triangulated along its short diagonals</h3>
+<p>The twine used to be a 16 × 24 mm band, and it read as packing tape on a parcel. Thinned to an 8 × 10 mm cord, the two belts came out 0.45 mm out of step, right against the 0.5 mm mirror budget. The loaf&#x27;s vertices were mirror-symmetric to 71 um. The belt profile is raycast from the loaf at each station, though, and the loaf&#x27;s quads are not planar: split along a fixed diagonal, the surface at -x and at +x differed by up to 5.6 mm on the same vertices. The old wide band happened to hide that.</p>
+<p>The loaf is now triangulated with <code>quad_method=&quot;SHORT_EDGE&quot;</code>. On mirror-symmetric vertices the shorter diagonal is mirror-symmetric too, and a tie only happens where a quad is planar, where either split is the same surface. The belt mirror error went back to exactly 0 and the seats to identical values at both stations. This is the surface an engine renders, so it is fixed in the mesh, not only in the sampling. Averaging the two stations&#x27; profiles was tried first and rejected: it put one belt 0.52 mm into the loaf, below the seat band, because neither station&#x27;s real surface is the mean.</p>
+<p>The loaf&#x27;s own symmetry is now asserted directly (<strong>Loaf mirror</strong>, exit 19). Every loaf vertex needs a partner at <code>(-x, y, z)</code> within <code>LOAF_MIRROR_EPS</code>. The belt budget only ever caught an odd shaping term second-hand, through the belts&#x27; extents. <code>--odd-loaf</code> adds a 2 mm odd <code>sin</code> displacement to the finished loaf and fails it. It is applied after the bevel because, put into the shaping function, even 0.3 mm of odd term flipped which edges cleared the bevel&#x27;s 50-degree selection and grew the envelope 16 mm, so the bounding box fired instead.</p>
 <h2>Falsifiers</h2>
-<p>Each breaks one stage so a <strong>named</strong> budget fails and the piece exits that code. All six proven on 4.5.11, 5.1.2 and 5.2.1.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>hygiene: loose vertices</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded AABB zmin</td><td>16</td></tr><tr><td><code>--float-belts</code></td><td>per-belt wrap zmin</td><td>16</td></tr><tr><td><code>--slack-belt</code></td><td>banded belt seat depth</td><td>18</td></tr><tr><td><code>--skew-belt</code></td><td>belt mirror symmetry</td><td>19</td></tr></tbody></table></div>
+<p>Each breaks one stage so a <strong>named</strong> budget fails and the piece exits that code. All seven proven on 4.5.11, 5.1.2 and 5.2.1.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>hygiene: loose vertices</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded AABB zmin</td><td>16</td></tr><tr><td><code>--float-belts</code></td><td>per-belt wrap zmin</td><td>16</td></tr><tr><td><code>--slack-belt</code></td><td>banded belt seat depth</td><td>18</td></tr><tr><td><code>--skew-belt</code></td><td>belt mirror symmetry</td><td>19</td></tr><tr><td><code>--odd-loaf</code></td><td>loaf X-mirror symmetry</td><td>19</td></tr></tbody></table></div>
 <p><code>--stray-vert</code> parks its loose vertex <strong>inside</strong> the bale: above it, the bounding-box budget (exit 8) fired first and the run proved nothing about hygiene. <code>--skew-belt</code> shifts one belt along <strong>X</strong> rather than Z for the same reason — a Z skew landed a belt face coplanar with a loaf face and tripped the z-fight budget (exit 15) instead of its target. <code>--float-belts</code> moves twine only, so the loaf still grounds the AABB and the per-belt gate has to be the thing that fires.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python hay_bale.py --
@@ -306,16 +310,19 @@ blender --background --python hay_bale.py -- --lift-z
 blender --background --python hay_bale.py -- --float-belts
 blender --background --python hay_bale.py -- --slack-belt
 blender --background --python hay_bale.py -- --skew-belt
+blender --background --python hay_bale.py -- --odd-loaf
 blender --background --python hay_bale.py -- --output bale.png</code></pre>
 <p>Smoke does not pass <code>--output</code> or any falsifier flag.</p>
 <h2>Shading</h2>
 <p>Decided per part, not globally. The loaf is <strong>flat</strong>-shaded: straw is a chunky matte mass and the facets read as compressed flakes. Smoothing the whole bale erased every ridge and nap in it and left a featureless pillow that read as a bar of soap. Twine is cord, so the belts and hitch loops stay smooth.</p>
 <p>The low mesh carries the form — bulge, waist, ridges, end strata — and the <strong>high mesh carries the straw</strong>: <code>LOAF_CUTS_HIGH</code> subdivision plus per-band flake offsets, moved onto the low mesh by the bake stage. A low mesh dense enough to model flakes directly would cost thousands of triangles for detail this piece already has a bake for.</p>
-<h2>Known gap</h2>
-<p>At hero scale the piece still reads as a wrapped parcel rather than as straw. The form, the binding and the hygiene are right; the surface is not. The next pass on this piece belongs in the <strong>material and bake</strong> — straw needs directional fibre and colour break-up that a 256 px tangent-space normal off a smooth high mesh cannot deliver — not in more geometry. Recorded here so the next run does not re-litigate the silhouette.</p>
+<h2>Surface</h2>
+<p>The bale used to read as a wrapped parcel: flat mustard hay, and a wide dark band for twine. The hay is now <code>straw_material</code>:</p>
+<ul><li>a dense fibre field stretched along the bale (noise with X compressed), and a weaker crossing field for the strands that lie the other way;</li><li>colour pulled between pale straw and dark tan by the fibres, with a faint green cast from low-frequency noise;</li><li>roughness and a bump from the same fibres, so every strand catches light.</li></ul>
+<p>The baked normal is chained under that bump (<code>wire_normal</code>). The twine is an 8 × 10 mm cord, and the hitch loop&#x27;s tube is sized from the same <code>TWINE_T</code>. The earlier note here, that the surface belonged to the material and bake and not to more geometry, was right. The cord was the other half of the parcel read.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or hay/twine faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose, non-manifold, zero-area, doubles, n-gons, or cross-shell z-fight (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded: AABB zmin (<code>--lift-z</code>), or a belt that does not wrap under (<code>--float-belts</code>)</td></tr><tr><td>17</td><td>Shell count, or hay–twine BVH gap above 8 mm</td></tr><tr><td>18</td><td>Banded belt seat depth (<code>--slack-belt</code>)</td></tr><tr><td>19</td><td>Belt mirror symmetry (<code>--skew-belt</code>), cinch depth, or loaf real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or hay/twine faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose, non-manifold, zero-area, doubles, n-gons, or cross-shell z-fight (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded: AABB zmin (<code>--lift-z</code>), or a belt that does not wrap under (<code>--float-belts</code>)</td></tr><tr><td>17</td><td>Shell count, or hay–twine BVH gap above 8 mm</td></tr><tr><td>18</td><td>Banded belt seat depth (<code>--slack-belt</code>)</td></tr><tr><td>19</td><td>Loaf X-mirror symmetry (<code>--odd-loaf</code>), belt mirror symmetry (<code>--skew-belt</code>), cinch depth, or loaf real-world size</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -332,7 +339,8 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin hygiene budget fails.
+mesh so the grounded-zmin hygiene budget fails. ``--odd-loaf`` breaks
+the loaf&#x27;s X-mirror symmetry so the loaf-mirror budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -354,6 +362,7 @@ ratio band, not an exact count.
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
 <span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
 
 <span class="c"># Showcase lives at repo-root/showcase/, not under examples/. The framing</span>
 <span class="c"># helper is the repo&#x27;s only shared import and lives next to the examples;</span>
@@ -368,8 +377,10 @@ sys.dont_write_bytecode = <span class="k">True</span>
 BALE_X = <span class="n">0.90</span>
 BALE_Y = <span class="n">0.48</span>
 BALE_Z = <span class="n">0.38</span>
-TWINE_T = <span class="n">0.016</span>
-TWINE_W = <span class="n">0.024</span>
+<span class="c"># Baling twine is a cord, not a strap. At 16 x 24 mm the wrap read as</span>
+<span class="c"># packing tape on a parcel; 8 x 10 mm reads as cord pulled into the straw.</span>
+TWINE_T = <span class="n">0.008</span>
+TWINE_W = <span class="n">0.010</span>
 TWINE_EMBED = <span class="n">0.004</span>
 BELT_XS = (-<span class="n">0.225</span>, <span class="n">0.225</span>)
 LOAF_CUTS = <span class="n">8</span>
@@ -443,6 +454,12 @@ BELT_PRESS_H = <span class="n">0.06</span>
 <span class="c"># The two belts are mirror images. The odd ridge term used to put them</span>
 <span class="c"># 5.4 mm out of step, which no budget could see.</span>
 MIRROR_EPS = <span class="n">5e-4</span>
+<span class="c"># The loaf itself must be mirror-symmetric in X: every vertex has a partner</span>
+<span class="c"># at (-x, y, z) within this distance. This is the direct witness for an odd</span>
+<span class="c"># term in the shaping function; the belt extents only ever caught it</span>
+<span class="c"># second-hand. Measured worst on the finished loaf: 71 um (bevel rounding).</span>
+LOAF_MIRROR_EPS = <span class="n">2e-4</span>
+ODD_LOAF_AMP = <span class="n">0.002</span>
 
 <span class="c"># The cinch is what makes this a *bound* bale rather than a pillow, and it</span>
 <span class="c"># is the one feature no other budget here touches: measured as the loaf&#x27;s</span>
@@ -928,6 +945,8 @@ TWINE_IDX = <span class="n">1</span>
         <span class="c"># waist: the cinch measured 2.2 mm and read as a crease rather than</span>
         <span class="c"># as binding.</span>
         press = <span class="n">1.0</span> - _cinch(x) / CINCH
+        <span class="c"># --odd-loaf restores the historical sin() here: the falsifier for</span>
+        <span class="c"># the loaf-mirror budget.</span>
         v.co.y += RIDGE_AMP * math.cos(x * <span class="n">24.0</span>) * (<span class="n">0.35</span> + <span class="n">0.65</span> * abs(ny)) * press
         v.co.z += (
             <span class="n">0.55</span> * RIDGE_AMP * math.cos(x * <span class="n">19.0</span>) * (<span class="n">0.35</span> + <span class="n">0.65</span> * abs(nz))
@@ -954,7 +973,7 @@ TWINE_IDX = <span class="n">1</span>
 
 <span class="k">def</span> build_bale_mesh(name, bevel_offset, bevel_segments, cuts=LOAF_CUTS,
                     flake=<span class="k">False</span>, slack_belt=<span class="k">False</span>, float_belts=<span class="k">False</span>,
-                    skew_belt=<span class="k">False</span>):
+                    skew_belt=<span class="k">False</span>, odd_loaf=<span class="k">False</span>):
     bm = bmesh.new()
     hay_verts = []
     twine_faces = set()
@@ -995,6 +1014,27 @@ TWINE_IDX = <span class="n">1</span>
                 clamp_overlap=<span class="k">True</span>,
             )
 
+        <span class="c"># --odd-loaf: an odd displacement on the finished loaf, applied after</span>
+        <span class="c"># the bevel. Put into the shaping function instead, even 0.3 mm of</span>
+        <span class="c"># odd term flipped which edges cleared the bevel&#x27;s 50-degree</span>
+        <span class="c"># selection and grew the envelope 16 mm, so the bounding box fired</span>
+        <span class="c"># instead of the loaf-mirror budget.</span>
+        <span class="k">if</span> odd_loaf:
+            <span class="k">for</span> v <span class="k">in</span> bm.verts:
+                v.co.y += ODD_LOAF_AMP * math.sin(v.co.x * <span class="n">24.0</span>)
+
+        <span class="c"># Triangulate the loaf along each quad&#x27;s shorter diagonal. The quads</span>
+        <span class="c"># are not planar, and left to a fixed split their diagonals are not</span>
+        <span class="c"># mirrored: the surface at -x and +x differed by up to 5.6 mm on</span>
+        <span class="c"># mirror-symmetric vertices, so a thin cord at the two stations came</span>
+        <span class="c"># out 0.45 mm out of step. On symmetric vertices the shorter</span>
+        <span class="c"># diagonal is symmetric too, and a tie only happens where the quad</span>
+        <span class="c"># is planar, where either split is the same surface. This is the</span>
+        <span class="c"># surface an engine renders, so it is fixed here, not only sampled.</span>
+        loaf_quads = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) == <span class="n">4</span>]
+        <span class="k">if</span> loaf_quads:
+            bmesh.ops.triangulate(bm, faces=loaf_quads, quad_method=<span class="s">&quot;SHORT_EDGE&quot;</span>)
+
         <span class="c"># Ground and centre the LOAF first, then hang the belts on the</span>
         <span class="c"># finished surface. Placing them beforehand and shifting everything</span>
         <span class="c"># afterwards left each belt a few millimetres off the floor by a</span>
@@ -1034,7 +1074,8 @@ TWINE_IDX = <span class="n">1</span>
                 (x + math.copysign(TWINE_W, x), <span class="n">0.052</span>,
                  top_z - TWINE_EMBED + TWINE_T * <span class="n">0.45</span>),
                 <span class="n">0.030</span>,
-                <span class="n">0.0062</span>,
+                <span class="c"># The loop is the same cord as the wrap: tube sized from it.</span>
+                TWINE_T * <span class="n">0.39</span>,
                 TWINE_IDX,
                 euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
                 n_major=<span class="n">12</span>,
@@ -1113,6 +1154,86 @@ TWINE_IDX = <span class="n">1</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
         nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> _stretched_noise(nt, coord, stretch, scale, detail):
+    <span class="s">&quot;&quot;&quot;Noise sampled in object space with one axis compressed: streaks along it.&quot;&quot;&quot;</span>
+    mp = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mp.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = stretch
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mp.inputs[<span class="s">&quot;Vector&quot;</span>])
+    n = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    n.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    n.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = detail
+    n.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.65</span>
+    nt.links.new(mp.outputs[<span class="s">&quot;Vector&quot;</span>], n.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="k">return</span> n
+
+
+<span class="k">def</span> straw_material(name):
+    <span class="s">&quot;&quot;&quot;Straw: fibres, colour break-up and a fibre bump, not a flat mustard.
+
+    The bale read as a wrapped parcel because its hay was one flat colour
+    with a soft noise. Straw is streaks: a dense fibre field stretched
+    along the bale, a weaker crossing field for the strands that lie the
+    other way, colour pulled between pale straw and dark tan by the fibres,
+    a faint green cast from low-frequency noise, and a bump from the same
+    fibres so every strand catches light.
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    along = _stretched_noise(nt, coord, (<span class="n">0.07</span>, <span class="n">1.0</span>, <span class="n">1.0</span>), <span class="n">110.0</span>, <span class="n">6.0</span>)
+    across = _stretched_noise(nt, coord, (<span class="n">1.0</span>, <span class="n">0.09</span>, <span class="n">1.0</span>), <span class="n">90.0</span>, <span class="n">4.0</span>)
+    fib = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    fib.data_type = <span class="s">&quot;FLOAT&quot;</span>
+    _sock(fib.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">0.32</span>
+    nt.links.new(along.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(fib.inputs, <span class="s">&quot;A_Float&quot;</span>))
+    nt.links.new(across.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(fib.inputs, <span class="s">&quot;B_Float&quot;</span>))
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.34</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.36</span>, <span class="n">0.25</span>, <span class="n">0.075</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.66</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.88</span>, <span class="n">0.71</span>, <span class="n">0.31</span>, <span class="n">1.0</span>)
+    nt.links.new(_sock(fib.outputs, <span class="s">&quot;Result_Float&quot;</span>), ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    patch = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    patch.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">4.0</span>
+    patch.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], patch.inputs[<span class="s">&quot;Vector&quot;</span>])
+    green = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    green.data_type = <span class="s">&quot;RGBA&quot;</span>
+    green.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(patch.outputs[<span class="s">&quot;Fac&quot;</span>], _sock(green.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(green.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    _sock(green.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.90</span>, <span class="n">0.95</span>, <span class="n">0.74</span>, <span class="n">1.0</span>)
+    nt.links.new(_sock(green.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.95</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.70</span>
+    nt.links.new(_sock(fib.outputs, <span class="s">&quot;Result_Float&quot;</span>), rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.65</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.004</span>
+    nt.links.new(_sock(fib.outputs, <span class="s">&quot;Result_Float&quot;</span>), bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> bale_materials():
+    <span class="s">&quot;&quot;&quot;(hay, twine): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    hay = straw_material(<span class="s">&quot;BaleHay&quot;</span>)
+    twine = principled(
+        <span class="s">&quot;BaleTwine&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.22</span>, <span class="n">0.11</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
+        noise_scale=<span class="n">60.0</span>, wear=(<span class="n">0.17</span>, <span class="n">0.12</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> hay, twine
 
 
 <span class="k">def</span> assign_slots(obj, hay, twine):
@@ -1251,11 +1372,12 @@ TWINE_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, slack_belt=<span class="k">False</span>,
-          float_belts=<span class="k">False</span>, skew_belt=<span class="k">False</span>):
+          float_belts=<span class="k">False</span>, skew_belt=<span class="k">False</span>, odd_loaf=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_bale_mesh(
         <span class="s">&quot;BaleLow&quot;</span>, bevel_offset=<span class="n">0.016</span>, bevel_segments=<span class="n">2</span>,
         slack_belt=slack_belt, float_belts=float_belts, skew_belt=skew_belt,
+        odd_loaf=odd_loaf,
     )
     <span class="c"># The high mesh is where the straw lives: finer subdivision plus the</span>
     <span class="c"># flake strata. bake_normal moves that detail onto the low mesh.</span>
@@ -1263,22 +1385,7 @@ TWINE_IDX = <span class="n">1</span>
         <span class="s">&quot;BaleHigh&quot;</span>, bevel_offset=<span class="n">0.016</span>, bevel_segments=<span class="n">4</span>,
         cuts=LOAF_CUTS_HIGH, flake=<span class="k">True</span>,
     )
-    hay = principled(
-        <span class="s">&quot;BaleHay&quot;</span>,
-        (<span class="n">0.66</span>, <span class="n">0.52</span>, <span class="n">0.18</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.78</span>,
-        noise_scale=<span class="n">22.0</span>,
-        wear=(<span class="n">0.48</span>, <span class="n">0.36</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
-    )
-    twine = principled(
-        <span class="s">&quot;BaleTwine&quot;</span>,
-        (<span class="n">0.22</span>, <span class="n">0.16</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.58</span>,
-        noise_scale=<span class="n">14.0</span>,
-        wear=(<span class="n">0.14</span>, <span class="n">0.10</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
+    hay, twine = bale_materials()
     assign_slots(low, hay, twine)
     assign_slots(high, hay, twine)
     <span class="k">if</span> lift_z:
@@ -1408,6 +1515,16 @@ TWINE_IDX = <span class="n">1</span>
 
     mirror_err = max(mirror_error(belt_shells), mirror_error(loop_shells))
 
+    <span class="c"># Loaf X-symmetry, vertex by vertex.</span>
+    loaf_pts = [low.data.vertices[i].co <span class="k">for</span> i <span class="k">in</span> loaf_comp]
+    kd = KDTree(len(loaf_pts))
+    <span class="k">for</span> k, co <span class="k">in</span> enumerate(loaf_pts):
+        kd.insert(co, k)
+    kd.balance()
+    loaf_mirror = max(
+        kd.find(Vector((-co.x, co.y, co.z)))[<span class="n">2</span>] <span class="k">for</span> co <span class="k">in</span> loaf_pts
+    )
+
     <span class="c"># --- banded seat depth, per angular station --------------------------</span>
     seat_depths = []
     <span class="k">for</span> bx, st <span class="k">in</span> belt_shells:
@@ -1436,7 +1553,7 @@ TWINE_IDX = <span class="n">1</span>
 
     print(
         <span class="s">f&quot;</span><span class="s">measured shells=</span>{n_shells}<span class="s"> loaf=(</span>{core_x:<span class="s">.4f</span>}<span class="s">,</span>{core_y:<span class="s">.4f</span>}<span class="s">,</span>{core_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">mirror_err=</span>{mirror_err:<span class="s">.6f</span>}<span class="s"> zfight=</span>{zfight}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">mirror_err=</span>{mirror_err:<span class="s">.6f</span>}<span class="s"> loaf_mirror=</span>{loaf_mirror:<span class="s">.6f</span>}<span class="s"> zfight=</span>{zfight}<span class="s">&quot;</span>
     )
     print(
         <span class="s">f&quot;</span><span class="s">measured cinch waist=</span>{waist:<span class="s">.5f</span>}<span class="s"> midspan=</span>{midspan:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
@@ -1577,6 +1694,13 @@ TWINE_IDX = <span class="n">1</span>
                 <span class="s">&quot;(--slack-belt is the designed fail)&quot;</span>,
                 <span class="n">18</span>,
             ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> loaf_mirror &gt; LOAF_MIRROR_EPS:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">loaf not mirror-symmetric in X: worst vertex </span>{loaf_mirror:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">&gt; </span>{LOAF_MIRROR_EPS}<span class="s"> from its partner — an odd term in the </span><span class="s">&quot;</span>
+            <span class="s">&quot;shaping function (--odd-loaf is the designed fail)&quot;</span>,
+            <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> mirror_err &gt; MIRROR_EPS:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">belts out of step by </span>{mirror_err:<span class="s">.6f</span>}<span class="s"> &gt; </span>{MIRROR_EPS}<span class="s"> — the two </span><span class="s">&quot;</span>
@@ -1602,12 +1726,17 @@ TWINE_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> wire_normal(mat, tex):
+    <span class="s">&quot;&quot;&quot;Baked normal map into the BSDF, under the fibre bump if there is one.&quot;&quot;&quot;</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
     nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
     nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
-    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    bump = next((n <span class="k">for</span> n <span class="k">in</span> nt.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;ShaderNodeBump&quot;</span>), <span class="k">None</span>)
+    <span class="k">if</span> bump <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bump.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">else</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
 <span class="k">def</span> render_still(low, hay, tex, path, engine):
@@ -1753,6 +1882,12 @@ TWINE_IDX = <span class="n">1</span>
         help=<span class="s">&quot;falsification: raise one belt so the two wraps stop being &quot;</span>
              <span class="s">&quot;mirror images&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--odd-loaf&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: use the odd sin() ridge term so the loaf stops &quot;</span>
+             <span class="s">&quot;being mirror-symmetric in X&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, hay, tex, _col = check(
@@ -1762,6 +1897,7 @@ TWINE_IDX = <span class="n">1</span>
         float_belts=args.float_belts,
         slack_belt=args.slack_belt,
         skew_belt=args.skew_belt,
+        odd_loaf=args.odd_loaf,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1786,7 +1922,7 @@ TWINE_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/hay-bale-hero.webp" alt="A rectangular hay bale bound by two twine belts." />
+    <img src="../assets/hay-bale-hero.webp" alt="A golden fibrous hay bale bound by two thin twine cords with knotted loops on top." />
   </dialog>
   <footer>
     <div class="statusbar">

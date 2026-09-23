@@ -7,7 +7,8 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin hygiene budget fails.
+mesh so the grounded-zmin hygiene budget fails. ``--odd-loaf`` breaks
+the loaf's X-mirror symmetry so the loaf-mirror budget fails.
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -29,6 +30,7 @@ import bmesh
 import bpy
 from mathutils import Euler, Vector
 from mathutils.bvhtree import BVHTree
+from mathutils.kdtree import KDTree
 
 # Showcase lives at repo-root/showcase/, not under examples/. The framing
 # helper is the repo's only shared import and lives next to the examples;
@@ -43,8 +45,10 @@ import gallery_framing  # noqa: E402
 BALE_X = 0.90
 BALE_Y = 0.48
 BALE_Z = 0.38
-TWINE_T = 0.016
-TWINE_W = 0.024
+# Baling twine is a cord, not a strap. At 16 x 24 mm the wrap read as
+# packing tape on a parcel; 8 x 10 mm reads as cord pulled into the straw.
+TWINE_T = 0.008
+TWINE_W = 0.010
 TWINE_EMBED = 0.004
 BELT_XS = (-0.225, 0.225)
 LOAF_CUTS = 8
@@ -118,6 +122,12 @@ BELT_PRESS_H = 0.06
 # The two belts are mirror images. The odd ridge term used to put them
 # 5.4 mm out of step, which no budget could see.
 MIRROR_EPS = 5e-4
+# The loaf itself must be mirror-symmetric in X: every vertex has a partner
+# at (-x, y, z) within this distance. This is the direct witness for an odd
+# term in the shaping function; the belt extents only ever caught it
+# second-hand. Measured worst on the finished loaf: 71 um (bevel rounding).
+LOAF_MIRROR_EPS = 2e-4
+ODD_LOAF_AMP = 0.002
 
 # The cinch is what makes this a *bound* bale rather than a pillow, and it
 # is the one feature no other budget here touches: measured as the loaf's
@@ -603,6 +613,8 @@ def _shape_loaf(verts, flake=False):
         # waist: the cinch measured 2.2 mm and read as a crease rather than
         # as binding.
         press = 1.0 - _cinch(x) / CINCH
+        # --odd-loaf restores the historical sin() here: the falsifier for
+        # the loaf-mirror budget.
         v.co.y += RIDGE_AMP * math.cos(x * 24.0) * (0.35 + 0.65 * abs(ny)) * press
         v.co.z += (
             0.55 * RIDGE_AMP * math.cos(x * 19.0) * (0.35 + 0.65 * abs(nz))
@@ -629,7 +641,7 @@ def _shape_loaf(verts, flake=False):
 
 def build_bale_mesh(name, bevel_offset, bevel_segments, cuts=LOAF_CUTS,
                     flake=False, slack_belt=False, float_belts=False,
-                    skew_belt=False):
+                    skew_belt=False, odd_loaf=False):
     bm = bmesh.new()
     hay_verts = []
     twine_faces = set()
@@ -670,6 +682,27 @@ def build_bale_mesh(name, bevel_offset, bevel_segments, cuts=LOAF_CUTS,
                 clamp_overlap=True,
             )
 
+        # --odd-loaf: an odd displacement on the finished loaf, applied after
+        # the bevel. Put into the shaping function instead, even 0.3 mm of
+        # odd term flipped which edges cleared the bevel's 50-degree
+        # selection and grew the envelope 16 mm, so the bounding box fired
+        # instead of the loaf-mirror budget.
+        if odd_loaf:
+            for v in bm.verts:
+                v.co.y += ODD_LOAF_AMP * math.sin(v.co.x * 24.0)
+
+        # Triangulate the loaf along each quad's shorter diagonal. The quads
+        # are not planar, and left to a fixed split their diagonals are not
+        # mirrored: the surface at -x and +x differed by up to 5.6 mm on
+        # mirror-symmetric vertices, so a thin cord at the two stations came
+        # out 0.45 mm out of step. On symmetric vertices the shorter
+        # diagonal is symmetric too, and a tie only happens where the quad
+        # is planar, where either split is the same surface. This is the
+        # surface an engine renders, so it is fixed here, not only sampled.
+        loaf_quads = [f for f in bm.faces if len(f.verts) == 4]
+        if loaf_quads:
+            bmesh.ops.triangulate(bm, faces=loaf_quads, quad_method="SHORT_EDGE")
+
         # Ground and centre the LOAF first, then hang the belts on the
         # finished surface. Placing them beforehand and shifting everything
         # afterwards left each belt a few millimetres off the floor by a
@@ -709,7 +742,8 @@ def build_bale_mesh(name, bevel_offset, bevel_segments, cuts=LOAF_CUTS,
                 (x + math.copysign(TWINE_W, x), 0.052,
                  top_z - TWINE_EMBED + TWINE_T * 0.45),
                 0.030,
-                0.0062,
+                # The loop is the same cord as the wrap: tube sized from it.
+                TWINE_T * 0.39,
                 TWINE_IDX,
                 euler=(0.0, 0.0, 0.0),
                 n_major=12,
@@ -788,6 +822,86 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], rfac)
         nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def _stretched_noise(nt, coord, stretch, scale, detail):
+    """Noise sampled in object space with one axis compressed: streaks along it."""
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = stretch
+    nt.links.new(coord.outputs["Object"], mp.inputs["Vector"])
+    n = nt.nodes.new("ShaderNodeTexNoise")
+    n.inputs["Scale"].default_value = scale
+    n.inputs["Detail"].default_value = detail
+    n.inputs["Roughness"].default_value = 0.65
+    nt.links.new(mp.outputs["Vector"], n.inputs["Vector"])
+    return n
+
+
+def straw_material(name):
+    """Straw: fibres, colour break-up and a fibre bump, not a flat mustard.
+
+    The bale read as a wrapped parcel because its hay was one flat colour
+    with a soft noise. Straw is streaks: a dense fibre field stretched
+    along the bale, a weaker crossing field for the strands that lie the
+    other way, colour pulled between pale straw and dark tan by the fibres,
+    a faint green cast from low-frequency noise, and a bump from the same
+    fibres so every strand catches light.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    along = _stretched_noise(nt, coord, (0.07, 1.0, 1.0), 110.0, 6.0)
+    across = _stretched_noise(nt, coord, (1.0, 0.09, 1.0), 90.0, 4.0)
+    fib = nt.nodes.new("ShaderNodeMix")
+    fib.data_type = "FLOAT"
+    _sock(fib.inputs, "Factor_Float").default_value = 0.32
+    nt.links.new(along.outputs["Fac"], _sock(fib.inputs, "A_Float"))
+    nt.links.new(across.outputs["Fac"], _sock(fib.inputs, "B_Float"))
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.34
+    ramp.color_ramp.elements[0].color = (0.36, 0.25, 0.075, 1.0)
+    ramp.color_ramp.elements[1].position = 0.66
+    ramp.color_ramp.elements[1].color = (0.88, 0.71, 0.31, 1.0)
+    nt.links.new(_sock(fib.outputs, "Result_Float"), ramp.inputs["Fac"])
+    patch = nt.nodes.new("ShaderNodeTexNoise")
+    patch.inputs["Scale"].default_value = 4.0
+    patch.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], patch.inputs["Vector"])
+    green = nt.nodes.new("ShaderNodeMix")
+    green.data_type = "RGBA"
+    green.blend_type = "MULTIPLY"
+    nt.links.new(patch.outputs["Fac"], _sock(green.inputs, "Factor_Float"))
+    nt.links.new(ramp.outputs["Color"], _sock(green.inputs, "A_Color"))
+    _sock(green.inputs, "B_Color").default_value = (0.90, 0.95, 0.74, 1.0)
+    nt.links.new(_sock(green.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.95
+    rough.inputs["To Max"].default_value = 0.70
+    nt.links.new(_sock(fib.outputs, "Result_Float"), rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.65
+    bump.inputs["Distance"].default_value = 0.004
+    nt.links.new(_sock(fib.outputs, "Result_Float"), bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def bale_materials():
+    """(hay, twine): shared by the check, the render and inspection."""
+    hay = straw_material("BaleHay")
+    twine = principled(
+        "BaleTwine", (0.30, 0.22, 0.11, 1.0), 0.0, 0.62,
+        noise_scale=60.0, wear=(0.17, 0.12, 0.06, 1.0),
+    )
+    return hay, twine
 
 
 def assign_slots(obj, hay, twine):
@@ -926,11 +1040,12 @@ def export_unity(path, objects):
 
 
 def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
-          float_belts=False, skew_belt=False):
+          float_belts=False, skew_belt=False, odd_loaf=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_bale_mesh(
         "BaleLow", bevel_offset=0.016, bevel_segments=2,
         slack_belt=slack_belt, float_belts=float_belts, skew_belt=skew_belt,
+        odd_loaf=odd_loaf,
     )
     # The high mesh is where the straw lives: finer subdivision plus the
     # flake strata. bake_normal moves that detail onto the low mesh.
@@ -938,22 +1053,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
         "BaleHigh", bevel_offset=0.016, bevel_segments=4,
         cuts=LOAF_CUTS_HIGH, flake=True,
     )
-    hay = principled(
-        "BaleHay",
-        (0.66, 0.52, 0.18, 1.0),
-        0.0,
-        0.78,
-        noise_scale=22.0,
-        wear=(0.48, 0.36, 0.10, 1.0),
-    )
-    twine = principled(
-        "BaleTwine",
-        (0.22, 0.16, 0.08, 1.0),
-        0.0,
-        0.58,
-        noise_scale=14.0,
-        wear=(0.14, 0.10, 0.05, 1.0),
-    )
+    hay, twine = bale_materials()
     assign_slots(low, hay, twine)
     assign_slots(high, hay, twine)
     if lift_z:
@@ -1083,6 +1183,16 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
 
     mirror_err = max(mirror_error(belt_shells), mirror_error(loop_shells))
 
+    # Loaf X-symmetry, vertex by vertex.
+    loaf_pts = [low.data.vertices[i].co for i in loaf_comp]
+    kd = KDTree(len(loaf_pts))
+    for k, co in enumerate(loaf_pts):
+        kd.insert(co, k)
+    kd.balance()
+    loaf_mirror = max(
+        kd.find(Vector((-co.x, co.y, co.z)))[2] for co in loaf_pts
+    )
+
     # --- banded seat depth, per angular station --------------------------
     seat_depths = []
     for bx, st in belt_shells:
@@ -1111,7 +1221,7 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
 
     print(
         f"measured shells={n_shells} loaf=({core_x:.4f},{core_y:.4f},{core_z:.4f}) "
-        f"mirror_err={mirror_err:.6f} zfight={zfight}"
+        f"mirror_err={mirror_err:.6f} loaf_mirror={loaf_mirror:.6f} zfight={zfight}"
     )
     print(
         f"measured cinch waist={waist:.5f} midspan={midspan:.5f} "
@@ -1252,6 +1362,13 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
                 "(--slack-belt is the designed fail)",
                 18,
             ), None, None, None, None, None
+    if loaf_mirror > LOAF_MIRROR_EPS:
+        return fail(
+            f"loaf not mirror-symmetric in X: worst vertex {loaf_mirror:.6f} "
+            f"> {LOAF_MIRROR_EPS} from its partner — an odd term in the "
+            "shaping function (--odd-loaf is the designed fail)",
+            19,
+        ), None, None, None, None, None
     if mirror_err > MIRROR_EPS:
         return fail(
             f"belts out of step by {mirror_err:.6f} > {MIRROR_EPS} — the two "
@@ -1277,12 +1394,17 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
 
 
 def wire_normal(mat, tex):
+    """Baked normal map into the BSDF, under the fibre bump if there is one."""
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     nrm = nt.nodes.new("ShaderNodeNormalMap")
     nrm.inputs["Strength"].default_value = 1.0
     nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
+    bump = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBump"), None)
+    if bump is not None:
+        nt.links.new(nrm.outputs["Normal"], bump.inputs["Normal"])
+    else:
+        nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
 def render_still(low, hay, tex, path, engine):
@@ -1428,6 +1550,12 @@ def main():
         help="falsification: raise one belt so the two wraps stop being "
              "mirror images",
     )
+    p.add_argument(
+        "--odd-loaf",
+        action="store_true",
+        help="falsification: use the odd sin() ridge term so the loaf stops "
+             "being mirror-symmetric in X",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, hay, tex, _col = check(
@@ -1437,6 +1565,7 @@ def main():
         float_belts=args.float_belts,
         slack_belt=args.slack_belt,
         skew_belt=args.skew_belt,
+        odd_loaf=args.odd_loaf,
     )
     if code:
         return code
