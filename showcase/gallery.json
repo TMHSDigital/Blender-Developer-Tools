@@ -169,8 +169,8 @@
       "name": "wheelbarrow",
       "dir": "showcase/wheelbarrow",
       "teaches": "A procedural wooden wheelbarrow through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A wooden wheelbarrow with a box tray, spoked front wheel and two long handles.",
-      "witnessesFix": "Recomputed: 2500 tris, two materials with 1094 wood and 190 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.556×0.630×0.572 m, zmin 0, hygiene 0, wall-floor seat 12 mm, spoke clearance 40 mm, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 90 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --fat-spokes / --float-walls exit 17 on joint fit; --pipe-rim exits 18 on tread aspect.",
+      "alt": "A wooden wheelbarrow whose tray walls are stacked boards held by iron straps, with a spoked front wheel and two long handles.",
+      "witnessesFix": "Recomputed: 2536 tris, two materials with 1157 wood and 190 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.556×0.630×0.572 m, zmin 0, hygiene 0, wall-floor seat 12 mm, spoke clearance 40 mm, two boards per side and front wall with 2 mm seams, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 90 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --fat-spokes / --float-walls / --wide-seams exit 17 on joint fit; --pipe-rim exits 18 on tread aspect.",
       "hero": "docs/gallery/assets/wheelbarrow-hero.webp",
       "preview": "showcase/wheelbarrow/preview.webp",
       "tags": [
