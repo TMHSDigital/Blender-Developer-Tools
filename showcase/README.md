@@ -55,6 +55,8 @@ entry in `showcase/gallery.json`, and a rendered still.
   `--open-ends` restores open U-band ends so the water is not contained
   (exit 18). `--pile-rocks` draws scattered stones together so they
   interpenetrate (file-local code; `terrain-scatter` uses 20).
+  `--straddle-handle` mounts a fixture across a board gap (file-local
+  code; `shipping-crate` uses 20).
   `--sharp-iron` skips a chamfer pass so the edge-treatment budget fails
   (file-local code; `crate-stack` uses 21).
   A budget with no falsifier witnesses nothing:
@@ -359,6 +361,14 @@ entry in `showcase/gallery.json`, and a rendered still.
   A falsifier that only skips the relaxation proves nothing if the parts
   happen to miss anyway; `terrain-scatter`'s `--pile-rocks` also draws
   the scatter inward so collisions are guaranteed.
+- **A fixture is mounted on a member, not across a gap (file-local
+  code).** Handles, hinges, hasps and plates screwed to planked faces
+  must land on one board. A height fixed as a fraction of the frame lands
+  wherever the plank layout happens to put a gap: `shipping-crate`'s
+  handle plates sat across the slot between two end boards. Snap the
+  fixture to the centre of the nearest board, from the same layout
+  function that places the boards, and assert each mounting plate sits
+  inside a single board's extent with a named clearance at both edges.
 - **Rock is broken, not smooth.** A smooth-shaded ellipsoid is an egg.
   Cleave it with a few closed-form planes (project every vertex beyond a
   plane onto it) and shade it flat, so it reads as broken stone. Cleaving
