@@ -415,6 +415,29 @@ entry in `showcase/gallery.json`, and a rendered still.
   attributes, and have the shader stretch its grain along that axis
   rather than a world axis, which a yawed member is off by its yaw.
   Nothing here is an assertion; it is found on the inspection sheet.
+  The same holds for coopered staves: `wooden-barrel` and `wooden-bucket`
+  were one flat tone until each stave got its own. Hoops are forged iron,
+  dark and rusted, not the bright polished metal both pieces first shipped
+  with.
+- **A head or bottom is boards, not a slab (exit 17).** A barrel head or
+  bucket bottom cut from one disk reads as a lid. Cut the croze outline
+  across into boards with a named seam, so every board's outer edge is
+  still the croze and the seat does not change. Assert the board count and
+  that every seam lies in a band. Classify boards by their span in plan,
+  not by a radius: a quarter of the head's width is smaller than any
+  "round" test built for the whole disk. `--one-piece-head` /
+  `--one-piece-bottom` are the falsifiers.
+- **Rope is laid, not piped.** A smooth tube with a rope material is a
+  plastic hose. Loft a three-lobed section and turn it one vertex step per
+  ring, so each lobe winds along the path as a strand. That costs the same
+  triangles as a round section of the same count. Fix the section's frame
+  to the path's plane, or the lay jumps where the path turns vertical.
+- **What passes through a part must clear its mount (exit 17).** A bail
+  through an ear ring has to clear the plate the ring hangs on. Ring
+  offsets sized to the ring (`RING_MAJOR * 0.25`) put the rope's axis 3 mm
+  off the plate and its body through it. Size the offset from the thing
+  passing through, and assert that no vertex of it lies inside the mount.
+  `--sunk-rope` restores the old offset.
 - **A section that carries the read is a budget (exit 19).** Where a
   cross-section is what makes a part recognisable — an axe handle is
   oval, a broom handle is round — assert it as a ratio band at a named
