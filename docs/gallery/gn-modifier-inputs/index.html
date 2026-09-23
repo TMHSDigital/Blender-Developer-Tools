@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-modifier-inputs-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three boxes stepping up in size from a small teal cube to an orange block to a large red block." />
+  <meta property="og:image:alt" content="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-modifier-inputs — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-modifier-inputs-hero.webp" />
-  <meta name="twitter:image:alt" content="Three boxes stepping up in size from a small teal cube to an orange block to a large red block." />
+  <meta name="twitter:image:alt" content="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three boxes stepping up in size from a small teal cube to an orange block to a large red block.">
-      <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three boxes stepping up in size from a small teal cube to an orange block to a large red block." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block.">
+      <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.</div>
@@ -281,6 +281,7 @@
 <p>A runnable example that attaches one Geometry Nodes tree to three cubes and writes a per-modifier Float <strong>Scale</strong> input through the version-appropriate API. The tree scales a 1 m cube by that value and lifts it onto the floor. Evaluated Z-extent must match the written scale (1 / 2 / 3). That is the closed form: if the write did not land, the three cubes collapse to the socket default and the extents are no longer distinct.</p>
 <p><strong>What it witnesses:</strong> Blender 5.2 removed ID-property assignment on <code>NodesModifier</code>. <code>mod[&quot;Socket_1&quot;] = 2.0</code> raises <code>TypeError</code> rather than silently no-opping. 4.5 LTS and 5.1 still require that dict form; <code>mod.properties</code> does not exist there (<code>AttributeError</code>). 5.2+ writes <code>mod.properties.inputs.Socket_1.value</code>. After the write, the depsgraph must be updated or <code>evaluated_get</code> still sees the previous scale.</p>
 <p>Follows <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a>.</p>
+<p>Staging: the carriers now stand 0.5 m apart (<code>XS</code>). The old spacing overlapped the 2 m and 3 m cubes by 0.2 m. The check reads only each cube&#x27;s evaluated Z extent and zmin, never X, so this is layout only. The camera looks from the front, so small to large reads left to right, and a duller finish keeps the tops from blowing out.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_modifier_inputs.py --
@@ -346,8 +347,10 @@ sys.path.insert(
 
 CUBE_SIZE = <span class="n">1.0</span>
 SCALES = (<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">3.0</span>)
-<span class="c"># Half-widths 0.5 / 1.0 / 1.5; keep a clear gap, keep the 3 m cube off the right edge.</span>
-XS = (-<span class="n">2.2</span>, <span class="n">0.15</span>, <span class="n">2.45</span>)
+<span class="c"># Half-widths 0.5 / 1.0 / 1.5, with 0.5 m between neighbours. The old</span>
+<span class="c"># (-2.2, 0.15, 2.45) overlapped the 2 m and 3 m cubes by 0.2 m. The check</span>
+<span class="c"># reads only Z extents, so the layout is free.</span>
+XS = (-<span class="n">2.6</span>, -<span class="n">0.6</span>, <span class="n">2.4</span>)
 COLORS = (
     (<span class="n">0.05</span>, <span class="n">0.62</span>, <span class="n">0.58</span>, <span class="n">1.0</span>),  <span class="c"># teal</span>
     (<span class="n">0.82</span>, <span class="n">0.38</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),  <span class="c"># copper</span>
@@ -393,8 +396,8 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.28</span>
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.35</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.1</span>
     <span class="k">return</span> mat
 
 
@@ -603,7 +606,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">1.25</span>)
+    aim.location = (<span class="n">0.25</span>, <span class="n">0.0</span>, <span class="n">1.1</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -619,7 +622,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         lc.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
         lc.up_axis = <span class="s">&quot;UP_Y&quot;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.8</span>, -<span class="n">5.0</span>, <span class="n">6.2</span>), <span class="n">560.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.5</span>, -<span class="n">6.0</span>, <span class="n">5.2</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.4</span>, -<span class="n">3.2</span>, <span class="n">2.4</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.4</span>, <span class="n">6.4</span>, <span class="n">3.8</span>), <span class="n">280.0</span>, <span class="n">3.5</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
@@ -634,7 +637,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">8.1</span>, -<span class="n">10.8</span>, <span class="n">5.05</span>)
+    cam.location = (<span class="n">1.6</span>, -<span class="n">12.4</span>, <span class="n">6.6</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -718,7 +721,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three boxes stepping up in size from a small teal cube to an orange block to a large red block." />
+    <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
   </dialog>
   <footer>
     <div class="statusbar">

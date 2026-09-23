@@ -139,7 +139,7 @@
       "name": "gn-modifier-inputs",
       "dir": "examples/gn-modifier-inputs",
       "teaches": "Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.",
-      "alt": "Three boxes stepping up in size from a small teal cube to an orange block to a large red block.",
+      "alt": "Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block.",
       "witnessesFix": "The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.",
       "hero": "docs/gallery/assets/gn-modifier-inputs-hero.webp",
       "preview": "examples/gn-modifier-inputs/preview.webp",

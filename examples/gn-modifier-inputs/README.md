@@ -16,6 +16,12 @@ must be updated or `evaluated_get` still sees the previous scale.
 
 Follows [`geometry-nodes-python`](../../skills/geometry-nodes-python/SKILL.md).
 
+Staging: the carriers now stand 0.5 m apart (`XS`). The old spacing
+overlapped the 2 m and 3 m cubes by 0.2 m. The check reads only each
+cube's evaluated Z extent and zmin, never X, so this is layout only. The
+camera looks from the front, so small to large reads left to right, and a
+duller finish keeps the tops from blowing out.
+
 ## Run
 
 ```bash

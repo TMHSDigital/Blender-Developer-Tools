@@ -36,8 +36,10 @@ import gallery_framing  # noqa: E402
 
 CUBE_SIZE = 1.0
 SCALES = (1.0, 2.0, 3.0)
-# Half-widths 0.5 / 1.0 / 1.5; keep a clear gap, keep the 3 m cube off the right edge.
-XS = (-2.2, 0.15, 2.45)
+# Half-widths 0.5 / 1.0 / 1.5, with 0.5 m between neighbours. The old
+# (-2.2, 0.15, 2.45) overlapped the 2 m and 3 m cubes by 0.2 m. The check
+# reads only Z extents, so the layout is free.
+XS = (-2.6, -0.6, 2.4)
 COLORS = (
     (0.05, 0.62, 0.58, 1.0),  # teal
     (0.82, 0.38, 0.08, 1.0),  # copper
@@ -83,8 +85,8 @@ def make_material(name, color):
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
-    bsdf.inputs["Roughness"].default_value = 0.28
-    bsdf.inputs["Metallic"].default_value = 0.35
+    bsdf.inputs["Roughness"].default_value = 0.45
+    bsdf.inputs["Metallic"].default_value = 0.1
     return mat
 
 
@@ -293,7 +295,7 @@ def render_still(objs, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.35, 0.0, 1.25)
+    aim.location = (0.25, 0.0, 1.1)
     scene.collection.objects.link(aim)
 
     def light(name, loc, energy, size, col):
@@ -309,7 +311,7 @@ def render_still(objs, path, engine):
         lc.track_axis = "TRACK_NEGATIVE_Z"
         lc.up_axis = "UP_Y"
 
-    light("Key", (-3.8, -5.0, 6.2), 560.0, 5.0, (1.0, 0.96, 0.9))
+    light("Key", (-5.5, -6.0, 5.2), 380.0, 6.0, (1.0, 0.96, 0.9))
     light("Fill", (5.4, -3.2, 2.4), 110.0, 8.0, (0.75, 0.85, 1.0))
     light("Rim", (0.4, 6.4, 3.8), 280.0, 3.5, (0.6, 0.78, 1.0))
     wedge = bpy.data.lights.new("Wedge", "AREA")
@@ -324,7 +326,7 @@ def render_still(objs, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (8.1, -10.8, 5.05)
+    cam.location = (1.6, -12.4, 6.6)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")

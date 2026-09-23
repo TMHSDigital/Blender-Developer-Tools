@@ -562,7 +562,7 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
+<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three separate cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
 </td>
 <td valign="middle">
 
