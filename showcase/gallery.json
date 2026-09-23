@@ -102,7 +102,7 @@
       "name": "terrain-scatter",
       "dir": "showcase/terrain-scatter",
       "teaches": "A Geometry Nodes hill tile with seated icosphere scatter through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A square tile of sandy rolling terrain with pale rocks scattered on the hill.",
+      "alt": "A square tile of dark rolling earth with nine faceted grey rocks seated across the hill, none touching.",
       "witnessesFix": "Recomputed: 1758 tris, two materials with 720 stone faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.800×1.800×0.552 m, grounded zmin, 9 stones of ≥80 faces seated on sampled dirt Z (offset −35 mm, floor zmin 0.113 m), LOD ratios in band, convex collider 81 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --poke-rock 17; --float-rocks 18; --box-rocks 19.",
       "hero": "docs/gallery/assets/terrain-scatter-hero.webp",
       "preview": "showcase/terrain-scatter/preview.webp",
