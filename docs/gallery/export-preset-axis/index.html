@@ -697,8 +697,10 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     scene = bpy.context.scene
     source.hide_render = <span class="k">True</span>
     source.hide_viewport = <span class="k">True</span>
-    sit_on_floor(unity_objs, -<span class="n">2.15</span>, <span class="n">0.0</span>)
-    sit_on_floor(godot_objs, <span class="n">1.95</span>, <span class="n">0.0</span>)
+    <span class="c"># Closer together: at -2.15 / +1.95 the pair left an empty metre of floor</span>
+    <span class="c"># between them, and each prop was small in its half of the frame.</span>
+    sit_on_floor(unity_objs, -<span class="n">1.35</span>, <span class="n">0.0</span>)
+    sit_on_floor(godot_objs, <span class="n">1.35</span>, <span class="n">0.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -734,10 +736,14 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.12</span>, -<span class="n">8.15</span>, <span class="n">2.45</span>)
+    <span class="c"># Oblique rather than straight down +Y: the Godot reimport lies with its</span>
+    <span class="c"># mast along -Y, and a camera looking along Y foreshortened that mast to</span>
+    <span class="c"># a stub in front of the base plate, so the one thing the check proves</span>
+    <span class="c"># (it lies) barely read. From the side-front the mast shows its length.</span>
+    cam.location = (<span class="n">4.9</span>, -<span class="n">5.1</span>, <span class="n">2.2</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.85</span>)
+    aim.location = (<span class="n">0.40</span>, -<span class="n">0.30</span>, <span class="n">1.00</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim

@@ -391,8 +391,10 @@ def render_still(source, unity_objs, godot_objs, path, engine):
     scene = bpy.context.scene
     source.hide_render = True
     source.hide_viewport = True
-    sit_on_floor(unity_objs, -2.15, 0.0)
-    sit_on_floor(godot_objs, 1.95, 0.0)
+    # Closer together: at -2.15 / +1.95 the pair left an empty metre of floor
+    # between them, and each prop was small in its half of the frame.
+    sit_on_floor(unity_objs, -1.35, 0.0)
+    sit_on_floor(godot_objs, 1.35, 0.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -428,10 +430,14 @@ def render_still(source, unity_objs, godot_objs, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (3.12, -8.15, 2.45)
+    # Oblique rather than straight down +Y: the Godot reimport lies with its
+    # mast along -Y, and a camera looking along Y foreshortened that mast to
+    # a stub in front of the base plate, so the one thing the check proves
+    # (it lies) barely read. From the side-front the mast shows its length.
+    cam.location = (4.9, -5.1, 2.2)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.85)
+    aim.location = (0.40, -0.30, 1.00)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
