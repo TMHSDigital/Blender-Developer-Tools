@@ -41,8 +41,9 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Tenon engagement | ≥ 0.008 m past the stile inner face | 0.01399 |
 | Tenon breakout margin | ≥ 0.008 m short of the stile outer face | 0.03780 |
 | Shoe bite / cover | bite ≥ 0.010 m, cover ≥ 0.016 m | 0.02000 / 0.03800 |
+| **Rung pitch** | 6 rungs; every rung-to-rung gap within 0.002 m of the mean | 6; 0.00000 |
 | Collider tris | ≤ 180 | 24 |
-| Export | written, size > 0 | 187528 / 187528 / 187504 bytes |
+| Export | written, size > 0 | 187524 / 187524 / 187504 bytes |
 
 Base triangles rose from **936 to 2536**. The previous mesh was two
 boxes, six cloned dowels, and four chrome cubes. Turned rungs (tenon
@@ -57,9 +58,27 @@ thicker only between the stiles.
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. On this mesh the three
 binaries agreed. Bake pixels are stochastic; the gate is `has_data`
-plus operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 24 B on 5.2.1 (glTF serializer), not a
-gated axis. Euler is 24 (multi-body) and is not gated to 2.
+plus operator `FINISHED`, not byte-identity. Construction is
+closed-form; the only RNG is the seeded per-piece wood tone. Bevel inputs are
+sorted by edge index, so the face order is the same on every run; a
+Python set of edges handed to the bevel had made it vary. Export byte
+counts differ on 5.2.1 (glTF serializer), not a gated axis. Euler is 24 (multi-body) and is not gated to 2.
+
+### Rungs, wood and staging
+
+The rung heights were jittered on purpose (up to ±18 mm, `RUNG_Z_OFFSETS`)
+and the barrel thickness varied from 0.82× to 1.22×. That is variation
+put into function: a climber's feet find rungs blind, so an even pitch
+is part of what a ladder is. The rungs now sit at one pitch, and the
+turning varies by a few percent. **Rung pitch** asserts it;
+`--drift-rungs` restores the old heights and exits 19 (worst gap
+0.03287 m off the mean). Tone and grain now vary per rail and rung
+instead. The temp `.glb` is removed after its size is measured.
+
+The hero stood the ladder at its 12° rake with nothing to lean on. The
+render path now adds a render-only wall section on the side the rails
+rake toward, with its face through the rail tops, and turns the ladder
+so that side faces away from the camera.
 
 Each falsifier violates exactly one named budget. Proven on Blender
 4.5.11 LTS, 5.1.2, and 5.2.1 LTS (the binaries' own `--version`):
@@ -72,6 +91,7 @@ Each falsifier violates exactly one named budget. Proven on Blender
 | `--lift-z` | Grounded zmin | 16 | zmin 0.050000 |
 | `--fat-rungs` | Rung depth clearance | 17 | clearance 0 |
 | `--short-stile` | Shoe bite / cover | 18 | bite 0.070, cover −0.012 |
+| `--drift-rungs` | Rung pitch | 19 | worst gap 0.03287 off the mean |
 
 Default exit is 0 on all three.
 
@@ -85,6 +105,7 @@ blender --background --python wooden_ladder.py -- --twin-sole
 blender --background --python wooden_ladder.py -- --lift-z
 blender --background --python wooden_ladder.py -- --fat-rungs
 blender --background --python wooden_ladder.py -- --short-stile
+blender --background --python wooden_ladder.py -- --drift-rungs
 blender --background --python wooden_ladder.py -- --output preview.webp --engine cycles
 ```
 
@@ -116,3 +137,4 @@ File-local. `9` is a valid check code. `10` is reserved for
 | 16 | Grounded zmin, or a rail end sitting in the tread (`--lift-z`) |
 | 17 | Part count or rung-to-stile joint fit (`--fat-rungs`) |
 | 18 | Shoe bite / cover (`--short-stile`) |
+| 19 | Rung pitch (`--drift-rungs`) |

@@ -326,8 +326,8 @@
       "name": "wooden-ladder",
       "dir": "showcase/wooden-ladder",
       "teaches": "A procedural timber ladder with raked tapered stiles, six turned rungs, ferrule caps, and level shoe plates through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A wooden ladder with tapered stiles and round rungs, leaning at an angle.",
-      "witnessesFix": "Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18.",
+      "alt": "A wooden ladder with tapered stiles and evenly spaced round rungs, leaning against a dark wall section.",
+      "witnessesFix": "Recomputed: 2536 tris, two materials with 612 wood and 736 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.490×0.376×1.487 m, zmin 0, hygiene and coplanar pairs 0, tenon clearance 8 mm, shoe bite 20 mm, rung pitch even to 0.002 m, LOD ratios in band, convex collider 24 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert and --twin-sole exit 15; --lift-z exits 16; --fat-rungs exits 17; --short-stile exits 18; --drift-rungs exits 19.",
       "hero": "docs/gallery/assets/wooden-ladder-hero.webp",
       "preview": "showcase/wooden-ladder/preview.webp",
       "tags": [
