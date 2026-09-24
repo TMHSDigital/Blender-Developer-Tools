@@ -76,8 +76,8 @@
       "name": "street-lantern",
       "dir": "showcase/street-lantern",
       "teaches": "A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A black iron street lamp post with an arm holding a hanging lantern with glowing panes.",
-      "witnessesFix": "Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19.",
+      "alt": "A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes.",
+      "witnessesFix": "Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.",
       "hero": "docs/gallery/assets/street-lantern-hero.webp",
       "preview": "showcase/street-lantern/preview.webp",
       "tags": [

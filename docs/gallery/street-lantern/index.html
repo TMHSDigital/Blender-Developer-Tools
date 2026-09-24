@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A black iron street lamp post with an arm holding a hanging lantern with glowing panes." />
+  <meta property="og:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="street-lantern — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/street-lantern-hero.webp" />
-  <meta name="twitter:image:alt" content="A black iron street lamp post with an arm holding a hanging lantern with glowing panes." />
+  <meta name="twitter:image:alt" content="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,35 +268,37 @@
     <p>A procedural hanging street lantern through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron street lamp post with an arm holding a hanging lantern with glowing panes.">
-      <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with an arm holding a hanging lantern with glowing panes." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes.">
+      <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 3338 tris, three materials with 1530 metal, 24 glass and 209 brass faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.300×0.786×1.287 m, zmin 0, hygiene 0, brace BVH gap 0, brace ends 13 mm into the post and the arm, hanger-roof gap −1 mm, post 0.100×1.120 m plumb 0, LOD ratios in band (5.2 COLLAPSE 2 tris leaner on LOD2), convex collider 78 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-brace 17; --sink-arm 18; --rake-post 19; --shallow-brace 20.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/street-lantern/street_lantern.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural hanging street lantern (stepped iron foot, tapered octagonal post, brass collars, braced arm, muntined cage with amber panes, square pyramidal brass roof and finial) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>The arm axis, drop length, and roof stack are one closed-form chain: the roof peak stays below the arm, the hanger is the arm&#x27;s far station, and the brace is an oriented box between a post-radius station and an arm station. The square pyramid is lofted on the cage axes, not a 4-gon cone. Cage posts and rails share a named overlap (<code>CAGE_JOINT</code>); glass sits behind the muntins by <code>PANE_REBATE</code>. Collars and the arm root evaluate <code>post_radius_at(z)</code>.</p>
+<p>The arm axis, drop length, and roof stack are one closed-form chain: the roof peak stays below the arm, the hanger is the arm&#x27;s far station, and the brace is an oriented box tenoned into the post wall and into the arm&#x27;s lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone. Cage posts and rails share a named overlap (<code>CAGE_JOINT</code>); glass sits behind the muntins by <code>PANE_REBATE</code>. Collars and the arm root evaluate <code>post_radius_at(z)</code>.</p>
+<p>The first build parked the brace&#x27;s post end 0.35 × <code>BRACE_T</code> outside the post and its arm end under the arm, so a single bevelled corner grazed each host and the brace read as a loose stick in both side elevations. The brace-to-arm gap budget passed anyway, because a grazing corner is a zero gap, and nothing measured the post end at all. The brace ends now start half a brace inside the post wall and on the arm&#x27;s centre-line side, and the brace-bite budget below asserts that each end is actually inside its host. Brass is aged and rougher (it was bright polished gold at roughness 0.28).</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
 <p>Intended size: 0.30 m square foot, 1.12 m octagonal post (0.10 m across at the base), 0.50 m arm, 0.24 × 0.30 m cage; outer AABB 0.300 × 0.786 × 1.287 m.</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>3000–3800</td><td>3338 / 3338 / 3338</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4997 / 0.4997 / 0.4997</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2193</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥200 metal, ≥8 glass, ≥24 brass</td><td>3 slots; 1530 / 24 / 209</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.300, 0.786, 1.287) m ± 0.01</td><td>(0.3000, 0.7860, 1.2874), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 120</td><td>78</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>250980 / 250980 / 250964 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>3000–3800</td><td>3338 / 3338 / 3338</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.4997 / 0.4997 / 0.4997</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2193</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥200 metal, ≥8 glass, ≥24 brass</td><td>3 slots; 1530 / 24 / 209</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.300, 0.786, 1.287) m ± 0.01</td><td>(0.3000, 0.7860, 1.2874), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 120</td><td>78</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>251016 / 251016 / 251000 bytes</td></tr></tbody></table></div>
 <p>Base triangles dropped from <strong>3520 to 3338</strong> in the quality pass: the open 4-gon cone roof became a closed square pyramid, cage crossings stopped sharing vertices, and a pane rebate replaced coplanar glass.</p>
 <p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is 2 tris leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Post plan</td><td>0.100 m across × 1.120 m high ± (0.02, 0.04)</td><td>0.1000 × 1.1200</td></tr><tr><td>Post plumb (top vs bottom XY)</td><td>≤ 0.008 m</td><td>0.00000</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-arm BVH gap</td><td>≤ 0.006 m</td><td>0.00000</td></tr><tr><td>Arm underside vs roof peak</td><td>≥ 0.008 m clearance</td><td>0.05300</td></tr><tr><td>Hanger-to-roof BVH gap</td><td>≤ 0.004 m</td><td>−0.00100</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-arm BVH gap</td><td>≤ 0.006 m</td><td>0.00000</td></tr><tr><td>Brace bite: deepest brace vertex inside the post / inside the arm (signed distance to the host shell)</td><td>≥ 0.004 m each</td><td>0.01305 / 0.01282</td></tr><tr><td>Arm underside vs roof peak</td><td>≥ 0.008 m clearance</td><td>0.05300</td></tr><tr><td>Hanger-to-roof BVH gap</td><td>≤ 0.004 m</td><td>−0.00100</td></tr></tbody></table></div>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All six were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-brace</code></td><td>brace-to-arm BVH gap</td><td>17</td></tr><tr><td><code>--sink-arm</code></td><td>arm-over-roof clearance</td><td>18</td></tr><tr><td><code>--rake-post</code></td><td>post plumb</td><td>19</td></tr></tbody></table></div>
+<p>Each violates one named budget. Every falsifier was run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-brace</code></td><td>brace-to-arm BVH gap</td><td>17</td></tr><tr><td><code>--sink-arm</code></td><td>arm-over-roof clearance</td><td>18</td></tr><tr><td><code>--rake-post</code></td><td>post plumb</td><td>19</td></tr><tr><td><code>--shallow-brace</code></td><td>brace bite (the first build&#x27;s ends: −0.00593 m into the post, 0.00000 m into the arm)</td><td>20</td></tr></tbody></table></div>
 <p><code>--sink-arm</code> lowers only the arm. Hang-station <code>hang_z</code> stays at post top so the cage does not follow, which is what lets the clearance budget fire.</p>
+<p>The brace-bite check runs last, after plumb, so a raked post is reported as plumb (19) rather than as a brace that no longer reaches it.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python street_lantern.py --
 blender --background --python street_lantern.py -- --skip-decimate
@@ -305,11 +307,12 @@ blender --background --python street_lantern.py -- --lift-z
 blender --background --python street_lantern.py -- --float-brace
 blender --background --python street_lantern.py -- --sink-arm
 blender --background --python street_lantern.py -- --rake-post
+blender --background --python street_lantern.py -- --shallow-brace
 blender --background --python street_lantern.py -- --output lantern.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0</td></tr><tr><td>17</td><td>Joint fit: brace-to-arm gap (<code>--float-brace</code>)</td></tr><tr><td>18</td><td>Seat: arm-roof clearance or hanger-roof gap (<code>--sink-arm</code>)</td></tr><tr><td>19</td><td>Post plumb or post size off the stated real-world size (<code>--rake-post</code>)</td></tr></tbody></table></div>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family; <code>20</code> is file-local.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0</td></tr><tr><td>17</td><td>Joint fit: brace-to-arm gap (<code>--float-brace</code>)</td></tr><tr><td>18</td><td>Seat: arm-roof clearance or hanger-roof gap (<code>--sink-arm</code>)</td></tr><tr><td>19</td><td>Post plumb or post size off the stated real-world size (<code>--rake-post</code>)</td></tr><tr><td>20</td><td>Brace bite: a brace end not inside the post or the arm (<code>--shallow-brace</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -325,14 +328,15 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 The arm axis, drop length, and roof stack are one closed-form chain: the
 roof peak stays below the arm, the hanger is the arm&#x27;s far station, and
-the brace is an oriented box between a post-radius station and an arm
-station. The square pyramid is lofted on the cage axes, not a 4-gon cone.
+the brace is an oriented box tenoned into the post wall and into the
+arm&#x27;s lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-brace`` brace-to-arm
-joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb.
+joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb,
+``--shallow-brace`` brace bite into post and arm (exit 20).
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -437,6 +441,13 @@ ARM_ROOF_CLEAR_MIN = <span class="n">0.008</span>
 HANGER_ROOF_GAP_MAX = <span class="n">0.004</span>
 PLUMB_MAX = <span class="n">0.008</span>
 SINK_ARM = <span class="n">0.14</span>
+<span class="c"># Each brace end must bite into its host: the deepest brace vertex inside the</span>
+<span class="c"># post shell, and inside the arm shell, measured as signed distance to that</span>
+<span class="c"># shell&#x27;s surface. The first build parked the post end 0.35 x BRACE_T outside</span>
+<span class="c"># the post and the arm end under the arm, so one bevelled corner grazed each</span>
+<span class="c"># host and the brace read as a loose stick (it measured -0.0059 m into the</span>
+<span class="c"># post and 0.0000 m into the arm).</span>
+BRACE_BITE_MIN = <span class="n">0.004</span>
 RAKE = math.radians(<span class="n">8.0</span>)
 
 METAL_IDX = <span class="n">0</span>
@@ -605,6 +616,7 @@ BRASS_IDX = <span class="n">2</span>
     float_brace=<span class="k">False</span>,
     sink_arm=<span class="k">False</span>,
     rake_post=<span class="k">False</span>,
+    shallow_brace=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -702,8 +714,15 @@ BRASS_IDX = <span class="n">2</span>
 
         brace_z = arm_z - BRACE_POST_DROP
         post_r = post_radius_at(brace_z)
-        p_post = Vector((<span class="n">0.0</span>, post_r + BRACE_T * <span class="n">0.35</span>, brace_z))
-        p_arm = Vector((<span class="n">0.0</span>, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R - BRACE_T * <span class="n">0.20</span>))
+        <span class="k">if</span> shallow_brace:
+            <span class="c"># The first build: ends parked on the host surfaces, not in them.</span>
+            p_post = Vector((<span class="n">0.0</span>, post_r + BRACE_T * <span class="n">0.35</span>, brace_z))
+            p_arm = Vector((<span class="n">0.0</span>, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R - BRACE_T * <span class="n">0.20</span>))
+        <span class="k">else</span>:
+            <span class="c"># Tenoned: the post end starts half a brace inside the post wall,</span>
+            <span class="c"># the arm end sits on the arm&#x27;s lower half, so both ends bite.</span>
+            p_post = Vector((<span class="n">0.0</span>, post_r - BRACE_T * <span class="n">0.5</span>, brace_z))
+            p_arm = Vector((<span class="n">0.0</span>, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R * <span class="n">0.35</span>))
         <span class="k">if</span> float_brace:
             p_arm = p_post + Vector((<span class="n">0.0</span>, <span class="n">0.11</span>, -<span class="n">0.06</span>))
         bevel_verts.extend(add_oriented_box(bm, p_post, p_arm, (BRACE_T, BRACE_T), METAL_IDX))
@@ -842,7 +861,12 @@ BRASS_IDX = <span class="n">2</span>
         )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> bevel_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># A set of BMEdges iterates in memory order, which varies run to</span>
+            <span class="c"># run and reorders the bevelled faces; sort by index.</span>
+            bm.edges.index_update()
+            edges = sorted(
+                {e <span class="k">for</span> v <span class="k">in</span> bevel_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index
+            )
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -923,6 +947,24 @@ BRASS_IDX = <span class="n">2</span>
         nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
         nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> lantern_materials():
+    <span class="s">&quot;&quot;&quot;(metal, glass, brass): shared by the check, the render and inspection.
+
+    The first build&#x27;s brass was bright polished gold (0.72, 0.46, 0.14,
+    roughness 0.28) and outshone the lamp; it is aged, rougher brass now.
+    &quot;&quot;&quot;</span>
+    metal = principled(<span class="s">&quot;LanternMetal&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.048</span>, <span class="n">0.055</span>, <span class="n">1.0</span>), <span class="n">0.88</span>, <span class="n">0.40</span>, roughness_var=<span class="n">0.12</span>)
+    glass = principled(
+        <span class="s">&quot;LanternGlass&quot;</span>,
+        (<span class="n">0.62</span>, <span class="n">0.32</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
+        <span class="n">0.0</span>,
+        <span class="n">0.22</span>,
+        emission=((<span class="n">0.85</span>, <span class="n">0.42</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.45</span>),
+    )
+    brass = principled(<span class="s">&quot;LanternBrass&quot;</span>, (<span class="n">0.44</span>, <span class="n">0.29</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.9</span>, <span class="n">0.44</span>, roughness_var=<span class="n">0.14</span>)
+    <span class="k">return</span> metal, glass, brass
 
 
 <span class="k">def</span> assign_slots(obj, metal, glass, brass):
@@ -1112,6 +1154,32 @@ BRASS_IDX = <span class="n">2</span>
         bm_b.free()
 
 
+<span class="k">def</span> shell_bite(me, ga, gb):
+    <span class="s">&quot;&quot;&quot;Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is.&quot;&quot;&quot;</span>
+    bm_b = bmesh.new()
+    <span class="k">try</span>:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f <span class="k">for</span> f <span class="k">in</span> bm_b.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep_b <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_b.faces:
+            <span class="k">return</span> -<span class="n">1e9</span>
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -<span class="n">1e9</span>
+        <span class="k">for</span> i <span class="k">in</span> ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            <span class="k">if</span> loc <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            depth = dist <span class="k">if</span> (co - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+            best = max(best, depth)
+        <span class="k">return</span> best
+    <span class="k">finally</span>:
+        bm_b.free()
+
+
 <span class="k">def</span> joint_audit(me):
     <span class="s">&quot;&quot;&quot;Brace reaches the arm; roof stays under the arm.&quot;&quot;&quot;</span>
     groups = shells(me)
@@ -1146,6 +1214,10 @@ BRASS_IDX = <span class="n">2</span>
     brace_gap = <span class="n">99.0</span>
     <span class="k">if</span> arms <span class="k">and</span> braces:
         brace_gap = min(shell_bvh_gap(me, b[<span class="n">0</span>], a[<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces <span class="k">for</span> a <span class="k">in</span> arms)
+    post_bite = arm_bite = -<span class="n">1.0</span>
+    <span class="k">if</span> braces <span class="k">and</span> posts <span class="k">and</span> arms:
+        post_bite = min(shell_bite(me, b[<span class="n">0</span>], posts[<span class="n">0</span>][<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces)
+        arm_bite = min(shell_bite(me, b[<span class="n">0</span>], arms[<span class="n">0</span>][<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces)
     roof_zmax = max((a[<span class="n">5</span>] <span class="k">for</span> _g, a <span class="k">in</span> roofs), default=<span class="n">0.0</span>)
     arm_zmin = min((a[<span class="n">2</span>] <span class="k">for</span> _g, a <span class="k">in</span> arms), default=<span class="n">99.0</span>)
     hanger_zmin = min((a[<span class="n">2</span>] <span class="k">for</span> _g, a <span class="k">in</span> hangers), default=<span class="n">99.0</span>)
@@ -1157,6 +1229,8 @@ BRASS_IDX = <span class="n">2</span>
         <span class="s">&quot;posts&quot;</span>: len(posts),
         <span class="s">&quot;hangers&quot;</span>: len(hangers),
         <span class="s">&quot;brace_gap&quot;</span>: brace_gap,
+        <span class="s">&quot;post_bite&quot;</span>: post_bite,
+        <span class="s">&quot;arm_bite&quot;</span>: arm_bite,
         <span class="s">&quot;arm_roof_clear&quot;</span>: arm_zmin - roof_zmax,
         <span class="s">&quot;hanger_roof_gap&quot;</span>: hanger_zmin - roof_zmax,
     }
@@ -1311,6 +1385,7 @@ BRASS_IDX = <span class="n">2</span>
     float_brace=<span class="k">False</span>,
     sink_arm=<span class="k">False</span>,
     rake_post=<span class="k">False</span>,
+    shallow_brace=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_lantern_mesh(
@@ -1320,6 +1395,7 @@ BRASS_IDX = <span class="n">2</span>
         float_brace=float_brace,
         sink_arm=sink_arm,
         rake_post=rake_post,
+        shallow_brace=shallow_brace,
     )
     high = build_lantern_mesh(
         <span class="s">&quot;LanternHigh&quot;</span>,
@@ -1328,16 +1404,9 @@ BRASS_IDX = <span class="n">2</span>
         float_brace=float_brace,
         sink_arm=sink_arm,
         rake_post=rake_post,
+        shallow_brace=shallow_brace,
     )
-    metal = principled(<span class="s">&quot;LanternMetal&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.048</span>, <span class="n">0.055</span>, <span class="n">1.0</span>), <span class="n">0.88</span>, <span class="n">0.34</span>, roughness_var=<span class="n">0.08</span>)
-    glass = principled(
-        <span class="s">&quot;LanternGlass&quot;</span>,
-        (<span class="n">0.62</span>, <span class="n">0.32</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.22</span>,
-        emission=((<span class="n">0.85</span>, <span class="n">0.42</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.45</span>),
-    )
-    brass = principled(<span class="s">&quot;LanternBrass&quot;</span>, (<span class="n">0.72</span>, <span class="n">0.46</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>, roughness_var=<span class="n">0.07</span>)
+    metal, glass, brass = lantern_materials()
     assign_slots(low, metal, glass, brass)
     assign_slots(high, metal, glass, brass)
 
@@ -1398,6 +1467,14 @@ BRASS_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender sets TMPDIR from its own preference, which resolves to the</span>
+    <span class="c"># working directory on a stock portable build, so every run left a .glb</span>
+    <span class="c"># behind. The budget only needs the byte count.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        <span class="k">try</span>:
+            os.remove(export_path)
+        <span class="k">except</span> OSError:
+            <span class="k">pass</span>
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1423,6 +1500,7 @@ BRASS_IDX = <span class="n">2</span>
     )
     print(
         <span class="s">f&quot;</span><span class="s">measured brace_gap=</span>{jnt[<span class="s">&#x27;brace_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">post_bite=</span>{jnt[<span class="s">&#x27;post_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> arm_bite=</span>{jnt[<span class="s">&#x27;arm_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">arm_roof_clear=</span>{jnt[<span class="s">&#x27;arm_roof_clear&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">hanger_roof_gap=</span>{jnt[<span class="s">&#x27;hanger_roof_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">plumb=</span>{plumb:<span class="s">.5f</span>}<span class="s"> post_size=(</span>{pxy:<span class="s">.4f</span>}<span class="s">,</span>{pz:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
@@ -1539,6 +1617,14 @@ BRASS_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">plumb </span>{plumb:<span class="s">.5f</span>}<span class="s"> post_size=(</span>{pxy:<span class="s">.4f</span>}<span class="s">,</span>{pz:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>,
             <span class="n">19</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="c"># Last, so a raked post (plumb, 19) is reported as plumb, not as a brace</span>
+    <span class="c"># that no longer reaches it.</span>
+    <span class="k">if</span> min(jnt[<span class="s">&quot;post_bite&quot;</span>], jnt[<span class="s">&quot;arm_bite&quot;</span>]) &lt; BRACE_BITE_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">brace bite post=</span>{jnt[<span class="s">&#x27;post_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> arm=</span>{jnt[<span class="s">&#x27;arm_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">&lt; </span>{BRACE_BITE_MIN}<span class="s">&quot;</span>,
+            <span class="n">20</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, metal, tex, collider
 
 
@@ -1565,7 +1651,7 @@ BRASS_IDX = <span class="n">2</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1656,6 +1742,7 @@ BRASS_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-brace&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--shallow-brace&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--sink-arm&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--rake-post&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
@@ -1667,6 +1754,7 @@ BRASS_IDX = <span class="n">2</span>
         float_brace=args.float_brace,
         sink_arm=args.sink_arm,
         rake_post=args.rake_post,
+        shallow_brace=args.shallow_brace,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1691,7 +1779,7 @@ BRASS_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with an arm holding a hanging lantern with glowing panes." />
+    <img src="../assets/street-lantern-hero.webp" alt="A black iron street lamp post with aged brass collars and a knee brace under the arm, holding a hanging lantern with glowing panes." />
   </dialog>
   <footer>
     <div class="statusbar">
