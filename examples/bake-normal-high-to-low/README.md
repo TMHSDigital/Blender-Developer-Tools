@@ -41,6 +41,14 @@ The still stages the baked map as an unlit card beside the LOD wearing it.
 If the bake were flat, the card would be uniform `(128, 128, 255)` periwinkle
 and the plate would shade like the undisplaced cage.
 
+Staging is render-only. Each panel stands in a low display plinth, lifted
+so its lowest evaluated point sits 35 mm in the slot. Both panels used to
+balance on an edge, and the leaning plate pierced the floor. The
+solidify rim wears plain bronze instead of the baked map. The slight
+waviness along the plate's border is the bake itself, normal-map shading
+inside the UV margin, and is left as the map produces it. Bake
+statistics are unchanged: frac 0.7211, MAD 0.09356 on all three binaries.
+
 Operator RNA (`type='NORMAL'`, `use_selected_to_active`, `cage_extrusion`,
 `cage_object` as a string, `normal_space='TANGENT'`, `margin_type`) is
 identical on 4.5.11, 5.1.2, and 5.2.1 — no shim.

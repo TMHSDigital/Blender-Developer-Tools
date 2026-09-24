@@ -378,6 +378,55 @@ def make_map_card(image, name="BakeCard"):
     return ob
 
 
+PLINTH_H = 0.10
+PLINTH_SEAT = 0.035
+PLINTH_PAD = 0.08
+
+
+def seat_on_plinth(ob, name):
+    """Stand a display panel in a low plinth by its own lowest point.
+
+    Render-only staging. The panel is lifted so its lowest evaluated vertex
+    sits PLINTH_SEAT inside a dark slab sized from the panel's footprint.
+    Both panels used to balance on an edge, and the leaning plate's lower
+    edge pierced the floor.
+    """
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = ob.evaluated_get(dg)
+    me = ev.to_mesh()
+    try:
+        pts = [ev.matrix_world @ v.co for v in me.vertices]
+    finally:
+        ev.to_mesh_clear()
+    ob.location.z += (PLINTH_H - PLINTH_SEAT) - min(p.z for p in pts)
+    base = [p for p in pts if p.z < min(q.z for q in pts) + 0.15]
+    x0 = min(p.x for p in base) - PLINTH_PAD
+    x1 = max(p.x for p in base) + PLINTH_PAD
+    y0 = min(p.y for p in base) - PLINTH_PAD
+    y1 = max(p.y for p in base) + PLINTH_PAD
+    slab = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x = (x0 + x1) / 2 + v.co.x * (x1 - x0)
+            v.co.y = (y0 + y1) / 2 + v.co.y * (y1 - y0)
+            v.co.z = PLINTH_H / 2 + v.co.z * PLINTH_H
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.012, segments=2,
+                        affect="EDGES", clamp_overlap=True)
+        bm.to_mesh(slab)
+    finally:
+        bm.free()
+    pmat = bpy.data.materials.new(name + "Mat")
+    pmat.use_nodes = True
+    paint_principled(pmat, (0.045, 0.042, 0.04, 1.0), 0.0, 0.55)
+    slab.materials.append(pmat)
+    plinth = bpy.data.objects.new(name, slab)
+    bpy.context.scene.collection.objects.link(plinth)
+    return plinth
+
+
 def render_still(low, mat, tex, path, engine):
     scene = bpy.context.scene
     for ob in list(scene.objects):
@@ -386,13 +435,22 @@ def render_still(low, mat, tex, path, engine):
             ob.hide_viewport = True
 
     wire_normal_map(mat, tex)
+    # The solidify rim is the plate's edge, not baked surface: give it plain
+    # bronze. Wearing the map, it sampled the UV border and rendered ragged.
+    rim = bpy.data.materials.new("BronzeRim")
+    rim.use_nodes = True
+    paint_principled(rim, (0.22, 0.13, 0.07, 1.0), 0.58, 0.44)
+    low.data.materials.append(rim)
     solid = low.modifiers.new("SolidifyDisplay", "SOLIDIFY")
     solid.thickness = THICKNESS
     solid.offset = 1.0
+    solid.material_offset_rim = 1
     low.rotation_euler.x = math.radians(72.0)
     low.location = (1.20, 0.0, 1.05)
     card = make_map_card(tex.image)
     card.location = (-1.50, 0.0, 1.05)
+    plinths = [seat_on_plinth(ob, name) for ob, name in
+               ((card, "CardPlinth"), (low, "PlatePlinth"))]
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -472,7 +530,7 @@ def render_still(low, mat, tex, path, engine):
         scene,
         cam,
         hero=[card, low],
-        elements=[card, low],
+        elements=[card, low] + plinths,
         stage=[floor, wall],
     )
     if fcode:

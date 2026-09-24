@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bake-normal-high-to-low-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern." />
+  <meta property="og:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="bake-normal-high-to-low — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bake-normal-high-to-low-hero.webp" />
-  <meta name="twitter:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern." />
+  <meta name="twitter:image:alt" content="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A collapse-decimated hatch plate receiving a Cycles cage-baked tangent normal map from a ribbed high-poly source</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern.">
-      <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths.">
+      <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Statistical gates not byte-identity: detail frac 0.7211 / MAD 0.09356 vs flat 0.0000 / 0.00277; --flat-source exits 5; type=NORMAL not bake_type; RNA identical on 4.5.11, 5.1.2, 5.2.1</div>
@@ -284,6 +284,7 @@
 <ul><li><strong>Detail bake is not flat.</strong> <code>frac &gt;= 0.40</code> and <code>MAD &gt;= 0.05</code> (measured 0.7211 / 0.09356 on 4.5.11, 5.1.2, and 5.2.1). Catches an inactive Image Texture node, reversed selection, or EEVEE/GPU mis-setup that writes a blank map. MAD floor is half the measured hatch value, still ~30× a flat bake.</li><li><strong>Flat control is flat.</strong> <code>frac &lt;= 0.05</code> and <code>MAD &lt;= 0.03</code> (measured 0.0000 / 0.00277). Catches a noisy or wrongly-typed bake that would also satisfy the detail gates.</li><li><strong>Monotonic gap.</strong> <code>detail_frac - flat_frac &gt;= 0.30</code>. The two maps must separate; a tolerance wide enough to pass both would have no discriminating power.</li><li><strong><code>--flat-source</code> is the falsifier.</strong> Skips the ribs and still runs the detail gates. Must exit 5. Analogous to <code>--same-axis</code> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/export-preset-axis"><code>export-preset-axis</code></a>.</li></ul>
 <p>Neighbor of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a> (the LOD is the cage target; collapse keeps UVs) and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/image-pixels-testcard"><code>image-pixels-testcard</code></a> (<code>save_render</code>, not <code>Image.save()</code>, if you persist the datablock). UV transfer and atlas packing are out of scope.</p>
 <p>The still stages the baked map as an unlit card beside the LOD wearing it. If the bake were flat, the card would be uniform <code>(128, 128, 255)</code> periwinkle and the plate would shade like the undisplaced cage.</p>
+<p>Staging is render-only. Each panel stands in a low display plinth, lifted so its lowest evaluated point sits 35 mm in the slot. Both panels used to balance on an edge, and the leaning plate pierced the floor. The solidify rim wears plain bronze instead of the baked map. The slight waviness along the plate&#x27;s border is the bake itself, normal-map shading inside the UV margin, and is left as the map produces it. Bake statistics are unchanged: frac 0.7211, MAD 0.09356 on all three binaries.</p>
 <p>Operator RNA (<code>type=&#x27;NORMAL&#x27;</code>, <code>use_selected_to_active</code>, <code>cage_extrusion</code>, <code>cage_object</code> as a string, <code>normal_space=&#x27;TANGENT&#x27;</code>, <code>margin_type</code>) is identical on 4.5.11, 5.1.2, and 5.2.1 — no shim.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) - the CI check:
@@ -686,6 +687,55 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
     <span class="k">return</span> ob
 
 
+PLINTH_H = <span class="n">0.10</span>
+PLINTH_SEAT = <span class="n">0.035</span>
+PLINTH_PAD = <span class="n">0.08</span>
+
+
+<span class="k">def</span> seat_on_plinth(ob, name):
+    <span class="s">&quot;&quot;&quot;Stand a display panel in a low plinth by its own lowest point.
+
+    Render-only staging. The panel is lifted so its lowest evaluated vertex
+    sits PLINTH_SEAT inside a dark slab sized from the panel&#x27;s footprint.
+    Both panels used to balance on an edge, and the leaning plate&#x27;s lower
+    edge pierced the floor.
+    &quot;&quot;&quot;</span>
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = ob.evaluated_get(dg)
+    me = ev.to_mesh()
+    <span class="k">try</span>:
+        pts = [ev.matrix_world @ v.co <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+    ob.location.z += (PLINTH_H - PLINTH_SEAT) - min(p.z <span class="k">for</span> p <span class="k">in</span> pts)
+    base = [p <span class="k">for</span> p <span class="k">in</span> pts <span class="k">if</span> p.z &lt; min(q.z <span class="k">for</span> q <span class="k">in</span> pts) + <span class="n">0.15</span>]
+    x0 = min(p.x <span class="k">for</span> p <span class="k">in</span> base) - PLINTH_PAD
+    x1 = max(p.x <span class="k">for</span> p <span class="k">in</span> base) + PLINTH_PAD
+    y0 = min(p.y <span class="k">for</span> p <span class="k">in</span> base) - PLINTH_PAD
+    y1 = max(p.y <span class="k">for</span> p <span class="k">in</span> base) + PLINTH_PAD
+    slab = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v.co.x = (x0 + x1) / <span class="n">2</span> + v.co.x * (x1 - x0)
+            v.co.y = (y0 + y1) / <span class="n">2</span> + v.co.y * (y1 - y0)
+            v.co.z = PLINTH_H / <span class="n">2</span> + v.co.z * PLINTH_H
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=<span class="n">0.012</span>, segments=<span class="n">2</span>,
+                        affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bm.to_mesh(slab)
+    <span class="k">finally</span>:
+        bm.free()
+    pmat = bpy.data.materials.new(name + <span class="s">&quot;Mat&quot;</span>)
+    pmat.use_nodes = <span class="k">True</span>
+    paint_principled(pmat, (<span class="n">0.045</span>, <span class="n">0.042</span>, <span class="n">0.04</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>)
+    slab.materials.append(pmat)
+    plinth = bpy.data.objects.new(name, slab)
+    bpy.context.scene.collection.objects.link(plinth)
+    <span class="k">return</span> plinth
+
+
 <span class="k">def</span> render_still(low, mat, tex, path, engine):
     scene = bpy.context.scene
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
@@ -694,13 +744,22 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
             ob.hide_viewport = <span class="k">True</span>
 
     wire_normal_map(mat, tex)
+    <span class="c"># The solidify rim is the plate&#x27;s edge, not baked surface: give it plain</span>
+    <span class="c"># bronze. Wearing the map, it sampled the UV border and rendered ragged.</span>
+    rim = bpy.data.materials.new(<span class="s">&quot;BronzeRim&quot;</span>)
+    rim.use_nodes = <span class="k">True</span>
+    paint_principled(rim, (<span class="n">0.22</span>, <span class="n">0.13</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.58</span>, <span class="n">0.44</span>)
+    low.data.materials.append(rim)
     solid = low.modifiers.new(<span class="s">&quot;SolidifyDisplay&quot;</span>, <span class="s">&quot;SOLIDIFY&quot;</span>)
     solid.thickness = THICKNESS
     solid.offset = <span class="n">1.0</span>
+    solid.material_offset_rim = <span class="n">1</span>
     low.rotation_euler.x = math.radians(<span class="n">72.0</span>)
     low.location = (<span class="n">1.20</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
     card = make_map_card(tex.image)
     card.location = (-<span class="n">1.50</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    plinths = [seat_on_plinth(ob, name) <span class="k">for</span> ob, name <span class="k">in</span>
+               ((card, <span class="s">&quot;CardPlinth&quot;</span>), (low, <span class="s">&quot;PlatePlinth&quot;</span>))]
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -780,7 +839,7 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
         scene,
         cam,
         hero=[card, low],
-        elements=[card, low],
+        elements=[card, low] + plinths,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -840,7 +899,7 @@ FLAT_RGB = (<span class="n">0.5</span>, <span class="n">0.5</span>, <span class=
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern." />
+    <img src="../assets/bake-normal-high-to-low-hero.webp" alt="A baked tangent-space normal map shown as a lilac card beside a bronze plate wearing it, with a radial embossed pattern, both standing in low display plinths." />
   </dialog>
   <footer>
     <div class="statusbar">
