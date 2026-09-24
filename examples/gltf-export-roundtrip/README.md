@@ -49,7 +49,15 @@ raises `ReferenceError`, so counts are captured before the wipe.
 The render stages the authored crate beside the actual re-imported one — same
 bevels, same materials carried through the file itself. If the axis conversion
 broke, the right twin would lie on its side; if the modifier contract broke, its
-silhouette would lose the rounded edges.
+silhouette would lose the rounded edges. Both twins are turned 22° off
+square so each shows a side and its corner armour; dead-on, the pair read
+as two flat front elevations. The re-imported object comes back in
+`QUATERNION` rotation mode, so the render path switches it to `XYZ`
+before turning it — presentation only, after every check has run.
+
+The render path gates framing through `gallery_framing.check_framing`.
+The helper returns 10, which is already a check code here, so the call
+site remaps a framing violation to 22.
 
 ## Run
 
@@ -94,6 +102,7 @@ against it.
 | 19 | Re-import triangle count drifted |
 | 20 | Per-triangle material bindings drifted |
 | 21 | `--output` produced no file |
+| 22 | Gallery framing violation (render path only; the helper's 10, remapped) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

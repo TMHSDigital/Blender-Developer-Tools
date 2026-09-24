@@ -814,7 +814,7 @@ portable path is `radius`.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gltf-export-roundtrip/"><img src="examples/gltf-export-roundtrip/preview.webp" alt="glTF export round-trip: two identical olive-drab sci-fi supply crates on a dark studio floor - authored beside re-imported - with teal status strips, riveted panels, and corner armor, proving the export/import round-trip preserves the asset" /></a>
+<a href="examples/gltf-export-roundtrip/"><img src="examples/gltf-export-roundtrip/preview.webp" alt="glTF export round-trip: two identical olive-drab sci-fi supply crates turned three-quarter on a dark studio floor - authored beside re-imported - with teal status strips, riveted panels, and corner armor, proving the export/import round-trip preserves the asset" /></a>
 </td>
 <td valign="middle">
 
