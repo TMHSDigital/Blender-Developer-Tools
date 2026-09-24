@@ -4,7 +4,12 @@ A runnable example building the second UV layer engines require for baked
 lighting, on an asset built to be reused: a market cart assembled from
 21 named, watertight parts — a plank-grooved bed with side rails, corner
 brackets, and fasteners, real wheel assemblies (disc + hub + iron band +
-bolt ring) on a capped axle, four posts, and a ribbed canvas canopy.
+bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Each
+post rises from inside the bed into the canopy's underside, its top
+sheared to the arc at its own station for a uniform 12 mm bite. Fixed
+1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated.
+The UV1 contract is unchanged: every part keeps its island count, zero
+overlap and minimum island distance.
 Ground-level pivot at `z=0`, identity transforms by construction, `Cart.*`
 datablocks. (An earlier revision shipped a soft uniform-tan cart with
 lumpy polygon wheels and was remodeled under the asset-quality gate;

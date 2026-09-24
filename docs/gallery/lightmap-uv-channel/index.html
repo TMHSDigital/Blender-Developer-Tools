@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wooden covered cart beside a board showing its packed lightmap UV atlas as coloured islands." />
+  <meta property="og:image:alt" content="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="lightmap-uv-channel — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lightmap-uv-channel-hero.webp" />
-  <meta name="twitter:image:alt" content="A wooden covered cart beside a board showing its packed lightmap UV atlas as coloured islands." />
+  <meta name="twitter:image:alt" content="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A market cart carrying the two-channel UV contract for baked lighting: UV0 untouched, UVLight packed with no overlaps and a respected margin.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden covered cart beside a board showing its packed lightmap UV atlas as coloured islands.">
-      <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart beside a board showing its packed lightmap UV atlas as coloured islands." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands.">
+      <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Per-part UVMap/UVLight with active vs active_render pinned (ops clear both flags), UV0 drift 0.0, 3680 islands with 0 SAT overlaps, min island distance 0.00401.</div>
@@ -278,7 +278,7 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 21 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, real wheel assemblies (disc + hub + iron band + bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
+<p>A runnable example building the second UV layer engines require for baked lighting, on an asset built to be reused: a market cart assembled from 21 named, watertight parts — a plank-grooved bed with side rails, corner brackets, and fasteners, real wheel assemblies (disc + hub + iron band + bolt ring) on a capped axle, four posts, and a ribbed canvas canopy. Each post rises from inside the bed into the canopy&#x27;s underside, its top sheared to the arc at its own station for a uniform 12 mm bite. Fixed 1.35 m posts used to stop 0.33 m short of the arc, so the canopy floated. The UV1 contract is unchanged: every part keeps its island count, zero overlap and minimum island distance. Ground-level pivot at <code>z=0</code>, identity transforms by construction, <code>Cart.*</code> datablocks. (An earlier revision shipped a soft uniform-tan cart with lumpy polygon wheels and was remodeled under the asset-quality gate; its wheel material was also silently never applied — a name-key lookup bug the exact per-part mapping now replaces.) UV0 is the texture channel (deterministic dominant-axis box projection per face); UVLight is the baked-lighting atlas (<code>smart_project</code> → <code>lightmap_pack</code>).</p>
 <p><strong>What it witnesses</strong> (all independently derived, nothing trusted from the packer):</p>
 <ul><li><strong>The flag trap.</strong> <code>uv_layers.new()</code> does <strong>not</strong> move the active flags — the first layer keeps <code>active</code> + <code>active_render</code>, so a UV op runs against channel 0 unless you move <code>active</code> yourself (probed: unwrap+pack with the flags unmoved destroys channel 0, measured drift <strong>2.068</strong>). Worse, the edit-mode UV ops <strong>clear both flags</strong> — the sequence must re-assert them. The check pins, per part: exactly two layers <code>UVMap</code>/<code>UVLight</code>, <code>active == UVLight</code> (edit target), <code>active_render == UVMap</code> (render target).</li><li><strong>Channel zero untouched.</strong> UV0 loops snapshotted before the UVLight unwrap, compared after: drift <strong>0.0</strong> on every part (tol 1e-6).</li><li><strong>Bounds.</strong> Every UVLight loop inside <code>[0, 1]</code> within 1e-5.</li><li><strong>Non-overlap.</strong> UV1 triangles binned into a 256² spatial hash and tested pairwise with strict SAT (epsilon-separated, so shared edges don&#x27;t count): <strong>0</strong> overlapping pairs.</li><li><strong>Margin.</strong> <code>MARGIN_DIV</code> semantics measured live: nominal margin == <code>MARGIN_DIV × 0.01</code> UV units; the check requires the measured min island-pair distance ≥ half the nominal — measured <strong>0.00401</strong> (≈ 2× the nominal 0.002, the packer&#x27;s per-island margin applied twice).</li><li><strong>Island census + watertight parts.</strong> Connected components counted independently per part; loops conserved; every part manifold.</li></ul>
 <p><strong>What each check catches on failure:</strong> wrong layer names/count (exit 3); flags not re-established after the ops (exit 4); channel 0 touched by the UV1 unwrap (exit 5 — probed via the clobber trap, drift 2.068); UV1 loops outside the unit square (exit 6); overlapping islands (exit 7 — probed by translating an island onto a neighbor, 15 SAT hits); margin floor broken (exit 8 — probed with <code>MARGIN_DIV=0</code>, measured 2e-5 &lt; 0.001); non-watertight part (exit 9).</p>
@@ -577,11 +577,26 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
             <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Band</span><span class="s">&quot;</span>, <span class="n">0.47</span>, <span class="n">0.435</span>, <span class="n">0.10</span>, (<span class="n">0.55</span>, y, <span class="n">0.45</span>))
         parts[<span class="s">f&quot;</span><span class="s">Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>] = _bolt_ring(
             <span class="s">f&quot;</span><span class="s">Cart.Wheel.</span>{tag}<span class="s">.Bolts</span><span class="s">&quot;</span>, <span class="n">6</span>, <span class="n">0.09</span>, <span class="n">0.02</span>, (<span class="n">0.55</span>, y + sy * <span class="n">0.085</span>, <span class="n">0.45</span>))
+    <span class="c"># Each post runs from inside the bed up into the canopy&#x27;s underside at</span>
+    <span class="c"># its own station, read off the canopy arc. A fixed 1.35 m post stopped</span>
+    <span class="c"># 0.33 m short of the arc, so the canopy floated over four sticks.</span>
+    <span class="c"># The top is sheared to follow the arc, so the bite is the same across</span>
+    <span class="c"># the post&#x27;s width rather than deep on one side and open on the other.</span>
+    canopy_z0, canopy_r, canopy_t, post_bite = <span class="n">1.9</span>, <span class="n">0.85</span>, <span class="n">0.04</span>, <span class="n">0.012</span>
+    post_z0 = <span class="n">0.875</span>
+    r_in = canopy_r - canopy_t
     <span class="k">for</span> tag, (px, py) <span class="k">in</span> ((<span class="s">&quot;FL&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;FR&quot;</span>, (<span class="n">0.95</span>, -<span class="n">0.48</span>)),
                           (<span class="s">&quot;RL&quot;</span>, (-<span class="n">0.95</span>, <span class="n">0.48</span>)), (<span class="s">&quot;RR&quot;</span>, (-<span class="n">0.95</span>, -<span class="n">0.48</span>))):
-        parts[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = _box(<span class="s">f&quot;</span><span class="s">Cart.Post.</span>{tag}<span class="s">&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">1.35</span>),
-                                    (px, py, <span class="n">1.55</span>), <span class="n">0.015</span>)
-    parts[<span class="s">&quot;Canopy&quot;</span>] = _canopy(<span class="s">&quot;Cart.Canopy&quot;</span>, <span class="n">2.3</span>, <span class="n">0.85</span>, <span class="n">0.04</span>, <span class="n">1.9</span>)
+        top = canopy_z0 + math.sqrt(r_in * r_in - py * py) + post_bite
+        me = _box(<span class="s">f&quot;</span><span class="s">Cart.Post.</span>{tag}<span class="s">&quot;</span>, (<span class="n">0.09</span>, <span class="n">0.09</span>, top - post_z0),
+                  (px, py, <span class="n">0.5</span> * (post_z0 + top)), <span class="n">0.015</span>)
+        <span class="k">for</span> v <span class="k">in</span> me.vertices:
+            <span class="k">if</span> v.co.z &gt; top - <span class="n">0.05</span>:
+                arc = canopy_z0 + math.sqrt(r_in * r_in - v.co.y * v.co.y) + post_bite
+                v.co.z += arc - top
+        me.update()
+        parts[<span class="s">f&quot;</span><span class="s">Post.</span>{tag}<span class="s">&quot;</span>] = me
+    parts[<span class="s">&quot;Canopy&quot;</span>] = _canopy(<span class="s">&quot;Cart.Canopy&quot;</span>, <span class="n">2.3</span>, canopy_r, canopy_t, canopy_z0)
     parts[<span class="s">&quot;Canopy.Ribs&quot;</span>] = _canopy_ribs(<span class="s">&quot;Cart.Canopy.Ribs&quot;</span>, (-<span class="n">0.75</span>, <span class="n">0.0</span>, <span class="n">0.75</span>),
                                         <span class="n">0.07</span>, <span class="n">0.875</span>, <span class="n">0.035</span>, <span class="n">1.9</span>)
     <span class="k">return</span> parts
@@ -1145,7 +1160,7 @@ LAYER1 = <span class="s">&quot;UVLight&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart beside a board showing its packed lightmap UV atlas as coloured islands." />
+    <img src="../assets/lightmap-uv-channel-hero.webp" alt="A wooden covered cart, its four posts carrying an arched canvas canopy, beside a board showing its packed lightmap UV atlas as coloured islands." />
   </dialog>
   <footer>
     <div class="statusbar">
