@@ -113,7 +113,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
   <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
   <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course ring of rounded fieldstones around a tripod of logs and glowing ash on a dark studio floor, warm wedge on the back wall" /></a>
-  <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a grained timber frame with post feet, diagonal side braces, slatted counter, rafters, and a striped canvas awning on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
   <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
   <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" width="24%" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
@@ -147,7 +147,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`campfire`](showcase/campfire/) — procedural fieldstone ring, logs, and ash through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--uniform-stones` exits 20.
 
-[`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--short-brace` exits 17.
 
 [`street-lantern`](showcase/street-lantern/) — procedural hanging lantern with iron post, brass fittings, and amber cage through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
