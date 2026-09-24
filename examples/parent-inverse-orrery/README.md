@@ -32,10 +32,21 @@ blender --background --python parent_inverse_orrery.py -- --output orrery.png
 blender --background --python parent_inverse_orrery.py -- --output orrery.png --engine cycles
 ```
 
+## Staging
+
+Render path only; the rig the checks measure is untouched. The still
+uses the `Standard` view transform: under the default AgX the orange sun
+clipped to a peach-white bulb and read as a lamp. Lighting follows the
+house recipe (shaped key, faint fill, rim, warm wedge on the back wall)
+on the dark matte studio floor; the old rig (key 1500 W, fill 500 W, a
+glossy grey floor) lit the frame to mean luma 0.33, above the gallery's
+calibration band. The render path gates framing through
+`gallery_framing.check_framing` (exit 10), which it never did before.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it.
+against it. `10` is the shared framing helper.
 
 | Code | Meaning |
 | --- | --- |
@@ -48,6 +59,7 @@ against it.
 | 6 | Planet off closed-form orbit (`--skip-mpi` lands here) |
 | 7 | Moon off closed-form orbit |
 | 8 | `--output` produced no file |
+| 10 | Gallery framing violation (render path only) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

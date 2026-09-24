@@ -203,7 +203,7 @@ or expand a category below.
 
 <p align="center">
   <a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" width="24%" alt="Grease pencil rosette: five nested neon rose curves glowing against a dark studio wall" /></a>
-  <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun and three planets" /></a>
+  <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing yellow sun and three planets" /></a>
   <a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" width="24%" alt="Compositor glare: three neon rings with colored bloom halos" /></a>
   <a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" width="24%" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card" /></a>
 </p>
@@ -706,7 +706,7 @@ ring pinned and the tip deflected. A straight tube is a failure.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
+<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing yellow sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 

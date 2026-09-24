@@ -29,6 +29,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Vector, Matrix
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 # (name, orbit radius, arm height, orbit angle deg, sphere radius, color RGBA)
 PLANETS = [
     ("Lapis", 2.55, 1.02, 152.0, 0.34, (0.04, 0.10, 0.42, 1.0)),
@@ -245,7 +250,9 @@ def render_still(rig, path, engine):
     scene = bpy.context.scene
     brass = principled("Brass", (0.62, 0.40, 0.16, 1.0), 1.0, 0.32)
     dark_bronze = principled("Bronze", (0.16, 0.11, 0.07, 1.0), 1.0, 0.45)
-    sun_mat = principled("SunGlow", (1.0, 0.48, 0.10, 1.0), 0.0, 0.4, emission=3.2)
+    # At emission 3.2 the sun clipped to a peach-white bulb and read as a
+    # lamp; a lower strength keeps it an orange star against the brass.
+    sun_mat = principled("SunGlow", (1.0, 0.42, 0.06, 1.0), 0.0, 0.4, emission=1.3)
     moon_mat = principled("MoonSilver", (0.82, 0.84, 0.88, 1.0), 1.0, 0.25)
 
     rig["sun"].data.materials.append(sun_mat)
@@ -267,11 +274,11 @@ def render_still(rig, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
-    fmat = principled("Studio", (0.045, 0.05, 0.06, 1.0), 0.0, 0.42)
+    fmat = principled("Studio", (0.03, 0.032, 0.037, 1.0), 0.0, 0.7)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
@@ -295,9 +302,13 @@ def render_still(rig, path, engine):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
-    light("Key", (-4.0, -4.5, 5.0), 1500.0, 6.5, (1.0, 0.94, 0.86), (46, 0, -40))
-    light("Fill", (4.8, -3.8, 2.6), 500.0, 8.0, (0.75, 0.83, 1.0), (62, 0, 48))
-    light("Rim", (1.0, 4.5, 3.4), 900.0, 4.0, (1.0, 0.68, 0.38), (-70, 0, 170))
+    # House recipe (docs/VISUAL-STYLE.md): shaped warm key, faint cool fill,
+    # rim, warm wedge on the back wall. The old rig (key 1500, fill 500) lit
+    # the stage to mean luma 0.33, above the calibration set's band.
+    light("Key", (-4.0, -4.5, 5.0), 620.0, 4.5, (1.0, 0.94, 0.86), (46, 0, -40))
+    light("Fill", (4.8, -3.8, 2.6), 120.0, 8.0, (0.75, 0.83, 1.0), (62, 0, 48))
+    light("Rim", (1.0, 4.5, 3.4), 420.0, 4.0, (1.0, 0.68, 0.38), (-70, 0, 170))
+    light("Wedge", (2.5, 3.5, 4.2), 420.0, 5.5, (1.0, 0.76, 0.5), (-72, 0, 195))
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 40.0
@@ -319,8 +330,20 @@ def render_still(rig, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
+    # AgX washes the orange sun and the planet colours toward pastel
+    # (docs/VISUAL-STYLE.md); the sun read as a peach bulb under it.
+    scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact.
+    orrery = [o for o in scene.objects
+              if o.type in {'MESH', 'CURVE'} and o.name not in {"Floor", "Wall"}]
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=orrery, elements=orrery, stage=[floor, wall],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 8
 
 
 def main():
@@ -339,9 +362,11 @@ def main():
         return code
 
     if args.output:
-        if not render_still(rig, os.path.abspath(args.output), args.engine):
+        rcode = render_still(rig, os.path.abspath(args.output), args.engine)
+        if rcode == 8:
             print("ERROR: render produced no file", file=sys.stderr)
-            return 8
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("parent-inverse-orrery OK")
