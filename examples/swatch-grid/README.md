@@ -34,6 +34,17 @@ blender --background --python swatch_grid.py -- --output swatch.png
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960
 ```
 
+## Staging
+
+The backdrop stands 0.16 behind the spheres, so each casts a soft contact
+shadow. It used to stand 1.58 behind them, and the grid floated. The world is
+a reflection-only sky: glossy rays see a warm overhead gradient above a dark
+horizon, and camera and diffuse rays see the dark stage. The mirror-finish
+gold otherwise reflected the near-black world and rendered as a black ball
+with two light-card glints. Sphere positions, materials, the camera and the
+six-region pixel check are unchanged; `verify_png` still reads six distinct
+regions on 4.5.11, 5.1.2 and 5.2.1.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
