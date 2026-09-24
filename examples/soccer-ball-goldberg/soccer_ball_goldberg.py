@@ -18,6 +18,11 @@ check. Pass --output to also render a still:
 """
 import bpy, bmesh, sys, os, math, argparse
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 # truncation parameter: cutting each icosahedron edge at 1/3 makes every new
 # edge the same length (a/3), which is what makes the result an Archimedean
 # solid with a circumsphere at all
@@ -32,6 +37,9 @@ TOL_LEN = 3.0e-5            # edge-length uniformity
 TOL_PLANAR = 3.0e-5         # face planarity (max vertex-to-plane distance)
 TOL_RADIUS = 3.0e-5         # circumsphere uniformity
 TOL_CENTER = 1.0e-6         # centroid at origin
+SEAM_WIDTH = 0.018          # render only: stitched seam width on the ball
+SEAM_LIFT = 0.002           # render only: seam sits this far proud of the ball
+FRAMING_EXIT = 14           # render only: gallery_framing returns 10, taken here
 
 # closed forms for a truncated icosahedron (Goldberg polyhedron GP(1,1))
 EXPECT_V, EXPECT_E, EXPECT_F = 60, 90, 32
@@ -292,16 +300,48 @@ def render_still(obj, path, engine):
     me = obj.data
     _panel_materials(obj)
 
-    # the check reads the base mesh; the still adds an UNAPPLIED Subsurf so
-    # the faceted Goldberg cage reads as an inflated ball. Panel materials
-    # carry through Catmull-Clark per face class, so a misbound panel would
+    # the check reads the base mesh; the still adds UNAPPLIED modifiers so
+    # the faceted Goldberg cage reads as a stitched ball. Panel materials
+    # carry through every stage per face class, so a misbound panel would
     # still show in the image.
     for poly in me.polygons:
         poly.use_smooth = True
     sub = obj.modifiers.new("Inflate", 'SUBSURF')
     sub.subdivision_type = 'CATMULL_CLARK'
-    sub.levels = 2
-    sub.render_levels = 2
+    sub.levels = 3
+    sub.render_levels = 3
+    # Catmull-Clark on a 60-vertex cage leaves flats over the hexagons (the
+    # clay pass reads as a lumpy stone); Cast pulls the surface onto a sphere
+    # of the cage's own circumradius
+    cast = obj.modifiers.new("Round", 'CAST')
+    cast.cast_type = 'SPHERE'
+    cast.factor = 1.0
+    cast.use_radius_as_size = True
+    cast.radius = BALL_RADIUS
+
+    # stitched seams: without them the 20 white hexagons merge into one white
+    # shell and only 12 of the 32 panels the check counts are visible. The
+    # cage's own edges, as a wire subdivided and cast onto a sphere just
+    # proud of the ball, draw every panel boundary. A render-only copy of
+    # the mesh, so the checked mesh and its binding are untouched.
+    seam_me = me.copy()
+    for poly in seam_me.polygons:
+        poly.material_index = 1
+    seams = bpy.data.objects.new("Seams", seam_me)
+    scene.collection.objects.link(seams)
+    seams.parent = obj
+    wire = seams.modifiers.new("Wire", 'WIREFRAME')
+    wire.thickness = SEAM_WIDTH
+    wire.use_replace = True
+    fine = seams.modifiers.new("Follow", 'SUBSURF')
+    fine.subdivision_type = 'SIMPLE'
+    fine.levels = 3
+    fine.render_levels = 3
+    lay = seams.modifiers.new("Lay", 'CAST')
+    lay.cast_type = 'SPHERE'
+    lay.factor = 1.0
+    lay.use_radius_as_size = True
+    lay.radius = BALL_RADIUS + SEAM_LIFT
 
     # a pentagon sits on the icosphere +Z pole; tip it toward the camera and
     # spin for an asymmetric, match-worn panel layout
@@ -362,7 +402,7 @@ def render_still(obj, path, engine):
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 55.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
     cam.location = (0.0, -7.2, 3.8)
     cam.rotation_euler = (math.radians(68), 0.0, 0.0)
@@ -384,8 +424,14 @@ def render_still(obj, path, engine):
     # AgX would wash the white leather toward grey and lift the stage
     # (docs/VISUAL-STYLE.md); Standard is the house transform
     scene.view_settings.view_transform = 'Standard'
+    if gallery_framing.check_framing(scene, cam, hero=[obj], elements=[obj],
+                                     stage=[floor, wall]):
+        return FRAMING_EXIT
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 6
+    return 0
 
 
 def main():
@@ -404,9 +450,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("soccer-ball-goldberg OK")
