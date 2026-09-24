@@ -505,6 +505,17 @@ entry in `showcase/gallery.json`, and a rendered still.
   oval, a broom handle is round — assert it as a ratio band at a named
   station, measured in the construction frame from a slab that holds
   exactly one ring. `--round-haft` is the falsifier.
+- **A brace joins two members (exit 17).** A diagonal that stops in
+  the air is a peg, not a brace. Assert that both ends reach past the
+  inner face of the member each tenons into, measured per side, and
+  count the braces so a classifier that silently drops one (a level
+  brace fails a "diagonal" shape test) cannot pass vacuously. The
+  falsifier stops one end short inside the envelope (`--short-brace`).
+- **Laid stone and cut timber vary piece by piece.** One flat grey on
+  every stone reads as a moulded ring; one brown on every member reads
+  as a single casting. Drive a per-shell tone (`PlankTone`) and, for
+  wood, grain along each shell's long axis (`GrainDir`) from face
+  attributes, seeded so the render is the same every run.
 - **Rendered still and gallery entry.** Showcase pieces are visual by
   definition. The pathology / sidecar exemption does not apply. Call
   `examples/gallery_framing.check_framing` on the `--output` path only.
