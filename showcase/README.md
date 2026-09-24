@@ -552,6 +552,30 @@ entry in `showcase/gallery.json`, and a rendered still.
   by 24 mm, while its README said the width *was* the tile. `--wide-tile`
   restores the old stations. Check it before the AABB gate, or the envelope
   check fires first.
+- **A fixture is bolted to the face it is seen on (file-local code).** A
+  wall plate seated on the backing slab, behind the face of the stones
+  laid over it, is buried: `wall-torch` showed only its four bolt heads.
+  A plate-to-plaque gap budget passed, because the plate still touched the
+  slab. Derive the seat from the proudest face (`stone_face_y()`), and
+  assert two things from the mesh: the fixture stands proud of that face
+  by a named minimum, and its back bites the face within a band.
+  `--sink-plate` restores the old seat.
+- **A ferrule grips the leg on the leg's axis (exit 18/20).** A vertical
+  cup on the floor under a splayed leg can't hold it. The leg either
+  saws through the wall or, as `tavern-stool` shipped, stops above an open
+  ring with air around the foot. Build the sleeve on the leg's own axis,
+  with its inner radius a named grip inside the leg. Bury its raked bottom
+  in a level tread, and end the leg inside the sleeve above the tread.
+  Measure the grip radially about the leg's principal axis, not by
+  nearest-face signed distance: points in an open sleeve's hollow read as
+  inside its wall.
+- **Bake texels per UV cell (file-local code).** One UV cell per face
+  and a 256 px bake gives a 1,700-face piece about 6 px per cell. The
+  render's bilinear lookup then reads the next cell's normals across the
+  border, as dark slivers on the hero (`tavern-stool`). Assert the smallest
+  UV cell's extent in baked texels, from the mesh's UVs and the image's
+  actual size, against a floor (12 px). `--low-bake` bakes at 256 px and
+  is the falsifier.
 - **Level on the stage.** A hero that tilts the piece about X, even by 2°,
   sinks one row of feet into the floor and lifts the other. Turn the piece
   only about Z.

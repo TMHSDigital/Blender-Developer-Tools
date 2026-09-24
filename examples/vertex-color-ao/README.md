@@ -107,6 +107,14 @@ attribute, not from the lights. The falsification variant (`--falsify`) writes
 the same bake **inverted**: sky-facing coping and apron tops go grimy while the
 recesses and post bases glow, occlusion turned inside out.
 
+The studio rig is presentation only. Its fill and rim used to be strongly
+blue, which lit the whole stage cold (stage luma 0.243, warmth +0.01 against
+the calibration set). Its wedge grazed floor the camera barely saw and left a
+hard-edged patch on the back wall. Both are now near neutral, and the wedge
+pools warm light on the floor just behind the well from the camera's side:
+luma 0.274, warmth +0.023. The bake, the checks and the exit codes are
+unchanged.
+
 ## Run
 
 ```bash

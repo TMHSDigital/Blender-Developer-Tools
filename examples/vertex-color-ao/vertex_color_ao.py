@@ -90,6 +90,8 @@ FLOAT_TOL = 1e-6           # FLOAT_COLOR round-trip (measured 1.43e-08)
 BYTE_MODEL_TOL = 1e-6      # agreement with the independent sRGB model
 SPREAD_MIN = 0.25          # the asset must actually use its AO range
 EXPECT_PARTS = 11          # asserted before any per-part loop runs (check 0)
+WEDGE_AT = (-0.9, 3.4, 2.0)    # render only: warm wedge position
+WEDGE_POOL = (-1.8, 2.2, 0.0)  # render only: floor point the wedge pools on
 
 
 def eevee_engine_id():
@@ -839,11 +841,20 @@ def build_studio(sc):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         sc.collection.objects.link(ob)
 
-    # VISUAL-STYLE Layer 2 rig, energies scaled to a ~1.9 m subject
-    light("Key", (-2.3, -2.4, 3.6), 430.0, 3.0, (1.0, 0.96, 0.9), (40, 0, -42))
-    light("Fill", (3.0, -2.0, 1.2), 78.0, 5.0, (0.75, 0.85, 1.0), (70, 0, 54))
-    light("Rim", (-0.9, 3.0, 2.6), 240.0, 2.0, (0.6, 0.78, 1.0), (-54, 0, 196))
-    light("Wedge", (0.3, 5.0, 0.7), 300.0, 5.0, (1.0, 0.76, 0.5), (-86, 0, 182))
+    # VISUAL-STYLE Layer 2 rig, energies scaled to a ~1.9 m subject. The fill
+    # and rim used to be strongly blue and lit the whole stage cold (stage
+    # luma 0.243, warmth +0.01 against the calibration set); they are now
+    # near neutral and weaker, and the warm wedge carries the back wall.
+    light("Key", (-2.3, -2.4, 3.6), 400.0, 3.0, (1.0, 0.95, 0.88), (40, 0, -42))
+    light("Fill", (3.0, -2.0, 1.2), 45.0, 5.0, (0.88, 0.92, 1.0), (70, 0, 54))
+    light("Rim", (-0.9, 3.0, 2.6), 170.0, 2.0, (0.85, 0.88, 0.95), (-54, 0, 196))
+    light("Wedge", (0.3, 5.0, 0.7), 150.0, 4.0, (1.0, 0.70, 0.40), (-86, 0, 182))
+    # The wedge pool lands on the floor behind the well as the hero camera
+    # sees it; at its old grazing angle it lit floor the camera barely saw.
+    wedge = sc.objects["Wedge"]
+    wedge.location = WEDGE_AT
+    wedge.rotation_euler = (Vector(WEDGE_POOL) - Vector(WEDGE_AT)).to_track_quat(
+        "-Z", "Y").to_euler()
     return floor, wall
 
 

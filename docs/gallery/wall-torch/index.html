@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wall-torch — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wall-torch/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="wall-torch — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/wall-torch/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wall-torch-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A wall torch: a stone-block plaque with an iron bracket holding a bowl with a flame, casting warm light on the floor." />
+  <meta property="og:image:alt" content="A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="wall-torch — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/wall-torch-hero.webp" />
-  <meta name="twitter:image:alt" content="A wall torch: a stone-block plaque with an iron bracket holding a bowl with a flame, casting warm light on the floor." />
+  <meta name="twitter:image:alt" content="A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,38 +265,39 @@
   </div>
   <header class="hero">
     <h1>wall-torch</h1>
-    <p>A procedural wall-mounted torch sconce with a dressed stone plaque, iron bracket, wooden haft, and emissive flame through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural wall-mounted torch sconce: an iron plate bolted to the stone face, a level arm, an open cup holding a leaning haft with a pitch wrap and upright flames, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wall torch: a stone-block plaque with an iron bracket holding a bowl with a flame, casting warm light on the floor.">
-      <img src="../assets/wall-torch-hero.webp" alt="A wall torch: a stone-block plaque with an iron bracket holding a bowl with a flame, casting warm light on the floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice.">
+      <img src="../assets/wall-torch-hero.webp" alt="A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1528 tris, four materials with 540 stone, 228 metal and 78 flame faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.293×0.424 m at zmin 0, LOD ratios in band, convex collider 60 tris, non-empty glTF. Hygiene all zero. Arm-to-cup gap 0.87 mm, plate-to-plaque gap 4 mm, plaque width 0.280 m. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2004 tris, five materials with 540 stone, 318 metal, 50 wood, 180 flame and 60 pitch faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.304×0.322×0.485 m at zmin 0, LOD ratios in band, convex collider 116 tris, non-empty glTF. Hygiene all zero. Arm level 0.000°, plate 13 mm proud of the stones and 3 mm into them, arm-to-cup gap 0.07 mm, plaque width 0.280 m, bake 27.7 texels per UV cell. --skip-decimate exits 9; --stray-vert 15; --lift-z 16; --float-arm 17; --float-plate 18; --skinny-plaque 19; --droop-arm 20; --sink-plate 21; --low-bake 22.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/wall-torch/wall_torch.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural wall-mounted torch sconce (running-bond dressed stone plaque, iron plate and arm from named stations, bowl cup, wooden haft, emissive flame) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>The plaque back sits on the wall plane Y=0 with zmin at 0. The iron arm is a tube from the plate station to the cup wall, not a pair of square bars aimed at a funnel. The bowl opens upward and holds the haft. Hygiene family 15–19: <code>--stray-vert</code>, <code>--lift-z</code>, <code>--float-arm</code>, <code>--float-plate</code>, <code>--skinny-plaque</code>.</p>
+<p>A showcase piece, not an example. A procedural wall-mounted torch sconce: a running-bond dressed-stone plaque with dark mortar joints, an iron wall plate bolted to the stones, a level iron arm, an open iron cup, a leaning wooden haft with a pitch wrap, and upright emissive flames. Then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
+<p>The plaque back sits on the wall plane Y=0 with zmin at 0. The plate&#x27;s seat comes from the face of the facing stones (<code>stone_face_y()</code>), a named bite into it. The cup&#x27;s mid-height is the arm&#x27;s height, so the arm is level by construction. It runs from inside the plate into the cup&#x27;s wall. The cup sits on the haft&#x27;s axis, which leans 15° out from the wall. The haft stands on the cup&#x27;s floor and runs up into the wrap. The flames stand upright from the wrap, whatever the haft does.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, <code>procedural-materials-and-shaders</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
-<p>Intended size: 0.28 m plaque width, 0.40 m plaque height, bowl projecting 0.24 m from the wall; outer AABB 0.304 × 0.293 × 0.424 m.</p>
+<p>Intended size: a 0.28 m wide, 0.40 m tall plaque; the cup centre 0.24 m out from the wall; the flame tip 0.48 m above the floor. Outer AABB 0.304 × 0.322 × 0.485 m.</p>
 <h2>Budgets</h2>
-<p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1400–1700</td><td>1528 / 1528 / 1528</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2199</td></tr><tr><td>Materials</td><td>exactly 4 distinct, ≥24 stone, ≥24 metal, ≥8 flame</td><td>4 slots, 540 stone, 228 metal, 78 flame</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.304, 0.293, 0.424) m ± 0.015</td><td>(0.3040, 0.2930, 0.4240), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>60</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>124608 / 124608 / 124584 bytes</td></tr></tbody></table></div>
-<p>Base triangles rose from <strong>848 to 1528</strong> in the quality pass: one mailbox slab became four courses of running-bond ashlar plus a round arm and a triangulated bowl. Outer AABB tightened from 0.384 × 0.360 × 0.670 m (and zmin 0.140) to 0.304 × 0.293 × 0.424 m at zmin 0.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 24 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>Declared as named constants. Every gate <strong>recomputes</strong> its value from the mesh, materials, UVs, evaluated LOD, collider or export file.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1800–2250</td><td>2004 / 2004 / 2004</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2196 / 0.2196 / 0.2196</td></tr><tr><td>Materials</td><td>exactly 5 distinct; ≥24 stone, ≥24 metal, ≥8 flame, ≥10 pitch</td><td>5 slots; 540 stone, 318 metal, 50 wood, 180 flame, 60 pitch</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.304, 0.322, 0.485) m ± 0.015</td><td>(0.3040, 0.3218, 0.4845), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>116</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>164408 / 164408 / 164384 bytes</td></tr></tbody></table></div>
+<p>Base triangles rose from <strong>1528 to 2004</strong> in the second quality pass, and the band moved from 1400–1700 to 1800–2250. The solid cup became an open, walled cup with a drip boss. The 26 mm haft stub became a 0.20 m haft with a wrap. The three flame cones became lathed teardrops. The envelope grew from 0.293 m to 0.322 m in depth and from 0.424 m to 0.485 m in height, because the torch now stands up out of its cup.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form and stone tones are seeded, so repeated runs on one binary print identical measurements. Export byte counts differ by 24 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr></tbody></table></div>
-<h3>Joint fit and plaque size</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Arm-to-cup BVH gap</td><td>≤ 0.008 m</td><td>0.00087</td></tr><tr><td>Plate-to-plaque BVH gap</td><td>≤ 0.008 m</td><td>0.00400</td></tr><tr><td>Plaque width vs <code>WALL_W</code></td><td>± 0.04 m</td><td>0.2800 vs 0.280</td></tr></tbody></table></div>
+<h3>Joint fit, seat and bake</h3>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Arm-to-cup BVH gap</td><td>≤ 0.008 m</td><td>0.00007</td></tr><tr><td>Plate-to-stone BVH gap</td><td>≤ 0.008 m</td><td>0.00057</td></tr><tr><td>Plaque width vs <code>WALL_W</code></td><td>± 0.04 m</td><td>0.2800 vs 0.280</td></tr><tr><td>Arm level (exit 20): the arm shell&#x27;s long axis against horizontal</td><td>≤ 1.0°</td><td>0.000°</td></tr><tr><td>Plate seat (exit 21): plate front proud of the facing stones / plate back into their face</td><td>≥ 0.008 m / 0.001–0.005 m</td><td>0.01300 / 0.00300</td></tr><tr><td>Bake texel density (exit 22): smallest UV cell in baked texels</td><td>≥ 12 px</td><td>27.71 px (1024 px bake)</td></tr></tbody></table></div>
+<p>The plate-to-stone gap is measured to any stone shell. The plate is bolted to the face of the stones, not to the backing slab behind them, as it was in the first build.</p>
 <h3>Falsifiers</h3>
 <p>Each violates one named budget. All were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-arm</code></td><td>arm-to-cup BVH gap</td><td>17</td></tr><tr><td><code>--float-plate</code></td><td>plate-to-plaque BVH gap</td><td>18</td></tr><tr><td><code>--skinny-plaque</code></td><td>plaque width vs <code>WALL_W</code></td><td>19</td></tr></tbody></table></div>
-<p><code>--float-arm</code> shortens the tube to 55 % of the plate-to-cup station vector; the cup stays put. <code>--float-plate</code> moves only the hang plate off the plaque; the arm still reaches the cup so 17 still passes. <code>--skinny-plaque</code> scales the back plaque and courses to 0.55 · <code>WALL_W</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--float-arm</code></td><td>arm-to-cup BVH gap</td><td>17</td></tr><tr><td><code>--float-plate</code></td><td>plate-to-stone BVH gap (measured 0.07700)</td><td>18</td></tr><tr><td><code>--skinny-plaque</code></td><td>plaque width vs <code>WALL_W</code></td><td>19</td></tr><tr><td><code>--droop-arm</code></td><td>arm level (the old 20 mm drop; measured 9.580°)</td><td>20</td></tr><tr><td><code>--sink-plate</code></td><td>plate seat (the first build&#x27;s seat; measured proud −0.00400, seat 0.02000)</td><td>21</td></tr><tr><td><code>--low-bake</code></td><td>bake texel density (256 px bake; measured 6.93 px)</td><td>22</td></tr></tbody></table></div>
+<p><code>--float-arm</code> shortens the tube to 55 % of the plate-to-cup station vector, and the cup stays put. <code>--float-plate</code> moves only the plate off the stones; the arm root stays at the seated plate, so 17 still passes. <code>--skinny-plaque</code> scales the back plaque and courses to 0.55 · <code>WALL_W</code>.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python wall_torch.py --
 blender --background --python wall_torch.py -- --skip-decimate
@@ -305,11 +306,14 @@ blender --background --python wall_torch.py -- --lift-z
 blender --background --python wall_torch.py -- --float-arm
 blender --background --python wall_torch.py -- --float-plate
 blender --background --python wall_torch.py -- --skinny-plaque
+blender --background --python wall_torch.py -- --droop-arm
+blender --background --python wall_torch.py -- --sink-plate
+blender --background --python wall_torch.py -- --low-bake
 blender --background --python wall_torch.py -- --output torch.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 4 distinct slots, or stone/metal/flame faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Arm-to-cup gap (<code>--float-arm</code>)</td></tr><tr><td>18</td><td>Plate-to-plaque gap (<code>--float-plate</code>)</td></tr><tr><td>19</td><td>Plaque width (<code>--skinny-plaque</code>)</td></tr></tbody></table></div>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family. <code>20</code>–<code>22</code> are this piece&#x27;s own.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 5 distinct slots, or stone/metal/flame/pitch faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin (<code>--lift-z</code>)</td></tr><tr><td>17</td><td>Arm-to-cup gap (<code>--float-arm</code>)</td></tr><tr><td>18</td><td>Plate-to-stone gap (<code>--float-plate</code>)</td></tr><tr><td>19</td><td>Plaque width (<code>--skinny-plaque</code>)</td></tr><tr><td>20</td><td>Arm not level (<code>--droop-arm</code>)</td></tr><tr><td>21</td><td>Plate not seated on the stone face (<code>--sink-plate</code>)</td></tr><tr><td>22</td><td>Bake texel density below floor (<code>--low-bake</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -320,19 +324,23 @@ blender --background --python wall_torch.py -- --output torch.png</code></pre>
       <pre><span class="s">&quot;&quot;&quot;Game-ready wall torch sconce — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural wall-mounted torch after
-composing shipped pipeline pieces: bmesh construction, UVs, four
+composing shipped pipeline pieces: bmesh construction, UVs, five
 materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
-The plaque back sits on the wall plane Y=0 with zmin at 0. The iron
-arm is a tube between the plate station and the cup station. The
-bowl opens upward and holds the haft. Hygiene family 15–19:
+The plaque back sits on the wall plane Y=0 with zmin at 0. The iron plate
+is bolted to the face of the stones, a named bite into it. A level arm
+runs from the plate into the wall of an open iron cup, whose mid-height
+is the arm&#x27;s height. The cup sits on the haft&#x27;s axis, which leans out
+from the wall; the haft stands on the cup floor and carries a pitch wrap,
+and the flames stand upright from the wrap. Hygiene family 15–19:
 ``--stray-vert``, ``--lift-z``, ``--float-arm``, ``--float-plate``,
-``--skinny-plaque``.
+``--skinny-plaque``; ``--droop-arm`` (20), ``--sink-plate`` (21),
+``--low-bake`` (22).
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle
-counts are not byte-identical across Blender versions — the LOD
-gate is a ratio band, not an exact count.
+Construction is closed-form; stone tones use a seeded RNG. DECIMATE
+COLLAPSE triangle counts are not byte-identical across Blender versions —
+the LOD gate is a ratio band, not an exact count.
 
     blender --background --python wall_torch.py --
     blender --background --python wall_torch.py -- --skip-decimate
@@ -341,6 +349,7 @@ gate is a ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -365,46 +374,75 @@ GROUT = <span class="n">0.007</span>
 NROWS = <span class="n">4</span>
 STONE_D = <span class="n">0.020</span>
 STONE_BITE = <span class="n">0.004</span>
-PLATE_Z = <span class="n">0.22</span>
+PLATE_Z = <span class="n">0.20</span>
 PLATE_R = <span class="n">0.055</span>
 PLATE_T = <span class="n">0.016</span>
+PLATE_BITE = <span class="n">0.003</span>
 CUP_Y = <span class="n">0.24</span>
-CUP_Z = <span class="n">0.20</span>
 CUP_H = <span class="n">0.052</span>
 CUP_R0 = <span class="n">0.024</span>
 CUP_R1 = <span class="n">0.050</span>
+CUP_T = <span class="n">0.005</span>
+<span class="c"># Floor thicker than the wall so the haft&#x27;s foot, the drip boss and the</span>
+<span class="c"># floor&#x27;s two faces sit on four planes at least 2.5 mm apart.</span>
+FLOOR_T = <span class="n">0.010</span>
+CUP_SEGS = <span class="n">16</span>
 ARM_R = <span class="n">0.011</span>
-ARM_BITE = <span class="n">0.012</span>
 HAFT_R = <span class="n">0.016</span>
+HAFT_LEN = <span class="n">0.20</span>
+HAFT_SEGS = <span class="n">10</span>
+HAFT_TILT_DEG = <span class="n">15.0</span>
+WRAP_H = <span class="n">0.055</span>
+WRAP_R = <span class="n">0.024</span>
+FLAME_SEAT = <span class="n">0.012</span>
+FLAME_SEGS = <span class="n">12</span>
+<span class="c"># (t along the flame&#x27;s own axis, radius): a teardrop, widest low.</span>
+FLAME_PROFILE = (
+    (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.012</span>), (<span class="n">0.018</span>, <span class="n">0.026</span>), (<span class="n">0.045</span>, <span class="n">0.023</span>),
+    (<span class="n">0.080</span>, <span class="n">0.011</span>), (<span class="n">0.112</span>, <span class="n">0.0</span>),
+)
+DROOP_ARM = <span class="n">0.02</span>
+ARM_LEVEL_DEG = <span class="n">1.0</span>
+PLATE_PROUD_MIN = <span class="n">0.008</span>
+PLATE_SEAT_MIN = <span class="n">0.001</span>
+PLATE_SEAT_MAX = <span class="n">0.005</span>
+MORTAR_TONE = <span class="n">0.08</span>
+PLANK_TONE_JITTER = <span class="n">0.26</span>
+TONE_SEED = <span class="n">31</span>
+WOOD_GRAIN_SCALE = <span class="n">34.0</span>
 LIFT_Z = <span class="n">0.05</span>
 FLOAT_ARM = <span class="n">0.55</span>
 FLOAT_PLATE = <span class="n">0.08</span>
 SKINNY = <span class="n">0.55</span>
 
 BBOX_TOL = <span class="n">0.015</span>
-OUTER_SIZE = (<span class="n">0.304</span>, <span class="n">0.293</span>, <span class="n">0.424</span>)
-BASE_TRIS_MIN = <span class="n">1400</span>
-BASE_TRIS_MAX = <span class="n">1700</span>
+OUTER_SIZE = (<span class="n">0.304</span>, <span class="n">0.322</span>, <span class="n">0.485</span>)
+BASE_TRIS_MIN = <span class="n">1800</span>
+BASE_TRIS_MAX = <span class="n">2250</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
 LOD2_RATIO_MAX = <span class="n">0.35</span>
 LOD1_TARGET = <span class="n">0.50</span>
 LOD2_TARGET = <span class="n">0.22</span>
-MATERIAL_COUNT = <span class="n">4</span>
+MATERIAL_COUNT = <span class="n">5</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">180</span>
-BAKE_RES = <span class="n">256</span>
+BAKE_RES = <span class="n">1024</span>
+LOW_BAKE_RES = <span class="n">256</span>
+TEXEL_MIN = <span class="n">12.0</span>
 CAGE_EXTRUSION = <span class="n">0.06</span>
 STONE_FACES_MIN = <span class="n">24</span>
 METAL_FACES_MIN = <span class="n">24</span>
 FLAME_FACES_MIN = <span class="n">8</span>
+PITCH_FACES_MIN = <span class="n">10</span>
 
 STONE_IDX = <span class="n">0</span>
 METAL_IDX = <span class="n">1</span>
 WOOD_IDX = <span class="n">2</span>
 FLAME_IDX = <span class="n">3</span>
+PITCH_IDX = <span class="n">4</span>
 
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
@@ -540,6 +578,58 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
             )
 
 
+<span class="k">def</span> lathe_axis(bm, base, axis, profile, segs, mat_idx):
+    <span class="s">&quot;&quot;&quot;Solid of revolution about ``axis`` from ``base``.
+
+    ``profile`` is (t metres along the axis, radius); a radius of 0 is a
+    single centre vertex, which closes the solid there with a fan.
+    &quot;&quot;&quot;</span>
+    base = Vector(base)
+    axis = Vector(axis).normalized()
+    side = axis.cross(Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)))
+    <span class="k">if</span> side.length &lt; <span class="n">1e-6</span>:
+        side = axis.cross(Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>)))
+    side.normalize()
+    up = axis.cross(side).normalized()
+    rings = []
+    <span class="k">for</span> t, r <span class="k">in</span> profile:
+        p = base + axis * t
+        <span class="k">if</span> r &lt;= <span class="n">1e-9</span>:
+            rings.append([bm.verts.new(p)])
+            <span class="k">continue</span>
+        rings.append([
+            bm.verts.new(p + (side * math.cos(<span class="n">2.0</span> * math.pi * k / segs)
+                              + up * math.sin(<span class="n">2.0</span> * math.pi * k / segs)) * r)
+            <span class="k">for</span> k <span class="k">in</span> range(segs)
+        ])
+    faces = []
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">if</span> len(a) == <span class="n">1</span>:
+            <span class="k">for</span> k <span class="k">in</span> range(segs):
+                faces.append(bm.faces.new((a[<span class="n">0</span>], b[(k + <span class="n">1</span>) % segs], b[k])))
+        <span class="k">elif</span> len(b) == <span class="n">1</span>:
+            <span class="k">for</span> k <span class="k">in</span> range(segs):
+                faces.append(bm.faces.new((a[k], a[(k + <span class="n">1</span>) % segs], b[<span class="n">0</span>])))
+        <span class="k">else</span>:
+            <span class="k">for</span> k <span class="k">in</span> range(segs):
+                k2 = (k + <span class="n">1</span>) % segs
+                faces.append(bm.faces.new((a[k], a[k2], b[k2], b[k])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> stone_face_y():
+    <span class="s">&quot;&quot;&quot;Front face of the facing stones: the plane a fixture is bolted to.&quot;&quot;&quot;</span>
+    <span class="k">return</span> WALL_D - STONE_BITE + STONE_D
+
+
+<span class="k">def</span> torch_axis(tilt_deg=HAFT_TILT_DEG):
+    <span class="s">&quot;&quot;&quot;Haft axis: leaning out from the wall (+Y) by the named tilt.&quot;&quot;&quot;</span>
+    t = math.radians(tilt_deg)
+    <span class="k">return</span> Vector((<span class="n">0.0</span>, math.sin(t), math.cos(t)))
+
+
 <span class="k">def</span> build_torch_mesh(
     name,
     bevel_offset,
@@ -547,22 +637,25 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     float_arm=<span class="k">False</span>,
     float_plate=<span class="k">False</span>,
     skinny_plaque=<span class="k">False</span>,
+    droop_arm=<span class="k">False</span>,
+    sink_plate=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
         plaque_w = WALL_W * SKINNY <span class="k">if</span> skinny_plaque <span class="k">else</span> WALL_W
-        add_box(
+        stone = []
+        stone.extend(add_box(
             bm,
             (<span class="n">0.0</span>, WALL_D / <span class="n">2.0</span>, WALL_H / <span class="n">2.0</span>),
             (plaque_w, WALL_D, WALL_H),
             STONE_IDX,
-        )
-        add_box(
+        ))
+        stone.extend(add_box(
             bm,
             (<span class="n">0.0</span>, WALL_D / <span class="n">2.0</span> + <span class="n">0.006</span>, WALL_H + CORNICE_H / <span class="n">2.0</span> - <span class="n">0.004</span>),
             (plaque_w + <span class="n">0.024</span>, WALL_D + <span class="n">0.018</span>, CORNICE_H),
             STONE_IDX,
-        )
+        ))
 
         course_h = (WALL_H - GROUT * (NROWS + <span class="n">1</span>)) / NROWS
         face_y = WALL_D - STONE_BITE + STONE_D / <span class="n">2.0</span>
@@ -574,120 +667,120 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
             <span class="k">for</span> frac <span class="k">in</span> fracs:
                 w = inner * frac - GROUT * <span class="n">0.5</span>
                 cx = x + w / <span class="n">2.0</span>
-                add_box(
+                stone.extend(add_box(
                     bm,
                     (cx, face_y, zc),
                     (max(w, <span class="n">0.04</span>), STONE_D, course_h - <span class="n">0.001</span>),
                     STONE_IDX,
-                )
+                ))
                 x += w + GROUT
 
-        plate_y = WALL_D - <span class="n">0.004</span> + PLATE_T / <span class="n">2.0</span>
+        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
+            <span class="c"># Stone only, before any iron exists; sorted so the bevel lays</span>
+            <span class="c"># its faces down in the same order every run.</span>
+            bm.edges.index_update()
+            edges = sorted({e <span class="k">for</span> v <span class="k">in</span> stone <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index)
+            ret = bmesh.ops.bevel(
+                bm,
+                geom=edges,
+                offset=bevel_offset,
+                segments=bevel_segments,
+                profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>,
+                clamp_overlap=<span class="k">True</span>,
+            )
+            <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
+                f.material_index = STONE_IDX
+
+        <span class="c"># The plate is bolted to the stone face, a named bite into it. The</span>
+        <span class="c"># first build seated it on the backing slab, 4 mm behind the face of</span>
+        <span class="c"># the stones, so only its bolt heads showed.</span>
+        seat_face = WALL_D - <span class="n">0.004</span> <span class="k">if</span> sink_plate <span class="k">else</span> stone_face_y() - PLATE_BITE
+        plate_y = seat_face + PLATE_T / <span class="n">2.0</span>
+        <span class="c"># The arm root stays at the seated plate, so floating the plate</span>
+        <span class="c"># moves only the plate.</span>
+        arm_root_y = plate_y
         <span class="k">if</span> float_plate:
             plate_y += FLOAT_PLATE
         add_cone(
-            bm,
-            (<span class="n">0.0</span>, plate_y, PLATE_Z),
-            PLATE_R,
-            PLATE_R,
-            PLATE_T,
-            <span class="n">12</span>,
-            METAL_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+            bm, (<span class="n">0.0</span>, plate_y, PLATE_Z), PLATE_R, PLATE_R, PLATE_T, <span class="n">16</span>,
+            METAL_IDX, euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
         )
         <span class="k">for</span> sx, sz <span class="k">in</span> ((-<span class="n">0.032</span>, <span class="n">0.028</span>), (<span class="n">0.032</span>, <span class="n">0.028</span>), (-<span class="n">0.032</span>, -<span class="n">0.028</span>), (<span class="n">0.032</span>, -<span class="n">0.028</span>)):
             add_cone(
-                bm,
-                (sx, plate_y + PLATE_T / <span class="n">2.0</span> + <span class="n">0.004</span>, PLATE_Z + sz),
-                <span class="n">0.006</span>,
-                <span class="n">0.006</span>,
-                <span class="n">0.010</span>,
-                <span class="n">8</span>,
-                METAL_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+                bm, (sx, plate_y + PLATE_T / <span class="n">2.0</span> + <span class="n">0.004</span>, PLATE_Z + sz),
+                <span class="n">0.006</span>, <span class="n">0.0045</span>, <span class="n">0.010</span>, <span class="n">8</span>, METAL_IDX, euler=(-math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
             )
 
-        plate_st = Vector((<span class="n">0.0</span>, plate_y, PLATE_Z))
-        cup_st = Vector((<span class="n">0.0</span>, CUP_Y - CUP_R1 + ARM_BITE, CUP_Z))
+        <span class="c"># The cup sits on the haft axis, which leans out from the wall. Its</span>
+        <span class="c"># station is where the level arm meets the cup&#x27;s wall.</span>
+        axis = torch_axis()
+        <span class="c"># The cup&#x27;s mid-height is the arm&#x27;s height, so a level arm meets it.</span>
+        cup_base = Vector((<span class="n">0.0</span>, CUP_Y, PLATE_Z)) - axis * (CUP_H * <span class="n">0.5</span>)
+        cup_prof = (
+            (<span class="n">0.0</span>, <span class="n">0.0</span>),
+            (<span class="n">0.0</span>, CUP_R0),
+            (CUP_H, CUP_R1),
+            (CUP_H, CUP_R1 - CUP_T),
+            (FLOOR_T, CUP_R0 - CUP_T * <span class="n">0.6</span>),
+            (FLOOR_T, <span class="n">0.0</span>),
+        )
+        lathe_axis(bm, cup_base, axis, cup_prof, CUP_SEGS, METAL_IDX)
+        <span class="c"># A drip boss under the cup, biting its floor.</span>
+        lathe_axis(
+            bm, cup_base - axis * <span class="n">0.012</span>, axis,
+            ((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.006</span>), (<span class="n">0.006</span>, <span class="n">0.012</span>),
+             (<span class="n">0.012</span> + <span class="n">0.25</span> * FLOOR_T, <span class="n">0.012</span>), (<span class="n">0.012</span> + <span class="n">0.25</span> * FLOOR_T, <span class="n">0.0</span>)),
+            CUP_SEGS, METAL_IDX,
+        )
+
+        <span class="c"># Level arm from inside the plate to inside the cup wall at mid-cup.</span>
+        mid = cup_base + axis * (CUP_H * <span class="n">0.5</span>)
+        r_mid = <span class="n">0.5</span> * (CUP_R0 + CUP_R1)
+        arm_z = PLATE_Z
+        plate_st = Vector((<span class="n">0.0</span>, arm_root_y - PLATE_T * <span class="n">0.25</span>, arm_z))
+        cup_st = Vector((<span class="n">0.0</span>, mid.y - r_mid + CUP_T * <span class="n">0.5</span>, mid.z))
+        <span class="k">if</span> droop_arm:
+            plate_st.z += DROOP_ARM
         arm_end = cup_st
         <span class="k">if</span> float_arm:
             arm_end = plate_st + (cup_st - plate_st) * FLOAT_ARM
-        add_cyl_between(bm, plate_st, arm_end, ARM_R, <span class="n">8</span>, METAL_IDX)
+        add_cyl_between(bm, plate_st, arm_end, ARM_R, <span class="n">10</span>, METAL_IDX)
 
-        add_cone(
-            bm,
-            (<span class="n">0.0</span>, CUP_Y, CUP_Z),
-            CUP_R0,
-            CUP_R1,
-            CUP_H,
-            <span class="n">12</span>,
-            METAL_IDX,
+        <span class="c"># The haft stands on the cup floor and runs up the tilted axis.</span>
+        haft_base = cup_base + axis * (FLOOR_T * <span class="n">0.5</span>)
+        lathe_axis(
+            bm, haft_base, axis,
+            ((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, HAFT_R * <span class="n">0.92</span>), (<span class="n">0.02</span>, HAFT_R),
+             (HAFT_LEN * <span class="n">0.6</span>, HAFT_R * <span class="n">1.06</span>), (HAFT_LEN, HAFT_R * <span class="n">1.10</span>), (HAFT_LEN, <span class="n">0.0</span>)),
+            HAFT_SEGS, WOOD_IDX,
         )
-        add_cone(
-            bm,
-            (<span class="n">0.0</span>, CUP_Y, CUP_Z - CUP_H / <span class="n">2.0</span> - <span class="n">0.006</span>),
-            CUP_R0 + <span class="n">0.004</span>,
-            CUP_R0 + <span class="n">0.004</span>,
-            <span class="n">0.010</span>,
-            <span class="n">12</span>,
-            METAL_IDX,
+        <span class="c"># Pitch-soaked wrap over the head, the haft end inside it.</span>
+        head = haft_base + axis * (HAFT_LEN - WRAP_H + <span class="n">0.012</span>)
+        lathe_axis(
+            bm, head, axis,
+            ((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, HAFT_R * <span class="n">1.12</span>), (<span class="n">0.006</span>, WRAP_R), (WRAP_H * <span class="n">0.55</span>, WRAP_R * <span class="n">1.06</span>),
+             (WRAP_H - <span class="n">0.006</span>, WRAP_R * <span class="n">0.96</span>), (WRAP_H, WRAP_R * <span class="n">0.70</span>), (WRAP_H, <span class="n">0.0</span>)),
+            HAFT_SEGS, PITCH_IDX,
         )
+        top = head + axis * WRAP_H
 
-        cup_rim = CUP_Z + CUP_H / <span class="n">2.0</span>
-        haft_z0 = CUP_Z - CUP_H / <span class="n">2.0</span> + <span class="n">0.006</span>
-        haft_z1 = cup_rim + <span class="n">0.026</span>
-        add_cone(
-            bm,
-            (<span class="n">0.0</span>, CUP_Y, (haft_z0 + haft_z1) / <span class="n">2.0</span>),
-            HAFT_R,
-            HAFT_R,
-            haft_z1 - haft_z0,
-            <span class="n">10</span>,
-            WOOD_IDX,
-        )
+        <span class="c"># Flames stand up, whatever the haft does: a teardrop and two licks,</span>
+        <span class="c"># each seated a named depth into the wrap.</span>
+        up = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        <span class="k">for</span> off, lean, scale <span class="k">in</span> (
+            (Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)), up, <span class="n">1.0</span>),
+            (Vector((<span class="n">0.012</span>, -<span class="n">0.006</span>, <span class="n">0.0</span>)), Vector((<span class="n">0.25</span>, -<span class="n">0.1</span>, <span class="n">1.0</span>)), <span class="n">0.62</span>),
+            (Vector((-<span class="n">0.011</span>, <span class="n">0.007</span>, <span class="n">0.0</span>)), Vector((-<span class="n">0.22</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)), <span class="n">0.55</span>),
+        ):
+            base = top + off - up * FLAME_SEAT
+            lathe_axis(
+                bm, base, lean,
+                tuple((t * scale, r * (<span class="n">0.6</span> + <span class="n">0.4</span> * scale)) <span class="k">for</span> t, r <span class="k">in</span> FLAME_PROFILE),
+                FLAME_SEGS, FLAME_IDX,
+            )
 
-        add_cone(bm, (<span class="n">0.0</span>, CUP_Y, cup_rim + <span class="n">0.038</span>), <span class="n">0.034</span>, <span class="n">0.004</span>, <span class="n">0.078</span>, <span class="n">10</span>, FLAME_IDX)
-        add_cone(
-            bm,
-            (<span class="n">0.012</span>, CUP_Y - <span class="n">0.008</span>, cup_rim + <span class="n">0.028</span>),
-            <span class="n">0.022</span>,
-            <span class="n">0.003</span>,
-            <span class="n">0.058</span>,
-            <span class="n">8</span>,
-            FLAME_IDX,
-            euler=(<span class="n">0.0</span>, math.radians(<span class="n">14.0</span>), <span class="n">0.0</span>),
-        )
-        add_cone(
-            bm,
-            (-<span class="n">0.010</span>, CUP_Y + <span class="n">0.006</span>, cup_rim + <span class="n">0.024</span>),
-            <span class="n">0.018</span>,
-            <span class="n">0.003</span>,
-            <span class="n">0.050</span>,
-            <span class="n">8</span>,
-            FLAME_IDX,
-            euler=(math.radians(-<span class="n">10.0</span>), math.radians(-<span class="n">12.0</span>), <span class="n">0.0</span>),
-        )
-
-        <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            stone_edges = [
-                e <span class="k">for</span> e <span class="k">in</span> bm.edges
-                <span class="k">if</span> any(f.material_index == STONE_IDX <span class="k">for</span> f <span class="k">in</span> e.link_faces)
-            ]
-            <span class="k">if</span> stone_edges:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=stone_edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=<span class="n">0.5</span>,
-                    affect=<span class="s">&quot;EDGES&quot;</span>,
-                    clamp_overlap=<span class="k">True</span>,
-                )
-                <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
-                    f.material_index = STONE_IDX
-
-        zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        zmin = min(zs)
+        zmin = min(v.co.z <span class="k">for</span> v <span class="k">in</span> bm.verts)
         <span class="k">for</span> v <span class="k">in</span> bm.verts:
             v.co.z -= zmin
             <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
@@ -695,13 +788,15 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
-        <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = face.material_index <span class="k">in</span> (METAL_IDX, FLAME_IDX)
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
+        <span class="c"># Turned iron, the haft, the wrap and the flame are smooth; dressed</span>
+        <span class="c"># stone keeps its chamfer facets. Fan caps stay flat.</span>
         <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = poly.material_index <span class="k">in</span> (METAL_IDX, FLAME_IDX)
+            poly.use_smooth = (
+                poly.material_index != STONE_IDX <span class="k">and</span> len(poly.vertices) == <span class="n">4</span>
+            ) <span class="k">or</span> poly.material_index == FLAME_IDX
     <span class="k">finally</span>:
         bm.free()
     obj = bpy.data.objects.new(name, me)
@@ -744,12 +839,209 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
         fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
         nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> assign_slots(obj, stone, metal, wood, flame):
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes.
+
+    Every facing stone and the haft are their own shells, so each gets one
+    tone (and the haft grain along its own axis). The backing slab shows
+    only in the joints, so it takes the mortar tone: the first build gave
+    stone and joint one flat grey and the courses did not read.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        a = shell_aabb(me, g)
+        <span class="k">if</span> mat_of(me, g) == STONE_IDX <span class="k">and</span> a[<span class="n">5</span>] - a[<span class="n">2</span>] &gt; <span class="n">0.20</span> <span class="k">and</span> a[<span class="n">3</span>] - a[<span class="n">0</span>] &gt; <span class="n">0.12</span>:
+            t = MORTAR_TONE
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along the haft (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> stone_material(name):
+    <span class="s">&quot;&quot;&quot;Isotropic mottling, fine speckle in roughness, a tone per stone.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    mottle = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    mottle.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">24.0</span>
+    mottle.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    mottle.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], mottle.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.32</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.085</span>, <span class="n">0.080</span>, <span class="n">0.072</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.20</span>, <span class="n">0.188</span>, <span class="n">0.165</span>, <span class="n">1.0</span>)
+    nt.links.new(mottle.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.3</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.25</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    speck = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    speck.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">260.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], speck.inputs[<span class="s">&quot;Vector&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.92</span>
+    nt.links.new(speck.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> torch_materials():
+    <span class="s">&quot;&quot;&quot;(stone, metal, wood, flame, pitch): shared by the check, the render and inspection.
+
+    The first build was one flat grey for stone and joint alike, and iron at
+    metallic 0.88, roughness 0.38 that read as polished.
+    &quot;&quot;&quot;</span>
+    stone = stone_material(<span class="s">&quot;TorchStone&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;TorchIron&quot;</span>, (<span class="n">0.050</span>, <span class="n">0.048</span>, <span class="n">0.046</span>, <span class="n">1.0</span>), <span class="n">0.65</span>, <span class="n">0.52</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.15</span>, <span class="n">0.070</span>, <span class="n">0.030</span>, <span class="n">1.0</span>),
+    )
+    wood = wood_material(<span class="s">&quot;TorchWood&quot;</span>)
+    flame = principled(
+        <span class="s">&quot;TorchFlame&quot;</span>,
+        (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
+        <span class="n">0.0</span>,
+        <span class="n">0.48</span>,
+        emission=<span class="n">3.2</span>,
+        emission_color=(<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),
+    )
+    pitch = principled(
+        <span class="s">&quot;TorchPitch&quot;</span>, (<span class="n">0.030</span>, <span class="n">0.022</span>, <span class="n">0.016</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
+        noise_scale=<span class="n">40.0</span>, wear=(<span class="n">0.10</span>, <span class="n">0.060</span>, <span class="n">0.030</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> stone, metal, wood, flame, pitch
+
+
+<span class="k">def</span> assign_slots(obj, stone, metal, wood, flame, pitch):
     mats = obj.data.materials
-    wanted = (stone, metal, wood, flame)
+    wanted = (stone, metal, wood, flame, pitch)
     <span class="k">for</span> i, mat <span class="k">in</span> enumerate(wanted):
         <span class="k">if</span> i &lt; len(mats):
             mats[i] = mat
@@ -977,18 +1269,38 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
             plates.append((g, a))
         <span class="k">elif</span> mat == METAL_IDX <span class="k">and</span> a[<span class="n">4</span>] &gt; CUP_Y - <span class="n">0.05</span> <span class="k">and</span> dx &gt; <span class="n">0.05</span> <span class="k">and</span> dz &lt; <span class="n">0.14</span>:
             cups.append((g, a))
-        <span class="k">elif</span> mat == METAL_IDX <span class="k">and</span> dy &gt; dx <span class="k">and</span> dy &gt; dz:
+        <span class="k">elif</span> mat == METAL_IDX <span class="k">and</span> dy &gt; dx <span class="k">and</span> dy &gt; dz <span class="k">and</span> dy &gt; <span class="n">0.06</span>:
             arms.append((g, a))
     arm_gap = <span class="n">1e9</span>
     <span class="k">for</span> ag, _ <span class="k">in</span> arms:
         <span class="k">for</span> cg, _ <span class="k">in</span> cups:
             arm_gap = min(arm_gap, shell_bvh_gap(me, ag, cg))
+    <span class="c"># The plate is bolted to the stone face, so its gap is measured to any</span>
+    <span class="c"># stone shell, not only the backing slab behind the stones.</span>
+    stones = [g <span class="k">for</span> g <span class="k">in</span> groups <span class="k">if</span> mat_of(me, g) == STONE_IDX]
     plate_gap = <span class="n">1e9</span>
     <span class="k">for</span> pg, _ <span class="k">in</span> plates:
-        <span class="k">for</span> qg, _ <span class="k">in</span> plaques:
+        <span class="k">for</span> qg <span class="k">in</span> stones:
             plate_gap = min(plate_gap, shell_bvh_gap(me, pg, qg))
     plaque_w = max((a[<span class="n">3</span>] - a[<span class="n">0</span>] <span class="k">for</span> _, a <span class="k">in</span> plaques), default=<span class="n">0.0</span>)
+    <span class="c"># Arm level: its long axis, from the shell&#x27;s own vertices.</span>
+    arm_tilt = <span class="n">90.0</span>
+    <span class="k">for</span> ag, _ <span class="k">in</span> arms:
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> ag]
+        d = _long_axis(pts)
+        arm_tilt = min(arm_tilt, math.degrees(math.asin(min(<span class="n">1.0</span>, abs(d.z)))))
+    <span class="c"># Plate seat: the plate stands proud of the facing stones and its back</span>
+    <span class="c"># bites their face. Facing stones are the thin stone shells.</span>
+    faces = [a <span class="k">for</span> g, a <span class="k">in</span> ((g, shell_aabb(me, g)) <span class="k">for</span> g <span class="k">in</span> groups)
+             <span class="k">if</span> mat_of(me, g) == STONE_IDX <span class="k">and</span> a[<span class="n">4</span>] - a[<span class="n">1</span>] &lt; <span class="n">0.03</span>]
+    stone_front = max((a[<span class="n">4</span>] <span class="k">for</span> a <span class="k">in</span> faces), default=<span class="n">0.0</span>)
+    plate_proud = max((a[<span class="n">4</span>] <span class="k">for</span> _, a <span class="k">in</span> plates), default=-<span class="n">1.0</span>) - stone_front
+    plate_seat = stone_front - min((a[<span class="n">1</span>] <span class="k">for</span> _, a <span class="k">in</span> plates), default=<span class="n">1.0</span>)
     <span class="k">return</span> {
+        <span class="s">&quot;arm_tilt&quot;</span>: arm_tilt,
+        <span class="s">&quot;facing&quot;</span>: len(faces),
+        <span class="s">&quot;plate_proud&quot;</span>: plate_proud,
+        <span class="s">&quot;plate_seat&quot;</span>: plate_seat,
         <span class="s">&quot;plaques&quot;</span>: len(plaques),
         <span class="s">&quot;plates&quot;</span>: len(plates),
         <span class="s">&quot;cups&quot;</span>: len(cups),
@@ -997,6 +1309,26 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
         <span class="s">&quot;plate_gap&quot;</span>: plate_gap <span class="k">if</span> plates <span class="k">and</span> plaques <span class="k">else</span> <span class="n">1e9</span>,
         <span class="s">&quot;plaque_w&quot;</span>: plaque_w,
     }
+
+
+<span class="k">def</span> texel_audit(mesh, img):
+    <span class="s">&quot;&quot;&quot;Smallest UV cell, in baked texels along its longer side.
+
+    Every face packs into its own UV cell, so a small image spreads a few
+    texels over each face and the render&#x27;s bilinear lookup reads the next
+    cell&#x27;s normals across the border: dark slivers on the hero.
+    &quot;&quot;&quot;</span>
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    res = min(img.size[<span class="n">0</span>], img.size[<span class="n">1</span>])
+    data = uv.data
+    worst = <span class="n">1e9</span>
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        us = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        vs = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        worst = min(worst, max(max(us) - min(us), max(vs) - min(vs)) * res)
+    <span class="k">return</span> worst
 
 
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
@@ -1060,37 +1392,26 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     float_arm=<span class="k">False</span>,
     float_plate=<span class="k">False</span>,
     skinny_plaque=<span class="k">False</span>,
+    droop_arm=<span class="k">False</span>,
+    sink_plate=<span class="k">False</span>,
+    low_bake=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     kw = dict(
         float_arm=float_arm,
         float_plate=float_plate,
         skinny_plaque=skinny_plaque,
+        droop_arm=droop_arm,
+        sink_plate=sink_plate,
     )
     low = build_torch_mesh(<span class="s">&quot;TorchLow&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">2</span>, **kw)
     high = build_torch_mesh(<span class="s">&quot;TorchHigh&quot;</span>, bevel_offset=<span class="n">0.004</span>, bevel_segments=<span class="n">4</span>, **kw)
-    stone = principled(
-        <span class="s">&quot;TorchStone&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.34</span>, <span class="n">0.30</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.72</span>,
-        noise_scale=<span class="n">12.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.26</span>, <span class="n">0.22</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;TorchMetal&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.12</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.88</span>, <span class="n">0.38</span>,
-        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.22</span>, <span class="n">0.16</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
-    )
-    wood = principled(
-        <span class="s">&quot;TorchWood&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.11</span>, <span class="n">0.05</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.64</span>,
-        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.12</span>, <span class="n">0.06</span>, <span class="n">0.03</span>, <span class="n">1.0</span>),
-    )
-    flame = principled(
-        <span class="s">&quot;TorchFlame&quot;</span>,
-        (<span class="n">1.0</span>, <span class="n">0.28</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
-        <span class="n">0.0</span>,
-        <span class="n">0.48</span>,
-        emission=<span class="n">1.6</span>,
-        emission_color=(<span class="n">1.0</span>, <span class="n">0.30</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    assign_slots(low, stone, metal, wood, flame)
-    assign_slots(high, stone, metal, wood, flame)
+    paint_planks(low.data)
+    paint_planks(high.data)
+    mats = torch_materials()
+    stone = mats[<span class="n">0</span>]
+    assign_slots(low, *mats)
+    assign_slots(high, *mats)
 
     <span class="k">if</span> stray_vert:
         add_stray_vert(low.data)
@@ -1116,10 +1437,12 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
 
-    img, tex = setup_bake_image(low, stone)
+    img, tex = setup_bake_image(low, size=LOW_BAKE_RES <span class="k">if</span> low_bake <span class="k">else</span> BAKE_RES, target_mat=stone)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
         <span class="k">return</span> fail(<span class="s">&quot;torch has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     bake_result = bake_normal(high, low)
+    texel = texel_audit(low.data, img)
+    print(<span class="s">f&quot;</span><span class="s">measured bake_res=</span>{img.size[<span class="n">0</span>]}<span class="s"> texel_min=</span>{texel:<span class="s">.2f</span>}<span class="s">&quot;</span>)
 
     lod1 = make_lod(low, <span class="s">&quot;TorchLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
     lod2 = make_lod(low, <span class="s">&quot;TorchLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
@@ -1142,6 +1465,9 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        <span class="c"># Measured; do not leave a .glb per run in the temp directory.</span>
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1175,6 +1501,10 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
         <span class="s">f&quot;</span><span class="s">arm_gap=</span>{jnt[<span class="s">&#x27;arm_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> plate_gap=</span>{jnt[<span class="s">&#x27;plate_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">plaque_w=</span>{jnt[<span class="s">&#x27;plaque_w&#x27;</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured arm_tilt=</span>{jnt[<span class="s">&#x27;arm_tilt&#x27;</span>]:<span class="s">.3f</span>}<span class="s">deg facing_stones=</span>{jnt[<span class="s">&#x27;facing&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">plate_proud=</span>{jnt[<span class="s">&#x27;plate_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> plate_seat=</span>{jnt[<span class="s">&#x27;plate_seat&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
         <span class="k">return</span> fail(
@@ -1199,6 +1529,11 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     <span class="k">if</span> idx_counts.get(FLAME_IDX, <span class="n">0</span>) &lt; FLAME_FACES_MIN:
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">flame faces </span>{idx_counts.get(FLAME_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{FLAME_FACES_MIN}<span class="s">&quot;</span>,
+            <span class="n">5</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> idx_counts.get(PITCH_IDX, <span class="n">0</span>) &lt; PITCH_FACES_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">pitch faces </span>{idx_counts.get(PITCH_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{PITCH_FACES_MIN}<span class="s">&quot;</span>,
             <span class="n">5</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
@@ -1272,6 +1607,26 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
             <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
             <span class="n">15</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;arms&quot;</span>] != <span class="n">1</span> <span class="k">or</span> jnt[<span class="s">&quot;arm_tilt&quot;</span>] &gt; ARM_LEVEL_DEG:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">arm tilt </span>{jnt[<span class="s">&#x27;arm_tilt&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> deg &gt; </span>{ARM_LEVEL_DEG}<span class="s"> arms=</span>{jnt[<span class="s">&#x27;arms&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">20</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        jnt[<span class="s">&quot;plate_proud&quot;</span>] &lt; PLATE_PROUD_MIN
+        <span class="k">or</span> <span class="k">not</span> (PLATE_SEAT_MIN &lt;= jnt[<span class="s">&quot;plate_seat&quot;</span>] &lt;= PLATE_SEAT_MAX)
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">plate proud </span>{jnt[<span class="s">&#x27;plate_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{PLATE_PROUD_MIN}<span class="s"> or seat </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{jnt[<span class="s">&#x27;plate_seat&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> not in [</span>{PLATE_SEAT_MIN}<span class="s">, </span>{PLATE_SEAT_MAX}<span class="s">]</span><span class="s">&quot;</span>,
+            <span class="n">21</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> texel &lt; TEXEL_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">bake texel density </span>{texel:<span class="s">.2f</span>}<span class="s"> px per UV cell &lt; </span>{TEXEL_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--low-bake is the designed fail)&quot;</span>,
+            <span class="n">22</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">return</span> <span class="n">0</span>, low, high, stone, tex, collider
 
 
@@ -1297,7 +1652,7 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1333,16 +1688,16 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
 
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.6</span>, -<span class="n">5.0</span>, <span class="n">5.4</span>), <span class="n">640.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">36</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.4</span>, <span class="n">2.4</span>), <span class="n">42.0</span>, <span class="n">8.0</span>, (<span class="n">0.72</span>, <span class="n">0.82</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">560.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.2</span>, <span class="n">4.0</span>, <span class="n">3.8</span>), <span class="n">380.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">198</span>))
     light(<span class="s">&quot;FlameKick&quot;</span>, (<span class="n">0.4</span>, <span class="n">1.2</span>, <span class="n">0.8</span>), <span class="n">90.0</span>, <span class="n">0.6</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.22</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">160</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (-<span class="n">0.95</span>, -<span class="n">1.15</span>, <span class="n">0.36</span>)
+    cam.location = (-<span class="n">1.19</span>, -<span class="n">1.45</span>, <span class="n">0.44</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.02</span>, <span class="n">0.06</span>, <span class="n">0.21</span>)
+    aim.location = (<span class="n">0.02</span>, <span class="n">0.07</span>, <span class="n">0.25</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -1391,6 +1746,9 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
     p.add_argument(<span class="s">&quot;--float-arm&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-plate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--skinny-plaque&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--droop-arm&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--sink-plate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--low-bake&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, stone, tex, _col = check(
@@ -1400,6 +1758,9 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
         float_arm=args.float_arm,
         float_plate=args.float_plate,
         skinny_plaque=args.skinny_plaque,
+        droop_arm=args.droop_arm,
+        sink_plate=args.sink_plate,
+        low_bake=args.low_bake,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1424,7 +1785,7 @@ PLAQUE_W_TOL = <span class="n">0.04</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/wall-torch-hero.webp" alt="A wall torch: a stone-block plaque with an iron bracket holding a bowl with a flame, casting warm light on the floor." />
+    <img src="../assets/wall-torch-hero.webp" alt="A wall torch: a dark-jointed stone plaque with a round iron plate and level arm holding a cup, from which a leaning wooden torch with a pitch-wrapped head burns above the cornice." />
   </dialog>
   <footer>
     <div class="statusbar">

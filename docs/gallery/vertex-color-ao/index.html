@@ -292,6 +292,7 @@
 <p>The exit-7 probe earned its keep twice: the depsgraph check originally compared <code>zip(src.data, eva.data)</code>, which stops at the shorter sequence, so a resampled attribute reported a clean <strong>0.0</strong> deviation and the probe exited <strong>0</strong>. The length guard was added because the falsification pass failed to fail.</p>
 <p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same 6966 vertices, same closed-form errors to every printed digit, same storage deviations.</p>
 <p><strong>Render as proof:</strong> the well on the dark stage, lit only by the studio rig, with the baked AO multiplied into base colour — the masonry joints, the shaft mouth, the coping undersides and the apron contact all darken from the attribute, not from the lights. The falsification variant (<code>--falsify</code>) writes the same bake <strong>inverted</strong>: sky-facing coping and apron tops go grimy while the recesses and post bases glow, occlusion turned inside out.</p>
+<p>The studio rig is presentation only. Its fill and rim used to be strongly blue, which lit the whole stage cold (stage luma 0.243, warmth +0.01 against the calibration set). Its wedge grazed floor the camera barely saw and left a hard-edged patch on the back wall. Both are now near neutral, and the wedge pools warm light on the floor just behind the well from the camera&#x27;s side: luma 0.274, warmth +0.023. The bake, the checks and the exit codes are unchanged.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python vertex_color_ao.py --
 blender --background --python vertex_color_ao.py -- --output well.png
@@ -400,6 +401,8 @@ FLOAT_TOL = <span class="n">1e-6</span>           <span class="c"># FLOAT_COLOR 
 BYTE_MODEL_TOL = <span class="n">1e-6</span>      <span class="c"># agreement with the independent sRGB model</span>
 SPREAD_MIN = <span class="n">0.25</span>          <span class="c"># the asset must actually use its AO range</span>
 EXPECT_PARTS = <span class="n">11</span>          <span class="c"># asserted before any per-part loop runs (check 0)</span>
+WEDGE_AT = (-<span class="n">0.9</span>, <span class="n">3.4</span>, <span class="n">2.0</span>)    <span class="c"># render only: warm wedge position</span>
+WEDGE_POOL = (-<span class="n">1.8</span>, <span class="n">2.2</span>, <span class="n">0.0</span>)  <span class="c"># render only: floor point the wedge pools on</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -1149,11 +1152,20 @@ _mat_cache = {}
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         sc.collection.objects.link(ob)
 
-    <span class="c"># VISUAL-STYLE Layer 2 rig, energies scaled to a ~1.9 m subject</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.3</span>, -<span class="n">2.4</span>, <span class="n">3.6</span>), <span class="n">430.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">40</span>, <span class="n">0</span>, -<span class="n">42</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.0</span>, -<span class="n">2.0</span>, <span class="n">1.2</span>), <span class="n">78.0</span>, <span class="n">5.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">54</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.9</span>, <span class="n">3.0</span>, <span class="n">2.6</span>), <span class="n">240.0</span>, <span class="n">2.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">54</span>, <span class="n">0</span>, <span class="n">196</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.3</span>, <span class="n">5.0</span>, <span class="n">0.7</span>), <span class="n">300.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">86</span>, <span class="n">0</span>, <span class="n">182</span>))
+    <span class="c"># VISUAL-STYLE Layer 2 rig, energies scaled to a ~1.9 m subject. The fill</span>
+    <span class="c"># and rim used to be strongly blue and lit the whole stage cold (stage</span>
+    <span class="c"># luma 0.243, warmth +0.01 against the calibration set); they are now</span>
+    <span class="c"># near neutral and weaker, and the warm wedge carries the back wall.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">2.3</span>, -<span class="n">2.4</span>, <span class="n">3.6</span>), <span class="n">400.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">40</span>, <span class="n">0</span>, -<span class="n">42</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">3.0</span>, -<span class="n">2.0</span>, <span class="n">1.2</span>), <span class="n">45.0</span>, <span class="n">5.0</span>, (<span class="n">0.88</span>, <span class="n">0.92</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">54</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">0.9</span>, <span class="n">3.0</span>, <span class="n">2.6</span>), <span class="n">170.0</span>, <span class="n">2.0</span>, (<span class="n">0.85</span>, <span class="n">0.88</span>, <span class="n">0.95</span>), (-<span class="n">54</span>, <span class="n">0</span>, <span class="n">196</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.3</span>, <span class="n">5.0</span>, <span class="n">0.7</span>), <span class="n">150.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>), (-<span class="n">86</span>, <span class="n">0</span>, <span class="n">182</span>))
+    <span class="c"># The wedge pool lands on the floor behind the well as the hero camera</span>
+    <span class="c"># sees it; at its old grazing angle it lit floor the camera barely saw.</span>
+    wedge = sc.objects[<span class="s">&quot;Wedge&quot;</span>]
+    wedge.location = WEDGE_AT
+    wedge.rotation_euler = (Vector(WEDGE_POOL) - Vector(WEDGE_AT)).to_track_quat(
+        <span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
     <span class="k">return</span> floor, wall
 
 
