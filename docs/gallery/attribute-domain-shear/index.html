@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending." />
+  <meta property="og:image:alt" content="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="attribute-domain-shear — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/attribute-domain-shear-hero.webp" />
-  <meta name="twitter:image:alt" content="Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending." />
+  <meta name="twitter:image:alt" content="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending.">
-      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub.">
+      <img src="../assets/attribute-domain-shear-hero.webp" alt="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Authoring per-face colors into a POINT-domain attribute overwrites shared vertices once per neighbor; the last write wins and intended colors shear across every shared vertex.</div>
@@ -285,6 +285,7 @@
 <p><strong>What each check catches on failure:</strong> wedge 3 miscolored in the CORNER pass (exit 4); naive writes reversed, so the hub reads palette[0] (exit 5); a ring vert corrupted, breaking the overwrite-ordering witness (exit 6); a constant palette, collapsing the shear so the probe cannot distinguish naive from correct (exit 7). Sizes wrong for the declared domain (exit 3).</p>
 <p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — the <code>color_attributes</code> domain API is stable across both.</p>
 <p><strong>Render as proof:</strong> dual pinwheel from the same closed-form palette the check asserts. CORNER (left) holds eight crisp petals to the hub; naive POINT (right) smears — petal colors bleed across the shared hub and ring verts into a swirl. The broken state is in-frame by design: the right fan <em>is</em> the falsification variant. Fully matte petal materials (<code>Specular IOR Level = 0</code>) so the flat color data carries no specular line, per <code>docs/VISUAL-STYLE.md</code>.</p>
+<p>The staging is render-only and does not touch the checked mesh. The two stands are 2.72 m apart so their canopies read as two objects; at 2.30 m the petal tips met at the centre of the frame. Each stand&#x27;s wooden stick runs from just below the floor into the hub it carries, both ends derived from the stand&#x27;s tilt. The old dark steel stick stopped 0.6 m short of the hub, under the canopy, and disappeared into the stage.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python attribute_domain_shear.py --
 blender --background --python attribute_domain_shear.py -- --no-overwrite
@@ -519,26 +520,37 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> mat
 
 
+STAND_TILT = math.radians(<span class="n">12</span>)
+STEM_BURY = <span class="n">0.02</span>
+
+
 <span class="k">def</span> _pinwheel_obj(sc, name, me, loc, rot_z):
     ob = bpy.data.objects.new(name, me)
     ob.location = loc
-    ob.rotation_euler = (math.radians(<span class="n">12</span>), <span class="n">0.0</span>, rot_z)
+    ob.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
     sc.collection.objects.link(ob)
-    <span class="c"># stem + hub cap: a garden pinwheel on a stick, not a floating disc</span>
+    <span class="c"># stem + hub cap: a garden pinwheel on a stick, not a floating disc. The</span>
+    <span class="c"># stick runs from just under the floor to the hub it carries, both ends</span>
+    <span class="c"># derived from the stand&#x27;s own tilt; it used to stop 0.6 below the hub,</span>
+    <span class="c"># hidden under the canopy, holding nothing.</span>
+    stem_lo = -(loc[<span class="n">2</span>] / math.cos(STAND_TILT)) - STEM_BURY
+    stem_hi = HUB_Z
     stem_me = bpy.data.meshes.new(name + <span class="s">&quot;Stem&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">10</span>, radius1=<span class="n">0.05</span>,
-                              radius2=<span class="n">0.06</span>, depth=<span class="n">1.35</span>)
-        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.72</span>), verts=bm.verts)
+        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">10</span>, radius1=<span class="n">0.045</span>,
+                              radius2=<span class="n">0.035</span>, depth=stem_hi - stem_lo)
+        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span> * (stem_lo + stem_hi)),
+                            verts=bm.verts)
         bm.to_mesh(stem_me)
     <span class="k">finally</span>:
         bm.free()
-    stem_me.materials.append(make_material(<span class="s">&quot;StemMetal&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.17</span>, <span class="n">0.18</span>),
-                                           rough=<span class="n">0.4</span>, metallic=<span class="n">0.8</span>))
+    <span class="c"># a painted wooden dowel: near-black steel vanished into the dark stage</span>
+    stem_me.materials.append(make_material(<span class="s">&quot;StemDowel&quot;</span>, (<span class="n">0.46</span>, <span class="n">0.30</span>, <span class="n">0.16</span>),
+                                           rough=<span class="n">0.55</span>, metallic=<span class="n">0.0</span>))
     stem = bpy.data.objects.new(name + <span class="s">&quot;Stem&quot;</span>, stem_me)
     stem.location = loc
-    stem.rotation_euler = (math.radians(<span class="n">12</span>), <span class="n">0.0</span>, rot_z)
+    stem.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
     sc.collection.objects.link(stem)
     cap_me = bpy.data.meshes.new(name + <span class="s">&quot;Cap&quot;</span>)
     bm = bmesh.new()
@@ -552,7 +564,7 @@ COLOR_EPS = <span class="n">1e-6</span>
                                           rough=<span class="n">0.35</span>, metallic=<span class="n">0.85</span>))
     cap = bpy.data.objects.new(name + <span class="s">&quot;Cap&quot;</span>, cap_me)
     cap.location = loc
-    cap.rotation_euler = (math.radians(<span class="n">12</span>), <span class="n">0.0</span>, rot_z)
+    cap.rotation_euler = (STAND_TILT, <span class="n">0.0</span>, rot_z)
     sc.collection.objects.link(cap)
     <span class="k">return</span> ob
 
@@ -611,6 +623,9 @@ COLOR_EPS = <span class="n">1e-6</span>
     <span class="k">return</span> floor, wall
 
 
+PAIR_X = <span class="n">1.36</span>
+
+
 <span class="k">def</span> render_still(path, engine):
     <span class="s">&quot;&quot;&quot;Dual pinwheel: CORNER (crisp petals to the hub) vs naive POINT (last
     write smears the shared hub + ring verts). Colors come from the same
@@ -622,20 +637,22 @@ COLOR_EPS = <span class="n">1e-6</span>
     me_c = build_fan()
     assign_corner(me_c, pal)
     me_c.materials.append(make_attr_material(<span class="s">&quot;MatCorner&quot;</span>, ATTR_C))
-    left = _pinwheel_obj(sc, <span class="s">&quot;Corner&quot;</span>, me_c, (-<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(-<span class="n">8</span>))
+    <span class="c"># Spread so the two canopies read as two objects: at +/-1.15 their</span>
+    <span class="c"># tips met at x=0 and the pair read as one shape.</span>
+    left = _pinwheel_obj(sc, <span class="s">&quot;Corner&quot;</span>, me_c, (-PAIR_X, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(-<span class="n">8</span>))
 
     me_p = build_fan()
     assign_point_naive(me_p, pal)
     me_p.materials.append(make_attr_material(<span class="s">&quot;MatPoint&quot;</span>, ATTR_P))
-    right = _pinwheel_obj(sc, <span class="s">&quot;Point&quot;</span>, me_p, (<span class="n">1.15</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(<span class="n">8</span>))
+    right = _pinwheel_obj(sc, <span class="s">&quot;Point&quot;</span>, me_p, (PAIR_X, <span class="n">0.0</span>, <span class="n">1.35</span>), math.radians(<span class="n">8</span>))
 
-    p_corner = placard(sc, <span class="s">&quot;CORNER&quot;</span>, (-<span class="n">1.15</span>, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.13</span>)
-    p_point = placard(sc, <span class="s">&quot;POINT — last write wins&quot;</span>, (<span class="n">1.15</span>, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.10</span>)
+    p_corner = placard(sc, <span class="s">&quot;CORNER&quot;</span>, (-PAIR_X, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.13</span>)
+    p_point = placard(sc, <span class="s">&quot;POINT — last write wins&quot;</span>, (PAIR_X, -<span class="n">1.05</span>, <span class="n">0.02</span>), size=<span class="n">0.10</span>)
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">48.0</span>
+    cam_data.lens = <span class="n">44.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
     cam.location = (<span class="n">0.0</span>, -<span class="n">6.4</span>, <span class="n">4.6</span>)
     sc.collection.objects.link(cam)
@@ -722,7 +739,7 @@ COLOR_EPS = <span class="n">1e-6</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending." />
+    <img src="../assets/attribute-domain-shear-hero.webp" alt="Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub." />
   </dialog>
   <footer>
     <div class="statusbar">

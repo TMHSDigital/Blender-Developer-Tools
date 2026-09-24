@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grindstone-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle." />
+  <meta property="og:image:alt" content="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="grindstone — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grindstone-hero.webp" />
-  <meta name="twitter:image:alt" content="A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle." />
+  <meta name="twitter:image:alt" content="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,47 +268,54 @@
     <p>A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle.">
-      <img src="../assets/grindstone-hero.webp" alt="A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes.">
+      <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 928 tris, three materials with 216 wood / 160 stone / 180 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.710×0.419×0.610 m, zmin 0, hygiene 0, four shoes planted, trough seated in the sills, stone dip 26 mm, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 198 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough exit 18 on seat.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1668 tris, three materials with 400 wood / 240 stone / 364 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.419×0.610 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four shoes planted, trough seated in the sills and biting both stretchers 4 mm, stone dip 24 mm, no unchamfered right-angle edge, 29.44 bake texels per UV cell, LOD ratios in band, convex collider 304 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert / --flush-shoes exit 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough / --low-stretchers exit 18 on seat; --sharp-handle exits 20 on edge treatment; --low-bake exits 21 on texel density.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/grindstone/grindstone.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural grindstone (sandstone wheel, timber A-frame trestle, iron shoes/axle/hubs/crank, open water trough) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>The A-frame is a king post with diagonals tenoning into a fatter sill, not two sticks meeting at a point. The trough is one manifold basin seated into those sills. Iron shoes bury a short wood tenon so the angled leg end-cap cannot pierce Z=0.</p>
+<p>A showcase piece, not an example. A procedural grindstone: a sandstone wheel, a timber A-frame trestle, iron shoes, axle, hubs and crank, and an open trough. The piece then runs the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider, and a Unity glTF export.</p>
+<p>Each A-frame is a king post with two diagonals tenoned 12 mm into its faces and into a fatter sill. It is not two sticks meeting at a point. The sills stand in iron shoes, cups one 6 mm reveal proud of the sill on every side. The trough is one manifold basin seated into the sills and carried on two end stretchers, which it bites by 4 mm. Every timber and iron edge is chamfered. The stone is 48 smooth segments with hard chamfer rings, in a mottled sandstone material. Stated size is a 0.50 m × 0.095 m stone in a 0.72 × 0.42 × 0.61 m frame.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>700–1000</td><td>928 / 928 / 928</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.1897</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥80 wood, stone, metal faces</td><td>3 slots; 216 / 160 / 180</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.710, 0.419, 0.610) m ± 0.015</td><td>(0.7100, 0.4185, 0.6100), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 240</td><td>198</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>89316 / 89316 / 89312 bytes</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1560–1780</td><td>1668 / 1668 / 1668</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2194 / 0.2194 / 0.2194</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥ 280 wood, ≥ 190 stone, ≥ 260 metal faces</td><td>3 slots; 400 / 240 / 364</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(0.722, 0.419, 0.610) m ± 0.015</td><td>(0.7220, 0.4185, 0.6100), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 320</td><td>304</td></tr><tr><td>Bake texels</td><td>smallest UV cell ≥ 12 px at the baked resolution</td><td>29.44 px at 1024 px</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>152272 / 152272 / 152260 bytes</td></tr></tbody></table></div>
+<p>The collider ceiling moved from 240 to 320 with the stone. 48 segments put more of its rim on the hull (198 → 304 triangles).</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 4 shoes</td><td>each <code>zmin</code> ≤ 1e-3</td><td>4, shoe_z 0.00000</td></tr><tr><td>Stone size</td><td>0.500 m dia × 0.095 m thick ± 0.02 / ± 0.015</td><td>0.5000 × 0.0950</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar cross-shell face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 4 shoes</td><td>each <code>zmin</code> ≤ 1e-3</td><td>4, shoe_z 0.00000</td></tr><tr><td>Stone size</td><td>0.500 m dia × 0.095 m thick ± 0.02 / ± 0.015</td><td>0.5000 × 0.0950</td></tr><tr><td>Edge treatment</td><td>manifold edges within 5° of 90° = 0</td><td>0 wood, 0 stone, 0 iron</td></tr></tbody></table></div>
+<p>The coplanar budget counts pairs from different shells within 0.05 m, using <code>hay-bale</code>&#x27;s constants. The first build matched only faces whose centres fell within 0.1 mm of each other, and no real overlap ever does. It reported 0 while the shoes shared three planes with every sill end, seen as a lit slit in each foot close-up.</p>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Crank-axle gap</td><td>≤ 0.008 m</td><td>0.00418</td></tr><tr><td>Shoe-wood BVH gap</td><td>≤ 0.008 m (overlap is 0)</td><td>0.00000</td></tr><tr><td>Trough-sill per-side gap</td><td>≤ 0.008 m (overlap is 0)</td><td>0.00000</td></tr><tr><td>Stone dip into trough</td><td>0.015–0.045 m</td><td>0.02570</td></tr><tr><td>Trough floor zmin</td><td>≥ 0.040 m</td><td>0.05800</td></tr></tbody></table></div>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 4 B on 5.2.1 (glTF serializer), not a gated axis.</p>
-<h3>Falsifiers</h3>
-<p>Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--float-crank</code></td><td>crank-axle gap</td><td>17</td></tr><tr><td><code>--float-legs</code></td><td>shoe-wood join</td><td>17</td></tr><tr><td><code>--no-dip</code></td><td>stone dip band</td><td>18</td></tr><tr><td><code>--narrow-trough</code></td><td>trough-sill seat</td><td>18</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Crank-axle gap</td><td>≤ 0.008 m</td><td>0.00376</td></tr><tr><td>Shoe-wood BVH gap</td><td>≤ 0.008 m (overlap is 0)</td><td>0.00000</td></tr><tr><td>Trough-sill per-side gap</td><td>≤ 0.008 m (overlap is 0)</td><td>0.00000</td></tr><tr><td>Stone dip into trough</td><td>0.015–0.045 m</td><td>0.02416</td></tr><tr><td>Trough floor zmin</td><td>≥ 0.040 m</td><td>0.05800</td></tr><tr><td>Trough bearing</td><td>2 end stretchers, each biting the trough floor 0.002–0.008 m</td><td>2, [0.00400, 0.00400]</td></tr></tbody></table></div>
+<p>DECIMATE COLLAPSE triangle counts can differ across series, so the gate is a ratio band, not an exact count. Bake pixels are stochastic. The gate is <code>has_data</code> plus operator <code>FINISHED</code> plus the texel floor, not byte-identity. Per-member wood tone comes from <code>random.Random(TONE_SEED)</code>, so it is identical run to run. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), which is not a gated axis.</p>
+<h2>Falsifiers</h2>
+<p>Each violates one named budget. All thirteen were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--flush-shoes</code></td><td>coplanar cross-shell pairs: shoes sized to the sill and flush with its end (0 → 4 pairs)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--float-crank</code></td><td>crank-axle gap</td><td>17</td></tr><tr><td><code>--float-legs</code></td><td>shoe-wood join</td><td>17</td></tr><tr><td><code>--narrow-trough</code></td><td>trough-sill seat</td><td>18</td></tr><tr><td><code>--no-dip</code></td><td>stone dip band</td><td>18</td></tr><tr><td><code>--low-stretchers</code></td><td>trough bearing: stretchers back at sill height, 5.9 mm under the trough</td><td>18</td></tr><tr><td><code>--sharp-handle</code></td><td>edge treatment: the crank handle&#x27;s rims left square (20 right-angle edges)</td><td>20</td></tr><tr><td><code>--low-bake</code></td><td>bake texel density: 256 px bake (7.36 px per cell)</td><td>21</td></tr></tbody></table></div>
+<p><code>--flush-shoes</code> moves the shoe envelope 12 mm inside <code>BBOX_TOL</code> (15 mm), so the AABB gate cannot steal it. <code>--sharp-handle</code> leaves the triangle count inside its band, so only the edge budget sees it.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python grindstone.py --
 blender --background --python grindstone.py -- --skip-decimate
 blender --background --python grindstone.py -- --stray-vert
+blender --background --python grindstone.py -- --flush-shoes
 blender --background --python grindstone.py -- --lift-z
 blender --background --python grindstone.py -- --short-legs
 blender --background --python grindstone.py -- --float-crank
 blender --background --python grindstone.py -- --float-legs
-blender --background --python grindstone.py -- --no-dip
 blender --background --python grindstone.py -- --narrow-trough
+blender --background --python grindstone.py -- --no-dip
+blender --background --python grindstone.py -- --low-stretchers
+blender --background --python grindstone.py -- --sharp-handle
+blender --background --python grindstone.py -- --low-bake
 blender --background --python grindstone.py -- --output grindstone.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: crank-axle gap, or shoe-wood join</td></tr><tr><td>18</td><td>Seat: trough-sill gap, stone dip band, or trough sitting on the dirt</td></tr><tr><td>19</td><td>Stone diameter or thickness off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, coplanar cross-shell pairs</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: crank-axle gap, or shoe-wood join</td></tr><tr><td>18</td><td>Seat: trough-sill gap, stone dip band, trough on the dirt, or trough not bearing on its stretchers</td></tr><tr><td>19</td><td>Stone diameter or thickness off the stated real-world size</td></tr><tr><td>20</td><td>A right-angle edge survived the chamfer passes (<code>--sharp-handle</code> lands here)</td></tr><tr><td>21</td><td>Bake texel density below the floor (<code>--low-bake</code> lands here)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -327,18 +334,25 @@ glTF export.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. ``--stray-vert`` adds a
-loose vertex so the mesh-hygiene budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin budget fails. ``--float-crank`` offsets the
-crank from the axle so joint-fit fails. ``--no-dip`` raises the stone
-clear of the trough so the seat-conformance dip band fails.
-``--short-legs`` raises the iron shoes and plants a dummy so the named
-support budget fails while AABB zmin still passes. ``--float-legs``
-lifts the A-frame timber off the shoes so the shoe-wood join fails.
-``--narrow-trough`` shrinks the tub so it no longer seats in the sills.
+loose vertex so the mesh-hygiene budget fails. ``--flush-shoes`` sizes
+the iron shoes to the sill so their faces share its planes and the
+coplanar budget fails. ``--lift-z`` raises the mesh so the
+grounded-zmin budget fails. ``--short-legs`` raises the iron shoes and
+plants a dummy so the named support budget fails while AABB zmin still
+passes. ``--float-crank`` offsets the crank from the axle so joint-fit
+fails. ``--float-legs`` lifts the A-frame timber off the shoes so the
+shoe-wood join fails. ``--narrow-trough`` shrinks the tub so it no
+longer seats in the sills. ``--no-dip`` raises the stone clear of the
+trough so the seat-conformance dip band fails. ``--low-stretchers``
+drops the end stretchers under the trough so it no longer bears on
+them. ``--sharp-handle`` leaves the crank handle unchamfered so the
+edge-treatment budget fails. ``--low-bake`` bakes at 256 px so the
+texel-density budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+Seeded, not random: per-member tone uses ``random.Random(TONE_SEED)``.
+Construction is closed-form. DECIMATE COLLAPSE triangle counts are not
+byte-identical across Blender versions — the LOD gate is a ratio band,
+not an exact count.
 
     blender --background --python grindstone.py --
     blender --background --python grindstone.py -- --skip-decimate
@@ -347,6 +361,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -355,6 +370,7 @@ ratio band, not an exact count.
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
 <span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -365,7 +381,10 @@ sys.dont_write_bytecode = <span class="k">True</span>
 
 STONE_R = <span class="n">0.250</span>
 STONE_T = <span class="n">0.095</span>
-STONE_SEGS = <span class="n">32</span>
+<span class="c"># 32 flat-shaded segments read as a polygon in the front orthographic and</span>
+<span class="c"># threw one highlight per facet across the tread. 48 smooth segments with</span>
+<span class="c"># hard chamfer rings read as a turned wheel.</span>
+STONE_SEGS = <span class="n">48</span>
 CHAMFER = <span class="n">0.012</span>
 TROUGH_H = <span class="n">0.080</span>
 TROUGH_WALL = <span class="n">0.018</span>
@@ -380,7 +399,13 @@ LEG_XY = (<span class="n">0.044</span>, <span class="n">0.044</span>)
 <span class="c"># tenon *into* the frame. Matching Y-thickness puts coplanar faces</span>
 <span class="c"># on the camera side and reads as a black hole in the timber.</span>
 SILL_Y = <span class="n">0.070</span>
+KING_X = <span class="n">0.052</span>
 KING_Y = <span class="n">0.054</span>
+<span class="c"># Each diagonal tenons into the king post&#x27;s face by a named bite. Run to</span>
+<span class="c"># the king&#x27;s centre line, the pair met at one apex and their chamfered</span>
+<span class="c"># end faces landed on each other inside the bearing: 6 coplanar pairs.</span>
+DIAG_BITE = <span class="n">0.012</span>
+SILL_END = LEG_SPREAD + <span class="n">0.035</span>
 <span class="c"># Seat the tub into the sill inner faces. Deriving from LEG_XY left a</span>
 <span class="c"># daylight slot once the sill was fattened to nest the diagonals.</span>
 TROUGH_SEAT = <span class="n">0.012</span>
@@ -392,15 +417,39 @@ AXLE_OVER = <span class="n">0.055</span>
 CRANK_ARM = <span class="n">0.13</span>
 HANDLE_L = <span class="n">0.11</span>
 SHOE_H = <span class="n">0.024</span>
-SHOE_XY = (<span class="n">0.070</span>, <span class="n">0.070</span>)
+<span class="c"># An iron shoe is a cup round the sill&#x27;s end, a named reveal proud of it</span>
+<span class="c"># on every side. The first build made it exactly as wide as the sill and</span>
+<span class="c"># flush with its end, so the two shared three planes per foot: a lit slit</span>
+<span class="c"># in every foot close-up, which a centre-coincidence z-fight test missed.</span>
+SHOE_REVEAL = <span class="n">0.006</span>
+SHOE_CUP = <span class="n">0.064</span>
+<span class="c"># The end stretchers carry the trough: their top is the trough&#x27;s bottom</span>
+<span class="c"># plus a named bite. At sill height they stopped 6 mm short, a dark slit</span>
+<span class="c"># under the tub. Stationed inboard of the shoes, so a stretcher is never</span>
+<span class="c"># the wood a shoe measures against.</span>
+STRETCH_W = <span class="n">0.038</span>
+STRETCH_H = <span class="n">0.035</span>
+STRETCH_CLEAR = <span class="n">0.010</span>
+TROUGH_BITE = <span class="n">0.004</span>
+TROUGH_BITE_MIN = <span class="n">0.002</span>
+TROUGH_BITE_MAX = <span class="n">0.008</span>
+IRON_BEVEL = <span class="n">0.0012</span>
+BEVEL_MIN_ANGLE = math.radians(<span class="n">50.0</span>)
+PLANK_TONE_JITTER = <span class="n">0.26</span>
+TONE_SEED = <span class="n">43</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 BBOX_TOL = <span class="n">0.015</span>
-OUTER_SIZE = (<span class="n">0.710</span>, <span class="n">0.419</span>, <span class="n">0.610</span>)
+<span class="c"># Shoes one reveal past the sill ends (X); the crank handle (Y); the</span>
+<span class="c"># stone&#x27;s crown (Z). X was 0.710 with flush shoes.</span>
+OUTER_SIZE = (<span class="n">0.722</span>, <span class="n">0.419</span>, <span class="n">0.610</span>)
 STONE_DIA = <span class="n">2.0</span> * STONE_R
 STONE_DIA_TOL = <span class="n">0.02</span>
 STONE_T_TOL = <span class="n">0.015</span>
-BASE_TRIS_MIN = <span class="n">700</span>
-BASE_TRIS_MAX = <span class="n">1000</span>
+<span class="c"># Re-fitted for the rebuild (928 -&gt; 1668: chamfers on every member, a</span>
+<span class="c"># 48-segment stone). Centred on the measurement.</span>
+BASE_TRIS_MIN = <span class="n">1560</span>
+BASE_TRIS_MAX = <span class="n">1780</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -410,17 +459,32 @@ LOD2_TARGET = <span class="n">0.22</span>
 MATERIAL_COUNT = <span class="n">3</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
-COLLIDER_TRIS_MAX = <span class="n">240</span>
-BAKE_RES = <span class="n">256</span>
-CAGE_EXTRUSION = <span class="n">0.08</span>
-METAL_FACES_MIN = <span class="n">80</span>
-WOOD_FACES_MIN = <span class="n">80</span>
-STONE_FACES_MIN = <span class="n">80</span>
+<span class="c"># Re-fitted: the 48-segment stone adds hull vertices (198 -&gt; 304).</span>
+COLLIDER_TRIS_MAX = <span class="n">320</span>
+<span class="c"># One UV cell per face; 256 px left each cell under 12 texels, so the</span>
+<span class="c"># bilinear lookup read neighbouring cells&#x27; normals (tavern-stool&#x27;s defect).</span>
+BAKE_RES = <span class="n">1024</span>
+LOW_BAKE_RES = <span class="n">256</span>
+TEXEL_MIN = <span class="n">12.0</span>
+<span class="c"># The cage covers the chamfer difference between high and low (under</span>
+<span class="c"># 2 mm); a wide one reaches the next part and bakes its surface instead.</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+<span class="c"># About 70% of each measured count; the first build&#x27;s 80 apiece let most</span>
+<span class="c"># of a material&#x27;s faces go missing unseen.</span>
+METAL_FACES_MIN = <span class="n">260</span>
+WOOD_FACES_MIN = <span class="n">280</span>
+STONE_FACES_MIN = <span class="n">190</span>
 ZMIN_EPS = <span class="n">1e-4</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
-ZFIGHT_EPS = <span class="n">1e-4</span>
-ZFIGHT_COS = <span class="n">0.999</span>
+<span class="c"># Z-fighting: two separate bodies landing on one plane. Cross-shell, with</span>
+<span class="c"># hay-bale&#x27;s constants (copied, not imported). The first build matched</span>
+<span class="c"># only faces whose centres fell within 0.1 mm of each other, which no</span>
+<span class="c"># real shoe-on-sill overlap ever does.</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+ZFIGHT_PAIRS_MAX = <span class="n">0</span>
 LIFT_Z = <span class="n">0.05</span>
 CRANK_JOIN = <span class="n">0.008</span>
 SHOE_JOIN = <span class="n">0.008</span>
@@ -429,6 +493,10 @@ DIP_MIN = <span class="n">0.015</span>
 DIP_MAX = <span class="n">0.045</span>
 SHOE_Z_MAX = <span class="n">1e-3</span>
 TROUGH_FLOOR_Z_MIN = <span class="n">0.040</span>
+<span class="c"># Edge treatment: every timber and iron edge is chamfered, so a manifold</span>
+<span class="c"># edge still within RIGHT_ANGLE_TOL of 90 degrees is a skipped bevel.</span>
+RIGHT_ANGLE_TOL = math.radians(<span class="n">5.0</span>)
+RIGHT_ANGLE_MAX = <span class="n">0</span>
 
 WOOD_IDX = <span class="n">0</span>
 STONE_IDX = <span class="n">1</span>
@@ -481,6 +549,13 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> verts
 
 
+<span class="k">def</span> add_span(bm, lo, hi, mat_idx):
+    <span class="s">&quot;&quot;&quot;Axis-aligned box from its min corner to its max corner.&quot;&quot;&quot;</span>
+    lo = Vector(lo)
+    hi = Vector(hi)
+    <span class="k">return</span> add_box(bm, (lo + hi) * <span class="n">0.5</span>, hi - lo, mat_idx)
+
+
 <span class="k">def</span> add_oriented_box(bm, a, b, scale_xy, mat_idx):
     a = Vector(a)
     b = Vector(b)
@@ -500,10 +575,12 @@ METAL_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+    <span class="s">&quot;&quot;&quot;Cylinder with n-gon caps; ``finish_caps`` triangulates them after the
+    chamfer pass, which folds a chamfered triangle-fan cap inside out.&quot;&quot;&quot;</span>
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=<span class="k">True</span>,
-        cap_tris=<span class="k">True</span>,
+        cap_tris=<span class="k">False</span>,
         segments=segments,
         radius1=radius,
         radius2=radius,
@@ -518,6 +595,15 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">for</span> f <span class="k">in</span> faces:
         f.material_index = mat_idx
     <span class="k">return</span> verts
+
+
+<span class="k">def</span> finish_caps(bm):
+    <span class="s">&quot;&quot;&quot;Triangulate every face with more than four corners.&quot;&quot;&quot;</span>
+    ngons = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
+    <span class="k">if</span> ngons:
+        bmesh.ops.triangulate(
+            bm, faces=ngons, quad_method=<span class="s">&quot;BEAUTY&quot;</span>, ngon_method=<span class="s">&quot;BEAUTY&quot;</span>,
+        )
 
 
 <span class="k">def</span> add_basin(bm, loc, size, wall, mat_idx):
@@ -645,7 +731,8 @@ METAL_IDX = <span class="n">2</span>
 <span class="k">def</span> build_grindstone_mesh(
     name, bevel_offset, bevel_segments,
     float_crank=<span class="k">False</span>, no_dip=<span class="k">False</span>, short_legs=<span class="k">False</span>, float_legs=<span class="k">False</span>,
-    narrow_trough=<span class="k">False</span>,
+    narrow_trough=<span class="k">False</span>, flush_shoes=<span class="k">False</span>, low_stretchers=<span class="k">False</span>,
+    sharp_handle=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -664,22 +751,20 @@ METAL_IDX = <span class="n">2</span>
         shoe_z = <span class="n">0.05</span> <span class="k">if</span> short_legs <span class="k">else</span> <span class="n">0.0</span>
         bearing_h = <span class="n">0.090</span>
         bearing_xz = (<span class="n">0.078</span>, bearing_h)
-        king_xy = (<span class="n">0.052</span>, KING_Y)
-        <span class="c"># Diagonals *are* the legs. A tall stump beside an angled timber</span>
-        <span class="c"># paints a see-through triangle on the stump face. Bury a short</span>
-        <span class="c"># tenon in the shoe (never proud of the iron) and start the</span>
-        <span class="c"># diagonal on the shoe top so the angled end-cap cannot pierce</span>
-        <span class="c"># Z=0.</span>
-        tenon_z = shoe_z + SHOE_H * <span class="n">0.50</span>
+        king_xy = (KING_X, KING_Y)
+        <span class="c"># Diagonals *are* the legs, and they start in the sill above the</span>
+        <span class="c"># shoe so the angled end-cap cannot pierce Z=0. The first build</span>
+        <span class="c"># also buried a short tenon box in each shoe, wholly hidden inside</span>
+        <span class="c"># sill and iron: triangles nobody could see.</span>
         diag_z = shoe_z + SHOE_H + <span class="n">0.008</span>
         <span class="k">if</span> float_legs:
-            tenon_z = shoe_z + SHOE_H + <span class="n">0.070</span>
             diag_z = shoe_z + SHOE_H + <span class="n">0.070</span>
         sill_h = <span class="n">0.050</span>
         sill_bottom = (
             shoe_z + SHOE_H + <span class="n">0.055</span> <span class="k">if</span> float_legs <span class="k">else</span> shoe_z + SHOE_H * <span class="n">0.40</span>
         )
         sill_z = sill_bottom + sill_h / <span class="n">2.0</span>
+        reveal = <span class="n">0.0</span> <span class="k">if</span> flush_shoes <span class="k">else</span> SHOE_REVEAL
 
         <span class="k">for</span> y <span class="k">in</span> (-FRAME_Y, FRAME_Y):
             <span class="c"># King post fills the A-crotch so the bearing is not a cube</span>
@@ -701,57 +786,52 @@ METAL_IDX = <span class="n">2</span>
                     WOOD_IDX,
                 )
             )
-            <span class="c"># Tie beam sits on the shoes and occupies the A-foot.</span>
+            <span class="c"># Tie beam sits in the shoes and occupies the A-foot.</span>
             wood.extend(
-                add_box(
+                add_span(
                     bm,
-                    (<span class="n">0.0</span>, y, sill_z),
-                    (LEG_SPREAD * <span class="n">2.0</span> + SHOE_XY[<span class="n">0</span>], SILL_Y, sill_h),
+                    (-SILL_END, y - SILL_Y / <span class="n">2.0</span>, sill_bottom),
+                    (SILL_END, y + SILL_Y / <span class="n">2.0</span>, sill_bottom + sill_h),
                     WOOD_IDX,
                 )
             )
-            <span class="k">for</span> x <span class="k">in</span> (-LEG_SPREAD, LEG_SPREAD):
-                <span class="k">if</span> <span class="k">not</span> float_legs:
-                    wood.extend(
-                        add_box(
-                            bm,
-                            (x, y, tenon_z),
-                            (LEG_XY[<span class="n">0</span>] * <span class="n">0.92</span>, LEG_XY[<span class="n">1</span>] * <span class="n">0.92</span>, SHOE_H * <span class="n">0.90</span>),
-                            WOOD_IDX,
-                        )
-                    )
+            <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
                 wood.extend(
                     add_oriented_box(
                         bm,
-                        (x, y, diag_z),
-                        (<span class="n">0.0</span>, y, axle_z - <span class="n">0.010</span>),
+                        (s * LEG_SPREAD, y, diag_z),
+                        (s * (KING_X / <span class="n">2.0</span> - DIAG_BITE), y, axle_z - <span class="n">0.010</span>),
                         LEG_XY,
                         WOOD_IDX,
                     )
                 )
+                x_in, x_out = SILL_END - SHOE_CUP, SILL_END + reveal
                 metal.extend(
-                    add_box(
+                    add_span(
                         bm,
-                        (x, y, shoe_z + SHOE_H / <span class="n">2.0</span>),
-                        (SHOE_XY[<span class="n">0</span>], SHOE_XY[<span class="n">1</span>], SHOE_H),
+                        (min(s * x_in, s * x_out), y - SILL_Y / <span class="n">2.0</span> - reveal, shoe_z),
+                        (max(s * x_in, s * x_out), y + SILL_Y / <span class="n">2.0</span> + reveal,
+                         shoe_z + SHOE_H),
                         METAL_IDX,
                     )
                 )
 
-        <span class="k">for</span> x <span class="k">in</span> (-LEG_SPREAD, LEG_SPREAD):
-            <span class="c"># End stretchers tenon through both sills at sill height.</span>
-            <span class="c"># A higher independent Z left them floating as extra cubes.</span>
+        <span class="c"># End stretchers tenon through both sills and carry the trough.</span>
+        stretch_top = TROUGH_Z0 + TROUGH_BITE
+        <span class="k">if</span> low_stretchers:
+            stretch_top = sill_z + sill_h * <span class="n">0.35</span>
+        stretch_x = SILL_END - SHOE_CUP - STRETCH_CLEAR - STRETCH_W / <span class="n">2.0</span>
+        <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             wood.extend(
-                add_box(
+                add_span(
                     bm,
-                    (x, <span class="n">0.0</span>, sill_z),
-                    (<span class="n">0.038</span>, FRAME_Y * <span class="n">2.0</span>, sill_h * <span class="n">0.70</span>),
+                    (s * stretch_x - STRETCH_W / <span class="n">2.0</span>, -FRAME_Y, stretch_top - STRETCH_H),
+                    (s * stretch_x + STRETCH_W / <span class="n">2.0</span>, FRAME_Y, stretch_top),
                     WOOD_IDX,
                 )
             )
 
         tw = TROUGH_W * (<span class="n">0.58</span> <span class="k">if</span> narrow_trough <span class="k">else</span> <span class="n">1.0</span>)
-        chamfer = []
         basin_verts = add_basin(
             bm,
             (<span class="n">0.0</span>, <span class="n">0.0</span>, tub_z0 + TROUGH_H / <span class="n">2.0</span>),
@@ -759,9 +839,9 @@ METAL_IDX = <span class="n">2</span>
             TROUGH_WALL,
             WOOD_IDX,
         )
-        chamfer.extend(basin_verts)
+        wood.extend(basin_verts)
 
-        chamfer.extend(
+        handle = set(
             add_cyl(
                 bm,
                 (<span class="n">0.0</span>, crank_y + HANDLE_L * <span class="n">0.15</span>, axle_z + CRANK_ARM),
@@ -772,7 +852,7 @@ METAL_IDX = <span class="n">2</span>
                 euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
             )
         )
-        wood.extend(chamfer)
+        wood.extend(handle)
 
         add_stone(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>), axle_z)
 
@@ -837,42 +917,108 @@ METAL_IDX = <span class="n">2</span>
             v.co.x -= cx
             v.co.y -= cy
 
+        bm.edges.index_update()
+
+        <span class="k">def</span> sharp(edge, idx):
+            <span class="k">if</span> len(edge.link_faces) != <span class="n">2</span>:
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="k">if</span> any(f.material_index != idx <span class="k">for</span> f <span class="k">in</span> edge.link_faces):
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="c"># --sharp-handle leaves the crank handle&#x27;s rims square: a few</span>
+            <span class="c"># dozen triangles short, inside the triangle band, so only</span>
+            <span class="c"># the edge budget can see it.</span>
+            <span class="k">if</span> sharp_handle <span class="k">and</span> all(v <span class="k">in</span> handle <span class="k">for</span> v <span class="k">in</span> edge.verts):
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="k">return</span> edge.calc_face_angle(<span class="n">0.0</span>) &gt; BEVEL_MIN_ANGLE
+
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = []
-            trough_verts = set(basin_verts)
-            <span class="k">for</span> e <span class="k">in</span> {e <span class="k">for</span> v <span class="k">in</span> trough_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}:
-                <span class="k">if</span> min(v.co.z <span class="k">for</span> v <span class="k">in</span> e.verts) &lt; tub_z0 - <span class="n">0.002</span>:
-                    <span class="k">continue</span>
-                <span class="k">if</span> any(f.material_index != WOOD_IDX <span class="k">for</span> f <span class="k">in</span> e.link_faces):
-                    <span class="k">continue</span>
-                edges.append(e)
-            <span class="k">if</span> edges:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=<span class="n">0.5</span>,
-                    affect=<span class="s">&quot;EDGES&quot;</span>,
-                    clamp_overlap=<span class="k">True</span>,
-                )
-                <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
-                    f.material_index = WOOD_IDX
+            edges = sorted(
+                (e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> sharp(e, WOOD_IDX)), key=<span class="k">lambda</span> e: e.index
+            )
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=bevel_offset, segments=bevel_segments,
+                profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=WOOD_IDX,
+            )
+            bm.edges.index_update()
+            edges = sorted(
+                (e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> sharp(e, METAL_IDX)), key=<span class="k">lambda</span> e: e.index
+            )
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=IRON_BEVEL, segments=<span class="n">1</span>, profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=METAL_IDX,
+            )
+        finish_caps(bm)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        <span class="c"># Smooth across the stone&#x27;s and the round irons&#x27; facets; hard at</span>
+        <span class="c"># every chamfer and material boundary. The stone&#x27;s chamfer rings</span>
+        <span class="c"># meet its tread at 32 degrees, so its threshold is lower.</span>
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = <span class="k">False</span>
+            face.smooth = <span class="k">True</span>
+        <span class="k">for</span> edge <span class="k">in</span> bm.edges:
+            edge.smooth = <span class="k">True</span>
+            <span class="k">if</span> len(edge.link_faces) == <span class="n">2</span>:
+                f0, f1 = edge.link_faces
+                limit = math.radians(
+                    <span class="n">25.0</span> <span class="k">if</span> f0.material_index == STONE_IDX <span class="k">else</span> <span class="n">35.0</span>
+                )
+                <span class="k">if</span> (f0.material_index != f1.material_index
+                        <span class="k">or</span> edge.calc_face_angle(<span class="n">0.0</span>) &gt; limit):
+                    edge.smooth = <span class="k">False</span>
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = <span class="k">False</span>
     <span class="k">finally</span>:
         bm.free()
+    paint_planks(me)
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     <span class="k">return</span> out
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every sill, diagonal, king, bearing and stretcher is its own shell, so
+    each gets one seeded tone and grain along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> sorted(shells(me), key=min):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
 
 
 <span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
@@ -903,6 +1049,136 @@ METAL_IDX = <span class="n">2</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
         nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each member (``GrainDir``), tone per member (``PlankTone``).
+
+    Copied from showcase/wheelbarrow (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> stone_material(name):
+    <span class="s">&quot;&quot;&quot;Sandstone: isotropic object-space mottling, fine speckle driving
+    roughness and a small bump. The first build&#x27;s pale noise mix rendered
+    the wheel chalk-white, a plastic disc rather than a quarried stone.
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mottle = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    mottle.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">7.0</span>
+    mottle.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">5.0</span>
+    mottle.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mottle.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.32</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.20</span>, <span class="n">0.16</span>, <span class="n">0.115</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.34</span>, <span class="n">0.28</span>, <span class="n">0.20</span>, <span class="n">1.0</span>)
+    nt.links.new(mottle.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    speck = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    speck.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">220.0</span>
+    speck.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], speck.inputs[<span class="s">&quot;Vector&quot;</span>])
+    grit = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    grit.data_type = <span class="s">&quot;RGBA&quot;</span>
+    grit.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(grit.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">0.35</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(grit.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(speck.outputs[<span class="s">&quot;Color&quot;</span>], _sock(grit.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(grit.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.80</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.96</span>
+    nt.links.new(speck.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.18</span>
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+    nt.links.new(speck.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> grindstone_materials():
+    <span class="s">&quot;&quot;&quot;(wood, stone, iron): shared by the check, the render and inspection.
+
+    Forged iron is dark and rusted. The first build&#x27;s metallic 1.0 at 0.38
+    roughness rendered hubs and shoes as black plastic.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;GrindstoneWood&quot;</span>)
+    stone = stone_material(<span class="s">&quot;GrindstoneStone&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;GrindstoneIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, stone, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, stone, metal):
@@ -983,24 +1259,39 @@ METAL_IDX = <span class="n">2</span>
 
 
 <span class="k">def</span> zfight_pairs(me):
-    data = [
-        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
-        <span class="k">for</span> p <span class="k">in</span> me.polygons
-    ]
-    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
-    count = <span class="n">0</span>
-    <span class="k">for</span> i <span class="k">in</span> range(len(data)):
-        ci, ni, vi = data[i]
-        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(data)):
-            cj, nj, vj = data[j]
-            <span class="k">if</span> (cj - ci).length_squared &gt; eps2:
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two quads on one flat face of
+    a chamfered box share no vertex and are coplanar by construction.
+    Z-fighting is two separate bodies landing on one plane. Combinatorics
+    and constants copied from showcase/hay-bale (do not import across
+    pieces); candidate pairs come from a KD-tree range query at
+    COPLANAR_CENTRE_MAX.
+    &quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
                 <span class="k">continue</span>
-            <span class="k">if</span> abs(ni.dot(nj)) &lt;= ZFIGHT_COS:
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
                 <span class="k">continue</span>
-            <span class="k">if</span> vi &amp; vj:
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
                 <span class="k">continue</span>
-            count += <span class="n">1</span>
-    <span class="k">return</span> count
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
 
 
 <span class="k">def</span> shells(me):
@@ -1071,6 +1362,17 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> best
 
 
+<span class="k">def</span> _trough_box(me, groups):
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]
+        <span class="k">if</span> abs(dx - TROUGH_L) &lt; <span class="n">0.08</span> <span class="k">and</span> dy &gt; <span class="n">0.08</span> <span class="k">and</span> a[<span class="n">2</span>] &lt; <span class="n">0.15</span>:
+            <span class="k">return</span> a
+    <span class="k">return</span> <span class="k">None</span>
+
+
 <span class="k">def</span> stone_audit(me):
     stone_pts = []
     groups = shells(me)
@@ -1088,15 +1390,7 @@ METAL_IDX = <span class="n">2</span>
     dia = max(max(xs) - min(xs), max(zs) - min(zs))
     thick = max(ys) - min(ys)
     zmin = min(zs)
-    tb = <span class="k">None</span>
-    <span class="k">for</span> g <span class="k">in</span> groups:
-        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
-            <span class="k">continue</span>
-        a = shell_aabb(me, g)
-        dx, dy = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]
-        <span class="k">if</span> abs(dx - TROUGH_L) &lt; <span class="n">0.08</span> <span class="k">and</span> dy &gt; <span class="n">0.08</span> <span class="k">and</span> a[<span class="n">2</span>] &lt; <span class="n">0.15</span>:
-            tb = a
-            <span class="k">break</span>
+    tb = _trough_box(me, groups)
     trough_z = tb[<span class="n">2</span>] <span class="k">if</span> tb <span class="k">else</span> trough_floor_z(me)
     trough_top = tb[<span class="n">5</span>] <span class="k">if</span> tb <span class="k">else</span> (TROUGH_Z0 + TROUGH_H)
     <span class="k">return</span> {
@@ -1106,6 +1400,28 @@ METAL_IDX = <span class="n">2</span>
         <span class="s">&quot;dip&quot;</span>: trough_top - zmin,
         <span class="s">&quot;trough_z&quot;</span>: trough_z,
     }
+
+
+<span class="k">def</span> trough_bearing(me):
+    <span class="s">&quot;&quot;&quot;How deep the trough&#x27;s floor bites each end stretcher.
+
+    Stretchers are the wood shells that cross the frame in Y and are
+    short in X and Z, read off the mesh and counted, so a dropped
+    stretcher cannot pass vacuously. A trough resting a few millimetres
+    above its bearers passes the sill seat and the dip band; this is the
+    budget that sees the slit.
+    &quot;&quot;&quot;</span>
+    groups = shells(me)
+    tb = _trough_box(me, groups)
+    bites = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> mat_of(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        <span class="k">if</span> dx &lt; <span class="n">0.06</span> <span class="k">and</span> dy &gt; <span class="n">1.5</span> * FRAME_Y <span class="k">and</span> dz &lt; <span class="n">0.05</span>:
+            bites.append(a[<span class="n">5</span>] - tb[<span class="n">2</span>] <span class="k">if</span> tb <span class="k">else</span> -<span class="n">1.0</span>)
+    <span class="k">return</span> bites
 
 
 <span class="k">def</span> crank_join(me):
@@ -1231,6 +1547,47 @@ METAL_IDX = <span class="n">2</span>
         bm_wood.free()
 
 
+<span class="k">def</span> right_angle_edges(me):
+    <span class="s">&quot;&quot;&quot;Manifold edges whose two faces meet at 90 degrees, iron and timber.
+
+    Every box and cylinder in the piece is chamfered, and a chamfer turns
+    a 90-degree edge into two shallower ones. An edge still at 90 is one a
+    bevel pass skipped: the razor edge that renders as a hard black line.
+    Copied from showcase/crate-stack (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    counts = {WOOD_IDX: <span class="n">0</span>, STONE_IDX: <span class="n">0</span>, METAL_IDX: <span class="n">0</span>}
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(e.calc_face_angle(<span class="n">0.0</span>) - math.pi / <span class="n">2.0</span>) &lt;= RIGHT_ANGLE_TOL:
+                idx = e.link_faces[<span class="n">0</span>].material_index
+                counts[idx] = counts.get(idx, <span class="n">0</span>) + <span class="n">1</span>
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> counts
+
+
+<span class="k">def</span> texel_audit(mesh, img):
+    <span class="s">&quot;&quot;&quot;Smallest UV cell, in baked texels along its longer side.
+
+    Copied from showcase/tavern-stool (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    res = min(img.size[<span class="n">0</span>], img.size[<span class="n">1</span>])
+    data = uv.data
+    worst = <span class="n">1e9</span>
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        us = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        vs = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        worst = min(worst, max(max(us) - min(us), max(vs) - min(vs)) * res)
+    <span class="k">return</span> worst
+
+
 <span class="k">def</span> add_stray_vert(me):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -1328,31 +1685,26 @@ METAL_IDX = <span class="n">2</span>
     )
 
 
+<span class="k">def</span> _no():
+    <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+
+
 <span class="k">def</span> check(
     skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>,
     float_crank=<span class="k">False</span>, no_dip=<span class="k">False</span>, short_legs=<span class="k">False</span>, float_legs=<span class="k">False</span>,
-    narrow_trough=<span class="k">False</span>,
+    narrow_trough=<span class="k">False</span>, flush_shoes=<span class="k">False</span>, low_stretchers=<span class="k">False</span>,
+    sharp_handle=<span class="k">False</span>, low_bake=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     flags = dict(
         float_crank=float_crank, no_dip=no_dip,
         short_legs=short_legs, float_legs=float_legs,
-        narrow_trough=narrow_trough,
+        narrow_trough=narrow_trough, flush_shoes=flush_shoes,
+        low_stretchers=low_stretchers, sharp_handle=sharp_handle,
     )
-    low = build_grindstone_mesh(<span class="s">&quot;GrindstoneLow&quot;</span>, <span class="n">0.004</span>, <span class="n">2</span>, **flags)
-    high = build_grindstone_mesh(<span class="s">&quot;GrindstoneHigh&quot;</span>, <span class="n">0.004</span>, <span class="n">4</span>, **flags)
-    wood = principled(
-        <span class="s">&quot;GrindstoneWood&quot;</span>, (<span class="n">0.38</span>, <span class="n">0.20</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.62</span>,
-        noise_scale=<span class="n">6.5</span>, wear=(<span class="n">0.22</span>, <span class="n">0.11</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
-    )
-    stone = principled(
-        <span class="s">&quot;GrindstoneStone&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.36</span>, <span class="n">0.30</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.92</span>,
-        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.28</span>, <span class="n">0.24</span>, <span class="n">0.18</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;GrindstoneIron&quot;</span>, (<span class="n">0.14</span>, <span class="n">0.145</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.38</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">1.0</span>),
-    )
+    low = build_grindstone_mesh(<span class="s">&quot;GrindstoneLow&quot;</span>, <span class="n">0.004</span>, <span class="n">1</span>, **flags)
+    high = build_grindstone_mesh(<span class="s">&quot;GrindstoneHigh&quot;</span>, <span class="n">0.004</span>, <span class="n">3</span>, **flags)
+    wood, stone, metal = grindstone_materials()
     assign_slots(low, wood, stone, metal)
     assign_slots(high, wood, stone, metal)
     <span class="k">if</span> stray_vert:
@@ -1364,7 +1716,7 @@ METAL_IDX = <span class="n">2</span>
         bpy.context.view_layer.update()
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;grindstone mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;grindstone mesh did not build&quot;</span>, <span class="n">3</span>),) + _no()
 
     base_tris = triangle_count(low.data)
     mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
@@ -1380,10 +1732,11 @@ METAL_IDX = <span class="n">2</span>
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
 
-    img, tex = setup_bake_image(low, stone)
+    img, tex = setup_bake_image(low, stone, LOW_BAKE_RES <span class="k">if</span> low_bake <span class="k">else</span> BAKE_RES)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;grindstone has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;grindstone has no UV layer&quot;</span>, <span class="n">3</span>),) + _no()
     bake_result = bake_normal(high, low)
+    texel = texel_audit(low.data, img)
 
     lod1 = make_lod(low, <span class="s">&quot;GrindstoneLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
     lod2 = make_lod(low, <span class="s">&quot;GrindstoneLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
@@ -1406,6 +1759,11 @@ METAL_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        <span class="k">try</span>:
+            os.remove(export_path)
+        <span class="k">except</span> OSError:
+            <span class="k">pass</span>
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1414,6 +1772,11 @@ METAL_IDX = <span class="n">2</span>
     cj = crank_join(low.data)
     sw = shoe_wood_gap(low.data)
     ts = trough_sill_gap(low.data)
+    bites = trough_bearing(low.data)
+    right_angles = right_angle_edges(low.data)
+    n_right_angles = sum(right_angles.values())
+    bite_lo = min(bites) <span class="k">if</span> bites <span class="k">else</span> -<span class="n">1.0</span>
+    bite_hi = max(bites) <span class="k">if</span> bites <span class="k">else</span> <span class="n">1e9</span>
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1430,7 +1793,8 @@ METAL_IDX = <span class="n">2</span>
     )
     print(
         <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bake_res=</span>{img.size[<span class="n">0</span>]}<span class="s"> texel_min=</span>{texel:<span class="s">.2f</span>}<span class="s">&quot;</span>
     )
     print(
         <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
@@ -1443,152 +1807,162 @@ METAL_IDX = <span class="n">2</span>
         <span class="s">f&quot;</span><span class="s">dip=</span>{st[<span class="s">&#x27;dip&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> trough_z=</span>{st[<span class="s">&#x27;trough_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">crank_join=</span>{cj:<span class="s">.5f</span>}<span class="s"> shoe_wood=</span>{sw:<span class="s">.5f</span>}<span class="s"> trough_sill=</span>{ts:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured trough_bearing=</span>{len(bites)}<span class="s"> stretchers </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bite=[</span>{bite_lo:<span class="s">.5f</span>}<span class="s">,</span>{bite_hi:<span class="s">.5f</span>}<span class="s">] right_angle_edges=</span>{right_angles}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>,
-            <span class="n">4</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>,
+        ),) + _no()
     <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct_mats != MATERIAL_COUNT:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> idx_counts.get(STONE_IDX, <span class="n">0</span>) &lt; STONE_FACES_MIN:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">stone faces </span>{idx_counts.get(STONE_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{STONE_FACES_MIN}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">stone faces </span>{idx_counts.get(STONE_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{STONE_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>,
-            <span class="n">6</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>,
+        ),) + _no()
     <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>,
-            <span class="n">7</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + _no()
     <span class="k">if</span> (
         abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL
     ):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>,
-            <span class="n">8</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>,
+        ),) + _no()
     <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
             <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>,
             <span class="n">9</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>,
-            <span class="n">9</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>,
+        ),) + _no()
     <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>,
-            <span class="n">11</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + _no()
     <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>,
-            <span class="n">12</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>,
+        ),) + _no()
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + _no()
     <span class="k">if</span> (
         hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>]
         <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
     ):
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--stray-vert and --flush-shoes are the designed fails)&quot;</span>,
             <span class="n">15</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
             <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
             <span class="n">16</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> sup[<span class="s">&quot;shoes&quot;</span>] &lt; <span class="n">4</span> <span class="k">or</span> sup[<span class="s">&quot;shoe_z&quot;</span>] &gt; SHOE_Z_MAX:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">shoe supports </span>{sup[<span class="s">&#x27;shoes&#x27;</span>]}<span class="s"> shoe_z=</span>{sup[<span class="s">&#x27;shoe_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--short-legs is the designed fail)&quot;</span>,
             <span class="n">16</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> cj &gt; CRANK_JOIN:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">crank-axle gap </span>{cj:<span class="s">.5f</span>}<span class="s"> &gt; </span>{CRANK_JOIN}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--float-crank is the designed fail)&quot;</span>,
             <span class="n">17</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> sw &gt; SHOE_JOIN:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">shoe-wood gap </span>{sw:<span class="s">.5f</span>}<span class="s"> &gt; </span>{SHOE_JOIN}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--float-legs is the designed fail)&quot;</span>,
             <span class="n">17</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> ts &gt; TROUGH_SILL_JOIN:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">trough-sill gap </span>{ts:<span class="s">.5f</span>}<span class="s"> &gt; </span>{TROUGH_SILL_JOIN}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--narrow-trough is the designed fail)&quot;</span>,
             <span class="n">18</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> <span class="k">not</span> (DIP_MIN &lt;= st[<span class="s">&quot;dip&quot;</span>] &lt;= DIP_MAX):
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">stone dip </span>{st[<span class="s">&#x27;dip&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> not in [</span>{DIP_MIN}<span class="s">, </span>{DIP_MAX}<span class="s">] </span><span class="s">&quot;</span>
             <span class="s">&quot;(--no-dip is the designed fail)&quot;</span>,
             <span class="n">18</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> st[<span class="s">&quot;trough_z&quot;</span>] &lt; TROUGH_FLOOR_Z_MIN:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">trough floor zmin </span>{st[<span class="s">&#x27;trough_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{TROUGH_FLOOR_Z_MIN}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(tub must sit on the frame, not the dirt)&quot;</span>,
             <span class="n">18</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
+    <span class="k">if</span> len(bites) != <span class="n">2</span> <span class="k">or</span> bite_lo &lt; TROUGH_BITE_MIN <span class="k">or</span> bite_hi &gt; TROUGH_BITE_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">trough bearing: </span>{len(bites)}<span class="s"> stretchers, bite </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{bite_lo:<span class="s">.5f</span>}<span class="s">, </span>{bite_hi:<span class="s">.5f</span>}<span class="s">] outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{TROUGH_BITE_MIN}<span class="s">, </span>{TROUGH_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--low-stretchers is the designed fail: the tub hovers over &quot;</span>
+            <span class="s">&quot;its bearers)&quot;</span>,
+            <span class="n">18</span>,
+        ),) + _no()
     <span class="k">if</span> abs(st[<span class="s">&quot;dia&quot;</span>] - STONE_DIA) &gt; STONE_DIA_TOL:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">stone diameter </span>{st[<span class="s">&#x27;dia&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{STONE_DIA}<span class="s">&quot;</span>,
-            <span class="n">19</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">stone diameter </span>{st[<span class="s">&#x27;dia&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{STONE_DIA}<span class="s">&quot;</span>, <span class="n">19</span>),) + _no()
     <span class="k">if</span> abs(st[<span class="s">&quot;thick&quot;</span>] - STONE_T) &gt; STONE_T_TOL:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">stone thickness </span>{st[<span class="s">&#x27;thick&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{STONE_T}<span class="s">&quot;</span>,
-            <span class="n">19</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">stone thickness </span>{st[<span class="s">&#x27;thick&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{STONE_T}<span class="s">&quot;</span>, <span class="n">19</span>),) + _no()
+    <span class="k">if</span> n_right_angles &gt; RIGHT_ANGLE_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">right-angle edges </span>{right_angles}<span class="s"> &gt; </span>{RIGHT_ANGLE_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--sharp-handle is the designed fail: the crank handle left &quot;</span>
+            <span class="s">&quot;unchamfered)&quot;</span>,
+            <span class="n">20</span>,
+        ),) + _no()
+    <span class="k">if</span> texel &lt; TEXEL_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake texel density </span>{texel:<span class="s">.2f</span>}<span class="s"> px per UV cell &lt; </span>{TEXEL_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--low-bake is the designed fail)&quot;</span>,
+            <span class="n">21</span>,
+        ),) + _no()
     <span class="k">return</span> <span class="n">0</span>, low, high, stone, tex, collider
 
 
 <span class="k">def</span> wire_normal(mat, tex):
+    <span class="s">&quot;&quot;&quot;Chain the baked normal map under the stone&#x27;s bump, not over it.&quot;&quot;&quot;</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
     nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
     nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
-    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    bump = next((n <span class="k">for</span> n <span class="k">in</span> nt.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;ShaderNodeBump&quot;</span>), <span class="k">None</span>)
+    <span class="k">if</span> bump <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bump.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">else</span>:
+        nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
 
 
-<span class="k">def</span> render_still(low, wood, tex, path, engine):
+<span class="k">def</span> render_still(low, hero_mat, tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(wood, tex)
+    wire_normal(hero_mat, tex)
     <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
         <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
             ob.hide_render = <span class="k">True</span>
@@ -1600,7 +1974,7 @@ METAL_IDX = <span class="n">2</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1695,6 +2069,10 @@ METAL_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--narrow-trough&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--flush-shoes&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--low-stretchers&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--sharp-handle&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--low-bake&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, hero_mat, tex, _col = check(
@@ -1706,6 +2084,10 @@ METAL_IDX = <span class="n">2</span>
         short_legs=args.short_legs,
         float_legs=args.float_legs,
         narrow_trough=args.narrow_trough,
+        flush_shoes=args.flush_shoes,
+        low_stretchers=args.low_stretchers,
+        sharp_handle=args.sharp_handle,
+        low_bake=args.low_bake,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1730,7 +2112,7 @@ METAL_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/grindstone-hero.webp" alt="A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle." />
+    <img src="../assets/grindstone-hero.webp" alt="A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes." />
   </dialog>
   <footer>
     <div class="statusbar">

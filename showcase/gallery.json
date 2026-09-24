@@ -140,9 +140,9 @@
     {
       "name": "cart",
       "dir": "showcase/cart",
-      "teaches": "A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor.",
-      "witnessesFix": "Recomputed: 2856 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 154 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres grounded, tyre seat depth in band over 48 angular stations, the two wheels mirrored within 5e-5 m, grounded zmin, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --sink-tyre exits 18 on the tyre seat band; --float-wheel exits 16 on the named-support budget; --skew-wheel exits 19 on the wheel mirror; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
+      "teaches": "A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar.",
+      "witnessesFix": "Recomputed: 5284 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.580×0.842×0.640 m, LOD ratios in band, convex collider 192 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres and both prop legs grounded, two wall boards per side with 3 mm seams, tyre seat depth in band over 48 angular stations, every shell in one BVH-contact assembly, the two wheels mirrored within 5e-5 m, no unchamfered right-angle edge, 17.45 bake texels per UV cell, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --float-wheel and --short-props exit 16 on the named-support budget; --wide-seams exits 17 on the board seams; --sink-tyre exits 18 on the tyre seat band; --lift-bed exits 18 on the one-assembly budget; --skew-wheel exits 19 on the wheel mirror; --sharp-bar exits 20 on edge treatment; --low-bake exits 21 on texel density; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
       "hero": "docs/gallery/assets/cart-hero.webp",
       "preview": "showcase/cart/preview.webp",
       "tags": [
@@ -221,8 +221,8 @@
       "name": "grindstone",
       "dir": "showcase/grindstone",
       "teaches": "A procedural grindstone on a timber trestle through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A round grey grindstone with a crank handle, mounted in a wooden A-frame trestle.",
-      "witnessesFix": "Recomputed: 928 tris, three materials with 216 wood / 160 stone / 180 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.710×0.419×0.610 m, zmin 0, hygiene 0, four shoes planted, trough seated in the sills, stone dip 26 mm, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 198 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert exits 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough exit 18 on seat.",
+      "alt": "A sandstone grindstone wheel with an iron crank, turning in a chamfered timber A-frame over an open trough, its sills capped by iron shoes.",
+      "witnessesFix": "Recomputed: 1668 tris, three materials with 400 wood / 240 stone / 364 metal faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.722×0.419×0.610 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four shoes planted, trough seated in the sills and biting both stretchers 4 mm, stone dip 24 mm, no unchamfered right-angle edge, 29.44 bake texels per UV cell, LOD ratios in band, convex collider 304 tris, non-empty glTF. --skip-decimate exits 9 on LOD1; --stray-vert / --flush-shoes exit 15 on hygiene; --lift-z / --short-legs exit 16 on grounded; --float-crank / --float-legs exit 17 on joint fit; --no-dip / --narrow-trough / --low-stretchers exit 18 on seat; --sharp-handle exits 20 on edge treatment; --low-bake exits 21 on texel density.",
       "hero": "docs/gallery/assets/grindstone-hero.webp",
       "preview": "showcase/grindstone/preview.webp",
       "tags": [

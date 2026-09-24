@@ -46,6 +46,13 @@ verts into a swirl. The broken state is in-frame by design: the right fan
 (`Specular IOR Level = 0`) so the flat color data carries no specular line,
 per `docs/VISUAL-STYLE.md`.
 
+The staging is render-only and does not touch the checked mesh. The two
+stands are 2.72 m apart so their canopies read as two objects; at 2.30 m the
+petal tips met at the centre of the frame. Each stand's wooden stick runs from
+just below the floor into the hub it carries, both ends derived from the
+stand's tilt. The old dark steel stick stopped 0.6 m short of the hub, under
+the canopy, and disappeared into the stage.
+
 ## Run
 
 ```bash

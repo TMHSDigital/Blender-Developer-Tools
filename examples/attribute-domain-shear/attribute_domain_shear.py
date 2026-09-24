@@ -216,26 +216,37 @@ def make_material(name, rgb, rough=0.45, metallic=0.35, emit=None, estr=0.0):
     return mat
 
 
+STAND_TILT = math.radians(12)
+STEM_BURY = 0.02
+
+
 def _pinwheel_obj(sc, name, me, loc, rot_z):
     ob = bpy.data.objects.new(name, me)
     ob.location = loc
-    ob.rotation_euler = (math.radians(12), 0.0, rot_z)
+    ob.rotation_euler = (STAND_TILT, 0.0, rot_z)
     sc.collection.objects.link(ob)
-    # stem + hub cap: a garden pinwheel on a stick, not a floating disc
+    # stem + hub cap: a garden pinwheel on a stick, not a floating disc. The
+    # stick runs from just under the floor to the hub it carries, both ends
+    # derived from the stand's own tilt; it used to stop 0.6 below the hub,
+    # hidden under the canopy, holding nothing.
+    stem_lo = -(loc[2] / math.cos(STAND_TILT)) - STEM_BURY
+    stem_hi = HUB_Z
     stem_me = bpy.data.meshes.new(name + "Stem")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_cone(bm, cap_ends=True, segments=10, radius1=0.05,
-                              radius2=0.06, depth=1.35)
-        bmesh.ops.translate(bm, vec=(0.0, 0.0, -0.72), verts=bm.verts)
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=10, radius1=0.045,
+                              radius2=0.035, depth=stem_hi - stem_lo)
+        bmesh.ops.translate(bm, vec=(0.0, 0.0, 0.5 * (stem_lo + stem_hi)),
+                            verts=bm.verts)
         bm.to_mesh(stem_me)
     finally:
         bm.free()
-    stem_me.materials.append(make_material("StemMetal", (0.16, 0.17, 0.18),
-                                           rough=0.4, metallic=0.8))
+    # a painted wooden dowel: near-black steel vanished into the dark stage
+    stem_me.materials.append(make_material("StemDowel", (0.46, 0.30, 0.16),
+                                           rough=0.55, metallic=0.0))
     stem = bpy.data.objects.new(name + "Stem", stem_me)
     stem.location = loc
-    stem.rotation_euler = (math.radians(12), 0.0, rot_z)
+    stem.rotation_euler = (STAND_TILT, 0.0, rot_z)
     sc.collection.objects.link(stem)
     cap_me = bpy.data.meshes.new(name + "Cap")
     bm = bmesh.new()
@@ -249,7 +260,7 @@ def _pinwheel_obj(sc, name, me, loc, rot_z):
                                           rough=0.35, metallic=0.85))
     cap = bpy.data.objects.new(name + "Cap", cap_me)
     cap.location = loc
-    cap.rotation_euler = (math.radians(12), 0.0, rot_z)
+    cap.rotation_euler = (STAND_TILT, 0.0, rot_z)
     sc.collection.objects.link(cap)
     return ob
 
@@ -308,6 +319,9 @@ def build_studio(sc):
     return floor, wall
 
 
+PAIR_X = 1.36
+
+
 def render_still(path, engine):
     """Dual pinwheel: CORNER (crisp petals to the hub) vs naive POINT (last
     write smears the shared hub + ring verts). Colors come from the same
@@ -319,20 +333,22 @@ def render_still(path, engine):
     me_c = build_fan()
     assign_corner(me_c, pal)
     me_c.materials.append(make_attr_material("MatCorner", ATTR_C))
-    left = _pinwheel_obj(sc, "Corner", me_c, (-1.15, 0.0, 1.35), math.radians(-8))
+    # Spread so the two canopies read as two objects: at +/-1.15 their
+    # tips met at x=0 and the pair read as one shape.
+    left = _pinwheel_obj(sc, "Corner", me_c, (-PAIR_X, 0.0, 1.35), math.radians(-8))
 
     me_p = build_fan()
     assign_point_naive(me_p, pal)
     me_p.materials.append(make_attr_material("MatPoint", ATTR_P))
-    right = _pinwheel_obj(sc, "Point", me_p, (1.15, 0.0, 1.35), math.radians(8))
+    right = _pinwheel_obj(sc, "Point", me_p, (PAIR_X, 0.0, 1.35), math.radians(8))
 
-    p_corner = placard(sc, "CORNER", (-1.15, -1.05, 0.02), size=0.13)
-    p_point = placard(sc, "POINT — last write wins", (1.15, -1.05, 0.02), size=0.10)
+    p_corner = placard(sc, "CORNER", (-PAIR_X, -1.05, 0.02), size=0.13)
+    p_point = placard(sc, "POINT — last write wins", (PAIR_X, -1.05, 0.02), size=0.10)
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 48.0
+    cam_data.lens = 44.0
     cam = bpy.data.objects.new("Cam", cam_data)
     cam.location = (0.0, -6.4, 4.6)
     sc.collection.objects.link(cam)

@@ -584,6 +584,51 @@ entry in `showcase/gallery.json`, and a rendered still.
   as a single casting. Drive a per-shell tone (`PlankTone`) and, for
   wood, grain along each shell's long axis (`GrainDir`) from face
   attributes, seeded so the render is the same every run.
+- **One connected assembly (exit 18, file-local).** Every joint in a
+  piece is a bite, so joined members' surfaces cross. Build a BVH per
+  shell, union the shells whose trees overlap, and assert **one**
+  component. Per-part budgets pass a box resting a hair above its rails,
+  because every plank still touches a wall. The contact graph shows the
+  box as a second component. `cart`'s `--lift-bed` raises planks, walls
+  and straps 7 mm and splits the graph in two.
+- **A z-fight budget matches planes, not centres (exit 15).** A test that
+  counts only faces whose centres coincide within 0.1 mm never fires on a
+  real overlap. `grindstone` reported 0 for a whole release while its iron
+  shoes, exactly as wide as the sill and flush with its end, shared three
+  planes with every sill (a lit slit in each foot close-up). Use the
+  cross-shell coplanar budget above, with a KD-tree range query at
+  `COPLANAR_CENTRE_MAX` so it stays linear on a 5k-triangle piece. A shoe,
+  cap or ferrule is a cup a named reveal proud of its host on every side;
+  `--flush-shoes` restores the flush shoe.
+- **Braces that meet tenon into the host's faces (exit 15).** Two
+  diagonals run to the same centre line meet at one apex. Their chamfered
+  end faces then land on each other inside the host: 6 coplanar pairs on
+  `grindstone`, hidden in the bearing block. End each one a named bite
+  inside the king post's face.
+- **Carried parts bite their bearers (exit 18).** A tub, bed or shelf
+  asserts how deep it bites each member that carries it, as a band, with
+  the bearers counted. Stretchers left at sill height stopped 6 mm under
+  `grindstone`'s trough, a dark slit that the sill seat and the dip band
+  both passed. `--low-stretchers` restores them.
+- **Chamfer n-gon caps, then triangulate.** A triangle-fan cap on a
+  lathe, chamfered 5 mm at its rim, folded its centre out through the cap:
+  8 non-manifold edges per nave on `cart`. An L-strap cap pre-split on its
+  inner-corner diagonal left 24 per strap once the reflex corner was
+  chamfered. Build caps as single n-gons, run the bevel passes, then
+  `bmesh.ops.triangulate` every face over four corners, so the shipped
+  mesh still has no n-gon.
+- **The bake cage is narrower than the nearest neighbour.** `cage_extrusion`
+  only has to cover the difference between high and low, under 2 mm for
+  a chamfer. At 0.08 m, `cart`'s cage reached past the 74 mm between a
+  side wall and its wheel. Rays from the wall hit the high-poly felloe,
+  and the rim baked onto the board as a black staircase that no budget
+  measures. Raising the bake resolution made it sharper, not smaller.
+  Start from 0.01 m and look at the hero.
+- **Aim an edge falsifier at one member.** Skipping a whole chamfer pass
+  moves the triangle count by hundreds: `cart`'s whole-iron skip dropped
+  1200 and exited 4 on the triangle floor. Leave one small member square
+  instead (`--sharp-bar`, `--sharp-handle`, 20–24 right-angle edges and
+  about 48 triangles), so only the edge budget can see it.
 - **Rendered still and gallery entry.** Showcase pieces are visual by
   definition. The pathology / sidecar exemption does not apply. Call
   `examples/gallery_framing.check_framing` on the `--output` path only.

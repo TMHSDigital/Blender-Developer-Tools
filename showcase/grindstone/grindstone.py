@@ -9,18 +9,25 @@ glTF export.
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. ``--stray-vert`` adds a
-loose vertex so the mesh-hygiene budget fails. ``--lift-z`` raises the
-mesh so the grounded-zmin budget fails. ``--float-crank`` offsets the
-crank from the axle so joint-fit fails. ``--no-dip`` raises the stone
-clear of the trough so the seat-conformance dip band fails.
-``--short-legs`` raises the iron shoes and plants a dummy so the named
-support budget fails while AABB zmin still passes. ``--float-legs``
-lifts the A-frame timber off the shoes so the shoe-wood join fails.
-``--narrow-trough`` shrinks the tub so it no longer seats in the sills.
+loose vertex so the mesh-hygiene budget fails. ``--flush-shoes`` sizes
+the iron shoes to the sill so their faces share its planes and the
+coplanar budget fails. ``--lift-z`` raises the mesh so the
+grounded-zmin budget fails. ``--short-legs`` raises the iron shoes and
+plants a dummy so the named support budget fails while AABB zmin still
+passes. ``--float-crank`` offsets the crank from the axle so joint-fit
+fails. ``--float-legs`` lifts the A-frame timber off the shoes so the
+shoe-wood join fails. ``--narrow-trough`` shrinks the tub so it no
+longer seats in the sills. ``--no-dip`` raises the stone clear of the
+trough so the seat-conformance dip band fails. ``--low-stretchers``
+drops the end stretchers under the trough so it no longer bears on
+them. ``--sharp-handle`` leaves the crank handle unchamfered so the
+edge-treatment budget fails. ``--low-bake`` bakes at 256 px so the
+texel-density budget fails.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+Seeded, not random: per-member tone uses ``random.Random(TONE_SEED)``.
+Construction is closed-form. DECIMATE COLLAPSE triangle counts are not
+byte-identical across Blender versions — the LOD gate is a ratio band,
+not an exact count.
 
     blender --background --python grindstone.py --
     blender --background --python grindstone.py -- --skip-decimate
@@ -29,6 +36,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -37,6 +45,7 @@ import bmesh
 import bpy
 from mathutils import Euler, Vector
 from mathutils.bvhtree import BVHTree
+from mathutils.kdtree import KDTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -47,7 +56,10 @@ import gallery_framing  # noqa: E402
 
 STONE_R = 0.250
 STONE_T = 0.095
-STONE_SEGS = 32
+# 32 flat-shaded segments read as a polygon in the front orthographic and
+# threw one highlight per facet across the tread. 48 smooth segments with
+# hard chamfer rings read as a turned wheel.
+STONE_SEGS = 48
 CHAMFER = 0.012
 TROUGH_H = 0.080
 TROUGH_WALL = 0.018
@@ -62,7 +74,13 @@ LEG_XY = (0.044, 0.044)
 # tenon *into* the frame. Matching Y-thickness puts coplanar faces
 # on the camera side and reads as a black hole in the timber.
 SILL_Y = 0.070
+KING_X = 0.052
 KING_Y = 0.054
+# Each diagonal tenons into the king post's face by a named bite. Run to
+# the king's centre line, the pair met at one apex and their chamfered
+# end faces landed on each other inside the bearing: 6 coplanar pairs.
+DIAG_BITE = 0.012
+SILL_END = LEG_SPREAD + 0.035
 # Seat the tub into the sill inner faces. Deriving from LEG_XY left a
 # daylight slot once the sill was fattened to nest the diagonals.
 TROUGH_SEAT = 0.012
@@ -74,15 +92,39 @@ AXLE_OVER = 0.055
 CRANK_ARM = 0.13
 HANDLE_L = 0.11
 SHOE_H = 0.024
-SHOE_XY = (0.070, 0.070)
+# An iron shoe is a cup round the sill's end, a named reveal proud of it
+# on every side. The first build made it exactly as wide as the sill and
+# flush with its end, so the two shared three planes per foot: a lit slit
+# in every foot close-up, which a centre-coincidence z-fight test missed.
+SHOE_REVEAL = 0.006
+SHOE_CUP = 0.064
+# The end stretchers carry the trough: their top is the trough's bottom
+# plus a named bite. At sill height they stopped 6 mm short, a dark slit
+# under the tub. Stationed inboard of the shoes, so a stretcher is never
+# the wood a shoe measures against.
+STRETCH_W = 0.038
+STRETCH_H = 0.035
+STRETCH_CLEAR = 0.010
+TROUGH_BITE = 0.004
+TROUGH_BITE_MIN = 0.002
+TROUGH_BITE_MAX = 0.008
+IRON_BEVEL = 0.0012
+BEVEL_MIN_ANGLE = math.radians(50.0)
+PLANK_TONE_JITTER = 0.26
+TONE_SEED = 43
+WOOD_GRAIN_SCALE = 30.0
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (0.710, 0.419, 0.610)
+# Shoes one reveal past the sill ends (X); the crank handle (Y); the
+# stone's crown (Z). X was 0.710 with flush shoes.
+OUTER_SIZE = (0.722, 0.419, 0.610)
 STONE_DIA = 2.0 * STONE_R
 STONE_DIA_TOL = 0.02
 STONE_T_TOL = 0.015
-BASE_TRIS_MIN = 700
-BASE_TRIS_MAX = 1000
+# Re-fitted for the rebuild (928 -> 1668: chamfers on every member, a
+# 48-segment stone). Centred on the measurement.
+BASE_TRIS_MIN = 1560
+BASE_TRIS_MAX = 1780
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -92,17 +134,32 @@ LOD2_TARGET = 0.22
 MATERIAL_COUNT = 3
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
-COLLIDER_TRIS_MAX = 240
-BAKE_RES = 256
-CAGE_EXTRUSION = 0.08
-METAL_FACES_MIN = 80
-WOOD_FACES_MIN = 80
-STONE_FACES_MIN = 80
+# Re-fitted: the 48-segment stone adds hull vertices (198 -> 304).
+COLLIDER_TRIS_MAX = 320
+# One UV cell per face; 256 px left each cell under 12 texels, so the
+# bilinear lookup read neighbouring cells' normals (tavern-stool's defect).
+BAKE_RES = 1024
+LOW_BAKE_RES = 256
+TEXEL_MIN = 12.0
+# The cage covers the chamfer difference between high and low (under
+# 2 mm); a wide one reaches the next part and bakes its surface instead.
+CAGE_EXTRUSION = 0.01
+# About 70% of each measured count; the first build's 80 apiece let most
+# of a material's faces go missing unseen.
+METAL_FACES_MIN = 260
+WOOD_FACES_MIN = 280
+STONE_FACES_MIN = 190
 ZMIN_EPS = 1e-4
 DOUBLES_EPS = 1e-5
 AREA_EPS = 1e-10
-ZFIGHT_EPS = 1e-4
-ZFIGHT_COS = 0.999
+# Z-fighting: two separate bodies landing on one plane. Cross-shell, with
+# hay-bale's constants (copied, not imported). The first build matched
+# only faces whose centres fell within 0.1 mm of each other, which no
+# real shoe-on-sill overlap ever does.
+COPLANAR_NORMAL_EPS = 1e-4
+COPLANAR_PLANE_EPS = 1e-4
+COPLANAR_CENTRE_MAX = 0.05
+ZFIGHT_PAIRS_MAX = 0
 LIFT_Z = 0.05
 CRANK_JOIN = 0.008
 SHOE_JOIN = 0.008
@@ -111,6 +168,10 @@ DIP_MIN = 0.015
 DIP_MAX = 0.045
 SHOE_Z_MAX = 1e-3
 TROUGH_FLOOR_Z_MIN = 0.040
+# Edge treatment: every timber and iron edge is chamfered, so a manifold
+# edge still within RIGHT_ANGLE_TOL of 90 degrees is a skipped bevel.
+RIGHT_ANGLE_TOL = math.radians(5.0)
+RIGHT_ANGLE_MAX = 0
 
 WOOD_IDX = 0
 STONE_IDX = 1
@@ -163,6 +224,13 @@ def add_box(bm, loc, scale, mat_idx, euler=(0.0, 0.0, 0.0)):
     return verts
 
 
+def add_span(bm, lo, hi, mat_idx):
+    """Axis-aligned box from its min corner to its max corner."""
+    lo = Vector(lo)
+    hi = Vector(hi)
+    return add_box(bm, (lo + hi) * 0.5, hi - lo, mat_idx)
+
+
 def add_oriented_box(bm, a, b, scale_xy, mat_idx):
     a = Vector(a)
     b = Vector(b)
@@ -182,10 +250,12 @@ def add_oriented_box(bm, a, b, scale_xy, mat_idx):
 
 
 def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
+    """Cylinder with n-gon caps; ``finish_caps`` triangulates them after the
+    chamfer pass, which folds a chamfered triangle-fan cap inside out."""
     geo = bmesh.ops.create_cone(
         bm,
         cap_ends=True,
-        cap_tris=True,
+        cap_tris=False,
         segments=segments,
         radius1=radius,
         radius2=radius,
@@ -200,6 +270,15 @@ def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
     for f in faces:
         f.material_index = mat_idx
     return verts
+
+
+def finish_caps(bm):
+    """Triangulate every face with more than four corners."""
+    ngons = [f for f in bm.faces if len(f.verts) > 4]
+    if ngons:
+        bmesh.ops.triangulate(
+            bm, faces=ngons, quad_method="BEAUTY", ngon_method="BEAUTY",
+        )
 
 
 def add_basin(bm, loc, size, wall, mat_idx):
@@ -327,7 +406,8 @@ def pack_uvs(bm, margin=0.08):
 def build_grindstone_mesh(
     name, bevel_offset, bevel_segments,
     float_crank=False, no_dip=False, short_legs=False, float_legs=False,
-    narrow_trough=False,
+    narrow_trough=False, flush_shoes=False, low_stretchers=False,
+    sharp_handle=False,
 ):
     bm = bmesh.new()
     try:
@@ -346,22 +426,20 @@ def build_grindstone_mesh(
         shoe_z = 0.05 if short_legs else 0.0
         bearing_h = 0.090
         bearing_xz = (0.078, bearing_h)
-        king_xy = (0.052, KING_Y)
-        # Diagonals *are* the legs. A tall stump beside an angled timber
-        # paints a see-through triangle on the stump face. Bury a short
-        # tenon in the shoe (never proud of the iron) and start the
-        # diagonal on the shoe top so the angled end-cap cannot pierce
-        # Z=0.
-        tenon_z = shoe_z + SHOE_H * 0.50
+        king_xy = (KING_X, KING_Y)
+        # Diagonals *are* the legs, and they start in the sill above the
+        # shoe so the angled end-cap cannot pierce Z=0. The first build
+        # also buried a short tenon box in each shoe, wholly hidden inside
+        # sill and iron: triangles nobody could see.
         diag_z = shoe_z + SHOE_H + 0.008
         if float_legs:
-            tenon_z = shoe_z + SHOE_H + 0.070
             diag_z = shoe_z + SHOE_H + 0.070
         sill_h = 0.050
         sill_bottom = (
             shoe_z + SHOE_H + 0.055 if float_legs else shoe_z + SHOE_H * 0.40
         )
         sill_z = sill_bottom + sill_h / 2.0
+        reveal = 0.0 if flush_shoes else SHOE_REVEAL
 
         for y in (-FRAME_Y, FRAME_Y):
             # King post fills the A-crotch so the bearing is not a cube
@@ -383,57 +461,52 @@ def build_grindstone_mesh(
                     WOOD_IDX,
                 )
             )
-            # Tie beam sits on the shoes and occupies the A-foot.
+            # Tie beam sits in the shoes and occupies the A-foot.
             wood.extend(
-                add_box(
+                add_span(
                     bm,
-                    (0.0, y, sill_z),
-                    (LEG_SPREAD * 2.0 + SHOE_XY[0], SILL_Y, sill_h),
+                    (-SILL_END, y - SILL_Y / 2.0, sill_bottom),
+                    (SILL_END, y + SILL_Y / 2.0, sill_bottom + sill_h),
                     WOOD_IDX,
                 )
             )
-            for x in (-LEG_SPREAD, LEG_SPREAD):
-                if not float_legs:
-                    wood.extend(
-                        add_box(
-                            bm,
-                            (x, y, tenon_z),
-                            (LEG_XY[0] * 0.92, LEG_XY[1] * 0.92, SHOE_H * 0.90),
-                            WOOD_IDX,
-                        )
-                    )
+            for s in (-1.0, 1.0):
                 wood.extend(
                     add_oriented_box(
                         bm,
-                        (x, y, diag_z),
-                        (0.0, y, axle_z - 0.010),
+                        (s * LEG_SPREAD, y, diag_z),
+                        (s * (KING_X / 2.0 - DIAG_BITE), y, axle_z - 0.010),
                         LEG_XY,
                         WOOD_IDX,
                     )
                 )
+                x_in, x_out = SILL_END - SHOE_CUP, SILL_END + reveal
                 metal.extend(
-                    add_box(
+                    add_span(
                         bm,
-                        (x, y, shoe_z + SHOE_H / 2.0),
-                        (SHOE_XY[0], SHOE_XY[1], SHOE_H),
+                        (min(s * x_in, s * x_out), y - SILL_Y / 2.0 - reveal, shoe_z),
+                        (max(s * x_in, s * x_out), y + SILL_Y / 2.0 + reveal,
+                         shoe_z + SHOE_H),
                         METAL_IDX,
                     )
                 )
 
-        for x in (-LEG_SPREAD, LEG_SPREAD):
-            # End stretchers tenon through both sills at sill height.
-            # A higher independent Z left them floating as extra cubes.
+        # End stretchers tenon through both sills and carry the trough.
+        stretch_top = TROUGH_Z0 + TROUGH_BITE
+        if low_stretchers:
+            stretch_top = sill_z + sill_h * 0.35
+        stretch_x = SILL_END - SHOE_CUP - STRETCH_CLEAR - STRETCH_W / 2.0
+        for s in (-1.0, 1.0):
             wood.extend(
-                add_box(
+                add_span(
                     bm,
-                    (x, 0.0, sill_z),
-                    (0.038, FRAME_Y * 2.0, sill_h * 0.70),
+                    (s * stretch_x - STRETCH_W / 2.0, -FRAME_Y, stretch_top - STRETCH_H),
+                    (s * stretch_x + STRETCH_W / 2.0, FRAME_Y, stretch_top),
                     WOOD_IDX,
                 )
             )
 
         tw = TROUGH_W * (0.58 if narrow_trough else 1.0)
-        chamfer = []
         basin_verts = add_basin(
             bm,
             (0.0, 0.0, tub_z0 + TROUGH_H / 2.0),
@@ -441,9 +514,9 @@ def build_grindstone_mesh(
             TROUGH_WALL,
             WOOD_IDX,
         )
-        chamfer.extend(basin_verts)
+        wood.extend(basin_verts)
 
-        chamfer.extend(
+        handle = set(
             add_cyl(
                 bm,
                 (0.0, crank_y + HANDLE_L * 0.15, axle_z + CRANK_ARM),
@@ -454,7 +527,7 @@ def build_grindstone_mesh(
                 euler=(math.pi / 2.0, 0.0, 0.0),
             )
         )
-        wood.extend(chamfer)
+        wood.extend(handle)
 
         add_stone(bm, (0.0, 0.0), axle_z)
 
@@ -519,42 +592,108 @@ def build_grindstone_mesh(
             v.co.x -= cx
             v.co.y -= cy
 
+        bm.edges.index_update()
+
+        def sharp(edge, idx):
+            if len(edge.link_faces) != 2:
+                return False
+            if any(f.material_index != idx for f in edge.link_faces):
+                return False
+            # --sharp-handle leaves the crank handle's rims square: a few
+            # dozen triangles short, inside the triangle band, so only
+            # the edge budget can see it.
+            if sharp_handle and all(v in handle for v in edge.verts):
+                return False
+            return edge.calc_face_angle(0.0) > BEVEL_MIN_ANGLE
+
         if bevel_offset > 0.0:
-            edges = []
-            trough_verts = set(basin_verts)
-            for e in {e for v in trough_verts for e in v.link_edges}:
-                if min(v.co.z for v in e.verts) < tub_z0 - 0.002:
-                    continue
-                if any(f.material_index != WOOD_IDX for f in e.link_faces):
-                    continue
-                edges.append(e)
-            if edges:
-                ret = bmesh.ops.bevel(
-                    bm,
-                    geom=edges,
-                    offset=bevel_offset,
-                    segments=bevel_segments,
-                    profile=0.5,
-                    affect="EDGES",
-                    clamp_overlap=True,
-                )
-                for f in ret.get("faces") or []:
-                    f.material_index = WOOD_IDX
+            edges = sorted(
+                (e for e in bm.edges if sharp(e, WOOD_IDX)), key=lambda e: e.index
+            )
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=bevel_offset, segments=bevel_segments,
+                profile=0.5, affect="EDGES", clamp_overlap=True, material=WOOD_IDX,
+            )
+            bm.edges.index_update()
+            edges = sorted(
+                (e for e in bm.edges if sharp(e, METAL_IDX)), key=lambda e: e.index
+            )
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=IRON_BEVEL, segments=1, profile=0.5,
+                affect="EDGES", clamp_overlap=True, material=METAL_IDX,
+            )
+        finish_caps(bm)
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        # Smooth across the stone's and the round irons' facets; hard at
+        # every chamfer and material boundary. The stone's chamfer rings
+        # meet its tread at 32 degrees, so its threshold is lower.
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = True
+        for edge in bm.edges:
+            edge.smooth = True
+            if len(edge.link_faces) == 2:
+                f0, f1 = edge.link_faces
+                limit = math.radians(
+                    25.0 if f0.material_index == STONE_IDX else 35.0
+                )
+                if (f0.material_index != f1.material_index
+                        or edge.calc_face_angle(0.0) > limit):
+                    edge.smooth = False
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        for poly in me.polygons:
-            poly.use_smooth = False
     finally:
         bm.free()
+    paint_planks(me)
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     return out
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every sill, diagonal, king, bearing and stretcher is its own shell, so
+    each gets one seeded tone and grain along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in sorted(shells(me), key=min):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
 
 
 def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
@@ -585,6 +724,136 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], rfac)
         nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each member (``GrainDir``), tone per member (``PlankTone``).
+
+    Copied from showcase/wheelbarrow (do not import across pieces).
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def stone_material(name):
+    """Sandstone: isotropic object-space mottling, fine speckle driving
+    roughness and a small bump. The first build's pale noise mix rendered
+    the wheel chalk-white, a plastic disc rather than a quarried stone.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mottle = nt.nodes.new("ShaderNodeTexNoise")
+    mottle.inputs["Scale"].default_value = 7.0
+    mottle.inputs["Detail"].default_value = 5.0
+    mottle.inputs["Roughness"].default_value = 0.6
+    nt.links.new(coord.outputs["Object"], mottle.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.32
+    ramp.color_ramp.elements[0].color = (0.20, 0.16, 0.115, 1.0)
+    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[1].color = (0.34, 0.28, 0.20, 1.0)
+    nt.links.new(mottle.outputs["Fac"], ramp.inputs["Fac"])
+    speck = nt.nodes.new("ShaderNodeTexNoise")
+    speck.inputs["Scale"].default_value = 220.0
+    speck.inputs["Detail"].default_value = 2.0
+    nt.links.new(coord.outputs["Object"], speck.inputs["Vector"])
+    grit = nt.nodes.new("ShaderNodeMix")
+    grit.data_type = "RGBA"
+    grit.blend_type = "MULTIPLY"
+    _sock(grit.inputs, "Factor_Float").default_value = 0.35
+    nt.links.new(ramp.outputs["Color"], _sock(grit.inputs, "A_Color"))
+    nt.links.new(speck.outputs["Color"], _sock(grit.inputs, "B_Color"))
+    nt.links.new(_sock(grit.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.80
+    rough.inputs["To Max"].default_value = 0.96
+    nt.links.new(speck.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.18
+    bump.inputs["Distance"].default_value = 0.002
+    nt.links.new(speck.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def grindstone_materials():
+    """(wood, stone, iron): shared by the check, the render and inspection.
+
+    Forged iron is dark and rusted. The first build's metallic 1.0 at 0.38
+    roughness rendered hubs and shoes as black plastic.
+    """
+    wood = wood_material("GrindstoneWood")
+    stone = stone_material("GrindstoneStone")
+    metal = principled(
+        "GrindstoneIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, stone, metal
 
 
 def assign_slots(obj, wood, stone, metal):
@@ -665,24 +934,39 @@ def hygiene_audit(me):
 
 
 def zfight_pairs(me):
-    data = [
-        (p.center.copy(), p.normal.copy(), frozenset(p.vertices))
-        for p in me.polygons
-    ]
-    eps2 = ZFIGHT_EPS * ZFIGHT_EPS
-    count = 0
-    for i in range(len(data)):
-        ci, ni, vi = data[i]
-        for j in range(i + 1, len(data)):
-            cj, nj, vj = data[j]
-            if (cj - ci).length_squared > eps2:
+    """Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two quads on one flat face of
+    a chamfered box share no vertex and are coplanar by construction.
+    Z-fighting is two separate bodies landing on one plane. Combinatorics
+    and constants copied from showcase/hay-bale (do not import across
+    pieces); candidate pairs come from a KD-tree range query at
+    COPLANAR_CENTRE_MAX.
+    """
+    owner = {}
+    for si, g in enumerate(shells(me)):
+        for vi in g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[0], -1))
+             for p in me.polygons]
+    kd = KDTree(len(faces))
+    for i, (_n, c, _s) in enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = 0
+    for i, (ni, ci, si) in enumerate(faces):
+        for _co, j, _d in kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            if j <= i:
                 continue
-            if abs(ni.dot(nj)) <= ZFIGHT_COS:
+            nj, cj, sj = faces[j]
+            if si == sj:
                 continue
-            if vi & vj:
+            if abs(abs(ni.dot(nj)) - 1.0) > COPLANAR_NORMAL_EPS:
                 continue
-            count += 1
-    return count
+            if abs(ni.dot(cj - ci)) > COPLANAR_PLANE_EPS:
+                continue
+            hits += 1
+    return hits
 
 
 def shells(me):
@@ -753,6 +1037,17 @@ def trough_floor_z(me):
     return best
 
 
+def _trough_box(me, groups):
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy = a[3] - a[0], a[4] - a[1]
+        if abs(dx - TROUGH_L) < 0.08 and dy > 0.08 and a[2] < 0.15:
+            return a
+    return None
+
+
 def stone_audit(me):
     stone_pts = []
     groups = shells(me)
@@ -770,15 +1065,7 @@ def stone_audit(me):
     dia = max(max(xs) - min(xs), max(zs) - min(zs))
     thick = max(ys) - min(ys)
     zmin = min(zs)
-    tb = None
-    for g in groups:
-        if mat_of(me, g) != WOOD_IDX:
-            continue
-        a = shell_aabb(me, g)
-        dx, dy = a[3] - a[0], a[4] - a[1]
-        if abs(dx - TROUGH_L) < 0.08 and dy > 0.08 and a[2] < 0.15:
-            tb = a
-            break
+    tb = _trough_box(me, groups)
     trough_z = tb[2] if tb else trough_floor_z(me)
     trough_top = tb[5] if tb else (TROUGH_Z0 + TROUGH_H)
     return {
@@ -788,6 +1075,28 @@ def stone_audit(me):
         "dip": trough_top - zmin,
         "trough_z": trough_z,
     }
+
+
+def trough_bearing(me):
+    """How deep the trough's floor bites each end stretcher.
+
+    Stretchers are the wood shells that cross the frame in Y and are
+    short in X and Z, read off the mesh and counted, so a dropped
+    stretcher cannot pass vacuously. A trough resting a few millimetres
+    above its bearers passes the sill seat and the dip band; this is the
+    budget that sees the slit.
+    """
+    groups = shells(me)
+    tb = _trough_box(me, groups)
+    bites = []
+    for g in groups:
+        if mat_of(me, g) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, g)
+        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        if dx < 0.06 and dy > 1.5 * FRAME_Y and dz < 0.05:
+            bites.append(a[5] - tb[2] if tb else -1.0)
+    return bites
 
 
 def crank_join(me):
@@ -913,6 +1222,47 @@ def shoe_wood_gap(me):
         bm_wood.free()
 
 
+def right_angle_edges(me):
+    """Manifold edges whose two faces meet at 90 degrees, iron and timber.
+
+    Every box and cylinder in the piece is chamfered, and a chamfer turns
+    a 90-degree edge into two shallower ones. An edge still at 90 is one a
+    bevel pass skipped: the razor edge that renders as a hard black line.
+    Copied from showcase/crate-stack (do not import across pieces).
+    """
+    counts = {WOOD_IDX: 0, STONE_IDX: 0, METAL_IDX: 0}
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        for e in bm.edges:
+            if len(e.link_faces) != 2:
+                continue
+            if abs(e.calc_face_angle(0.0) - math.pi / 2.0) <= RIGHT_ANGLE_TOL:
+                idx = e.link_faces[0].material_index
+                counts[idx] = counts.get(idx, 0) + 1
+    finally:
+        bm.free()
+    return counts
+
+
+def texel_audit(mesh, img):
+    """Smallest UV cell, in baked texels along its longer side.
+
+    Copied from showcase/tavern-stool (do not import across pieces).
+    """
+    uv = mesh.uv_layers.active
+    if uv is None or img is None:
+        return 0.0
+    res = min(img.size[0], img.size[1])
+    data = uv.data
+    worst = 1e9
+    for poly in mesh.polygons:
+        us = [data[i].uv[0] for i in poly.loop_indices]
+        vs = [data[i].uv[1] for i in poly.loop_indices]
+        worst = min(worst, max(max(us) - min(us), max(vs) - min(vs)) * res)
+    return worst
+
+
 def add_stray_vert(me):
     bm = bmesh.new()
     try:
@@ -1010,31 +1360,26 @@ def export_unity(path, objects):
     )
 
 
+def _no():
+    return None, None, None, None, None
+
+
 def check(
     skip_decimate, lift_z=False, stray_vert=False,
     float_crank=False, no_dip=False, short_legs=False, float_legs=False,
-    narrow_trough=False,
+    narrow_trough=False, flush_shoes=False, low_stretchers=False,
+    sharp_handle=False, low_bake=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         float_crank=float_crank, no_dip=no_dip,
         short_legs=short_legs, float_legs=float_legs,
-        narrow_trough=narrow_trough,
+        narrow_trough=narrow_trough, flush_shoes=flush_shoes,
+        low_stretchers=low_stretchers, sharp_handle=sharp_handle,
     )
-    low = build_grindstone_mesh("GrindstoneLow", 0.004, 2, **flags)
-    high = build_grindstone_mesh("GrindstoneHigh", 0.004, 4, **flags)
-    wood = principled(
-        "GrindstoneWood", (0.38, 0.20, 0.08, 1.0), 0.0, 0.62,
-        noise_scale=6.5, wear=(0.22, 0.11, 0.04, 1.0),
-    )
-    stone = principled(
-        "GrindstoneStone", (0.40, 0.36, 0.30, 1.0), 0.0, 0.92,
-        noise_scale=14.0, wear=(0.28, 0.24, 0.18, 1.0),
-    )
-    metal = principled(
-        "GrindstoneIron", (0.14, 0.145, 0.155, 1.0), 1.0, 0.38,
-        noise_scale=5.0, wear=(0.05, 0.05, 0.06, 1.0),
-    )
+    low = build_grindstone_mesh("GrindstoneLow", 0.004, 1, **flags)
+    high = build_grindstone_mesh("GrindstoneHigh", 0.004, 3, **flags)
+    wood, stone, metal = grindstone_materials()
     assign_slots(low, wood, stone, metal)
     assign_slots(high, wood, stone, metal)
     if stray_vert:
@@ -1046,7 +1391,7 @@ def check(
         bpy.context.view_layer.update()
 
     if low.data is None or len(low.data.polygons) < 6:
-        return fail("grindstone mesh did not build", 3), None, None, None, None, None
+        return (fail("grindstone mesh did not build", 3),) + _no()
 
     base_tris = triangle_count(low.data)
     mats = [s for s in low.data.materials if s is not None]
@@ -1062,10 +1407,11 @@ def check(
     size_y = bb[4] - bb[1]
     size_z = bb[5] - bb[2]
 
-    img, tex = setup_bake_image(low, stone)
+    img, tex = setup_bake_image(low, stone, LOW_BAKE_RES if low_bake else BAKE_RES)
     if img is None:
-        return fail("grindstone has no UV layer", 3), None, None, None, None, None
+        return (fail("grindstone has no UV layer", 3),) + _no()
     bake_result = bake_normal(high, low)
+    texel = texel_audit(low.data, img)
 
     lod1 = make_lod(low, "GrindstoneLOD1", LOD1_TARGET, skip_decimate)
     lod2 = make_lod(low, "GrindstoneLOD2", LOD2_TARGET, skip_decimate)
@@ -1088,6 +1434,11 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    if os.path.isfile(export_path):
+        try:
+            os.remove(export_path)
+        except OSError:
+            pass
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1096,6 +1447,11 @@ def check(
     cj = crank_join(low.data)
     sw = shoe_wood_gap(low.data)
     ts = trough_sill_gap(low.data)
+    bites = trough_bearing(low.data)
+    right_angles = right_angle_edges(low.data)
+    n_right_angles = sum(right_angles.values())
+    bite_lo = min(bites) if bites else -1.0
+    bite_hi = max(bites) if bites else 1e9
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1112,7 +1468,8 @@ def check(
     )
     print(
         f"measured collider_tris={col_tris} bake={bake_result} "
-        f"bake_has_data={img.has_data} export_bytes={export_size}"
+        f"bake_has_data={img.has_data} export_bytes={export_size} "
+        f"bake_res={img.size[0]} texel_min={texel:.2f}"
     )
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
@@ -1125,152 +1482,162 @@ def check(
         f"dip={st['dip']:.5f} trough_z={st['trough_z']:.5f} "
         f"crank_join={cj:.5f} shoe_wood={sw:.5f} trough_sill={ts:.5f}"
     )
+    print(
+        f"measured trough_bearing={len(bites)} stretchers "
+        f"bite=[{bite_lo:.5f},{bite_hi:.5f}] right_angle_edges={right_angles}"
+    )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
-        return fail(
-            f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]",
-            4,
-        ), None, None, None, None, None
+        return (fail(
+            f"base tris {base_tris} not in [{BASE_TRIS_MIN}, {BASE_TRIS_MAX}]", 4,
+        ),) + _no()
     if nmat != MATERIAL_COUNT or distinct_mats != MATERIAL_COUNT:
-        return fail(
-            f"material slots {nmat} distinct {distinct_mats} != {MATERIAL_COUNT}",
-            5,
-        ), None, None, None, None, None
+        return (fail(
+            f"material slots {nmat} distinct {distinct_mats} != {MATERIAL_COUNT}", 5,
+        ),) + _no()
     if idx_counts.get(METAL_IDX, 0) < METAL_FACES_MIN:
-        return fail(
-            f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}",
-            5,
-        ), None, None, None, None, None
+        return (fail(
+            f"metal faces {idx_counts.get(METAL_IDX, 0)} < {METAL_FACES_MIN}", 5,
+        ),) + _no()
     if idx_counts.get(STONE_IDX, 0) < STONE_FACES_MIN:
-        return fail(
-            f"stone faces {idx_counts.get(STONE_IDX, 0)} < {STONE_FACES_MIN}",
-            5,
-        ), None, None, None, None, None
+        return (fail(
+            f"stone faces {idx_counts.get(STONE_IDX, 0)} < {STONE_FACES_MIN}", 5,
+        ),) + _no()
     if idx_counts.get(WOOD_IDX, 0) < WOOD_FACES_MIN:
-        return fail(
-            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}",
-            5,
-        ), None, None, None, None, None
+        return (fail(
+            f"wood faces {idx_counts.get(WOOD_IDX, 0)} < {WOOD_FACES_MIN}", 5,
+        ),) + _no()
     if u0 < -UV_EPS or v0 < -UV_EPS or u1 > 1.0 + UV_EPS or v1 > 1.0 + UV_EPS:
-        return fail(
-            f"UVs outside 0..1: ({u0:.4f},{v0:.4f})-({u1:.4f},{v1:.4f})",
-            6,
-        ), None, None, None, None, None
+        return (fail(
+            f"UVs outside 0..1: ({u0:.4f},{v0:.4f})-({u1:.4f},{v1:.4f})", 6,
+        ),) + _no()
     if overlap > UV_OVERLAP_MAX:
-        return fail(
-            f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}",
-            7,
-        ), None, None, None, None, None
+        return (fail(f"UV AABB overlap {overlap:.6f} > {UV_OVERLAP_MAX}", 7),) + _no()
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
         or abs(size_y - OUTER_SIZE[1]) > BBOX_TOL
         or abs(size_z - OUTER_SIZE[2]) > BBOX_TOL
     ):
-        return fail(
-            f"bbox ({size_x:.4f},{size_y:.4f},{size_z:.4f}) "
-            f"off outer {OUTER_SIZE}",
-            8,
-        ), None, None, None, None, None
+        return (fail(
+            f"bbox ({size_x:.4f},{size_y:.4f},{size_z:.4f}) off outer {OUTER_SIZE}", 8,
+        ),) + _no()
     if not (LOD1_RATIO_MIN <= r1 <= LOD1_RATIO_MAX):
-        return fail(
+        return (fail(
             f"LOD1 ratio {r1:.4f} not in [{LOD1_RATIO_MIN}, {LOD1_RATIO_MAX}] "
             "(--skip-decimate is the designed fail)",
             9,
-        ), None, None, None, None, None
+        ),) + _no()
     if not (LOD2_RATIO_MIN <= r2 <= LOD2_RATIO_MAX):
-        return fail(
-            f"LOD2 ratio {r2:.4f} not in [{LOD2_RATIO_MIN}, {LOD2_RATIO_MAX}]",
-            9,
-        ), None, None, None, None, None
+        return (fail(
+            f"LOD2 ratio {r2:.4f} not in [{LOD2_RATIO_MIN}, {LOD2_RATIO_MAX}]", 9,
+        ),) + _no()
     if col_tris > COLLIDER_TRIS_MAX:
-        return fail(
-            f"collider tris {col_tris} > {COLLIDER_TRIS_MAX}",
-            11,
-        ), None, None, None, None, None
+        return (fail(f"collider tris {col_tris} > {COLLIDER_TRIS_MAX}", 11),) + _no()
     if bake_result != {"FINISHED"} or not img.has_data:
-        return fail(
-            f"bake failed result={bake_result} has_data={img.has_data}",
-            12,
-        ), None, None, None, None, None
+        return (fail(
+            f"bake failed result={bake_result} has_data={img.has_data}", 12,
+        ),) + _no()
     if export_size <= 0:
-        return fail("export file missing or empty", 13), None, None, None, None, None
+        return (fail("export file missing or empty", 13),) + _no()
     if (
         hyg["loose_v"] or hyg["loose_e"] or hyg["nonman"]
         or hyg["zero_area"] or hyg["doubles"] or hyg["ngons"] or zf
     ):
-        return fail(
+        return (fail(
             f"hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
             f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
-            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf}",
+            f"doubles={hyg['doubles']} ngons={hyg['ngons']} zfight={zf} "
+            "(--stray-vert and --flush-shoes are the designed fails)",
             15,
-        ), None, None, None, None, None
+        ),) + _no()
     if abs(bb[2]) > ZMIN_EPS:
-        return fail(
+        return (fail(
             f"zmin {bb[2]:.6f} not within {ZMIN_EPS} of 0 "
             "(--lift-z is the designed fail)",
             16,
-        ), None, None, None, None, None
+        ),) + _no()
     if sup["shoes"] < 4 or sup["shoe_z"] > SHOE_Z_MAX:
-        return fail(
+        return (fail(
             f"shoe supports {sup['shoes']} shoe_z={sup['shoe_z']:.5f} "
             "(--short-legs is the designed fail)",
             16,
-        ), None, None, None, None, None
+        ),) + _no()
     if cj > CRANK_JOIN:
-        return fail(
+        return (fail(
             f"crank-axle gap {cj:.5f} > {CRANK_JOIN} "
             "(--float-crank is the designed fail)",
             17,
-        ), None, None, None, None, None
+        ),) + _no()
     if sw > SHOE_JOIN:
-        return fail(
+        return (fail(
             f"shoe-wood gap {sw:.5f} > {SHOE_JOIN} "
             "(--float-legs is the designed fail)",
             17,
-        ), None, None, None, None, None
+        ),) + _no()
     if ts > TROUGH_SILL_JOIN:
-        return fail(
+        return (fail(
             f"trough-sill gap {ts:.5f} > {TROUGH_SILL_JOIN} "
             "(--narrow-trough is the designed fail)",
             18,
-        ), None, None, None, None, None
+        ),) + _no()
     if not (DIP_MIN <= st["dip"] <= DIP_MAX):
-        return fail(
+        return (fail(
             f"stone dip {st['dip']:.5f} not in [{DIP_MIN}, {DIP_MAX}] "
             "(--no-dip is the designed fail)",
             18,
-        ), None, None, None, None, None
+        ),) + _no()
     if st["trough_z"] < TROUGH_FLOOR_Z_MIN:
-        return fail(
+        return (fail(
             f"trough floor zmin {st['trough_z']:.5f} < {TROUGH_FLOOR_Z_MIN} "
             "(tub must sit on the frame, not the dirt)",
             18,
-        ), None, None, None, None, None
+        ),) + _no()
+    if len(bites) != 2 or bite_lo < TROUGH_BITE_MIN or bite_hi > TROUGH_BITE_MAX:
+        return (fail(
+            f"trough bearing: {len(bites)} stretchers, bite "
+            f"[{bite_lo:.5f}, {bite_hi:.5f}] outside "
+            f"[{TROUGH_BITE_MIN}, {TROUGH_BITE_MAX}] "
+            "(--low-stretchers is the designed fail: the tub hovers over "
+            "its bearers)",
+            18,
+        ),) + _no()
     if abs(st["dia"] - STONE_DIA) > STONE_DIA_TOL:
-        return fail(
-            f"stone diameter {st['dia']:.4f} off {STONE_DIA}",
-            19,
-        ), None, None, None, None, None
+        return (fail(f"stone diameter {st['dia']:.4f} off {STONE_DIA}", 19),) + _no()
     if abs(st["thick"] - STONE_T) > STONE_T_TOL:
-        return fail(
-            f"stone thickness {st['thick']:.4f} off {STONE_T}",
-            19,
-        ), None, None, None, None, None
+        return (fail(f"stone thickness {st['thick']:.4f} off {STONE_T}", 19),) + _no()
+    if n_right_angles > RIGHT_ANGLE_MAX:
+        return (fail(
+            f"right-angle edges {right_angles} > {RIGHT_ANGLE_MAX} "
+            "(--sharp-handle is the designed fail: the crank handle left "
+            "unchamfered)",
+            20,
+        ),) + _no()
+    if texel < TEXEL_MIN:
+        return (fail(
+            f"bake texel density {texel:.2f} px per UV cell < {TEXEL_MIN} "
+            "(--low-bake is the designed fail)",
+            21,
+        ),) + _no()
     return 0, low, high, stone, tex, collider
 
 
 def wire_normal(mat, tex):
+    """Chain the baked normal map under the stone's bump, not over it."""
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     nrm = nt.nodes.new("ShaderNodeNormalMap")
     nrm.inputs["Strength"].default_value = 1.0
     nt.links.new(tex.outputs["Color"], nrm.inputs["Color"])
-    nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
+    bump = next((n for n in nt.nodes if n.bl_idname == "ShaderNodeBump"), None)
+    if bump is not None:
+        nt.links.new(nrm.outputs["Normal"], bump.inputs["Normal"])
+    else:
+        nt.links.new(nrm.outputs["Normal"], bsdf.inputs["Normal"])
 
 
-def render_still(low, wood, tex, path, engine):
+def render_still(low, hero_mat, tex, path, engine):
     scene = bpy.context.scene
-    wire_normal(wood, tex)
+    wire_normal(hero_mat, tex)
     for ob in list(scene.objects):
         if ob.type == "MESH" and ob != low:
             ob.hide_render = True
@@ -1282,7 +1649,7 @@ def render_still(low, wood, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1377,6 +1744,10 @@ def main():
     p.add_argument("--short-legs", action="store_true")
     p.add_argument("--float-legs", action="store_true")
     p.add_argument("--narrow-trough", action="store_true")
+    p.add_argument("--flush-shoes", action="store_true")
+    p.add_argument("--low-stretchers", action="store_true")
+    p.add_argument("--sharp-handle", action="store_true")
+    p.add_argument("--low-bake", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, hero_mat, tex, _col = check(
@@ -1388,6 +1759,10 @@ def main():
         short_legs=args.short_legs,
         float_legs=args.float_legs,
         narrow_trough=args.narrow_trough,
+        flush_shoes=args.flush_shoes,
+        low_stretchers=args.low_stretchers,
+        sharp_handle=args.sharp_handle,
+        low_bake=args.low_bake,
     )
     if code:
         return code

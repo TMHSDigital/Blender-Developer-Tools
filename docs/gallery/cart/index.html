@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>cart — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cart/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="cart — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/cart/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cart-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor." />
+  <meta property="og:image:alt" content="A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="cart — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/cart-hero.webp" />
-  <meta name="twitter:image:alt" content="A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor." />
+  <meta name="twitter:image:alt" content="A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,43 +265,53 @@
   </div>
   <header class="hero">
     <h1>cart</h1>
-    <p>A procedural two-wheel wooden cart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural two-wheel handcart through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor.">
-      <img src="../assets/cart-hero.webp" alt="A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar.">
+      <img src="../assets/cart-hero.webp" alt="A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 2856 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.539×0.749×0.640 m, LOD ratios in band, convex collider 154 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres grounded, tyre seat depth in band over 48 angular stations, the two wheels mirrored within 5e-5 m, grounded zmin, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --sink-tyre exits 18 on the tyre seat band; --float-wheel exits 16 on the named-support budget; --skew-wheel exits 19 on the wheel mirror; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 5284 tris, two materials with metal and wood face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.580×0.842×0.640 m, LOD ratios in band, convex collider 192 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, both tyres and both prop legs grounded, two wall boards per side with 3 mm seams, tyre seat depth in band over 48 angular stations, every shell in one BVH-contact assembly, the two wheels mirrored within 5e-5 m, no unchamfered right-angle edge, 17.45 bake texels per UV cell, non-empty glTF. --flush-tyre exits 15 on the z-fight budget; --float-wheel and --short-props exit 16 on the named-support budget; --wide-seams exits 17 on the board seams; --sink-tyre exits 18 on the tyre seat band; --lift-bed exits 18 on the one-assembly budget; --skew-wheel exits 19 on the wheel mirror; --sharp-bar exits 20 on edge treatment; --low-bake exits 21 on texel density; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/cart/cart.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural two-wheel wooden cart (slatted bed, side walls, shafts, spoked wheels, iron hubs and axle) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>A showcase piece, not an example. A procedural two-wheel handcart built on two rails that run on past the bed as shafts, with a pull bar through their tips and two prop legs under them. It has a planked floor, board walls with iron corner straps, and spoked wheels on long naves with iron bands, tyres and washers. The piece then runs the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider, and a Unity glTF export.</p>
+<p>The chassis is stacked from the axle up, and every member bites the one below it by a named depth: axle, bolster, rails, floor planks, walls. The cart stands level on four named supports: two tyres and two legs. Stated size is 1.58 m long, 0.84 m across the axle ends and 0.64 m tall. The wheels are 0.64 m in diameter and the bed is 0.92 × 0.50 m.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>2760–2960</td><td>2856 / 2856 / 2856</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2157</td></tr><tr><td>Materials</td><td>exactly 2 distinct, metal ≥ 24, wood ≥ 800 faces</td><td>2 slots, floors met</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.539, 0.749, 0.640) m ± 0.01</td><td>(1.5393, 0.7486, 0.6400)</td></tr><tr><td>Grounded</td><td>bbox min Z within 1e-4 of 0</td><td>0.0000 / 0.0000 / 0.0000</td></tr><tr><td>Named supports</td><td>each tyre&#x27;s own zmin within 1e-4 of the floor</td><td>+Y 0.000000, −Y 0.000000</td></tr><tr><td>Hygiene</td><td>loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0</td><td>0 / 0 / 0 on every axis</td></tr><tr><td>Z-fighting</td><td>coplanar cross-shell face pairs = 0</td><td>0 / 0 / 0</td></tr><tr><td>Tyre seat</td><td>0.0030–0.0055 m interference, per angular station</td><td>[0.00400, 0.00400] over 48 stations</td></tr><tr><td>Wheel mirror</td><td>the two wheels match in X, Z and extent within 5e-5 m</td><td>0.00000 mm</td></tr><tr><td>Material-island gap</td><td>metal↔wood min distance ≤ 0.008 m</td><td>0.00000 / 0.00000 / 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 360</td><td>154</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>221960 bytes on 5.2.1</td></tr></tbody></table></div>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by a few bytes across series (glTF serializer); the gate is &quot;written and non-empty&quot;, not a byte count, and the file is removed once measured.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>5160–5410</td><td>5284 / 5284 / 5284</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2146</td></tr><tr><td>Materials</td><td>exactly 2 distinct, metal ≥ 800, wood ≥ 1200 faces</td><td>2 slots; 1196 metal, 1694 wood</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.580, 0.842, 0.640) m ± 0.01</td><td>(1.5800, 0.8420, 0.6400)</td></tr><tr><td>Collider tris</td><td>≤ 360</td><td>192</td></tr><tr><td>Bake texels</td><td>smallest UV cell ≥ 12 px at the baked resolution</td><td>17.45 px at 1024 px</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>403176 / 403176 / 403160 bytes</td></tr></tbody></table></div>
+<h3>Hygiene, supports and joints</h3>
+<p>Recomputed from the generated mesh on all three binaries, identical on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons</td><td>all 0</td><td>all 0</td></tr><tr><td>Z-fighting</td><td>coplanar cross-shell face pairs = 0</td><td>0</td></tr><tr><td>Grounded</td><td>bbox min Z within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports</td><td>2 legs found; each tyre and leg zmin within 1e-4 of the floor</td><td>2 legs; all four 0.000000</td></tr><tr><td>Material-island gap</td><td>metal↔wood min distance ≤ 0.008 m</td><td>0.00023</td></tr><tr><td>Wall boards</td><td>2 boards per side wall, seams 0.0015–0.005 m</td><td>(2, 2), seams 0.00300</td></tr><tr><td>Tyre seat</td><td>0.0030–0.0055 m interference, per angular station</td><td>[0.00400, 0.00400] over 48 stations</td></tr><tr><td>One assembly</td><td>the shells&#x27; BVH-overlap graph is 1 component</td><td>1 component, 59 shells</td></tr><tr><td>Wheel mirror</td><td>the two wheels match in X, Z and extent within 5e-5 m</td><td>0.00000 mm</td></tr><tr><td>Edge treatment</td><td>manifold edges within 5° of 90° = 0</td><td>0 wood, 0 iron</td></tr></tbody></table></div>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series. 5.2.1 is more aggressive on LOD2, so the gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code> plus the texel floor, not byte-identity. Per-board tone comes from <code>random.Random(TONE_SEED)</code>, so it is identical run to run. Export byte counts differ by a few bytes across series (glTF serializer). The gate is &quot;written and non-empty&quot;, not a byte count, and the file is removed once measured.</p>
+<p>The bake cage is 0.01 m: it only has to cover the chamfer difference between the 3-segment high and the 1-segment low. At 0.08 m it reached past the 74 mm between a side wall and its wheel, so rays from the wall hit the high-poly felloe. The wheel&#x27;s rim baked onto the board as a black staircase.</p>
 <h2>Falsifiers</h2>
-<p>Each flag breaks one stage so a <strong>named</strong> budget fails and the piece exits <em>that</em> code. Magnitudes are sized so no earlier gate can steal the failure: the two wheel moves stay inside <code>BBOX_TOL</code>, so the AABB gate (exit 8) still passes.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (ratio becomes 1.0)</td><td>9</td></tr><tr><td><code>--lift-z</code></td><td>AABB grounded zmin (whole mesh up 0.05 m)</td><td>16</td></tr><tr><td><code>--flush-tyre</code></td><td>Coplanar cross-shell pairs — sets the tyre&#x27;s inner radius equal to the felloe&#x27;s outer radius, which is the construction bug this piece was rebuilt to remove (0 → 48 pairs)</td><td>15</td></tr><tr><td><code>--sink-tyre</code></td><td>Tyre seat band — buries the hoop 9 mm into the felloe so it reads as one body</td><td>18</td></tr><tr><td><code>--float-wheel</code></td><td>Named supports — lifts one wheel 3 mm while the other still grounds the AABB</td><td>16</td></tr><tr><td><code>--skew-wheel</code></td><td>Wheel mirror — pushes one wheel 6 mm out along the track</td><td>19</td></tr></tbody></table></div>
-<p><code>--lift-z</code> and <code>--float-wheel</code> share exit 16 and fail different budgets: <code>--lift-z</code> fails the AABB gate, which fires first; <code>--float-wheel</code> leaves the AABB grounded, so only the per-tyre support check can catch it.</p>
+<p>Each flag breaks one stage so a <strong>named</strong> budget fails and the piece exits <em>that</em> code. Magnitudes are sized so no earlier gate can steal the failure. The wheel, leg and bed moves stay inside <code>BBOX_TOL</code>, so the AABB gate (exit 8) still passes, and no flag changes the triangle count by more than the band allows.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (ratio becomes 1.0)</td><td>9</td></tr><tr><td><code>--flush-tyre</code></td><td>Coplanar cross-shell pairs: sets the tyre&#x27;s inner radius equal to the felloe&#x27;s outer radius, which is the construction bug this piece was rebuilt to remove (0 → 144 pairs)</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>AABB grounded zmin (whole mesh up 0.05 m)</td><td>16</td></tr><tr><td><code>--float-wheel</code></td><td>Named supports: lifts one wheel 3 mm while the other still grounds the AABB</td><td>16</td></tr><tr><td><code>--short-props</code></td><td>Named supports: stops both prop legs 3 mm above the floor while the tyres still ground the AABB</td><td>16</td></tr><tr><td><code>--wide-seams</code></td><td>Wall board seams: opens every seam to 10 mm, same triangle count</td><td>17</td></tr><tr><td><code>--sink-tyre</code></td><td>Tyre seat band: buries the hoop 9 mm into the felloe so it reads as one body</td><td>18</td></tr><tr><td><code>--lift-bed</code></td><td>One assembly: raises the box (planks, walls, straps) 7 mm off its rails, so the contact graph splits in two</td><td>18</td></tr><tr><td><code>--skew-wheel</code></td><td>Wheel mirror: pushes one wheel 6 mm out along the track</td><td>19</td></tr><tr><td><code>--sharp-bar</code></td><td>Edge treatment: leaves the pull bar&#x27;s rims unchamfered (24 right-angle edges, 48 triangles short)</td><td>20</td></tr><tr><td><code>--low-bake</code></td><td>Bake texel density: bakes at 256 px (4.36 px per cell)</td><td>21</td></tr></tbody></table></div>
+<p><code>--lift-z</code>, <code>--float-wheel</code> and <code>--short-props</code> share exit 16 and fail different budgets. <code>--lift-z</code> fails the AABB gate, which fires first. The other two leave the AABB grounded, so only the per-support check can catch them. <code>--sharp-bar</code> replaced a flag that skipped the whole iron chamfer pass. That flag dropped 1200 triangles and tripped the triangle floor (exit 4) instead of the edge budget.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python cart.py --
 blender --background --python cart.py -- --skip-decimate
-blender --background --python cart.py -- --lift-z
 blender --background --python cart.py -- --flush-tyre
-blender --background --python cart.py -- --sink-tyre
+blender --background --python cart.py -- --lift-z
 blender --background --python cart.py -- --float-wheel
+blender --background --python cart.py -- --short-props
+blender --background --python cart.py -- --wide-seams
+blender --background --python cart.py -- --sink-tyre
+blender --background --python cart.py -- --lift-bed
 blender --background --python cart.py -- --skew-wheel
+blender --background --python cart.py -- --sharp-bar
+blender --background --python cart.py -- --low-bake
 blender --background --python cart.py -- --output cart.png</code></pre>
 <p>Smoke passes none of the falsifier flags and no <code>--output</code>.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose geometry, non-manifold, zero-area, doubles, n-gons, or coplanar cross-shell face pairs (<code>--flush-tyre</code> lands here)</td></tr><tr><td>16</td><td>Bbox min Z not grounded (<code>--lift-z</code>), or a named support off the floor (<code>--float-wheel</code>)</td></tr><tr><td>17</td><td>Material-island gap above tolerance (parts meant to touch)</td></tr><tr><td>18</td><td>Tyre seat depth outside its band (<code>--sink-tyre</code> lands here)</td></tr><tr><td>19</td><td>Wheel mirror deviation above epsilon (<code>--skew-wheel</code> lands here)</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer / wheels not found</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or a face-count floor missed</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene: loose geometry, non-manifold, zero-area, doubles, n-gons, or coplanar cross-shell face pairs (<code>--flush-tyre</code> lands here)</td></tr><tr><td>16</td><td>Bbox min Z not grounded (<code>--lift-z</code>), or a named support off the floor (<code>--float-wheel</code>, <code>--short-props</code>)</td></tr><tr><td>17</td><td>Material-island gap above tolerance, or wall boards miscounted or their seams out of band (<code>--wide-seams</code>)</td></tr><tr><td>18</td><td>Tyre seat depth outside its band (<code>--sink-tyre</code>), or the shells not one connected assembly (<code>--lift-bed</code>)</td></tr><tr><td>19</td><td>Wheel mirror deviation above epsilon (<code>--skew-wheel</code> lands here)</td></tr><tr><td>20</td><td>A right-angle edge survived the chamfer passes (<code>--sharp-bar</code> lands here)</td></tr><tr><td>21</td><td>Bake texel density below the floor (<code>--low-bake</code> lands here)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -309,26 +319,32 @@ blender --background --python cart.py -- --output cart.png</code></pre>
         <code>showcase/cart/cart.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/cart/cart.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;Game-ready two-wheel wooden cart — a showcase piece, not an example.
+      <pre><span class="s">&quot;&quot;&quot;Game-ready two-wheel handcart — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural cart (staved bed, side
-walls, shafts, spoked wheels, iron hubs and axle) after composing
-shipped pipeline pieces: bmesh construction, UVs, two materials,
-high-to-low normal bake, LOD chain, convex collider, Unity glTF
-export.
+Asserts budget conformance of a procedural handcart (planked bed on two
+rails that run on as shafts, board walls with iron corner straps, prop
+legs, spoked wheels on long naves, iron tyres, axle and washers) after
+composing shipped pipeline pieces: bmesh construction, UVs, two
+materials, high-to-low normal bake, LOD chain, convex collider, Unity
+glTF export.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier flag breaks one
 stage so a named budget fails and the piece exits that budget&#x27;s code:
-``--skip-decimate`` (LOD ratio, 9), ``--lift-z`` (AABB grounded, 16),
-``--float-wheel`` (named supports, 16), ``--flush-tyre`` (coplanar
-cross-shell pairs, 15), ``--sink-tyre`` (tyre seat band, 18),
-``--skew-wheel`` (wheel mirror, 19). The two wheel moves stay inside
-``BBOX_TOL`` so the AABB gate cannot steal the failure.
+``--skip-decimate`` (LOD ratio, 9), ``--flush-tyre`` (coplanar
+cross-shell pairs, 15), ``--lift-z`` (AABB grounded, 16),
+``--float-wheel`` and ``--short-props`` (named supports, 16),
+``--wide-seams`` (wall board seams, 17), ``--sink-tyre`` (tyre seat
+band, 18), ``--lift-bed`` (one connected assembly, 18), ``--skew-wheel``
+(wheel mirror, 19), ``--sharp-bar`` (edge treatment, 20), ``--low-bake``
+(bake texel density, 21). The wheel,
+leg and bed moves stay inside ``BBOX_TOL`` so the AABB gate cannot steal
+the failure.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
-are not byte-identical across Blender versions — the LOD gate is a
-ratio band, not an exact count.
+Seeded, not random: per-board tone uses ``random.Random(TONE_SEED)``.
+Construction is closed-form. DECIMATE COLLAPSE triangle counts are not
+byte-identical across Blender versions — the LOD gate is a ratio band,
+not an exact count.
 
     blender --background --python cart.py --
     blender --background --python cart.py -- --skip-decimate
@@ -338,6 +354,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -346,6 +363,7 @@ ratio band, not an exact count.
 <span class="k">import</span> bpy
 <span class="k">from</span> mathutils <span class="k">import</span> Euler, Vector
 <span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
 
 _REPO = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
@@ -354,10 +372,12 @@ sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&q
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-RIM_MAJOR = <span class="n">0.30</span>
-<span class="c"># Felloe ring: flat-tread box section, not a round tube — round torus rims</span>
-<span class="c"># read as bicycle wheels. The iron tyre wraps the tread.</span>
-RIM_RADIAL = <span class="n">0.012</span>
+RIM_OUTER = <span class="n">0.312</span>
+<span class="c"># Felloe: flat-tread box section, not a round tube — round torus rims read</span>
+<span class="c"># as bicycle wheels. RIM_RADIAL is the half-depth: a 40 mm felloe. The</span>
+<span class="c"># first build&#x27;s 24 mm read as a bent strip at hero size.</span>
+RIM_RADIAL = <span class="n">0.020</span>
+RIM_MAJOR = RIM_OUTER - RIM_RADIAL
 RIM_W = <span class="n">0.036</span>
 TYRE_T = <span class="n">0.008</span>
 TYRE_W = <span class="n">0.040</span>
@@ -366,38 +386,109 @@ TYRE_W = <span class="n">0.040</span>
 <span class="c"># set equal to it: r_in == r_out puts the tyre&#x27;s inner cylinder and the</span>
 <span class="c"># felloe&#x27;s tread on one plane for every segment, which is a guaranteed</span>
 <span class="c"># z-fight (it measured 32 coplanar cross-shell pairs, 16 per wheel).</span>
-RIM_OUTER = RIM_MAJOR + RIM_RADIAL
 TYRE_SEAT = <span class="n">0.004</span>
 TYRE_SEAT_MIN = <span class="n">0.0030</span>
 TYRE_SEAT_MAX = <span class="n">0.0055</span>
+WHEEL_R = RIM_OUTER + TYRE_T
 WHEEL_SEGMENTS = <span class="n">24</span>
 TRACK = <span class="n">0.68</span>
-AXLE_X = -<span class="n">0.16</span>
 AXLE_R = <span class="n">0.020</span>
-HUB_R = <span class="n">0.052</span>
-HUB_W = <span class="n">0.046</span>
-N_SPOKES = <span class="n">8</span>
-SPOKE_T = <span class="n">0.018</span>
+<span class="c"># The axle runs past each washer, so a washer pushed out by --skew-wheel</span>
+<span class="c"># still stops short of the axle&#x27;s end cap instead of landing on its plane.</span>
+AXLE_PROUD = <span class="n">0.016</span>
+<span class="c"># A nave is a long barrel, not a disc. The first build&#x27;s 46 mm hub read as</span>
+<span class="c"># a toy wheel in every view; 130 mm with an iron band at each end is a</span>
+<span class="c"># cartwheel&#x27;s proportion.</span>
+NAVE_L = <span class="n">0.130</span>
+NAVE_R_END = <span class="n">0.044</span>
+NAVE_R_MID = <span class="n">0.058</span>
+NAVE_BAND_ZONE = <span class="n">0.028</span>
+NAVE_BAND_W = <span class="n">0.016</span>
+NAVE_BAND_T = <span class="n">0.006</span>
+NAVE_BAND_BITE = <span class="n">0.002</span>
+NAVE_SEGS = <span class="n">12</span>
+WASHER_R = <span class="n">0.032</span>
+WASHER_BITE = <span class="n">0.003</span>
+WASHER_T = <span class="n">0.009</span>
+N_SPOKES = <span class="n">10</span>
+SPOKE_W = <span class="n">0.022</span>
+SPOKE_D = <span class="n">0.018</span>
+SPOKE_ROOT = <span class="n">0.020</span>
+SPOKE_TENON = <span class="n">0.014</span>
+
+<span class="c"># Chassis, stacked from the axle up. Each member bites the one below it by</span>
+<span class="c"># a named depth, so nothing rests on a tangent line or floats.</span>
 BED_L = <span class="n">0.92</span>
 BED_W = <span class="n">0.50</span>
-BED_T = <span class="n">0.038</span>
-WALL_H = <span class="n">0.16</span>
-WALL_T = <span class="n">0.032</span>
-TAILGATE_H = <span class="n">0.10</span>
-SHAFT_L = <span class="n">0.58</span>
-SHAFT_T = <span class="n">0.034</span>
-SHAFT_PITCH = math.radians(<span class="n">7.0</span>)
-N_SLATS = <span class="n">6</span>
-IRON_T = <span class="n">0.014</span>
+BED_CX = <span class="n">0.06</span>
+AXLE_X = BED_CX - <span class="n">0.22</span>
+AXLE_BITE = <span class="n">0.006</span>
 BOLSTER_H = <span class="n">0.044</span>
+BOLSTER_X = <span class="n">0.060</span>
+BOLSTER_SPAN = <span class="n">0.52</span>
+RAIL_Y = <span class="n">0.17</span>
+RAIL_W = <span class="n">0.040</span>
+RAIL_H = <span class="n">0.050</span>
+RAIL_BITE = <span class="n">0.006</span>
+RAIL_BACK = <span class="n">0.03</span>
+FLOOR_T = <span class="n">0.030</span>
+N_FLOOR = <span class="n">9</span>
+FLOOR_GAP = <span class="n">0.004</span>
+FLOOR_BITE = <span class="n">0.004</span>
+<span class="c"># Walls stand on the floor, inset from its edge. The first build hung them</span>
+<span class="c"># outside the planks at mid-thickness, which left every slat end poking out</span>
+<span class="c"># under the front board as a row of teeth; flush with the plank ends they</span>
+<span class="c"># would share the end grain&#x27;s plane.</span>
+WALL_H = <span class="n">0.18</span>
+WALL_T = <span class="n">0.028</span>
+WALL_SEAT = <span class="n">0.006</span>
+WALL_INSET = <span class="n">0.004</span>
+WALL_BOARDS = <span class="n">2</span>
+WALL_SEAM = <span class="n">0.003</span>
+WALL_SEAM_MIN = <span class="n">0.0015</span>
+WALL_SEAM_MAX = <span class="n">0.005</span>
+WIDE_SEAM = <span class="n">0.010</span>
+<span class="c"># End boards sit between the side walls: recessed, seated deeper, split at</span>
+<span class="c"># a different height and topped lower, so no face of an end board lands on</span>
+<span class="c"># a plane of a side board.</span>
+END_INSET = <span class="n">0.003</span>
+END_BITE = <span class="n">0.012</span>
+END_SEAT = <span class="n">0.009</span>
+END_SPLIT = <span class="n">0.46</span>
+END_DROP = <span class="n">0.008</span>
+TAILGATE_H = <span class="n">0.100</span>
+SHAFT_L = <span class="n">0.58</span>
+HANDLE_R = <span class="n">0.017</span>
+HANDLE_BACK = <span class="n">0.07</span>
+HANDLE_PROUD = <span class="n">0.012</span>
+<span class="c"># The first build hovered its shaft tips 0.30 m off the floor with the</span>
+<span class="c"># centre of mass ahead of the axle: it would tip. Two prop legs under the</span>
+<span class="c"># rails stand it level. Thinner than the rail, so their faces never share</span>
+<span class="c"># its planes.</span>
+LEG_T = <span class="n">0.034</span>
+LEG_BACK = <span class="n">0.09</span>
+LEG_BITE = <span class="n">0.024</span>
+SHORT_PROP_Z = <span class="n">0.003</span>
+<span class="c"># Iron corner straps: one L-section shell per corner, bitten into both</span>
+<span class="c"># faces of the side wall it is nailed to.</span>
+STRAP_LEG = <span class="n">0.050</span>
+STRAP_T = <span class="n">0.004</span>
+STRAP_BITE = <span class="n">0.0015</span>
+STRAP_MARGIN = <span class="n">0.012</span>
+IRON_BEVEL = <span class="n">0.0012</span>
+BEVEL_MIN_ANGLE = math.radians(<span class="n">50.0</span>)
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">31</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 BBOX_TOL = <span class="n">0.01</span>
-OUTER_SIZE = (<span class="n">1.539</span>, <span class="n">0.749</span>, <span class="n">0.640</span>)
-<span class="c"># Re-fitted after the wheel went from 16 to 24 segments (2600 -&gt; 2856).</span>
-<span class="c"># Narrower than the band it replaces (200 wide, was 430) and centred on</span>
-<span class="c"># the measured value, so this is a tightening, not a widening.</span>
-BASE_TRIS_MIN = <span class="n">2760</span>
-BASE_TRIS_MAX = <span class="n">2960</span>
+<span class="c"># Rails run on as shafts past the bed (X); axle ends past the washers (Y);</span>
+<span class="c"># the tyre tops (Z). Re-declared for the rebuild: 1.539 x 0.749 before.</span>
+OUTER_SIZE = (<span class="n">1.580</span>, <span class="n">0.842</span>, <span class="n">0.640</span>)
+<span class="c"># Re-fitted for the rebuild (2856 -&gt; 5284: naves, bands, washers, straps,</span>
+<span class="c"># legs, boards). Centred on the measurement, 250 wide against the old 200.</span>
+BASE_TRIS_MIN = <span class="n">5160</span>
+BASE_TRIS_MAX = <span class="n">5410</span>
 ZMIN_EPS = <span class="n">1e-4</span>
 DOUBLES_EPS = <span class="n">1e-5</span>
 AREA_EPS = <span class="n">1e-10</span>
@@ -413,10 +504,20 @@ MATERIAL_COUNT = <span class="n">2</span>
 UV_EPS = <span class="n">1e-4</span>
 UV_OVERLAP_MAX = <span class="n">1e-5</span>
 COLLIDER_TRIS_MAX = <span class="n">360</span>
-BAKE_RES = <span class="n">256</span>
-CAGE_EXTRUSION = <span class="n">0.08</span>
-METAL_FACES_MIN = <span class="n">24</span>
-WOOD_FACES_MIN = <span class="n">800</span>
+<span class="c"># One UV cell per face: at 256 px each of the ~2900 faces got about 4 px,</span>
+<span class="c"># and the render&#x27;s bilinear lookup read neighbouring cells&#x27; normals as a</span>
+<span class="c"># black hexagon and sandpaper speckle on the side boards (tavern-stool&#x27;s</span>
+<span class="c"># defect). 1024 px gives every cell 17 px against a 12 px floor.</span>
+BAKE_RES = <span class="n">1024</span>
+LOW_BAKE_RES = <span class="n">256</span>
+TEXEL_MIN = <span class="n">12.0</span>
+<span class="c"># The cage only has to cover the chamfer difference between the 3-segment</span>
+<span class="c"># high and the 1-segment low (under 2 mm). At 0.08 it reached past the</span>
+<span class="c"># 74 mm between side wall and felloe, so rays from the wall hit the high</span>
+<span class="c"># wheel and baked its rim onto the board as a black staircase.</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+METAL_FACES_MIN = <span class="n">800</span>
+WOOD_FACES_MIN = <span class="n">1200</span>
 
 <span class="c"># Z-fighting: two separate bodies landing on one plane. Cross-shell, with</span>
 <span class="c"># hay-bale&#x27;s constants (copied, not imported).</span>
@@ -424,11 +525,21 @@ COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
 COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
 COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
 ZFIGHT_PAIRS_MAX = <span class="n">0</span>
-<span class="c"># Named supports: a two-wheel cart&#x27;s AABB zmin is grounded by whichever</span>
-<span class="c"># tyre happens to be lowest. Each tyre carries its own floor contact.</span>
+<span class="c"># Named supports: two tyres and two prop legs. The AABB zmin is grounded by</span>
+<span class="c"># whichever of them is lowest, so each carries its own floor contact.</span>
 SUPPORT_ZMIN_EPS = <span class="n">1e-4</span>
+N_LEGS = <span class="n">2</span>
 <span class="c"># Mirrored members: the two wheels are the same part reflected in Y.</span>
 WHEEL_MIRROR_EPS = <span class="n">5e-5</span>
+<span class="c"># Every member is joined to the rest: the BVH-overlap graph of the shells</span>
+<span class="c"># is one component. A bed resting a hair above its rails passes every</span>
+<span class="c"># per-part budget and is still a floating box.</span>
+CONTACT_COMPONENTS = <span class="n">1</span>
+LIFT_BED = FLOOR_BITE + <span class="n">0.003</span>
+<span class="c"># Edge treatment: every edge is chamfered, so a manifold edge still within</span>
+<span class="c"># RIGHT_ANGLE_TOL of 90 degrees is one a bevel pass skipped.</span>
+RIGHT_ANGLE_TOL = math.radians(<span class="n">5.0</span>)
+RIGHT_ANGLE_MAX = <span class="n">0</span>
 <span class="c"># Falsifier magnitudes, each sized to trip its own budget and nothing</span>
 <span class="c"># earlier: the wheel moves stay inside BBOX_TOL so the AABB gate cannot</span>
 <span class="c"># steal the failure.</span>
@@ -472,6 +583,12 @@ METAL_IDX = <span class="n">1</span>
         ob.select_set(<span class="k">False</span>)
 
 
+<span class="k">def</span> _faces_of(verts, mat_idx):
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+
+
 <span class="k">def</span> add_box(bm, loc, scale, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
     geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
     verts = geo[<span class="s">&quot;verts&quot;</span>]
@@ -480,10 +597,35 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">for</span> v <span class="k">in</span> verts:
         p = Vector((v.co.x * scale[<span class="n">0</span>], v.co.y * scale[<span class="n">1</span>], v.co.z * scale[<span class="n">2</span>]))
         v.co = rot @ p + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
+    _faces_of(verts, mat_idx)
     <span class="k">return</span> verts
+
+
+<span class="k">def</span> add_span(bm, lo, hi, mat_idx):
+    <span class="s">&quot;&quot;&quot;Axis-aligned box from its min corner to its max corner.&quot;&quot;&quot;</span>
+    lo = Vector(lo)
+    hi = Vector(hi)
+    <span class="k">return</span> add_box(bm, (lo + hi) * <span class="n">0.5</span>, hi - lo, mat_idx)
+
+
+<span class="k">def</span> add_oriented_box(bm, a, b, scale_xy, mat_idx):
+    <span class="s">&quot;&quot;&quot;Box whose long axis runs from station ``a`` to station ``b``.
+
+    For a direction in the XZ plane the rotation is about Y alone, so the
+    box&#x27;s local Y stays world Y — a spoke&#x27;s thin side stays along the axle.
+    &quot;&quot;&quot;</span>
+    a = Vector(a)
+    b = Vector(b)
+    delta = b - a
+    length = delta.length
+    <span class="k">if</span> length &lt; <span class="n">1e-8</span>:
+        <span class="k">return</span> []
+    quat = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(delta.normalized())
+    eul = quat.to_euler(<span class="s">&quot;XYZ&quot;</span>)
+    <span class="k">return</span> add_box(
+        bm, (a + b) * <span class="n">0.5</span>, (scale_xy[<span class="n">0</span>], scale_xy[<span class="n">1</span>], length), mat_idx,
+        euler=(eul.x, eul.y, eul.z),
+    )
 
 
 <span class="k">def</span> add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
@@ -501,21 +643,19 @@ METAL_IDX = <span class="n">1</span>
     origin = Vector(loc)
     <span class="k">for</span> v <span class="k">in</span> verts:
         v.co = rot @ v.co + origin
-    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = mat_idx
+    _faces_of(verts, mat_idx)
     <span class="k">return</span> verts
 
 
-<span class="k">def</span> add_ring(bm, loc, r_mid, radial_t, width, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
-    <span class="s">&quot;&quot;&quot;Flat-sided ring with a box cross-section (felloe / tyre profile).
+<span class="k">def</span> add_ring(bm, loc, r_in, r_out, width, segments, mat_idx):
+    <span class="s">&quot;&quot;&quot;Flat-sided ring with a box cross-section, its axis along world Y.
 
     Manifold: outer tread, inner surface, and two side annuli, all quads.
-    Built in the XY plane, width along Z, then rotated/translated.
+    Built in the XZ plane with u measured from +X toward +Z, so a segment
+    count divisible by four puts a vertex at the very bottom.
     &quot;&quot;&quot;</span>
-    r_in = r_mid - radial_t
-    r_out = r_mid + radial_t
     hw = width / <span class="n">2.0</span>
+    ox, oy, oz = loc
     rings = []
     <span class="k">for</span> i <span class="k">in</span> range(segments):
         u = i * (<span class="n">2.0</span> * math.pi / segments)
@@ -523,30 +663,95 @@ METAL_IDX = <span class="n">1</span>
         su = math.sin(u)
         rings.append(
             [
-                bm.verts.new((r_in * cu, r_in * su, -hw)),
-                bm.verts.new((r_out * cu, r_out * su, -hw)),
-                bm.verts.new((r_out * cu, r_out * su, hw)),
-                bm.verts.new((r_in * cu, r_in * su, hw)),
+                bm.verts.new((ox + r_in * cu, oy - hw, oz + r_in * su)),
+                bm.verts.new((ox + r_out * cu, oy - hw, oz + r_out * su)),
+                bm.verts.new((ox + r_out * cu, oy + hw, oz + r_out * su)),
+                bm.verts.new((ox + r_in * cu, oy + hw, oz + r_in * su)),
             ]
         )
     <span class="k">for</span> i <span class="k">in</span> range(segments):
-        i2 = (i + <span class="n">1</span>) % segments
         a = rings[i]
-        b = rings[i2]
+        b = rings[(i + <span class="n">1</span>) % segments]
         <span class="k">for</span> quad <span class="k">in</span> (
             (a[<span class="n">1</span>], b[<span class="n">1</span>], b[<span class="n">2</span>], a[<span class="n">2</span>]),
             (a[<span class="n">3</span>], b[<span class="n">3</span>], b[<span class="n">0</span>], a[<span class="n">0</span>]),
             (a[<span class="n">2</span>], b[<span class="n">2</span>], b[<span class="n">3</span>], a[<span class="n">3</span>]),
             (a[<span class="n">0</span>], b[<span class="n">0</span>], b[<span class="n">1</span>], a[<span class="n">1</span>]),
         ):
-            face = bm.faces.new(quad)
-            face.material_index = mat_idx
-    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
-    rot = Euler(euler).to_matrix()
-    origin = Vector(loc)
-    <span class="k">for</span> v <span class="k">in</span> verts:
-        v.co = rot @ v.co + origin
-    <span class="k">return</span> verts
+            bm.faces.new(quad).material_index = mat_idx
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> add_lathe_y(bm, loc, profile, segments, mat_idx):
+    <span class="s">&quot;&quot;&quot;Closed solid of revolution about world Y from ``(dy, radius)`` pairs.
+
+    Capped at both ends with an n-gon that ``finish_caps`` triangulates
+    after the chamfer pass: a triangle-fan cap, chamfered 5 mm at its rim,
+    folded its centre out through the cap as non-manifold slivers.
+    &quot;&quot;&quot;</span>
+    ox, oy, oz = loc
+    rings = []
+    <span class="k">for</span> dy, r <span class="k">in</span> profile:
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segments):
+            u = <span class="n">2.0</span> * math.pi * i / segments
+            ring.append(bm.verts.new(
+                (ox + r * math.cos(u), oy + dy, oz + r * math.sin(u))))
+        rings.append(ring)
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> k <span class="k">in</span> range(segments):
+            kn = (k + <span class="n">1</span>) % segments
+            bm.faces.new((a[k], a[kn], b[kn], b[k])).material_index = mat_idx
+    bm.faces.new(list(reversed(rings[<span class="n">0</span>]))).material_index = mat_idx
+    bm.faces.new(rings[-<span class="n">1</span>]).material_index = mat_idx
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> add_l_strap(bm, corner, sx, sy, z0, z1, mat_idx):
+    <span class="s">&quot;&quot;&quot;One L-section iron strap wrapped round a vertical box corner.
+
+    ``corner`` is the wood&#x27;s outer corner in plan; ``sx``/``sy`` point out
+    of the box. Both legs bite ``STRAP_BITE`` into the wood faces. One
+    shell: two overlapping boxes would chamfer a strip onto the same line
+    twice. Each cap is one L n-gon until ``finish_caps`` triangulates it
+    after the chamfer pass; caps pre-split on the inner-corner diagonal
+    left 24 non-manifold edges per strap once the reflex corner was
+    chamfered.
+    &quot;&quot;&quot;</span>
+    xc, yc = corner
+    b, t, leg = STRAP_BITE, STRAP_T, STRAP_LEG
+    xi, yi = xc - sx * b, yc - sy * b
+    xo, yo = xc + sx * (t - b), yc + sy * (t - b)
+    plan = [
+        (xi, yi),
+        (xi - sx * leg, yi),
+        (xi - sx * leg, yo),
+        (xo, yo),
+        (xo, yi - sy * leg),
+        (xi, yi - sy * leg),
+    ]
+    lo = [bm.verts.new((x, y, z0)) <span class="k">for</span> x, y <span class="k">in</span> plan]
+    hi = [bm.verts.new((x, y, z1)) <span class="k">for</span> x, y <span class="k">in</span> plan]
+    n = len(plan)
+    <span class="k">for</span> k <span class="k">in</span> range(n):
+        kn = (k + <span class="n">1</span>) % n
+        bm.faces.new((lo[k], lo[kn], hi[kn], hi[k])).material_index = mat_idx
+    bm.faces.new(list(reversed(lo))).material_index = mat_idx
+    bm.faces.new(hi).material_index = mat_idx
+    <span class="k">return</span> lo + hi
+
+
+<span class="k">def</span> finish_caps(bm):
+    <span class="s">&quot;&quot;&quot;Triangulate every face with more than four corners.
+
+    Lathe and strap caps are built as n-gons so the chamfer pass has clean
+    rims to work on; the shipped mesh carries no n-gon.
+    &quot;&quot;&quot;</span>
+    ngons = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>]
+    <span class="k">if</span> ngons:
+        bmesh.ops.triangulate(
+            bm, faces=ngons, quad_method=<span class="s">&quot;BEAUTY&quot;</span>, ngon_method=<span class="s">&quot;BEAUTY&quot;</span>,
+        )
 
 
 <span class="k">def</span> pack_uvs(bm, margin=<span class="n">0.08</span>):
@@ -592,216 +797,207 @@ METAL_IDX = <span class="n">1</span>
             )
 
 
+<span class="k">def</span> chassis_levels():
+    <span class="s">&quot;&quot;&quot;Z of every chassis level, stacked from the axle up by named bites.&quot;&quot;&quot;</span>
+    axle_z = WHEEL_R
+    bolster_z0 = axle_z + AXLE_R - AXLE_BITE
+    bolster_z1 = bolster_z0 + BOLSTER_H
+    rail_z0 = bolster_z1 - RAIL_BITE
+    rail_z1 = rail_z0 + RAIL_H
+    floor_z0 = rail_z1 - FLOOR_BITE
+    floor_z1 = floor_z0 + FLOOR_T
+    wall_z0 = floor_z1 - WALL_SEAT
+    <span class="k">return</span> {
+        <span class="s">&quot;axle&quot;</span>: axle_z, <span class="s">&quot;bolster0&quot;</span>: bolster_z0, <span class="s">&quot;bolster1&quot;</span>: bolster_z1,
+        <span class="s">&quot;rail0&quot;</span>: rail_z0, <span class="s">&quot;rail1&quot;</span>: rail_z1, <span class="s">&quot;floor0&quot;</span>: floor_z0,
+        <span class="s">&quot;floor1&quot;</span>: floor_z1, <span class="s">&quot;wall0&quot;</span>: wall_z0, <span class="s">&quot;wall1&quot;</span>: wall_z0 + WALL_H,
+    }
+
+
+<span class="k">def</span> board_heights(z0, total, n, seam, split=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;(bottom, top) of ``n`` boards stacked in ``total`` with ``seam`` gaps.&quot;&quot;&quot;</span>
+    <span class="k">if</span> n == <span class="n">1</span>:
+        <span class="k">return</span> [(z0, z0 + total)]
+    usable = total - (n - <span class="n">1</span>) * seam
+    <span class="k">if</span> split <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> n == <span class="n">2</span>:
+        hs = [usable * split, usable * (<span class="n">1.0</span> - split)]
+    <span class="k">else</span>:
+        hs = [usable / n] * n
+    out = []
+    z = z0
+    <span class="k">for</span> h <span class="k">in</span> hs:
+        out.append((z, z + h))
+        z += h + seam
+    <span class="k">return</span> out
+
+
 <span class="k">def</span> add_wheel(bm, loc, wood, metal):
-    wood.extend(
-        add_ring(
-            bm, loc, RIM_MAJOR, RIM_RADIAL, RIM_W, WHEEL_SEGMENTS, WOOD_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-        )
-    )
+    ox, oy, oz = loc
+    wood.extend(add_ring(
+        bm, loc, RIM_MAJOR - RIM_RADIAL, RIM_OUTER, RIM_W, WHEEL_SEGMENTS, WOOD_IDX,
+    ))
     <span class="c"># Hooped, not pasted on: inner radius is RIM_OUTER - TYRE_SEAT so the</span>
-    <span class="c"># band bites into the felloe, and the tread still lands at</span>
-    <span class="c"># RIM_OUTER + TYRE_T so the tyre stays the ground contact.</span>
-    tyre_in = RIM_OUTER - TYRE_SEAT
-    tyre_out = RIM_OUTER + TYRE_T
-    metal.extend(
-        add_ring(
-            bm, loc, <span class="n">0.5</span> * (tyre_in + tyre_out), <span class="n">0.5</span> * (tyre_out - tyre_in),
-            TYRE_W, WHEEL_SEGMENTS, METAL_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-        )
-    )
-    wood.extend(
-        add_cyl(
-            bm,
-            loc,
-            HUB_R,
-            HUB_W,
-            <span class="n">12</span>,
-            WOOD_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-        )
-    )
-    <span class="c"># Spokes root inside the hub and embed into the felloe ring — no</span>
-    <span class="c"># floating ends hidden by the hub band.</span>
-    inner = HUB_R * <span class="n">0.4</span>
-    outer = RIM_MAJOR - RIM_RADIAL + <span class="n">0.008</span>
-    mid_r = <span class="n">0.5</span> * (inner + outer)
-    slen = outer - inner
+    <span class="c"># band bites into the felloe, and the tread still lands at WHEEL_R so</span>
+    <span class="c"># the tyre stays the ground contact.</span>
+    metal.extend(add_ring(
+        bm, loc, RIM_OUTER - TYRE_SEAT, WHEEL_R, TYRE_W, WHEEL_SEGMENTS, METAL_IDX,
+    ))
+    zone = NAVE_BAND_ZONE
+    half = NAVE_L / <span class="n">2.0</span>
+    wood.extend(add_lathe_y(
+        bm, loc,
+        [(-half, NAVE_R_END), (-half + zone, NAVE_R_END), (<span class="n">0.0</span>, NAVE_R_MID),
+         (half - zone, NAVE_R_END), (half, NAVE_R_END)],
+        NAVE_SEGS, WOOD_IDX,
+    ))
+    <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        metal.extend(add_ring(
+            bm, (ox, oy + s * (half - zone / <span class="n">2.0</span>), oz),
+            NAVE_R_END - NAVE_BAND_BITE, NAVE_R_END + NAVE_BAND_T,
+            NAVE_BAND_W, NAVE_SEGS, METAL_IDX,
+        ))
+    <span class="c"># Outboard washer: bites the nave&#x27;s end and the axle.</span>
+    out = <span class="n">1.0</span> <span class="k">if</span> oy &gt; <span class="n">0.0</span> <span class="k">else</span> -<span class="n">1.0</span>
+    w_mid = oy + out * (half - WASHER_BITE + WASHER_T / <span class="n">2.0</span>)
+    metal.extend(add_ring(
+        bm, (ox, w_mid, oz), AXLE_R - <span class="n">0.002</span>, WASHER_R, WASHER_T, NAVE_SEGS, METAL_IDX,
+    ))
+    <span class="c"># Spokes root inside the nave and tenon into the felloe.</span>
+    r0 = NAVE_R_MID - SPOKE_ROOT
+    r1 = RIM_MAJOR - RIM_RADIAL + SPOKE_TENON
     <span class="k">for</span> i <span class="k">in</span> range(N_SPOKES):
-        a = i * (<span class="n">2.0</span> * math.pi / N_SPOKES)
-        dx = math.cos(a)
-        dz = math.sin(a)
-        cx = loc[<span class="n">0</span>] + dx * mid_r
-        cy = loc[<span class="n">1</span>]
-        cz = loc[<span class="n">2</span>] + dz * mid_r
-        wood.extend(
-            add_box(
-                bm,
-                (cx, cy, cz),
-                (slen, SPOKE_T * <span class="n">0.85</span>, SPOKE_T),
-                WOOD_IDX,
-                euler=(<span class="n">0.0</span>, -a, <span class="n">0.0</span>),
-            )
-        )
-    metal.extend(
-        add_cyl(
-            bm,
-            loc,
-            HUB_R + <span class="n">0.010</span>,
-            <span class="n">0.016</span>,
-            <span class="n">12</span>,
-            METAL_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-        )
-    )
-    metal.extend(
-        add_cyl(
-            bm,
-            (loc[<span class="n">0</span>], loc[<span class="n">1</span>] + (HUB_W * <span class="n">0.55</span> <span class="k">if</span> loc[<span class="n">1</span>] &gt; <span class="n">0</span> <span class="k">else</span> -HUB_W * <span class="n">0.55</span>), loc[<span class="n">2</span>]),
-            <span class="n">0.022</span>,
-            <span class="n">0.018</span>,
-            <span class="n">10</span>,
-            METAL_IDX,
-            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-        )
-    )
+        a = (i + <span class="n">0.5</span>) * (<span class="n">2.0</span> * math.pi / N_SPOKES)
+        d = Vector((math.cos(a), <span class="n">0.0</span>, math.sin(a)))
+        c = Vector(loc)
+        wood.extend(add_oriented_box(bm, c + d * r0, c + d * r1,
+                                     (SPOKE_W, SPOKE_D), WOOD_IDX))
 
 
-<span class="k">def</span> build_cart_mesh(name, bevel_offset, bevel_segments):
+<span class="k">def</span> build_cart_mesh(name, bevel_offset, bevel_segments, sharp_bar=<span class="k">False</span>,
+                    wide_seams=<span class="k">False</span>, short_props=<span class="k">False</span>):
+    lv = chassis_levels()
+    bed_x0 = BED_CX - BED_L / <span class="n">2.0</span>
+    bed_x1 = BED_CX + BED_L / <span class="n">2.0</span>
     bm = bmesh.new()
     <span class="k">try</span>:
-        body = []
-        wood_wheels = []
+        wood = []
         metal = []
-        axle_z = RIM_MAJOR
-        <span class="c"># The bed rides on the axle through a bolster: axle top -&gt; bolster -&gt;</span>
-        <span class="c"># bed bottom. Never let the axle interpenetrate the slats.</span>
-        bed_z = axle_z + AXLE_R + BOLSTER_H + BED_T / <span class="n">2.0</span>
-        bed_bottom = bed_z - BED_T / <span class="n">2.0</span>
-        bed_cx = <span class="n">0.06</span>
+        axle_z = lv[<span class="s">&quot;axle&quot;</span>]
+        <span class="k">for</span> s <span class="k">in</span> (<span class="n">1.0</span>, -<span class="n">1.0</span>):
+            add_wheel(bm, (AXLE_X, s * TRACK / <span class="n">2.0</span>, axle_z), wood, metal)
+        axle_len = TRACK + NAVE_L + <span class="n">2.0</span> * AXLE_PROUD
+        metal.extend(add_cyl(
+            bm, (AXLE_X, <span class="n">0.0</span>, axle_z), AXLE_R, axle_len, <span class="n">12</span>, METAL_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        ))
 
-        add_wheel(bm, (AXLE_X, TRACK / <span class="n">2.0</span>, axle_z), wood_wheels, metal)
-        add_wheel(bm, (AXLE_X, -TRACK / <span class="n">2.0</span>, axle_z), wood_wheels, metal)
-
-        metal.extend(
-            add_cyl(
+        <span class="c"># Bolster notched onto the axle; rails on the bolster.</span>
+        wood.extend(add_span(
+            bm,
+            (AXLE_X - BOLSTER_X / <span class="n">2.0</span>, -BOLSTER_SPAN / <span class="n">2.0</span>, lv[<span class="s">&quot;bolster0&quot;</span>]),
+            (AXLE_X + BOLSTER_X / <span class="n">2.0</span>, BOLSTER_SPAN / <span class="n">2.0</span>, lv[<span class="s">&quot;bolster1&quot;</span>]),
+            WOOD_IDX,
+        ))
+        tip_x = bed_x1 + SHAFT_L
+        <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(add_span(
                 bm,
-                (AXLE_X, <span class="n">0.0</span>, axle_z),
-                AXLE_R,
-                TRACK + <span class="n">0.06</span>,
-                <span class="n">10</span>,
-                METAL_IDX,
-                euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
-            )
-        )
-
-        slat_w = BED_W / N_SLATS
-        y0 = -BED_W / <span class="n">2.0</span> + slat_w / <span class="n">2.0</span>
-        <span class="k">for</span> i <span class="k">in</span> range(N_SLATS):
-            y = y0 + i * slat_w
-            body.extend(
-                add_box(
-                    bm,
-                    (bed_cx, y, bed_z),
-                    (BED_L, slat_w * <span class="n">0.88</span>, BED_T),
-                    WOOD_IDX,
-                )
-            )
-        <span class="c"># Side walls and the front board finish flush at WALL_H; the back</span>
-        <span class="c"># board is a deliberately lower tailgate.</span>
-        <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            body.extend(
-                add_box(
-                    bm,
-                    (bed_cx, ysign * (BED_W / <span class="n">2.0</span> + WALL_T / <span class="n">2.0</span>), bed_z + WALL_H / <span class="n">2.0</span>),
-                    (BED_L * <span class="n">0.98</span>, WALL_T, WALL_H),
-                    WOOD_IDX,
-                )
-            )
-        body.extend(
-            add_box(
-                bm,
-                (bed_cx + BED_L / <span class="n">2.0</span> - WALL_T / <span class="n">2.0</span>, <span class="n">0.0</span>, bed_z + WALL_H / <span class="n">2.0</span>),
-                (WALL_T, BED_W + WALL_T * <span class="n">2.0</span>, WALL_H),
+                (bed_x0 + RAIL_BACK, s * RAIL_Y - RAIL_W / <span class="n">2.0</span>, lv[<span class="s">&quot;rail0&quot;</span>]),
+                (tip_x, s * RAIL_Y + RAIL_W / <span class="n">2.0</span>, lv[<span class="s">&quot;rail1&quot;</span>]),
                 WOOD_IDX,
-            )
-        )
-        body.extend(
-            add_box(
+            ))
+            <span class="c"># Prop leg tenoned into the rail&#x27;s underside.</span>
+            leg_x = bed_x1 - LEG_BACK
+            foot_z = SHORT_PROP_Z <span class="k">if</span> short_props <span class="k">else</span> <span class="n">0.0</span>
+            wood.extend(add_span(
                 bm,
-                (bed_cx - BED_L / <span class="n">2.0</span> + WALL_T / <span class="n">2.0</span>, <span class="n">0.0</span>, bed_z + TAILGATE_H / <span class="n">2.0</span>),
-                (WALL_T, BED_W + WALL_T * <span class="n">2.0</span>, TAILGATE_H),
+                (leg_x - LEG_T / <span class="n">2.0</span>, s * RAIL_Y - LEG_T / <span class="n">2.0</span>, foot_z),
+                (leg_x + LEG_T / <span class="n">2.0</span>, s * RAIL_Y + LEG_T / <span class="n">2.0</span>,
+                 lv[<span class="s">&quot;rail0&quot;</span>] + LEG_BITE),
                 WOOD_IDX,
-            )
-        )
-        <span class="c"># Bolsters: one sits on the axle, one forward; both carry the bed.</span>
-        <span class="k">for</span> xj <span class="k">in</span> (AXLE_X, bed_cx + BED_L * <span class="n">0.28</span>):
-            body.extend(
-                add_box(
-                    bm,
-                    (xj, <span class="n">0.0</span>, axle_z + AXLE_R + BOLSTER_H / <span class="n">2.0</span>),
-                    (<span class="n">0.055</span>, BED_W * <span class="n">0.92</span>, BOLSTER_H),
-                    WOOD_IDX,
-                )
-            )
+            ))
+        <span class="c"># Pulling bar through both shaft tips.</span>
+        bar_half = RAIL_Y + RAIL_W / <span class="n">2.0</span> + HANDLE_PROUD
+        bar = set(add_cyl(
+            bm, (tip_x - HANDLE_BACK, <span class="n">0.0</span>, <span class="n">0.5</span> * (lv[<span class="s">&quot;rail0&quot;</span>] + lv[<span class="s">&quot;rail1&quot;</span>])),
+            HANDLE_R, <span class="n">2.0</span> * bar_half, <span class="n">12</span>, WOOD_IDX,
+            euler=(math.pi / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+        ))
+        wood.extend(bar)
 
-        <span class="c"># Shafts hang under the bed front: the back end embeds 6 mm into the</span>
-        <span class="c"># slat bottom and never pokes through the bed floor.</span>
-        shaft_x = bed_cx + BED_L / <span class="n">2.0</span> + SHAFT_L / <span class="n">2.0</span> - <span class="n">0.04</span>
-        shaft_z = (
-            bed_bottom + <span class="n">0.006</span> - SHAFT_T / <span class="n">2.0</span>
-            - math.sin(SHAFT_PITCH) * (SHAFT_L / <span class="n">2.0</span>)
-        )
-        <span class="k">for</span> ysign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
-            body.extend(
-                add_box(
-                    bm,
-                    (shaft_x, ysign * <span class="n">0.12</span>, shaft_z),
-                    (SHAFT_L, SHAFT_T, SHAFT_T),
-                    WOOD_IDX,
-                    euler=(<span class="n">0.0</span>, SHAFT_PITCH, <span class="n">0.0</span>),
-                )
-            )
-            metal.extend(
-                add_box(
-                    bm,
-                    (bed_cx + BED_L / <span class="n">2.0</span> - <span class="n">0.02</span>, ysign * <span class="n">0.12</span>, bed_bottom - IRON_T / <span class="n">2.0</span>),
-                    (<span class="n">0.05</span>, <span class="n">0.042</span>, IRON_T),
-                    METAL_IDX,
-                )
-            )
+        <span class="c"># Floor: planks across the rails.</span>
+        w = (BED_L - (N_FLOOR - <span class="n">1</span>) * FLOOR_GAP) / N_FLOOR
+        <span class="k">for</span> i <span class="k">in</span> range(N_FLOOR):
+            x0 = bed_x0 + i * (w + FLOOR_GAP)
+            wood.extend(add_span(
+                bm, (x0, -BED_W / <span class="n">2.0</span>, lv[<span class="s">&quot;floor0&quot;</span>]),
+                (x0 + w, BED_W / <span class="n">2.0</span>, lv[<span class="s">&quot;floor1&quot;</span>]), WOOD_IDX,
+            ))
 
-        <span class="c"># Tie-down plates sit on top of the bed floor, fully inboard of the</span>
-        <span class="c"># walls — visible, not buried inside the slats.</span>
-        <span class="k">for</span> sx, sy <span class="k">in</span> (
-            (bed_cx - BED_L / <span class="n">2.0</span> + <span class="n">0.055</span>, -BED_W / <span class="n">2.0</span> + <span class="n">0.055</span>),
-            (bed_cx - BED_L / <span class="n">2.0</span> + <span class="n">0.055</span>, BED_W / <span class="n">2.0</span> - <span class="n">0.055</span>),
-            (bed_cx + BED_L / <span class="n">2.0</span> - <span class="n">0.055</span>, -BED_W / <span class="n">2.0</span> + <span class="n">0.055</span>),
-            (bed_cx + BED_L / <span class="n">2.0</span> - <span class="n">0.055</span>, BED_W / <span class="n">2.0</span> - <span class="n">0.055</span>),
+        <span class="c"># Side walls: stacked boards standing on the floor.</span>
+        seam = WIDE_SEAM <span class="k">if</span> wide_seams <span class="k">else</span> WALL_SEAM
+        yo = BED_W / <span class="n">2.0</span> - WALL_INSET
+        xa = bed_x0 + WALL_INSET
+        xb = bed_x1 - WALL_INSET
+        <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> z0, z1 <span class="k">in</span> board_heights(lv[<span class="s">&quot;wall0&quot;</span>], WALL_H, WALL_BOARDS, seam):
+                ylo, yhi = sorted((s * yo, s * (yo - WALL_T)))
+                wood.extend(add_span(bm, (xa, ylo, z0), (xb, yhi, z1), WOOD_IDX))
+        <span class="c"># End boards between the side walls, biting into them.</span>
+        e_half = yo - WALL_T + END_BITE
+        e_z0 = lv[<span class="s">&quot;floor1&quot;</span>] - END_SEAT
+        front = board_heights(
+            e_z0, lv[<span class="s">&quot;wall1&quot;</span>] - END_DROP - e_z0, WALL_BOARDS, seam, split=END_SPLIT,
+        )
+        tail = board_heights(e_z0, TAILGATE_H, <span class="n">1</span>, seam)
+        <span class="k">for</span> boards, xs <span class="k">in</span> (
+            (front, (xb - END_INSET - WALL_T, xb - END_INSET)),
+            (tail, (xa + END_INSET, xa + END_INSET + WALL_T)),
         ):
-            metal.extend(
-                add_box(
-                    bm,
-                    (sx, sy, bed_z + BED_T / <span class="n">2.0</span> + IRON_T / <span class="n">2.0</span>),
-                    (<span class="n">0.055</span>, <span class="n">0.055</span>, IRON_T),
-                    METAL_IDX,
-                )
-            )
+            <span class="k">for</span> z0, z1 <span class="k">in</span> boards:
+                wood.extend(add_span(
+                    bm, (xs[<span class="n">0</span>], -e_half, z0), (xs[<span class="n">1</span>], e_half, z1), WOOD_IDX,
+                ))
+
+        <span class="c"># Iron corner straps on the side walls&#x27; corners.</span>
+        sz0 = lv[<span class="s">&quot;floor1&quot;</span>] + STRAP_MARGIN
+        sz1 = lv[<span class="s">&quot;wall1&quot;</span>] - STRAP_MARGIN
+        <span class="k">for</span> cx, sx <span class="k">in</span> ((xb, <span class="n">1.0</span>), (xa, -<span class="n">1.0</span>)):
+            <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                metal.extend(add_l_strap(bm, (cx, sy * yo), sx, sy, sz0, sz1, METAL_IDX))
+
+        bm.edges.index_update()
+
+        <span class="k">def</span> sharp(edge, idx):
+            <span class="k">if</span> len(edge.link_faces) != <span class="n">2</span>:
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="c"># --sharp-bar leaves the pull bar&#x27;s rims square: 48 triangles</span>
+            <span class="c"># short, well inside the triangle band, so only the edge</span>
+            <span class="c"># budget can see it. Skipping the whole iron pass dropped</span>
+            <span class="c"># 1200 and tripped the triangle floor instead.</span>
+            <span class="k">if</span> sharp_bar <span class="k">and</span> all(v <span class="k">in</span> bar <span class="k">for</span> v <span class="k">in</span> edge.verts):
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="k">if</span> any(f.material_index != idx <span class="k">for</span> f <span class="k">in</span> edge.link_faces):
+                <span class="k">return</span> <span class="k">False</span>
+            <span class="k">return</span> edge.calc_face_angle(<span class="n">0.0</span>) &gt; BEVEL_MIN_ANGLE
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> body <span class="k">for</span> e <span class="k">in</span> v.link_edges})
-            ret = bmesh.ops.bevel(
-                bm,
-                geom=edges,
-                offset=bevel_offset,
-                segments=bevel_segments,
-                profile=<span class="n">0.5</span>,
-                affect=<span class="s">&quot;EDGES&quot;</span>,
-                clamp_overlap=<span class="k">True</span>,
+            edges = sorted(
+                (e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> sharp(e, WOOD_IDX)), key=<span class="k">lambda</span> e: e.index
             )
-            <span class="k">for</span> f <span class="k">in</span> ret.get(<span class="s">&quot;faces&quot;</span>) <span class="k">or</span> []:
-                f.material_index = WOOD_IDX
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=bevel_offset, segments=bevel_segments,
+                profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=WOOD_IDX,
+            )
+            bm.edges.index_update()
+            edges = sorted(
+                (e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> sharp(e, METAL_IDX)), key=<span class="k">lambda</span> e: e.index
+            )
+            bmesh.ops.bevel(
+                bm, geom=edges, offset=IRON_BEVEL, segments=<span class="n">1</span>, profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=METAL_IDX,
+            )
+        finish_caps(bm)
 
         xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
         ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
@@ -813,23 +1009,73 @@ METAL_IDX = <span class="n">1</span>
             v.co.x -= cx
             v.co.y -= cy
             v.co.z -= zmin
-            <span class="k">if</span> v.co.z &lt; <span class="n">0.0</span>:
-                v.co.z = <span class="n">0.0</span>
 
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        <span class="c"># Smooth across the felloe&#x27;s, nave&#x27;s and axle&#x27;s facets; hard at every</span>
+        <span class="c"># chamfer and material boundary, so a board stays a board.</span>
         <span class="k">for</span> face <span class="k">in</span> bm.faces:
-            face.smooth = <span class="k">False</span>
+            face.smooth = <span class="k">True</span>
+        <span class="k">for</span> edge <span class="k">in</span> bm.edges:
+            edge.smooth = <span class="k">True</span>
+            <span class="k">if</span> len(edge.link_faces) == <span class="n">2</span>:
+                f0, f1 = edge.link_faces
+                <span class="k">if</span> (f0.material_index != f1.material_index
+                        <span class="k">or</span> edge.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">35.0</span>)):
+                    edge.smooth = <span class="k">False</span>
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = <span class="k">False</span>
     <span class="k">finally</span>:
         bm.free()
+    paint_planks(me)
     out = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(out)
     <span class="k">return</span> out
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every plank, board, rail, leg, spoke and felloe is its own shell, so
+    each gets one seeded tone and grain along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shell_groups(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
 
 
 <span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
@@ -862,6 +1108,90 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> mat
 
 
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each board and rail (``GrainDir``), tone per piece (``PlankTone``).
+
+    Copied from showcase/wheelbarrow (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.13</span>, <span class="n">0.058</span>, <span class="n">0.020</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.40</span>, <span class="n">0.20</span>, <span class="n">0.075</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> cart_materials():
+    <span class="s">&quot;&quot;&quot;(wood, iron): shared by the check, the render and inspection.
+
+    Forged iron, dark and rusted. The first build&#x27;s metallic 1.0 at 0.50
+    roughness rendered the tyres as bright polished steel beside the wood.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;CartWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;CartIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
+
+
 <span class="k">def</span> assign_slots(obj, wood, metal):
     mats = obj.data.materials
     wanted = (wood, metal)
@@ -881,6 +1211,11 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> uv_stats(mesh):
+    <span class="s">&quot;&quot;&quot;UV bounds and the summed pairwise AABB overlap area.
+
+    A sweep over boxes sorted by min u: the same pairs and the same sum as
+    the all-pairs loop, without its quadratic cost on a 4k-face piece.
+    &quot;&quot;&quot;</span>
     uv = mesh.uv_layers.active
     <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
         <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0</span>, <span class="n">1.0</span>
@@ -892,16 +1227,17 @@ METAL_IDX = <span class="n">1</span>
         pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
         pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
         aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    aabbs.sort()
     overlap = <span class="n">0.0</span>
     <span class="k">for</span> i <span class="k">in</span> range(len(aabbs)):
         a = aabbs[i]
         <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(aabbs)):
             b = aabbs[j]
-            x0 = max(a[<span class="n">0</span>], b[<span class="n">0</span>])
+            <span class="k">if</span> b[<span class="n">0</span>] &gt;= a[<span class="n">2</span>]:
+                <span class="k">break</span>
             y0 = max(a[<span class="n">1</span>], b[<span class="n">1</span>])
-            x1 = min(a[<span class="n">2</span>], b[<span class="n">2</span>])
             y1 = min(a[<span class="n">3</span>], b[<span class="n">3</span>])
-            overlap += max(<span class="n">0.0</span>, x1 - x0) * max(<span class="n">0.0</span>, y1 - y0)
+            overlap += (min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - b[<span class="n">0</span>]) * max(<span class="n">0.0</span>, y1 - y0)
     <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
 
 
@@ -965,7 +1301,7 @@ METAL_IDX = <span class="n">1</span>
     groups = {}
     <span class="k">for</span> i <span class="k">in</span> range(len(me.vertices)):
         groups.setdefault(find(i), []).append(i)
-    <span class="k">return</span> sorted(groups.values(), key=<span class="k">lambda</span> g: -len(g))
+    <span class="k">return</span> sorted(groups.values(), key=<span class="k">lambda</span> g: (-len(g), min(g)))
 
 
 <span class="k">def</span> shell_box(me, idxs):
@@ -977,6 +1313,14 @@ METAL_IDX = <span class="n">1</span>
     }
 
 
+<span class="k">def</span> shell_mat(me, idxs):
+    member = set(idxs)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> member:
+            <span class="k">return</span> p.material_index
+    <span class="k">return</span> <span class="k">None</span>
+
+
 <span class="k">def</span> coplanar_zfight_pairs(me, groups):
     <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* — the z-fighting budget.
 
@@ -985,7 +1329,9 @@ METAL_IDX = <span class="n">1</span>
     counting those makes the budget unsatisfiable rather than meaningful.
     Z-fighting is two separate bodies landing on one plane, which is
     exactly a cross-shell pair. Combinatorics and constants copied from
-    showcase/hay-bale (do not import across pieces).
+    showcase/hay-bale (do not import across pieces); candidate pairs come
+    from a KD-tree range query at COPLANAR_CENTRE_MAX, the same pairs the
+    all-pairs loop visits.
     &quot;&quot;&quot;</span>
     owner = {}
     <span class="k">for</span> si, comp <span class="k">in</span> enumerate(groups):
@@ -993,14 +1339,17 @@ METAL_IDX = <span class="n">1</span>
             owner[vi] = si
     faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
              <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
     hits = <span class="n">0</span>
-    <span class="k">for</span> i <span class="k">in</span> range(len(faces)):
-        ni, ci, si = faces[i]
-        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(faces)):
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
             nj, cj, sj = faces[j]
             <span class="k">if</span> si == sj:
-                <span class="k">continue</span>
-            <span class="k">if</span> (ci - cj).length &gt; COPLANAR_CENTRE_MAX:
                 <span class="k">continue</span>
             <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
                 <span class="k">continue</span>
@@ -1014,7 +1363,7 @@ METAL_IDX = <span class="n">1</span>
     <span class="s">&quot;&quot;&quot;(rim, tyre) shell index pairs for each wheel, keyed by track side.
 
     Identified from the generated mesh by geometry — a shell centred on the
-    axle line whose YZ extent is a full disc — never from a construction
+    axle line whose XZ extent is a full disc — never from a construction
     constant. The tyre is the metal-indexed member of the pair.
     &quot;&quot;&quot;</span>
     metal = set()
@@ -1096,11 +1445,12 @@ METAL_IDX = <span class="n">1</span>
 
 
 <span class="k">def</span> move_one_wheel(me, delta):
-    <span class="s">&quot;&quot;&quot;Falsifier surgery: translate the +Y wheel only (rim, tyre, spokes).
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: translate the +Y wheel only, as one body.
 
-    Everything whose vertices lie on the +Y side of the axle centreline and
-    within the wheel&#x27;s radius, so the assembly moves as one body and the
-    opposite wheel still grounds the AABB.
+    Moves every shell lying wholly inside that wheel&#x27;s envelope — felloe,
+    tyre, nave, bands, washer, spokes — so the assembly stays intact and
+    the opposite wheel still grounds the AABB. The axle runs across both
+    wheels, so it is never wholly inside one and stays put.
     &quot;&quot;&quot;</span>
     groups = shell_groups(me)
     parts = wheel_shells(me, groups).get(<span class="n">1</span>)
@@ -1108,17 +1458,163 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">return</span>
     b = shell_box(me, groups[parts[<span class="s">&quot;tyre&quot;</span>]])
     cx, cz = _wheel_centre(me, groups, parts[<span class="s">&quot;rim&quot;</span>])
-    y_lo, y_hi = b[<span class="s">&quot;ymin&quot;</span>] - <span class="n">0.02</span>, b[<span class="s">&quot;ymax&quot;</span>] + <span class="n">0.02</span>
-    r_max = <span class="n">0.5</span> * (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) + <span class="n">1e-4</span>
-    <span class="k">for</span> v <span class="k">in</span> me.vertices:
-        <span class="k">if</span> <span class="k">not</span> (y_lo &lt;= v.co.y &lt;= y_hi):
+    wy = <span class="n">0.5</span> * (b[<span class="s">&quot;ymin&quot;</span>] + b[<span class="s">&quot;ymax&quot;</span>])
+    r_max = <span class="n">0.5</span> * (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) + <span class="n">1e-3</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        inside = all(
+            math.hypot(me.vertices[i].co.x - cx, me.vertices[i].co.z - cz) &lt;= r_max
+            <span class="k">and</span> abs(me.vertices[i].co.y - wy) &lt;= NAVE_L / <span class="n">2.0</span> + <span class="n">0.02</span>
+            <span class="k">for</span> i <span class="k">in</span> g
+        )
+        <span class="k">if</span> <span class="k">not</span> inside:
             <span class="k">continue</span>
-        <span class="k">if</span> math.hypot(v.co.x - cx, v.co.z - cz) &gt; r_max:
-            <span class="k">continue</span>
-        v.co.x += delta[<span class="n">0</span>]
-        v.co.y += delta[<span class="n">1</span>]
-        v.co.z += delta[<span class="n">2</span>]
+        <span class="k">for</span> i <span class="k">in</span> g:
+            co = me.vertices[i].co
+            co.x += delta[<span class="n">0</span>]
+            co.y += delta[<span class="n">1</span>]
+            co.z += delta[<span class="n">2</span>]
     me.update()
+
+
+<span class="k">def</span> lift_bed(me, dz):
+    <span class="s">&quot;&quot;&quot;Falsifier surgery: raise the box — planks, walls, straps — off its rails.
+
+    The box is every shell whose floor sits at or above the rails&#x27; top less
+    the floor&#x27;s bite, read off the mesh. Lifted by more than that bite, the
+    planks clear the rails and the box is joined to nothing below it.
+    &quot;&quot;&quot;</span>
+    groups = shell_groups(me)
+    rails = [g <span class="k">for</span> g <span class="k">in</span> groups
+             <span class="k">if</span> shell_mat(me, g) == WOOD_IDX
+             <span class="k">and</span> (shell_box(me, g)[<span class="s">&quot;xmax&quot;</span>] - shell_box(me, g)[<span class="s">&quot;xmin&quot;</span>]) &gt; BED_L + <span class="n">0.3</span>]
+    <span class="k">if</span> <span class="k">not</span> rails:
+        <span class="k">return</span>
+    rail_top = max(shell_box(me, g)[<span class="s">&quot;zmax&quot;</span>] <span class="k">for</span> g <span class="k">in</span> rails)
+    floor = rail_top - FLOOR_BITE - <span class="n">1e-4</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> shell_box(me, g)[<span class="s">&quot;zmin&quot;</span>] &lt; floor:
+            <span class="k">continue</span>
+        <span class="k">for</span> i <span class="k">in</span> g:
+            me.vertices[i].co.z += dz
+    me.update()
+
+
+<span class="k">def</span> support_audit(me, groups, wheels):
+    <span class="s">&quot;&quot;&quot;Floor contact per named support: each tyre and each prop leg.
+
+    Legs are the wood shells that stand tall and thin; counted, so a leg a
+    classifier drops cannot pass vacuously.
+    &quot;&quot;&quot;</span>
+    out = {}
+    <span class="k">for</span> side, parts <span class="k">in</span> sorted(wheels.items()):
+        tb = shell_box(me, groups[parts[<span class="s">&quot;tyre&quot;</span>]])
+        out[<span class="s">&quot;tyre+Y&quot;</span> <span class="k">if</span> side &gt; <span class="n">0</span> <span class="k">else</span> <span class="s">&quot;tyre-Y&quot;</span>] = tb[<span class="s">&quot;zmin&quot;</span>]
+    legs = []
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> shell_mat(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        b = shell_box(me, g)
+        <span class="k">if</span> (b[<span class="s">&quot;zmax&quot;</span>] - b[<span class="s">&quot;zmin&quot;</span>]) &gt; <span class="n">0.3</span> <span class="k">and</span> (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) &lt; <span class="n">0.06</span> \
+                <span class="k">and</span> (b[<span class="s">&quot;ymax&quot;</span>] - b[<span class="s">&quot;ymin&quot;</span>]) &lt; <span class="n">0.06</span>:
+            legs.append(b)
+    legs.sort(key=<span class="k">lambda</span> b: b[<span class="s">&quot;ymin&quot;</span>])
+    <span class="k">for</span> i, b <span class="k">in</span> enumerate(legs):
+        out[<span class="s">f&quot;</span><span class="s">leg</span>{i}<span class="s">&quot;</span>] = b[<span class="s">&quot;zmin&quot;</span>]
+    <span class="k">return</span> out, len(legs)
+
+
+<span class="k">def</span> wall_board_audit(me, groups):
+    <span class="s">&quot;&quot;&quot;Side-wall boards per side and the seam between each stacked pair.
+
+    Boards are the wood shells that run the bed&#x27;s length, are one board
+    thick, and stand above the rails — read off the mesh.
+    &quot;&quot;&quot;</span>
+    rails_top = -<span class="n">1.0</span>
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        b = shell_box(me, g)
+        <span class="k">if</span> shell_mat(me, g) == WOOD_IDX <span class="k">and</span> (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) &gt; BED_L + <span class="n">0.3</span>:
+            rails_top = max(rails_top, b[<span class="s">&quot;zmax&quot;</span>])
+    sides = {-<span class="n">1</span>: [], <span class="n">1</span>: []}
+    <span class="k">for</span> g <span class="k">in</span> groups:
+        <span class="k">if</span> shell_mat(me, g) != WOOD_IDX:
+            <span class="k">continue</span>
+        b = shell_box(me, g)
+        <span class="k">if</span> (b[<span class="s">&quot;xmax&quot;</span>] - b[<span class="s">&quot;xmin&quot;</span>]) &lt; <span class="n">0.8</span> * BED_L:
+            <span class="k">continue</span>
+        <span class="k">if</span> (b[<span class="s">&quot;ymax&quot;</span>] - b[<span class="s">&quot;ymin&quot;</span>]) &gt; <span class="n">2.0</span> * WALL_T <span class="k">or</span> b[<span class="s">&quot;zmin&quot;</span>] &lt; rails_top:
+            <span class="k">continue</span>
+        sides[<span class="n">1</span> <span class="k">if</span> b[<span class="s">&quot;ymin&quot;</span>] &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">1</span>].append(b)
+    seams = []
+    <span class="k">for</span> boards <span class="k">in</span> sides.values():
+        boards.sort(key=<span class="k">lambda</span> b: b[<span class="s">&quot;zmin&quot;</span>])
+        <span class="k">for</span> lo, hi <span class="k">in</span> zip(boards, boards[<span class="n">1</span>:]):
+            seams.append(hi[<span class="s">&quot;zmin&quot;</span>] - lo[<span class="s">&quot;zmax&quot;</span>])
+    <span class="k">return</span> len(sides[-<span class="n">1</span>]), len(sides[<span class="n">1</span>]), seams
+
+
+<span class="k">def</span> contact_components(me, groups):
+    <span class="s">&quot;&quot;&quot;Components of the shells&#x27; BVH-overlap graph.
+
+    Every joint in the piece is a bite, so joined members&#x27; surfaces cross.
+    One component means every member is attached to the assembly; a second
+    is a part — or a whole sub-assembly — hanging in the air.
+    &quot;&quot;&quot;</span>
+    verts = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(groups):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    polys = [[] <span class="k">for</span> _ <span class="k">in</span> groups]
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        polys[owner[p.vertices[<span class="n">0</span>]]].append(tuple(p.vertices))
+    trees = [BVHTree.FromPolygons(verts, ps) <span class="k">if</span> ps <span class="k">else</span> <span class="k">None</span> <span class="k">for</span> ps <span class="k">in</span> polys]
+    boxes = [shell_box(me, g) <span class="k">for</span> g <span class="k">in</span> groups]
+    parent = list(range(len(groups)))
+
+    <span class="k">def</span> find(a):
+        <span class="k">while</span> parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        <span class="k">return</span> a
+
+    pad = <span class="n">1e-4</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(groups)):
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(groups)):
+            a, b = boxes[i], boxes[j]
+            <span class="k">if</span> (a[<span class="s">&quot;xmin&quot;</span>] &gt; b[<span class="s">&quot;xmax&quot;</span>] + pad <span class="k">or</span> b[<span class="s">&quot;xmin&quot;</span>] &gt; a[<span class="s">&quot;xmax&quot;</span>] + pad
+                    <span class="k">or</span> a[<span class="s">&quot;ymin&quot;</span>] &gt; b[<span class="s">&quot;ymax&quot;</span>] + pad <span class="k">or</span> b[<span class="s">&quot;ymin&quot;</span>] &gt; a[<span class="s">&quot;ymax&quot;</span>] + pad
+                    <span class="k">or</span> a[<span class="s">&quot;zmin&quot;</span>] &gt; b[<span class="s">&quot;zmax&quot;</span>] + pad <span class="k">or</span> b[<span class="s">&quot;zmin&quot;</span>] &gt; a[<span class="s">&quot;zmax&quot;</span>] + pad):
+                <span class="k">continue</span>
+            <span class="k">if</span> trees[i] <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> trees[j] <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> trees[i].overlap(trees[j]):
+                ra, rb = find(i), find(j)
+                <span class="k">if</span> ra != rb:
+                    parent[rb] = ra
+    <span class="k">return</span> len({find(i) <span class="k">for</span> i <span class="k">in</span> range(len(groups))})
+
+
+<span class="k">def</span> right_angle_edges(me):
+    <span class="s">&quot;&quot;&quot;Manifold edges whose two faces meet at 90 degrees, iron and timber.
+
+    Every box and ring in the piece is chamfered, and a chamfer turns a
+    90-degree edge into two shallower ones. An edge still at 90 is one a
+    bevel pass skipped: the razor edge that renders as a hard black line.
+    Copied from showcase/crate-stack (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    counts = {WOOD_IDX: <span class="n">0</span>, METAL_IDX: <span class="n">0</span>}
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(e.calc_face_angle(<span class="n">0.0</span>) - math.pi / <span class="n">2.0</span>) &lt;= RIGHT_ANGLE_TOL:
+                idx = e.link_faces[<span class="n">0</span>].material_index
+                counts[idx] = counts.get(idx, <span class="n">0</span>) + <span class="n">1</span>
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> counts
 
 
 <span class="k">def</span> min_mat_distance(me, ia, ib):
@@ -1190,6 +1686,27 @@ METAL_IDX = <span class="n">1</span>
     <span class="k">return</span> collider
 
 
+<span class="k">def</span> texel_audit(mesh, img):
+    <span class="s">&quot;&quot;&quot;Smallest UV cell, in baked texels along its longer side.
+
+    Every face packs into its own UV cell, so a small image spreads a few
+    texels over each face and the render&#x27;s bilinear lookup reads the next
+    cell&#x27;s normals across the border. Copied from showcase/tavern-stool
+    (do not import across pieces).
+    &quot;&quot;&quot;</span>
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    res = min(img.size[<span class="n">0</span>], img.size[<span class="n">1</span>])
+    data = uv.data
+    worst = <span class="n">1e9</span>
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        us = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        vs = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        worst = min(worst, max(max(us) - min(us), max(vs) - min(vs)) * res)
+    <span class="k">return</span> worst
+
+
 <span class="k">def</span> setup_bake_image(obj, target_mat, size=BAKE_RES):
     <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
         <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
@@ -1242,24 +1759,19 @@ METAL_IDX = <span class="n">1</span>
     )
 
 
+<span class="k">def</span> _no():
+    <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+
+
 <span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, flush_tyre=<span class="k">False</span>, sink_tyre=<span class="k">False</span>,
-          float_wheel=<span class="k">False</span>, skew_wheel=<span class="k">False</span>):
+          float_wheel=<span class="k">False</span>, skew_wheel=<span class="k">False</span>, short_props=<span class="k">False</span>,
+          wide_seams=<span class="k">False</span>, lift_bed_flag=<span class="k">False</span>, sharp_bar=<span class="k">False</span>,
+          low_bake=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    low = build_cart_mesh(<span class="s">&quot;CartLow&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">2</span>)
-    high = build_cart_mesh(<span class="s">&quot;CartHigh&quot;</span>, bevel_offset=<span class="n">0.005</span>, bevel_segments=<span class="n">4</span>)
-    wood = principled(
-        <span class="s">&quot;CartWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.58</span>,
-        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.26</span>, <span class="n">0.12</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
-    )
-    <span class="c"># Wrought iron, not black plastic. At (0.13, 0.32) the tyre rendered as</span>
-    <span class="c"># a flat black band with no sheen — darker and glossier than every</span>
-    <span class="c"># sibling piece&#x27;s iron (hitching-post 0.16/0.48, wooden-ladder</span>
-    <span class="c"># 0.18/0.48). Raised to sit inside that calibration range, and the wear</span>
-    <span class="c"># colour lifted off near-black so the noise actually varies the surface.</span>
-    metal = principled(
-        <span class="s">&quot;CartIron&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.195</span>, <span class="n">0.185</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.50</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.11</span>, <span class="n">0.105</span>, <span class="n">0.10</span>, <span class="n">1.0</span>),
-    )
+    flags = dict(sharp_bar=sharp_bar, wide_seams=wide_seams, short_props=short_props)
+    low = build_cart_mesh(<span class="s">&quot;CartLow&quot;</span>, <span class="n">0.005</span>, <span class="n">1</span>, **flags)
+    high = build_cart_mesh(<span class="s">&quot;CartHigh&quot;</span>, <span class="n">0.005</span>, <span class="n">3</span>, **flags)
+    wood, metal = cart_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
     <span class="k">if</span> lift_z:
@@ -1274,9 +1786,11 @@ METAL_IDX = <span class="n">1</span>
         move_one_wheel(low.data, (<span class="n">0.0</span>, <span class="n">0.0</span>, FLOAT_WHEEL_Z))
     <span class="k">if</span> skew_wheel:
         move_one_wheel(low.data, (<span class="n">0.0</span>, SKEW_WHEEL_Y, <span class="n">0.0</span>))
+    <span class="k">if</span> lift_bed_flag:
+        lift_bed(low.data, LIFT_BED)
 
     <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;cart mesh did not build&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;cart mesh did not build&quot;</span>, <span class="n">3</span>),) + _no()
 
     base_tris = triangle_count(low.data)
     mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
@@ -1292,10 +1806,12 @@ METAL_IDX = <span class="n">1</span>
     size_y = bb[<span class="n">4</span>] - bb[<span class="n">1</span>]
     size_z = bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
 
-    img, tex = setup_bake_image(low, wood)
+    img, tex = setup_bake_image(low, wood, LOW_BAKE_RES <span class="k">if</span> low_bake <span class="k">else</span> BAKE_RES)
     <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;cart has no UV layer&quot;</span>, <span class="n">3</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;cart has no UV layer&quot;</span>, <span class="n">3</span>),) + _no()
     bake_result = bake_normal(high, low)
+    texel = texel_audit(low.data, img)
+    print(<span class="s">f&quot;</span><span class="s">measured bake_res=</span>{img.size[<span class="n">0</span>]}<span class="s"> texel_min=</span>{texel:<span class="s">.2f</span>}<span class="s">&quot;</span>)
 
     lod1 = make_lod(low, <span class="s">&quot;CartLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
     lod2 = make_lod(low, <span class="s">&quot;CartLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
@@ -1305,7 +1821,7 @@ METAL_IDX = <span class="n">1</span>
     r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
     r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
 
-    collider_src = build_cart_mesh(<span class="s">&quot;CartColSrc&quot;</span>, bevel_offset=<span class="n">0.0</span>, bevel_segments=<span class="n">1</span>)
+    collider_src = build_cart_mesh(<span class="s">&quot;CartColSrc&quot;</span>, <span class="n">0.0</span>, <span class="n">1</span>)
     collider = convex_hull_collider(collider_src, <span class="s">&quot;CartCollider&quot;</span>)
     bpy.data.objects.remove(collider_src, do_unlink=<span class="k">True</span>)
     col_tris = triangle_count(collider.data)
@@ -1357,16 +1873,14 @@ METAL_IDX = <span class="n">1</span>
     groups = shell_groups(low.data)
     zfight = coplanar_zfight_pairs(low.data, groups)
     wheels = wheel_shells(low.data, groups)
-    support_zmins = {}
+    supports, n_legs = support_audit(low.data, groups, wheels)
     seats = []
     <span class="k">for</span> side, parts <span class="k">in</span> sorted(wheels.items()):
-        tb = shell_box(low.data, groups[parts[<span class="s">&quot;tyre&quot;</span>]])
-        support_zmins[<span class="s">&quot;+Y&quot;</span> <span class="k">if</span> side &gt; <span class="n">0</span> <span class="k">else</span> <span class="s">&quot;-Y&quot;</span>] = round(tb[<span class="s">&quot;zmin&quot;</span>], <span class="n">6</span>)
         depths, _ = tyre_seat_depths(
             low.data, groups, parts[<span class="s">&quot;rim&quot;</span>], parts[<span class="s">&quot;tyre&quot;</span>], WHEEL_SEGMENTS
         )
         seats.extend(depths)
-    support_worst = max((abs(z) <span class="k">for</span> z <span class="k">in</span> support_zmins.values()), default=<span class="n">1e9</span>)
+    support_worst = max((abs(z) <span class="k">for</span> z <span class="k">in</span> supports.values()), default=<span class="n">1e9</span>)
     seat_min = min(seats) <span class="k">if</span> seats <span class="k">else</span> -<span class="n">1.0</span>
     seat_max = max(seats) <span class="k">if</span> seats <span class="k">else</span> <span class="n">1e9</span>
     seat_n = len(seats)
@@ -1389,81 +1903,74 @@ METAL_IDX = <span class="n">1</span>
             abs(a[<span class="n">0</span>] - b2[<span class="n">0</span>]), abs(a[<span class="n">1</span>] + b2[<span class="n">1</span>]), abs(a[<span class="n">2</span>] - b2[<span class="n">2</span>]),
             abs(a[<span class="n">3</span>] - b2[<span class="n">3</span>]), abs(a[<span class="n">4</span>] - b2[<span class="n">4</span>]),
         )
+    n_left, n_right, seams = wall_board_audit(low.data, groups)
+    seam_lo = min(seams) <span class="k">if</span> seams <span class="k">else</span> -<span class="n">1.0</span>
+    seam_hi = max(seams) <span class="k">if</span> seams <span class="k">else</span> <span class="n">1e9</span>
+    components = contact_components(low.data, groups)
+    right_angles = right_angle_edges(low.data)
+    n_right_angles = sum(right_angles.values())
     print(
         <span class="s">f&quot;</span><span class="s">measured zfight_pairs=</span>{zfight}<span class="s"> shells=</span>{len(groups)}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">support_zmin=</span>{support_zmins}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">supports=</span>{ {k: round(v, <span class="n">6</span>) <span class="k">for</span> k, v <span class="k">in</span> supports.items()} }<span class="s"> legs=</span>{n_legs}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">tyre_seat=[</span>{seat_min:<span class="s">.5f</span>}<span class="s">,</span>{seat_max:<span class="s">.5f</span>}<span class="s">] over </span>{seat_n}<span class="s"> stations </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">wheel_mirror=</span>{wheel_mirror*<span class="n">1000</span>:<span class="s">.5f</span>}<span class="s">mm</span><span class="s">&quot;</span>
     )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured wall_boards=(</span>{n_left}<span class="s">,</span>{n_right}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seams=[</span>{seam_lo:<span class="s">.5f</span>}<span class="s">,</span>{seam_hi:<span class="s">.5f</span>}<span class="s">] components=</span>{components}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">right_angle_edges=</span>{right_angles}<span class="s">&quot;</span>
+    )
 
     <span class="k">if</span> len(wheels) != <span class="n">2</span> <span class="k">or</span> any(len(p) != <span class="n">2</span> <span class="k">for</span> p <span class="k">in</span> wheels.values()):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">expected 2 wheels of (rim, tyre) shells, found </span>{wheels}<span class="s">&quot;</span>,
-            <span class="n">3</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">expected 2 wheels of (rim, tyre) shells, found </span>{wheels}<span class="s">&quot;</span>, <span class="n">3</span>),) + _no()
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>,
-            <span class="n">4</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>,
+        ),) + _no()
     <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct_mats != MATERIAL_COUNT:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct_mats}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> idx_counts.get(METAL_IDX, <span class="n">0</span>) &lt; METAL_FACES_MIN:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">metal faces </span>{idx_counts.get(METAL_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{METAL_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> idx_counts.get(WOOD_IDX, <span class="n">0</span>) &lt; WOOD_FACES_MIN:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>,
-            <span class="n">5</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">wood faces </span>{idx_counts.get(WOOD_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{WOOD_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>,
+        ),) + _no()
     <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>,
-            <span class="n">6</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>,
+        ),) + _no()
     <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>,
-            <span class="n">7</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + _no()
     <span class="k">if</span> (
         abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
         <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL
     ):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>,
-            <span class="n">8</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>,
+        ),) + _no()
     <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
             <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>,
             <span class="n">9</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>,
-            <span class="n">9</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>,
+        ),) + _no()
     <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>,
-            <span class="n">11</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + _no()
     <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>,
-            <span class="n">12</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>,
+        ),) + _no()
     <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
-        <span class="k">return</span> fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + _no()
     <span class="k">if</span> (
         hyg[<span class="s">&quot;loose_v&quot;</span>]
         <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>]
@@ -1472,55 +1979,85 @@ METAL_IDX = <span class="n">1</span>
         <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>]
         <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>]
     ):
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>,
             <span class="n">15</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> zfight &gt; ZFIGHT_PAIRS_MAX:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">coplanar cross-shell face pairs </span>{zfight}<span class="s"> &gt; </span>{ZFIGHT_PAIRS_MAX}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">&quot;(--flush-tyre is the designed fail: a tyre whose inner radius &quot;</span>
             <span class="s">&quot;equals the felloe&#x27;s outer radius puts both on one plane)&quot;</span>,
             <span class="n">15</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
             <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>,
             <span class="n">16</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
-    <span class="k">if</span> support_worst &gt; SUPPORT_ZMIN_EPS:
-        <span class="k">return</span> fail(
-            <span class="s">f&quot;</span><span class="s">named support zmin </span>{support_worst:<span class="s">.6f</span>}<span class="s"> &gt; </span>{SUPPORT_ZMIN_EPS}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">per-tyre zmin=</span>{support_zmins}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">&quot;(--float-wheel is the designed fail: one tyre off the floor &quot;</span>
-            <span class="s">&quot;while the other still grounds the AABB)&quot;</span>,
+        ),) + _no()
+    <span class="k">if</span> n_legs != N_LEGS <span class="k">or</span> support_worst &gt; SUPPORT_ZMIN_EPS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">named supports </span>{supports}<span class="s"> legs=</span>{n_legs}<span class="s">: worst zmin </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{support_worst:<span class="s">.6f</span>}<span class="s"> &gt; </span>{SUPPORT_ZMIN_EPS}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-wheel and --short-props are the designed fails: one &quot;</span>
+            <span class="s">&quot;support off the floor while the rest still ground the AABB)&quot;</span>,
             <span class="n">16</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
     <span class="k">if</span> gap_mw &gt; GAP_MAX:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">metal-wood gap </span>{gap_mw:<span class="s">.5f</span>}<span class="s"> &gt; </span>{GAP_MAX}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">&quot;(tyres, hubs, straps, and plates must touch the wood they mount to)&quot;</span>,
+            <span class="s">&quot;(tyres, bands, washers and straps must touch the wood they mount to)&quot;</span>,
             <span class="n">17</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
+    <span class="k">if</span> (n_left, n_right) != (WALL_BOARDS, WALL_BOARDS) <span class="k">or</span> <span class="k">not</span> (
+        WALL_SEAM_MIN &lt;= seam_lo <span class="k">and</span> seam_hi &lt;= WALL_SEAM_MAX
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">side-wall boards (</span>{n_left}<span class="s">,</span>{n_right}<span class="s">) != </span>{WALL_BOARDS}<span class="s"> per side or </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">seams [</span>{seam_lo:<span class="s">.5f</span>}<span class="s">,</span>{seam_hi:<span class="s">.5f</span>}<span class="s">] outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{WALL_SEAM_MIN}<span class="s">, </span>{WALL_SEAM_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--wide-seams is the designed fail)&quot;</span>,
+            <span class="n">17</span>,
+        ),) + _no()
     <span class="k">if</span> seat_min &lt; TYRE_SEAT_MIN <span class="k">or</span> seat_max &gt; TYRE_SEAT_MAX:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">tyre seat depth band [</span>{seat_min:<span class="s">.5f</span>}<span class="s">, </span>{seat_max:<span class="s">.5f</span>}<span class="s">] outside </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">[</span>{TYRE_SEAT_MIN}<span class="s">, </span>{TYRE_SEAT_MAX}<span class="s">] over </span>{seat_n}<span class="s"> stations </span><span class="s">&quot;</span>
             <span class="s">&quot;(--sink-tyre is the designed fail: the hoop swallowed by the &quot;</span>
             <span class="s">&quot;felloe reads as one body, not a tyre)&quot;</span>,
             <span class="n">18</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
+    <span class="k">if</span> components != CONTACT_COMPONENTS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">shell contact graph has </span>{components}<span class="s"> components, expected </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{CONTACT_COMPONENTS}<span class="s"> (--lift-bed is the designed fail: the box </span><span class="s">&quot;</span>
+            <span class="s">&quot;raised off its rails is joined to nothing below it)&quot;</span>,
+            <span class="n">18</span>,
+        ),) + _no()
     <span class="k">if</span> wheel_mirror &gt; WHEEL_MIRROR_EPS:
-        <span class="k">return</span> fail(
+        <span class="k">return</span> (fail(
             <span class="s">f&quot;</span><span class="s">wheel mirror deviation </span>{wheel_mirror*<span class="n">1000</span>:<span class="s">.4f</span>}<span class="s"> mm &gt; </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span>{WHEEL_MIRROR_EPS*<span class="n">1000</span>:<span class="s">.4f</span>}<span class="s"> mm </span><span class="s">&quot;</span>
             <span class="s">&quot;(--skew-wheel is the designed fail: the two wheels are one part &quot;</span>
             <span class="s">&quot;reflected in Y and must sit at matched X and Z)&quot;</span>,
             <span class="n">19</span>,
-        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+        ),) + _no()
+    <span class="k">if</span> n_right_angles &gt; RIGHT_ANGLE_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">right-angle edges </span>{right_angles}<span class="s"> &gt; </span>{RIGHT_ANGLE_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--sharp-bar is the designed fail: the pull bar left unchamfered)&quot;</span>,
+            <span class="n">20</span>,
+        ),) + _no()
+    <span class="k">if</span> texel &lt; TEXEL_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake texel density </span>{texel:<span class="s">.2f</span>}<span class="s"> px per UV cell &lt; </span>{TEXEL_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--low-bake is the designed fail: a 256 px bake smears each &quot;</span>
+            <span class="s">&quot;face&#x27;s normals into its neighbours&#x27;)&quot;</span>,
+            <span class="n">21</span>,
+        ),) + _no()
     <span class="k">return</span> <span class="n">0</span>, low, high, wood, tex, collider
 
 
@@ -1547,7 +2084,7 @@ METAL_IDX = <span class="n">1</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1667,6 +2204,36 @@ METAL_IDX = <span class="n">1</span>
         help=<span class="s">&quot;falsification: push one wheel out along the track so the &quot;</span>
              <span class="s">&quot;wheel-mirror budget fails&quot;</span>,
     )
+    p.add_argument(
+        <span class="s">&quot;--short-props&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: stop both prop legs 3 mm above the floor while &quot;</span>
+             <span class="s">&quot;the tyres still ground the AABB, so the named-support budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--wide-seams&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: open the wall-board seams to 10 mm (same &quot;</span>
+             <span class="s">&quot;triangles), so the board-seam budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--lift-bed&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: raise the box off its rails, so the contact &quot;</span>
+             <span class="s">&quot;graph splits and the one-assembly budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--sharp-bar&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: leave the pull bar&#x27;s rims unchamfered, so the &quot;</span>
+             <span class="s">&quot;edge-treatment budget fails&quot;</span>,
+    )
+    p.add_argument(
+        <span class="s">&quot;--low-bake&quot;</span>,
+        action=<span class="s">&quot;store_true&quot;</span>,
+        help=<span class="s">&quot;falsification: bake the normal map at 256 px, so the &quot;</span>
+             <span class="s">&quot;texel-density budget fails&quot;</span>,
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1676,6 +2243,11 @@ METAL_IDX = <span class="n">1</span>
         sink_tyre=args.sink_tyre,
         float_wheel=args.float_wheel,
         skew_wheel=args.skew_wheel,
+        short_props=args.short_props,
+        wide_seams=args.wide_seams,
+        lift_bed_flag=args.lift_bed,
+        sharp_bar=args.sharp_bar,
+        low_bake=args.low_bake,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1700,7 +2272,7 @@ METAL_IDX = <span class="n">1</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/cart-hero.webp" alt="A two-wheeled wooden cart with spoked wheels, an open box bed and long shafts resting on the floor." />
+    <img src="../assets/cart-hero.webp" alt="A wooden handcart with a planked box bed and iron corner straps on two spoked wheels, standing level on two prop legs with its shafts joined by a pull bar." />
   </dialog>
   <footer>
     <div class="statusbar">
