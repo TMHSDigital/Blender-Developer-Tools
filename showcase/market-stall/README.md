@@ -2,7 +2,7 @@
 
 A showcase piece, not an example. Procedural timber stall (corner posts
 with wrap plinths, slatted counter and shelf, back-wall planks, side
-braces that sit in the post bay, striped awning with a front roller and
+braces that run post to post, striped awning with a front roller and
 hanging valance) then the shipped pipeline: unique-cell UVs, Cycles
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
@@ -10,6 +10,17 @@ The old piece used capped foot cubes coplanar with the post bottoms and
 counter-leg pads coplanar with the legs, which z-fought at Z=0. Wrap
 plates stand off the post; counter legs go to Z=0 without a second
 bottom face.
+
+The side braces used to start at the back post and stop at mid-depth,
+0.43 m short of the front post, nearly level and joined to nothing at
+the front: in the side elevation they read as pegs hanging in the air.
+The audit that should have caught it never did, because a level brace
+fails its brace shape test and was never measured. Each brace now runs
+from the front post, just above the counter, up to the back post under
+the header, so the side bay is triangulated; the brace-in-post seat
+below asserts both ends. Wood carries grain and a tone per piece
+(`PlankTone` / `GrainDir` face attributes), and the awning is a matte
+canvas with faint dirt, not two flat paints.
 
 It asserts **budget conformance** of the generated result. It does not
 witness an API contract. "It rendered without error" is not a check.
@@ -34,7 +45,7 @@ materials, UVs, evaluated LOD, collider, or export file.
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.389, 1.011, 1.740) m ± 0.01 | (1.3892, 1.0107, 1.7402), zmin 0 |
 | Collider tris | ≤ 80 | 58 |
-| Export | written, size > 0 | 312752 / 312752 / 312728 bytes |
+| Export | written, size > 0, removed after measuring | 312400 / 312400 / 312376 bytes |
 
 ### Hygiene
 
@@ -57,6 +68,7 @@ Recomputed from the generated mesh, not asserted about the script.
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
 | Brace-vs-counter overlap | ≤ 1e-6 m³ | 0.000000 |
+| Brace-in-post seat: 2 side braces, each end past the post's inner face | ≥ 0.020 m | 0.0418 |
 | Header-post tenon engage | ≥ 0.4 × tenon | 0.0595 |
 | Awning-on-header seat | −0.002–0.010 m | 0.00378 |
 | Post plumb (XY drift) | ≤ 0.008 m | 0.00000 |
@@ -64,13 +76,14 @@ Recomputed from the generated mesh, not asserted about the script.
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. Bake pixels are
 stochastic; the gate is `has_data` plus operator `FINISHED`, not
-byte-identity. Construction uses no RNG. Export byte counts differ by
-24 B on 5.2.1 (glTF serializer), not a gated axis.
+byte-identity. Construction uses no RNG; the per-piece wood tone is
+drawn from a seeded `random.Random(TONE_SEED)`, the same every run. Export
+byte counts differ by series (glTF serializer), not a gated axis.
 
 ### Falsifiers
 
-Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
-5.2.1 and returned the same code on each.
+Each violates one named budget. Every falsifier was run on 4.5.11,
+5.1.2 and 5.2.1 and returned the same code on each.
 
 | Flag | Budget violated | Exit |
 | --- | --- | --- |
@@ -79,6 +92,7 @@ Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
 | `--lift-z` | bounding box `zmin` is 0 | 16 |
 | `--short-feet` | named wrap-foot supports at Z=0 | 16 |
 | `--low-brace` | brace-vs-counter overlap | 17 |
+| `--short-brace` | brace-in-post seat (front end stops at mid-depth, -0.4181 m) | 17 |
 | `--float-awning` | awning-on-header seat | 18 |
 | `--rake-posts` | post plumb | 19 |
 
@@ -91,6 +105,7 @@ blender --background --python market_stall.py -- --stray-vert
 blender --background --python market_stall.py -- --lift-z
 blender --background --python market_stall.py -- --short-feet
 blender --background --python market_stall.py -- --low-brace
+blender --background --python market_stall.py -- --short-brace
 blender --background --python market_stall.py -- --float-awning
 blender --background --python market_stall.py -- --rake-posts
 blender --background --python market_stall.py -- --output stall.png
@@ -123,6 +138,6 @@ hygiene and joint-fit family.
 | 14 | `--output` produced no file |
 | 15 | Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight |
 | 16 | Not grounded: bounding box `zmin` off 0, or a named wrap foot floats |
-| 17 | Joint fit: brace occupying the counter volume |
+| 17 | Joint fit: brace occupying the counter volume, or a side brace not seated in both posts |
 | 18 | Seat: awning-on-header gap |
 | 19 | Post plumb or frame plan off the stated real-world size |

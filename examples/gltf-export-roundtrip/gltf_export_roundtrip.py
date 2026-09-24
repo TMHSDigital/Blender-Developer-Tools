@@ -41,6 +41,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
 import mathutils
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 # ---------------------------------------------------------------------------
 # Crate specification. Every part is an axis-aligned box, so every base-cage
 # vertex is a closed form: center +/- size/2. The parts interpenetrate on
@@ -493,8 +498,15 @@ def render_still(authored, roundtrip, path, engine):
 
     # the authored twin keeps its materials; the re-imported twin renders with
     # whatever the file carried back — the same look through the format itself
+    # turned a quarter off square so each crate shows a side and its corner
+    # guards read as solid; dead-on, the pair was two flat front elevations
     authored.location.x = -1.35
     roundtrip.location.x = 1.35
+    # the importer leaves objects in QUATERNION mode, where rotation_euler
+    # is ignored
+    for ob in (authored, roundtrip):
+        ob.rotation_mode = 'XYZ'
+        ob.rotation_euler.z = math.radians(-22.0)
 
     pm = bpy.data.materials.new("PlaqueMetal")
     pm.use_nodes = True
@@ -515,14 +527,14 @@ def render_still(authored, roundtrip, path, engine):
         ob.location = (x, -1.55, 0.01)
         ob.data.materials.append(pm)
         scene.collection.objects.link(ob)
+        return ob
 
-    plaque("AUTHORED", -1.35)
-    plaque("ROUND-TRIP", 1.35)
+    plaques = [plaque("AUTHORED", -1.35), plaque("ROUND-TRIP", 1.35)]
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -562,7 +574,7 @@ def render_still(authored, roundtrip, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 53.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.6, 2.7)
+    cam.location = (0.0, -8.9, 3.3)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
     target.location = (0.0, 0.0, 0.75)
@@ -586,8 +598,19 @@ def render_still(authored, roundtrip, path, engine):
     # AgX would wash the olive drab and teal glow toward pastel
     # (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte), before the beauty render so a
+    # defective composition ships no artifact. The helper returns 10, which is
+    # a check code here (POSITION count), so the call site remaps it to 22.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[authored, roundtrip],
+        elements=[authored, roundtrip] + plaques,
+        stage=[floor, wall],
+    )
+    if fcode:
+        return 22
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 21
 
 
 def main():
@@ -618,10 +641,12 @@ def main():
         authored = build_crate()
         for m in make_materials():
             authored.data.materials.append(m)
-        if not render_still(authored, roundtrip, os.path.abspath(args.output),
-                            args.engine):
+        rcode = render_still(authored, roundtrip, os.path.abspath(args.output),
+                             args.engine)
+        if rcode == 21:
             print("ERROR: render produced no file", file=sys.stderr)
-            return 21
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("gltf-export-roundtrip OK")

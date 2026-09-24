@@ -9,9 +9,11 @@ They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-feet`` named post-foot
 supports, ``--low-brace`` brace-vs-counter joint fit, ``--float-awning``
-awning-on-header seat, ``--rake-posts`` post plumb.
+awning-on-header seat, ``--rake-posts`` post plumb, ``--short-brace``
+brace-in-post seat.
 
-No RNG. Slat jitter is closed-form ``sin(i)``. DECIMATE COLLAPSE
+Slat jitter is closed-form ``sin(i)``; the per-piece wood tone is drawn
+from ``random.Random(TONE_SEED)``, so it is the same every run. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
 gate is a ratio band, not an exact count.
 
@@ -22,6 +24,7 @@ gate is a ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -91,6 +94,17 @@ LIFT_Z = 0.05
 FLOAT_AWNING = 0.008
 RAKE = math.radians(2.0)
 SHORT_FOOT_Z = 0.048
+# Brace ends must sit inside the post they tenon into, at both ends: the
+# depth each end reaches past the post's inner face, along Y. The first
+# build stopped the front end at y = +0.04, 0.43 m short of the front post,
+# so the brace hung in the air behind the counter.
+BRACE_SEAT_MIN = 0.020
+BRACE_COUNT = 2
+# --short-brace stops the front end at that old mid-depth point.
+SHORT_BRACE_Y = 0.04
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 31
+WOOD_GRAIN_SCALE = 30.0
 
 WOOD_IDX = 0
 STRIPE_A_IDX = 1
@@ -259,6 +273,7 @@ def build_stall_mesh(
     float_awning=False,
     rake_posts=False,
     short_feet=False,
+    short_brace=False,
 ):
     bm = bmesh.new()
     wood_verts = []
@@ -350,10 +365,12 @@ def build_stall_mesh(
                 a = Vector((sx, py_f, 0.28))
                 b = Vector((sx, py_b, BACK_H * 0.58))
             else:
-                # On the post centreline so the brace tenons the post instead
-                # of reading as a wing in the front elevation.
-                a = Vector((sx, 0.04, COUNTER_Z + 0.14))
-                b = Vector((sx, py_b, BACK_H * 0.56))
+                # Post centre to post centre, so both ends tenon a post and
+                # the side frame is triangulated. On the post centreline so it
+                # does not read as a wing in the front elevation.
+                fy = SHORT_BRACE_Y if short_brace else py_f
+                a = Vector((sx, fy, COUNTER_Z + 0.17))
+                b = Vector((sx, py_b, BACK_H - 0.22))
             wood_verts.extend(add_oriented_box(bm, a, b, (BRACE, BRACE), WOOD_IDX))
 
         inner_w = WIDTH - 2.0 * POST - 0.024
@@ -475,7 +492,12 @@ def build_stall_mesh(
         )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood_verts for e in v.link_edges})
+            # A set of BMEdges iterates in memory order, which varies run to
+            # run and reorders the bevelled faces; sort by index.
+            bm.edges.index_update()
+            edges = sorted(
+                {e for v in wood_verts for e in v.link_edges}, key=lambda e: e.index
+            )
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -514,14 +536,166 @@ def build_stall_mesh(
     return obj
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every post, rail, slat and plank is its own shell, so each gets one
+    tone and grain running along its own long axis. The awning shells take
+    the attributes too; their materials never read them.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def stall_materials():
+    """(wood, stripe_a, stripe_b): shared by the check, the render and inspection.
+
+    The first build was one flat brown for every piece of timber and two
+    flat stripe colours, so the frame read as a single moulding. Wood now
+    carries grain and a tone per piece; the canvas carries faint dirt so
+    the stripes read as cloth, not paint.
+    """
+    wood = wood_material("StallWood")
+    stripe_a = principled(
+        "StallStripeA", (0.62, 0.075, 0.055, 1.0), 0.0, 0.78,
+        noise_scale=26.0, wear=(0.46, 0.07, 0.05, 1.0),
+    )
+    stripe_b = principled(
+        "StallStripeB", (0.80, 0.72, 0.54, 1.0), 0.0, 0.80,
+        noise_scale=26.0, wear=(0.62, 0.55, 0.40, 1.0),
+    )
+    return wood, stripe_a, stripe_b
 
 
 def assign_slots(obj, wood, stripe_a, stripe_b):
@@ -739,7 +913,23 @@ def joint_audit(me):
         if abs(0.5 * (h[1] + h[4]) - 0.5 * (p[1] + p[4])) < POST * 2.0
     ]
     engage = min(pairs) if pairs else 1.0
+    frame_posts = [p for p in posts if abs(0.5 * (p[0] + p[3])) > hx - POST]
+    # Side plates sit on the headers and pass the brace shape test too;
+    # the braces proper are the ones below the front header.
+    side_braces = [b for b in braces if b[2] < FRONT_H - 2.0 * POST]
+    seats = []
+    for brace in side_braces:
+        bx = 0.5 * (brace[0] + brace[3])
+        side = [p for p in frame_posts if abs(0.5 * (p[0] + p[3]) - bx) < POST]
+        front = [p for p in side if 0.5 * (p[1] + p[4]) < 0.0]
+        back = [p for p in side if 0.5 * (p[1] + p[4]) > 0.0]
+        if not front or not back:
+            seats.append(-1.0)
+            continue
+        seats.append(min(front[0][4] - brace[1], brace[4] - back[0][1]))
     return {
+        "brace_seat": min(seats) if seats else -1.0,
+        "side_braces": len(side_braces),
         "posts": len(posts),
         "headers": len(headers),
         "braces": len(braces),
@@ -934,6 +1124,7 @@ def check(
     low_brace=False,
     float_awning=False,
     rake_posts=False,
+    short_brace=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_stall_mesh(
@@ -944,6 +1135,7 @@ def check(
         float_awning=float_awning,
         rake_posts=rake_posts,
         short_feet=short_feet,
+        short_brace=short_brace,
     )
     high = build_stall_mesh(
         "StallHigh",
@@ -953,10 +1145,11 @@ def check(
         float_awning=float_awning,
         rake_posts=rake_posts,
         short_feet=short_feet,
+        short_brace=short_brace,
     )
-    wood = principled("StallWood", (0.42, 0.24, 0.10, 1.0), 0.0, 0.55)
-    stripe_a = principled("StallStripeA", (0.72, 0.12, 0.10, 1.0), 0.0, 0.62)
-    stripe_b = principled("StallStripeB", (0.86, 0.80, 0.62, 1.0), 0.0, 0.58)
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, stripe_a, stripe_b = stall_materials()
     assign_slots(low, wood, stripe_a, stripe_b)
     assign_slots(high, wood, stripe_a, stripe_b)
 
@@ -1017,6 +1210,14 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender sets TMPDIR from its own preference, which resolves to the
+    # working directory on a stock portable build, so every run left a .glb
+    # in the repo root. The budget only needs the byte count.
+    if os.path.isfile(export_path):
+        try:
+            os.remove(export_path)
+        except OSError:
+            pass
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1042,7 +1243,8 @@ def check(
     )
     print(
         f"measured feet={sup['feet']} foot_z={sup['foot_z']:.5f} "
-        f"brace_overlap={jnt['overlap']:.6f} engage={jnt['engage']:.4f} "
+        f"brace_overlap={jnt['overlap']:.6f} brace_seat={jnt['brace_seat']:.4f} "
+        f"side_braces={jnt['side_braces']} engage={jnt['engage']:.4f} "
         f"seat={seat:.5f} plumb={plumb:.5f} frame=({fx:.4f},{fy:.4f},{fz:.4f})"
     )
 
@@ -1131,6 +1333,12 @@ def check(
             f"posts={jnt['posts']} braces={jnt['braces']} slats={jnt['slats']}",
             17,
         ), None, None, None, None, None
+    if jnt["side_braces"] != BRACE_COUNT or jnt["brace_seat"] < BRACE_SEAT_MIN:
+        return fail(
+            f"brace seat {jnt['brace_seat']:.4f} < {BRACE_SEAT_MIN} "
+            f"side_braces={jnt['side_braces']} (want {BRACE_COUNT})",
+            17,
+        ), None, None, None, None, None
     if seat < AWNING_SEAT_MIN or seat > AWNING_SEAT_MAX:
         return fail(f"awning seat gap {seat:.5f} > {AWNING_SEAT_MAX}", 18), None, None, None, None, None
     if (
@@ -1169,7 +1377,7 @@ def render_still(low, wood, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1265,6 +1473,7 @@ def main():
     p.add_argument("--low-brace", action="store_true")
     p.add_argument("--float-awning", action="store_true")
     p.add_argument("--rake-posts", action="store_true")
+    p.add_argument("--short-brace", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1275,6 +1484,7 @@ def main():
         low_brace=args.low_brace,
         float_awning=args.float_awning,
         rake_posts=args.rake_posts,
+        short_brace=args.short_brace,
     )
     if code:
         return code

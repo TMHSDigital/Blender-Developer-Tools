@@ -366,7 +366,13 @@ def check(prop, acc, skip_mpi=False):
 
 
 def origin_marker(sc, loc):
-    """Small emissive triad at the object origin — scene evidence, not a light."""
+    """Emissive triad at the object origin — scene evidence, not a light.
+
+    The origin sits at the base centre, inside the plinth, so a bead alone is
+    buried. The X and Y stubs are centred on it and run long enough to exit
+    the plinth on both sides along the floor: where they cross, under the
+    pedestal, is the origin.
+    """
     mat = make_material(
         "OriginMark", (1.0, 0.55, 0.1), rough=0.35, metallic=0.0,
         emit=(1.0, 0.6, 0.1), estr=2.2,
@@ -383,18 +389,19 @@ def origin_marker(sc, loc):
     ob.location = loc
     sc.collection.objects.link(ob)
     # Axis stubs
-    for axis, rgb, rot in (
-        ("X", (1.0, 0.2, 0.15), (0, math.radians(90), 0)),
-        ("Y", (0.2, 1.0, 0.25), (math.radians(-90), 0, 0)),
-        ("Z", (0.25, 0.45, 1.0), (0, 0, 0)),
+    for axis, rgb, rot, depth in (
+        ("X", (1.0, 0.2, 0.15), (0, math.radians(90), 0), 1.7),
+        ("Y", (0.2, 1.0, 0.25), (math.radians(-90), 0, 0), 1.7),
+        ("Z", (0.25, 0.45, 1.0), (0, 0, 0), 0.56),
     ):
         ame = bpy.data.meshes.new(f"Axis{axis}")
         abm = bmesh.new()
         try:
             bmesh.ops.create_cone(
-                abm, cap_ends=True, segments=8, radius1=0.015, radius2=0.015, depth=0.28,
+                abm, cap_ends=True, segments=8, radius1=0.022, radius2=0.022, depth=depth,
             )
-            bmesh.ops.translate(abm, vec=(0, 0, 0.14), verts=abm.verts)
+            if axis == "Z":
+                bmesh.ops.translate(abm, vec=(0, 0, depth / 2.0), verts=abm.verts)
             abm.to_mesh(ame)
         finally:
             abm.free()
@@ -403,7 +410,8 @@ def origin_marker(sc, loc):
         )
         ame.materials.append(am)
         aob = bpy.data.objects.new(f"Axis{axis}", ame)
-        aob.location = loc
+        # X and Y are centred on the origin, lifted one radius onto the floor
+        aob.location = loc + Vector((0.0, 0.0, 0.022 if axis != "Z" else 0.0))
         aob.rotation_euler = rot
         sc.collection.objects.link(aob)
 
@@ -413,6 +421,7 @@ def placard(sc, text, loc, size=0.18):
     cu.body = text
     cu.size = size
     cu.align_x = "CENTER"
+    cu.extrude = 0.006
     ob = bpy.data.objects.new(text, cu)
     ob.location = loc
     sc.collection.objects.link(ob)
@@ -425,7 +434,7 @@ def build_studio(sc):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -554,8 +563,9 @@ def render_still(path, engine):
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    p_trap = placard(sc, "TRAP", (0.15, -1.25, 0.02), size=0.11)
-    p_keep = placard(sc, "MPI KEEP", (2.1, -1.25, 0.02), size=0.11)
+    # Big enough to read at card size; at 0.11 they vanished in the thumbnail.
+    p_trap = placard(sc, "TRAP", (0.1, -1.2, 0.02), size=0.21)
+    p_keep = placard(sc, "MPI KEEP", (2.15, -1.2, 0.02), size=0.21)
 
     floor, wall = build_studio(sc)
 

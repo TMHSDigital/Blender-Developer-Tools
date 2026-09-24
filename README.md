@@ -110,10 +110,10 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
-  <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
+  <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round well of varied grey stones with a grained wooden pyramid roof on posts, rope and a bucket on rusted iron hoops, on a dark studio floor" /></a>
   <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
   <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course ring of rounded fieldstones around a tripod of logs and glowing ash on a dark studio floor, warm wedge on the back wall" /></a>
-  <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a timber frame with post feet, slatted counter, rafters, and a striped awning on a dark studio floor, warm wedge on the back wall" /></a>
+  <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a grained timber frame with post feet, diagonal side braces, slatted counter, rafters, and a striped canvas awning on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
   <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
   <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" width="24%" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
@@ -147,7 +147,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`campfire`](showcase/campfire/) — procedural fieldstone ring, logs, and ash through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--uniform-stones` exits 20.
 
-[`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--short-brace` exits 17.
 
 [`street-lantern`](showcase/street-lantern/) — procedural hanging lantern with iron post, brass fittings, and amber cage through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -814,7 +814,7 @@ portable path is `radius`.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gltf-export-roundtrip/"><img src="examples/gltf-export-roundtrip/preview.webp" alt="glTF export round-trip: two identical olive-drab sci-fi supply crates on a dark studio floor - authored beside re-imported - with teal status strips, riveted panels, and corner armor, proving the export/import round-trip preserves the asset" /></a>
+<a href="examples/gltf-export-roundtrip/"><img src="examples/gltf-export-roundtrip/preview.webp" alt="glTF export round-trip: two identical olive-drab sci-fi supply crates turned three-quarter on a dark studio floor - authored beside re-imported - with teal status strips, riveted panels, and corner armor, proving the export/import round-trip preserves the asset" /></a>
 </td>
 <td valign="middle">
 
@@ -990,7 +990,7 @@ still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated — proving scale apply, base origin, and matrix_parent_inverse" /></a>
+<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated, origin axes crossing on the floor under each base — proving scale apply, base origin, and matrix_parent_inverse" /></a>
 </td>
 <td valign="middle">
 

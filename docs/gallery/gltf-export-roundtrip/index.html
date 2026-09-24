@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-export-roundtrip-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." />
+  <meta property="og:image:alt" content="Two identical olive equipment crates with cyan light strips, both turned to show a side, labelled AUTHORED and ROUND-TRIP." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gltf-export-roundtrip — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-export-roundtrip-hero.webp" />
-  <meta name="twitter:image:alt" content="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." />
+  <meta name="twitter:image:alt" content="Two identical olive equipment crates with cyan light strips, both turned to show a side, labelled AUTHORED and ROUND-TRIP." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A sci-fi supply crate exported to glTF and re-imported, verifying the round-trip against the depsgraph-evaluated mesh within float tolerances. Positions, loop normals, box-mapped UVs, and per-triangle material bindings must all survive; the on-disk JSON proves the +Y-up conversion and the V-flipped UV layout.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP.">
-      <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two identical olive equipment crates with cyan light strips, both turned to show a side, labelled AUTHORED and ROUND-TRIP.">
+      <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, both turned to show a side, labelled AUTHORED and ROUND-TRIP." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> export_yup bakes (x, y, z) -&gt; (x, z, -y) into the vertex data with no node rotation (probed identical on 4.5.11 and 5.1.2); export_apply ships the evaluated mesh, not the base cage; exporter/importer RNA is guarded so a future kwarg rename fails loudly.</div>
@@ -284,7 +284,8 @@
 <ul><li><strong>The +Y-up convention is baked into vertex data.</strong> glTF is +Y-up, Blender is +Z-up, and <code>export_yup=True</code> (the default) writes <code>(x, y, z) -&gt; (x, z, -y)</code> directly into the POSITION buffer — the node carries <strong>no</strong> rotation or scale. The check parses the <code>.gltf</code> JSON and asserts the accessor bounds equal the axis-converted evaluated bounding box, and that the node transform is absent. Exporting with <code>export_yup=False</code> ships raw Z-up data every engine displays lying on its back.</li><li><strong><code>export_apply=True</code> ships the evaluated mesh, not the base cage.</strong> The crate&#x27;s bevel modifier lives only in the depsgraph; with flat shading and UV seams the exporter splits exactly one vertex per evaluated loop (7,560), so the on-disk POSITION count is an exact witness. <code>export_apply=False</code> silently writes the 624-vertex cage.</li><li><strong>The round-trip is faithful.</strong> Re-imported positions (bit-exact here), loop normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin is top-left) and flipped back on import — both flips are proven by reading the <code>.bin</code> buffer directly.</li></ul>
 <p><strong>Version witness (probed on Blender 4.5.11 LTS and 5.1.2):</strong> the operator signatures are byte-identical — 109 exporter properties, 20 importer properties, same defaults — and the exported JSON differs only in <code>asset.generator</code> (&quot;Khronos glTF Blender I/O v4.5.51&quot; vs &quot;v5.1.20&quot;). The example therefore runs identical kwargs on both versions and guards forward drift explicitly: every kwarg it passes must still exist in the operator&#x27;s RNA, so a future rename fails loudly instead of drifting silently. One genuine 5.x removal surfaced during authoring: <code>Mesh.calc_normals()</code> is gone (loop normals auto-compute on read) — calling it is itself a cross-version hazard, noted in the code.</p>
 <p>Two more authoring hazards are pinned in comments: exact face-plane coincidences between kit-bashed shells weld loops on export (the count check catches it), and <code>read_factory_settings</code> mid-check frees the original mesh — touching a freed RNA raises <code>ReferenceError</code>, so counts are captured before the wipe.</p>
-<p>The render stages the authored crate beside the actual re-imported one — same bevels, same materials carried through the file itself. If the axis conversion broke, the right twin would lie on its side; if the modifier contract broke, its silhouette would lose the rounded edges.</p>
+<p>The render stages the authored crate beside the actual re-imported one — same bevels, same materials carried through the file itself. If the axis conversion broke, the right twin would lie on its side; if the modifier contract broke, its silhouette would lose the rounded edges. Both twins are turned 22° off square so each shows a side and its corner armour; dead-on, the pair read as two flat front elevations. The re-imported object comes back in <code>QUATERNION</code> rotation mode, so the render path switches it to <code>XYZ</code> before turning it — presentation only, after every check has run.</p>
+<p>The render path gates framing through <code>gallery_framing.check_framing</code>. The helper returns 10, which is already a check code here, so the call site remaps a framing violation to 22.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_export_roundtrip.py --
@@ -297,7 +298,7 @@ blender --background --python gltf_export_roundtrip.py -- --output crate.png
 blender --background --python gltf_export_roundtrip.py -- --output crate.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Exporter/importer RNA kwargs drifted</td></tr><tr><td>4</td><td>Base cage drifted from its closed form</td></tr><tr><td>5</td><td>Authored UVs drifted from the box-map closed form</td></tr><tr><td>6</td><td>Bevel produced no evaluated geometry</td></tr><tr><td>7</td><td>On-disk node/mesh/generator contract drifted</td></tr><tr><td>8</td><td>On-disk primitive/material binding count drifted</td></tr><tr><td>9</td><td>On-disk POSITION bounds ≠ axis-converted bbox (<code>--no-yup</code> lands here)</td></tr><tr><td>10</td><td>On-disk POSITION count ≠ evaluated loop count</td></tr><tr><td>11</td><td>On-disk UV V-flip failed</td></tr><tr><td>12</td><td>Re-import did not produce exactly one mesh</td></tr><tr><td>13</td><td>Re-imported object carries a transform</td></tr><tr><td>14</td><td>Material names drifted on re-import</td></tr><tr><td>15</td><td>Re-import vert count ≠ evaluated loop count</td></tr><tr><td>16</td><td>Round-trip position drift</td></tr><tr><td>17</td><td>Round-trip normal drift</td></tr><tr><td>18</td><td>Round-trip UV drift</td></tr><tr><td>19</td><td>Re-import triangle count drifted</td></tr><tr><td>20</td><td>Per-triangle material bindings drifted</td></tr><tr><td>21</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Exporter/importer RNA kwargs drifted</td></tr><tr><td>4</td><td>Base cage drifted from its closed form</td></tr><tr><td>5</td><td>Authored UVs drifted from the box-map closed form</td></tr><tr><td>6</td><td>Bevel produced no evaluated geometry</td></tr><tr><td>7</td><td>On-disk node/mesh/generator contract drifted</td></tr><tr><td>8</td><td>On-disk primitive/material binding count drifted</td></tr><tr><td>9</td><td>On-disk POSITION bounds ≠ axis-converted bbox (<code>--no-yup</code> lands here)</td></tr><tr><td>10</td><td>On-disk POSITION count ≠ evaluated loop count</td></tr><tr><td>11</td><td>On-disk UV V-flip failed</td></tr><tr><td>12</td><td>Re-import did not produce exactly one mesh</td></tr><tr><td>13</td><td>Re-imported object carries a transform</td></tr><tr><td>14</td><td>Material names drifted on re-import</td></tr><tr><td>15</td><td>Re-import vert count ≠ evaluated loop count</td></tr><tr><td>16</td><td>Round-trip position drift</td></tr><tr><td>17</td><td>Round-trip normal drift</td></tr><tr><td>18</td><td>Round-trip UV drift</td></tr><tr><td>19</td><td>Re-import triangle count drifted</td></tr><tr><td>20</td><td>Per-triangle material bindings drifted</td></tr><tr><td>21</td><td><code>--output</code> produced no file</td></tr><tr><td>22</td><td>Gallery framing violation (render path only; the helper&#x27;s 10, remapped)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-yup</code>.</p>
     </section>
     <section class="detail-section src">
@@ -348,6 +349,11 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
 <span class="k">import</span> mathutils
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 <span class="c"># ---------------------------------------------------------------------------</span>
 <span class="c"># Crate specification. Every part is an axis-aligned box, so every base-cage</span>
@@ -801,8 +807,15 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
 
     <span class="c"># the authored twin keeps its materials; the re-imported twin renders with</span>
     <span class="c"># whatever the file carried back — the same look through the format itself</span>
+    <span class="c"># turned a quarter off square so each crate shows a side and its corner</span>
+    <span class="c"># guards read as solid; dead-on, the pair was two flat front elevations</span>
     authored.location.x = -<span class="n">1.35</span>
     roundtrip.location.x = <span class="n">1.35</span>
+    <span class="c"># the importer leaves objects in QUATERNION mode, where rotation_euler</span>
+    <span class="c"># is ignored</span>
+    <span class="k">for</span> ob <span class="k">in</span> (authored, roundtrip):
+        ob.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
+        ob.rotation_euler.z = math.radians(-<span class="n">22.0</span>)
 
     pm = bpy.data.materials.new(<span class="s">&quot;PlaqueMetal&quot;</span>)
     pm.use_nodes = <span class="k">True</span>
@@ -823,14 +836,14 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
         ob.location = (x, -<span class="n">1.55</span>, <span class="n">0.01</span>)
         ob.data.materials.append(pm)
         scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
 
-    plaque(<span class="s">&quot;AUTHORED&quot;</span>, -<span class="n">1.35</span>)
-    plaque(<span class="s">&quot;ROUND-TRIP&quot;</span>, <span class="n">1.35</span>)
+    plaques = [plaque(<span class="s">&quot;AUTHORED&quot;</span>, -<span class="n">1.35</span>), plaque(<span class="s">&quot;ROUND-TRIP&quot;</span>, <span class="n">1.35</span>)]
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -870,7 +883,7 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">53.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.6</span>, <span class="n">2.7</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.9</span>, <span class="n">3.3</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
     target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.75</span>)
@@ -894,8 +907,19 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
     <span class="c"># AgX would wash the olive drab and teal glow toward pastel</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte), before the beauty render so a</span>
+    <span class="c"># defective composition ships no artifact. The helper returns 10, which is</span>
+    <span class="c"># a check code here (POSITION count), so the call site remaps it to 22.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[authored, roundtrip],
+        elements=[authored, roundtrip] + plaques,
+        stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> <span class="n">22</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">21</span>
 
 
 <span class="k">def</span> main():
@@ -926,10 +950,12 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
         authored = build_crate()
         <span class="k">for</span> m <span class="k">in</span> make_materials():
             authored.data.materials.append(m)
-        <span class="k">if</span> <span class="k">not</span> render_still(authored, roundtrip, os.path.abspath(args.output),
-                            args.engine):
+        rcode = render_still(authored, roundtrip, os.path.abspath(args.output),
+                             args.engine)
+        <span class="k">if</span> rcode == <span class="n">21</span>:
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">21</span>
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;gltf-export-roundtrip OK&quot;</span>)
@@ -946,7 +972,7 @@ KEY_DIGITS = <span class="n">4</span>          <span class="c"># position-key gr
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, labelled AUTHORED and ROUND-TRIP." />
+    <img src="../assets/gltf-export-roundtrip-hero.webp" alt="Two identical olive equipment crates with cyan light strips, both turned to show a side, labelled AUTHORED and ROUND-TRIP." />
   </dialog>
   <footer>
     <div class="statusbar">
