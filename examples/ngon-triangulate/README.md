@@ -36,6 +36,39 @@ Error: Tangent space can only be computed for tris/quads, aborting
 survives a reword of the surrounding sentence but still fails if the
 abort stops happening at all.
 
+**Affected versions:** all three targeted series. Nothing here is
+version-gated: the abort, the counts and both falsifier exits are the
+same on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS, so neither falsifier is
+expected to exit 0 anywhere.
+
+**The UV map comes first.** `calc_tangents` checks for a UV map before
+it looks at face sizes. On a mesh with no UV layer it fails with a
+different message, and the n-gon abort is never reached:
+
+```
+Error: Tangent space computation needs a UV Map, "(null)" not found, aborting   # 4.5.11 LTS
+Error: Tangent space computation needs a UV Map, "" not found, aborting         # 5.1.2, 5.2.1 LTS
+```
+
+So a mesh that has both problems shows only the UV error; add a UV map
+and the `tris/quads` abort appears next. `build()` adds `UVMap` so the
+check witnesses the n-gon abort, and because the match is on
+`tris/quads`, a missing UV map would fail the check (exit 4) rather than
+pass it.
+
+### Re-verified
+
+Run on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS with a scratch probe that
+repeats the construction:
+
+| Claim | 4.5.11 | 5.1.2 | 5.2.1 |
+| --- | --- | --- | --- |
+| n-gon + UV map: `tris/quads` abort, byte-identical text | yes | yes | yes |
+| n-gon, no UV map: UV-map error instead | `"(null)"` | `""` | `""` |
+| glTF index count / 3, dissolved mesh | 12 | 12 | 12 |
+| glTF index count / 3, plain cube | 12 | 12 | 12 |
+| default / `--no-dissolve` / `--skip-triangulate` exit | 0 / 3 / 4 | 0 / 3 / 4 | 0 / 3 / 4 |
+
 ## Falsifiers
 
 Each flag breaks one stage and lands on the assertion that stage feeds.
@@ -70,7 +103,7 @@ against it.
 | Code | Meaning |
 | --- | --- |
 | 0 | Success |
-| 1 | Uncaught exception (FATAL wrapper) |
+| 1 | Uncaught exception (the `__main__` wrapper prints `ERROR: <type>: <message>`) |
 | 2 | argparse / usage |
 | 3 | Pathology missing: n-gon count, loops, or face count (`--no-dissolve` lands here) |
 | 4 | `calc_tangents` / triangulate handling (`--skip-triangulate` lands here, via the real handling assertion) |
