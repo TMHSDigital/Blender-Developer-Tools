@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/parent-inverse-orrery-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A brass orrery: a pale central sun on a stand with three planets on arms and orbit rings." />
+  <meta property="og:image:alt" content="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="parent-inverse-orrery — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/parent-inverse-orrery-hero.webp" />
-  <meta name="twitter:image:alt" content="A brass orrery: a pale central sun on a stand with three planets on arms and orbit rings." />
+  <meta name="twitter:image:alt" content="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Data-API parenting for a brass orrery — the keep-world idiom (child.parent = pivot; child.matrix_parent_inverse = pivot.matrix_world.inverted()) carrying arms, planets, and a two-level moon through spinning pivots.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery: a pale central sun on a stand with three planets on arms and orbit rings.">
-      <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a pale central sun on a stand with three planets on arms and orbit rings." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon.">
+      <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Bare `.parent =` really does teleport the child; the idiom restores world position exactly; matrix_world stays stale until view_layer.update(); every orbit lands on its closed form.</div>
@@ -292,9 +292,11 @@ blender --background --python parent_inverse_orrery.py -- --skip-mpi
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
 blender --background --python parent_inverse_orrery.py -- --output orrery.png
 blender --background --python parent_inverse_orrery.py -- --output orrery.png --engine cycles</code></pre>
+<h2>Staging</h2>
+<p>Render path only; the rig the checks measure is untouched. The still uses the <code>Standard</code> view transform: under the default AgX the orange sun clipped to a peach-white bulb and read as a lamp. Lighting follows the house recipe (shaped key, faint fill, rim, warm wedge on the back wall) on the dark matte studio floor; the old rig (key 1500 W, fill 500 W, a glossy grey floor) lit the frame to mean luma 0.33, above the gallery&#x27;s calibration band. The render path gates framing through <code>gallery_framing.check_framing</code> (exit 10), which it never did before.</p>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Bare parenting did not jump</td></tr><tr><td>4</td><td>Keep-world idiom off</td></tr><tr><td>5</td><td>Stale <code>matrix_world</code> contract broken</td></tr><tr><td>6</td><td>Planet off closed-form orbit (<code>--skip-mpi</code> lands here)</td></tr><tr><td>7</td><td>Moon off closed-form orbit</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Bare parenting did not jump</td></tr><tr><td>4</td><td>Keep-world idiom off</td></tr><tr><td>5</td><td>Stale <code>matrix_world</code> contract broken</td></tr><tr><td>6</td><td>Planet off closed-form orbit (<code>--skip-mpi</code> lands here)</td></tr><tr><td>7</td><td>Moon off closed-form orbit</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation (render path only)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--skip-mpi</code>.</p>
     </section>
     <section class="detail-section src">
@@ -333,6 +335,11 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Vector, Matrix
+
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
 
 <span class="c"># (name, orbit radius, arm height, orbit angle deg, sphere radius, color RGBA)</span>
 PLANETS = [
@@ -550,7 +557,9 @@ EPS = <span class="n">1e-5</span>
     scene = bpy.context.scene
     brass = principled(<span class="s">&quot;Brass&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.40</span>, <span class="n">0.16</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.32</span>)
     dark_bronze = principled(<span class="s">&quot;Bronze&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.11</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.45</span>)
-    sun_mat = principled(<span class="s">&quot;SunGlow&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.48</span>, <span class="n">0.10</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.4</span>, emission=<span class="n">3.2</span>)
+    <span class="c"># At emission 3.2 the sun clipped to a peach-white bulb and read as a</span>
+    <span class="c"># lamp; a lower strength keeps it an orange star against the brass.</span>
+    sun_mat = principled(<span class="s">&quot;SunGlow&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.42</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.4</span>, emission=<span class="n">1.3</span>)
     moon_mat = principled(<span class="s">&quot;MoonSilver&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.84</span>, <span class="n">0.88</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.25</span>)
 
     rig[<span class="s">&quot;sun&quot;</span>].data.materials.append(sun_mat)
@@ -572,11 +581,11 @@ EPS = <span class="n">1e-5</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.05</span>, <span class="n">0.06</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.42</span>)
+    fmat = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -600,9 +609,13 @@ EPS = <span class="n">1e-5</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">1500.0</span>, <span class="n">6.5</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">40</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">3.8</span>, <span class="n">2.6</span>), <span class="n">500.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.83</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">48</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.0</span>, <span class="n">4.5</span>, <span class="n">3.4</span>), <span class="n">900.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.68</span>, <span class="n">0.38</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">170</span>))
+    <span class="c"># House recipe (docs/VISUAL-STYLE.md): shaped warm key, faint cool fill,</span>
+    <span class="c"># rim, warm wedge on the back wall. The old rig (key 1500, fill 500) lit</span>
+    <span class="c"># the stage to mean luma 0.33, above the calibration set&#x27;s band.</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">620.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.94</span>, <span class="n">0.86</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">40</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.8</span>, -<span class="n">3.8</span>, <span class="n">2.6</span>), <span class="n">120.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.83</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">48</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.0</span>, <span class="n">4.5</span>, <span class="n">3.4</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.68</span>, <span class="n">0.38</span>), (-<span class="n">70</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">420.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">40.0</span>
@@ -624,8 +637,20 @@ EPS = <span class="n">1e-5</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
+    <span class="c"># AgX washes the orange sun and the planet colours toward pastel</span>
+    <span class="c"># (docs/VISUAL-STYLE.md); the sun read as a peach bulb under it.</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    orrery = [o <span class="k">for</span> o <span class="k">in</span> scene.objects
+              <span class="k">if</span> o.type <span class="k">in</span> {<span class="s">&#x27;MESH&#x27;</span>, <span class="s">&#x27;CURVE&#x27;</span>} <span class="k">and</span> o.name <span class="k">not</span> <span class="k">in</span> {<span class="s">&quot;Floor&quot;</span>, <span class="s">&quot;Wall&quot;</span>}]
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=orrery, elements=orrery, stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">8</span>
 
 
 <span class="k">def</span> main():
@@ -644,9 +669,11 @@ EPS = <span class="n">1e-5</span>
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(rig, os.path.abspath(args.output), args.engine):
+        rcode = render_still(rig, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode == <span class="n">8</span>:
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;parent-inverse-orrery OK&quot;</span>)
@@ -663,7 +690,7 @@ EPS = <span class="n">1e-5</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a pale central sun on a stand with three planets on arms and orbit rings." />
+    <img src="../assets/parent-inverse-orrery-hero.webp" alt="A brass orrery: a glowing yellow sun on a stand with blue, green and orange planets on arms, orbit rings and a silver moon." />
   </dialog>
   <footer>
     <div class="statusbar">

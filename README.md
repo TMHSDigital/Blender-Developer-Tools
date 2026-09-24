@@ -114,11 +114,11 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
   <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course ring of rounded fieldstones around a tripod of logs and glowing ash on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a grained timber frame with post feet, diagonal side braces, slatted counter, rafters, and a striped canvas awning on a dark studio floor, warm wedge on the back wall" /></a>
-  <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with brass collars, a braced arm, and a muntined amber cage on a dark studio floor" /></a>
+  <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with aged brass collars, a knee brace tenoned into post and arm, and a muntined amber cage on a dark studio floor" /></a>
   <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
   <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" width="24%" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
   <a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" width="24%" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
-  <a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" width="24%" alt="Watchtower: a timber lookout with X-braces, hatch ladder, plank platform, and a coursed shake roof on a dark studio floor" /></a>
+  <a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" width="24%" alt="Watchtower: a grained timber lookout with X-braces, hatch ladder, a plank platform on deck girts, and a coursed shake roof on a dark studio floor" /></a>
   <a href="showcase/cart/"><img src="showcase/cart/preview.webp" width="24%" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
   <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
   <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a wooden tray with walls of stacked boards and iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
@@ -149,7 +149,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`market-stall`](showcase/market-stall/) — procedural timber stall with striped awning and counter through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--short-brace` exits 17.
 
-[`street-lantern`](showcase/street-lantern/) — procedural hanging lantern with iron post, brass fittings, and amber cage through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`street-lantern`](showcase/street-lantern/) — procedural hanging lantern with iron post, brass fittings, and amber cage through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--shallow-brace` exits 20.
 
 [`treasure-chest`](showcase/treasure-chest/) — procedural slatted chest with iron bands, corner brackets, and an open lid through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -157,7 +157,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 [`fence-kit`](showcase/fence-kit/) — procedural post-and-rail fence section through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
-[`watchtower`](showcase/watchtower/) — procedural timber lookout with X-braces, hatch ladder, platform, and coursed shake roof through the same pipeline. Falsifier `--skip-decimate` exits 9.
+[`watchtower`](showcase/watchtower/) — procedural timber lookout with X-braces, hatch ladder, platform, and coursed shake roof through the same pipeline. Falsifiers `--skip-decimate` exits 9, `--short-joists` exits 17.
 
 [`cart`](showcase/cart/) — procedural two-wheel wooden cart with spoked wheels, slatted bed, and shafts through the same pipeline. Falsifier `--skip-decimate` exits 9.
 
@@ -203,7 +203,7 @@ or expand a category below.
 
 <p align="center">
   <a href="examples/grease-pencil-rosette/"><img src="examples/grease-pencil-rosette/preview.webp" width="24%" alt="Grease pencil rosette: five nested neon rose curves glowing against a dark studio wall" /></a>
-  <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun and three planets" /></a>
+  <a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" width="24%" alt="Parent inverse orrery: a brass tabletop orrery with a glowing yellow sun and three planets" /></a>
   <a href="examples/compositor-glare/"><img src="examples/compositor-glare/preview.webp" width="24%" alt="Compositor glare: three neon rings with colored bloom halos" /></a>
   <a href="examples/image-pixels-testcard/"><img src="examples/image-pixels-testcard/preview.webp" width="24%" alt="Image pixels testcard: a studio monitor showing a procedural broadcast test card" /></a>
 </p>
@@ -706,7 +706,7 @@ ring pinned and the tip deflected. A straight tube is a failure.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
+<a href="examples/parent-inverse-orrery/"><img src="examples/parent-inverse-orrery/preview.webp" alt="Parent inverse orrery: a brass tabletop orrery with a glowing yellow sun, three planets on pivot arms inside brass orbit rings, and a silver moon, on a dark studio floor" /></a>
 </td>
 <td valign="middle">
 

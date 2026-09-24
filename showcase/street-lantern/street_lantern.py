@@ -6,14 +6,15 @@ high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 The arm axis, drop length, and roof stack are one closed-form chain: the
 roof peak stays below the arm, the hanger is the arm's far station, and
-the brace is an oriented box between a post-radius station and an arm
-station. The square pyramid is lofted on the cage axes, not a 4-gon cone.
+the brace is an oriented box tenoned into the post wall and into the
+arm's lower half. The square pyramid is lofted on the cage axes, not a 4-gon cone.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--float-brace`` brace-to-arm
-joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb.
+joint, ``--sink-arm`` arm-over-roof clearance, ``--rake-post`` post plumb,
+``--shallow-brace`` brace bite into post and arm (exit 20).
 
 No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
@@ -118,6 +119,13 @@ ARM_ROOF_CLEAR_MIN = 0.008
 HANGER_ROOF_GAP_MAX = 0.004
 PLUMB_MAX = 0.008
 SINK_ARM = 0.14
+# Each brace end must bite into its host: the deepest brace vertex inside the
+# post shell, and inside the arm shell, measured as signed distance to that
+# shell's surface. The first build parked the post end 0.35 x BRACE_T outside
+# the post and the arm end under the arm, so one bevelled corner grazed each
+# host and the brace read as a loose stick (it measured -0.0059 m into the
+# post and 0.0000 m into the arm).
+BRACE_BITE_MIN = 0.004
 RAKE = math.radians(8.0)
 
 METAL_IDX = 0
@@ -286,6 +294,7 @@ def build_lantern_mesh(
     float_brace=False,
     sink_arm=False,
     rake_post=False,
+    shallow_brace=False,
 ):
     bm = bmesh.new()
     try:
@@ -383,8 +392,15 @@ def build_lantern_mesh(
 
         brace_z = arm_z - BRACE_POST_DROP
         post_r = post_radius_at(brace_z)
-        p_post = Vector((0.0, post_r + BRACE_T * 0.35, brace_z))
-        p_arm = Vector((0.0, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R - BRACE_T * 0.20))
+        if shallow_brace:
+            # The first build: ends parked on the host surfaces, not in them.
+            p_post = Vector((0.0, post_r + BRACE_T * 0.35, brace_z))
+            p_arm = Vector((0.0, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R - BRACE_T * 0.20))
+        else:
+            # Tenoned: the post end starts half a brace inside the post wall,
+            # the arm end sits on the arm's lower half, so both ends bite.
+            p_post = Vector((0.0, post_r - BRACE_T * 0.5, brace_z))
+            p_arm = Vector((0.0, ARM_LEN * BRACE_ARM_FRAC, arm_z - ARM_R * 0.35))
         if float_brace:
             p_arm = p_post + Vector((0.0, 0.11, -0.06))
         bevel_verts.extend(add_oriented_box(bm, p_post, p_arm, (BRACE_T, BRACE_T), METAL_IDX))
@@ -523,7 +539,12 @@ def build_lantern_mesh(
         )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in bevel_verts for e in v.link_edges})
+            # A set of BMEdges iterates in memory order, which varies run to
+            # run and reorders the bevelled faces; sort by index.
+            bm.edges.index_update()
+            edges = sorted(
+                {e for v in bevel_verts for e in v.link_edges}, key=lambda e: e.index
+            )
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -604,6 +625,24 @@ def principled(name, color, metallic, roughness, emission=None, roughness_var=0.
         nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
         nt.links.new(ramp.outputs["Color"], bsdf.inputs["Roughness"])
     return mat
+
+
+def lantern_materials():
+    """(metal, glass, brass): shared by the check, the render and inspection.
+
+    The first build's brass was bright polished gold (0.72, 0.46, 0.14,
+    roughness 0.28) and outshone the lamp; it is aged, rougher brass now.
+    """
+    metal = principled("LanternMetal", (0.045, 0.048, 0.055, 1.0), 0.88, 0.40, roughness_var=0.12)
+    glass = principled(
+        "LanternGlass",
+        (0.62, 0.32, 0.08, 1.0),
+        0.0,
+        0.22,
+        emission=((0.85, 0.42, 0.10, 1.0), 0.45),
+    )
+    brass = principled("LanternBrass", (0.44, 0.29, 0.10, 1.0), 0.9, 0.44, roughness_var=0.14)
+    return metal, glass, brass
 
 
 def assign_slots(obj, metal, glass, brass):
@@ -793,6 +832,32 @@ def shell_bvh_gap(me, ga, gb):
         bm_b.free()
 
 
+def shell_bite(me, ga, gb):
+    """Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is."""
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_b.faces:
+            return -1e9
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -1e9
+        for i in ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            if loc is None:
+                continue
+            depth = dist if (co - loc).dot(nrm) < 0.0 else -dist
+            best = max(best, depth)
+        return best
+    finally:
+        bm_b.free()
+
+
 def joint_audit(me):
     """Brace reaches the arm; roof stays under the arm."""
     groups = shells(me)
@@ -827,6 +892,10 @@ def joint_audit(me):
     brace_gap = 99.0
     if arms and braces:
         brace_gap = min(shell_bvh_gap(me, b[0], a[0]) for b in braces for a in arms)
+    post_bite = arm_bite = -1.0
+    if braces and posts and arms:
+        post_bite = min(shell_bite(me, b[0], posts[0][0]) for b in braces)
+        arm_bite = min(shell_bite(me, b[0], arms[0][0]) for b in braces)
     roof_zmax = max((a[5] for _g, a in roofs), default=0.0)
     arm_zmin = min((a[2] for _g, a in arms), default=99.0)
     hanger_zmin = min((a[2] for _g, a in hangers), default=99.0)
@@ -838,6 +907,8 @@ def joint_audit(me):
         "posts": len(posts),
         "hangers": len(hangers),
         "brace_gap": brace_gap,
+        "post_bite": post_bite,
+        "arm_bite": arm_bite,
         "arm_roof_clear": arm_zmin - roof_zmax,
         "hanger_roof_gap": hanger_zmin - roof_zmax,
     }
@@ -992,6 +1063,7 @@ def check(
     float_brace=False,
     sink_arm=False,
     rake_post=False,
+    shallow_brace=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_lantern_mesh(
@@ -1001,6 +1073,7 @@ def check(
         float_brace=float_brace,
         sink_arm=sink_arm,
         rake_post=rake_post,
+        shallow_brace=shallow_brace,
     )
     high = build_lantern_mesh(
         "LanternHigh",
@@ -1009,16 +1082,9 @@ def check(
         float_brace=float_brace,
         sink_arm=sink_arm,
         rake_post=rake_post,
+        shallow_brace=shallow_brace,
     )
-    metal = principled("LanternMetal", (0.045, 0.048, 0.055, 1.0), 0.88, 0.34, roughness_var=0.08)
-    glass = principled(
-        "LanternGlass",
-        (0.62, 0.32, 0.08, 1.0),
-        0.0,
-        0.22,
-        emission=((0.85, 0.42, 0.10, 1.0), 0.45),
-    )
-    brass = principled("LanternBrass", (0.72, 0.46, 0.14, 1.0), 1.0, 0.28, roughness_var=0.07)
+    metal, glass, brass = lantern_materials()
     assign_slots(low, metal, glass, brass)
     assign_slots(high, metal, glass, brass)
 
@@ -1079,6 +1145,14 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender sets TMPDIR from its own preference, which resolves to the
+    # working directory on a stock portable build, so every run left a .glb
+    # behind. The budget only needs the byte count.
+    if os.path.isfile(export_path):
+        try:
+            os.remove(export_path)
+        except OSError:
+            pass
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1104,6 +1178,7 @@ def check(
     )
     print(
         f"measured brace_gap={jnt['brace_gap']:.5f} "
+        f"post_bite={jnt['post_bite']:.5f} arm_bite={jnt['arm_bite']:.5f} "
         f"arm_roof_clear={jnt['arm_roof_clear']:.5f} "
         f"hanger_roof_gap={jnt['hanger_roof_gap']:.5f} "
         f"plumb={plumb:.5f} post_size=({pxy:.4f},{pz:.4f}) "
@@ -1220,6 +1295,14 @@ def check(
             f"plumb {plumb:.5f} post_size=({pxy:.4f},{pz:.4f})",
             19,
         ), None, None, None, None, None
+    # Last, so a raked post (plumb, 19) is reported as plumb, not as a brace
+    # that no longer reaches it.
+    if min(jnt["post_bite"], jnt["arm_bite"]) < BRACE_BITE_MIN:
+        return fail(
+            f"brace bite post={jnt['post_bite']:.5f} arm={jnt['arm_bite']:.5f} "
+            f"< {BRACE_BITE_MIN}",
+            20,
+        ), None, None, None, None, None
     return 0, low, high, metal, tex, collider
 
 
@@ -1246,7 +1329,7 @@ def render_still(low, metal, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1337,6 +1420,7 @@ def main():
     p.add_argument("--stray-vert", action="store_true")
     p.add_argument("--lift-z", action="store_true")
     p.add_argument("--float-brace", action="store_true")
+    p.add_argument("--shallow-brace", action="store_true")
     p.add_argument("--sink-arm", action="store_true")
     p.add_argument("--rake-post", action="store_true")
     args = p.parse_args(argv)
@@ -1348,6 +1432,7 @@ def main():
         float_brace=args.float_brace,
         sink_arm=args.sink_arm,
         rake_post=args.rake_post,
+        shallow_brace=args.shallow_brace,
     )
     if code:
         return code

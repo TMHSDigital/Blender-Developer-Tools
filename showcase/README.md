@@ -511,6 +511,19 @@ entry in `showcase/gallery.json`, and a rendered still.
   count the braces so a classifier that silently drops one (a level
   brace fails a "diagonal" shape test) cannot pass vacuously. The
   falsifier stops one end short inside the envelope (`--short-brace`).
+- **A joint bites; touching is not joining (file-local code or 17).**
+  A BVH gap of zero is satisfied by one grazing bevel corner, which reads
+  as a loose stick. Where a member tenons into another, assert the
+  deepest vertex of the member inside the host shell (signed distance to
+  the host's surface), at every end. Run it after plumb so a raked host
+  reports as plumb. `--shallow-brace` (street-lantern) restores the
+  grazing ends.
+- **A platform bears on something (exit 17).** Every deck, floor or shelf
+  needs bearers that tenon into the frame, and every joist must sit in a
+  bearer at both ends. Count the bearers and joists so a dropped member
+  cannot pass vacuously, and aim the falsifier at the joist span with
+  the bearers kept, so the triangle floor and envelope do not steal it
+  (`--short-joists`, watchtower).
 - **Laid stone and cut timber vary piece by piece.** One flat grey on
   every stone reads as a moulded ring; one brown on every member reads
   as a single casting. Drive a per-shell tone (`PlankTone`) and, for

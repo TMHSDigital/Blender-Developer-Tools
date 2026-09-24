@@ -9,10 +9,12 @@ Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-shoes`` named shoe
-supports, ``--short-rails`` rail-to-post joint fit, ``--float-band``
+supports, ``--short-rails`` rail-to-post joint fit, ``--open-sides``
+side-rail engage, ``--short-joists`` deck bearing, ``--float-band``
 iron-collar seat, ``--rake-posts`` post plumb.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the per-piece wood tone is drawn from
+``random.Random(TONE_SEED)``, so it is the same every run. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -23,6 +25,7 @@ ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -91,6 +94,25 @@ ZFIGHT_COS = 0.998
 SHOE_COUNT = 4
 SHOE_ZMIN_MAX = 0.001
 RAIL_ENGAGE_MIN = 0.012
+# Side guardrails tenon a post at BOTH ends, measured along the rail from the
+# near face of each post. The first build stopped them 0.30 m short of the
+# front posts (a "hatch clearance" the hatch never needed: it sits at the
+# centre of the front edge), so each ended in the air mid-bay.
+SIDE_RAIL_COUNT = 4
+# The deck bears on four girts between the posts, tops at PLAT_Z, and each
+# joist runs girt to girt. The first build had no deck girts at all: the two
+# joists stopped 0.19 m short of the front edge and at the back edge in the
+# air, and the plank ends hung past nothing at the sides.
+DECK_GIRT_COUNT = 4
+JOIST_BEAR_MIN = 0.012
+# --short-joists restores the old joist span (girts stay, so the envelope and
+# triangle count do not move).
+SHORT_JOIST_Y0 = -0.326
+# --open-sides restores that old front-end stop.
+OPEN_SIDE_CLEAR = 0.30
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 41
+WOOD_GRAIN_SCALE = 30.0
 BAND_SEAT_MAX = 0.010
 POST_PLUMB_MAX = 0.010
 PLAN_XY = 2.0 * EAVE_HALF
@@ -313,6 +335,8 @@ def build_tower_mesh(
     short_rails=False,
     float_band=False,
     rake_posts=False,
+    open_sides=False,
+    short_joists=False,
 ):
     bm = bmesh.new()
     try:
@@ -373,6 +397,17 @@ def build_tower_mesh(
                     (section, member, GIRT_H),
                     WOOD_IDX,
                 )
+            )
+
+        # Deck girts: the platform's bearers, tops at PLAT_Z, tenoned into
+        # the posts like the girts below.
+        deck_girt_z = PLAT_Z - GIRT_H / 2.0
+        for sign in (-1.0, 1.0):
+            wood.extend(
+                add_box(bm, (0.0, sign * HALF, deck_girt_z), (member, section, GIRT_H), WOOD_IDX)
+            )
+            wood.extend(
+                add_box(bm, (sign * HALF, 0.0, deck_girt_z), (section, member, GIRT_H), WOOD_IDX)
             )
 
         # Kick sits on the sill, not on the same plane as the sill bottom.
@@ -463,12 +498,18 @@ def build_tower_mesh(
                     WOOD_IDX,
                 )
             )
+        # Joists run front girt to back girt, both ends inside a girt; tops
+        # 2 mm under PLAT_Z so they are not coplanar with the girt tops.
+        if short_joists:
+            jy0, jy1 = SHORT_JOIST_Y0, SHORT_JOIST_Y0 + 2.0 * HALF * 0.82
+        else:
+            jy0, jy1 = -HALF, HALF
         for xj in (-HALF * 0.42, HALF * 0.42):
             wood.extend(
                 add_box(
                     bm,
-                    (xj, 0.10, PLAT_Z - 0.022),
-                    (POST * 0.62, 2.0 * HALF * 0.82, 0.044),
+                    (xj, 0.5 * (jy0 + jy1), PLAT_Z - 0.024),
+                    (POST * 0.62, jy1 - jy0, 0.044),
                     WOOD_IDX,
                 )
             )
@@ -485,8 +526,8 @@ def build_tower_mesh(
             wood.extend(
                 add_box(
                     bm,
-                    (xsign * 0.23, -HALF + 0.12, PLAT_Z + PLANK_T / 2.0),
-                    (0.040, hatch_y1 + HALF - 0.02, PLANK_T),
+                    (xsign * 0.23, 0.5 * (hatch_y1 - HALF), PLAT_Z + PLANK_T / 2.0),
+                    (0.040, hatch_y1 + HALF, PLANK_T),
                     WOOD_IDX,
                 )
             )
@@ -501,11 +542,14 @@ def build_tower_mesh(
         wood.extend(
             add_box(bm, (0.0, HALF, rail_z_hi), (rail_len, rail_t, 0.048), WOOD_IDX)
         )
-        hatch_clear = 0.30
-        side_y0 = -HALF + hatch_clear
-        side_span = HALF - side_y0
-        side_cy = (side_y0 + HALF) / 2.0
-        side_len = side_span + (0.0 if short_rails else RAIL_TENON * 0.5)
+        if open_sides:
+            side_y0 = -HALF + OPEN_SIDE_CLEAR
+            side_cy = (side_y0 + HALF) / 2.0
+            side_len = HALF - side_y0 + RAIL_TENON * 0.5
+        else:
+            # Post to post, the same span and tenon as the back rail.
+            side_cy = 0.0
+            side_len = bay * 0.70 if short_rails else bay + RAIL_TENON
         for xsign in (-1.0, 1.0):
             wood.extend(
                 add_box(
@@ -548,7 +592,10 @@ def build_tower_mesh(
             wood.extend(add_box(bm, (0.0, y, z), (0.28, 0.034, 0.032), WOOD_IDX))
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood for e in v.link_edges})
+            # A set of BMEdges iterates in memory order, which varies run to
+            # run and reorders the bevelled faces; sort by index.
+            bm.edges.index_update()
+            edges = sorted({e for v in wood for e in v.link_edges}, key=lambda e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -628,14 +675,163 @@ def build_tower_mesh(
     return out
 
 
-def principled(name, color, metallic, roughness):
+def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = color
     bsdf.inputs["Metallic"].default_value = metallic
     bsdf.inputs["Roughness"].default_value = roughness
+    if noise_scale > 0.0 and wear is not None:
+        tex = nt.nodes.new("ShaderNodeTexNoise")
+        tex.inputs["Scale"].default_value = noise_scale
+        tex.inputs["Detail"].default_value = 8.0
+        tex.inputs["Roughness"].default_value = 0.55
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        mix.inputs["A"].default_value = color
+        mix.inputs["B"].default_value = wear
+        fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], fac)
+        nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every post, girt, brace, plank, rail and shingle course is its own
+    shell, so each gets one tone and grain along its own long axis.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def tower_materials():
+    """(wood, roof, metal): shared by the check, the render and inspection.
+
+    The first build was one flat brown for the whole frame, a flat grey
+    roof and satin iron (metallic 1.0, roughness 0.30) that read as chrome.
+    """
+    wood = wood_material("TowerWood")
+    roof = principled(
+        "TowerShake", (0.26, 0.24, 0.21, 1.0), 0.0, 0.82,
+        noise_scale=14.0, wear=(0.16, 0.15, 0.13, 1.0),
+    )
+    metal = principled(
+        "TowerIron", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return wood, roof, metal
 
 
 def assign_slots(obj, wood, roof, metal):
@@ -818,6 +1014,44 @@ def joint_audit(me):
             and abs(cy - HALF) < POST
         ):
             rails.append(a)
+    side_rails = []
+    for group in shells(me):
+        if mat_of(me, group) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, group)
+        cx = 0.5 * (a[0] + a[3])
+        cz = 0.5 * (a[2] + a[5])
+        if cz > PLAT_Z and (a[4] - a[1]) > HALF * 0.5 and (a[3] - a[0]) < POST and abs(abs(cx) - HALF) < POST:
+            side_rails.append(a)
+    side_ends = []
+    for r in side_rails:
+        rx = 0.5 * (r[0] + r[3])
+        col = [p for p in posts if abs(0.5 * (p[0] + p[3]) - rx) < POST]
+        front = [p for p in col if 0.5 * (p[1] + p[4]) < 0.0]
+        back = [p for p in col if 0.5 * (p[1] + p[4]) > 0.0]
+        if not front or not back:
+            side_ends.append(-1.0)
+            continue
+        side_ends.append(min(front[0][4] - r[1], r[4] - back[0][1]))
+    deck_girts, joists = [], []
+    for group in shells(me):
+        if mat_of(me, group) != WOOD_IDX:
+            continue
+        a = shell_aabb(me, group)
+        dx, dy = a[3] - a[0], a[4] - a[1]
+        cz = 0.5 * (a[2] + a[5])
+        if abs(cz - (PLAT_Z - GIRT_H / 2.0)) < 0.01 and max(dx, dy) > HALF * 1.5 and min(dx, dy) < POST:
+            deck_girts.append(a)
+        elif abs(cz - (PLAT_Z - 0.024)) < 0.01 and dy > HALF and dx < POST:
+            joists.append(a)
+    front_g = [g for g in deck_girts if 0.5 * (g[1] + g[4]) < -HALF * 0.5]
+    back_g = [g for g in deck_girts if 0.5 * (g[1] + g[4]) > HALF * 0.5]
+    bears = []
+    for j in joists:
+        if not front_g or not back_g:
+            bears.append(-1.0)
+            continue
+        bears.append(min(front_g[0][4] - j[1], j[4] - back_g[0][1]))
     back_posts = [p for p in posts if 0.5 * (p[1] + p[4]) > 0.0]
     pairs = [
         min(r[3] - p[0], p[3] - r[0])
@@ -825,7 +1059,14 @@ def joint_audit(me):
         for p in back_posts
     ]
     engage = min(pairs) if pairs else 1.0
-    return {"posts": len(posts), "rails": len(rails), "engage": engage}
+    return {
+        "posts": len(posts), "rails": len(rails), "engage": engage,
+        "side_rails": len(side_rails),
+        "side_engage": min(side_ends) if side_ends else -1.0,
+        "deck_girts": len(deck_girts),
+        "joists": len(joists),
+        "joist_bear": min(bears) if bears else -1.0,
+    }
 
 
 def band_seat(me):
@@ -1001,6 +1242,8 @@ def check(
     short_rails=False,
     float_band=False,
     rake_posts=False,
+    open_sides=False,
+    short_joists=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_tower_mesh(
@@ -1011,6 +1254,8 @@ def check(
         short_rails=short_rails,
         float_band=float_band,
         rake_posts=rake_posts,
+        open_sides=open_sides,
+        short_joists=short_joists,
     )
     high = build_tower_mesh(
         "TowerHigh",
@@ -1020,10 +1265,12 @@ def check(
         short_rails=short_rails,
         float_band=float_band,
         rake_posts=rake_posts,
+        open_sides=open_sides,
+        short_joists=short_joists,
     )
-    wood = principled("TowerWood", (0.42, 0.22, 0.08, 1.0), 0.0, 0.56)
-    roof = principled("TowerShake", (0.30, 0.28, 0.26, 1.0), 0.0, 0.74)
-    metal = principled("TowerIron", (0.12, 0.125, 0.14, 1.0), 1.0, 0.30)
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, roof, metal = tower_materials()
     assign_slots(low, wood, roof, metal)
     assign_slots(high, wood, roof, metal)
 
@@ -1083,6 +1330,14 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    # Blender sets TMPDIR from its own preference, which resolves to the
+    # working directory on a stock portable build, so every run left a .glb
+    # behind. The budget only needs the byte count.
+    if os.path.isfile(export_path):
+        try:
+            os.remove(export_path)
+        except OSError:
+            pass
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -1108,7 +1363,9 @@ def check(
     )
     print(
         f"measured shoes={sup['shoes']} shoe_z={sup['shoe_z']:.5f} "
-        f"rail_engage={jnt['engage']:.4f} band_seat={seat:.5f} "
+        f"rail_engage={jnt['engage']:.4f} side_engage={jnt['side_engage']:.4f} "
+        f"side_rails={jnt['side_rails']} deck_girts={jnt['deck_girts']} "
+        f"joist_bear={jnt['joist_bear']:.4f} band_seat={seat:.5f} "
         f"plumb={plumb:.5f}"
     )
 
@@ -1197,6 +1454,22 @@ def check(
             f"posts={jnt['posts']} rails={jnt['rails']}",
             17,
         ), None, None, None, None, None
+    if jnt["side_rails"] != SIDE_RAIL_COUNT or jnt["side_engage"] < RAIL_ENGAGE_MIN:
+        return fail(
+            f"side rail engage {jnt['side_engage']:.4f} < {RAIL_ENGAGE_MIN} "
+            f"side_rails={jnt['side_rails']} (want {SIDE_RAIL_COUNT})",
+            17,
+        ), None, None, None, None, None
+    if (
+        jnt["deck_girts"] != DECK_GIRT_COUNT
+        or jnt["joists"] != 2
+        or jnt["joist_bear"] < JOIST_BEAR_MIN
+    ):
+        return fail(
+            f"deck bearing: joist_bear {jnt['joist_bear']:.4f} < {JOIST_BEAR_MIN} "
+            f"deck_girts={jnt['deck_girts']} (want {DECK_GIRT_COUNT}) joists={jnt['joists']}",
+            17,
+        ), None, None, None, None, None
     if seat > BAND_SEAT_MAX:
         return fail(f"band seat {seat:.5f} > {BAND_SEAT_MAX}", 18), None, None, None, None, None
     if (
@@ -1235,7 +1508,7 @@ def render_still(low, wood, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1333,6 +1606,8 @@ def main():
     p.add_argument("--lift-z", action="store_true")
     p.add_argument("--short-shoes", action="store_true")
     p.add_argument("--short-rails", action="store_true")
+    p.add_argument("--open-sides", action="store_true")
+    p.add_argument("--short-joists", action="store_true")
     p.add_argument("--float-band", action="store_true")
     p.add_argument("--rake-posts", action="store_true")
     args = p.parse_args(argv)
@@ -1343,6 +1618,8 @@ def main():
         stray_vert=args.stray_vert,
         short_shoes=args.short_shoes,
         short_rails=args.short_rails,
+        open_sides=args.open_sides,
+        short_joists=args.short_joists,
         float_band=args.float_band,
         rake_posts=args.rake_posts,
     )
