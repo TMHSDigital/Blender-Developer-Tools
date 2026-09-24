@@ -22,7 +22,7 @@
       "name": "stone-well",
       "dir": "showcase/stone-well",
       "teaches": "A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside.",
+      "alt": "A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside.",
       "witnessesFix": "Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.312×1.312×1.761 m, LOD ratios in band, convex collider 346 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, all 12 bottom-course stones on the floor, each post tenoned 18 mm into the measured coping and standing under a roof hip corner, the bucket hanging 0.10 m clear of the coping, grounded zmin, non-empty glTF. --stand-posts exits 15 on the z-fight budget; --float-stone exits 16 on the named-support budget; --shallow-tenon and --drop-bucket exit 18; --turn-posts exits 19 on post placement; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.",
       "hero": "docs/gallery/assets/stone-well-hero.webp",
       "preview": "showcase/stone-well/preview.webp",

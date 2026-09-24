@@ -14,8 +14,9 @@ cross-shell pairs, 15), ``--shallow-tenon`` (post tenon band, 18),
 hip corner, 19). See README.md for why two of them are aimed the way
 they are.
 
-No RNG. Construction is closed-form (per-stone jitter is a deterministic
-hash). DECIMATE COLLAPSE triangle counts are not byte-identical across
+Construction is closed-form (per-stone jitter is a deterministic hash);
+the per-piece material tone is drawn from ``random.Random(TONE_SEED)``, so
+it is the same every run. DECIMATE COLLAPSE triangle counts are not byte-identical across
 Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python stone_well.py --
@@ -26,6 +27,7 @@ Blender versions — the LOD gate is a ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -75,6 +77,9 @@ POST_ANGLES = tuple(math.pi / 4.0 + i * math.pi / 2.0 for i in range(4))
 # coplanar cross-shell pairs, one per post). POST_TOP is held fixed so
 # nothing above the posts moves.
 POST_SEAT = 0.018
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 37
+WOOD_GRAIN_SCALE = 30.0
 POST_SEAT_MIN = 0.015
 POST_SEAT_MAX = 0.022
 POST_CLEAR = 0.58
@@ -396,7 +401,12 @@ def build_well_mesh(name, bevel_offset, bevel_segments,
             )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in stone_verts for e in v.link_edges})
+            # A set of BMEdges iterates in memory order, which varies run to
+            # run and reorders the bevelled faces; sort by index.
+            bm.edges.index_update()
+            edges = sorted(
+                {e for v in stone_verts for e in v.link_edges}, key=lambda e: e.index
+            )
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -561,7 +571,12 @@ def build_well_mesh(name, bevel_offset, bevel_segments,
                 )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood_bevel_verts for e in v.link_edges})
+            # A set of BMEdges iterates in memory order, which varies run to
+            # run and reorders the bevelled faces; sort by index.
+            bm.edges.index_update()
+            edges = sorted(
+                {e for v in wood_bevel_verts for e in v.link_edges}, key=lambda e: e.index
+            )
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -672,6 +687,163 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         nt.links.new(tex.outputs["Fac"], rfac)
         nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stone, post, beam and roof board is its own shell, so each gets
+    one tone and grain running along its own long axis. Stone reads the
+    tone only; metal reads neither.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shell_groups(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def stone_material(name):
+    """Weathered granite: mottled noise, and a value shift per stone (``PlankTone``).
+
+    The first build gave every stone one grey, so the courses read as a
+    single moulded ring rather than laid stone.
+    """
+    mat = principled(
+        name, (0.40, 0.41, 0.43, 1.0), 0.0, 0.86,
+        noise_scale=9.0, wear=(0.25, 0.25, 0.26, 1.0),
+    )
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    src = bsdf.inputs["Base Color"].links[0].from_socket
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 0.9
+    gain.inputs[2].default_value = 0.55
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(src, _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    return mat
+
+
+def well_materials():
+    """(stone, wood, metal): shared by the check, the render and inspection.
+
+    Bucket hoops and crank were bright satin metal (metallic 1.0, roughness
+    0.30) and read as chrome; they are rusted iron now.
+    """
+    stone = stone_material("WellStone")
+    wood = wood_material("WellWood")
+    metal = principled(
+        "WellMetal", (0.17, 0.165, 0.155, 1.0), 0.80, 0.46,
+        noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
+    )
+    return stone, wood, metal
 
 
 def assign_slots(obj, stone, wood, metal):
@@ -1069,18 +1241,9 @@ def check(skip_decimate, lift_z=False, stand_posts=False, turn_posts=False,
                           post_seat=seat, turn_posts=turn)
     high = build_well_mesh("WellHigh", bevel_offset=0.010, bevel_segments=4,
                            post_seat=seat, turn_posts=turn)
-    stone = principled(
-        "WellStone", (0.40, 0.42, 0.46, 1.0), 0.0, 0.84,
-        noise_scale=9.0, wear=(0.29, 0.30, 0.33, 1.0),
-    )
-    wood = principled(
-        "WellWood", (0.48, 0.22, 0.07, 1.0), 0.0, 0.50,
-        noise_scale=7.0, wear=(0.30, 0.13, 0.04, 1.0),
-    )
-    metal = principled(
-        "WellMetal", (0.62, 0.58, 0.48, 1.0), 1.0, 0.30,
-        noise_scale=5.0, wear=(0.34, 0.32, 0.27, 1.0),
-    )
+    paint_planks(low.data)
+    paint_planks(high.data)
+    stone, wood, metal = well_materials()
     assign_slots(low, stone, wood, metal)
     assign_slots(high, stone, wood, metal)
     if lift_z:
@@ -1393,7 +1556,7 @@ def render_still(low, stone, tex, path, engine):
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()

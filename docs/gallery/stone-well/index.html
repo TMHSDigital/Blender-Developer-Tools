@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/stone-well-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside." />
+  <meta property="og:image:alt" content="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="stone-well — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/stone-well-hero.webp" />
-  <meta name="twitter:image:alt" content="A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside." />
+  <meta name="twitter:image:alt" content="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A procedural stone well through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside.">
-      <img src="../assets/stone-well-hero.webp" alt="A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside.">
+      <img src="../assets/stone-well-hero.webp" alt="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Recomputed: 9380 tris, three materials with face floors, UVs in 0..1 with zero AABB overlap, outer AABB 1.312×1.312×1.761 m, LOD ratios in band, convex collider 346 tris, hygiene zero (loose, non-manifold, doubles, n-gons), zero coplanar cross-shell face pairs, all 12 bottom-course stones on the floor, each post tenoned 18 mm into the measured coping and standing under a roof hip corner, the bucket hanging 0.10 m clear of the coping, grounded zmin, non-empty glTF. --stand-posts exits 15 on the z-fight budget; --float-stone exits 16 on the named-support budget; --shallow-tenon and --drop-bucket exit 18; --turn-posts exits 19 on post placement; --skip-decimate exits 9 on the LOD1 ratio budget; --lift-z exits 16 on the grounded budget.</div>
@@ -283,8 +283,8 @@
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>8280–9500</td><td>9380 / 9380 / 9380</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.2198</td></tr><tr><td>Materials</td><td>exactly 3 distinct</td><td>3</td></tr><tr><td>Material faces</td><td>stone ≥ 3000, wood ≥ 600, metal ≥ 100</td><td>all above</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.312, 1.312, 1.761) m ± 0.01</td><td>(1.3120, 1.3120, 1.7606)</td></tr><tr><td>Grounded</td><td>bbox min Z within 1e-4 of 0</td><td>0.0000 / 0.0000 / 0.0000</td></tr><tr><td>Named supports</td><td>all 12 bottom-course stones on the floor within 1e-4</td><td>12/12, worst 0.000000</td></tr><tr><td>Hygiene</td><td>loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0</td><td>0 / 0 / 0 on every axis</td></tr><tr><td>Z-fighting</td><td>coplanar cross-shell face pairs = 0</td><td>0 / 0 / 0</td></tr><tr><td>Post tenon</td><td>each post seats 0.015–0.022 m into the measured coping top</td><td>0.01800 / 0.01800 / 0.01800</td></tr><tr><td>Post placement</td><td>each post within 0.02 rad, in plan, of a roof hip corner recomputed from the mesh</td><td>0.00000</td></tr><tr><td>Bucket clearance</td><td>hangs 0.085–0.115 m clear of the measured coping top</td><td>0.10000</td></tr><tr><td>Material-island gap</td><td>stone↔wood and metal↔wood min distance ≤ 0.008 m</td><td>0.00000 / 0.00000 / 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 380</td><td>346</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>690092 bytes on 5.2.1</td></tr></tbody></table></div>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. glTF byte size differs by a few hundred bytes across series; the gate is &quot;written and non-empty&quot;, not a byte count, and the file is removed once measured.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>8280–9500</td><td>9380 / 9380 / 9380</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.2198</td></tr><tr><td>Materials</td><td>exactly 3 distinct</td><td>3</td></tr><tr><td>Material faces</td><td>stone ≥ 3000, wood ≥ 600, metal ≥ 100</td><td>all above</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.312, 1.312, 1.761) m ± 0.01</td><td>(1.3120, 1.3120, 1.7606)</td></tr><tr><td>Grounded</td><td>bbox min Z within 1e-4 of 0</td><td>0.0000 / 0.0000 / 0.0000</td></tr><tr><td>Named supports</td><td>all 12 bottom-course stones on the floor within 1e-4</td><td>12/12, worst 0.000000</td></tr><tr><td>Hygiene</td><td>loose V/E, non-manifold, zero-area, doubles @1e-5, n-gons: all 0</td><td>0 / 0 / 0 on every axis</td></tr><tr><td>Z-fighting</td><td>coplanar cross-shell face pairs = 0</td><td>0 / 0 / 0</td></tr><tr><td>Post tenon</td><td>each post seats 0.015–0.022 m into the measured coping top</td><td>0.01800 / 0.01800 / 0.01800</td></tr><tr><td>Post placement</td><td>each post within 0.02 rad, in plan, of a roof hip corner recomputed from the mesh</td><td>0.00000</td></tr><tr><td>Bucket clearance</td><td>hangs 0.085–0.115 m clear of the measured coping top</td><td>0.10000</td></tr><tr><td>Material-island gap</td><td>stone↔wood and metal↔wood min distance ≤ 0.008 m</td><td>0.00000 / 0.00000 / 0.00000</td></tr><tr><td>Collider tris</td><td>≤ 380</td><td>346</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>690216 bytes on 5.2.1</td></tr></tbody></table></div>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> guaranteed identical across series — the gate is a ratio band, not an exact count. This mesh happened to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG; the per-piece material tone is drawn from a seeded <code>random.Random(TONE_SEED)</code>, the same every run. glTF byte size differs by a few hundred bytes across series; the gate is &quot;written and non-empty&quot;, not a byte count, and the file is removed once measured.</p>
 <h2>Falsifiers</h2>
 <p>Each flag breaks one stage so a <strong>named</strong> budget fails and the piece exits <em>that</em> code.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band (ratio becomes 1.0)</td><td>9</td></tr><tr><td><code>--lift-z</code></td><td>AABB grounded zmin (whole mesh up 0.05 m)</td><td>16</td></tr><tr><td><code>--stand-posts</code></td><td>Coplanar cross-shell pairs — puts the posts back on the axis <em>and</em> stands them on the coping, which is the pair of choices the shipped piece made (0 → 4 pairs)</td><td>15</td></tr><tr><td><code>--float-stone</code></td><td>Named supports — lifts one bottom-course stone 4 mm while the other eleven still ground the AABB</td><td>16</td></tr><tr><td><code>--shallow-tenon</code></td><td>Post tenon band — seats the posts only 4 mm, too shallow to be a joint but not flush, so no faces share a plane</td><td>18</td></tr><tr><td><code>--drop-bucket</code></td><td>Bucket clearance — lowers the bucket 0.26 m back down the shaft</td><td>18</td></tr><tr><td><code>--turn-posts</code></td><td>Post placement — rotates the post ring one curb facet off the roof&#x27;s hip corners</td><td>19</td></tr></tbody></table></div>
@@ -327,8 +327,9 @@ cross-shell pairs, 15), ``--shallow-tenon`` (post tenon band, 18),
 hip corner, 19). See README.md for why two of them are aimed the way
 they are.
 
-No RNG. Construction is closed-form (per-stone jitter is a deterministic
-hash). DECIMATE COLLAPSE triangle counts are not byte-identical across
+Construction is closed-form (per-stone jitter is a deterministic hash);
+the per-piece material tone is drawn from ``random.Random(TONE_SEED)``, so
+it is the same every run. DECIMATE COLLAPSE triangle counts are not byte-identical across
 Blender versions — the LOD gate is a ratio band, not an exact count.
 
     blender --background --python stone_well.py --
@@ -339,6 +340,7 @@ Blender versions — the LOD gate is a ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -388,6 +390,9 @@ POST_ANGLES = tuple(math.pi / <span class="n">4.0</span> + i * math.pi / <span c
 <span class="c"># coplanar cross-shell pairs, one per post). POST_TOP is held fixed so</span>
 <span class="c"># nothing above the posts moves.</span>
 POST_SEAT = <span class="n">0.018</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">37</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 POST_SEAT_MIN = <span class="n">0.015</span>
 POST_SEAT_MAX = <span class="n">0.022</span>
 POST_CLEAR = <span class="n">0.58</span>
@@ -709,7 +714,12 @@ METAL_IDX = <span class="n">2</span>
             )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> stone_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># A set of BMEdges iterates in memory order, which varies run to</span>
+            <span class="c"># run and reorders the bevelled faces; sort by index.</span>
+            bm.edges.index_update()
+            edges = sorted(
+                {e <span class="k">for</span> v <span class="k">in</span> stone_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index
+            )
             bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -874,7 +884,12 @@ METAL_IDX = <span class="n">2</span>
                 )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_bevel_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># A set of BMEdges iterates in memory order, which varies run to</span>
+            <span class="c"># run and reorders the bevelled faces; sort by index.</span>
+            bm.edges.index_update()
+            edges = sorted(
+                {e <span class="k">for</span> v <span class="k">in</span> wood_bevel_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index
+            )
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -985,6 +1000,163 @@ METAL_IDX = <span class="n">2</span>
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
         nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every stone, post, beam and roof board is its own shell, so each gets
+    one tone and grain running along its own long axis. Stone reads the
+    tone only; metal reads neither.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shell_groups(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> stone_material(name):
+    <span class="s">&quot;&quot;&quot;Weathered granite: mottled noise, and a value shift per stone (``PlankTone``).
+
+    The first build gave every stone one grey, so the courses read as a
+    single moulded ring rather than laid stone.
+    &quot;&quot;&quot;</span>
+    mat = principled(
+        name, (<span class="n">0.40</span>, <span class="n">0.41</span>, <span class="n">0.43</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.86</span>,
+        noise_scale=<span class="n">9.0</span>, wear=(<span class="n">0.25</span>, <span class="n">0.25</span>, <span class="n">0.26</span>, <span class="n">1.0</span>),
+    )
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    src = bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].links[<span class="n">0</span>].from_socket
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">0.9</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.55</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(src, _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> well_materials():
+    <span class="s">&quot;&quot;&quot;(stone, wood, metal): shared by the check, the render and inspection.
+
+    Bucket hoops and crank were bright satin metal (metallic 1.0, roughness
+    0.30) and read as chrome; they are rusted iron now.
+    &quot;&quot;&quot;</span>
+    stone = stone_material(<span class="s">&quot;WellStone&quot;</span>)
+    wood = wood_material(<span class="s">&quot;WellWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;WellMetal&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> stone, wood, metal
 
 
 <span class="k">def</span> assign_slots(obj, stone, wood, metal):
@@ -1382,18 +1554,9 @@ METAL_IDX = <span class="n">2</span>
                           post_seat=seat, turn_posts=turn)
     high = build_well_mesh(<span class="s">&quot;WellHigh&quot;</span>, bevel_offset=<span class="n">0.010</span>, bevel_segments=<span class="n">4</span>,
                            post_seat=seat, turn_posts=turn)
-    stone = principled(
-        <span class="s">&quot;WellStone&quot;</span>, (<span class="n">0.40</span>, <span class="n">0.42</span>, <span class="n">0.46</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.84</span>,
-        noise_scale=<span class="n">9.0</span>, wear=(<span class="n">0.29</span>, <span class="n">0.30</span>, <span class="n">0.33</span>, <span class="n">1.0</span>),
-    )
-    wood = principled(
-        <span class="s">&quot;WellWood&quot;</span>, (<span class="n">0.48</span>, <span class="n">0.22</span>, <span class="n">0.07</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.50</span>,
-        noise_scale=<span class="n">7.0</span>, wear=(<span class="n">0.30</span>, <span class="n">0.13</span>, <span class="n">0.04</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;WellMetal&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.58</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>,
-        noise_scale=<span class="n">5.0</span>, wear=(<span class="n">0.34</span>, <span class="n">0.32</span>, <span class="n">0.27</span>, <span class="n">1.0</span>),
-    )
+    paint_planks(low.data)
+    paint_planks(high.data)
+    stone, wood, metal = well_materials()
     assign_slots(low, stone, wood, metal)
     assign_slots(high, stone, wood, metal)
     <span class="k">if</span> lift_z:
@@ -1706,7 +1869,7 @@ METAL_IDX = <span class="n">2</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1866,7 +2029,7 @@ METAL_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/stone-well-hero.webp" alt="A round stone well of grey blocks under a four-post wooden roof, with a bucket hanging inside." />
+    <img src="../assets/stone-well-hero.webp" alt="A round well of grey stones, each a slightly different shade, under a four-post grained wooden roof, with a bucket on rusted iron hoops hanging inside." />
   </dialog>
   <footer>
     <div class="statusbar">

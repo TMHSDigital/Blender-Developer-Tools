@@ -37,13 +37,14 @@ materials, UVs, evaluated LOD, collider, or export file.
 | Bucket clearance | hangs 0.085–0.115 m clear of the measured coping top | 0.10000 |
 | Material-island gap | stone↔wood and metal↔wood min distance ≤ 0.008 m | 0.00000 / 0.00000 / 0.00000 |
 | Collider tris | ≤ 380 | 346 |
-| Export | written, size > 0, removed after measuring | 690092 bytes on 5.2.1 |
+| Export | written, size > 0, removed after measuring | 690216 bytes on 5.2.1 |
 
 DECIMATE COLLAPSE triangle counts are **not** guaranteed identical across
 series — the gate is a ratio band, not an exact count. This mesh happened
 to match on 4.5.11 / 5.1.2 / 5.2.1. Bake pixels are stochastic; the gate
 is `has_data` plus operator `FINISHED`, not byte-identity. Construction
-uses no RNG. glTF byte size differs by a few hundred bytes across
+uses no RNG; the per-piece material tone is drawn from a seeded
+`random.Random(TONE_SEED)`, the same every run. glTF byte size differs by a few hundred bytes across
 series; the gate is "written and non-empty", not a byte count, and the
 file is removed once measured.
 

@@ -110,7 +110,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
-  <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round brick well with a shingled pyramid roof on posts, rope and bucket, on a dark studio floor" /></a>
+  <a href="showcase/stone-well/"><img src="showcase/stone-well/preview.webp" width="24%" alt="Stone well: a round well of varied grey stones with a grained wooden pyramid roof on posts, rope and a bucket on rusted iron hoops, on a dark studio floor" /></a>
   <a href="showcase/wooden-barrel/"><img src="showcase/wooden-barrel/preview.webp" width="24%" alt="Wooden barrel: a 20-stave wine-cask with a head of four boards, chord-lofted iron hoops, and a bung on a dark studio floor" /></a>
   <a href="showcase/campfire/"><img src="showcase/campfire/preview.webp" width="24%" alt="Campfire: a two-course ring of rounded fieldstones around a tripod of logs and glowing ash on a dark studio floor, warm wedge on the back wall" /></a>
   <a href="showcase/market-stall/"><img src="showcase/market-stall/preview.webp" width="24%" alt="Market stall: a grained timber frame with post feet, diagonal side braces, slatted counter, rafters, and a striped canvas awning on a dark studio floor, warm wedge on the back wall" /></a>
