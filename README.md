@@ -117,10 +117,10 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/street-lantern/"><img src="showcase/street-lantern/preview.webp" width="24%" alt="Street lantern: an iron post with aged brass collars, a knee brace tenoned into post and arm, and a muntined amber cage on a dark studio floor" /></a>
   <a href="showcase/treasure-chest/"><img src="showcase/treasure-chest/preview.webp" width="24%" alt="Treasure chest: a slatted wooden chest with iron bands, corner brackets, and an open lid on a dark studio floor" /></a>
   <a href="showcase/terrain-scatter/"><img src="showcase/terrain-scatter/preview.webp" width="24%" alt="Terrain scatter: a Geometry Nodes dirt hill tile with bevelled masonry rocks on a dark studio floor" /></a>
-  <a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" width="24%" alt="Fence kit: a timber post-and-rail section with pyramidal caps, iron shoes and straps on a dark studio floor" /></a>
+  <a href="showcase/fence-kit/"><img src="showcase/fence-kit/preview.webp" width="24%" alt="Fence kit: a grained timber post-and-rail section with pyramidal caps, a diagonal board brace, and iron shoes and bands on a dark studio floor" /></a>
   <a href="showcase/watchtower/"><img src="showcase/watchtower/preview.webp" width="24%" alt="Watchtower: a grained timber lookout with X-braces, hatch ladder, a plank platform on deck girts, and a coursed shake roof on a dark studio floor" /></a>
   <a href="showcase/cart/"><img src="showcase/cart/preview.webp" width="24%" alt="Cart: a two-wheel wooden cart with spoked wheels, slatted bed, and shafts on a dark studio floor" /></a>
-  <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench with scrolled legs and wooden slats on a dark studio floor" /></a>
+  <a href="showcase/park-bench/"><img src="showcase/park-bench/preview.webp" width="24%" alt="Park bench: a wrought-iron bench whose round-bar legs curl into scrolled feet, with wooden slats and a reclined back, on a dark studio floor" /></a>
   <a href="showcase/wheelbarrow/"><img src="showcase/wheelbarrow/preview.webp" width="24%" alt="Wheelbarrow: a wooden tray with walls of stacked boards and iron straps, a spoked wheel, rear legs, and handles on a dark studio floor" /></a>
   <a href="showcase/anvil/"><img src="showcase/anvil/preview.webp" width="24%" alt="Anvil: a dark forged-steel London-pattern anvil with a flared, squared waist on a hooped timber stump on a dark studio floor" /></a>
   <a href="showcase/water-trough/"><img src="showcase/water-trough/preview.webp" width="24%" alt="Water trough: a watertight wooden trough with plank ends, contained water, and trestle legs on a dark studio floor" /></a>
@@ -1008,7 +1008,7 @@ teleported flange) vs MPI KEEP.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/soccer-ball-goldberg/"><img src="examples/soccer-ball-goldberg/preview.webp" alt="Soccer ball Goldberg: a white soccer ball with black pentagon panels on a dark studio floor — a bmesh icosphere truncated at one-third per edge into the Goldberg polyhedron, proving closed-form counts, uniform degree, equal edges, planar faces, one circumsphere, and panels bound by face vertex count" /></a>
+<a href="examples/soccer-ball-goldberg/"><img src="examples/soccer-ball-goldberg/preview.webp" alt="Soccer ball Goldberg: a round white soccer ball with black pentagon panels and dark stitched seams around every hexagon on a dark studio floor — a bmesh icosphere truncated at one-third per edge into the Goldberg polyhedron, proving closed-form counts, uniform degree, equal edges, planar faces, one circumsphere, and panels bound by face vertex count" /></a>
 </td>
 <td valign="middle">
 
