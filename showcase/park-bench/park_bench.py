@@ -1,22 +1,26 @@
 """Game-ready park bench — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural wrought-iron bench (quarter-
-circle scroll feet tangent to the posts, slatted seat and back, arm
-scrolls) after composing shipped pipeline pieces: bmesh construction,
-UVs, two materials, high-to-low normal bake, LOD chain, convex collider,
-Unity glTF export.
+Asserts budget conformance of a procedural wrought-iron bench after
+composing shipped pipeline pieces: bmesh construction, UVs, two
+materials, high-to-low normal bake, LOD chain, convex collider, Unity
+glTF export.
 
-Posts, feet, stretchers and arms share named stations (hx, hy, SEAT_Z,
-ARM_Z, SCROLL_R). A foot is a quarter-circle about (hy ± R, R) so it is
-tangent to the post at z=R and plants at z=0.
+Every leg is one round bar swept along one path: a quarter-circle toe
+scroll about (hy ± R, R), the post, and at the back a bend into the
+reclined upright that carries the back slats. Seat slats bear on the side
+rails, back slats on the uprights, armrests on the arm bar and the front
+leg's tenon, each by a named bite. Stations are shared (HX, HY, SEAT_Z,
+ARM_Z, SCROLL_R, BACK_TOP).
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` LOD, ``--stray-vert`` hygiene, ``--lift-z``
 zmin, ``--short-feet`` named toes, ``--float-stretcher`` stretcher seat,
-``--gap-slats`` slat-to-rail, ``--narrow-seat`` sitting width.
+``--gap-slats`` slat-to-leg, ``--narrow-seat`` sitting width,
+``--float-slats`` bearing bite (20), ``--split-feet`` legs in one piece
+(21), ``--upright-back`` back recline (19).
 
-No RNG. Slat widths use closed-form ``sin(i)``. DECIMATE COLLAPSE
+Slat widths use closed-form ``sin(i)``; plank tones use a seeded RNG. DECIMATE COLLAPSE
 triangle counts are not byte-identical across Blender versions — the LOD
 gate is a ratio band, not an exact count.
 
@@ -27,6 +31,7 @@ gate is a ratio band, not an exact count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -58,15 +63,31 @@ ARM_SCROLL_R = 0.055
 STRETCHER_Z = 0.16
 POST_INSET_X = 0.07
 POST_INSET_Y = 0.045
+BAR_R = IRON_T / 2.0
+TUBE_SEGS = 8
+RECLINE_DEG = 12.0
+BEND_R = 0.10
+BEND_N = 4
+UPRIGHT_N = 4
+TOP_RAIL_R = BAR_R * 1.25
+BACK_TOP = SEAT_Z + SLAT_T + BACK_H + 0.02
+BACK_CLEAR = 0.012
+SLAT_BITE = 0.003
+ARM_OVER = 0.075
+ARM_TENON = 0.004
+LEG_TENON = 0.012
+BRACKET_R = 0.05
+BRACKET_N = 8
+BRACKET_BITE = 0.008
 HX = SEAT_W / 2.0 - POST_INSET_X
 HY = SEAT_D / 2.0 - POST_INSET_Y
 SEAT_SPAN = 2.0 * HX
 SEAT_SPAN_TOL = 0.08
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (1.295, 0.632, 0.884)
-BASE_TRIS_MIN = 2200
-BASE_TRIS_MAX = 4200
+OUTER_SIZE = (1.295, 0.632, 0.887)
+BASE_TRIS_MIN = 2900
+BASE_TRIS_MAX = 3700
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -95,6 +116,14 @@ GAP_SLAT = 0.10
 SHORT_FOOT = 0.16
 LIFT_Z = 0.05
 NARROW_SEAT = 0.55
+LEG_COUNT = 4
+BITE_MIN = 0.0015
+FLOAT_SLATS = 0.006
+RECLINE_MIN_DEG = 9.0
+RECLINE_MAX_DEG = 16.0
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 23
+WOOD_GRAIN_SCALE = 30.0
 
 WOOD_IDX = 0
 METAL_IDX = 1
@@ -164,70 +193,89 @@ def add_oriented_box(bm, a, b, scale_xy, mat_idx):
     )
 
 
-def add_arc_yz(bm, x, cy, cz, radius, a0, a1, n, thick, mat_idx, t0=0.0, t1=1.0):
-    pts = []
-    for i in range(n + 1):
-        t = t0 + (t1 - t0) * (i / n)
-        ang = a0 + (a1 - a0) * t
-        pts.append(Vector((x, cy + radius * math.cos(ang), cz + radius * math.sin(ang))))
-    rings = 6
-    r = thick * 0.5
-    ring_verts = []
-    for i, p in enumerate(pts):
-        if i < n:
-            tangent = (pts[i + 1] - p).normalized()
+def add_sweep(bm, pts, radius, mat_idx, segs=None):
+    """Round bar along a polyline, parallel-transported frames, fan caps.
+
+    Every leg is one sweep: the toe scroll, the post and (at the back) the
+    reclined upright are a single bar, the way a smith bends it. A foot
+    built as its own arc under a separate post leaves daylight at the join.
+    """
+    segs = segs or TUBE_SEGS
+    pts = [Vector(p) for p in pts]
+    n = len(pts)
+    tangents = []
+    for i in range(n):
+        if i == 0:
+            t = pts[1] - pts[0]
+        elif i == n - 1:
+            t = pts[-1] - pts[-2]
         else:
-            tangent = (p - pts[i - 1]).normalized()
-        side = tangent.cross(Vector((1.0, 0.0, 0.0)))
-        if side.length < 1e-6:
-            side = tangent.cross(Vector((0.0, 1.0, 0.0)))
-        side.normalize()
-        up = tangent.cross(side).normalized()
+            t = (pts[i + 1] - pts[i]).normalized() + (pts[i] - pts[i - 1]).normalized()
+        tangents.append(t.normalized())
+    t0 = tangents[0]
+    ref = Vector((1.0, 0.0, 0.0)) if abs(t0.x) < 0.9 else Vector((0.0, 0.0, 1.0))
+    side = t0.cross(ref).normalized()
+    rings = []
+    for i, p in enumerate(pts):
+        t = tangents[i]
+        if i > 0:
+            side = tangents[i - 1].rotation_difference(t) @ side
+            side = (side - t * side.dot(t)).normalized()
+        up = t.cross(side).normalized()
         ring = []
-        for k in range(rings):
-            ang = (2.0 * math.pi * k) / rings
-            offset = side * math.cos(ang) * r + up * math.sin(ang) * r
-            ring.append(bm.verts.new(p + offset))
-        ring_verts.append(ring)
-    bm.verts.ensure_lookup_table()
-    bm.faces.ensure_lookup_table()
-    for a, b in zip(ring_verts, ring_verts[1:]):
-        for k in range(rings):
-            k2 = (k + 1) % rings
-            face = bm.faces.new((a[k], a[k2], b[k2], b[k]))
-            face.material_index = mat_idx
-    for end_i, p in ((0, pts[0]), (-1, pts[-1])):
-        center = bm.verts.new(p)
-        ring = ring_verts[end_i]
-        for k in range(rings):
-            k2 = (k + 1) % rings
-            if end_i == 0:
-                face = bm.faces.new((center, ring[k2], ring[k]))
-            else:
-                face = bm.faces.new((center, ring[k], ring[k2]))
-            face.material_index = mat_idx
-    return [v for ring in ring_verts for v in ring]
+        for k in range(segs):
+            a = 2.0 * math.pi * k / segs
+            ring.append(bm.verts.new(p + (side * math.cos(a) + up * math.sin(a)) * radius))
+        rings.append(ring)
+    for a, b in zip(rings, rings[1:]):
+        for k in range(segs):
+            k2 = (k + 1) % segs
+            bm.faces.new((a[k], a[k2], b[k2], b[k])).material_index = mat_idx
+    for ring, p, flip in ((rings[0], pts[0], True), (rings[-1], pts[-1], False)):
+        c = bm.verts.new(p)
+        for k in range(segs):
+            k2 = (k + 1) % segs
+            f = bm.faces.new((c, ring[k2], ring[k]) if flip else (c, ring[k], ring[k2]))
+            f.material_index = mat_idx
+    return [v for ring in rings for v in ring]
 
 
-def add_foot_scroll(bm, x, y_post, y_out, thick, mat_idx):
-    """Quarter-circle from post join (y_post, R) to toe (y_out, 0)."""
-    cy = y_out
-    cz = SCROLL_R
-    if y_out < y_post:
-        a0, a1 = 0.0, -math.pi / 2.0
-    else:
-        a0, a1 = math.pi, 1.5 * math.pi
-    return add_arc_yz(
-        bm, x, cy, cz, SCROLL_R, a0, a1, SCROLL_N, thick, mat_idx, t0=0.08, t1=1.0
-    )
+def toe_arc(y_post, outward):
+    """Quarter circle from the toe (on the floor) up to the post at z=R.
+
+    Centre ``(y_post + outward*R, R)``: horizontal at the toe, tangent to
+    the post where it meets it. Returned toe first.
+    """
+    cy = y_post + outward * SCROLL_R
+    pts = []
+    for i in range(SCROLL_N + 1):
+        a = -0.5 * math.pi * (1.0 - i / SCROLL_N)
+        pts.append((cy - outward * SCROLL_R * math.cos(a), SCROLL_R + SCROLL_R * math.sin(a)))
+    return pts
 
 
-def add_arm_scroll(bm, x, y_post, thick, mat_idx):
-    cy = y_post - ARM_SCROLL_R
-    cz = ARM_Z
-    return add_arc_yz(
-        bm, x, cy, cz, ARM_SCROLL_R, 0.0, -math.pi / 2.0, 8, thick, mat_idx, t0=0.08, t1=1.0
-    )
+def rear_leg_path(recline):
+    """(y, z) centreline of a rear leg: toe, post, bend, reclined upright."""
+    pts = toe_arc(HY, 1.0)
+    pts.append((HY, SEAT_Z))
+    # No bend at zero recline: its points would all land on one spot.
+    for i in range(1, BEND_N + 1 if recline > 0.0 else 1):
+        ph = recline * i / BEND_N
+        pts.append((HY + BEND_R * (1.0 - math.cos(ph)), SEAT_Z + BEND_R * math.sin(ph)))
+    y_f, z_f = pts[-1]
+    y_t = y_f + (BACK_TOP - z_f) * math.tan(recline)
+    for i in range(1, UPRIGHT_N + 1):
+        f = i / UPRIGHT_N
+        pts.append((y_f + (y_t - y_f) * f, z_f + (BACK_TOP - z_f) * f))
+    return pts
+
+
+def path_y_at(path, z):
+    """y of a (y, z) path where it first crosses height z."""
+    for (y0, z0), (y1, z1) in zip(path, path[1:]):
+        if (z0 - z) * (z1 - z) <= 0.0 and abs(z1 - z0) > 1e-9:
+            return y0 + (y1 - y0) * (z - z0) / (z1 - z0)
+    return path[-1][0]
 
 
 def pack_uvs(bm, margin=0.08):
@@ -281,18 +329,28 @@ def build_bench_mesh(
     gap_slats=False,
     short_feet=False,
     narrow_seat=False,
+    float_slats=False,
+    split_feet=False,
+    upright_back=False,
 ):
     bm = bmesh.new()
     try:
         wood = []
         t = IRON_T
+        r = BAR_R
         hx, hy = HX, HY
+        recline = 0.0 if upright_back else math.radians(RECLINE_DEG)
+        rear = rear_leg_path(recline)
         slat_span = SEAT_SPAN + t * 0.50
         if gap_slats:
             slat_span = SEAT_SPAN - IRON_T - 0.024
         if narrow_seat:
             slat_span = SEAT_SPAN * NARROW_SEAT
 
+        # Seat slats bear on the side rails: the bottom face sits a named
+        # bite below the rail's top line, so each slat is carried.
+        rail_z = SEAT_Z - t * 0.35
+        slat_z0 = rail_z + r - SLAT_BITE + (FLOAT_SLATS if float_slats else 0.0)
         usable = 2.0 * hy - 0.06
         gap = 0.010
         widths = []
@@ -306,43 +364,62 @@ def build_bench_mesh(
             wood.extend(
                 add_box(
                     bm,
-                    (0.0, y, SEAT_Z + SLAT_T / 2.0),
+                    (0.0, y, slat_z0 + SLAT_T / 2.0),
                     (slat_span, slat_w * 0.92, SLAT_T),
                     WOOD_IDX,
                 )
             )
             y_cursor += slat_w + gap
 
-        back_span = BACK_H - 0.04
+        # Back slats are screwed to the front of the reclined uprights.
+        y_f, z_f = rear[-1 - UPRIGHT_N]
+        y_top, z_top = rear[-1]
+        u = Vector((0.0, y_top - y_f, z_top - z_f))
+        run = u.length
+        u.normalize()
+        fwd = Vector((0.0, -u.z, u.y))
+        base = Vector((0.0, y_f, z_f))
+        d0 = max(0.0, (SEAT_Z + SLAT_T + 0.04 - z_f) / max(u.z, 1e-6))
+        d1 = run - r - BACK_CLEAR
         bwidths = [1.0 + 0.08 * math.sin(i * 1.4 + 0.8) for i in range(N_BACK)]
-        bscale = (back_span - gap * (N_BACK - 1)) / sum(bwidths)
-        z_cursor = SEAT_Z + SLAT_T + 0.04
+        bscale = ((d1 - d0) - gap * (N_BACK - 1)) / sum(bwidths)
+        d_cursor = d0
+        off = r + SLAT_T / 2.0 - SLAT_BITE
         for w in bwidths:
             slat_h = w * bscale
-            z = z_cursor + slat_h * 0.5
+            c = base + u * (d_cursor + slat_h * 0.5) + fwd * off
             wood.extend(
                 add_box(
                     bm,
-                    (0.0, hy, z),
+                    tuple(c),
                     (slat_span, SLAT_T, slat_h * 0.90),
                     WOOD_IDX,
+                    euler=(-recline, 0.0, 0.0),
                 )
             )
-            z_cursor += slat_h + gap
+            d_cursor += slat_h + gap
 
+        # Armrests sit on the arm bar, overhang the front leg, and stop a
+        # named tenon inside the reclined upright at their top edge.
+        arm_bot = ARM_Z + r * 0.95 - SLAT_BITE
+        arm_top = arm_bot + SLAT_T
+        y_arm_end = path_y_at(rear, arm_top) - r / math.cos(recline) + ARM_TENON
+        y_arm_0 = -hy - ARM_OVER
         for xsign in (-1.0, 1.0):
-            x = xsign * hx
             wood.extend(
                 add_box(
                     bm,
-                    (x, 0.0, ARM_Z + t * 0.5 + SLAT_T * 0.5),
-                    (SLAT_T * 1.15, 2.0 * hy + t, SLAT_T),
+                    (xsign * hx, 0.5 * (y_arm_0 + y_arm_end), arm_bot + SLAT_T * 0.5),
+                    (SLAT_T * 1.15, y_arm_end - y_arm_0, SLAT_T),
                     WOOD_IDX,
                 )
             )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood for e in v.link_edges})
+            # A set of BMEdges iterates in memory order; sort by index so the
+            # bevel lays its faces down in the same order every run.
+            bm.edges.index_update()
+            edges = sorted({e for v in wood for e in v.link_edges}, key=lambda e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -355,57 +432,59 @@ def build_bench_mesh(
             for f in ret.get("faces") or []:
                 f.material_index = WOOD_IDX
 
-        add_box(bm, (0.0, -hy, SEAT_Z - t * 0.35), (SEAT_SPAN, t, t), METAL_IDX)
-        add_box(bm, (0.0, hy, SEAT_Z - t * 0.35), (SEAT_SPAN, t, t), METAL_IDX)
-        for xsign in (-1.0, 1.0):
-            add_box(
-                bm,
-                (xsign * hx, 0.0, SEAT_Z - t * 0.35),
-                (t, 2.0 * hy, t),
-                METAL_IDX,
-            )
-
-        back_top = SEAT_Z + SLAT_T + BACK_H + 0.02
+        leg_top = arm_bot + LEG_TENON
         for xsign in (-1.0, 1.0):
             x = xsign * hx
-            add_oriented_box(
-                bm, (x, hy, SCROLL_R), (x, hy, back_top), (t, t), METAL_IDX
+            front = toe_arc(-hy, -1.0)
+            if split_feet:
+                # The first build: foot arcs that stop short of the posts,
+                # and posts that start at z=R, as separate shells.
+                add_sweep(bm, [(x, y, z) for y, z in front[:-1]], r, METAL_IDX)
+                add_sweep(bm, [(x, -hy, SCROLL_R), (x, -hy, leg_top)], r, METAL_IDX)
+                add_sweep(bm, [(x, y, z) for y, z in rear[:SCROLL_N]], r, METAL_IDX)
+                add_sweep(bm, [(x, y, z) for y, z in rear[SCROLL_N:]], r, METAL_IDX)
+            else:
+                front.append((-hy, leg_top))
+                add_sweep(bm, [(x, y, z) for y, z in front], r, METAL_IDX)
+                add_sweep(bm, [(x, y, z) for y, z in rear], r, METAL_IDX)
+            add_sweep(
+                bm,
+                [(x, -hy, ARM_Z), (x, path_y_at(rear, ARM_Z), ARM_Z)],
+                r * 0.95,
+                METAL_IDX,
             )
-            add_oriented_box(
-                bm, (x, -hy, SCROLL_R), (x, -hy, ARM_Z), (t, t), METAL_IDX
-            )
-            add_oriented_box(
-                bm, (x, -hy, ARM_Z), (x, hy, ARM_Z), (t * 0.95, t * 0.95), METAL_IDX
-            )
-            add_foot_scroll(bm, x, -hy, -hy - SCROLL_R, t, METAL_IDX)
-            add_foot_scroll(bm, x, hy, hy + SCROLL_R, t, METAL_IDX)
-            add_arm_scroll(bm, x, -hy, t * 0.90, METAL_IDX)
+            # Quarter-round bracket under the armrest's overhang: one end in
+            # the leg, the other up inside the armrest.
+            zc = arm_bot + BRACKET_BITE
+            br = []
+            for i in range(BRACKET_N + 1):
+                a = 1.5 * math.pi - 0.5 * math.pi * i / BRACKET_N
+                br.append((x, -hy + BRACKET_R * math.cos(a), zc + BRACKET_R * math.sin(a)))
+            add_sweep(bm, br, r * 0.85, METAL_IDX)
+            # Side seat rail, leg axis to leg axis.
+            add_sweep(bm, [(x, -hy, rail_z), (x, hy, rail_z)], r, METAL_IDX)
 
-        add_box(bm, (0.0, hy, back_top), (SEAT_SPAN, t, t), METAL_IDX)
+        # Front and back rails stop half a bar inside the legs: ending on the
+        # leg axis puts their end rings on the side rails' end rings.
+        rx = hx - 0.5 * r
+        add_sweep(bm, [(-rx, -hy, rail_z), (rx, -hy, rail_z)], r, METAL_IDX)
+        add_sweep(bm, [(-rx, hy, rail_z), (rx, hy, rail_z)], r, METAL_IDX)
+        # The top rail runs through the upright tops, a heavier bar that
+        # swallows their end caps, out to the armrests' outer faces.
+        tx = hx + SLAT_T * 1.15 * 0.5
+        add_sweep(bm, [(-tx, y_top, z_top), (tx, y_top, z_top)], TOP_RAIL_R, METAL_IDX)
 
         st_trim = FLOAT_STRETCHER if float_stretcher else 0.0
         yx = hx - st_trim
-        add_oriented_box(
-            bm,
-            (-yx, -hy, STRETCHER_Z),
-            (-yx, hy, STRETCHER_Z),
-            (t * 0.9, t * 0.9),
-            METAL_IDX,
-        )
-        add_oriented_box(
-            bm,
-            (yx, -hy, STRETCHER_Z),
-            (yx, hy, STRETCHER_Z),
-            (t * 0.9, t * 0.9),
-            METAL_IDX,
-        )
-        cx_end = yx - t * 0.40
-        add_oriented_box(
-            bm,
-            (-cx_end, 0.0, STRETCHER_Z),
-            (cx_end, 0.0, STRETCHER_Z),
-            (t * 0.9, t * 0.9),
-            METAL_IDX,
+        for xsign in (-1.0, 1.0):
+            add_sweep(
+                bm,
+                [(xsign * yx, -hy, STRETCHER_Z), (xsign * yx, hy, STRETCHER_Z)],
+                r * 0.9,
+                METAL_IDX,
+            )
+        add_sweep(
+            bm, [(-yx, 0.0, STRETCHER_Z), (yx, 0.0, STRETCHER_Z)], r * 0.9, METAL_IDX
         )
 
         if short_feet:
@@ -431,13 +510,12 @@ def build_bench_mesh(
             bmesh.ops.triangulate(bm, faces=ngons)
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
-        for face in bm.faces:
-            face.smooth = face.material_index == METAL_IDX
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
+        # Round bar is smooth-shaded; sawn slats keep their chamfer facets.
         for poly in me.polygons:
-            poly.use_smooth = poly.material_index == METAL_IDX
+            poly.use_smooth = poly.material_index == METAL_IDX and len(poly.vertices) == 4
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -464,7 +542,140 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
         nt.links.new(tex.outputs["Fac"], fac)
         nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every slat and armrest is its own shell, so each gets one tone and
+    grain along its own long axis. Iron shells get a tone too; the iron
+    shader ignores it.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each slat (``GrainDir``), tone per slat (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def bench_materials():
+    """(wood, metal): shared by the check, the render and inspection.
+
+    The first build was one flat brown on every slat and satin iron
+    (metallic 1.0, roughness 0.32) that read as chrome.
+    """
+    wood = wood_material("BenchWood")
+    metal = principled(
+        "BenchIron", (0.040, 0.042, 0.045, 1.0), 0.60, 0.55,
+        noise_scale=18.0, wear=(0.11, 0.055, 0.028, 1.0),
+    )
+    return wood, metal
 
 
 def assign_slots(obj, wood, metal):
@@ -681,27 +892,75 @@ def add_stray_vert(me):
         bm.free()
 
 
+def shell_bite(me, ga, gb):
+    """Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is."""
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_b.faces:
+            return -1e9
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -1e9
+        for i in ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            if loc is None:
+                continue
+            depth = dist if (co - loc).dot(nrm) < 0.0 else -dist
+            best = max(best, depth)
+        return best
+    finally:
+        bm_b.free()
+
+
 def joint_audit(me):
     groups = shells(me)
+    owner = {}
+    for gi, g in enumerate(groups):
+        for i in g:
+            owner[i] = gi
+    rail_z = SEAT_Z - IRON_T * 0.35 + BAR_R
+    arm_z = ARM_Z + BAR_R
     posts = []
     stretchers = []
     slats = []
-    for g in groups:
+    seat_slats = []
+    back_slats = []
+    side_rails = []
+    arm_bars = []
+    armrests = []
+    for gi, g in enumerate(groups):
         a = shell_aabb(me, g)
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
+        cz = 0.5 * (a[2] + a[5])
         mat = mat_of(me, g)
-        if mat == METAL_IDX and dz > 0.28 and dx < 0.08 and dy < 0.08:
-            posts.append((g, a))
-        if mat == METAL_IDX and abs(0.5 * (a[2] + a[5]) - STRETCHER_Z) < 0.05 and max(dx, dy) > 0.25:
+        # A leg is one bar from toe to arm (front) or back top (rear); it is
+        # thin across the bench and tall, whatever its depth in plan.
+        if mat == METAL_IDX and dz > 0.28 and dx < 0.08:
+            posts.append((g, a, gi))
+        if mat == METAL_IDX and abs(cz - STRETCHER_Z) < 0.05 and max(dx, dy) > 0.25:
             stretchers.append((g, a))
+        if mat == METAL_IDX and dx < 0.08 and dy > 0.30 and dz < 0.05:
+            if abs(cz - rail_z) < 0.02:
+                side_rails.append((g, a))
+            elif abs(cz - arm_z) < 0.02:
+                arm_bars.append((g, a))
         if mat == WOOD_IDX and dz < 0.08 and dx > SEAT_SPAN * 0.4:
             slats.append((g, a))
+            (seat_slats if cz < SEAT_Z + 0.10 else back_slats).append((g, a))
+        if mat == WOOD_IDX and dx < 0.08 and dy > 0.20:
+            armrests.append((g, a))
     metal_verts = []
     for poly in me.polygons:
         if poly.material_index != METAL_IDX:
             continue
         for i in poly.vertices:
-            metal_verts.append(me.vertices[i].co)
+            metal_verts.append(i)
     stations = (
         (HX, HY + SCROLL_R, 0.0),
         (HX, -HY - SCROLL_R, 0.0),
@@ -710,26 +969,70 @@ def joint_audit(me):
     )
     toes = 0
     toe_z = 99.0
+    leg_ids = {gi for _g, _a, gi in posts}
+    tall = {gi for _g, a, gi in posts if a[5] >= SEAT_Z}
+    continuous = set()
     for sx, sy, sz in stations:
         nearby = []
-        for co in metal_verts:
+        for i in metal_verts:
+            co = me.vertices[i].co
             d = ((co.x - sx) ** 2 + (co.y - sy) ** 2) ** 0.5
             if d < SCROLL_R * 0.55:
-                nearby.append(co)
+                nearby.append(i)
         if nearby:
             toes += 1
-            toe_z = min(toe_z, min(c.z for c in nearby))
+            toe_z = min(toe_z, min(me.vertices[i].co.z for i in nearby))
+            # The toe's own shell must be a leg that reaches the seat: a
+            # foot that is a separate arc under its post fails here.
+            low = min(nearby, key=lambda i: me.vertices[i].co.z)
+            gi = owner[low]
+            if gi in leg_ids and gi in tall:
+                continuous.add(gi)
     st_gap = 99.0
     if stretchers and posts:
         st_gap = min(shell_bvh_gap(me, s[0], p[0]) for s in stretchers for p in posts)
     slat_gap = 99.0
-    rails = [p for p in posts]
-    if slats and rails:
-        slat_gap = min(shell_bvh_gap(me, s[0], p[0]) for s in slats for p in rails)
+    if slats and posts:
+        slat_gap = min(shell_bvh_gap(me, s[0], p[0]) for s in slats for p in posts)
     seat_x = 0.0
     if slats:
         xs = [v for _g, a in slats for v in (a[0], a[3])]
         seat_x = max(xs) - min(xs)
+
+    # Bearing bites: every seat slat is carried by both side rails, every
+    # back slat by both reclined uprights, every armrest by its front leg
+    # and its arm bar. Deepest carrier vertex inside the carried shell.
+    rear = [(g, a) for g, a, _gi in posts if a[5] > ARM_Z + 0.10]
+    front = [(g, a) for g, a, _gi in posts if a[5] <= ARM_Z + 0.10]
+    bites = []
+    # Overlap depth either way round: a rail has vertices only at its ends,
+    # so under a mid-span slat it is the slat's corner that sits in the rail.
+    def overlap(ga, gb):
+        return max(shell_bite(me, ga, gb), shell_bite(me, gb, ga))
+
+    for s, _a in seat_slats:
+        for rl, _b in side_rails:
+            bites.append(("seat", overlap(rl, s)))
+    for s, _a in back_slats:
+        for up, _b in rear:
+            bites.append(("back", overlap(up, s)))
+    for s, a in armrests:
+        side = 0.5 * (a[0] + a[3])
+        for host, b in front + arm_bars:
+            if abs(0.5 * (b[0] + b[3]) - side) < 0.05:
+                bites.append(("arm", overlap(host, s)))
+    bite_min = min((b for _k, b in bites), default=-1.0)
+    bite_kind = min(bites, key=lambda kb: kb[1])[0] if bites else "none"
+
+    # Recline of each rear upright: centroids of a low and a high slab.
+    recl = []
+    for g, a in rear:
+        lo_s = [me.vertices[i].co for i in g if SEAT_Z + 0.16 <= me.vertices[i].co.z <= SEAT_Z + 0.26]
+        hi_s = [me.vertices[i].co for i in g if a[5] - 0.16 <= me.vertices[i].co.z <= a[5] - 0.06]
+        if lo_s and hi_s:
+            c0 = sum(lo_s, Vector()) / len(lo_s)
+            c1 = sum(hi_s, Vector()) / len(hi_s)
+            recl.append(math.degrees(math.atan2(abs(c1.y - c0.y), c1.z - c0.z)))
     return {
         "toes": toes,
         "toe_z": toe_z,
@@ -739,6 +1042,16 @@ def joint_audit(me):
         "slat_gap": slat_gap,
         "seat_x": seat_x,
         "slats": len(slats),
+        "legs_whole": len(continuous),
+        "seat_slats": len(seat_slats),
+        "back_slats": len(back_slats),
+        "side_rails": len(side_rails),
+        "arm_bars": len(arm_bars),
+        "armrests": len(armrests),
+        "bites": len(bites),
+        "bite_min": bite_min,
+        "bite_kind": bite_kind,
+        "recline": recl,
     }
 
 
@@ -802,6 +1115,9 @@ def check(
     gap_slats=False,
     short_feet=False,
     narrow_seat=False,
+    float_slats=False,
+    split_feet=False,
+    upright_back=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     kw = dict(
@@ -809,17 +1125,15 @@ def check(
         gap_slats=gap_slats,
         short_feet=short_feet,
         narrow_seat=narrow_seat,
+        float_slats=float_slats,
+        split_feet=split_feet,
+        upright_back=upright_back,
     )
     low = build_bench_mesh("BenchLow", bevel_offset=0.004, bevel_segments=2, **kw)
     high = build_bench_mesh("BenchHigh", bevel_offset=0.004, bevel_segments=4, **kw)
-    wood = principled(
-        "BenchWood", (0.40, 0.20, 0.07, 1.0), 0.0, 0.58,
-        noise_scale=18.0, wear=(0.28, 0.14, 0.05, 1.0),
-    )
-    metal = principled(
-        "BenchIron", (0.09, 0.095, 0.11, 1.0), 1.0, 0.32,
-        noise_scale=22.0, wear=(0.16, 0.14, 0.10, 1.0),
-    )
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, metal = bench_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -875,6 +1189,9 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    if os.path.isfile(export_path):
+        # Measured; do not leave a .glb per run in the temp directory.
+        os.remove(export_path)
 
     print(f"blender={tuple(bpy.app.version)} skip_decimate={skip_decimate}")
     print(
@@ -906,6 +1223,14 @@ def check(
         f"posts={jnt['posts']} stretchers={jnt['stretchers']} "
         f"st_gap={jnt['st_gap']:.5f} slat_gap={jnt['slat_gap']:.5f} "
         f"seat_x={jnt['seat_x']:.4f} slats={jnt['slats']}"
+    )
+    recl = jnt["recline"]
+    print(
+        f"measured legs_whole={jnt['legs_whole']} seat_slats={jnt['seat_slats']} "
+        f"back_slats={jnt['back_slats']} side_rails={jnt['side_rails']} "
+        f"arm_bars={jnt['arm_bars']} armrests={jnt['armrests']} "
+        f"bites={jnt['bites']} bite_min={jnt['bite_min']:.5f} ({jnt['bite_kind']}) "
+        f"recline={[round(v, 2) for v in recl]}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -1001,6 +1326,29 @@ def check(
             f"slat gap {jnt['slat_gap']:.5f} slats={jnt['slats']}",
             18,
         ), None, None, None, None, None
+    want_bites = 2 * N_SEAT + 2 * N_BACK + 4
+    if (
+        jnt["seat_slats"] != N_SEAT or jnt["back_slats"] != N_BACK
+        or jnt["side_rails"] != 2 or jnt["arm_bars"] != 2 or jnt["armrests"] != 2
+        or jnt["bites"] != want_bites or jnt["bite_min"] < BITE_MIN
+    ):
+        return fail(
+            f"bearing bite {jnt['bite_min']:.5f} ({jnt['bite_kind']}) < {BITE_MIN} "
+            f"or members seat={jnt['seat_slats']} back={jnt['back_slats']} "
+            f"rails={jnt['side_rails']} bars={jnt['arm_bars']} "
+            f"arms={jnt['armrests']} bites={jnt['bites']}/{want_bites}",
+            20,
+        ), None, None, None, None, None
+    if jnt["legs_whole"] != LEG_COUNT:
+        return fail(
+            f"legs bent in one piece toe to seat {jnt['legs_whole']} != {LEG_COUNT}",
+            21,
+        ), None, None, None, None, None
+    if len(recl) != 2 or not all(RECLINE_MIN_DEG <= v <= RECLINE_MAX_DEG for v in recl):
+        return fail(
+            f"back recline {recl} not in [{RECLINE_MIN_DEG}, {RECLINE_MAX_DEG}] deg",
+            19,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1021,13 +1369,13 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
+    # Level on the floor: an X tilt sinks the front toes and lifts the back.
     low.rotation_euler.z = math.radians(-14.0)
-    low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1121,6 +1469,9 @@ def main():
     p.add_argument("--float-stretcher", action="store_true")
     p.add_argument("--gap-slats", action="store_true")
     p.add_argument("--narrow-seat", action="store_true")
+    p.add_argument("--float-slats", action="store_true")
+    p.add_argument("--split-feet", action="store_true")
+    p.add_argument("--upright-back", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1131,6 +1482,9 @@ def main():
         gap_slats=args.gap_slats,
         short_feet=args.short_feet,
         narrow_seat=args.narrow_seat,
+        float_slats=args.float_slats,
+        split_feet=args.split_feet,
+        upright_back=args.upright_back,
     )
     if code:
         return code
