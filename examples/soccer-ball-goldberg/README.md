@@ -58,9 +58,28 @@ Blender (passing the mesh raises TypeError) — see
 The render is the proof: the faceted Goldberg cage is smoothed by an
 **unapplied** Subsurf modifier (panel materials carry through Catmull-Clark
 per face class), and the ball is grounded by its depsgraph-evaluated lowest
-vertex — center-at-circumradius floats the ball, because the smoothed surface
-sinks toward the face inradii. Invert the panel binding and the still
-inverts with it: white pentagons on a black ball, wrong on sight.
+vertex. Invert the panel binding and the still inverts with it: white
+pentagons on a black ball, wrong on sight.
+
+### Staging (render path only)
+
+None of this touches the checked mesh, its binding, or any check.
+
+- **Round, not lumpy.** Catmull-Clark on a 60-vertex cage leaves flats over
+  every hexagon; the clay pass read as a lumpy stone. An unapplied Cast
+  modifier after the Subsurf pulls the surface onto a sphere of the cage's own
+  circumradius.
+- **Every panel visible.** The white hexagons used to merge into one white
+  shell, so the still showed 12 of the 32 panels the check counts. A
+  render-only copy of the mesh, turned into a wire, subdivided and cast onto a
+  sphere 2 mm proud of the ball, draws every panel boundary as a stitched seam.
+  It is parented to the ball and bound to the dark slot on the copy only.
+- **Framing gate.** The render path calls
+  [`gallery_framing.check_framing`](../gallery_framing.py) before writing the
+  still. The helper returns 10, which this example already spends on the
+  centroid check, so the call site maps a violation to **14**. The larger,
+  rounder ball touched the top edge at the old 55 mm lens; the lens is now
+  50 mm.
 
 ## Run
 
@@ -97,6 +116,7 @@ against it.
 | 11 | Circumradius not uniform |
 | 12 | Panel material count ≠ 2 |
 | 13 | Panel binding not by vertex count (`--invert-bind` lands here) |
+| 14 | Framing gate (`--output` path only; `gallery_framing` returns 10, remapped) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

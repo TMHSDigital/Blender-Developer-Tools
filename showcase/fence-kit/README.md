@@ -1,22 +1,25 @@
 # Fence kit
 
-A showcase piece, not an example. Procedural post-and-rail fence
-section (two posts, pyramidal caps, three rails, kickboard, a brace
-from named post stations, iron shoes and U-wrap straps) then the
-shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD
-chain, convex collider, Unity glTF export.
+A showcase piece, not an example. A procedural post-and-rail fence section
+(two posts, pyramidal caps, three rails, a kickboard, a board brace, iron
+shoes and U-bands), then the shipped pipeline: unique-cell UVs, a Cycles
+high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF
+export.
 
-Posts, rails, kick, brace and collars share named stations
-(`POST_XS`, `RAIL_ZS`, `Y_BRACE`, `SHOE_H`). The brace is an oriented
-box from the left-post lower-rail station to the right-post upper-rail
-station on the back face, not a hypot-length box rotated about its
-centroid. Rails and kick tenon into the post volume; rail collars are
-U-wraps so the span-facing plate is not coplanar with the rail end.
+Posts, rails, kick, brace and bands share named stations (`POST_XS`,
+`RAIL_ZS`, `SHOE_H`). The post stations come from the tile. The outer faces
+of the iron bands sit `KIT_CLEAR` (2 mm) inside the tile edge, so copies
+placed at the 1.60 m pitch meet band to band without interpenetrating or
+sharing a plane. Each band is one shell, mitred at the corners. A rail band
+is a U open toward the span, with its arms stopped inside the post's inner
+face. The brace is a board with plumb-cut ends, face-nailed to the middle
+rail and housed 12 mm into both posts. It clears the bottom rail at the left
+post and the top rail at the right one. Rails and kick tenon into the post
+volume.
 
 It asserts **budget conformance** of the generated result. It does not
-witness an API contract. "It rendered without error" is not a check.
-AABB X is the tile width so adjacent copies meet; this piece does not
-re-witness the `modular-kit-snap` snap contract.
+witness an API contract. "It rendered without error" is not a check. This
+piece does not re-witness the `modular-kit-snap` snap contract.
 
 **Composes** skills `mesh-editing-and-bmesh`, `bake-high-to-low`,
 `depsgraph-and-evaluated-data`, `engine-export-presets`, and snippets
@@ -26,35 +29,37 @@ re-witness the `modular-kit-snap` snap contract.
 Hygiene combinatorics match `examples/mesh-hygiene-audit` (copied, not
 imported).
 
-Intended size: 1.60 m bay, 1.14 m posts, 0.11 m post stock; outer AABB
-1.624 × 0.134 × 1.232 m.
+Intended size: 1.60 m tile, 1.14 m posts, 0.11 m post stock. Outer AABB
+1.596 × 0.134 × 1.232 m.
 
 ## Budgets
 
-Declared as named constants; every gate **recomputes** from the mesh,
-materials, UVs, evaluated LOD, collider, or export file.
+Declared as named constants. Every gate **recomputes** its value from the
+mesh, materials, UVs, evaluated LOD, collider or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 1000–1400 | 1092 / 1092 / 1092 |
+| Base triangles | 850–1200 | 1012 / 1012 / 1012 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2198 / 0.2198 / 0.1832 |
-| Materials | exactly 2 distinct, ≥48 metal, ≥24 wood | 2 slots, 156 metal / 390 wood |
+| LOD2 ratio | 0.10–0.35 of base | 0.2194 / 0.2194 / 0.2174 |
+| Materials | exactly 2 distinct, ≥48 metal, ≥48 wood | 2 slots, 116 metal / 390 wood |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
-| Outer AABB | (1.624, 0.134, 1.232) m ± 0.015 | (1.6240, 0.1340, 1.2320), zmin 0 |
-| Collider tris | ≤ 180 | 32 |
-| Export | written, size > 0 | 82216 / 82216 / 82208 bytes |
+| Outer AABB | (1.596, 0.134, 1.232) m ± 0.015 | (1.5960, 0.1340, 1.2320), zmin 0 |
+| Collider tris | ≤ 180 | 24 |
+| Export | written, size > 0 | 75900 / 75900 / 75888 bytes |
 
-Base triangles dropped from **1212 to 1092** in the quality pass: rail
-collars became U-wraps (no span-facing plate). Outer AABB tightened from
-1.642 × 0.157 × 1.235 m.
+Base triangles dropped from **1092 to 1012** in the second quality pass. Each
+band became one mitred shell instead of three or four separate plates, and
+the brace became a six-face board. The band was re-fitted around the
+measurement and narrowed from 1000–1400.
 
-DECIMATE COLLAPSE triangle counts are **not** identical across series —
-5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an
-exact count. Bake pixels are stochastic; the gate is `has_data` plus
-operator `FINISHED`, not byte-identity. Construction uses no RNG.
-Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a
-gated axis.
+DECIMATE COLLAPSE triangle counts are **not** identical across series:
+5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact
+count. Bake pixels are stochastic; the gate is `has_data` plus operator
+`FINISHED`, not byte-identity. Construction is closed-form and plank tones
+are seeded, so repeated runs on one binary print identical measurements.
+Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated
+axis.
 
 ### Hygiene
 
@@ -71,13 +76,20 @@ Recomputed from the generated mesh, not asserted about the script.
 | Grounded: `zmin` | within 1e-4 of 0 | 0.0000 |
 | Named shoes | 2, each `zmin` ≤ 0.002 | 2, 0.00000 |
 
-### Joint fit and span
+### Joint fit, bearing and tiling
 
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
-| Brace-to-post BVH gap (both posts) | ≤ 0.008 m | 0.00240 |
+| Brace-to-post BVH gap (both posts) | ≤ 0.008 m | 0.00531 |
 | Rail-to-post BVH gap | ≤ 0.008 m | 0.00093 |
-| Rail span vs `2·RAIL_HALF` | ± 0.04 m | 1.3900 vs 1.390 |
+| Rail span vs `2·RAIL_HALF` | ± 0.04 m | 1.3620 vs 1.362 |
+| Brace housing (exit 20): deepest brace vertex inside each post | ≥ 0.004 m | 0.01200 |
+| Brace bearing (exit 20): brace back plane past the middle rail's front plane, where their heights overlap | ≥ 0.001 m | 0.00200 |
+| Tile fit (exit 21): section width along the tiling axis | 1.590–1.600 m | 1.5960 |
+
+The brace bearing is measured plane to plane. The brace and the middle rail
+cross mid-span, and neither has a vertex there, so a vertex-depth metric
+reports a false gap of 0.15 m.
 
 ### Falsifiers
 
@@ -93,13 +105,17 @@ and returned the same code on each.
 | `--short-brace` | brace-to-post BVH gap (both posts) | 17 |
 | `--gap-rails` | rail-to-post BVH gap | 18 |
 | `--long-rails` | rail span vs `2·RAIL_HALF` | 19 |
+| `--float-brace` | brace bearing on the middle rail (brace 6 mm forward; measured −0.00400) | 20 |
+| `--wide-tile` | tile fit (the first build's post stations; measured 1.6240) | 21 |
 
-`--short-shoes` lifts only the iron shoes. After recenter a post or kick
-is the AABB `zmin`, so the AABB gate would still pass; the named-shoe
-stations fail. `--short-brace` shortens the left station; `brace_gap` is
-the max of the per-post minima so a brace that still hits the right post
-cannot sneak through. `--long-rails` adds an extra spanning board; the
-tenoned rails stay put so the gap budget still passes.
+`--short-shoes` lifts only the iron shoes. After recentring, a post or the
+kick is the AABB `zmin`, so the AABB gate would still pass. The named-shoe
+stations fail. `--short-brace` shortens the left end; `brace_gap` is the
+maximum of the per-post minima, so a brace that still reaches the right post
+cannot sneak through. `--long-rails` adds an extra spanning board, and the
+tenoned rails stay put, so the gap budget still passes. `--wide-tile` moves
+the posts out to where the first build had them and moves the rails with
+them. It is checked before the AABB gate, which it would also fail.
 
 ## Run
 
@@ -112,6 +128,8 @@ blender --background --python fence_kit.py -- --short-shoes
 blender --background --python fence_kit.py -- --short-brace
 blender --background --python fence_kit.py -- --gap-rails
 blender --background --python fence_kit.py -- --long-rails
+blender --background --python fence_kit.py -- --float-brace
+blender --background --python fence_kit.py -- --wide-tile
 blender --background --python fence_kit.py -- --output fence.png
 ```
 
@@ -121,7 +139,7 @@ Smoke passes no flags.
 
 File-local. `9` is a valid check code. `10` is reserved for
 `gallery_framing.check_framing` on the `--output` path. `15`–`19` are the
-hygiene and joint-fit family.
+hygiene and joint-fit family. `20` and `21` are this piece's own.
 
 | Code | Meaning |
 | --- | --- |
@@ -145,3 +163,5 @@ hygiene and joint-fit family.
 | 17 | Brace-to-post gap (`--short-brace`) |
 | 18 | Rail-to-post gap (`--gap-rails`) |
 | 19 | Rail span (`--long-rails`) |
+| 20 | Brace not housed in both posts or not bearing on the middle rail (`--float-brace`) |
+| 21 | Section does not fit its tile (`--wide-tile`) |

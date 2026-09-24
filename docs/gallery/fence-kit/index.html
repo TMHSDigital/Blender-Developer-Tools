@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>fence-kit — Showcase — Blender Developer Tools</title>
-  <meta name="description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="description" content="A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/fence-kit/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="fence-kit — Showcase — Blender Developer Tools" />
-  <meta property="og:description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:description" content="A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/fence-kit/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A section of wooden post-and-rail fence with a diagonal brace and dark iron collars." />
+  <meta property="og:image:alt" content="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="fence-kit — Showcase — Blender Developer Tools" />
-  <meta name="twitter:description" content="A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:description" content="A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/fence-kit-hero.webp" />
-  <meta name="twitter:image:alt" content="A section of wooden post-and-rail fence with a diagonal brace and dark iron collars." />
+  <meta name="twitter:image:alt" content="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,38 +265,39 @@
   </div>
   <header class="hero">
     <h1>fence-kit</h1>
-    <p>A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+    <p>A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A section of wooden post-and-rail fence with a diagonal brace and dark iron collars.">
-      <img src="../assets/fence-kit-hero.webp" alt="A section of wooden post-and-rail fence with a diagonal brace and dark iron collars." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts.">
+      <img src="../assets/fence-kit-hero.webp" alt="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1092 tris, two materials with 156 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.624×0.134×1.232 m, grounded zmin, 2 iron shoes, brace-to-post gap 2.4 mm on both posts, rail-to-post gap 0.93 mm, rail span 1.390 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 32 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/fence-kit/fence_kit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A showcase piece, not an example. Procedural post-and-rail fence section (two posts, pyramidal caps, three rails, kickboard, a brace from named post stations, iron shoes and U-wrap straps) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
-<p>Posts, rails, kick, brace and collars share named stations (<code>POST_XS</code>, <code>RAIL_ZS</code>, <code>Y_BRACE</code>, <code>SHOE_H</code>). The brace is an oriented box from the left-post lower-rail station to the right-post upper-rail station on the back face, not a hypot-length box rotated about its centroid. Rails and kick tenon into the post volume; rail collars are U-wraps so the span-facing plate is not coplanar with the rail end.</p>
-<p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check. AABB X is the tile width so adjacent copies meet; this piece does not re-witness the <code>modular-kit-snap</code> snap contract.</p>
+<p>A showcase piece, not an example. A procedural post-and-rail fence section (two posts, pyramidal caps, three rails, a kickboard, a board brace, iron shoes and U-bands), then the shipped pipeline: unique-cell UVs, a Cycles high-to-low normal bake, an LOD chain, a convex collider and a Unity glTF export.</p>
+<p>Posts, rails, kick, brace and bands share named stations (<code>POST_XS</code>, <code>RAIL_ZS</code>, <code>SHOE_H</code>). The post stations come from the tile. The outer faces of the iron bands sit <code>KIT_CLEAR</code> (2 mm) inside the tile edge, so copies placed at the 1.60 m pitch meet band to band without interpenetrating or sharing a plane. Each band is one shell, mitred at the corners. A rail band is a U open toward the span, with its arms stopped inside the post&#x27;s inner face. The brace is a board with plumb-cut ends, face-nailed to the middle rail and housed 12 mm into both posts. It clears the bottom rail at the left post and the top rail at the right one. Rails and kick tenon into the post volume.</p>
+<p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check. This piece does not re-witness the <code>modular-kit-snap</code> snap contract.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package). Hygiene combinatorics match <code>examples/mesh-hygiene-audit</code> (copied, not imported).</p>
-<p>Intended size: 1.60 m bay, 1.14 m posts, 0.11 m post stock; outer AABB 1.624 × 0.134 × 1.232 m.</p>
+<p>Intended size: 1.60 m tile, 1.14 m posts, 0.11 m post stock. Outer AABB 1.596 × 0.134 × 1.232 m.</p>
 <h2>Budgets</h2>
-<p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>1000–1400</td><td>1092 / 1092 / 1092</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2198 / 0.2198 / 0.1832</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥48 metal, ≥24 wood</td><td>2 slots, 156 metal / 390 wood</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.624, 0.134, 1.232) m ± 0.015</td><td>(1.6240, 0.1340, 1.2320), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>32</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>82216 / 82216 / 82208 bytes</td></tr></tbody></table></div>
-<p>Base triangles dropped from <strong>1212 to 1092</strong> in the quality pass: rail collars became U-wraps (no span-facing plate). Outer AABB tightened from 1.642 × 0.157 × 1.235 m.</p>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 8 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<p>Declared as named constants. Every gate <strong>recomputes</strong> its value from the mesh, materials, UVs, evaluated LOD, collider or export file.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>850–1200</td><td>1012 / 1012 / 1012</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2194 / 0.2194 / 0.2174</td></tr><tr><td>Materials</td><td>exactly 2 distinct, ≥48 metal, ≥48 wood</td><td>2 slots, 116 metal / 390 wood</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.596, 0.134, 1.232) m ± 0.015</td><td>(1.5960, 0.1340, 1.2320), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>24</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>75900 / 75900 / 75888 bytes</td></tr></tbody></table></div>
+<p>Base triangles dropped from <strong>1092 to 1012</strong> in the second quality pass. Each band became one mitred shell instead of three or four separate plates, and the brace became a six-face board. The band was re-fitted around the measurement and narrowed from 1000–1400.</p>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series: 5.2.1 is more aggressive on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction is closed-form and plank tones are seeded, so repeated runs on one binary print identical measurements. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named shoes</td><td>2, each <code>zmin</code> ≤ 0.002</td><td>2, 0.00000</td></tr></tbody></table></div>
-<h3>Joint fit and span</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-post BVH gap (both posts)</td><td>≤ 0.008 m</td><td>0.00240</td></tr><tr><td>Rail-to-post BVH gap</td><td>≤ 0.008 m</td><td>0.00093</td></tr><tr><td>Rail span vs <code>2·RAIL_HALF</code></td><td>± 0.04 m</td><td>1.3900 vs 1.390</td></tr></tbody></table></div>
+<h3>Joint fit, bearing and tiling</h3>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Brace-to-post BVH gap (both posts)</td><td>≤ 0.008 m</td><td>0.00531</td></tr><tr><td>Rail-to-post BVH gap</td><td>≤ 0.008 m</td><td>0.00093</td></tr><tr><td>Rail span vs <code>2·RAIL_HALF</code></td><td>± 0.04 m</td><td>1.3620 vs 1.362</td></tr><tr><td>Brace housing (exit 20): deepest brace vertex inside each post</td><td>≥ 0.004 m</td><td>0.01200</td></tr><tr><td>Brace bearing (exit 20): brace back plane past the middle rail&#x27;s front plane, where their heights overlap</td><td>≥ 0.001 m</td><td>0.00200</td></tr><tr><td>Tile fit (exit 21): section width along the tiling axis</td><td>1.590–1.600 m</td><td>1.5960</td></tr></tbody></table></div>
+<p>The brace bearing is measured plane to plane. The brace and the middle rail cross mid-span, and neither has a vertex there, so a vertex-depth metric reports a false gap of 0.15 m.</p>
 <h3>Falsifiers</h3>
 <p>Each violates one named budget. All were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-shoes</code></td><td>named shoes plant at z=0</td><td>16</td></tr><tr><td><code>--short-brace</code></td><td>brace-to-post BVH gap (both posts)</td><td>17</td></tr><tr><td><code>--gap-rails</code></td><td>rail-to-post BVH gap</td><td>18</td></tr><tr><td><code>--long-rails</code></td><td>rail span vs <code>2·RAIL_HALF</code></td><td>19</td></tr></tbody></table></div>
-<p><code>--short-shoes</code> lifts only the iron shoes. After recenter a post or kick is the AABB <code>zmin</code>, so the AABB gate would still pass; the named-shoe stations fail. <code>--short-brace</code> shortens the left station; <code>brace_gap</code> is the max of the per-post minima so a brace that still hits the right post cannot sneak through. <code>--long-rails</code> adds an extra spanning board; the tenoned rails stay put so the gap budget still passes.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-shoes</code></td><td>named shoes plant at z=0</td><td>16</td></tr><tr><td><code>--short-brace</code></td><td>brace-to-post BVH gap (both posts)</td><td>17</td></tr><tr><td><code>--gap-rails</code></td><td>rail-to-post BVH gap</td><td>18</td></tr><tr><td><code>--long-rails</code></td><td>rail span vs <code>2·RAIL_HALF</code></td><td>19</td></tr><tr><td><code>--float-brace</code></td><td>brace bearing on the middle rail (brace 6 mm forward; measured −0.00400)</td><td>20</td></tr><tr><td><code>--wide-tile</code></td><td>tile fit (the first build&#x27;s post stations; measured 1.6240)</td><td>21</td></tr></tbody></table></div>
+<p><code>--short-shoes</code> lifts only the iron shoes. After recentring, a post or the kick is the AABB <code>zmin</code>, so the AABB gate would still pass. The named-shoe stations fail. <code>--short-brace</code> shortens the left end; <code>brace_gap</code> is the maximum of the per-post minima, so a brace that still reaches the right post cannot sneak through. <code>--long-rails</code> adds an extra spanning board, and the tenoned rails stay put, so the gap budget still passes. <code>--wide-tile</code> moves the posts out to where the first build had them and moves the rails with them. It is checked before the AABB gate, which it would also fail.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python fence_kit.py --
 blender --background --python fence_kit.py -- --skip-decimate
@@ -306,11 +307,13 @@ blender --background --python fence_kit.py -- --short-shoes
 blender --background --python fence_kit.py -- --short-brace
 blender --background --python fence_kit.py -- --gap-rails
 blender --background --python fence_kit.py -- --long-rails
+blender --background --python fence_kit.py -- --float-brace
+blender --background --python fence_kit.py -- --wide-tile
 blender --background --python fence_kit.py -- --output fence.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
-<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin / named shoes (<code>--lift-z</code>, <code>--short-shoes</code>)</td></tr><tr><td>17</td><td>Brace-to-post gap (<code>--short-brace</code>)</td></tr><tr><td>18</td><td>Rail-to-post gap (<code>--gap-rails</code>)</td></tr><tr><td>19</td><td>Rail span (<code>--long-rails</code>)</td></tr></tbody></table></div>
+<p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family. <code>20</code> and <code>21</code> are this piece&#x27;s own.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 2 distinct slots, or wood/metal faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Hygiene (<code>--stray-vert</code> lands here)</td></tr><tr><td>16</td><td>Grounded zmin / named shoes (<code>--lift-z</code>, <code>--short-shoes</code>)</td></tr><tr><td>17</td><td>Brace-to-post gap (<code>--short-brace</code>)</td></tr><tr><td>18</td><td>Rail-to-post gap (<code>--gap-rails</code>)</td></tr><tr><td>19</td><td>Rail span (<code>--long-rails</code>)</td></tr><tr><td>20</td><td>Brace not housed in both posts or not bearing on the middle rail (<code>--float-brace</code>)</td></tr><tr><td>21</td><td>Section does not fit its tile (<code>--wide-tile</code>)</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -325,23 +328,25 @@ composing shipped pipeline pieces: bmesh construction, UVs, two
 materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
-Posts, rails, kick, brace and collars share named stations
-(``post_xs``, ``RAIL_ZS``, ``y_brace``). The brace is an oriented
-box between those stations, not a hypot-length cube rotated about
-its centroid. Rails and kick tenon into the post volume without
-sharing corner verts.
+Posts, rails, kick, brace and iron bands share named stations
+(``POST_XS``, ``RAIL_ZS``, ``SHOE_H``). The post stations come from the
+tile: the outer face of the iron bands sits ``KIT_CLEAR`` inside the tile
+edge, so adjacent copies meet without interpenetrating. Each band is one
+mitred shell. The brace is a board with plumb-cut ends, face-nailed to
+the middle rail and housed in both posts. Rails and kick tenon into the
+post volume without sharing corner verts.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. Hygiene family 15–19:
 ``--stray-vert``, ``--lift-z`` / ``--short-shoes``, ``--short-brace``,
-``--gap-rails``, ``--long-rails``.
+``--gap-rails``, ``--long-rails``. ``--float-brace`` fails the brace
+bearing (20); ``--wide-tile`` fails the tile fit (21).
 
-No RNG. Construction is closed-form. AABB X is the tile width so
-adjacent copies meet; this piece does not re-witness the modular-kit
-snap contract. DECIMATE COLLAPSE triangle counts are not byte-identical
-across Blender versions — the LOD gate is a ratio band, not an exact
-count.
+Construction is closed-form; plank tones use a seeded RNG. This piece
+does not re-witness the modular-kit snap contract. DECIMATE COLLAPSE
+triangle counts are not byte-identical across Blender versions — the LOD
+gate is a ratio band, not an exact count.
 
     blender --background --python fence_kit.py --
     blender --background --python fence_kit.py -- --skip-decimate
@@ -350,6 +355,7 @@ count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -380,16 +386,32 @@ BRACE_T = <span class="n">0.042</span>
 IRON_T = <span class="n">0.016</span>
 SHOE_H = <span class="n">0.034</span>
 TENON = <span class="n">0.005</span>
-POST_XS = (-(TILE / <span class="n">2.0</span> - POST_W / <span class="n">2.0</span>), TILE / <span class="n">2.0</span> - POST_W / <span class="n">2.0</span>)
-HX = POST_XS[<span class="n">1</span>]
-Y_BRACE = -(POST_W * <span class="n">0.5</span> - BRACE_T * <span class="n">0.30</span>)
-RAIL_HALF = HX - POST_W * <span class="n">0.5</span> + TENON
 COLLAR_BITE = <span class="n">0.004</span>
+<span class="c"># The section tiles at TILE: the outer face of the iron bands, not the post</span>
+<span class="c"># centre, sits a named clearance inside the tile edge, so neighbouring</span>
+<span class="c"># copies meet band to band without interpenetrating or sharing a plane.</span>
+KIT_CLEAR = <span class="n">0.002</span>
+TILE_FIT_TOL = <span class="n">0.010</span>
+WIDE_TILE_CLEAR = -<span class="n">0.012</span>
+BAND_REACH = POST_W / <span class="n">2.0</span> - COLLAR_BITE + IRON_T
+HX = TILE / <span class="n">2.0</span> - KIT_CLEAR - BAND_REACH
+POST_XS = (-HX, HX)
+RAIL_HALF = HX - POST_W * <span class="n">0.5</span> + TENON
+BRACE_D = <span class="n">0.022</span>
+BRACE_BITE = <span class="n">0.002</span>
+BRACE_TENON = <span class="n">0.012</span>
+BRACE_CLEAR = <span class="n">0.012</span>
+FLOAT_BRACE = <span class="n">0.006</span>
+BRACE_POST_BITE_MIN = <span class="n">0.004</span>
+BRACE_RAIL_BITE_MIN = <span class="n">0.001</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">17</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 
 BBOX_TOL = <span class="n">0.015</span>
-OUTER_SIZE = (<span class="n">1.624</span>, <span class="n">0.134</span>, <span class="n">1.232</span>)
-BASE_TRIS_MIN = <span class="n">1000</span>
-BASE_TRIS_MAX = <span class="n">1400</span>
+OUTER_SIZE = (<span class="n">1.596</span>, <span class="n">0.134</span>, <span class="n">1.232</span>)
+BASE_TRIS_MIN = <span class="n">850</span>
+BASE_TRIS_MAX = <span class="n">1200</span>
 LOD1_RATIO_MIN = <span class="n">0.32</span>
 LOD1_RATIO_MAX = <span class="n">0.62</span>
 LOD2_RATIO_MIN = <span class="n">0.10</span>
@@ -490,25 +512,78 @@ LONG_RAIL = <span class="n">0.08</span>
 
 
 <span class="k">def</span> add_collar(bm, px, z, half, t, h, mat_idx, closed=<span class="k">True</span>):
-    <span class="s">&quot;&quot;&quot;Plates around a post. Bite the host. U-wrap omits the span-facing plate.&quot;&quot;&quot;</span>
-    loc_y = half - COLLAR_BITE + t * <span class="n">0.5</span>
-    add_box(bm, (px, loc_y, z), (<span class="n">2.0</span> * half - t * <span class="n">0.50</span>, t, h), mat_idx)
-    add_box(bm, (px, -loc_y, z), (<span class="n">2.0</span> * half - t * <span class="n">0.50</span>, t, h), mat_idx)
-    loc_x = half - COLLAR_BITE + t * <span class="n">0.5</span>
-    sign = <span class="n">1.0</span> <span class="k">if</span> px &gt;= <span class="n">0.0</span> <span class="k">else</span> -<span class="n">1.0</span>
-    add_box(
-        bm,
-        (px + sign * loc_x, <span class="n">0.0</span>, z),
-        (t, <span class="n">2.0</span> * half - t * <span class="n">0.70</span>, h),
-        mat_idx,
-    )
+    <span class="s">&quot;&quot;&quot;One iron band around a post, mitred at the corners, one shell.
+
+    Inner face a named bite inside the post, outer face proud of it. A U
+    band (``closed=False``) leaves the span-facing side open for the rail
+    and stops its arms a quarter-thickness inside the post&#x27;s inner face,
+    so no arm end lands on that face&#x27;s plane. The first build was three or
+    four separate plates with open slits at every corner.
+    &quot;&quot;&quot;</span>
+    a = half - COLLAR_BITE
+    b = a + t
+    s = <span class="n">1.0</span> <span class="k">if</span> px &gt;= <span class="n">0.0</span> <span class="k">else</span> -<span class="n">1.0</span>
     <span class="k">if</span> closed:
-        add_box(
-            bm,
-            (px - sign * loc_x, <span class="n">0.0</span>, z),
-            (t, <span class="n">2.0</span> * half - t * <span class="n">0.70</span>, h),
-            mat_idx,
-        )
+        outer = [(b, b), (-b, b), (-b, -b), (b, -b)]
+        inner = [(a, a), (-a, a), (-a, -a), (a, -a)]
+    <span class="k">else</span>:
+        e = half - t * <span class="n">0.25</span>
+        outer = [(-e, -b), (b, -b), (b, b), (-e, b)]
+        inner = [(-e, -a), (a, -a), (a, a), (-e, a)]
+    z0, z1 = z - h * <span class="n">0.5</span>, z + h * <span class="n">0.5</span>
+
+    <span class="k">def</span> ring(pts, zz):
+        <span class="k">return</span> [bm.verts.new((px + s * x, y, zz)) <span class="k">for</span> x, y <span class="k">in</span> pts]
+
+    ob, ot = ring(outer, z0), ring(outer, z1)
+    ib, it = ring(inner, z0), ring(inner, z1)
+    n = len(outer)
+    segs = range(n) <span class="k">if</span> closed <span class="k">else</span> range(n - <span class="n">1</span>)
+    faces = []
+    <span class="k">for</span> i <span class="k">in</span> segs:
+        j = (i + <span class="n">1</span>) % n
+        faces.append(bm.faces.new((ob[i], ob[j], ot[j], ot[i])))
+        faces.append(bm.faces.new((ib[j], ib[i], it[i], it[j])))
+        faces.append(bm.faces.new((ot[i], ot[j], it[j], it[i])))
+        faces.append(bm.faces.new((ob[j], ob[i], ib[i], ib[j])))
+    <span class="k">if</span> <span class="k">not</span> closed:
+        <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, n - <span class="n">1</span>):
+            faces.append(bm.faces.new((ob[i], ib[i], it[i], ot[i])))
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat_idx
+    <span class="k">return</span> ob + ot + ib + it
+
+
+<span class="k">def</span> add_brace(bm, x0, z0, x1, z1, y_back, depth, height, mat_idx):
+    <span class="s">&quot;&quot;&quot;A board brace between two posts, ends cut plumb.
+
+    A box rotated onto the diagonal has ends square to its own axis: one
+    corner buries itself in the post and the other stands off in the air.
+    Cut plumb, both ends enter the post faces along their full height.
+    &quot;&quot;&quot;</span>
+    y_front = y_back - depth
+    vs = []
+    <span class="k">for</span> x, zc <span class="k">in</span> ((x0, z0), (x1, z1)):
+        <span class="k">for</span> y <span class="k">in</span> (y_back, y_front):
+            <span class="k">for</span> dz <span class="k">in</span> (-<span class="n">0.5</span>, <span class="n">0.5</span>):
+                vs.append(bm.verts.new((x, y, zc + dz * height)))
+    <span class="c"># index: (end, y, z) -&gt; end*4 + y*2 + z</span>
+    q = [
+        (<span class="n">0</span>, <span class="n">1</span>, <span class="n">3</span>, <span class="n">2</span>), (<span class="n">4</span>, <span class="n">6</span>, <span class="n">7</span>, <span class="n">5</span>),       <span class="c"># plumb ends</span>
+        (<span class="n">0</span>, <span class="n">4</span>, <span class="n">5</span>, <span class="n">1</span>), (<span class="n">2</span>, <span class="n">3</span>, <span class="n">7</span>, <span class="n">6</span>),       <span class="c"># back / front faces</span>
+        (<span class="n">0</span>, <span class="n">2</span>, <span class="n">6</span>, <span class="n">4</span>), (<span class="n">1</span>, <span class="n">5</span>, <span class="n">7</span>, <span class="n">3</span>),       <span class="c"># underside / top</span>
+    ]
+    <span class="k">for</span> quad <span class="k">in</span> q:
+        bm.faces.new([vs[i] <span class="k">for</span> i <span class="k">in</span> quad]).material_index = mat_idx
+    <span class="k">return</span> vs
+
+
+<span class="k">def</span> rail_depth(i):
+    <span class="k">return</span> RAIL_Y * (<span class="n">1.0</span> + <span class="n">0.10</span> * math.sin(i * <span class="n">2.15</span> + <span class="n">0.3</span>))
+
+
+<span class="k">def</span> rail_height(i):
+    <span class="k">return</span> RAIL_Z * (<span class="n">1.0</span> + <span class="n">0.06</span> * math.sin(i * <span class="n">1.7</span> + <span class="n">1.1</span>))
 
 
 <span class="k">def</span> add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
@@ -583,13 +658,18 @@ LONG_RAIL = <span class="n">0.08</span>
     short_shoes=<span class="k">False</span>,
     gap_rails=<span class="k">False</span>,
     long_rails=<span class="k">False</span>,
+    float_brace=<span class="k">False</span>,
+    wide_tile=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
         wood_verts = []
-        post_xs = POST_XS
         half = POST_W * <span class="n">0.5</span>
-        rail_half = RAIL_HALF - GAP_RAIL <span class="k">if</span> gap_rails <span class="k">else</span> RAIL_HALF
+        hx = TILE / <span class="n">2.0</span> - (WIDE_TILE_CLEAR <span class="k">if</span> wide_tile <span class="k">else</span> KIT_CLEAR) - BAND_REACH
+        post_xs = (-hx, hx)
+        rail_half = hx - half + TENON
+        <span class="k">if</span> gap_rails:
+            rail_half -= GAP_RAIL
 
         <span class="k">for</span> px <span class="k">in</span> post_xs:
             wood_verts.extend(
@@ -602,8 +682,8 @@ LONG_RAIL = <span class="n">0.08</span>
             )
 
         <span class="k">for</span> i, z <span class="k">in</span> enumerate(RAIL_ZS):
-            ry = RAIL_Y * (<span class="n">1.0</span> + <span class="n">0.10</span> * math.sin(i * <span class="n">2.15</span> + <span class="n">0.3</span>))
-            rz = RAIL_Z * (<span class="n">1.0</span> + <span class="n">0.06</span> * math.sin(i * <span class="n">1.7</span> + <span class="n">1.1</span>))
+            ry = rail_depth(i)
+            rz = rail_height(i)
             wood_verts.extend(
                 add_box(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, z), (<span class="n">2.0</span> * rail_half, ry, rz), WOOD_IDX)
             )
@@ -628,14 +708,35 @@ LONG_RAIL = <span class="n">0.08</span>
                 )
             )
 
-        a = Vector((post_xs[<span class="n">0</span>], Y_BRACE, RAIL_ZS[<span class="n">0</span>]))
-        b = Vector((post_xs[<span class="n">1</span>], Y_BRACE, RAIL_ZS[-<span class="n">1</span>]))
-        <span class="k">if</span> short_brace:
-            a = Vector((post_xs[<span class="n">0</span>] + SHORT_BRACE, Y_BRACE, RAIL_ZS[<span class="n">0</span>]))
-        wood_verts.extend(add_oriented_box(bm, a, b, (BRACE_T, BRACE_T), WOOD_IDX))
+        <span class="c"># The brace is a board face-nailed to the middle rail and housed in</span>
+        <span class="c"># both posts: it clears the bottom rail at the left post and the top</span>
+        <span class="c"># rail at the right one, and its back face bites the middle rail.</span>
+        <span class="c"># The first build ran post centre to post centre through the rail</span>
+        <span class="c"># bands, 6 mm into all three rails, with square-cut ends.</span>
+        x_a = post_xs[<span class="n">0</span>] + half
+        x_b = post_xs[<span class="n">1</span>] - half
+        h = BRACE_T
+        <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>):
+            z_a = RAIL_ZS[<span class="n">0</span>] + rail_height(<span class="n">0</span>) / <span class="n">2.0</span> + BRACE_CLEAR + h / <span class="n">2.0</span>
+            z_b = RAIL_ZS[-<span class="n">1</span>] - rail_height(len(RAIL_ZS) - <span class="n">1</span>) / <span class="n">2.0</span> - BRACE_CLEAR - h / <span class="n">2.0</span>
+            slope = (z_b - z_a) / (x_b - x_a)
+            h = BRACE_T * math.sqrt(<span class="n">1.0</span> + slope * slope)
+        x0 = x_a - BRACE_TENON + (SHORT_BRACE <span class="k">if</span> short_brace <span class="k">else</span> <span class="n">0.0</span>)
+        x1 = x_b + BRACE_TENON
+        y_back = -rail_depth(<span class="n">1</span>) / <span class="n">2.0</span> + BRACE_BITE - (FLOAT_BRACE <span class="k">if</span> float_brace <span class="k">else</span> <span class="n">0.0</span>)
+        wood_verts.extend(
+            add_brace(
+                bm,
+                x0, z_a + slope * (x0 - x_a),
+                x1, z_a + slope * (x1 - x_a),
+                y_back, BRACE_D, h, WOOD_IDX,
+            )
+        )
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># A set of BMEdges iterates in memory order; sort by index.</span>
+            bm.edges.index_update()
+            edges = sorted({e <span class="k">for</span> v <span class="k">in</span> wood_verts <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -714,7 +815,140 @@ LONG_RAIL = <span class="n">0.08</span>
         fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
         nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
         nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every post, rail, kick, brace and cap is its own shell, so each gets
+    one tone and grain along its own long axis. Iron shells get a tone
+    too; the iron shader ignores it.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each member (``GrainDir``), tone per member (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> fence_materials():
+    <span class="s">&quot;&quot;&quot;(wood, metal): shared by the check, the render and inspection.
+
+    The first build was one flat brown on every member and satin iron
+    (metallic 1.0, roughness 0.28) that read as chrome.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;FenceWood&quot;</span>)
+    metal = principled(
+        <span class="s">&quot;FenceIron&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.046</span>, <span class="n">0.048</span>, <span class="n">1.0</span>), <span class="n">0.60</span>, <span class="n">0.55</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.13</span>, <span class="n">0.062</span>, <span class="n">0.028</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, metal):
@@ -933,6 +1167,32 @@ LONG_RAIL = <span class="n">0.08</span>
         bm.free()
 
 
+<span class="k">def</span> shell_bite(me, ga, gb):
+    <span class="s">&quot;&quot;&quot;Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is.&quot;&quot;&quot;</span>
+    bm_b = bmesh.new()
+    <span class="k">try</span>:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f <span class="k">for</span> f <span class="k">in</span> bm_b.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> keep_b <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm_b.faces:
+            <span class="k">return</span> -<span class="n">1e9</span>
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -<span class="n">1e9</span>
+        <span class="k">for</span> i <span class="k">in</span> ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            <span class="k">if</span> loc <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            depth = dist <span class="k">if</span> (co - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+            best = max(best, depth)
+        <span class="k">return</span> best
+    <span class="k">finally</span>:
+        bm_b.free()
+
+
 <span class="k">def</span> joint_audit(me):
     groups = shells(me)
     posts = []
@@ -972,7 +1232,25 @@ LONG_RAIL = <span class="n">0.08</span>
     <span class="k">if</span> rails:
         xs = [v <span class="k">for</span> _g, a <span class="k">in</span> rails <span class="k">for</span> v <span class="k">in</span> (a[<span class="n">0</span>], a[<span class="n">3</span>])]
         span_x = max(xs) - min(xs)
+    <span class="c"># The brace is housed in both posts (deepest brace vertex inside each</span>
+    <span class="c"># post) and bears on the middle rail. Neither has a vertex where they</span>
+    <span class="c"># cross mid-span, so the bearing is the brace&#x27;s back plane measured</span>
+    <span class="c"># against the rail&#x27;s front plane, both read off the mesh, and only</span>
+    <span class="c"># counted where their heights overlap.</span>
+    post_bites = [shell_bite(me, b[<span class="n">0</span>], p[<span class="n">0</span>]) <span class="k">for</span> b <span class="k">in</span> braces <span class="k">for</span> p <span class="k">in</span> posts]
+    brace_post_bite = min(post_bites) <span class="k">if</span> post_bites <span class="k">else</span> -<span class="n">1.0</span>
+    brace_rail_bite = -<span class="n">1.0</span>
+    <span class="k">if</span> braces <span class="k">and</span> rails:
+        <span class="c"># The middle rail is the one centred on its station, whatever its</span>
+        <span class="c"># length, so a falsifier that moves the posts still finds it.</span>
+        mid = min(rails, key=<span class="k">lambda</span> r: abs(<span class="n">0.5</span> * (r[<span class="n">1</span>][<span class="n">2</span>] + r[<span class="n">1</span>][<span class="n">5</span>]) - RAIL_ZS[<span class="n">1</span>]))[<span class="n">1</span>]
+        brace_rail_bite = min(
+            (b[<span class="n">1</span>][<span class="n">4</span>] - mid[<span class="n">1</span>]) <span class="k">if</span> (b[<span class="n">1</span>][<span class="n">2</span>] &lt; mid[<span class="n">5</span>] <span class="k">and</span> b[<span class="n">1</span>][<span class="n">5</span>] &gt; mid[<span class="n">2</span>]) <span class="k">else</span> -<span class="n">1.0</span>
+            <span class="k">for</span> b <span class="k">in</span> braces
+        )
     <span class="k">return</span> {
+        <span class="s">&quot;brace_post_bite&quot;</span>: brace_post_bite,
+        <span class="s">&quot;brace_rail_bite&quot;</span>: brace_rail_bite,
         <span class="s">&quot;posts&quot;</span>: len(posts),
         <span class="s">&quot;rails&quot;</span>: len(rails),
         <span class="s">&quot;braces&quot;</span>: len(braces),
@@ -1044,6 +1322,8 @@ LONG_RAIL = <span class="n">0.08</span>
     short_shoes=<span class="k">False</span>,
     gap_rails=<span class="k">False</span>,
     long_rails=<span class="k">False</span>,
+    float_brace=<span class="k">False</span>,
+    wide_tile=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     kw = dict(
@@ -1051,17 +1331,14 @@ LONG_RAIL = <span class="n">0.08</span>
         short_shoes=short_shoes,
         gap_rails=gap_rails,
         long_rails=long_rails,
+        float_brace=float_brace,
+        wide_tile=wide_tile,
     )
     low = build_fence_mesh(<span class="s">&quot;FenceLow&quot;</span>, bevel_offset=<span class="n">0.006</span>, bevel_segments=<span class="n">2</span>, **kw)
     high = build_fence_mesh(<span class="s">&quot;FenceHigh&quot;</span>, bevel_offset=<span class="n">0.006</span>, bevel_segments=<span class="n">4</span>, **kw)
-    wood = principled(
-        <span class="s">&quot;FenceWood&quot;</span>, (<span class="n">0.46</span>, <span class="n">0.24</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.55</span>,
-        noise_scale=<span class="n">16.0</span>, wear=(<span class="n">0.32</span>, <span class="n">0.16</span>, <span class="n">0.05</span>, <span class="n">1.0</span>),
-    )
-    metal = principled(
-        <span class="s">&quot;FenceIron&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.115</span>, <span class="n">0.13</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.28</span>,
-        noise_scale=<span class="n">20.0</span>, wear=(<span class="n">0.18</span>, <span class="n">0.16</span>, <span class="n">0.12</span>, <span class="n">1.0</span>),
-    )
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, metal = fence_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -1117,6 +1394,9 @@ LONG_RAIL = <span class="n">0.08</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        <span class="c"># Measured; do not leave a .glb per run in the temp directory.</span>
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -1149,6 +1429,10 @@ LONG_RAIL = <span class="n">0.08</span>
         <span class="s">f&quot;</span><span class="s">braces=</span>{jnt[<span class="s">&#x27;braces&#x27;</span>]}<span class="s"> shoes=</span>{jnt[<span class="s">&#x27;shoes&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">shoe_z=</span>{jnt[<span class="s">&#x27;shoe_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> brace_gap=</span>{jnt[<span class="s">&#x27;brace_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">rail_gap=</span>{jnt[<span class="s">&#x27;rail_gap&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> span_x=</span>{jnt[<span class="s">&#x27;span_x&#x27;</span>]:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured brace_post_bite=</span>{jnt[<span class="s">&#x27;brace_post_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">brace_rail_bite=</span>{jnt[<span class="s">&#x27;brace_rail_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> tile=</span>{TILE}<span class="s"> size_x=</span>{size_x:<span class="s">.4f</span>}<span class="s">&quot;</span>
     )
 
     <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
@@ -1206,6 +1490,21 @@ LONG_RAIL = <span class="n">0.08</span>
         <span class="k">return</span> fail(
             <span class="s">f&quot;</span><span class="s">rail span </span>{jnt[<span class="s">&#x27;span_x&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> off </span>{<span class="n">2.0</span> * RAIL_HALF}<span class="s">&quot;</span>,
             <span class="n">19</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        jnt[<span class="s">&quot;brace_post_bite&quot;</span>] &lt; BRACE_POST_BITE_MIN
+        <span class="k">or</span> jnt[<span class="s">&quot;brace_rail_bite&quot;</span>] &lt; BRACE_RAIL_BITE_MIN
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">brace housing </span>{jnt[<span class="s">&#x27;brace_post_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{BRACE_POST_BITE_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">or rail bearing </span>{jnt[<span class="s">&#x27;brace_rail_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{BRACE_RAIL_BITE_MIN}<span class="s">&quot;</span>,
+            <span class="n">20</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> (TILE - TILE_FIT_TOL &lt;= size_x &lt;= TILE):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">section width </span>{size_x:<span class="s">.4f</span>}<span class="s"> does not fit the </span>{TILE}<span class="s"> m tile </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(band </span>{TILE - TILE_FIT_TOL:<span class="s">.3f</span>}<span class="s">-</span>{TILE}<span class="s">)</span><span class="s">&quot;</span>,
+            <span class="n">21</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
         abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
@@ -1270,13 +1569,13 @@ LONG_RAIL = <span class="n">0.08</span>
             ob.hide_render = <span class="k">True</span>
             ob.hide_viewport = <span class="k">True</span>
 
+    <span class="c"># Level on the floor: an X tilt sinks one face of the shoes.</span>
     low.rotation_euler.z = math.radians(-<span class="n">16.0</span>)
-    low.rotation_euler.x = math.radians(<span class="n">2.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1370,6 +1669,8 @@ LONG_RAIL = <span class="n">0.08</span>
     p.add_argument(<span class="s">&quot;--short-brace&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--gap-rails&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--long-rails&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-brace&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--wide-tile&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1380,6 +1681,8 @@ LONG_RAIL = <span class="n">0.08</span>
         short_shoes=args.short_shoes,
         gap_rails=args.gap_rails,
         long_rails=args.long_rails,
+        float_brace=args.float_brace,
+        wide_tile=args.wide_tile,
     )
     <span class="k">if</span> code:
         <span class="k">return</span> code
@@ -1404,7 +1707,7 @@ LONG_RAIL = <span class="n">0.08</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/fence-kit-hero.webp" alt="A section of wooden post-and-rail fence with a diagonal brace and dark iron collars." />
+    <img src="../assets/fence-kit-hero.webp" alt="A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts." />
   </dialog>
   <footer>
     <div class="statusbar">

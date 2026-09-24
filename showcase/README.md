@@ -524,6 +524,37 @@ entry in `showcase/gallery.json`, and a rendered still.
   cannot pass vacuously, and aim the falsifier at the joist span with
   the bearers kept, so the triangle floor and envelope do not steal it
   (`--short-joists`, watchtower).
+- **A bent bar is one sweep (file-local code).** Wrought iron that bends
+  from a foot into a post, or from a post into a back, is one bar. Sweep it
+  along one path with parallel-transported frames. Do not stand a post on a
+  separate foot arc. `park-bench` built its scroll feet that way, stopped
+  each arc 8% short, and started each post at the arc's top. That left
+  14 mm of daylight under all four posts. A BVH gap budget can't see this,
+  because the toe still grounds and the post still meets its stretcher.
+  Assert it from shells instead: the shell under each toe station must be a
+  leg that reaches the seat. `--split-feet` is the falsifier.
+- **A carried member bites its carrier, measured where the vertices are
+  (file-local code).** A slat on a rail, a back slat on an upright and an
+  armrest on its leg each assert an overlap depth against a named minimum,
+  and a count of the members, so a dropped slat cannot pass vacuously. A
+  round rail has vertices only at its end rings, so the deepest rail vertex
+  inside a mid-span slat is nowhere near the slat. Take the overlap either
+  way round: under a slat, the slat's corner sits in the rail. Where neither
+  member has a vertex at the crossing — a brace over a rail, mid-span — read
+  both faces off the mesh and compare the planes, only where their heights
+  overlap. `--float-slats` and `--float-brace` are the falsifiers.
+- **A kit section fits its tile (file-local code).** A section that claims
+  to tile at a pitch asserts its width along that axis is at most the tile
+  and within a named band of it. Derive the post stations from the tile
+  minus the reach of whatever is proudest, not from the post's own half
+  width. `fence-kit` placed its posts from the post width alone. Its iron
+  bands then stood 12 mm past each end, so adjacent copies interpenetrated
+  by 24 mm, while its README said the width *was* the tile. `--wide-tile`
+  restores the old stations. Check it before the AABB gate, or the envelope
+  check fires first.
+- **Level on the stage.** A hero that tilts the piece about X, even by 2°,
+  sinks one row of feet into the floor and lifts the other. Turn the piece
+  only about Z.
 - **Laid stone and cut timber vary piece by piece.** One flat grey on
   every stone reads as a moulded ring; one brown on every member reads
   as a single casting. Drive a per-shell tone (`PlankTone`) and, for

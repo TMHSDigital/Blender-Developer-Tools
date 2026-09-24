@@ -114,9 +114,9 @@
     {
       "name": "fence-kit",
       "dir": "showcase/fence-kit",
-      "teaches": "A procedural post-and-rail fence section whose brace is an oriented box between named post stations, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A section of wooden post-and-rail fence with a diagonal brace and dark iron collars.",
-      "witnessesFix": "Recomputed: 1092 tris, two materials with 156 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.624×0.134×1.232 m, grounded zmin, 2 iron shoes, brace-to-post gap 2.4 mm on both posts, rail-to-post gap 0.93 mm, rail span 1.390 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 32 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19.",
+      "teaches": "A procedural post-and-rail fence section that fits its 1.60 m tile, with one-shell iron bands and a board brace housed in both posts, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A section of grained timber post-and-rail fence with a diagonal board brace across the rails and dark iron bands and shoes on both posts.",
+      "witnessesFix": "Recomputed: 1012 tris, two materials with 116 metal and 390 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.596×0.134×1.232 m inside the 1.60 m tile, grounded zmin, 2 iron shoes, brace housed 12 mm in both posts and bearing 2 mm on the middle rail, rail-to-post gap 0.93 mm, rail span 1.362 m, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 24 tris, hygiene all zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-brace 17; --gap-rails 18; --long-rails 19; --float-brace 20; --wide-tile 21.",
       "hero": "docs/gallery/assets/fence-kit-hero.webp",
       "preview": "showcase/fence-kit/preview.webp",
       "tags": [
@@ -154,9 +154,9 @@
     {
       "name": "park-bench",
       "dir": "showcase/park-bench",
-      "teaches": "A procedural wrought-iron park bench with tangent tube scroll feet through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A park bench of wooden slats on a wrought-iron frame with scrolled feet and armrests.",
-      "witnessesFix": "Recomputed: 2520 tris, two materials with 540 metal and 756 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.295×0.632×0.884 m, grounded zmin, 4 named toes, stretcher gap 1.2 mm, slat gap 0.3 mm, seat span 1.272 m, LOD ratios in band, convex collider 82 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-feet 16; --float-stretcher 17; --gap-slats 18; --narrow-seat 19.",
+      "teaches": "A procedural wrought-iron park bench whose legs are each one bent bar from scroll toe to reclined back, through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A park bench of grained wooden slats with a reclined back, on a dark wrought-iron frame whose round-bar legs curl into scrolled feet, with armrests on curved brackets.",
+      "witnessesFix": "Recomputed: 3272 tris, two materials with 1008 metal and 756 wood faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.295×0.632×0.887 m, grounded zmin, 4 named toes, 4 legs each one bar from toe to seat, back reclined 12°, 28 slat and armrest bites of at least 2.0 mm, stretcher gap 1.1 mm, seat span 1.272 m, LOD ratios in band, convex collider 64 tris, hygiene zero, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-feet 16; --float-stretcher 17; --gap-slats 18; --narrow-seat/--upright-back 19; --float-slats 20; --split-feet 21.",
       "hero": "docs/gallery/assets/park-bench-hero.webp",
       "preview": "showcase/park-bench/preview.webp",
       "tags": [

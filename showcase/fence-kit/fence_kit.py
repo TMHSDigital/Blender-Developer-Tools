@@ -5,23 +5,25 @@ composing shipped pipeline pieces: bmesh construction, UVs, two
 materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
-Posts, rails, kick, brace and collars share named stations
-(``post_xs``, ``RAIL_ZS``, ``y_brace``). The brace is an oriented
-box between those stations, not a hypot-length cube rotated about
-its centroid. Rails and kick tenon into the post volume without
-sharing corner verts.
+Posts, rails, kick, brace and iron bands share named stations
+(``POST_XS``, ``RAIL_ZS``, ``SHOE_H``). The post stations come from the
+tile: the outer face of the iron bands sits ``KIT_CLEAR`` inside the tile
+edge, so adjacent copies meet without interpenetrating. Each band is one
+mitred shell. The brace is a board with plumb-cut ends, face-nailed to
+the middle rail and housed in both posts. Rails and kick tenon into the
+post volume without sharing corner verts.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. ``--skip-decimate`` skips the LOD
 DECIMATE stage so the LOD-ratio budget fails. Hygiene family 15–19:
 ``--stray-vert``, ``--lift-z`` / ``--short-shoes``, ``--short-brace``,
-``--gap-rails``, ``--long-rails``.
+``--gap-rails``, ``--long-rails``. ``--float-brace`` fails the brace
+bearing (20); ``--wide-tile`` fails the tile fit (21).
 
-No RNG. Construction is closed-form. AABB X is the tile width so
-adjacent copies meet; this piece does not re-witness the modular-kit
-snap contract. DECIMATE COLLAPSE triangle counts are not byte-identical
-across Blender versions — the LOD gate is a ratio band, not an exact
-count.
+Construction is closed-form; plank tones use a seeded RNG. This piece
+does not re-witness the modular-kit snap contract. DECIMATE COLLAPSE
+triangle counts are not byte-identical across Blender versions — the LOD
+gate is a ratio band, not an exact count.
 
     blender --background --python fence_kit.py --
     blender --background --python fence_kit.py -- --skip-decimate
@@ -30,6 +32,7 @@ count.
 import argparse
 import math
 import os
+import random
 import sys
 import tempfile
 import traceback
@@ -60,16 +63,32 @@ BRACE_T = 0.042
 IRON_T = 0.016
 SHOE_H = 0.034
 TENON = 0.005
-POST_XS = (-(TILE / 2.0 - POST_W / 2.0), TILE / 2.0 - POST_W / 2.0)
-HX = POST_XS[1]
-Y_BRACE = -(POST_W * 0.5 - BRACE_T * 0.30)
-RAIL_HALF = HX - POST_W * 0.5 + TENON
 COLLAR_BITE = 0.004
+# The section tiles at TILE: the outer face of the iron bands, not the post
+# centre, sits a named clearance inside the tile edge, so neighbouring
+# copies meet band to band without interpenetrating or sharing a plane.
+KIT_CLEAR = 0.002
+TILE_FIT_TOL = 0.010
+WIDE_TILE_CLEAR = -0.012
+BAND_REACH = POST_W / 2.0 - COLLAR_BITE + IRON_T
+HX = TILE / 2.0 - KIT_CLEAR - BAND_REACH
+POST_XS = (-HX, HX)
+RAIL_HALF = HX - POST_W * 0.5 + TENON
+BRACE_D = 0.022
+BRACE_BITE = 0.002
+BRACE_TENON = 0.012
+BRACE_CLEAR = 0.012
+FLOAT_BRACE = 0.006
+BRACE_POST_BITE_MIN = 0.004
+BRACE_RAIL_BITE_MIN = 0.001
+PLANK_TONE_JITTER = 0.28
+TONE_SEED = 17
+WOOD_GRAIN_SCALE = 30.0
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (1.624, 0.134, 1.232)
-BASE_TRIS_MIN = 1000
-BASE_TRIS_MAX = 1400
+OUTER_SIZE = (1.596, 0.134, 1.232)
+BASE_TRIS_MIN = 850
+BASE_TRIS_MAX = 1200
 LOD1_RATIO_MIN = 0.32
 LOD1_RATIO_MAX = 0.62
 LOD2_RATIO_MIN = 0.10
@@ -170,25 +189,78 @@ def add_oriented_box(bm, a, b, scale_xy, mat_idx):
 
 
 def add_collar(bm, px, z, half, t, h, mat_idx, closed=True):
-    """Plates around a post. Bite the host. U-wrap omits the span-facing plate."""
-    loc_y = half - COLLAR_BITE + t * 0.5
-    add_box(bm, (px, loc_y, z), (2.0 * half - t * 0.50, t, h), mat_idx)
-    add_box(bm, (px, -loc_y, z), (2.0 * half - t * 0.50, t, h), mat_idx)
-    loc_x = half - COLLAR_BITE + t * 0.5
-    sign = 1.0 if px >= 0.0 else -1.0
-    add_box(
-        bm,
-        (px + sign * loc_x, 0.0, z),
-        (t, 2.0 * half - t * 0.70, h),
-        mat_idx,
-    )
+    """One iron band around a post, mitred at the corners, one shell.
+
+    Inner face a named bite inside the post, outer face proud of it. A U
+    band (``closed=False``) leaves the span-facing side open for the rail
+    and stops its arms a quarter-thickness inside the post's inner face,
+    so no arm end lands on that face's plane. The first build was three or
+    four separate plates with open slits at every corner.
+    """
+    a = half - COLLAR_BITE
+    b = a + t
+    s = 1.0 if px >= 0.0 else -1.0
     if closed:
-        add_box(
-            bm,
-            (px - sign * loc_x, 0.0, z),
-            (t, 2.0 * half - t * 0.70, h),
-            mat_idx,
-        )
+        outer = [(b, b), (-b, b), (-b, -b), (b, -b)]
+        inner = [(a, a), (-a, a), (-a, -a), (a, -a)]
+    else:
+        e = half - t * 0.25
+        outer = [(-e, -b), (b, -b), (b, b), (-e, b)]
+        inner = [(-e, -a), (a, -a), (a, a), (-e, a)]
+    z0, z1 = z - h * 0.5, z + h * 0.5
+
+    def ring(pts, zz):
+        return [bm.verts.new((px + s * x, y, zz)) for x, y in pts]
+
+    ob, ot = ring(outer, z0), ring(outer, z1)
+    ib, it = ring(inner, z0), ring(inner, z1)
+    n = len(outer)
+    segs = range(n) if closed else range(n - 1)
+    faces = []
+    for i in segs:
+        j = (i + 1) % n
+        faces.append(bm.faces.new((ob[i], ob[j], ot[j], ot[i])))
+        faces.append(bm.faces.new((ib[j], ib[i], it[i], it[j])))
+        faces.append(bm.faces.new((ot[i], ot[j], it[j], it[i])))
+        faces.append(bm.faces.new((ob[j], ob[i], ib[i], ib[j])))
+    if not closed:
+        for i in (0, n - 1):
+            faces.append(bm.faces.new((ob[i], ib[i], it[i], ot[i])))
+    for f in faces:
+        f.material_index = mat_idx
+    return ob + ot + ib + it
+
+
+def add_brace(bm, x0, z0, x1, z1, y_back, depth, height, mat_idx):
+    """A board brace between two posts, ends cut plumb.
+
+    A box rotated onto the diagonal has ends square to its own axis: one
+    corner buries itself in the post and the other stands off in the air.
+    Cut plumb, both ends enter the post faces along their full height.
+    """
+    y_front = y_back - depth
+    vs = []
+    for x, zc in ((x0, z0), (x1, z1)):
+        for y in (y_back, y_front):
+            for dz in (-0.5, 0.5):
+                vs.append(bm.verts.new((x, y, zc + dz * height)))
+    # index: (end, y, z) -> end*4 + y*2 + z
+    q = [
+        (0, 1, 3, 2), (4, 6, 7, 5),       # plumb ends
+        (0, 4, 5, 1), (2, 3, 7, 6),       # back / front faces
+        (0, 2, 6, 4), (1, 5, 7, 3),       # underside / top
+    ]
+    for quad in q:
+        bm.faces.new([vs[i] for i in quad]).material_index = mat_idx
+    return vs
+
+
+def rail_depth(i):
+    return RAIL_Y * (1.0 + 0.10 * math.sin(i * 2.15 + 0.3))
+
+
+def rail_height(i):
+    return RAIL_Z * (1.0 + 0.06 * math.sin(i * 1.7 + 1.1))
 
 
 def add_cone(bm, loc, radius1, radius2, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
@@ -263,13 +335,18 @@ def build_fence_mesh(
     short_shoes=False,
     gap_rails=False,
     long_rails=False,
+    float_brace=False,
+    wide_tile=False,
 ):
     bm = bmesh.new()
     try:
         wood_verts = []
-        post_xs = POST_XS
         half = POST_W * 0.5
-        rail_half = RAIL_HALF - GAP_RAIL if gap_rails else RAIL_HALF
+        hx = TILE / 2.0 - (WIDE_TILE_CLEAR if wide_tile else KIT_CLEAR) - BAND_REACH
+        post_xs = (-hx, hx)
+        rail_half = hx - half + TENON
+        if gap_rails:
+            rail_half -= GAP_RAIL
 
         for px in post_xs:
             wood_verts.extend(
@@ -282,8 +359,8 @@ def build_fence_mesh(
             )
 
         for i, z in enumerate(RAIL_ZS):
-            ry = RAIL_Y * (1.0 + 0.10 * math.sin(i * 2.15 + 0.3))
-            rz = RAIL_Z * (1.0 + 0.06 * math.sin(i * 1.7 + 1.1))
+            ry = rail_depth(i)
+            rz = rail_height(i)
             wood_verts.extend(
                 add_box(bm, (0.0, 0.0, z), (2.0 * rail_half, ry, rz), WOOD_IDX)
             )
@@ -308,14 +385,35 @@ def build_fence_mesh(
                 )
             )
 
-        a = Vector((post_xs[0], Y_BRACE, RAIL_ZS[0]))
-        b = Vector((post_xs[1], Y_BRACE, RAIL_ZS[-1]))
-        if short_brace:
-            a = Vector((post_xs[0] + SHORT_BRACE, Y_BRACE, RAIL_ZS[0]))
-        wood_verts.extend(add_oriented_box(bm, a, b, (BRACE_T, BRACE_T), WOOD_IDX))
+        # The brace is a board face-nailed to the middle rail and housed in
+        # both posts: it clears the bottom rail at the left post and the top
+        # rail at the right one, and its back face bites the middle rail.
+        # The first build ran post centre to post centre through the rail
+        # bands, 6 mm into all three rails, with square-cut ends.
+        x_a = post_xs[0] + half
+        x_b = post_xs[1] - half
+        h = BRACE_T
+        for _ in range(3):
+            z_a = RAIL_ZS[0] + rail_height(0) / 2.0 + BRACE_CLEAR + h / 2.0
+            z_b = RAIL_ZS[-1] - rail_height(len(RAIL_ZS) - 1) / 2.0 - BRACE_CLEAR - h / 2.0
+            slope = (z_b - z_a) / (x_b - x_a)
+            h = BRACE_T * math.sqrt(1.0 + slope * slope)
+        x0 = x_a - BRACE_TENON + (SHORT_BRACE if short_brace else 0.0)
+        x1 = x_b + BRACE_TENON
+        y_back = -rail_depth(1) / 2.0 + BRACE_BITE - (FLOAT_BRACE if float_brace else 0.0)
+        wood_verts.extend(
+            add_brace(
+                bm,
+                x0, z_a + slope * (x0 - x_a),
+                x1, z_a + slope * (x1 - x_a),
+                y_back, BRACE_D, h, WOOD_IDX,
+            )
+        )
 
         if bevel_offset > 0.0:
-            edges = list({e for v in wood_verts for e in v.link_edges})
+            # A set of BMEdges iterates in memory order; sort by index.
+            bm.edges.index_update()
+            edges = sorted({e for v in wood_verts for e in v.link_edges}, key=lambda e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -394,7 +492,140 @@ def principled(name, color, metallic, roughness, noise_scale=0.0, wear=None):
         fac = mix.inputs.get("Factor") or mix.inputs.get("Fac")
         nt.links.new(tex.outputs["Fac"], fac)
         nt.links.new(mix.outputs["Result"], bsdf.inputs["Base Color"])
+        rmix = nt.nodes.new("ShaderNodeMix")
+        rmix.data_type = "FLOAT"
+        rmix.inputs["A"].default_value = roughness
+        rmix.inputs["B"].default_value = min(1.0, roughness + 0.18)
+        rfac = rmix.inputs.get("Factor") or rmix.inputs.get("Fac")
+        nt.links.new(tex.outputs["Fac"], rfac)
+        nt.links.new(rmix.outputs["Result"], bsdf.inputs["Roughness"])
     return mat
+
+
+def _long_axis(pts):
+    """Principal axis of a point set, by power iteration on its covariance."""
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[0.0] * 3 for _ in range(3)]
+    for p in pts:
+        d = p - c
+        for i in range(3):
+            for j in range(3):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((1.0, 0.3, 0.1))
+    for _ in range(30):
+        w = Vector([sum(cov[i][j] * v[j] for j in range(3)) for i in range(3)])
+        if w.length < 1e-12:
+            break
+        v = w.normalized()
+    return v
+
+
+def paint_planks(me):
+    """Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every post, rail, kick, brace and cap is its own shell, so each gets
+    one tone and grain along its own long axis. Iron shells get a tone
+    too; the iron shader ignores it.
+    """
+    tone = [0.5] * len(me.polygons)
+    grain = [(0.0, 0.0, 1.0)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    for g in shells(me):
+        pts = [me.vertices[i].co.copy() for i in g]
+        d = _long_axis(pts) if len(pts) > 2 else Vector((0.0, 0.0, 1.0))
+        t = 0.5 + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        for i in g:
+            owner[i] = (t, tuple(d))
+    for poly in me.polygons:
+        t, d = owner[poly.vertices[0]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new("PlankTone", "FLOAT", "FACE")
+    a.data.foreach_set("value", tone)
+    b = me.attributes.new("GrainDir", "FLOAT_VECTOR", "FACE")
+    b.data.foreach_set("vector", [c for v in grain for c in v])
+
+
+def _sock(sockets, identifier):
+    """A Mix-node socket by identifier; its A/B/Result names repeat per type."""
+    return next(sk for sk in sockets if sk.identifier == identifier)
+
+
+def wood_material(name):
+    """Grain along each member (``GrainDir``), tone per member (``PlankTone``)."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    gdir = nt.nodes.new("ShaderNodeAttribute")
+    gdir.attribute_name = "GrainDir"
+    tone = nt.nodes.new("ShaderNodeAttribute")
+    tone.attribute_name = "PlankTone"
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    nt.links.new(coord.outputs["Object"], dot.inputs[0])
+    nt.links.new(gdir.outputs["Vector"], dot.inputs[1])
+    squash = nt.nodes.new("ShaderNodeMath")
+    squash.operation = "MULTIPLY"
+    squash.inputs[1].default_value = 0.94
+    nt.links.new(dot.outputs["Value"], squash.inputs[0])
+    along = nt.nodes.new("ShaderNodeVectorMath")
+    along.operation = "SCALE"
+    nt.links.new(gdir.outputs["Vector"], along.inputs[0])
+    nt.links.new(squash.outputs["Value"], along.inputs["Scale"])
+    grain_co = nt.nodes.new("ShaderNodeVectorMath")
+    grain_co.operation = "SUBTRACT"
+    nt.links.new(coord.outputs["Object"], grain_co.inputs[0])
+    nt.links.new(along.outputs["Vector"], grain_co.inputs[1])
+    shift = nt.nodes.new("ShaderNodeVectorMath")
+    shift.operation = "ADD"
+    nt.links.new(grain_co.outputs["Vector"], shift.inputs[0])
+    nt.links.new(tone.outputs["Fac"], shift.inputs[1])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = WOOD_GRAIN_SCALE
+    noise.inputs["Detail"].default_value = 6.0
+    noise.inputs["Roughness"].default_value = 0.62
+    nt.links.new(shift.outputs["Vector"], noise.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.30
+    ramp.color_ramp.elements[0].color = (0.12, 0.052, 0.018, 1.0)
+    ramp.color_ramp.elements[1].position = 0.72
+    ramp.color_ramp.elements[1].color = (0.38, 0.18, 0.065, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    gain = nt.nodes.new("ShaderNodeMath")
+    gain.operation = "MULTIPLY_ADD"
+    gain.inputs[1].default_value = 1.1
+    gain.inputs[2].default_value = 0.45
+    nt.links.new(tone.outputs["Fac"], gain.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    _sock(mix.inputs, "Factor_Float").default_value = 1.0
+    nt.links.new(ramp.outputs["Color"], _sock(mix.inputs, "A_Color"))
+    nt.links.new(gain.outputs["Value"], _sock(mix.inputs, "B_Color"))
+    nt.links.new(_sock(mix.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+    rough = nt.nodes.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.72
+    rough.inputs["To Max"].default_value = 0.52
+    nt.links.new(noise.outputs["Fac"], rough.inputs["Value"])
+    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+    return mat
+
+
+def fence_materials():
+    """(wood, metal): shared by the check, the render and inspection.
+
+    The first build was one flat brown on every member and satin iron
+    (metallic 1.0, roughness 0.28) that read as chrome.
+    """
+    wood = wood_material("FenceWood")
+    metal = principled(
+        "FenceIron", (0.045, 0.046, 0.048, 1.0), 0.60, 0.55,
+        noise_scale=18.0, wear=(0.13, 0.062, 0.028, 1.0),
+    )
+    return wood, metal
 
 
 def assign_slots(obj, wood, metal):
@@ -613,6 +844,32 @@ def add_stray_vert(me):
         bm.free()
 
 
+def shell_bite(me, ga, gb):
+    """Deepest vertex of shell ``ga`` inside closed shell ``gb`` (m); negative if none is."""
+    bm_b = bmesh.new()
+    try:
+        bm_b.from_mesh(me)
+        keep_b = set(gb)
+        drop_b = [f for f in bm_b.faces if not all(v.index in keep_b for v in f.verts)]
+        if drop_b:
+            bmesh.ops.delete(bm_b, geom=drop_b, context="FACES")
+        if not bm_b.faces:
+            return -1e9
+        bmesh.ops.recalc_face_normals(bm_b, faces=list(bm_b.faces))
+        tree = BVHTree.FromBMesh(bm_b)
+        best = -1e9
+        for i in ga:
+            co = me.vertices[i].co
+            loc, nrm, _idx, dist = tree.find_nearest(co)
+            if loc is None:
+                continue
+            depth = dist if (co - loc).dot(nrm) < 0.0 else -dist
+            best = max(best, depth)
+        return best
+    finally:
+        bm_b.free()
+
+
 def joint_audit(me):
     groups = shells(me)
     posts = []
@@ -652,7 +909,25 @@ def joint_audit(me):
     if rails:
         xs = [v for _g, a in rails for v in (a[0], a[3])]
         span_x = max(xs) - min(xs)
+    # The brace is housed in both posts (deepest brace vertex inside each
+    # post) and bears on the middle rail. Neither has a vertex where they
+    # cross mid-span, so the bearing is the brace's back plane measured
+    # against the rail's front plane, both read off the mesh, and only
+    # counted where their heights overlap.
+    post_bites = [shell_bite(me, b[0], p[0]) for b in braces for p in posts]
+    brace_post_bite = min(post_bites) if post_bites else -1.0
+    brace_rail_bite = -1.0
+    if braces and rails:
+        # The middle rail is the one centred on its station, whatever its
+        # length, so a falsifier that moves the posts still finds it.
+        mid = min(rails, key=lambda r: abs(0.5 * (r[1][2] + r[1][5]) - RAIL_ZS[1]))[1]
+        brace_rail_bite = min(
+            (b[1][4] - mid[1]) if (b[1][2] < mid[5] and b[1][5] > mid[2]) else -1.0
+            for b in braces
+        )
     return {
+        "brace_post_bite": brace_post_bite,
+        "brace_rail_bite": brace_rail_bite,
         "posts": len(posts),
         "rails": len(rails),
         "braces": len(braces),
@@ -724,6 +999,8 @@ def check(
     short_shoes=False,
     gap_rails=False,
     long_rails=False,
+    float_brace=False,
+    wide_tile=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     kw = dict(
@@ -731,17 +1008,14 @@ def check(
         short_shoes=short_shoes,
         gap_rails=gap_rails,
         long_rails=long_rails,
+        float_brace=float_brace,
+        wide_tile=wide_tile,
     )
     low = build_fence_mesh("FenceLow", bevel_offset=0.006, bevel_segments=2, **kw)
     high = build_fence_mesh("FenceHigh", bevel_offset=0.006, bevel_segments=4, **kw)
-    wood = principled(
-        "FenceWood", (0.46, 0.24, 0.08, 1.0), 0.0, 0.55,
-        noise_scale=16.0, wear=(0.32, 0.16, 0.05, 1.0),
-    )
-    metal = principled(
-        "FenceIron", (0.11, 0.115, 0.13, 1.0), 1.0, 0.28,
-        noise_scale=20.0, wear=(0.18, 0.16, 0.12, 1.0),
-    )
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, metal = fence_materials()
     assign_slots(low, wood, metal)
     assign_slots(high, wood, metal)
 
@@ -797,6 +1071,9 @@ def check(
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) if os.path.isfile(export_path) else 0
+    if os.path.isfile(export_path):
+        # Measured; do not leave a .glb per run in the temp directory.
+        os.remove(export_path)
 
     hyg = hygiene_audit(low.data)
     zf = zfight_pairs(low.data)
@@ -829,6 +1106,10 @@ def check(
         f"braces={jnt['braces']} shoes={jnt['shoes']} "
         f"shoe_z={jnt['shoe_z']:.5f} brace_gap={jnt['brace_gap']:.5f} "
         f"rail_gap={jnt['rail_gap']:.5f} span_x={jnt['span_x']:.4f}"
+    )
+    print(
+        f"measured brace_post_bite={jnt['brace_post_bite']:.5f} "
+        f"brace_rail_bite={jnt['brace_rail_bite']:.5f} tile={TILE} size_x={size_x:.4f}"
     )
 
     if not (BASE_TRIS_MIN <= base_tris <= BASE_TRIS_MAX):
@@ -886,6 +1167,21 @@ def check(
         return fail(
             f"rail span {jnt['span_x']:.4f} off {2.0 * RAIL_HALF}",
             19,
+        ), None, None, None, None, None
+    if (
+        jnt["brace_post_bite"] < BRACE_POST_BITE_MIN
+        or jnt["brace_rail_bite"] < BRACE_RAIL_BITE_MIN
+    ):
+        return fail(
+            f"brace housing {jnt['brace_post_bite']:.5f} < {BRACE_POST_BITE_MIN} "
+            f"or rail bearing {jnt['brace_rail_bite']:.5f} < {BRACE_RAIL_BITE_MIN}",
+            20,
+        ), None, None, None, None, None
+    if not (TILE - TILE_FIT_TOL <= size_x <= TILE):
+        return fail(
+            f"section width {size_x:.4f} does not fit the {TILE} m tile "
+            f"(band {TILE - TILE_FIT_TOL:.3f}-{TILE})",
+            21,
         ), None, None, None, None, None
     if (
         abs(size_x - OUTER_SIZE[0]) > BBOX_TOL
@@ -950,13 +1246,13 @@ def render_still(low, wood, tex, path, engine):
             ob.hide_render = True
             ob.hide_viewport = True
 
+    # Level on the floor: an X tilt sinks one face of the shoes.
     low.rotation_euler.z = math.radians(-16.0)
-    low.rotation_euler.x = math.radians(2.0)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=14.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -1050,6 +1346,8 @@ def main():
     p.add_argument("--short-brace", action="store_true")
     p.add_argument("--gap-rails", action="store_true")
     p.add_argument("--long-rails", action="store_true")
+    p.add_argument("--float-brace", action="store_true")
+    p.add_argument("--wide-tile", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1060,6 +1358,8 @@ def main():
         short_shoes=args.short_shoes,
         gap_rails=args.gap_rails,
         long_rails=args.long_rails,
+        float_brace=args.float_brace,
+        wide_tile=args.wide_tile,
     )
     if code:
         return code
