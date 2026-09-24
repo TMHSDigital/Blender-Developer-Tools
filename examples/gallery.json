@@ -544,7 +544,7 @@
       "name": "attribute-domain-shear",
       "dir": "examples/attribute-domain-shear",
       "teaches": "POINT vs CORNER color-attribute domains on a shared-vertex pinwheel: CORNER stays exact per face while a naive per-wedge POINT loop shears to the last write at the hub. Crisp petals versus a smeared swirl in one frame; the measured shear equals the palette closed form.",
-      "alt": "Two octagonal rainbow-coloured caps labelled CORNER and POINT, last write wins, showing different colour blending.",
+      "alt": "Two rainbow pinwheels on wooden sticks, well apart: CORNER on the left with crisp coloured petals, POINT, last write wins, on the right with colours smeared across the hub.",
       "witnessesFix": "Authoring per-face colors into a POINT-domain attribute overwrites shared vertices once per neighbor; the last write wins and intended colors shear across every shared vertex.",
       "hero": "docs/gallery/assets/attribute-domain-shear-hero.webp",
       "preview": "examples/attribute-domain-shear/preview.webp",
