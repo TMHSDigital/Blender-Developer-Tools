@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A timber watchtower on braced legs with a ladder, railed platform and a pale shingled pyramid roof." />
+  <meta property="og:image:alt" content="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="watchtower — Showcase — Blender Developer Tools" />
   <meta name="twitter:description" content="A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/watchtower-hero.webp" />
-  <meta name="twitter:image:alt" content="A timber watchtower on braced legs with a ladder, railed platform and a pale shingled pyramid roof." />
+  <meta name="twitter:image:alt" content="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,33 +268,34 @@
     <p>A procedural timber watchtower through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A timber watchtower on braced legs with a ladder, railed platform and a pale shingled pyramid roof.">
-      <img src="../assets/watchtower-hero.webp" alt="A timber watchtower on braced legs with a ladder, railed platform and a pale shingled pyramid roof." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof.">
+      <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Recomputed: 6408 tris, three materials with 300 metal and 126 roof faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.594×1.594×2.973 m, grounded zmin, 4 iron shoes, rail engage 18 mm, collar standoff 2 mm, post plumb 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 150 tris, non-empty glTF. Hygiene all zero. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-rails 17; --float-band 18; --rake-posts 19.</div>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 6840 tris, three materials with 300 metal and 126 roof faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.594×1.594×2.973 m, grounded zmin, 4 iron shoes, rail engage 18 mm, all four side rails tenoned at both ends, both joists bearing 31 mm into deck girts, collar standoff 2 mm, post plumb 0, LOD ratios in band (5.2 COLLAPSE leaner on LOD2), convex collider 150 tris, non-empty glTF. Hygiene all zero. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-shoes 16; --short-rails/--open-sides/--short-joists 17; --float-band 18; --rake-posts 19.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python showcase/watchtower/watchtower.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
 <p>A showcase piece, not an example. Procedural timber lookout (corner posts through a plank platform, lower-bay X-braces, hatch and ladder whose stiles plant at Z=0, coursed shake roof over a solid cone, mitered iron collars and shoes) then the shipped pipeline: unique-cell UVs, Cycles high-to-low normal bake, LOD chain, convex collider, Unity glTF export.</p>
+<p>The first quality pass left the platform floating: there were no bearers at deck level, the two joists stopped 0.19 m short of the front edge and at the back edge in the air, the plank ends hung past nothing at the sides, and the side guardrails stopped 0.30 m short of the front posts for a &quot;hatch clearance&quot; the hatch never needed (it sits at the centre of the front edge). Four deck girts now tenon into the posts under the planks, the joists run girt to girt, the hatch trims end on the front girt, and the side rails span post to post like the back rail. Two budgets assert it. Wood carries grain and a tone per piece, the shakes are weathered, and the iron is rusted rather than chrome.</p>
 <p>The old roof was a wood U with incomplete shake coverage; rails showed through the eave. The cone plus non-overlapping courses close the pyramid. Shoes are added after the zmin snap so a bevel undershoot cannot lift them.</p>
 <p>It asserts <strong>budget conformance</strong> of the generated result. It does not witness an API contract. &quot;It rendered without error&quot; is not a check.</p>
 <p><strong>Composes</strong> skills <code>mesh-editing-and-bmesh</code>, <code>bake-high-to-low</code>, <code>depsgraph-and-evaluated-data</code>, <code>engine-export-presets</code>, and snippets <code>bake_normal_high_to_low.py</code>, <code>setup_bake_target_image.py</code>, <code>lod_chain.py</code> / <code>decimate_to_budget.py</code>, <code>convex_hull_collider.py</code>, <code>export_preset_unity.py</code> (helpers copied, not imported as a package).</p>
 <h2>Budgets</h2>
 <p>Declared as named constants; every gate <strong>recomputes</strong> from the mesh, materials, UVs, evaluated LOD, collider, or export file.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>6200–8200</td><td>6408 / 6408 / 6408</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2197 / 0.2197 / 0.2185</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥80 metal, ≥40 roof faces</td><td>3 slots; 300 metal, 126 roof</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.594, 1.594, 2.973) m ± 0.01</td><td>(1.5940, 1.5940, 2.9731), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>150</td></tr><tr><td>Export</td><td>written, size &gt; 0</td><td>464572 / 464572 / 464560 bytes</td></tr></tbody></table></div>
-<p>Base triangles rose from <strong>5220 to 6408</strong> in the quality pass: a taller eave-true roof and coursed shakes, not hidden interior faces.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (4.5.11 / 5.1.2 / 5.2.1)</th></tr></thead><tbody><tr><td>Base triangles</td><td>6200–8200</td><td>6840 / 6840 / 6840</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62 of base</td><td>0.5000 / 0.5000 / 0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35 of base</td><td>0.2199 / 0.2199 / 0.2187</td></tr><tr><td>Materials</td><td>exactly 3 distinct; ≥80 metal, ≥40 roof faces</td><td>3 slots; 300 metal, 126 roof</td></tr><tr><td>UVs</td><td>in <code>0..1</code>, AABB overlap ≤ 1e-5</td><td>in range, overlap 0</td></tr><tr><td>Outer AABB</td><td>(1.594, 1.594, 2.973) m ± 0.01</td><td>(1.5940, 1.5940, 2.9731), zmin 0</td></tr><tr><td>Collider tris</td><td>≤ 180</td><td>150</td></tr><tr><td>Export</td><td>written, size &gt; 0, removed after measuring</td><td>494508 / 494508 / 494492 bytes</td></tr></tbody></table></div>
+<p>Base triangles rose from <strong>5220 to 6408</strong> in the first quality pass (a taller eave-true roof and coursed shakes) and to <strong>6840</strong> in the second (four deck girts), not hidden interior faces.</p>
 <h3>Hygiene</h3>
 <p>Recomputed from the generated mesh, not asserted about the script.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Non-manifold edges</td><td>0</td><td>0</td></tr><tr><td>Loose verts / edges</td><td>0 / 0</td><td>0 / 0</td></tr><tr><td>Doubles merged at 1e-5</td><td>0</td><td>0</td></tr><tr><td>Zero-area faces</td><td>0</td><td>0</td></tr><tr><td>N-gons</td><td>0</td><td>0</td></tr><tr><td>Coplanar disjoint face pairs</td><td>0</td><td>0</td></tr><tr><td>Grounded: <code>zmin</code></td><td>within 1e-4 of 0</td><td>0.0000</td></tr><tr><td>Named supports: 4 iron shoes</td><td>each <code>zmin</code> ≤ 1e-3</td><td>4, shoe_z 0.00000</td></tr><tr><td>Plan</td><td>1.56 m eave × 2.97 m height ± 0.08 / ± 0.28</td><td>1.5940 × 2.9731</td></tr></tbody></table></div>
 <h3>Joint fit and seat</h3>
-<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Rail-to-post engage</td><td>≥ 0.012 m</td><td>0.0180</td></tr><tr><td>Girt-collar standoff</td><td>≤ 0.010 m</td><td>0.00200</td></tr><tr><td>Post plumb (XY drift)</td><td>≤ 0.010 m</td><td>0.00000</td></tr></tbody></table></div>
-<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG. Export byte counts differ by 12 B on 5.2.1 (glTF serializer), not a gated axis.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Axis</th><th scope="col">Declared</th><th scope="col">Measured (all three)</th></tr></thead><tbody><tr><td>Rail-to-post engage (back rails)</td><td>≥ 0.012 m</td><td>0.0180</td></tr><tr><td>Side-rail engage: 4 side rails, each tenoned into the front and the back post</td><td>≥ 0.012 m at both ends</td><td>0.0180</td></tr><tr><td>Deck bearing: 4 deck girts; each of 2 joists inside the front and the back girt</td><td>≥ 0.012 m at both ends</td><td>0.0315</td></tr><tr><td>Girt-collar standoff</td><td>≤ 0.010 m</td><td>0.00200</td></tr><tr><td>Post plumb (XY drift)</td><td>≤ 0.010 m</td><td>0.00000</td></tr></tbody></table></div>
+<p>DECIMATE COLLAPSE triangle counts are <strong>not</strong> identical across series — 5.2.1 is leaner on LOD2. The gate is a ratio band, not an exact count. Bake pixels are stochastic; the gate is <code>has_data</code> plus operator <code>FINISHED</code>, not byte-identity. Construction uses no RNG; the per-piece wood tone is drawn from a seeded <code>random.Random(TONE_SEED)</code>, the same every run. Export byte counts differ by 16 B on 5.2.1 (glTF serializer), not a gated axis.</p>
 <h3>Falsifiers</h3>
-<p>Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-shoes</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--short-rails</code></td><td>rail-to-post joint fit</td><td>17</td></tr><tr><td><code>--float-band</code></td><td>iron-collar seat</td><td>18</td></tr><tr><td><code>--rake-posts</code></td><td>post plumb</td><td>19</td></tr></tbody></table></div>
+<p>Each violates one named budget. Every falsifier was run on 4.5.11, 5.1.2 and 5.2.1 and returned the same code on each.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Budget violated</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio band</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>loose vertex count is 0</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>bounding box <code>zmin</code> is 0</td><td>16</td></tr><tr><td><code>--short-shoes</code></td><td>named shoe supports at Z=0</td><td>16</td></tr><tr><td><code>--short-rails</code></td><td>rail-to-post joint fit</td><td>17</td></tr><tr><td><code>--open-sides</code></td><td>side-rail engage (front ends stop 0.30 m short again: −0.2460 m)</td><td>17</td></tr><tr><td><code>--short-joists</code></td><td>deck bearing (joists back to the old span, girts kept: −0.1625 m)</td><td>17</td></tr><tr><td><code>--float-band</code></td><td>iron-collar seat</td><td>18</td></tr><tr><td><code>--rake-posts</code></td><td>post plumb</td><td>19</td></tr></tbody></table></div>
 <h2>Run</h2>
 <pre><code>blender --background --python watchtower.py --
 blender --background --python watchtower.py -- --skip-decimate
@@ -302,13 +303,15 @@ blender --background --python watchtower.py -- --stray-vert
 blender --background --python watchtower.py -- --lift-z
 blender --background --python watchtower.py -- --short-shoes
 blender --background --python watchtower.py -- --short-rails
+blender --background --python watchtower.py -- --open-sides
+blender --background --python watchtower.py -- --short-joists
 blender --background --python watchtower.py -- --float-band
 blender --background --python watchtower.py -- --rake-posts
 blender --background --python watchtower.py -- --output tower.png</code></pre>
 <p>Smoke passes no flags.</p>
 <h2>Exit codes</h2>
 <p>File-local. <code>9</code> is a valid check code. <code>10</code> is reserved for <code>gallery_framing.check_framing</code> on the <code>--output</code> path. <code>15</code>–<code>19</code> are the hygiene and joint-fit family.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or metal/roof faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: rail-to-post engage</td></tr><tr><td>18</td><td>Seat: girt-collar standoff</td></tr><tr><td>19</td><td>Post plumb or plan off the stated real-world size</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build / no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside range</td></tr><tr><td>5</td><td>Material count ≠ 3 distinct slots, or metal/roof faces missing</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>World AABB off declared outer size</td></tr><tr><td>9</td><td>LOD ratio band (<code>--skip-decimate</code> lands here)</td></tr><tr><td>10</td><td>Framing gate (render path only)</td></tr><tr><td>11</td><td>Collider triangle count above ceiling</td></tr><tr><td>12</td><td>Bake did not finish or image has no data</td></tr><tr><td>13</td><td>Export file missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene: loose, non-manifold, zero-area, doubles, n-gons, z-fight</td></tr><tr><td>16</td><td>Not grounded: bounding box <code>zmin</code> off 0, or a named shoe floats</td></tr><tr><td>17</td><td>Joint fit: rail-to-post engage, side-rail engage, or deck bearing</td></tr><tr><td>18</td><td>Seat: girt-collar standoff</td></tr><tr><td>19</td><td>Post plumb or plan off the stated real-world size</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -327,10 +330,12 @@ Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-shoes`` named shoe
-supports, ``--short-rails`` rail-to-post joint fit, ``--float-band``
+supports, ``--short-rails`` rail-to-post joint fit, ``--open-sides``
+side-rail engage, ``--short-joists`` deck bearing, ``--float-band``
 iron-collar seat, ``--rake-posts`` post plumb.
 
-No RNG. Construction is closed-form. DECIMATE COLLAPSE triangle counts
+Construction is closed-form; the per-piece wood tone is drawn from
+``random.Random(TONE_SEED)``, so it is the same every run. DECIMATE COLLAPSE triangle counts
 are not byte-identical across Blender versions — the LOD gate is a
 ratio band, not an exact count.
 
@@ -341,6 +346,7 @@ ratio band, not an exact count.
 <span class="k">import</span> argparse
 <span class="k">import</span> math
 <span class="k">import</span> os
+<span class="k">import</span> random
 <span class="k">import</span> sys
 <span class="k">import</span> tempfile
 <span class="k">import</span> traceback
@@ -409,6 +415,25 @@ ZFIGHT_COS = <span class="n">0.998</span>
 SHOE_COUNT = <span class="n">4</span>
 SHOE_ZMIN_MAX = <span class="n">0.001</span>
 RAIL_ENGAGE_MIN = <span class="n">0.012</span>
+<span class="c"># Side guardrails tenon a post at BOTH ends, measured along the rail from the</span>
+<span class="c"># near face of each post. The first build stopped them 0.30 m short of the</span>
+<span class="c"># front posts (a &quot;hatch clearance&quot; the hatch never needed: it sits at the</span>
+<span class="c"># centre of the front edge), so each ended in the air mid-bay.</span>
+SIDE_RAIL_COUNT = <span class="n">4</span>
+<span class="c"># The deck bears on four girts between the posts, tops at PLAT_Z, and each</span>
+<span class="c"># joist runs girt to girt. The first build had no deck girts at all: the two</span>
+<span class="c"># joists stopped 0.19 m short of the front edge and at the back edge in the</span>
+<span class="c"># air, and the plank ends hung past nothing at the sides.</span>
+DECK_GIRT_COUNT = <span class="n">4</span>
+JOIST_BEAR_MIN = <span class="n">0.012</span>
+<span class="c"># --short-joists restores the old joist span (girts stay, so the envelope and</span>
+<span class="c"># triangle count do not move).</span>
+SHORT_JOIST_Y0 = -<span class="n">0.326</span>
+<span class="c"># --open-sides restores that old front-end stop.</span>
+OPEN_SIDE_CLEAR = <span class="n">0.30</span>
+PLANK_TONE_JITTER = <span class="n">0.28</span>
+TONE_SEED = <span class="n">41</span>
+WOOD_GRAIN_SCALE = <span class="n">30.0</span>
 BAND_SEAT_MAX = <span class="n">0.010</span>
 POST_PLUMB_MAX = <span class="n">0.010</span>
 PLAN_XY = <span class="n">2.0</span> * EAVE_HALF
@@ -631,6 +656,8 @@ METAL_IDX = <span class="n">2</span>
     short_rails=<span class="k">False</span>,
     float_band=<span class="k">False</span>,
     rake_posts=<span class="k">False</span>,
+    open_sides=<span class="k">False</span>,
+    short_joists=<span class="k">False</span>,
 ):
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -691,6 +718,17 @@ METAL_IDX = <span class="n">2</span>
                     (section, member, GIRT_H),
                     WOOD_IDX,
                 )
+            )
+
+        <span class="c"># Deck girts: the platform&#x27;s bearers, tops at PLAT_Z, tenoned into</span>
+        <span class="c"># the posts like the girts below.</span>
+        deck_girt_z = PLAT_Z - GIRT_H / <span class="n">2.0</span>
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            wood.extend(
+                add_box(bm, (<span class="n">0.0</span>, sign * HALF, deck_girt_z), (member, section, GIRT_H), WOOD_IDX)
+            )
+            wood.extend(
+                add_box(bm, (sign * HALF, <span class="n">0.0</span>, deck_girt_z), (section, member, GIRT_H), WOOD_IDX)
             )
 
         <span class="c"># Kick sits on the sill, not on the same plane as the sill bottom.</span>
@@ -781,12 +819,18 @@ METAL_IDX = <span class="n">2</span>
                     WOOD_IDX,
                 )
             )
+        <span class="c"># Joists run front girt to back girt, both ends inside a girt; tops</span>
+        <span class="c"># 2 mm under PLAT_Z so they are not coplanar with the girt tops.</span>
+        <span class="k">if</span> short_joists:
+            jy0, jy1 = SHORT_JOIST_Y0, SHORT_JOIST_Y0 + <span class="n">2.0</span> * HALF * <span class="n">0.82</span>
+        <span class="k">else</span>:
+            jy0, jy1 = -HALF, HALF
         <span class="k">for</span> xj <span class="k">in</span> (-HALF * <span class="n">0.42</span>, HALF * <span class="n">0.42</span>):
             wood.extend(
                 add_box(
                     bm,
-                    (xj, <span class="n">0.10</span>, PLAT_Z - <span class="n">0.022</span>),
-                    (POST * <span class="n">0.62</span>, <span class="n">2.0</span> * HALF * <span class="n">0.82</span>, <span class="n">0.044</span>),
+                    (xj, <span class="n">0.5</span> * (jy0 + jy1), PLAT_Z - <span class="n">0.024</span>),
+                    (POST * <span class="n">0.62</span>, jy1 - jy0, <span class="n">0.044</span>),
                     WOOD_IDX,
                 )
             )
@@ -803,8 +847,8 @@ METAL_IDX = <span class="n">2</span>
             wood.extend(
                 add_box(
                     bm,
-                    (xsign * <span class="n">0.23</span>, -HALF + <span class="n">0.12</span>, PLAT_Z + PLANK_T / <span class="n">2.0</span>),
-                    (<span class="n">0.040</span>, hatch_y1 + HALF - <span class="n">0.02</span>, PLANK_T),
+                    (xsign * <span class="n">0.23</span>, <span class="n">0.5</span> * (hatch_y1 - HALF), PLAT_Z + PLANK_T / <span class="n">2.0</span>),
+                    (<span class="n">0.040</span>, hatch_y1 + HALF, PLANK_T),
                     WOOD_IDX,
                 )
             )
@@ -819,11 +863,14 @@ METAL_IDX = <span class="n">2</span>
         wood.extend(
             add_box(bm, (<span class="n">0.0</span>, HALF, rail_z_hi), (rail_len, rail_t, <span class="n">0.048</span>), WOOD_IDX)
         )
-        hatch_clear = <span class="n">0.30</span>
-        side_y0 = -HALF + hatch_clear
-        side_span = HALF - side_y0
-        side_cy = (side_y0 + HALF) / <span class="n">2.0</span>
-        side_len = side_span + (<span class="n">0.0</span> <span class="k">if</span> short_rails <span class="k">else</span> RAIL_TENON * <span class="n">0.5</span>)
+        <span class="k">if</span> open_sides:
+            side_y0 = -HALF + OPEN_SIDE_CLEAR
+            side_cy = (side_y0 + HALF) / <span class="n">2.0</span>
+            side_len = HALF - side_y0 + RAIL_TENON * <span class="n">0.5</span>
+        <span class="k">else</span>:
+            <span class="c"># Post to post, the same span and tenon as the back rail.</span>
+            side_cy = <span class="n">0.0</span>
+            side_len = bay * <span class="n">0.70</span> <span class="k">if</span> short_rails <span class="k">else</span> bay + RAIL_TENON
         <span class="k">for</span> xsign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
             wood.extend(
                 add_box(
@@ -866,7 +913,10 @@ METAL_IDX = <span class="n">2</span>
             wood.extend(add_box(bm, (<span class="n">0.0</span>, y, z), (<span class="n">0.28</span>, <span class="n">0.034</span>, <span class="n">0.032</span>), WOOD_IDX))
 
         <span class="k">if</span> bevel_offset &gt; <span class="n">0.0</span>:
-            edges = list({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+            <span class="c"># A set of BMEdges iterates in memory order, which varies run to</span>
+            <span class="c"># run and reorders the bevelled faces; sort by index.</span>
+            bm.edges.index_update()
+            edges = sorted({e <span class="k">for</span> v <span class="k">in</span> wood <span class="k">for</span> e <span class="k">in</span> v.link_edges}, key=<span class="k">lambda</span> e: e.index)
             ret = bmesh.ops.bevel(
                 bm,
                 geom=edges,
@@ -946,14 +996,163 @@ METAL_IDX = <span class="n">2</span>
     <span class="k">return</span> out
 
 
-<span class="k">def</span> principled(name, color, metallic, roughness):
+<span class="k">def</span> principled(name, color, metallic, roughness, noise_scale=<span class="n">0.0</span>, wear=<span class="k">None</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> noise_scale &gt; <span class="n">0.0</span> <span class="k">and</span> wear <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        tex.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = noise_scale
+        tex.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+        tex.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+        mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+        mix.inputs[<span class="s">&quot;A&quot;</span>].default_value = color
+        mix.inputs[<span class="s">&quot;B&quot;</span>].default_value = wear
+        fac = mix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> mix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], fac)
+        nt.links.new(mix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+        rmix.data_type = <span class="s">&quot;FLOAT&quot;</span>
+        rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = roughness
+        rmix.inputs[<span class="s">&quot;B&quot;</span>].default_value = min(<span class="n">1.0</span>, roughness + <span class="n">0.18</span>)
+        rfac = rmix.inputs.get(<span class="s">&quot;Factor&quot;</span>) <span class="k">or</span> rmix.inputs.get(<span class="s">&quot;Fac&quot;</span>)
+        nt.links.new(tex.outputs[<span class="s">&quot;Fac&quot;</span>], rfac)
+        nt.links.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     <span class="k">return</span> mat
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes for the wood shader.
+
+    Every post, girt, brace, plank, rail and shingle course is its own
+    shell, so each gets one tone and grain along its own long axis.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(TONE_SEED)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each stave or board (``GrainDir``), tone per piece (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.12</span>, <span class="n">0.052</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.38</span>, <span class="n">0.18</span>, <span class="n">0.065</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.72</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.52</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> tower_materials():
+    <span class="s">&quot;&quot;&quot;(wood, roof, metal): shared by the check, the render and inspection.
+
+    The first build was one flat brown for the whole frame, a flat grey
+    roof and satin iron (metallic 1.0, roughness 0.30) that read as chrome.
+    &quot;&quot;&quot;</span>
+    wood = wood_material(<span class="s">&quot;TowerWood&quot;</span>)
+    roof = principled(
+        <span class="s">&quot;TowerShake&quot;</span>, (<span class="n">0.26</span>, <span class="n">0.24</span>, <span class="n">0.21</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.82</span>,
+        noise_scale=<span class="n">14.0</span>, wear=(<span class="n">0.16</span>, <span class="n">0.15</span>, <span class="n">0.13</span>, <span class="n">1.0</span>),
+    )
+    metal = principled(
+        <span class="s">&quot;TowerIron&quot;</span>, (<span class="n">0.17</span>, <span class="n">0.165</span>, <span class="n">0.155</span>, <span class="n">1.0</span>), <span class="n">0.80</span>, <span class="n">0.46</span>,
+        noise_scale=<span class="n">18.0</span>, wear=(<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.032</span>, <span class="n">1.0</span>),
+    )
+    <span class="k">return</span> wood, roof, metal
 
 
 <span class="k">def</span> assign_slots(obj, wood, roof, metal):
@@ -1136,6 +1335,44 @@ METAL_IDX = <span class="n">2</span>
             <span class="k">and</span> abs(cy - HALF) &lt; POST
         ):
             rails.append(a)
+    side_rails = []
+    <span class="k">for</span> group <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, group) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, group)
+        cx = <span class="n">0.5</span> * (a[<span class="n">0</span>] + a[<span class="n">3</span>])
+        cz = <span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>])
+        <span class="k">if</span> cz &gt; PLAT_Z <span class="k">and</span> (a[<span class="n">4</span>] - a[<span class="n">1</span>]) &gt; HALF * <span class="n">0.5</span> <span class="k">and</span> (a[<span class="n">3</span>] - a[<span class="n">0</span>]) &lt; POST <span class="k">and</span> abs(abs(cx) - HALF) &lt; POST:
+            side_rails.append(a)
+    side_ends = []
+    <span class="k">for</span> r <span class="k">in</span> side_rails:
+        rx = <span class="n">0.5</span> * (r[<span class="n">0</span>] + r[<span class="n">3</span>])
+        col = [p <span class="k">for</span> p <span class="k">in</span> posts <span class="k">if</span> abs(<span class="n">0.5</span> * (p[<span class="n">0</span>] + p[<span class="n">3</span>]) - rx) &lt; POST]
+        front = [p <span class="k">for</span> p <span class="k">in</span> col <span class="k">if</span> <span class="n">0.5</span> * (p[<span class="n">1</span>] + p[<span class="n">4</span>]) &lt; <span class="n">0.0</span>]
+        back = [p <span class="k">for</span> p <span class="k">in</span> col <span class="k">if</span> <span class="n">0.5</span> * (p[<span class="n">1</span>] + p[<span class="n">4</span>]) &gt; <span class="n">0.0</span>]
+        <span class="k">if</span> <span class="k">not</span> front <span class="k">or</span> <span class="k">not</span> back:
+            side_ends.append(-<span class="n">1.0</span>)
+            <span class="k">continue</span>
+        side_ends.append(min(front[<span class="n">0</span>][<span class="n">4</span>] - r[<span class="n">1</span>], r[<span class="n">4</span>] - back[<span class="n">0</span>][<span class="n">1</span>]))
+    deck_girts, joists = [], []
+    <span class="k">for</span> group <span class="k">in</span> shells(me):
+        <span class="k">if</span> mat_of(me, group) != WOOD_IDX:
+            <span class="k">continue</span>
+        a = shell_aabb(me, group)
+        dx, dy = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>]
+        cz = <span class="n">0.5</span> * (a[<span class="n">2</span>] + a[<span class="n">5</span>])
+        <span class="k">if</span> abs(cz - (PLAT_Z - GIRT_H / <span class="n">2.0</span>)) &lt; <span class="n">0.01</span> <span class="k">and</span> max(dx, dy) &gt; HALF * <span class="n">1.5</span> <span class="k">and</span> min(dx, dy) &lt; POST:
+            deck_girts.append(a)
+        <span class="k">elif</span> abs(cz - (PLAT_Z - <span class="n">0.024</span>)) &lt; <span class="n">0.01</span> <span class="k">and</span> dy &gt; HALF <span class="k">and</span> dx &lt; POST:
+            joists.append(a)
+    front_g = [g <span class="k">for</span> g <span class="k">in</span> deck_girts <span class="k">if</span> <span class="n">0.5</span> * (g[<span class="n">1</span>] + g[<span class="n">4</span>]) &lt; -HALF * <span class="n">0.5</span>]
+    back_g = [g <span class="k">for</span> g <span class="k">in</span> deck_girts <span class="k">if</span> <span class="n">0.5</span> * (g[<span class="n">1</span>] + g[<span class="n">4</span>]) &gt; HALF * <span class="n">0.5</span>]
+    bears = []
+    <span class="k">for</span> j <span class="k">in</span> joists:
+        <span class="k">if</span> <span class="k">not</span> front_g <span class="k">or</span> <span class="k">not</span> back_g:
+            bears.append(-<span class="n">1.0</span>)
+            <span class="k">continue</span>
+        bears.append(min(front_g[<span class="n">0</span>][<span class="n">4</span>] - j[<span class="n">1</span>], j[<span class="n">4</span>] - back_g[<span class="n">0</span>][<span class="n">1</span>]))
     back_posts = [p <span class="k">for</span> p <span class="k">in</span> posts <span class="k">if</span> <span class="n">0.5</span> * (p[<span class="n">1</span>] + p[<span class="n">4</span>]) &gt; <span class="n">0.0</span>]
     pairs = [
         min(r[<span class="n">3</span>] - p[<span class="n">0</span>], p[<span class="n">3</span>] - r[<span class="n">0</span>])
@@ -1143,7 +1380,14 @@ METAL_IDX = <span class="n">2</span>
         <span class="k">for</span> p <span class="k">in</span> back_posts
     ]
     engage = min(pairs) <span class="k">if</span> pairs <span class="k">else</span> <span class="n">1.0</span>
-    <span class="k">return</span> {<span class="s">&quot;posts&quot;</span>: len(posts), <span class="s">&quot;rails&quot;</span>: len(rails), <span class="s">&quot;engage&quot;</span>: engage}
+    <span class="k">return</span> {
+        <span class="s">&quot;posts&quot;</span>: len(posts), <span class="s">&quot;rails&quot;</span>: len(rails), <span class="s">&quot;engage&quot;</span>: engage,
+        <span class="s">&quot;side_rails&quot;</span>: len(side_rails),
+        <span class="s">&quot;side_engage&quot;</span>: min(side_ends) <span class="k">if</span> side_ends <span class="k">else</span> -<span class="n">1.0</span>,
+        <span class="s">&quot;deck_girts&quot;</span>: len(deck_girts),
+        <span class="s">&quot;joists&quot;</span>: len(joists),
+        <span class="s">&quot;joist_bear&quot;</span>: min(bears) <span class="k">if</span> bears <span class="k">else</span> -<span class="n">1.0</span>,
+    }
 
 
 <span class="k">def</span> band_seat(me):
@@ -1319,6 +1563,8 @@ METAL_IDX = <span class="n">2</span>
     short_rails=<span class="k">False</span>,
     float_band=<span class="k">False</span>,
     rake_posts=<span class="k">False</span>,
+    open_sides=<span class="k">False</span>,
+    short_joists=<span class="k">False</span>,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     low = build_tower_mesh(
@@ -1329,6 +1575,8 @@ METAL_IDX = <span class="n">2</span>
         short_rails=short_rails,
         float_band=float_band,
         rake_posts=rake_posts,
+        open_sides=open_sides,
+        short_joists=short_joists,
     )
     high = build_tower_mesh(
         <span class="s">&quot;TowerHigh&quot;</span>,
@@ -1338,10 +1586,12 @@ METAL_IDX = <span class="n">2</span>
         short_rails=short_rails,
         float_band=float_band,
         rake_posts=rake_posts,
+        open_sides=open_sides,
+        short_joists=short_joists,
     )
-    wood = principled(<span class="s">&quot;TowerWood&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.22</span>, <span class="n">0.08</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.56</span>)
-    roof = principled(<span class="s">&quot;TowerShake&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.28</span>, <span class="n">0.26</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.74</span>)
-    metal = principled(<span class="s">&quot;TowerIron&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.125</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">1.0</span>, <span class="n">0.30</span>)
+    paint_planks(low.data)
+    paint_planks(high.data)
+    wood, roof, metal = tower_materials()
     assign_slots(low, wood, roof, metal)
     assign_slots(high, wood, roof, metal)
 
@@ -1401,6 +1651,14 @@ METAL_IDX = <span class="n">2</span>
         os.remove(export_path)
     export_unity(export_path, [low, collider])
     export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender sets TMPDIR from its own preference, which resolves to the</span>
+    <span class="c"># working directory on a stock portable build, so every run left a .glb</span>
+    <span class="c"># behind. The budget only needs the byte count.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        <span class="k">try</span>:
+            os.remove(export_path)
+        <span class="k">except</span> OSError:
+            <span class="k">pass</span>
 
     print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
     print(
@@ -1426,7 +1684,9 @@ METAL_IDX = <span class="n">2</span>
     )
     print(
         <span class="s">f&quot;</span><span class="s">measured shoes=</span>{sup[<span class="s">&#x27;shoes&#x27;</span>]}<span class="s"> shoe_z=</span>{sup[<span class="s">&#x27;shoe_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">rail_engage=</span>{jnt[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> band_seat=</span>{seat:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">rail_engage=</span>{jnt[<span class="s">&#x27;engage&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> side_engage=</span>{jnt[<span class="s">&#x27;side_engage&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">side_rails=</span>{jnt[<span class="s">&#x27;side_rails&#x27;</span>]}<span class="s"> deck_girts=</span>{jnt[<span class="s">&#x27;deck_girts&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">joist_bear=</span>{jnt[<span class="s">&#x27;joist_bear&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> band_seat=</span>{seat:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">plumb=</span>{plumb:<span class="s">.5f</span>}<span class="s">&quot;</span>
     )
 
@@ -1515,6 +1775,22 @@ METAL_IDX = <span class="n">2</span>
             <span class="s">f&quot;</span><span class="s">posts=</span>{jnt[<span class="s">&#x27;posts&#x27;</span>]}<span class="s"> rails=</span>{jnt[<span class="s">&#x27;rails&#x27;</span>]}<span class="s">&quot;</span>,
             <span class="n">17</span>,
         ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> jnt[<span class="s">&quot;side_rails&quot;</span>] != SIDE_RAIL_COUNT <span class="k">or</span> jnt[<span class="s">&quot;side_engage&quot;</span>] &lt; RAIL_ENGAGE_MIN:
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">side rail engage </span>{jnt[<span class="s">&#x27;side_engage&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> &lt; </span>{RAIL_ENGAGE_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">side_rails=</span>{jnt[<span class="s">&#x27;side_rails&#x27;</span>]}<span class="s"> (want </span>{SIDE_RAIL_COUNT}<span class="s">)</span><span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> (
+        jnt[<span class="s">&quot;deck_girts&quot;</span>] != DECK_GIRT_COUNT
+        <span class="k">or</span> jnt[<span class="s">&quot;joists&quot;</span>] != <span class="n">2</span>
+        <span class="k">or</span> jnt[<span class="s">&quot;joist_bear&quot;</span>] &lt; JOIST_BEAR_MIN
+    ):
+        <span class="k">return</span> fail(
+            <span class="s">f&quot;</span><span class="s">deck bearing: joist_bear </span>{jnt[<span class="s">&#x27;joist_bear&#x27;</span>]:<span class="s">.4f</span>}<span class="s"> &lt; </span>{JOIST_BEAR_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">deck_girts=</span>{jnt[<span class="s">&#x27;deck_girts&#x27;</span>]}<span class="s"> (want </span>{DECK_GIRT_COUNT}<span class="s">) joists=</span>{jnt[<span class="s">&#x27;joists&#x27;</span>]}<span class="s">&quot;</span>,
+            <span class="n">17</span>,
+        ), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> seat &gt; BAND_SEAT_MAX:
         <span class="k">return</span> fail(<span class="s">f&quot;</span><span class="s">band seat </span>{seat:<span class="s">.5f</span>}<span class="s"> &gt; </span>{BAND_SEAT_MAX}<span class="s">&quot;</span>, <span class="n">18</span>), <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>, <span class="k">None</span>
     <span class="k">if</span> (
@@ -1553,7 +1829,7 @@ METAL_IDX = <span class="n">2</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">14.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -1651,6 +1927,8 @@ METAL_IDX = <span class="n">2</span>
     p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--short-shoes&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--short-rails&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--open-sides&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-joists&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--float-band&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     p.add_argument(<span class="s">&quot;--rake-posts&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
     args = p.parse_args(argv)
@@ -1661,6 +1939,8 @@ METAL_IDX = <span class="n">2</span>
         stray_vert=args.stray_vert,
         short_shoes=args.short_shoes,
         short_rails=args.short_rails,
+        open_sides=args.open_sides,
+        short_joists=args.short_joists,
         float_band=args.float_band,
         rake_posts=args.rake_posts,
     )
@@ -1687,7 +1967,7 @@ METAL_IDX = <span class="n">2</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/watchtower-hero.webp" alt="A timber watchtower on braced legs with a ladder, railed platform and a pale shingled pyramid roof." />
+    <img src="../assets/watchtower-hero.webp" alt="A grained timber watchtower on braced legs with a ladder, a railed platform on deck girts, rusted iron collars and a shingled pyramid roof." />
   </dialog>
   <footer>
     <div class="statusbar">
