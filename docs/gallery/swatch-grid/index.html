@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Six material spheres in two rows: black glossy, copper metal, red, blue, flat orange emission and white." />
+  <meta property="og:image:alt" content="Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="swatch-grid — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/swatch-grid-hero.webp" />
-  <meta name="twitter:image:alt" content="Six material spheres in two rows: black glossy, copper metal, red, blue, flat orange emission and white." />
+  <meta name="twitter:image:alt" content="Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Six material spheres in two rows: black glossy, copper metal, red, blue, flat orange emission and white.">
-      <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in two rows: black glossy, copper metal, red, blue, flat orange emission and white." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white.">
+      <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.</div>
@@ -294,6 +294,8 @@ blender --background --python swatch_grid.py -- --output swatch.png
 # GPU-less / CI hosts: render the pixels with Cycles (CPU). The EEVEE id is still
 # asserted; only the final pixels use Cycles.
 blender --background --python swatch_grid.py -- --output swatch.png --engine cycles --samples 16 --width 960</code></pre>
+<h2>Staging</h2>
+<p>The backdrop stands 0.16 behind the spheres, so each casts a soft contact shadow. It used to stand 1.58 behind them, and the grid floated. The world is a reflection-only sky: glossy rays see a warm overhead gradient above a dark horizon, and camera and diffuse rays see the dark stage. The mirror-finish gold otherwise reflected the near-black world and rendered as a black ball with two light-card glints. Sphere positions, materials, the camera and the six-region pixel check are unchanged; <code>verify_png</code> still reads six distinct regions on 4.5.11, 5.1.2 and 5.2.1.</p>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Distinct swatch colors ≠ 6 (<code>--same-base</code> lands here); also render not six distinct regions</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
@@ -463,7 +465,10 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     wmat, _ = make_principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
     wall_me.materials.append(wmat)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, wall_me)
-    wall.location = (<span class="n">0.0</span>, <span class="n">2.5</span>, <span class="n">0.0</span>)
+    <span class="c"># just behind the spheres (0.16 clear of their backs) so each casts a</span>
+    <span class="c"># soft contact shadow and reads as mounted; at y=2.5 they hung 1.58 in</span>
+    <span class="c"># front of the backdrop with nothing under them</span>
+    wall.location = (<span class="n">0.0</span>, <span class="n">1.08</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     bpy.context.collection.objects.link(wall)
 
@@ -492,7 +497,29 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
     bpy.data.objects[<span class="s">&quot;WedgeL&quot;</span>].rotation_euler = (math.radians(-<span class="n">56</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
     world = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>)
+    nt = world.node_tree
+    bg = nt.nodes[<span class="s">&quot;Background&quot;</span>]
+    bg.inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>)
+    <span class="c"># A reflection-only sky: glossy rays see a warm overhead gradient over a</span>
+    <span class="c"># dark horizon, every other ray the dark stage. The mirror-finish gold</span>
+    <span class="c"># otherwise reflected the near-black world and rendered as a black ball</span>
+    <span class="c"># with two light-card glints. Diffuse and camera rays are unchanged, so</span>
+    <span class="c"># the stage stays dark.</span>
+    path = nt.nodes.new(<span class="s">&quot;ShaderNodeLightPath&quot;</span>)
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Generated&quot;</span>], sep.inputs[<span class="n">0</span>])
+    sky = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    sky.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.0</span>
+    sky.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>)
+    sky.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.7</span>
+    sky.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.70</span>, <span class="n">0.63</span>, <span class="n">0.55</span>, <span class="n">1</span>)
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], sky.inputs[<span class="s">&quot;Fac&quot;</span>])
+    pick = nt.nodes.new(<span class="s">&quot;ShaderNodeMixRGB&quot;</span>)
+    pick.inputs[<span class="n">1</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>)
+    nt.links.new(sky.outputs[<span class="s">&quot;Color&quot;</span>], pick.inputs[<span class="n">2</span>])
+    nt.links.new(path.outputs[<span class="s">&quot;Is Glossy Ray&quot;</span>], pick.inputs[<span class="n">0</span>])
+    nt.links.new(pick.outputs[<span class="n">0</span>], bg.inputs[<span class="n">0</span>])
     bpy.context.scene.world = world
 
 
@@ -648,7 +675,7 @@ MATERIAL_COUNT = GRID_COLS * GRID_ROWS  <span class="c"># 6</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in two rows: black glossy, copper metal, red, blue, flat orange emission and white." />
+    <img src="../assets/swatch-grid-hero.webp" alt="Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white." />
   </dialog>
   <footer>
     <div class="statusbar">

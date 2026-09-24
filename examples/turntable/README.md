@@ -29,6 +29,15 @@ keys, samples the object's Z rotation at frame 1 vs a later frame, and asserts t
 (the keys drive playback). `--output` additionally renders a still; the full animated loop is
 a showcase extra, not part of the CI check.
 
+The still's staging is render-only and runs after the check. The head gets a
+subdivision modifier (the 500-face monkey read as faceted plates) and is
+seated 10 mm into the platter of a turntable plinth, lifted from its own
+lowest evaluated vertex. It used to hover just above the floor with nothing
+under it. The rotation keys, the sampled frames and every exit code are
+unchanged. This render path does not call `gallery_framing.check_framing`,
+because adding it would add exit code 10. The framing was measured with the
+helper out of band instead: fill y 0.789, minimum margin 0.050, ok.
+
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule

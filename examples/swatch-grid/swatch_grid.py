@@ -153,7 +153,10 @@ def build_scene(mats):
     wmat, _ = make_principled("Studio", (0.03, 0.032, 0.037, 1), 0.0, 0.7)
     wall_me.materials.append(wmat)
     wall = bpy.data.objects.new("Wall", wall_me)
-    wall.location = (0.0, 2.5, 0.0)
+    # just behind the spheres (0.16 clear of their backs) so each casts a
+    # soft contact shadow and reads as mounted; at y=2.5 they hung 1.58 in
+    # front of the backdrop with nothing under them
+    wall.location = (0.0, 1.08, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     bpy.context.collection.objects.link(wall)
 
@@ -182,7 +185,29 @@ def build_scene(mats):
     bpy.data.objects["WedgeL"].rotation_euler = (math.radians(-56), 0.0, math.radians(190))
     world = bpy.data.worlds.new("W")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1)
+    nt = world.node_tree
+    bg = nt.nodes["Background"]
+    bg.inputs[0].default_value = (0.02, 0.021, 0.025, 1)
+    # A reflection-only sky: glossy rays see a warm overhead gradient over a
+    # dark horizon, every other ray the dark stage. The mirror-finish gold
+    # otherwise reflected the near-black world and rendered as a black ball
+    # with two light-card glints. Diffuse and camera rays are unchanged, so
+    # the stage stays dark.
+    path = nt.nodes.new("ShaderNodeLightPath")
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coord.outputs["Generated"], sep.inputs[0])
+    sky = nt.nodes.new("ShaderNodeValToRGB")
+    sky.color_ramp.elements[0].position = 0.0
+    sky.color_ramp.elements[0].color = (0.02, 0.021, 0.025, 1)
+    sky.color_ramp.elements[1].position = 0.7
+    sky.color_ramp.elements[1].color = (0.70, 0.63, 0.55, 1)
+    nt.links.new(sep.outputs["Z"], sky.inputs["Fac"])
+    pick = nt.nodes.new("ShaderNodeMixRGB")
+    pick.inputs[1].default_value = (0.02, 0.021, 0.025, 1)
+    nt.links.new(sky.outputs["Color"], pick.inputs[2])
+    nt.links.new(path.outputs["Is Glossy Ray"], pick.inputs[0])
+    nt.links.new(pick.outputs[0], bg.inputs[0])
     bpy.context.scene.world = world
 
 

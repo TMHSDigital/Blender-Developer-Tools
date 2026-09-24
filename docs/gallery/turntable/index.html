@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/turntable-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A bronze monkey head (Suzanne) turned three-quarters on a dark studio floor." />
+  <meta property="og:image:alt" content="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="turntable — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/turntable-hero.webp" />
-  <meta name="twitter:image:alt" content="A bronze monkey head (Suzanne) turned three-quarters on a dark studio floor." />
+  <meta name="twitter:image:alt" content="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A slotted-actions Z-rotation turntable keyed through the cross-version channelbag path (get_channelbag_for_slot).</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A bronze monkey head (Suzanne) turned three-quarters on a dark studio floor.">
-      <img src="../assets/turntable-hero.webp" alt="A bronze monkey head (Suzanne) turned three-quarters on a dark studio floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter.">
+      <img src="../assets/turntable-hero.webp" alt="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Slotted-actions boundary: ensure-helper channelbag on 5.x, strip.channelbag on 4.4/4.5.</div>
@@ -291,6 +291,7 @@ blender --background --python turntable.py -- --no-keys
 blender --background --python turntable.py -- --output turntable.png
 blender --background --python turntable.py -- --output turntable.png --engine cycles</code></pre>
 <p>By default it runs only the <strong>frame-independent correctness check</strong>: it inserts the rotation keys, samples the object&#x27;s Z rotation at frame 1 vs a later frame, and asserts they <strong>differ</strong> (the keys drive playback). <code>--output</code> additionally renders a still; the full animated loop is a showcase extra, not part of the CI check.</p>
+<p>The still&#x27;s staging is render-only and runs after the check. The head gets a subdivision modifier (the 500-face monkey read as faceted plates) and is seated 10 mm into the platter of a turntable plinth, lifted from its own lowest evaluated vertex. It used to hover just above the floor with nothing under it. The rotation keys, the sampled frames and every exit code are unchanged. This render path does not call <code>gallery_framing.check_framing</code>, because adding it would add exit code 10. The framing was measured with the helper out of band instead: fill y 0.789, minimum margin 0.050, ok.</p>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Rotation keys do not drive playback (<code>--no-keys</code> lands here)</td></tr><tr><td>4</td><td><code>--output</code> produced no file</td></tr><tr><td>5</td><td>Wrong-era EEVEE engine id was accepted</td></tr></tbody></table></div>
@@ -376,9 +377,72 @@ FRAMES = <span class="n">36</span>
     print(<span class="s">f&quot;</span><span class="s">branch=</span>{branch}<span class="s"> rot_z f1=</span>{r1}<span class="s"> fmid=</span>{rmid}<span class="s"> fend=</span>{rend}<span class="s"> drives=</span>{drives}<span class="s">&quot;</span>)
     <span class="k">return</span> drives
 
+PLINTH_R = <span class="n">1.15</span>
+PLINTH_H = <span class="n">0.28</span>
+PLATTER_R = <span class="n">1.05</span>
+PLATTER_H = <span class="n">0.05</span>
+SEAT = <span class="n">0.01</span>
+
+
+<span class="k">def</span> stage_turntable(obj):
+    <span class="s">&quot;&quot;&quot;Render-only staging, after the check has run: a turntable to turn on.
+
+    The head is smoothed by a subdivision modifier (the 500-face monkey read
+    as faceted plates), seated SEAT into a platter on a plinth, and lifted so
+    its lowest evaluated vertex lands there. It used to hover just above the
+    floor with nothing under it. Rotation keys and the correctness samples
+    are untouched; only location and a modifier change here.
+    &quot;&quot;&quot;</span>
+    <span class="k">import</span> bmesh
+    sub = obj.modifiers.new(<span class="s">&quot;Smooth&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>)
+    sub.levels = <span class="n">2</span>
+    sub.render_levels = <span class="n">2</span>
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    <span class="k">try</span>:
+        zmin = min((ev.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> me.vertices)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+    obj.location.z += (PLINTH_H + PLATTER_H - SEAT) - zmin
+    b = obj.active_material.node_tree.nodes[<span class="s">&#x27;Principled BSDF&#x27;</span>]
+    <span class="c"># 0.25 blew every brow and ear edge out to white under the key</span>
+    b.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = <span class="n">0.38</span>
+    parts = []
+    <span class="k">for</span> nm, r, z0, h, col, metal, rough <span class="k">in</span> (
+        (<span class="s">&quot;Plinth&quot;</span>, PLINTH_R, <span class="n">0.0</span>, PLINTH_H, (<span class="n">0.035</span>, <span class="n">0.032</span>, <span class="n">0.03</span>), <span class="n">0.0</span>, <span class="n">0.55</span>),
+        (<span class="s">&quot;Platter&quot;</span>, PLATTER_R, PLINTH_H - <span class="n">0.004</span>, PLATTER_H + <span class="n">0.004</span>,
+         (<span class="n">0.42</span>, <span class="n">0.42</span>, <span class="n">0.44</span>), <span class="n">1.0</span>, <span class="n">0.45</span>),
+    ):
+        mesh = bpy.data.meshes.new(nm)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">64</span>, radius1=r,
+                                  radius2=r, depth=h)
+            bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, z0 + h / <span class="n">2.0</span>), verts=bm.verts)
+            bmesh.ops.bevel(bm, geom=[e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">2</span>
+                                      <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; <span class="n">1.0</span>],
+                            offset=<span class="n">0.012</span>, segments=<span class="n">2</span>, affect=<span class="s">&#x27;EDGES&#x27;</span>)
+            bm.to_mesh(mesh)
+        <span class="k">finally</span>:
+            bm.free()
+        mesh.shade_smooth()
+        mat = bpy.data.materials.new(nm); mat.use_nodes = <span class="k">True</span>
+        pb = mat.node_tree.nodes[<span class="s">&#x27;Principled BSDF&#x27;</span>]
+        pb.inputs[<span class="s">&#x27;Base Color&#x27;</span>].default_value = (*col, <span class="n">1.0</span>)
+        pb.inputs[<span class="s">&#x27;Metallic&#x27;</span>].default_value = metal
+        pb.inputs[<span class="s">&#x27;Roughness&#x27;</span>].default_value = rough
+        mesh.materials.append(mat)
+        ob = bpy.data.objects.new(nm, mesh)
+        bpy.context.collection.objects.link(ob)
+        parts.append(ob)
+    <span class="k">return</span> parts
+
+
 <span class="k">def</span> render_still(obj, path, engine):
     <span class="k">import</span> bmesh
     sc = bpy.context.scene
+    stage_turntable(obj)
     fme = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>); bm = bmesh.new()
     <span class="k">try</span>:
         bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>); bm.to_mesh(fme)
@@ -396,8 +460,8 @@ FRAMES = <span class="n">36</span>
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new(<span class="s">&quot;W&quot;</span>); w.use_nodes = <span class="k">True</span>
     w.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="n">0</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1</span>); sc.world = w
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.0</span>); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">5.9</span>, <span class="n">2.4</span>)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>); aim.location = (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.1</span>); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new(<span class="s">&quot;cam&quot;</span>, bpy.data.cameras.new(<span class="s">&quot;cam&quot;</span>)); cam.location = (<span class="n">0</span>, -<span class="n">8.0</span>, <span class="n">3.4</span>)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>); c.target = aim; c.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>; c.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
     <span class="k">for</span> nm, loc, en, size, col <span class="k">in</span> [(<span class="s">&quot;K&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">7</span>), <span class="n">620</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>)),
@@ -472,7 +536,7 @@ FRAMES = <span class="n">36</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/turntable-hero.webp" alt="A bronze monkey head (Suzanne) turned three-quarters on a dark studio floor." />
+    <img src="../assets/turntable-hero.webp" alt="A smooth copper monkey head (Suzanne) turned three-quarters on a black turntable with a brushed metal platter." />
   </dialog>
   <footer>
     <div class="statusbar">
