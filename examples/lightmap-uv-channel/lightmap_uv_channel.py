@@ -273,11 +273,26 @@ def build_cart_meshes():
             f"Cart.Wheel.{tag}.Band", 0.47, 0.435, 0.10, (0.55, y, 0.45))
         parts[f"Wheel.{tag}.Bolts"] = _bolt_ring(
             f"Cart.Wheel.{tag}.Bolts", 6, 0.09, 0.02, (0.55, y + sy * 0.085, 0.45))
+    # Each post runs from inside the bed up into the canopy's underside at
+    # its own station, read off the canopy arc. A fixed 1.35 m post stopped
+    # 0.33 m short of the arc, so the canopy floated over four sticks.
+    # The top is sheared to follow the arc, so the bite is the same across
+    # the post's width rather than deep on one side and open on the other.
+    canopy_z0, canopy_r, canopy_t, post_bite = 1.9, 0.85, 0.04, 0.012
+    post_z0 = 0.875
+    r_in = canopy_r - canopy_t
     for tag, (px, py) in (("FL", (0.95, 0.48)), ("FR", (0.95, -0.48)),
                           ("RL", (-0.95, 0.48)), ("RR", (-0.95, -0.48))):
-        parts[f"Post.{tag}"] = _box(f"Cart.Post.{tag}", (0.09, 0.09, 1.35),
-                                    (px, py, 1.55), 0.015)
-    parts["Canopy"] = _canopy("Cart.Canopy", 2.3, 0.85, 0.04, 1.9)
+        top = canopy_z0 + math.sqrt(r_in * r_in - py * py) + post_bite
+        me = _box(f"Cart.Post.{tag}", (0.09, 0.09, top - post_z0),
+                  (px, py, 0.5 * (post_z0 + top)), 0.015)
+        for v in me.vertices:
+            if v.co.z > top - 0.05:
+                arc = canopy_z0 + math.sqrt(r_in * r_in - v.co.y * v.co.y) + post_bite
+                v.co.z += arc - top
+        me.update()
+        parts[f"Post.{tag}"] = me
+    parts["Canopy"] = _canopy("Cart.Canopy", 2.3, canopy_r, canopy_t, canopy_z0)
     parts["Canopy.Ribs"] = _canopy_ribs("Cart.Canopy.Ribs", (-0.75, 0.0, 0.75),
                                         0.07, 0.875, 0.035, 1.9)
     return parts
