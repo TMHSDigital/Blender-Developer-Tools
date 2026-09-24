@@ -475,10 +475,20 @@ def build_bay(sc, frame_path):
     deskmat = pbr("DeskTop", (0.05, 0.05, 0.06), 0.0, 0.80)
 
     # desk slab, stand, and the monitor bezel (screen face toward -Y)
-    box("Desk", (2.80, 1.10, 0.72), (0.0, 0.0, 0.36), deskmat)
-    box("StandBase", (0.70, 0.50, 0.06), (0.0, 0.05, 0.75), gunmetal)
-    box("Stand", (0.18, 0.12, 0.50), (0.0, 0.05, 0.99), gunmetal)
-    box("Bezel", (2.06, 0.09, 1.30), (0.0, 0.0, 1.89), gunmetal)
+    # Each part bites the one it rests on. The neck used to butt its top face
+    # onto the bezel's bottom face (one plane, no joint) with half its depth
+    # hanging out behind, and the base sat exactly on the desk top.
+    desk_top, base_h, base_bite = 0.72, 0.06, 0.005
+    bezel_z, bezel_h, bezel_d = 1.89, 1.30, 0.09
+    neck_bite, neck_d = 0.10, 0.07
+    base_z0 = desk_top - base_bite
+    neck_z0 = base_z0 + base_h - base_bite
+    neck_z1 = bezel_z - bezel_h / 2 + neck_bite
+    box("Desk", (2.80, 1.10, desk_top), (0.0, 0.0, desk_top / 2), deskmat)
+    box("StandBase", (0.70, 0.50, base_h), (0.0, 0.05, base_z0 + base_h / 2), gunmetal)
+    box("Stand", (0.18, neck_d, neck_z1 - neck_z0),
+        (0.0, bezel_d / 2 - neck_d / 2 + 0.02, 0.5 * (neck_z0 + neck_z1)), gunmetal)
+    box("Bezel", (2.06, bezel_d, bezel_h), (0.0, 0.0, bezel_z), gunmetal)
 
     # the screen: one unlit quad sampling the authentic frame end to end —
     # emission only, so the VSE pixels read exactly as the sequencer wrote them
@@ -521,7 +531,10 @@ def build_bay(sc, frame_path):
     cu.size = 0.10
     cu.extrude = 0.004
     cob = bpy.data.objects.new("BayCaption", cu)
-    cob.location = (0.0, -0.40, 0.73)
+    # upright on the desk's front face, set 1 mm into it: laid flat on the
+    # top it floated 6 mm up and read as a smear at the camera's grazing angle
+    cob.location = (0.0, -0.55 - cu.extrude + 0.001, desk_top - 0.16)
+    cob.rotation_euler = (math.radians(90.0), 0.0, 0.0)
     cob.data.materials.append(cmat)
     sc.collection.objects.link(cob)
 

@@ -99,6 +99,14 @@ are the genuine sequencer output (evidence); only the bay around them is
 staged (presentation). Rendered locally with EEVEE (GPU host); the checks
 and `--check-pixels` need no GPU (Cycles CPU).
 
+In the bay, each part bites the one it rests on. The monitor's neck rises
+0.10 m into the bezel, the stand base sits 5 mm into the desk, and the
+"PROGRAM" caption stands on the desk's front face. The neck used to butt its
+top face onto the bezel's bottom on one plane, with half its depth hanging
+out behind, and the caption lay flat on the desk top 6 mm up, where the
+camera read it as a smear. None of this touches the sequencer frame or any
+check.
+
 ## Framing measurement
 
 The gallery still renders from the dedicated `Bay` scene (camera `BayCam`),
