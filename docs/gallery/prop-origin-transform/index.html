@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two teal pedestals labelled TRAP and MPI KEEP: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
+  <meta property="og:image:alt" content="Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="prop-origin-transform — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/prop-origin-transform-hero.webp" />
-  <meta name="twitter:image:alt" content="Two teal pedestals labelled TRAP and MPI KEEP: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
+  <meta name="twitter:image:alt" content="Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal pedestals labelled TRAP and MPI KEEP: on the left a conduit fitting has jumped out of its socket, on the right it sits seated.">
-      <img src="../assets/prop-origin-transform-hero.webp" alt="Two teal pedestals labelled TRAP and MPI KEEP: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated.">
+      <img src="../assets/prop-origin-transform-hero.webp" alt="Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Bare child.parent = parent teleports accessories off their mounts; skipping view_layer.update() before matrix_world, or leaving non-uniform scale / centered origin, breaks engine ingest placement.</div>
@@ -285,7 +285,7 @@
 <ul><li><strong>Stale <code>matrix_world</code>.</strong> After a location edit, <code>matrix_world</code> is unchanged until <code>view_layer.update()</code> (same half of the orrery contract).</li><li><strong>Scale apply via data API.</strong> Non-uniform scale baked into verts; <code>obj.scale == (1,1,1)</code> exactly afterward.</li><li><strong>Origin at base center.</strong> Local bbox <code>min.z == 0</code>, XY centered; world AABB delta across the bake is <strong>0</strong> (gate <code>1e-5</code>).</li><li><strong>Bare-parent trap.</strong> Parenting the accessory without MPI jumps it (~0.43 m measured); setting <code>matrix_parent_inverse</code> restores world location (err ~3e-8).</li></ul>
 <p><strong>What each check catches on failure:</strong> skipping scale apply leaves non-identity scale; skipping origin bake leaves <code>min.z ≈ -0.756</code>; skipping MPI leaves the accessory teleported.</p>
 <p><strong>Version witness:</strong> byte-identical numbers on Blender 4.5.11 LTS and 5.1.2.</p>
-<p>The render is a dual panel: left <strong>TRAP</strong> (bare parent — flanged conduit teleports off a deep shadowed mount socket) vs right <strong>MPI KEEP</strong> (same metal fitting seated in the socket), with emissive origin markers at each pedestal&#x27;s base. Accessory and pedestal stay in one material family so displacement — not color — carries the proof. Check closed forms are unchanged.</p>
+<p>The render is a dual panel: left <strong>TRAP</strong> (bare parent — flanged conduit teleports off a deep shadowed mount socket) vs right <strong>MPI KEEP</strong> (same metal fitting seated in the socket), with emissive origin markers at each pedestal&#x27;s base. The origin is inside the plinth, so the red X and green Y stubs are centred on it and run 1.7 m along the floor, exiting the plinth on both sides: where they cross, under the base, is the origin. The first cut drew 0.28 m stubs from the origin outward, all buried, and 0.11 m labels that vanished at card size; the labels are 0.21 m now. Accessory and pedestal stay in one material family so displacement — not color — carries the proof. Check closed forms are unchanged.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python prop_origin_transform.py --
 blender --background --python prop_origin_transform.py -- --skip-mpi
@@ -670,7 +670,13 @@ JUMP_MIN = <span class="n">0.05</span>
 
 
 <span class="k">def</span> origin_marker(sc, loc):
-    <span class="s">&quot;&quot;&quot;Small emissive triad at the object origin — scene evidence, not a light.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Emissive triad at the object origin — scene evidence, not a light.
+
+    The origin sits at the base centre, inside the plinth, so a bead alone is
+    buried. The X and Y stubs are centred on it and run long enough to exit
+    the plinth on both sides along the floor: where they cross, under the
+    pedestal, is the origin.
+    &quot;&quot;&quot;</span>
     mat = make_material(
         <span class="s">&quot;OriginMark&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.1</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.0</span>,
         emit=(<span class="n">1.0</span>, <span class="n">0.6</span>, <span class="n">0.1</span>), estr=<span class="n">2.2</span>,
@@ -687,18 +693,19 @@ JUMP_MIN = <span class="n">0.05</span>
     ob.location = loc
     sc.collection.objects.link(ob)
     <span class="c"># Axis stubs</span>
-    <span class="k">for</span> axis, rgb, rot <span class="k">in</span> (
-        (<span class="s">&quot;X&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.2</span>, <span class="n">0.15</span>), (<span class="n">0</span>, math.radians(<span class="n">90</span>), <span class="n">0</span>)),
-        (<span class="s">&quot;Y&quot;</span>, (<span class="n">0.2</span>, <span class="n">1.0</span>, <span class="n">0.25</span>), (math.radians(-<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>)),
-        (<span class="s">&quot;Z&quot;</span>, (<span class="n">0.25</span>, <span class="n">0.45</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>)),
+    <span class="k">for</span> axis, rgb, rot, depth <span class="k">in</span> (
+        (<span class="s">&quot;X&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.2</span>, <span class="n">0.15</span>), (<span class="n">0</span>, math.radians(<span class="n">90</span>), <span class="n">0</span>), <span class="n">1.7</span>),
+        (<span class="s">&quot;Y&quot;</span>, (<span class="n">0.2</span>, <span class="n">1.0</span>, <span class="n">0.25</span>), (math.radians(-<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>), <span class="n">1.7</span>),
+        (<span class="s">&quot;Z&quot;</span>, (<span class="n">0.25</span>, <span class="n">0.45</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), <span class="n">0.56</span>),
     ):
         ame = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Axis</span>{axis}<span class="s">&quot;</span>)
         abm = bmesh.new()
         <span class="k">try</span>:
             bmesh.ops.create_cone(
-                abm, cap_ends=<span class="k">True</span>, segments=<span class="n">8</span>, radius1=<span class="n">0.015</span>, radius2=<span class="n">0.015</span>, depth=<span class="n">0.28</span>,
+                abm, cap_ends=<span class="k">True</span>, segments=<span class="n">8</span>, radius1=<span class="n">0.022</span>, radius2=<span class="n">0.022</span>, depth=depth,
             )
-            bmesh.ops.translate(abm, vec=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.14</span>), verts=abm.verts)
+            <span class="k">if</span> axis == <span class="s">&quot;Z&quot;</span>:
+                bmesh.ops.translate(abm, vec=(<span class="n">0</span>, <span class="n">0</span>, depth / <span class="n">2.0</span>), verts=abm.verts)
             abm.to_mesh(ame)
         <span class="k">finally</span>:
             abm.free()
@@ -707,7 +714,8 @@ JUMP_MIN = <span class="n">0.05</span>
         )
         ame.materials.append(am)
         aob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Axis</span>{axis}<span class="s">&quot;</span>, ame)
-        aob.location = loc
+        <span class="c"># X and Y are centred on the origin, lifted one radius onto the floor</span>
+        aob.location = loc + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.022</span> <span class="k">if</span> axis != <span class="s">&quot;Z&quot;</span> <span class="k">else</span> <span class="n">0.0</span>))
         aob.rotation_euler = rot
         sc.collection.objects.link(aob)
 
@@ -717,6 +725,7 @@ JUMP_MIN = <span class="n">0.05</span>
     cu.body = text
     cu.size = size
     cu.align_x = <span class="s">&quot;CENTER&quot;</span>
+    cu.extrude = <span class="n">0.006</span>
     ob = bpy.data.objects.new(text, cu)
     ob.location = loc
     sc.collection.objects.link(ob)
@@ -729,7 +738,7 @@ JUMP_MIN = <span class="n">0.05</span>
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">30.0</span>)
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
@@ -858,8 +867,9 @@ JUMP_MIN = <span class="n">0.05</span>
     origin_marker(sc, Vector(left.matrix_world.translation))
     origin_marker(sc, Vector(right.matrix_world.translation))
 
-    p_trap = placard(sc, <span class="s">&quot;TRAP&quot;</span>, (<span class="n">0.15</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
-    p_keep = placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">2.1</span>, -<span class="n">1.25</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
+    <span class="c"># Big enough to read at card size; at 0.11 they vanished in the thumbnail.</span>
+    p_trap = placard(sc, <span class="s">&quot;TRAP&quot;</span>, (<span class="n">0.1</span>, -<span class="n">1.2</span>, <span class="n">0.02</span>), size=<span class="n">0.21</span>)
+    p_keep = placard(sc, <span class="s">&quot;MPI KEEP&quot;</span>, (<span class="n">2.15</span>, -<span class="n">1.2</span>, <span class="n">0.02</span>), size=<span class="n">0.21</span>)
 
     floor, wall = build_studio(sc)
 
@@ -951,7 +961,7 @@ JUMP_MIN = <span class="n">0.05</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/prop-origin-transform-hero.webp" alt="Two teal pedestals labelled TRAP and MPI KEEP: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
+    <img src="../assets/prop-origin-transform-hero.webp" alt="Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated." />
   </dialog>
   <footer>
     <div class="statusbar">

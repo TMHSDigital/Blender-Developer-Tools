@@ -39,7 +39,11 @@ MPI leaves the accessory teleported.
 The render is a dual panel: left **TRAP** (bare parent — flanged conduit
 teleports off a deep shadowed mount socket) vs right **MPI KEEP** (same metal
 fitting seated in the socket), with emissive origin markers at each pedestal's
-base. Accessory and pedestal stay in one material family so displacement — not
+base. The origin is inside the plinth, so the red X and green Y stubs are
+centred on it and run 1.7 m along the floor, exiting the plinth on both
+sides: where they cross, under the base, is the origin. The first cut drew
+0.28 m stubs from the origin outward, all buried, and 0.11 m labels that
+vanished at card size; the labels are 0.21 m now. Accessory and pedestal stay in one material family so displacement — not
 color — carries the proof. Check closed forms are unchanged.
 
 ## Run

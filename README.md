@@ -990,7 +990,7 @@ still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated — proving scale apply, base origin, and matrix_parent_inverse" /></a>
+<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated, origin axes crossing on the floor under each base — proving scale apply, base origin, and matrix_parent_inverse" /></a>
 </td>
 <td valign="middle">
 
