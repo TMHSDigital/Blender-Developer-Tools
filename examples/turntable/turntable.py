@@ -72,9 +72,72 @@ def correctness(obj):
     print(f"branch={branch} rot_z f1={r1} fmid={rmid} fend={rend} drives={drives}")
     return drives
 
+PLINTH_R = 1.15
+PLINTH_H = 0.28
+PLATTER_R = 1.05
+PLATTER_H = 0.05
+SEAT = 0.01
+
+
+def stage_turntable(obj):
+    """Render-only staging, after the check has run: a turntable to turn on.
+
+    The head is smoothed by a subdivision modifier (the 500-face monkey read
+    as faceted plates), seated SEAT into a platter on a plinth, and lifted so
+    its lowest evaluated vertex lands there. It used to hover just above the
+    floor with nothing under it. Rotation keys and the correctness samples
+    are untouched; only location and a modifier change here.
+    """
+    import bmesh
+    sub = obj.modifiers.new("Smooth", 'SUBSURF')
+    sub.levels = 2
+    sub.render_levels = 2
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(dg)
+    me = ev.to_mesh()
+    try:
+        zmin = min((ev.matrix_world @ v.co).z for v in me.vertices)
+    finally:
+        ev.to_mesh_clear()
+    obj.location.z += (PLINTH_H + PLATTER_H - SEAT) - zmin
+    b = obj.active_material.node_tree.nodes['Principled BSDF']
+    # 0.25 blew every brow and ear edge out to white under the key
+    b.inputs['Roughness'].default_value = 0.38
+    parts = []
+    for nm, r, z0, h, col, metal, rough in (
+        ("Plinth", PLINTH_R, 0.0, PLINTH_H, (0.035, 0.032, 0.03), 0.0, 0.55),
+        ("Platter", PLATTER_R, PLINTH_H - 0.004, PLATTER_H + 0.004,
+         (0.42, 0.42, 0.44), 1.0, 0.45),
+    ):
+        mesh = bpy.data.meshes.new(nm)
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=64, radius1=r,
+                                  radius2=r, depth=h)
+            bmesh.ops.translate(bm, vec=(0.0, 0.0, z0 + h / 2.0), verts=bm.verts)
+            bmesh.ops.bevel(bm, geom=[e for e in bm.edges if len(e.link_faces) == 2
+                                      and e.calc_face_angle(0.0) > 1.0],
+                            offset=0.012, segments=2, affect='EDGES')
+            bm.to_mesh(mesh)
+        finally:
+            bm.free()
+        mesh.shade_smooth()
+        mat = bpy.data.materials.new(nm); mat.use_nodes = True
+        pb = mat.node_tree.nodes['Principled BSDF']
+        pb.inputs['Base Color'].default_value = (*col, 1.0)
+        pb.inputs['Metallic'].default_value = metal
+        pb.inputs['Roughness'].default_value = rough
+        mesh.materials.append(mat)
+        ob = bpy.data.objects.new(nm, mesh)
+        bpy.context.collection.objects.link(ob)
+        parts.append(ob)
+    return parts
+
+
 def render_still(obj, path, engine):
     import bmesh
     sc = bpy.context.scene
+    stage_turntable(obj)
     fme = bpy.data.meshes.new("Floor"); bm = bmesh.new()
     try:
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0); bm.to_mesh(fme)
@@ -92,8 +155,8 @@ def render_still(obj, path, engine):
     wall.rotation_euler = (math.radians(90), 0, 0); bpy.context.collection.objects.link(wall)
     w = bpy.data.worlds.new("W"); w.use_nodes = True
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.021, 0.025, 1); sc.world = w
-    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.0); bpy.context.collection.objects.link(aim)
-    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -5.9, 2.4)
+    aim = bpy.data.objects.new("Aim", None); aim.location = (0, 0, 1.1); bpy.context.collection.objects.link(aim)
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.location = (0, -8.0, 3.4)
     bpy.context.collection.objects.link(cam); sc.camera = cam
     c = cam.constraints.new('TRACK_TO'); c.target = aim; c.track_axis = 'TRACK_NEGATIVE_Z'; c.up_axis = 'UP_Y'
     for nm, loc, en, size, col in [("K", (-4, -5, 7), 620, 5.0, (1.0, 0.96, 0.9)),
