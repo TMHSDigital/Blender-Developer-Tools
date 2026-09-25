@@ -564,6 +564,28 @@ entry in `showcase/gallery.json`, and a rendered still.
   because the toe still grounds and the post still meets its stretcher.
   Assert it from shells instead: the shell under each toe station must be a
   leg that reaches the seat. `--split-feet` is the falsifier.
+
+  The same holds for timber that carries a load end to end. A barrow's
+  shaft is the handle, the bearer under the tray and the fork, in one
+  piece. `wheelbarrow` built it as three boxes and hid the middle one
+  exactly under the tray's side wall, so the handle appeared to stop at
+  the tray corner and the tray to carry everything. Sweep it through its
+  stations with mitred joints, route it where it can be seen, and assert
+  the count of shells that span the whole run (`--split-shafts`).
+- **A tray that tips is a hopper, not a box (file-local code).** Build a
+  tray, bin or trough that is emptied by tipping from a bottom outline
+  and a top outline: flared sides, a raked tipping end. Each wall is the
+  planar band between its two edges, the end boards housed into the
+  sides. Measure the lean from the boards' own largest faces and assert
+  a floor; the falsifier stands the walls vertical on the same top
+  outline, so the envelope and size budgets stay put (`--box-tray`).
+- **Measure a leaning board in its own plane.** A flared or raked board's
+  outer face sits lower than its inner one, so AABB tests lie: a seam in
+  Z between two stacked boards reads negative, and a zmin seat reads the
+  outer bottom edge. Take each wall's up direction from its boards' largest
+  face and measure seams along it; seat the wall on its lowest board's
+  inner face. Derive both from the mesh, not the build constants, or the
+  box-tray falsifier trips the seam gate first.
 - **A carried member bites its carrier, measured where the vertices are
   (file-local code).** A slat on a rail, a back slat on an upright and an
   armrest on its leg each assert an overlap depth against a named minimum,
