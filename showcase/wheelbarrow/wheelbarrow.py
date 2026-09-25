@@ -1,7 +1,8 @@
 """Game-ready wooden wheelbarrow — a showcase piece, not an example.
 
-Asserts budget conformance of a procedural wheelbarrow (two chassis
-shafts, box tray, flat-tread spoked wheel, rear legs) after composing
+Asserts budget conformance of a procedural wheelbarrow (two shafts, each
+one timber from grip to axle; a flared hopper tray; a flat-tread spoked
+wheel; rear legs) after composing
 shipped pipeline pieces: bmesh construction, UVs, two materials,
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
@@ -16,7 +17,9 @@ joint-fit fails. ``--pipe-rim`` swaps the flat felloe/tyre for a torus
 so the tread-aspect seat budget fails. ``--float-walls`` lifts the
 tray walls off the floor so the wall-floor seat budget fails.
 ``--wide-seams`` opens the seams between wall boards to 8 mm so the
-wall-board budget fails.
+wall-board budget fails. ``--split-shafts`` builds each shaft as three
+boxes so the shaft-run budget fails. ``--box-tray`` stands the tray walls
+vertical on the same top outline so the flare budget fails.
 
 Construction is closed-form; the only RNG is the seeded per-board wood
 tone. DECIMATE COLLAPSE triangle counts
@@ -63,9 +66,16 @@ WHEEL_X = 0.58
 WHEEL_Z = RIM_MAJOR + RIM_RADIAL + TYRE_T
 RIM_MINOR_PIPE = 0.020
 
-# Chassis shafts are the handles. They run under the tray, then converge
-# into forks at the axle. Tray, legs, and wheel all hang off this frame.
-SHAFT_Y = 0.255
+# Chassis shafts are the handles. Each is ONE timber swept from the grip,
+# under the tray, to the axle: it runs level under the tray and narrows
+# gently in plan all the way (grips HANDLE_Y apart, SHAFT_Y at the tray
+# rear, SHAFT_Y_FRONT at its front, FORK_Y at the hub). Built as three
+# boxes, the handle stopped at the tray's corner, the level run hid under
+# the side walls, and the fork started at the front corner: the tray
+# carried everything and the barrow read as a crate on legs.
+HANDLE_Y = 0.27
+SHAFT_Y = 0.19
+SHAFT_Y_FRONT = 0.15
 SHAFT_W = 0.036
 SHAFT_H = 0.044
 SHAFT_Z = 0.280
@@ -74,7 +84,16 @@ HANDLE_Z = 0.56
 TRAY_X0 = -0.32
 TRAY_X1 = 0.40
 TRAY_L = TRAY_X1 - TRAY_X0
-TRAY_W = 2.0 * SHAFT_Y
+# The tray is a hopper, not a box: a floor of inner half-width TRAY_YB on
+# the shafts, sides flared out by FLARE, the front raked over the wheel by
+# RAKE for tipping, the low rear leaning back by REAR_LEAN.
+TRAY_YB = 0.21
+TRAY_W = 2.0 * TRAY_YB
+FLARE = math.radians(15.0)
+RAKE = math.radians(30.0)
+REAR_LEAN = math.radians(12.0)
+FLARE_MIN = math.radians(10.0)
+RAKE_MIN = math.radians(20.0)
 FLOOR_T = 0.022
 N_FLOOR = 5
 # Negative: slats overlap so the wood bevel cannot open daylight
@@ -82,7 +101,10 @@ N_FLOOR = 5
 SLAT_GAP = -0.003
 WALL_H = 0.22
 WALL_T = 0.022
-WALL_SEAT = 0.012
+# A raked wall's outer bottom edge sits WALL_T*sin(RAKE) below its inner
+# one, so the seat is kept under FLOOR_T minus that or the edge pokes out
+# of the floor's underside.
+WALL_SEAT = 0.008
 # Side and front walls are WALL_BOARDS boards stacked with a WALL_SEAM
 # between them, held by the iron straps; the low rear wall is one board.
 WALL_BOARDS = 2
@@ -94,17 +116,21 @@ WIDE_SEAM = 0.008
 PLANK_TONE_JITTER = 0.28
 TONE_SEED = 29
 WOOD_GRAIN_SCALE = 30.0
-HANDLE_SEAT = 0.055
 FRONT_H = 0.26
 REAR_H = 0.10
 FORK_Y = HUB_W / 2.0 + 0.016
 LEG_X = -0.06
+LEG_SPLAY = 0.08          # each leg's foot sits this far outboard of its shaft
+LEG_BRACE_Z = 0.12
+BEARER_BACK = 0.04        # bearer under the tray, this far behind its front
+STRAP_T = 0.008
+STRAP_TOP_CLEAR = 0.010   # straps stop this far below the wall top
 SHOE_H = 0.024
 SHOE_XY = (0.058, 0.050)
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (1.558, 0.630, 0.574)
-TRAY_SIZE = (0.720, 0.532, 0.220)
+OUTER_SIZE = (1.563, 0.594, 0.577)
+TRAY_SIZE = (0.939, 0.578, 0.225)
 TRAY_SIZE_TOL = (0.02, 0.02, 0.02)
 BASE_TRIS_MIN = 2300
 BASE_TRIS_MAX = 2800
@@ -131,7 +157,6 @@ LIFT_Z = 0.05
 GAP_MAX = 0.010
 SPOKE_CLEAR_MIN = 0.010
 TREAD_ASPECT_MIN = 2.5
-HANDLE_JOIN = 0.020
 WALL_SEAT_MIN = 0.005
 SHOE_Z_MAX = 1e-3
 
@@ -201,6 +226,51 @@ def add_oriented_box(bm, a, b, scale_xy, mat_idx):
         mat_idx,
         euler=(eul.x, eul.y, eul.z),
     )
+
+
+def add_hex(bm, inner, outer, mat_idx):
+    """A six-faced board from its inner quad and outer quad (same winding)."""
+    vi = [bm.verts.new(p) for p in inner]
+    vo = [bm.verts.new(p) for p in outer]
+    quads = [vi, vo[::-1]] + [
+        (vi[k], vo[k], vo[(k + 1) % 4], vi[(k + 1) % 4]) for k in range(4)
+    ]
+    for q in quads:
+        bm.faces.new(q).material_index = mat_idx
+    return vi + vo
+
+
+def add_sweep(bm, pts, w, h, mat_idx):
+    """One square-section timber swept through a polyline, mitred at bends.
+
+    At an interior point the section lies in the bisector plane of the two
+    segments, scaled by 1/cos(half the bend) so the timber keeps its width
+    through the bend. One shell: a shaft that bends is one piece of wood.
+    """
+    pts = [Vector(p) for p in pts]
+    dirs = [(b - a).normalized() for a, b in zip(pts, pts[1:])]
+    rings = []
+    for i, p in enumerate(pts):
+        if i == 0:
+            t, k = dirs[0], 1.0
+        elif i == len(pts) - 1:
+            t, k = dirs[-1], 1.0
+        else:
+            t = (dirs[i - 1] + dirs[i]).normalized()
+            k = 1.0 / max(0.5, dirs[i - 1].dot(t))
+        side = t.cross(Vector((0.0, 0.0, 1.0))).normalized()
+        up = side.cross(t).normalized()
+        rings.append([
+            bm.verts.new(p + (side * sx * w / 2.0 + up * sz * h / 2.0) * k)
+            for sx, sz in ((-1, -1), (1, -1), (1, 1), (-1, 1))
+        ])
+    for a, b in zip(rings, rings[1:]):
+        for j in range(4):
+            j2 = (j + 1) % 4
+            bm.faces.new((a[j], a[j2], b[j2], b[j])).material_index = mat_idx
+    bm.faces.new(rings[0][::-1]).material_index = mat_idx
+    bm.faces.new(rings[-1]).material_index = mat_idx
+    return [v for r in rings for v in r]
 
 
 def add_cyl(bm, loc, radius, depth, segments, mat_idx, euler=(0.0, 0.0, 0.0)):
@@ -422,7 +492,7 @@ def add_board_stack(bm, center, size, n, seam, mat_idx):
 def build_barrow_mesh(
     name, bevel_offset, bevel_segments,
     pipe_rim=False, fat_spokes=False, short_legs=False, float_walls=False,
-    wide_seams=False,
+    wide_seams=False, split_shafts=False, box_tray=False,
 ):
     bm = bmesh.new()
     try:
@@ -431,56 +501,43 @@ def build_barrow_mesh(
         spoke_t = HUB_R * 2.2 if fat_spokes else SPOKE_T
         shoe_z = 0.05 if short_legs else 0.0
         shoe_top = shoe_z + SHOE_H
-        floor_z = SHAFT_Z + SHAFT_H / 2.0 + FLOOR_T / 2.0
-        floor_top = SHAFT_Z + SHAFT_H / 2.0 + FLOOR_T
+        floor_bot = SHAFT_Z + SHAFT_H / 2.0
+        floor_z = floor_bot + FLOOR_T / 2.0
+        floor_top = floor_bot + FLOOR_T
         seat = -0.003 if float_walls else WALL_SEAT
-        wall_z = floor_top - seat + WALL_H / 2.0
-        front_z = floor_top - seat + FRONT_H / 2.0
-        rear_z = floor_top - seat + REAR_H / 2.0
+        zb = floor_top - seat          # inner bottom edge of every wall
+        T = WALL_T
 
+        def shaft_y(x):
+            """Shaft centreline half-spacing under the tray (linear taper)."""
+            t = (x - TRAY_X0) / (TRAY_X1 - TRAY_X0)
+            return SHAFT_Y + (SHAFT_Y_FRONT - SHAFT_Y) * t
+
+        # ---- the frame: two shafts, legs, a bearer under the tray front
         for ysign in (-1.0, 1.0):
-            y = ysign * SHAFT_Y
-            fy = ysign * FORK_Y
+            path = [
+                (HANDLE_X, ysign * HANDLE_Y, HANDLE_Z),
+                (TRAY_X0, ysign * SHAFT_Y, SHAFT_Z),
+                (TRAY_X1, ysign * SHAFT_Y_FRONT, SHAFT_Z),
+                (WHEEL_X, ysign * FORK_Y, WHEEL_Z),
+            ]
+            if split_shafts:
+                # --split-shafts: the old three separate boxes per side
+                for a, b in zip(path, path[1:]):
+                    body.extend(add_oriented_box(bm, a, b, (SHAFT_W, SHAFT_H), WOOD_IDX))
+            else:
+                body.extend(add_sweep(bm, path, SHAFT_W, SHAFT_H, WOOD_IDX))
+            ly = shaft_y(LEG_X)
+            foot = (LEG_X + 0.02, ysign * (ly + LEG_SPLAY), shoe_top)
             body.extend(
                 add_oriented_box(
-                    bm,
-                    (HANDLE_X, y, HANDLE_Z),
-                    (TRAY_X0 + HANDLE_SEAT, y, SHAFT_Z),
-                    (SHAFT_W - 0.010, SHAFT_H - 0.010),
-                    WOOD_IDX,
-                )
-            )
-            body.extend(
-                add_oriented_box(
-                    bm,
-                    (TRAY_X0, y, SHAFT_Z),
-                    (TRAY_X1, y, SHAFT_Z),
-                    (SHAFT_W, SHAFT_H),
-                    WOOD_IDX,
-                )
-            )
-            body.extend(
-                add_oriented_box(
-                    bm,
-                    (TRAY_X1, y, SHAFT_Z),
-                    (WHEEL_X, fy, WHEEL_Z),
-                    (SHAFT_W, SHAFT_H),
-                    WOOD_IDX,
-                )
-            )
-            body.extend(
-                add_oriented_box(
-                    bm,
-                    (LEG_X, y, SHAFT_Z),
-                    (LEG_X + 0.02, ysign * (SHAFT_Y + 0.035), shoe_top),
-                    (0.034, 0.034),
-                    WOOD_IDX,
+                    bm, (LEG_X, ysign * ly, SHAFT_Z), foot, (0.034, 0.034), WOOD_IDX,
                 )
             )
             metal.extend(
                 add_box(
                     bm,
-                    (LEG_X + 0.02, ysign * (SHAFT_Y + 0.035), shoe_z + SHOE_H / 2.0),
+                    (foot[0], foot[1], shoe_z + SHOE_H / 2.0),
                     (SHOE_XY[0], SHOE_XY[1], SHOE_H),
                     METAL_IDX,
                 )
@@ -494,97 +551,126 @@ def build_barrow_mesh(
                 )
             )
 
+        # leg stretcher, its ends on the leg axes at its height
+        ly = shaft_y(LEG_X)
+        f = (SHAFT_Z - LEG_BRACE_Z) / (SHAFT_Z - shoe_top)
+        by = ly + LEG_SPLAY * f
+        bx = LEG_X + 0.02 * f
         body.extend(
             add_oriented_box(
-                bm,
-                (LEG_X, -SHAFT_Y, 0.12),
-                (LEG_X, SHAFT_Y, 0.12),
-                (0.028, 0.028),
-                WOOD_IDX,
+                bm, (bx, -by, LEG_BRACE_Z), (bx, by, LEG_BRACE_Z), (0.028, 0.028), WOOD_IDX,
             )
         )
+        # bearer between the shafts under the tray front, ends buried in the
+        # shafts; the old spreader stood inside the wheel between the forks
+        bx = TRAY_X1 - BEARER_BACK
         body.extend(
             add_oriented_box(
-                bm,
-                (TRAY_X1 + 0.04, -FORK_Y, WHEEL_Z + 0.02),
-                (TRAY_X1 + 0.04, FORK_Y, WHEEL_Z + 0.02),
-                (0.024, 0.024),
-                WOOD_IDX,
+                bm, (bx, -shaft_y(bx), SHAFT_Z), (bx, shaft_y(bx), SHAFT_Z),
+                (0.030, SHAFT_H * 0.8), WOOD_IDX,
             )
         )
 
-        slat_span = TRAY_L
-        slat_w = (slat_span - (N_FLOOR - 1) * SLAT_GAP) / N_FLOOR
-        # Slats run under the side walls; walls sit on the floor, not
-        # beside a through-gap at the inner arris.
-        slat_y = TRAY_W + WALL_T
-        # Tray parts whose lowest edges are buried or face the ground: the
-        # wall bottoms sit WALL_SEAT into the floor and the slat undersides
-        # face the shafts. Those edges get no bevel; nobody sees them.
+        # ---- the tray: a hopper between a bottom and a top outline.
+        # Heights are vertical; each wall is the planar band between its
+        # bottom edge and its top edge. --box-tray stands every wall
+        # vertical on the TOP outline, so the envelope stays put.
+        tf, tr, tl = math.tan(FLARE), math.tan(RAKE), math.tan(REAR_LEAN)
+        cf, cr, cl = math.cos(FLARE), math.cos(RAKE), math.cos(REAR_LEAN)
+
+        def side_y(h):
+            return TRAY_YB + (WALL_H if box_tray else h) * tf
+
+        def front_x(h):
+            return TRAY_X1 + (FRONT_H if box_tray else h) * tr
+
+        def rear_x(h):
+            return TRAY_X0 - (REAR_H if box_tray else h) * tl
+
+        # outward horizontal offset of a wall's outer face (thickness T
+        # measured along the wall's normal)
+        off_s = T if box_tray else T / cf
+        off_f = T if box_tray else T / cr
+        off_r = T if box_tray else T / cl
+
         tray = []
+        # floor: slats across the shafts, under every wall's full footprint
+        fx0 = rear_x(0.0) - off_r
+        fx1 = front_x(0.0) + off_f
+        slat_w = (fx1 - fx0 - (N_FLOOR - 1) * SLAT_GAP) / N_FLOOR
+        slat_y = 2.0 * (side_y(0.0) + off_s)
         for i in range(N_FLOOR):
-            x = TRAY_X0 + slat_w / 2.0 + i * (slat_w + SLAT_GAP)
+            x = fx0 + slat_w / 2.0 + i * (slat_w + SLAT_GAP)
             tray.extend(
-                add_box(
-                    bm,
-                    (x, 0.0, floor_z),
-                    (slat_w, slat_y, FLOOR_T),
-                    WOOD_IDX,
-                )
+                add_box(bm, (x, 0.0, floor_z), (slat_w, slat_y, FLOOR_T), WOOD_IDX)
             )
+
         # --wide-seams: the same boards and triangles, seams past the band
         seam_w = WIDE_SEAM if wide_seams else WALL_SEAM
-        for ysign in (-1.0, 1.0):
-            tray.extend(
-                add_board_stack(
-                    bm,
-                    (0.5 * (TRAY_X0 + TRAY_X1), ysign * (TRAY_W / 2.0), wall_z),
-                    (TRAY_L, WALL_T, WALL_H),
-                    WALL_BOARDS, seam_w, WOOD_IDX,
-                )
-            )
-        tray.extend(
-            add_board_stack(
-                bm,
-                (TRAY_X1, 0.0, front_z),
-                (WALL_T, TRAY_W + WALL_T, FRONT_H),
-                WALL_BOARDS, seam_w, WOOD_IDX,
-            )
-        )
-        tray.extend(
-            add_box(
-                bm,
-                (TRAY_X0, 0.0, rear_z),
-                (WALL_T, TRAY_W + WALL_T, REAR_H),
-                WOOD_IDX,
-            )
-        )
+
+        def bands(height, n):
+            b = (height - (n - 1) * seam_w) / n
+            return [(k * (b + seam_w), k * (b + seam_w) + b) for k in range(n)]
+
+        for s in (-1.0, 1.0):
+            # side boards run past the end walls' outer faces (the ends are
+            # housed into them), following the rake and the lean
+            for h0, h1 in bands(WALL_H, WALL_BOARDS):
+                def ring(h, out):
+                    # outer face: the inner point moved T along the normal
+                    ny, nz = (1.0, 0.0) if box_tray else (cf, -math.sin(FLARE))
+                    y = s * (side_y(h) + (T * ny if out else 0.0))
+                    z = zb + h + (T * nz if out else 0.0)
+                    return [
+                        (rear_x(h) - off_r, y, z),
+                        (front_x(h) + off_f, y, z),
+                    ]
+                inner = ring(h0, False) + ring(h1, False)[::-1]
+                outer = ring(h0, True) + ring(h1, True)[::-1]
+                if s < 0:
+                    inner, outer = inner[::-1], outer[::-1]
+                tray.extend(add_hex(bm, inner, outer, WOOD_IDX))
+
+        def end_wall(height, n, x_of, off, sign, angle):
+            """Front (sign +1) or rear (-1) boards, ends housed half a
+            board into the side walls."""
+            for h0, h1 in bands(height, n):
+                def edge(h, out):
+                    nx, nz = (1.0, 0.0) if box_tray else (math.cos(angle), -math.sin(angle))
+                    x = x_of(h) + sign * (T * nx if out else 0.0)
+                    z = zb + h + (T * nz if out else 0.0)
+                    y = side_y(h) + 0.5 * off_s
+                    return [(x, -y, z), (x, y, z)]
+                inner = edge(h0, False) + edge(h1, False)[::-1]
+                outer = edge(h0, True) + edge(h1, True)[::-1]
+                if sign < 0:
+                    inner, outer = inner[::-1], outer[::-1]
+                tray.extend(add_hex(bm, inner, outer, WOOD_IDX))
+
+        end_wall(FRONT_H, WALL_BOARDS, front_x, off_f, 1.0, RAKE)
+        end_wall(REAR_H, 1, rear_x, off_r, -1.0, REAR_LEAN)
         body.extend(tray)
         tray_set = set(tray)
 
-        strap_r_y = TRAY_W / 2.0 + WALL_T / 2.0 + 0.004
+        # iron straps: up each side wall's outer face from the floor's
+        # underside, stopping short of the wall top, joined under the floor
         for sx in (TRAY_X0 + TRAY_L * 0.28, TRAY_X0 + TRAY_L * 0.72):
-            z0 = SHAFT_Z + SHAFT_H / 2.0
-            z1 = z0 + FLOOR_T + WALL_H
-            for ysign in (-1.0, 1.0):
-                metal.extend(
-                    add_oriented_box(
-                        bm,
-                        (sx, ysign * strap_r_y, z0),
-                        (sx, ysign * strap_r_y, z1),
-                        (0.018, 0.008),
-                        METAL_IDX,
-                    )
-                )
-            metal.extend(
-                add_oriented_box(
-                    bm,
-                    (sx, -strap_r_y, z0),
-                    (sx, strap_r_y, z0),
-                    (0.018, 0.008),
-                    METAL_IDX,
-                )
-            )
+            z0 = floor_bot
+            ry = side_y(0.0) + off_s + STRAP_T / 2.0
+            for s in (-1.0, 1.0):
+                top_h = WALL_H - STRAP_TOP_CLEAR
+                # the outer face at height z is side_y + off_s horizontally
+                ty = side_y(top_h) + off_s + STRAP_T / 2.0
+                tz = zb + top_h
+                metal.extend(add_oriented_box(
+                    bm, (sx, s * ry, z0), (sx, s * ry, zb), (0.018, STRAP_T), METAL_IDX,
+                ))
+                metal.extend(add_oriented_box(
+                    bm, (sx, s * ry, zb - 0.004), (sx, s * ty, tz), (0.018, STRAP_T), METAL_IDX,
+                ))
+            metal.extend(add_oriented_box(
+                bm, (sx, -ry, z0), (sx, ry, z0), (0.018, STRAP_T), METAL_IDX,
+            ))
 
         if bevel_offset > 0.0:
             edges = []
@@ -851,29 +937,45 @@ def support_audit(me):
     }
 
 
-def tray_size(me):
-    """Side-wall pair: length, track, and height of the box they bound."""
-    groups = shells(me)
-    walls = []
-    for g in groups:
-        faces = [
-            p for p in me.polygons if all(i in set(g) for i in p.vertices)
-        ]
+def tray_parts(me):
+    """Wood shells of the tray, classified: side boards per side, front and
+    rear boards, floor slats. Each entry is (shell vertex indices, AABB).
+
+    A wall board is taller than a slat (dz > 0.05) and within its wall's
+    reach of the tray: side boards are long in X and outboard of the floor,
+    end boards are wide in Y and at the tray's front or rear.
+    """
+    out = {"side": {-1: [], 1: []}, "front": [], "rear": [], "floor": []}
+    for g in shells(me):
+        faces = [p for p in me.polygons if all(i in set(g) for i in p.vertices)]
         if not faces or faces[0].material_index != WOOD_IDX:
             continue
         a = shell_aabb(me, g)
         dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
-        if abs(dx - TRAY_L) < 0.10 and dy < 0.06 and 0.05 < dz < WALL_H + 0.08:
-            walls.append(a)
-    # A side wall is one or more boards: the union of the boards on a side.
+        cx, cy = 0.5 * (a[0] + a[3]), 0.5 * (a[1] + a[4])
+        if dz < FLOOR_T * 2.2 and dy > TRAY_W and a[0] > TRAY_X0 - 0.2:
+            out["floor"].append((g, a))
+        elif dz <= 0.05 or dz > FRONT_H + 0.08:
+            continue
+        elif dx > TRAY_L * 0.8 and abs(cy) > TRAY_YB * 0.9 and dy < 0.1:
+            out["side"][1 if cy > 0.0 else -1].append((g, a))
+        elif dy > TRAY_W * 0.8 and dx < 0.2 and cx > TRAY_X1 - 0.05:
+            out["front"].append((g, a))
+        elif dy > TRAY_W * 0.8 and dx < 0.2 and cx < TRAY_X0 + 0.05:
+            out["rear"].append((g, a))
+    return out
+
+
+def tray_size(me):
+    """Side-wall pair: length, track, and height of the hopper they bound."""
     sides = {}
-    for a in walls:
-        k = 1 if a[1] + a[4] > 0.0 else -1
-        b = sides.get(k)
-        sides[k] = a if b is None else (
-            min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2]),
-            max(a[3], b[3]), max(a[4], b[4]), max(a[5], b[5]),
-        )
+    for k, boards in tray_parts(me)["side"].items():
+        for _g, a in boards:
+            b = sides.get(k)
+            sides[k] = a if b is None else (
+                min(a[0], b[0]), min(a[1], b[1]), min(a[2], b[2]),
+                max(a[3], b[3]), max(a[4], b[4]), max(a[5], b[5]),
+            )
     if len(sides) < 2:
         return (0.0, 0.0, 0.0)
     left, right = sides[-1], sides[1]
@@ -885,59 +987,110 @@ def tray_size(me):
 
 
 def wall_floor_seat(me):
-    """How far the side walls drop into the floor shells, metres.
+    """How far the walls drop into the floor slats, metres.
 
-    Recomputed from AABBs. A wall that only kisses the floor top after
-    a bevel reports ~0 and fails the seat floor.
+    Per board: the floor top minus the lowest vertex on the board's INNER
+    face. Of the board's two largest faces (inner and outer), the inner one
+    is the one whose centre lies nearer the tray's centre in plan; the
+    board's vertices on that face's plane give the inner bottom edge. A
+    leaning board's outer bottom edge sits lower than its inner one, so the
+    board's AABB zmin would overstate the seat. The smallest seat over every
+    wall board is returned; a wall that only kisses the floor reports ~0 and
+    fails the seat floor.
     """
-    groups = shells(me)
-    floors = []
-    walls = []
-    for g in groups:
-        faces = [
-            p for p in me.polygons if all(i in set(g) for i in p.vertices)
-        ]
-        if not faces or faces[0].material_index != WOOD_IDX:
-            continue
-        a = shell_aabb(me, g)
-        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
-        if dz < FLOOR_T * 2.2 and dy > TRAY_W * 0.5:
-            floors.append(a)
-        if abs(dx - TRAY_L) < 0.10 and dy < WALL_T * 4.0 and 0.05 < dz < WALL_H + 0.08:
-            walls.append(a)
-    if not floors or not walls:
+    parts = tray_parts(me)
+    if not parts["floor"]:
         return -1.0
-    floor_top = max(a[5] for a in floors)
-    wall_bot = min(a[2] for a in walls)
-    return floor_top - wall_bot
+    floor_top = max(a[5] for _g, a in parts["floor"])
+    fx = [a for _g, a in parts["floor"]]
+    centre = Vector((0.5 * (min(a[0] for a in fx) + max(a[3] for a in fx)), 0.0))
+
+    def inner_bottom(g):
+        member = set(g)
+        faces = sorted((p for p in me.polygons if all(i in member for i in p.vertices)),
+                       key=lambda p: -p.area)[:2]
+        inner = min(faces, key=lambda p: (p.center.xy - centre).length)
+        return min(me.vertices[i].co.z for i in g
+                   if abs((me.vertices[i].co - inner.center).dot(inner.normal)) < 1e-4)
+
+    # each wall seats on its lowest board; the boards above it stack on it
+    walls = [parts["side"][-1], parts["side"][1], parts["front"], parts["rear"]]
+    seats = [floor_top - min(inner_bottom(g) for g, _a in w) for w in walls if w]
+    return min(seats) if seats else -1.0
 
 
 def wall_boards(me):
     """Boards per side wall and in the front wall, and the seams between them.
 
-    Side boards are long in X and thin in Y; front boards are thin in X,
-    wide in Y and the ones nearer the wheel (the rear wall is one low
-    board). Seams are the gaps between vertically adjacent boards.
+    Seams are measured in each wall's own plane, along the direction that
+    runs up the wall, taken from the boards' own largest face: the gap
+    between one board's top and the next one's bottom. An AABB seam in Z
+    would read negative on a leaning board, because its outer face sits
+    lower than its inner one.
     """
-    sides = {-1: [], 1: []}
-    ends = []
+    parts = tray_parts(me)
+
+    def up_of(boards, along):
+        if not boards:
+            return Vector((0.0, 0.0, 1.0))
+        member = set(boards[0][0])
+        big = max((p for p in me.polygons if all(i in member for i in p.vertices)),
+                  key=lambda p: p.area)
+        u = big.normal.cross(along).normalized()
+        return u if u.z > 0.0 else -u
+
+    stacks = [(b, up_of(b, Vector(ax))) for b, ax in (
+        (parts["side"][-1], (1.0, 0.0, 0.0)), (parts["side"][1], (1.0, 0.0, 0.0)),
+        (parts["front"], (0.0, 1.0, 0.0)))]
+    seams = []
+    for boards, u in stacks:
+        spans = sorted(
+            (min(me.vertices[i].co.dot(u) for i in g),
+             max(me.vertices[i].co.dot(u) for i in g))
+            for g, _a in boards
+        )
+        seams.extend(b[0] - a[1] for a, b in zip(spans, spans[1:]))
+    return len(parts["side"][-1]), len(parts["side"][1]), len(parts["front"]), seams
+
+
+def tray_flare(me):
+    """(side flare, front rake) in degrees, from the boards' own faces.
+
+    For each side board, the largest face whose normal points mostly
+    outward in Y; the flare is how far that normal dips below horizontal.
+    The same for front boards along X. A box tray measures 0 and 0.
+    """
+    parts = tray_parts(me)
+
+    def lean(boards, axis):
+        out = []
+        for g, _a in boards:
+            member = set(g)
+            faces = [p for p in me.polygons
+                     if all(i in member for i in p.vertices) and abs(p.normal[axis]) > 0.5]
+            if faces:
+                n = max(faces, key=lambda p: p.area).normal
+                out.append(math.degrees(math.asin(min(1.0, abs(n.z)))))
+        return min(out) if out else 0.0
+
+    return (lean(parts["side"][-1] + parts["side"][1], 1), lean(parts["front"], 0))
+
+
+def shaft_runs(me):
+    """Wood shells that run unbroken from behind the tray to beyond its front.
+
+    A barrow's two shafts are single timbers from grip to axle; built as
+    handle, level run and fork, no one shell spans the tray and this is 0.
+    """
+    n = 0
     for g in shells(me):
         faces = [p for p in me.polygons if all(i in set(g) for i in p.vertices)]
         if not faces or faces[0].material_index != WOOD_IDX:
             continue
         a = shell_aabb(me, g)
-        dx, dy, dz = a[3] - a[0], a[4] - a[1], a[5] - a[2]
-        if abs(dx - TRAY_L) < 0.10 and dy < 0.06 and 0.05 < dz < WALL_H + 0.08:
-            sides[1 if a[1] + a[4] > 0.0 else -1].append(a)
-        elif dx < 0.06 and dy > TRAY_W * 0.6 and dz > 0.05:
-            ends.append(a)
-    front_x = max((0.5 * (a[0] + a[3]) for a in ends), default=0.0)
-    front = [a for a in ends if abs(0.5 * (a[0] + a[3]) - front_x) < 0.01]
-    seams = []
-    for stack in (sides[-1], sides[1], front):
-        stack = sorted(stack, key=lambda a: a[2])
-        seams.extend(b[2] - a[5] for a, b in zip(stack, stack[1:]))
-    return len(sides[-1]), len(sides[1]), len(front), seams
+        if a[0] < TRAY_X0 - 0.2 and a[3] > TRAY_X1 + 0.1:
+            n += 1
+    return n
 
 
 def _long_axis(pts):
@@ -1059,33 +1212,6 @@ def barrow_materials():
         noise_scale=18.0, wear=(0.20, 0.085, 0.032, 1.0),
     )
     return wood, metal
-
-
-def handle_join_gap(me):
-    """Daylight between the handle sticks and the tray rear.
-
-    Handles are the wood shells whose xmax is behind the tray; the tray
-    rear is the wood shell with the smallest xmax among tall-wide parts.
-    """
-    groups = shells(me)
-    wood = []
-    for g in groups:
-        faces = [
-            p for p in me.polygons if all(i in set(g) for i in p.vertices)
-        ]
-        if not faces or faces[0].material_index != WOOD_IDX:
-            continue
-        wood.append(shell_aabb(me, g))
-    if not wood:
-        return 99.0
-    xmin = min(a[0] for a in wood)
-    handles = [a for a in wood if a[0] < xmin + 0.08]
-    trayish = [a for a in wood if (a[4] - a[1]) > TRAY_W * 0.6]
-    if not handles or not trayish:
-        return 99.0
-    tray_x0 = min(a[0] for a in trayish)
-    handle_x1 = max(a[3] for a in handles)
-    return tray_x0 - handle_x1
 
 
 def spoke_clearance(me):
@@ -1291,13 +1417,13 @@ def export_unity(path, objects):
 def check(
     skip_decimate, lift_z=False, stray_vert=False,
     fat_spokes=False, pipe_rim=False, short_legs=False, float_walls=False,
-    wide_seams=False,
+    wide_seams=False, split_shafts=False, box_tray=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     flags = dict(
         pipe_rim=pipe_rim, fat_spokes=fat_spokes,
         short_legs=short_legs, float_walls=float_walls,
-        wide_seams=wide_seams,
+        wide_seams=wide_seams, split_shafts=split_shafts, box_tray=box_tray,
     )
     low = build_barrow_mesh("BarrowLow", 0.004, 2, **flags)
     high = build_barrow_mesh("BarrowHigh", 0.004, 4, **flags)
@@ -1366,7 +1492,8 @@ def check(
     zf = zfight_pairs(low.data)
     sup = support_audit(low.data)
     tsz = tray_size(low.data)
-    hgap = handle_join_gap(low.data)
+    runs = shaft_runs(low.data)
+    flare, rake = tray_flare(low.data)
     sclear = spoke_clearance(low.data)
     aspect = tread_aspect(low.data)
     gap_mw = min_mat_distance(low.data, METAL_IDX, WOOD_IDX)
@@ -1401,7 +1528,7 @@ def check(
     )
     print(
         f"measured tray=({tsz[0]:.4f},{tsz[1]:.4f},{tsz[2]:.4f}) "
-        f"handle_gap={hgap:.5f} spoke_clear={sclear:.5f} "
+        f"shaft_runs={runs} flare={flare:.2f} rake={rake:.2f} spoke_clear={sclear:.5f} "
         f"tread_aspect={aspect:.3f} gap_metal_wood={gap_mw:.5f} "
         f"wall_floor_seat={seat:.5f}"
     )
@@ -1511,11 +1638,6 @@ def check(
             "(--fat-spokes is the designed fail)",
             17,
         ), None, None, None, None, None
-    if hgap > HANDLE_JOIN:
-        return fail(
-            f"handle-tray gap {hgap:.5f} > {HANDLE_JOIN}",
-            17,
-        ), None, None, None, None, None
     if seat < WALL_SEAT_MIN:
         return fail(
             f"wall-floor seat {seat:.5f} < {WALL_SEAT_MIN} "
@@ -1545,6 +1667,19 @@ def check(
             f"tread aspect {aspect:.3f} < {TREAD_ASPECT_MIN} "
             "(--pipe-rim is the designed fail)",
             18,
+        ), None, None, None, None, None
+    if runs != 2:
+        return fail(
+            f"{runs} shafts run unbroken from behind the tray past its front, "
+            "need 2 (--split-shafts is the designed fail)",
+            20,
+        ), None, None, None, None, None
+    if flare < math.degrees(FLARE_MIN) or rake < math.degrees(RAKE_MIN):
+        return fail(
+            f"tray flare {flare:.2f} deg / rake {rake:.2f} deg under "
+            f"{math.degrees(FLARE_MIN):.0f} / {math.degrees(RAKE_MIN):.0f} "
+            "(--box-tray is the designed fail)",
+            21,
         ), None, None, None, None, None
     if (
         abs(tsz[0] - TRAY_SIZE[0]) > TRAY_SIZE_TOL[0]
@@ -1709,6 +1844,16 @@ def main():
         action="store_true",
         help="falsification: 8 mm seams between wall boards",
     )
+    p.add_argument(
+        "--split-shafts",
+        action="store_true",
+        help="falsification: each shaft as handle, level run and fork, three shells",
+    )
+    p.add_argument(
+        "--box-tray",
+        action="store_true",
+        help="falsification: vertical tray walls on the same top outline",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1720,6 +1865,8 @@ def main():
         short_legs=args.short_legs,
         float_walls=args.float_walls,
         wide_seams=args.wide_seams,
+        split_shafts=args.split_shafts,
+        box_tray=args.box_tray,
     )
     if code:
         return code
