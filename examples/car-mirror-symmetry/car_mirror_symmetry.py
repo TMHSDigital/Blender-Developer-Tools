@@ -481,7 +481,10 @@ def render_still(objs, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 52.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (4.4, -5.3, 2.1)
+    # On the key's side (-X): the car is mirror-symmetric, so this is the
+    # same composition, but at +X the camera saw the flank the key cannot
+    # reach and the whole visible side rendered near-black.
+    cam.location = (-4.4, -5.3, 2.1)
     scene.collection.objects.link(cam)
     track = cam.constraints.new('TRACK_TO')  # data API, not bpy.ops (damped-track-aim)
     track.target = aim
