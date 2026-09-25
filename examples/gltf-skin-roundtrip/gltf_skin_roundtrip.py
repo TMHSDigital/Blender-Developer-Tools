@@ -52,6 +52,10 @@ SUM_TOL = 3e-4                  # disk weight-sum tolerance
 REST_TOL = 1e-5                 # rest-matrix round-trip tolerance
 LBS_TOL = 5e-4
 KEY_DIGITS = 4
+# render staging only (not part of the check): each rig's X offset and its
+# yaw, so the tail's curl (in the rig's Y-Z plane) is seen in profile
+STILL_X = 1.0
+STILL_YAW = -50.0
 
 EXPORT_KWARGS = dict(
     export_format='GLTF_SEPARATE',
@@ -589,9 +593,20 @@ def main():
             authored.data.materials.append(m)
         assign_weights(authored, part_of2)
         authored_arm = build_rig(authored)
-        # move the ARMATURES; the skinned meshes follow as children
-        authored_arm.location.x = -1.1
-        roundtrip_arm.location.x = 1.1
+        # move the ARMATURES; the skinned meshes follow as children. Each is
+        # turned three-quarters to the camera: seen head-on, the tail stood
+        # straight up behind the body like a chimney and the scorpion read
+        # as a boxy robot; side-on, the arch of the tail over the back and
+        # the legs down its flanks carry the read.
+        # The yaw is composed into the world matrix about the rig's own
+        # origin: the glTF importer leaves its armature in quaternion mode,
+        # where rotation_euler does nothing.
+        for arm, x in ((authored_arm, -STILL_X), (roundtrip_arm, STILL_X)):
+            arm.location.x = x
+            bpy.context.view_layer.update()
+            at = mathutils.Matrix.Translation(arm.matrix_world.translation)
+            arm.matrix_world = (at @ mathutils.Matrix.Rotation(
+                math.radians(STILL_YAW), 4, 'Z') @ at.inverted() @ arm.matrix_world)
         if not render_still(authored, os.path.abspath(args.output), args.engine):
             print("ERROR: render produced no file", file=sys.stderr)
             return 20

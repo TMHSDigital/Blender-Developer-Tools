@@ -284,7 +284,7 @@
 <ul><li><strong>The skeleton survives.</strong> <code>skins[0].joints</code> names every bone; the re-imported armature carries the same 7 bones, the same parent chain, and rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes exactly as it does to meshes (their translations convert, no rotation is written).</li><li><strong>The weights survive.</strong> Every primitive carries JOINTS_0/WEIGHTS_0; per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex groups match the authored groups <strong>bit-exactly</strong> (w_err 0.0), compared as straddle-safe position keys, the same protocol as the crate example.</li><li><strong>The deformation survives.</strong> Posed identically, the re-imported rig&#x27;s evaluated mesh matches the original&#x27;s within 4.8e-07 — linear blend skinning through the file format. The comparison is by rest-position key, never sorted multisets: the exporter welds duplicate loops (32 here), so cardinalities differ and a naive sorted zip mispairs vertices (a phantom 2.29 &quot;deviation&quot; measured and fixed during authoring).</li><li><strong>The mesh must be parented to the armature.</strong> The exporter warns &quot;Armature must be the parent of skinned mesh&quot; and picks an armature by name otherwise — with two rigs in the file it can bind the wrong one.</li></ul>
 <p><strong>What each check catches on failure:</strong> exporting with <code>export_skins=False</code> (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex groups), and posing the re-imported rig differently (exit 19 — deformation deviates 0.90).</p>
 <p><strong>Version witness:</strong> the skins pipeline is stable between Blender 4.5 LTS and 5.1 — the exporter/importer RNA is byte-identical (probed with <code>gltf-export-roundtrip</code>), and every measured value matches to the digit on 4.5.11 and 5.1.2.</p>
-<p>The render stages the authored scorpion beside the actual re-imported one — same curl, same glowing stinger — proof the skin rode the format through.</p>
+<p>The render stages the authored scorpion beside the actual re-imported one — same curl, same glowing stinger — proof the skin rode the format through. Both rigs are turned three-quarters to the camera. The tail curls in the rig&#x27;s own Y-Z plane, so a head-on view saw the curl end-on: the tail stood straight up behind the body like a chimney. The yaw is composed into each armature&#x27;s world matrix, because the glTF importer leaves its armature in quaternion mode, where <code>rotation_euler</code> does nothing.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_skin_roundtrip.py --
@@ -360,6 +360,10 @@ SUM_TOL = <span class="n">3e-4</span>                  <span class="c"># disk we
 REST_TOL = <span class="n">1e-5</span>                 <span class="c"># rest-matrix round-trip tolerance</span>
 LBS_TOL = <span class="n">5e-4</span>
 KEY_DIGITS = <span class="n">4</span>
+<span class="c"># render staging only (not part of the check): each rig&#x27;s X offset and its</span>
+<span class="c"># yaw, so the tail&#x27;s curl (in the rig&#x27;s Y-Z plane) is seen in profile</span>
+STILL_X = <span class="n">1.0</span>
+STILL_YAW = -<span class="n">50.0</span>
 
 EXPORT_KWARGS = dict(
     export_format=<span class="s">&#x27;GLTF_SEPARATE&#x27;</span>,
@@ -897,9 +901,20 @@ EXPORT_KWARGS = dict(
             authored.data.materials.append(m)
         assign_weights(authored, part_of2)
         authored_arm = build_rig(authored)
-        <span class="c"># move the ARMATURES; the skinned meshes follow as children</span>
-        authored_arm.location.x = -<span class="n">1.1</span>
-        roundtrip_arm.location.x = <span class="n">1.1</span>
+        <span class="c"># move the ARMATURES; the skinned meshes follow as children. Each is</span>
+        <span class="c"># turned three-quarters to the camera: seen head-on, the tail stood</span>
+        <span class="c"># straight up behind the body like a chimney and the scorpion read</span>
+        <span class="c"># as a boxy robot; side-on, the arch of the tail over the back and</span>
+        <span class="c"># the legs down its flanks carry the read.</span>
+        <span class="c"># The yaw is composed into the world matrix about the rig&#x27;s own</span>
+        <span class="c"># origin: the glTF importer leaves its armature in quaternion mode,</span>
+        <span class="c"># where rotation_euler does nothing.</span>
+        <span class="k">for</span> arm, x <span class="k">in</span> ((authored_arm, -STILL_X), (roundtrip_arm, STILL_X)):
+            arm.location.x = x
+            bpy.context.view_layer.update()
+            at = mathutils.Matrix.Translation(arm.matrix_world.translation)
+            arm.matrix_world = (at @ mathutils.Matrix.Rotation(
+                math.radians(STILL_YAW), <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>) @ at.inverted() @ arm.matrix_world)
         <span class="k">if</span> <span class="k">not</span> render_still(authored, os.path.abspath(args.output), args.engine):
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">20</span>
