@@ -11,6 +11,11 @@ check asserts the closed-form counts — verts = 2 × (4 × teeth), faces = side
 edges = 3 × profile — and that the result is watertight (every edge borders exactly two
 faces). If an op leaks geometry or a face fails to close, the math catches it.
 
+The still leans the gear back on a matte inclined display wedge. Both
+contacts are derived from the posed mesh: the lowest back-cap vertex sits 3 mm
+into the floor, and the wedge's slope lies in the back-cap plane, so the lean
+is carried rather than held in the air.
+
 ## Run
 
 ```bash

@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bmesh-gear-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A gold fourteen-tooth gear lying at an angle, its face covered in concentric grooves." />
+  <meta property="og:image:alt" content="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="bmesh-gear — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bmesh-gear-hero.webp" />
-  <meta name="twitter:image:alt" content="A gold fourteen-tooth gear lying at an angle, its face covered in concentric grooves." />
+  <meta name="twitter:image:alt" content="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A gold fourteen-tooth gear lying at an angle, its face covered in concentric grooves.">
-      <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear lying at an angle, its face covered in concentric grooves." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves.">
+      <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).</div>
@@ -280,6 +280,7 @@
     <section class="detail-section md">
 <p>A runnable example that builds a 14-tooth gear entirely with bmesh — profile ring, face, <code>extrude_face_region</code>, translate — following the ownership contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/always-free-bmesh.mdc"><code>always-free-bmesh</code></a> rule: every <code>bmesh.new()</code> is paired with <code>bm.free()</code> in a <code>try</code>/<code>finally</code>.</p>
 <p><strong>What it witnesses:</strong> parametric bmesh construction has exactly predictable topology. The check asserts the closed-form counts — verts = 2 × (4 × teeth), faces = sides + 2 caps, edges = 3 × profile — and that the result is watertight (every edge borders exactly two faces). If an op leaks geometry or a face fails to close, the math catches it.</p>
+<p>The still leans the gear back on a matte inclined display wedge. Both contacts are derived from the posed mesh: the lowest back-cap vertex sits 3 mm into the floor, and the wedge&#x27;s slope lies in the back-cap plane, so the lean is carried rather than held in the air.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python bmesh_gear.py --
@@ -322,6 +323,7 @@ check. Pass --output to also render a still:
     blender --background --python bmesh_gear.py -- --output g.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 TEETH = <span class="n">14</span>
 R_ROOT = <span class="n">1.0</span>
@@ -329,6 +331,11 @@ R_TIP = <span class="n">1.25</span>
 DEPTH = <span class="n">0.6</span>
 <span class="c"># fraction of a tooth period spent at the tip vs the root</span>
 TOOTH_DUTY = <span class="n">0.45</span>
+
+<span class="c"># render staging only (not part of the check)</span>
+STAGE_BITE = <span class="n">0.003</span>    <span class="c"># contact depth into the floor and into the gear&#x27;s back</span>
+WEDGE_SLOPE = <span class="n">1.55</span>    <span class="c"># display wedge slope length, up the gear&#x27;s back face</span>
+WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge width across the gear</span>
 
 
 <span class="k">def</span> gear_profile():
@@ -425,8 +432,53 @@ TOOTH_DUTY = <span class="n">0.45</span>
     nt.links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
     nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
     obj.data.materials.append(mat)
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.85</span>)
+    <span class="c"># the gear leans back on an inclined display wedge. Both contacts are</span>
+    <span class="c"># derived from the posed mesh: the lowest back-cap vertex bites into</span>
+    <span class="c"># the floor, and the wedge&#x27;s slope lies in the back-cap plane, sunk into</span>
+    <span class="c"># the gear, so the lean is carried rather than hung in the air</span>
     obj.rotation_euler = (math.radians(<span class="n">46</span>), <span class="n">0.0</span>, math.radians(<span class="n">22</span>))
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    bpy.context.view_layer.update()
+    obj.location.z = -min((obj.matrix_world @ v.co).z <span class="k">for</span> v <span class="k">in</span> obj.data.vertices) - STAGE_BITE
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    rot = mw.to_3x3()
+    side = (rot @ Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))).normalized()
+    up = (rot @ Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))).normalized()
+    into = (rot @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))).normalized()
+    low = min((mw @ v.co <span class="k">for</span> v <span class="k">in</span> obj.data.vertices), key=<span class="k">lambda</span> p: p.z)
+    centre = mw @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    foot = low + side * (centre - low).dot(side) + into * STAGE_BITE
+    top = foot + up * WEDGE_SLOPE
+    back = Vector((top.x, top.y, -STAGE_BITE))
+    front = Vector((foot.x, foot.y, -STAGE_BITE))
+    wedge_me = bpy.data.meshes.new(<span class="s">&quot;Wedge&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        half = side * (WEDGE_WIDTH / <span class="n">2</span>)
+        ring = [[bm.verts.new(p + sgn * half) <span class="k">for</span> p <span class="k">in</span> (front, foot, top, back)]
+                <span class="k">for</span> sgn <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>)]
+        a, b = ring
+        bm.faces.new(a)
+        bm.faces.new(b[::-<span class="n">1</span>])
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+            j = (i + <span class="n">1</span>) % <span class="n">4</span>
+            bm.faces.new((a[i], a[j], b[j], b[i]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(wedge_me)
+    <span class="k">finally</span>:
+        bm.free()
+    wmat = bpy.data.materials.new(<span class="s">&quot;DisplayStand&quot;</span>)
+    wmat.use_nodes = <span class="k">True</span>
+    wb = wmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    <span class="c"># matte and dark: the slope faces the key square-on, and at the floor&#x27;s</span>
+    <span class="c"># finish its specular sheen alone (~45/255, measured) reads as paper</span>
+    wb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    wb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.9</span>
+    spec = wb.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>) <span class="k">or</span> wb.inputs.get(<span class="s">&quot;Specular&quot;</span>)
+    spec.default_value = <span class="n">0.1</span>
+    wedge_me.materials.append(wmat)
+    scene.collection.objects.link(bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge_me))
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -473,7 +525,9 @@ TOOTH_DUTY = <span class="n">0.45</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">7.6</span>, <span class="n">4.2</span>)
+    <span class="c"># the camera rides with the gear&#x27;s derived seat height (it was posed for</span>
+    <span class="c"># a gear hung at z=0.85), so the composition is unchanged</span>
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.6</span>, <span class="n">4.2</span> + obj.location.z - <span class="n">0.85</span>)
     cam.rotation_euler = (math.radians(<span class="n">66</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -531,7 +585,7 @@ TOOTH_DUTY = <span class="n">0.45</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear lying at an angle, its face covered in concentric grooves." />
+    <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
   </dialog>
   <footer>
     <div class="statusbar">
