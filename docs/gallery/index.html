@@ -291,7 +291,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples, 33 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">51 examples, 34 showcase pieces</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -1265,6 +1265,17 @@
           <a class="card-link" href="wooden-yoke/">View showcase piece<span class="sr-only"> wooden-yoke</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase">
+        <a class="card-media" href="butter-churn/" tabindex="-1" aria-hidden="true">
+          <img src="assets/butter-churn-hero.webp" alt="A tall staved oak butter churn narrowing toward the top, bound by three dark iron hoops, with a two-board lid and a pale maple dasher handle rising through it." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="butter-churn/">butter-churn</a></h2>
+          <p class="teaches">A procedural plunge butter churn — sixteen tapered oak staves, three iron hoops, a three-board bottom, a two-board lid and a maple cross dasher — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 5684 tris, three materials with 2240 oak, 160 maple and 576 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.340×0.340×1.050 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all sixteen staves on the floor, three bottom boards with 1.2 mm seams, the handle 14 mm into the slats, three hoops 2.5 mm into the staves and 4.9 mm proud, the lid 1.4–2.0 mm onto the stave tops, 5 mm of clearance round the handle, and a 514 mm plunge stroke for a 101 mm reach. --wide-dasher exits 20 at 140 mm while the plunger still clears the staves at rest; --tight-hole exits 18.</p>
+          <a class="card-link" href="butter-churn/">View showcase piece<span class="sr-only"> butter-churn</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>
@@ -1294,7 +1305,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '51 examples, 33 showcase pieces';
+      var COUNT_LABEL = '51 examples, 34 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

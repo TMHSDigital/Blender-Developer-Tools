@@ -439,6 +439,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "butter-churn",
+      "dir": "showcase/butter-churn",
+      "teaches": "A procedural plunge butter churn — sixteen tapered oak staves, three iron hoops, a three-board bottom, a two-board lid and a maple cross dasher — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A tall staved oak butter churn narrowing toward the top, bound by three dark iron hoops, with a two-board lid and a pale maple dasher handle rising through it.",
+      "witnessesFix": "Recomputed: 5684 tris, three materials with 2240 oak, 160 maple and 576 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.340×0.340×1.050 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all sixteen staves on the floor, three bottom boards with 1.2 mm seams, the handle 14 mm into the slats, three hoops 2.5 mm into the staves and 4.9 mm proud, the lid 1.4–2.0 mm onto the stave tops, 5 mm of clearance round the handle, and a 514 mm plunge stroke for a 101 mm reach. --wide-dasher exits 20 at 140 mm while the plunger still clears the staves at rest; --tight-hole exits 18.",
+      "hero": "docs/gallery/assets/butter-churn-hero.webp",
+      "preview": "showcase/butter-churn/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
