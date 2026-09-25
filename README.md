@@ -350,7 +350,7 @@ Gallery still is a dual-elevation diptych so the contract reads at thumbnail sca
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a machined brass 14-tooth gear with concentric turning marks catching the light, tilted at a three-quarter angle on a dark studio floor" /></a>
+<a href="examples/bmesh-gear/"><img src="examples/bmesh-gear/preview.webp" alt="Bmesh gear: a brass 14-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre and its hobbed tooth flanks lit against the stage" /></a>
 </td>
 <td valign="middle">
 

@@ -86,7 +86,7 @@
       "name": "bmesh-gear",
       "dir": "examples/bmesh-gear",
       "teaches": "A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.",
-      "alt": "A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves.",
+      "alt": "A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre.",
       "witnessesFix": "Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).",
       "hero": "docs/gallery/assets/bmesh-gear-hero.webp",
       "preview": "examples/bmesh-gear/preview.webp",
