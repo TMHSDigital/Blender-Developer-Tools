@@ -413,6 +413,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "apothecary-shelf",
+      "dir": "showcase/apothecary-shelf",
+      "teaches": "A procedural apothecary shelf — housed shelves, gallery rails, a drawer bank and an arched crest, stocked with fifteen lathed bottles, flasks and glazed jars, each corked or lidded and labelled — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars.",
+      "witnessesFix": "Recomputed: 10456 tris, six materials with a face floor each, UVs in 0..1 with zero AABB overlap, outer AABB 0.876×0.274×1.076 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides grounded, seven cross members housed 8 mm into each side and 14 mm clear of its far face, fifteen vessels seated 1.0–1.8 mm into their shelves, every cork and lid biting 5 mm, every label 0.3 mm into its body and 0.8 mm proud, no vessel touching another or the carcass, and at least 24 mm of headroom between every vessel and the member above it. --tall-flask exits 20 at −5.5 mm while every seat and the envelope still pass; --short-shelves exits 17 on the dado bite.",
+      "hero": "docs/gallery/assets/apothecary-shelf-hero.webp",
+      "preview": "showcase/apothecary-shelf/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

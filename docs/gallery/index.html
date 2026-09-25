@@ -291,7 +291,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples, 31 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">51 examples, 32 showcase pieces</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -1243,6 +1243,17 @@
           <a class="card-link" href="brazier/">View showcase piece<span class="sr-only"> brazier</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase">
+        <a class="card-media" href="apothecary-shelf/" tabindex="-1" aria-hidden="true">
+          <img src="assets/apothecary-shelf-hero.webp" alt="A stained wooden shelf with an arched crest, gallery rails and three brass-knobbed drawers, stocked with labelled glass bottles and flasks and cream and blue glazed jars." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="apothecary-shelf/">apothecary-shelf</a></h2>
+          <p class="teaches">A procedural apothecary shelf — housed shelves, gallery rails, a drawer bank and an arched crest, stocked with fifteen lathed bottles, flasks and glazed jars, each corked or lidded and labelled — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 10456 tris, six materials with a face floor each, UVs in 0..1 with zero AABB overlap, outer AABB 0.876×0.274×1.076 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides grounded, seven cross members housed 8 mm into each side and 14 mm clear of its far face, fifteen vessels seated 1.0–1.8 mm into their shelves, every cork and lid biting 5 mm, every label 0.3 mm into its body and 0.8 mm proud, no vessel touching another or the carcass, and at least 24 mm of headroom between every vessel and the member above it. --tall-flask exits 20 at −5.5 mm while every seat and the envelope still pass; --short-shelves exits 17 on the dado bite.</p>
+          <a class="card-link" href="apothecary-shelf/">View showcase piece<span class="sr-only"> apothecary-shelf</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>
@@ -1272,7 +1283,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '51 examples, 31 showcase pieces';
+      var COUNT_LABEL = '51 examples, 32 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
