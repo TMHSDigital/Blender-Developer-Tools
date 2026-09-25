@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>gp-lineart-contour — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta name="description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta property="og:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." />
+  <meta property="og:image:alt" content="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta name="twitter:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
-  <meta name="twitter:image:alt" content="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." />
+  <meta name="twitter:image:alt" content="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>gp-lineart-contour</h1>
-    <p>Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 10 strokes / 34 points on both 4.5.11 and 5.1.2. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
+    <p>Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes.">
-      <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes.">
+      <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
@@ -280,9 +280,10 @@
     <section class="detail-section md">
 <p>A runnable example that builds a faceted crystal, attaches a Grease Pencil <code>LINEART</code> modifier with <code>source_type=&#x27;OBJECT&#x27;</code>, and proves the contour contract through the depsgraph — including the 4.5 → 5.1 stroke-width trap.</p>
 <p><strong>What it witnesses:</strong> the Line Art modifier contract AI-generated NPR code most often gets wrong.</p>
-<ul><li><strong>Contours are a modifier, not Freestyle and not hand-authored strokes.</strong> <code>modifiers.new(..., &#x27;LINEART&#x27;)</code> on a GPv3 object, with <code>target_layer</code> / <code>target_material</code> set, evaluates silhouette edges into drawing strokes.</li><li><strong><code>source_object</code> is load-bearing.</strong> Clearing it yields <strong>0</strong> evaluated strokes (proven in the same check pass). Restoring it recovers the contour.</li><li><strong>Edge-type flags matter.</strong> A freshly added LINEART with <code>use_contour</code> and <code>use_crease</code> both off emits <strong>0</strong> strokes; turning contour (+ crease) back on recovers the silhouette (<strong>10</strong> strokes / <strong>34</strong> points on both binaries for this crystal + camera).</li><li><strong>Stroke width renamed.</strong> 4.5 exposes both <code>thickness</code> (legacy px, set to 45 here) and <code>radius</code>; 5.1 removes <code>thickness</code> (<code>AttributeError</code>) and keeps <code>radius</code> only (portable path: <code>mod.radius = 0.028</code>).</li><li><strong>GPv3 address</strong> matches <code>grease-pencil-rosette</code>: <code>grease_pencils_v3</code> on 4.5, <code>grease_pencils</code> on 5.x.</li></ul>
+<ul><li><strong>Contours are a modifier, not Freestyle and not hand-authored strokes.</strong> <code>modifiers.new(..., &#x27;LINEART&#x27;)</code> on a GPv3 object, with <code>target_layer</code> / <code>target_material</code> set, evaluates silhouette edges into drawing strokes.</li><li><strong><code>source_object</code> is load-bearing.</strong> Clearing it yields <strong>0</strong> evaluated strokes (proven in the same check pass). Restoring it recovers the contour.</li><li><strong>Edge-type flags matter.</strong> A freshly added LINEART with <code>use_contour</code> and <code>use_crease</code> both off emits <strong>0</strong> strokes; turning contour (+ crease) back on recovers the silhouette (<strong>2</strong> strokes / <strong>12</strong> points on every binary for this crystal + camera; Line Art chains the bipyramid&#x27;s edges into long strokes, so the count is low and the gates are lower bounds).</li><li><strong>Stroke width renamed.</strong> 4.5 exposes both <code>thickness</code> (legacy px, set to 45 here) and <code>radius</code>; 5.1 removes <code>thickness</code> (<code>AttributeError</code>) and keeps <code>radius</code> only (portable path: <code>mod.radius = 0.028</code>).</li><li><strong>GPv3 address</strong> matches <code>grease-pencil-rosette</code>: <code>grease_pencils_v3</code> on 4.5, <code>grease_pencils</code> on 5.x.</li></ul>
 <p><strong>What each check catches on failure:</strong> wrong GPv3 collection (exit 2), <code>thickness</code> present/absent on the wrong side of 5.0 (exit 3), lost <code>source_object</code> assignment (exit 4), contour too thin (exit 5), source clear not zeroing strokes (exit 6), flags-off or restore failure (exit 7).</p>
-<p><strong>Version witness:</strong> stroke counts match on 4.5.11 LTS and 5.1.2 (10 strokes / 34 points). The divergence is <code>thickness</code> vs <code>radius</code>.</p>
+<p><strong>Version witness:</strong> stroke counts match on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS (2 strokes / 12 points). The divergence is <code>thickness</code> vs <code>radius</code>.</p>
+<p><strong>The still:</strong> the crystal is a hexagonal bipyramid (an equator ring and two apexes), set tip-down in a two-tier hex mount on the floor. The mount is render staging, derived from the crystal&#x27;s lowest evaluated vertex; it is built after the check, so it never enters the Line Art counts. The still&#x27;s camera drops its aim and dollies in along the check camera&#x27;s bearing, so the crystal fills the frame with the mount&#x27;s foot inside it.</p>
 <h2>Run</h2>
 <pre><code># Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
@@ -343,9 +344,18 @@ sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep ex
 
 <span class="c"># Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail</span>
 CRYSTAL_SCALE = <span class="n">1.15</span>
+CRYSTAL_R = <span class="n">0.72</span>        <span class="c"># bipyramid equator radius (before CRYSTAL_SCALE)</span>
+CRYSTAL_APEX = <span class="n">0.88</span>     <span class="c"># apex height above/below the equator</span>
 STROKE_MIN = <span class="n">1</span>
 POINT_MIN = <span class="n">4</span>
 RADIUS = <span class="n">0.028</span>
+
+<span class="c"># render staging only (not part of the check)</span>
+MOUNT_R = <span class="n">0.46</span>          <span class="c"># hex plinth base radius</span>
+MOUNT_BASE_H = <span class="n">0.07</span>     <span class="c"># base tier height, standing on the floor</span>
+MOUNT_SOCKET = <span class="n">0.10</span>     <span class="c"># depth the crystal&#x27;s lower tip sinks into the mount</span>
+STILL_AIM_Z = <span class="n">1.05</span>      <span class="c"># still camera aim height (the check&#x27;s is 1.15)</span>
+STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera distance, relative to the check&#x27;s</span>
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -387,19 +397,16 @@ RADIUS = <span class="n">0.028</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Crystal&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        <span class="c"># Dual cone = octahedron-like crystal</span>
-        bmesh.ops.create_cone(
-            bm, cap_ends=<span class="k">False</span>, cap_tris=<span class="k">True</span>,
-            segments=<span class="n">6</span>, radius1=<span class="n">0.85</span>, radius2=<span class="n">0.0</span>, depth=<span class="n">1.4</span>,
-        )
-        <span class="c"># second tip downward</span>
-        geom = bmesh.ops.duplicate(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces))
-        verts = [e <span class="k">for</span> e <span class="k">in</span> geom[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(e, bmesh.types.BMVert)]
-        bmesh.ops.rotate(
-            bm, verts=verts, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
-            matrix=Matrix.Rotation(math.pi, <span class="n">3</span>, <span class="s">&quot;X&quot;</span>),
-        )
-        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=<span class="n">1e-4</span>)
+        <span class="c"># Hexagonal bipyramid: one equator ring, an apex above and below.</span>
+        <span class="c"># (Two overlapped open cones, the earlier build, crossed into an</span>
+        <span class="c"># hourglass with open ends and an inner spike.)</span>
+        ring = [bm.verts.new((CRYSTAL_R * math.cos(math.pi * k / <span class="n">3</span>),
+                              CRYSTAL_R * math.sin(math.pi * k / <span class="n">3</span>), <span class="n">0.0</span>))
+                <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>)]
+        <span class="k">for</span> apex_z <span class="k">in</span> (CRYSTAL_APEX, -CRYSTAL_APEX):
+            apex = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, apex_z))
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>):
+                bm.faces.new((ring[k], ring[(k + <span class="n">1</span>) % <span class="n">6</span>], apex))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bmesh.ops.scale(bm, vec=(CRYSTAL_SCALE,) * <span class="n">3</span>, verts=bm.verts)
         bm.to_mesh(me)
@@ -667,7 +674,54 @@ RADIUS = <span class="n">0.028</span>
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">280.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
 
+<span class="k">def</span> build_mount(sc, crystal):
+    <span class="s">&quot;&quot;&quot;Render staging only: a two-tier hex plinth seated on the floor whose
+    top swallows the crystal&#x27;s lower tip, so the crystal is set in a mount
+    instead of hovering. Derived from the evaluated crystal; the crystal
+    itself (and so every Line Art count above) is untouched.&quot;&quot;&quot;</span>
+    bpy.context.view_layer.update()
+    mw = crystal.matrix_world
+    tip = min((mw @ v.co <span class="k">for</span> v <span class="k">in</span> crystal.data.vertices), key=<span class="k">lambda</span> p: p.z)
+    top = tip.z + MOUNT_SOCKET
+    me = bpy.data.meshes.new(<span class="s">&quot;Mount&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> r, z0, z1 <span class="k">in</span> ((MOUNT_R, -<span class="n">0.003</span>, MOUNT_BASE_H),
+                          (MOUNT_R * <span class="n">0.72</span>, MOUNT_BASE_H - <span class="n">0.003</span>, top)):
+            bmesh.ops.create_cone(
+                bm, cap_ends=<span class="k">True</span>, segments=<span class="n">6</span>, radius1=r, radius2=r,
+                depth=z1 - z0,
+                matrix=Matrix.Translation((tip.x, tip.y, (z0 + z1) / <span class="n">2</span>))
+                @ Matrix.Rotation(crystal.rotation_euler.z, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>),
+            )
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">False</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;MountStone&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.06</span>, <span class="n">0.062</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;Mount&quot;</span>, me)
+    sc.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
 <span class="k">def</span> render_still(sc, path, engine):
+    source = sc.objects[<span class="s">&quot;Crystal&quot;</span>]
+    mount = build_mount(sc, source)
+    <span class="c"># reframe for the still only (the check ran from the setup_camera view):</span>
+    <span class="c"># lower the aim so the mount&#x27;s foot clears the bottom edge, and dolly in</span>
+    <span class="c"># along the same bearing so the crystal still fills the frame</span>
+    aim = sc.objects[<span class="s">&quot;Aim&quot;</span>]
+    cam = sc.camera
+    bearing = cam.location - aim.location
+    aim.location.z = STILL_AIM_Z
+    cam.location = aim.location + bearing * STILL_DOLLY
+    bpy.context.view_layer.update()
     sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
         sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
@@ -685,16 +739,17 @@ RADIUS = <span class="n">0.028</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact. The two</span>
-    <span class="c"># renderable subjects are the crystal source mesh and the GP stroke object.</span>
+    <span class="c"># hero subjects are the crystal source mesh and the GP stroke object; the</span>
+    <span class="c"># mount is staging, so it must clear the edges but does not count as fill.</span>
     stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name <span class="k">in</span> {<span class="s">&quot;Floor&quot;</span>, <span class="s">&quot;Wall&quot;</span>}]
     hero = [
         o <span class="k">for</span> o <span class="k">in</span> sc.objects
-        <span class="k">if</span> o.type <span class="k">in</span> {<span class="s">&quot;MESH&quot;</span>, <span class="s">&quot;GREASEPENCIL&quot;</span>} <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage
+        <span class="k">if</span> o.type <span class="k">in</span> {<span class="s">&quot;MESH&quot;</span>, <span class="s">&quot;GREASEPENCIL&quot;</span>} <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage <span class="k">and</span> o != mount
     ]
     fcode = gallery_framing.check_framing(
         sc, sc.camera,
         hero=hero,
-        elements=hero,
+        elements=hero + [mount],
         stage=stage,
     )
     <span class="k">if</span> fcode:
@@ -766,7 +821,7 @@ RADIUS = <span class="n">0.028</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent hourglass-shaped solid outlined by cyan Line Art contour strokes." />
+    <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
   </dialog>
   <footer>
     <div class="statusbar">

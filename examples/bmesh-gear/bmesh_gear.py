@@ -19,6 +19,7 @@ check. Pass --output to also render a still:
     blender --background --python bmesh_gear.py -- --output g.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse
+from mathutils import Vector
 
 TEETH = 14
 R_ROOT = 1.0
@@ -26,6 +27,11 @@ R_TIP = 1.25
 DEPTH = 0.6
 # fraction of a tooth period spent at the tip vs the root
 TOOTH_DUTY = 0.45
+
+# render staging only (not part of the check)
+STAGE_BITE = 0.003    # contact depth into the floor and into the gear's back
+WEDGE_SLOPE = 1.55    # display wedge slope length, up the gear's back face
+WEDGE_WIDTH = 1.8     # display wedge width across the gear
 
 
 def gear_profile():
@@ -122,8 +128,53 @@ def render_still(obj, path, engine):
     nt.links.new(rings.outputs["Fac"], rough.inputs["Value"])
     nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
     obj.data.materials.append(mat)
-    obj.location = (0.0, 0.0, 0.85)
+    # the gear leans back on an inclined display wedge. Both contacts are
+    # derived from the posed mesh: the lowest back-cap vertex bites into
+    # the floor, and the wedge's slope lies in the back-cap plane, sunk into
+    # the gear, so the lean is carried rather than hung in the air
     obj.rotation_euler = (math.radians(46), 0.0, math.radians(22))
+    obj.location = (0.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    obj.location.z = -min((obj.matrix_world @ v.co).z for v in obj.data.vertices) - STAGE_BITE
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    rot = mw.to_3x3()
+    side = (rot @ Vector((1.0, 0.0, 0.0))).normalized()
+    up = (rot @ Vector((0.0, 1.0, 0.0))).normalized()
+    into = (rot @ Vector((0.0, 0.0, 1.0))).normalized()
+    low = min((mw @ v.co for v in obj.data.vertices), key=lambda p: p.z)
+    centre = mw @ Vector((0.0, 0.0, 0.0))
+    foot = low + side * (centre - low).dot(side) + into * STAGE_BITE
+    top = foot + up * WEDGE_SLOPE
+    back = Vector((top.x, top.y, -STAGE_BITE))
+    front = Vector((foot.x, foot.y, -STAGE_BITE))
+    wedge_me = bpy.data.meshes.new("Wedge")
+    bm = bmesh.new()
+    try:
+        half = side * (WEDGE_WIDTH / 2)
+        ring = [[bm.verts.new(p + sgn * half) for p in (front, foot, top, back)]
+                for sgn in (-1.0, 1.0)]
+        a, b = ring
+        bm.faces.new(a)
+        bm.faces.new(b[::-1])
+        for i in range(4):
+            j = (i + 1) % 4
+            bm.faces.new((a[i], a[j], b[j], b[i]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(wedge_me)
+    finally:
+        bm.free()
+    wmat = bpy.data.materials.new("DisplayStand")
+    wmat.use_nodes = True
+    wb = wmat.node_tree.nodes["Principled BSDF"]
+    # matte and dark: the slope faces the key square-on, and at the floor's
+    # finish its specular sheen alone (~45/255, measured) reads as paper
+    wb.inputs["Base Color"].default_value = (0.02, 0.021, 0.025, 1.0)
+    wb.inputs["Roughness"].default_value = 0.9
+    spec = wb.inputs.get("Specular IOR Level") or wb.inputs.get("Specular")
+    spec.default_value = 0.1
+    wedge_me.materials.append(wmat)
+    scene.collection.objects.link(bpy.data.objects.new("Wedge", wedge_me))
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -170,7 +221,9 @@ def render_still(obj, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -7.6, 4.2)
+    # the camera rides with the gear's derived seat height (it was posed for
+    # a gear hung at z=0.85), so the composition is unchanged
+    cam.location = (0.0, -7.6, 4.2 + obj.location.z - 0.85)
     cam.rotation_euler = (math.radians(66), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam

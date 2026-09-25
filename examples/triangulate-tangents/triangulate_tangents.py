@@ -51,6 +51,13 @@ WELD_TOL = 0.15                 # mikktspace vertex welding vs per-triangle form
 BTN_TOL = 1e-4                  # bitangent == sign * (n x t)
 UV_TOL = 1e-6                   # re-fetched UV layer vs authored closed form
 
+# render staging only (not part of the check)
+STAND_H = 0.12                  # display stand height, resting on the floor
+SEAT_BITE = 0.01                # rim's lowest vertex sunk into the stand top
+STRUT_V = 0.25                  # local v where the kickstand meets the back
+STRUT_BITE = 0.02               # strut ends buried in the back face / floor
+STRUT_LEAN = 0.45               # horizontal run per metre of strut height
+
 # dome profile: (r, z) rings from center out, then the raised rim lip
 PROFILE = [(0.02, 0.34), (0.30, 0.30), (0.55, 0.22), (0.78, 0.12),
            (0.95, 0.05), (1.00, 0.05)]
@@ -312,28 +319,56 @@ def render_still(obj, path, engine):
     nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     obj.data.materials.append(mat)
 
-    # presentation: the buckler leaning back on a low display stand
-    obj.location = (0.0, 0.0, 1.55)
-    obj.rotation_euler = (math.radians(70), 0.0, math.radians(-12))
-    stand_me = bpy.data.meshes.new("Stand")
-    bm = bmesh.new()
-    try:
-        bmesh.ops.create_cube(bm, size=1.0,
-                              matrix=mathutils.Matrix.Diagonal((0.9, 0.5, 0.12, 1.0)))
-        bm.to_mesh(stand_me)
-    finally:
-        bm.free()
+    # presentation: the buckler leaning back on a low display stand, held by
+    # a kickstand strut behind it. Every contact is derived from the posed
+    # mesh: the stand sits on the floor, the rim's lowest vertex bites into
+    # the stand's top, and the strut runs from the buckler's back to the floor.
+    yaw = math.radians(-12)
+    obj.rotation_euler = (math.radians(70), 0.0, yaw)
+    obj.location = (0.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    low = min((obj.matrix_world @ v.co for v in obj.data.vertices), key=lambda p: p.z)
+    lift = STAND_H - SEAT_BITE - low.z
+    obj.location = (0.0, 0.0, lift)
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    low.z += lift
+
     smat = bpy.data.materials.new("StandMetal")
     smat.use_nodes = True
     sb = smat.node_tree.nodes["Principled BSDF"]
     sb.inputs["Base Color"].default_value = (0.09, 0.10, 0.12, 1.0)
     sb.inputs["Metallic"].default_value = 0.85
     sb.inputs["Roughness"].default_value = 0.45
-    stand_me.materials.append(smat)
-    stand = bpy.data.objects.new("Stand", stand_me)
-    # under the leaning rim's contact patch, so the cradle visibly carries it
-    stand.location = (0.0, -0.34, 0.55)
-    scene.collection.objects.link(stand)
+
+    def box(name, dims, loc, rot):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        try:
+            bmesh.ops.create_cube(bm, size=1.0,
+                                  matrix=mathutils.Matrix.Diagonal((*dims, 1.0)))
+            bm.to_mesh(me)
+        finally:
+            bm.free()
+        me.materials.append(smat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        return ob
+
+    # the stand: on the floor, centred under the rim's contact vertex
+    box("Stand", (0.9, 0.5, STAND_H), (low.x, low.y, STAND_H / 2), (0.0, 0.0, yaw))
+    # the strut: its top buried in the buckler's back face (found by a
+    # local-space ray), its foot bitten into the floor behind
+    hit = obj.ray_cast((0.0, STRUT_V, -1.0), (0.0, 0.0, 1.0))[1]
+    back_n = (mw.to_3x3() @ mathutils.Vector((0.0, 0.0, -1.0))).normalized()
+    top = mw @ hit - back_n * STRUT_BITE
+    out = mathutils.Vector((back_n.x, back_n.y, 0.0)).normalized()
+    foot = mathutils.Vector((top.x, top.y, -STRUT_BITE)) + out * top.z * STRUT_LEAN
+    axis = top - foot
+    box("Strut", (0.08, 0.04, axis.length), (top + foot) / 2,
+        axis.to_track_quat('Z', 'Y').to_euler())
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -382,10 +417,12 @@ def render_still(obj, path, engine):
     # Reframed: the old (0.6,-8.8,2.8) left the buckler at 0.334 fill adrift
     # in the stage; moved in ~2.2x so the brushed-steel tangent sweep fills
     # the frame — the grooves are the tangent-field evidence.
-    cam.location = (0.6, -6.35, 2.62)
+    # Seated on the floor (was hung 0.49 m up): camera and aim ride with the
+    # buckler's derived lift, so the composition is unchanged.
+    cam.location = (0.6, -6.35, lift + 1.07)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.0, 0.0, 1.42)
+    target.location = (0.0, 0.0, lift - 0.13)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
@@ -407,11 +444,11 @@ def render_still(obj, path, engine):
     scene.view_settings.view_transform = 'Standard'
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact.
-    stand_ob = scene.objects.get("Stand")
+    props = [scene.objects[n] for n in ("Stand", "Strut")]
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj] + ([stand_ob] if stand_ob else []),
+        elements=[obj] + props,
         stage=[floor, wall],
     )
     if fcode:
