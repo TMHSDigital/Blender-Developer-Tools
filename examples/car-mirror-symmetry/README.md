@@ -50,7 +50,11 @@ modifier stack is Mirror only, so counts stay closed-form); the window band
 is glass by construction class (steepest roof-rise slope is the windshield,
 steepest drop the rear window, ring segment 5 the side windows), and the
 glass is dielectric — metallic glass mirrors the key light and renders the
-windshield as a hot salmon slab.
+windshield as a hot salmon slab. The camera stands on the key light's side
+of the car: from the other side it saw only the flank the key cannot reach,
+and the whole visible side rendered near-black. The car is mirror-symmetric,
+so the composition is the same either way. The bright streak along the cowl
+below the windshield is the key's highlight in a crease that faces it.
 
 ## Run
 
