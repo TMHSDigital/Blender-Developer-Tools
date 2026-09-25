@@ -101,5 +101,6 @@
   {"name": "wooden-ladder", "script": "showcase/wooden-ladder/wooden_ladder.py"},
   {"name": "hay-bale", "script": "showcase/hay-bale/hay_bale.py"},
   {"name": "crate-stack", "script": "showcase/crate-stack/crate_stack.py"},
-  {"name": "stone-archway", "script": "showcase/stone-archway/stone_archway.py"}
+  {"name": "stone-archway", "script": "showcase/stone-archway/stone_archway.py"},
+  {"name": "rope-bridge", "script": "showcase/rope-bridge/rope_bridge.py"}
 ]

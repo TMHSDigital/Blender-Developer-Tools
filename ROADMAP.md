@@ -133,7 +133,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Bound hay bale as a game-prop showcase piece~~ **SHIPPED** as `showcase/hay-bale/` — bevelled loaf, end nap, two sisal twine belts; `--skip-decimate` exits 9 on the LOD1 ratio band
 - ~~Stack of shipping crates as a game-prop showcase piece~~ **SHIPPED** as `showcase/crate-stack/` — one generator called three times with a per-instance seed driving yaw and plank widths, crates seated on the lid below; `--same-seed` exits 20 on the per-instance variation budget, `--float-stack` exits 18 on the seat
 - ~~Keystone archway with voussoirs as a game-prop showcase piece~~ **SHIPPED** as `showcase/stone-archway/` — coursed piers, projecting imposts, nine voussoirs, proud keystone; the intrados circle fit is recomputed from vertex positions and `--off-circle` exits 19 on it while leaving every other budget passing
-- Rope bridge (planks, rope rails, sag between anchors) as a game-prop showcase piece
+- ~~Rope bridge (planks, rope rails, sag between anchors) as a game-prop showcase piece~~ **SHIPPED** as `showcase/rope-bridge/` — log posts, through-tenoned sills, twenty planks seated on laid foot ropes, lashed hand ropes, suspenders, staked tie-offs; a least-squares parabola is fitted to the plank tops and `--vee-deck` exits 19 on it with the sag still in band
 - Grain sacks (cloth sacks, some slumped, tied necks) as a game-prop showcase piece
 - Brazier (iron bowl on legs, coals, ash) as a game-prop showcase piece
 - Apothecary shelf (shelf unit, bottles and jars of varied form) as a game-prop showcase piece
