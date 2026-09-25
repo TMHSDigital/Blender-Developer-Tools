@@ -5,16 +5,20 @@ rocks after composing shipped pipeline pieces: GN construction,
 UVs, two materials, high-to-low normal bake, LOD chain, convex collider,
 Unity glTF export.
 
-GN still builds the sine hill and the Index-jittered instance grid.
-Realized cubes are replaced with closed-form cleaved, faceted stones,
-relaxed apart so no two interpenetrate, seated on sampled dirt Z, then
-clamped above the slab floor.
+GN still builds the sine hill, with closed-form micro-relief, and the
+Index-jittered instance grid. The slab's rim is bevelled into its walls.
+Realized cubes are replaced with closed-form cleaved, faceted stones of
+varied size, relaxed apart so no two interpenetrate, sunk until the
+ground closes around each on every side, then clamped above the slab
+floor.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
 budget: ``--skip-decimate`` LOD, ``--stray-vert`` hygiene, ``--lift-z``
 zmin, ``--poke-rock`` stone floor, ``--float-rocks`` seat, ``--box-rocks``
-stone shell faces, ``--pile-rocks`` stone-to-stone interpenetration.
+stone shell faces, ``--pile-rocks`` stone-to-stone interpenetration,
+``--perch-rocks`` sealed sectors, ``--uniform-rocks`` stone size spread,
+``--sharp-rim`` rim tilt step.
 
 No RNG. Hills are a closed-form sine product; scatter is an Index-jittered
 instance grid. DECIMATE COLLAPSE triangle counts are not byte-identical
@@ -55,7 +59,7 @@ ROCK_ZMIN = 0.012
 N_ROCKS = 9
 
 BBOX_TOL = 0.015
-OUTER_SIZE = (1.800, 1.800, 0.584)
+OUTER_SIZE = (1.800, 1.800, 0.570)
 BASE_TRIS_MIN = 1400
 BASE_TRIS_MAX = 2800
 LOD1_RATIO_MIN = 0.32
@@ -68,6 +72,7 @@ MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 120
+COLLIDER_GRID = 9              # hill grid resolution the collider is hulled from
 BAKE_RES = 256
 CAGE_EXTRUSION = 0.08
 STONE_FACES_MIN = 24
@@ -85,8 +90,8 @@ LIFT_Z = 0.05
 DIRT_IDX = 0
 STONE_IDX = 1
 
-# Stones are kept apart by relaxing their centres to at least twice a
-# bound on any stone's horizontal radius. The GN scatter jitters by up to
+# Stones are kept apart by relaxing each pair of centres to at least the
+# sum of their bounds; a stone's bound is STONE_R_BOUND times its size. The GN scatter jitters by up to
 # 0.22 m on a 0.575 m grid, which pushed neighbours into each other: two
 # pairs interpenetrated in the committed piece. The bound covers the
 # largest ellipsoid semi-axis (0.135), the surface bump (0.016) and the
@@ -102,6 +107,37 @@ PILE_PULL = 0.40
 # as broken stone with flat faces rather than a smooth egg.
 N_CLEAVES = 5
 CLEAVE_DEPTH = 0.62
+
+# Stone sizes, one factor per scatter point. A tile of nine stones that are
+# all within 20% of each other reads as a planted grid; real scatter is a
+# couple of boulders among cobbles. The relaxation spaces each stone by its
+# own bound, so big and small stones clear by the same margin.
+STONE_SIZES = (1.45, 0.62, 1.00, 0.55, 1.25, 0.78, 0.58, 1.12, 0.70)
+SIZE_RATIO_MIN = 3.0           # largest / smallest stone footprint area
+# Embedding: in every azimuth sector around a stone, some vertex is sunk
+# below the terrain under it, so the ground closes around the stone on every
+# side. Seating the lowest point on the centre's dirt height, the old rule,
+# left daylight under the downhill side of every stone on a slope: no stone
+# was sealed in more than 6 of 8 sectors, two in only 4.
+EMBED_SINK = 0.006
+SEAL_SECTORS = 8               # azimuth sectors that must each hold a buried vertex
+SEAL_EPS = 0.002
+# The slab's top-to-wall rim is rounded: a knife edge all round the tile
+# made it read as a slice of cake. RIM_TIP_MAX bounds the step in normal
+# elevation (degrees from horizontal) between any two adjacent dirt faces,
+# so the ground turns into the wall gradually. It is an elevation step,
+# not a dihedral, because at the four corners the two chamfer strips meet
+# at a right angle in plan, which is a rounded corner, not a knife edge.
+# Bevel gives the middle folds twice the end folds: at two segments a 90
+# degree edge splits 22.5/45/22.5. Where the hill rises into the rim the fold
+# is wider than 90 degrees, and three segments left a 40.5-degree step, so
+# the rim takes four.
+RIM_BEVEL = 0.035
+RIM_SEGMENTS = 4
+RIM_TIP_MAX = 40.0
+WALL_NZ = 0.1                  # a dirt face with |normal.z| below this is a wall
+# Micro-relief on the hill, closed form: (fx, fy, phase_x, phase_y, amplitude).
+RELIEF = ((9.1, 7.3, 0.4, 1.3, 0.014), (17.9, 15.2, 2.1, 0.7, 0.007))
 
 
 def eevee_engine_id():
@@ -226,6 +262,37 @@ def hill_z_socket(tree, freq, amp):
     return sc.outputs[0]
 
 
+def relief_z_socket(tree, base):
+    """base + sum of amp*sin(fx*x + px)*cos(fy*y + py) over RELIEF."""
+    out = base
+    for fx, fy, px, py, amp in RELIEF:
+        pos = tree.nodes.new("GeometryNodeInputPosition")
+        sep = tree.nodes.new("ShaderNodeSeparateXYZ")
+        tree.links.new(pos.outputs["Position"], sep.inputs[0])
+        waves = []
+        for axis, f, ph, op in (("X", fx, px, "SINE"), ("Y", fy, py, "COSINE")):
+            mul = tree.nodes.new("ShaderNodeMath")
+            mul.operation = "MULTIPLY_ADD"
+            mul.inputs[1].default_value = f
+            mul.inputs[2].default_value = ph
+            tree.links.new(sep.outputs[axis], mul.inputs[0])
+            trig = tree.nodes.new("ShaderNodeMath")
+            trig.operation = op
+            tree.links.new(mul.outputs[0], trig.inputs[0])
+            waves.append(trig.outputs[0])
+        prod = tree.nodes.new("ShaderNodeMath")
+        prod.operation = "MULTIPLY"
+        tree.links.new(waves[0], prod.inputs[0])
+        tree.links.new(waves[1], prod.inputs[1])
+        acc = tree.nodes.new("ShaderNodeMath")
+        acc.operation = "MULTIPLY_ADD"
+        acc.inputs[1].default_value = amp
+        tree.links.new(prod.outputs[0], acc.inputs[0])
+        tree.links.new(out, acc.inputs[2])
+        out = acc.outputs[0]
+    return out
+
+
 def build_scatter_tree(verts, dirt, stone):
     tree = bpy.data.node_groups.new("TerrainScatter", "GeometryNodeTree")
     tree.interface.new_socket(
@@ -233,7 +300,7 @@ def build_scatter_tree(verts, dirt, stone):
     )
     go = tree.nodes.new("NodeGroupOutput")
 
-    hill = hill_z_socket(tree, FREQ, AMP)
+    hill = relief_z_socket(tree, hill_z_socket(tree, FREQ, AMP))
     off = tree.nodes.new("ShaderNodeCombineXYZ")
     tree.links.new(hill, off.inputs["Z"])
 
@@ -368,12 +435,13 @@ def eval_to_mesh(obj, name):
     return me
 
 
-def slabify(bm, floor_z=0.0):
+def slabify(bm, floor_z=0.0, sharp_rim=False):
     bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
     boundary = [e for e in bm.edges if e.is_boundary]
     if not boundary:
         return
     ret = bmesh.ops.extrude_edge_only(bm, edges=boundary)
+    rim = list(boundary)
     verts = [g for g in ret["geom"] if isinstance(g, bmesh.types.BMVert)]
     for v in verts:
         v.co.z = floor_z
@@ -388,6 +456,15 @@ def slabify(bm, floor_z=0.0):
             bmesh.ops.edgeloop_fill(bm, edges=bottom)
         except Exception:
             bmesh.ops.contextual_create(bm, geom=bottom)
+    if not sharp_rim:
+        # Chamfer the top-to-wall fold (the original boundary edges, now
+        # shared by the hill and the new wall faces), so the tile edge
+        # catches light instead of cutting like a knife.
+        bmesh.ops.bevel(
+            bm, geom=rim, offset=RIM_BEVEL, offset_type="OFFSET",
+            segments=RIM_SEGMENTS, profile=0.5, affect="EDGES",
+            clamp_overlap=True,
+        )
     for f in bm.faces:
         if f.material_index not in (DIRT_IDX, STONE_IDX):
             f.material_index = DIRT_IDX
@@ -410,10 +487,12 @@ def nearest_dirt_z(bm, x, y):
     return 0.0 if best_z is None else best_z
 
 
-def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
-    sx = ROCK_SCALE * (0.11 + 0.025 * math.sin(cx * 8.1))
-    sy = ROCK_SCALE * (0.10 + 0.022 * math.cos(cy * 6.4))
-    sz = ROCK_SCALE * (0.075 + 0.020 * math.sin(cx * 4.2 + cy * 3.1))
+def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up,
+                     size=1.0, ground=None, perch=False):
+    k = ROCK_SCALE * size
+    sx = k * (0.11 + 0.025 * math.sin(cx * 8.1))
+    sy = k * (0.10 + 0.022 * math.cos(cy * 6.4))
+    sz = k * (0.075 + 0.020 * math.sin(cx * 4.2 + cy * 3.1))
     bite = POKE_BITE if poke else ROCK_BITE
     seat = dirt_z + FLOAT_LIFT if float_up else dirt_z - bite
     rot = Euler(
@@ -433,7 +512,7 @@ def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
         for v in verts:
             p = Vector((v.co.x * sx, v.co.y * sy, v.co.z * sz))
             if p.length > 1e-8:
-                bump = ROCK_SCALE * 0.016 * math.sin(p.x * 26.0 + cx * 5.0) * math.cos(
+                bump = k * 0.016 * math.sin(p.x * 26.0 + cx * 5.0) * math.cos(
                     p.y * 21.0 + cy * 4.0
                 )
                 p += p.normalized() * bump
@@ -455,6 +534,20 @@ def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
             f.material_index = STONE_IDX
     zmin = min(v.co.z for v in verts)
     dz = seat - zmin
+    if ground is not None and not (poke or float_up or perch):
+        # Embed: around the stone's centroid, each of SEAL_SECTORS azimuth
+        # sectors gets its most-buried vertex EMBED_SINK below the terrain
+        # directly under it, so the ground closes around the stone on every
+        # side, uphill and down, however the stone is tilted.
+        mx = sum(v.co.x for v in verts) / len(verts)
+        my = sum(v.co.y for v in verts) / len(verts)
+        depth = {}
+        for v in verts:
+            a = math.atan2(v.co.y - my, v.co.x - mx) + math.pi
+            s = int(a / (2.0 * math.pi) * SEAL_SECTORS) % SEAL_SECTORS
+            h = v.co.z - ground(cx + v.co.x, cy + v.co.y)
+            depth[s] = min(depth.get(s, h), h)
+        dz = -EMBED_SINK - max(depth.values())
     for v in verts:
         v.co.x += cx
         v.co.y += cy
@@ -463,19 +556,20 @@ def add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up):
             v.co.z = ROCK_ZMIN
 
 
-def relax_centres(specs, half_span):
-    """Push stone centres apart to 2*STONE_R_BOUND + STONE_CLEAR, deterministically.
+def relax_centres(specs, half_span, sizes):
+    """Push stone centres apart until each pair clears by STONE_CLEAR, deterministically.
 
-    Pairwise, symmetric, fixed iteration count, and clamped so every stone
-    stays on the tile with its bound inside the edge.
+    Each stone's bound is STONE_R_BOUND times its size factor. Pairwise,
+    symmetric, fixed iteration count, and clamped so every stone stays on
+    the tile with its own bound inside the edge.
     """
     pts = [Vector((x, y)) for x, y in specs]
-    need = 2.0 * STONE_R_BOUND + STONE_CLEAR
-    lim = half_span - STONE_R_BOUND - STONE_CLEAR
+    bounds = [STONE_R_BOUND * s for s in sizes]
     for _ in range(RELAX_ITERS):
         moved = False
         for i in range(len(pts)):
             for j in range(i + 1, len(pts)):
+                need = bounds[i] + bounds[j] + STONE_CLEAR
                 d = pts[j] - pts[i]
                 dist = d.length
                 if dist >= need:
@@ -487,7 +581,8 @@ def relax_centres(specs, half_span):
                 pts[i] -= push
                 pts[j] += push
                 moved = True
-        for p in pts:
+        for p, b in zip(pts, bounds):
+            lim = half_span - b - STONE_CLEAR
             p.x = max(-lim, min(lim, p.x))
             p.y = max(-lim, min(lim, p.y))
         if not moved:
@@ -495,7 +590,8 @@ def relax_centres(specs, half_span):
     return [(p.x, p.y) for p in pts]
 
 
-def masonry_from_cubes(bm, box_rocks=False, poke=False, float_up=False, pile=False):
+def masonry_from_cubes(bm, box_rocks=False, poke=False, float_up=False, pile=False,
+                       perch=False, uniform=False):
     stone_faces = [f for f in bm.faces if f.material_index == STONE_IDX]
     visited = set()
     islands = []
@@ -539,17 +635,28 @@ def masonry_from_cubes(bm, box_rocks=False, poke=False, float_up=False, pile=Fal
         0.5 * (min(c.y for c in dirt_xy) + max(c.y for c in dirt_xy)),
     )
     local = [(x - span_c[0], y - span_c[1]) for x, y in specs]
+    sizes = [1.0 if uniform else STONE_SIZES[i % len(STONE_SIZES)]
+             for i in range(len(local))]
     if pile:
         # Falsifier: no relaxation, and the scatter drawn in toward the
         # middle so neighbours collide. Skipping relaxation alone proves
         # nothing once the stones are cleaved small enough to miss.
         local = [(x * PILE_PULL, y * PILE_PULL) for x, y in local]
     else:
-        local = relax_centres(local, PATCH / 2.0)
+        local = relax_centres(local, PATCH / 2.0, sizes)
     specs = [(x + span_c[0], y + span_c[1]) for x, y in local]
-    for cx, cy in specs:
+    # The terrain height under any point: a ray down onto the dirt-only
+    # mesh, captured before any stone is added.
+    dirt_bvh = BVHTree.FromBMesh(bm)
+
+    def ground(x, y):
+        hit = dirt_bvh.ray_cast((x, y, 10.0), (0.0, 0.0, -1.0))[0]
+        return hit.z if hit is not None else nearest_dirt_z(bm, x, y)
+
+    for (cx, cy), size in zip(specs, sizes):
         dirt_z = nearest_dirt_z(bm, cx, cy)
-        add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up)
+        add_seated_stone(bm, cx, cy, dirt_z, box_rocks, poke, float_up,
+                         size=size, ground=ground, perch=perch)
 
 
 def build_terrain_mesh(
@@ -561,6 +668,9 @@ def build_terrain_mesh(
     poke=False,
     float_up=False,
     pile=False,
+    perch=False,
+    uniform=False,
+    sharp_rim=False,
 ):
     carrier = bpy.data.meshes.new(name + "Carrier")
     carrier.vertices.add(1)
@@ -578,10 +688,11 @@ def build_terrain_mesh(
         bm.verts.ensure_lookup_table()
         bm.edges.ensure_lookup_table()
         bm.faces.ensure_lookup_table()
-        slabify(bm, floor_z=0.0)
+        slabify(bm, floor_z=0.0, sharp_rim=sharp_rim)
         bm.verts.ensure_lookup_table()
         bm.faces.ensure_lookup_table()
-        masonry_from_cubes(bm, box_rocks=box_rocks, poke=poke, float_up=float_up, pile=pile)
+        masonry_from_cubes(bm, box_rocks=box_rocks, poke=poke, float_up=float_up,
+                           pile=pile, perch=perch, uniform=uniform)
         xs = [v.co.x for v in bm.verts]
         ys = [v.co.y for v in bm.verts]
         zs = [v.co.z for v in bm.verts]
@@ -600,14 +711,18 @@ def build_terrain_mesh(
         pack_uvs(bm)
         bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
         # Broken rock is faceted; smooth shading made the cleaved stones
-        # read as eggs again. Nothing on this tile is smooth-shaded.
-        for face in bm.faces:
-            face.smooth = False
+        # read as eggs again, so stones stay flat. The hill and its rim
+        # chamfer are ground, and flat shading printed the 21x21 grid on
+        # them; they are smooth. The walls and underside stay flat (an edge
+        # is only smoothed when both of its faces are smooth).
+        smooth = [f.material_index == DIRT_IDX and f.normal.z > WALL_NZ for f in bm.faces]
+        for face, s in zip(bm.faces, smooth):
+            face.smooth = s
         me = bpy.data.meshes.new(name)
         bm.to_mesh(me)
         me.update()
-        for poly in me.polygons:
-            poly.use_smooth = False
+        for poly, s in zip(me.polygons, smooth):
+            poly.use_smooth = s
     finally:
         bm.free()
     out = bpy.data.objects.new(name, me)
@@ -642,8 +757,13 @@ def _sock(sockets, identifier):
     return next(sk for sk in sockets if sk.identifier == identifier)
 
 
-def mottled(name, dark, light, rough_lo, rough_hi, scale, fine, bump):
-    """Object-space mottle for colour, fine noise for roughness and bump."""
+def mottled(name, dark, light, rough_lo, rough_hi, scale, fine, bump, subsoil=None):
+    """Object-space mottle for colour, fine noise for roughness and bump.
+
+    subsoil: (colour, z_low, z_high) darkens the colour toward `colour`
+    below z_high in object space, fully at z_low, so a cut face reads as
+    topsoil over subsoil instead of repeating the surface mottle.
+    """
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -660,7 +780,22 @@ def mottled(name, dark, light, rough_lo, rough_hi, scale, fine, bump):
     ramp.color_ramp.elements[1].position = 0.72
     ramp.color_ramp.elements[1].color = light
     nt.links.new(big.outputs["Fac"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    colour = ramp.outputs["Color"]
+    if subsoil is not None:
+        deep, z_low, z_high = subsoil
+        sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(coord.outputs["Object"], sep.inputs[0])
+        depth = nt.nodes.new("ShaderNodeMapRange")
+        depth.inputs["From Min"].default_value = z_high
+        depth.inputs["From Max"].default_value = z_low
+        nt.links.new(sep.outputs["Z"], depth.inputs["Value"])
+        mix = nt.nodes.new("ShaderNodeMix")
+        mix.data_type = "RGBA"
+        nt.links.new(depth.outputs["Result"], mix.inputs["Factor"])
+        nt.links.new(colour, _sock(mix.inputs, "A_Color"))
+        _sock(mix.inputs, "B_Color").default_value = deep
+        colour = _sock(mix.outputs, "Result_Color")
+    nt.links.new(colour, bsdf.inputs["Base Color"])
     small = nt.nodes.new("ShaderNodeTexNoise")
     small.inputs["Scale"].default_value = fine
     small.inputs["Detail"].default_value = 3.0
@@ -690,9 +825,12 @@ def terrain_materials():
     dirt = mottled(
         "TerrainDirt", (0.075, 0.048, 0.026, 1.0), (0.20, 0.135, 0.075, 1.0),
         0.82, 0.98, scale=6.0, fine=90.0, bump=0.35,
+        subsoil=((0.035, 0.024, 0.016, 1.0), 0.0, SLAB_LIFT + 0.02),
     )
+    # Stones mid-grey, not near-white: at 0.40 the lit faces clipped toward
+    # white in the hero and the stones read as sugar lumps on the soil.
     stone = mottled(
-        "TerrainStone", (0.20, 0.195, 0.18, 1.0), (0.40, 0.38, 0.34, 1.0),
+        "TerrainStone", (0.12, 0.118, 0.11, 1.0), (0.27, 0.26, 0.235, 1.0),
         0.62, 0.86, scale=9.0, fine=160.0, bump=0.20,
     )
     return dirt, stone
@@ -981,6 +1119,50 @@ def joint_audit(me):
     }
 
 
+def ground_audit(me):
+    """Stone embedding, stone size spread and rim fold, from the final mesh.
+
+    min_sealed: fewest azimuth sectors (of SEAL_SECTORS, around each stone's
+    centroid) holding a stone vertex at least SEAL_EPS below the terrain
+    straight under it. A sector with none is daylight under the stone.
+    size_ratio: largest over smallest stone footprint (XY AABB) area.
+    rim_tip: largest step in normal elevation, in degrees, between adjacent
+    dirt faces, the underside excluded (it sits on the floor).
+    """
+    verts = [v.co.copy() for v in me.vertices]
+    dirt = [p for p in me.polygons if p.material_index == DIRT_IDX]
+    bvh = BVHTree.FromPolygons(verts, [tuple(p.vertices) for p in dirt])
+    min_sealed = SEAL_SECTORS
+    areas = []
+    for g in shells(me):
+        if mat_of(me, g) != STONE_IDX:
+            continue
+        pts = [verts[i] for i in g]
+        cx = sum(p.x for p in pts) / len(pts)
+        cy = sum(p.y for p in pts) / len(pts)
+        sealed = set()
+        for p in pts:
+            hit = bvh.ray_cast((p.x, p.y, 10.0), (0.0, 0.0, -1.0))[0]
+            if hit is not None and p.z - hit.z < -SEAL_EPS:
+                a = math.atan2(p.y - cy, p.x - cx) + math.pi
+                sealed.add(int(a / (2.0 * math.pi) * SEAL_SECTORS) % SEAL_SECTORS)
+        min_sealed = min(min_sealed, len(sealed))
+        a = shell_aabb(me, g)
+        areas.append((a[3] - a[0]) * (a[4] - a[1]))
+    size_ratio = max(areas) / min(areas) if areas else 0.0
+    face_of = {}
+    for p in dirt:
+        for ek in p.edge_keys:
+            face_of.setdefault(ek, []).append(p.normal)
+    rim_tip = 0.0
+    for ns in face_of.values():
+        if len(ns) != 2 or min(ns[0].z, ns[1].z) < -0.5:
+            continue  # the underside-to-wall fold sits on the floor
+        e0, e1 = (math.asin(max(-1.0, min(1.0, n.z))) for n in ns)
+        rim_tip = max(rim_tip, math.degrees(abs(e0 - e1)))
+    return {"min_sealed": min_sealed, "size_ratio": size_ratio, "rim_tip": rim_tip}
+
+
 def stone_overlap_audit(me):
     """Pairs of stone shells whose surfaces interpenetrate (BVH overlap)."""
     trees = []
@@ -1012,10 +1194,14 @@ def check(
     float_up=False,
     box_rocks=False,
     pile=False,
+    perch=False,
+    uniform=False,
+    sharp_rim=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     dirt, stone = terrain_materials()
-    kw = dict(box_rocks=box_rocks, poke=poke, float_up=float_up, pile=pile)
+    kw = dict(box_rocks=box_rocks, poke=poke, float_up=float_up, pile=pile,
+              perch=perch, uniform=uniform, sharp_rim=sharp_rim)
     low = build_terrain_mesh("TerrainLow", 21, dirt, stone, **kw)
     high = build_terrain_mesh("TerrainHigh", 25, dirt, stone, **kw)
     assign_slots(low, dirt, stone)
@@ -1058,8 +1244,11 @@ def check(
     r1 = lod1_tris / base_tris if base_tris else 0.0
     r2 = lod2_tris / base_tris if base_tris else 0.0
 
+    # The collider hulls a coarse, unchamfered tile: the rim rounding and
+    # the micro-relief are visual, and each adds hull vertices a physics
+    # proxy has no use for.
     collider_src = build_terrain_mesh(
-        "TerrainColSrc", 21, dirt, stone, **kw
+        "TerrainColSrc", COLLIDER_GRID, dirt, stone, **dict(kw, sharp_rim=True)
     )
     collider = convex_hull_collider(collider_src, "TerrainCollider")
     bpy.data.objects.remove(collider_src, do_unlink=True)
@@ -1099,6 +1288,11 @@ def check(
     zf = zfight_pairs(low.data)
     jnt = joint_audit(low.data)
     overlaps = stone_overlap_audit(low.data)
+    gnd = ground_audit(low.data)
+    print(
+        f"measured sealed_min={gnd['min_sealed']}/{SEAL_SECTORS} "
+        f"size_ratio={gnd['size_ratio']:.3f} rim_tip={gnd['rim_tip']:.2f}"
+    )
     print(
         f"measured hygiene loose_v={hyg['loose_v']} loose_e={hyg['loose_e']} "
         f"nonman={hyg['nonman']} zero_area={hyg['zero_area']} "
@@ -1154,6 +1348,24 @@ def check(
         return fail(
             f"{overlaps} stone pairs interpenetrate (--pile-rocks is the designed fail)",
             20,
+        ), None, None, None, None, None
+    if gnd["min_sealed"] < SEAL_SECTORS:
+        return fail(
+            f"a stone is sealed in only {gnd['min_sealed']}/{SEAL_SECTORS} sectors "
+            "(--perch-rocks is the designed fail)",
+            21,
+        ), None, None, None, None, None
+    if gnd["size_ratio"] < SIZE_RATIO_MIN:
+        return fail(
+            f"stone footprint ratio {gnd['size_ratio']:.3f} < {SIZE_RATIO_MIN} "
+            "(--uniform-rocks is the designed fail)",
+            22,
+        ), None, None, None, None, None
+    if gnd["rim_tip"] > RIM_TIP_MAX:
+        return fail(
+            f"rim tip {gnd['rim_tip']:.2f} deg > {RIM_TIP_MAX} "
+            "(--sharp-rim is the designed fail)",
+            23,
         ), None, None, None, None, None
     if bb[2] > ZMIN_EPS:
         return fail(f"grounded zmin={bb[2]:.5f}", 16), None, None, None, None, None
@@ -1267,10 +1479,12 @@ def render_still(low, dirt, tex, path, engine):
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.57, -3.51, 2.24)
+    # Aimed at the tile's base and 10% closer than before: the old framing
+    # sat the tile low (top margin 0.27, bottom 0.03) at exactly 0.700 fill.
+    cam.location = (2.313, -3.159, 1.80)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.24)
+    aim.location = (0.0, 0.0, 0.0)
     scene.collection.objects.link(aim)
     con = cam.constraints.new("TRACK_TO")
     con.target = aim
@@ -1320,6 +1534,9 @@ def main():
     p.add_argument("--float-rocks", action="store_true")
     p.add_argument("--box-rocks", action="store_true")
     p.add_argument("--pile-rocks", action="store_true")
+    p.add_argument("--perch-rocks", action="store_true")
+    p.add_argument("--uniform-rocks", action="store_true")
+    p.add_argument("--sharp-rim", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, dirt, tex, _col = check(
@@ -1330,6 +1547,9 @@ def main():
         float_up=args.float_rocks,
         box_rocks=args.box_rocks,
         pile=args.pile_rocks,
+        perch=args.perch_rocks,
+        uniform=args.uniform_rocks,
+        sharp_rim=args.sharp_rim,
     )
     if code:
         return code
