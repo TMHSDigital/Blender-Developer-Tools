@@ -400,6 +400,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "brazier",
+      "dir": "showcase/brazier",
+      "teaches": "A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks.",
+      "witnessesFix": "Recomputed: 6960 tris, three materials with 1680 iron, 2880 coal and 448 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.696×0.696×0.612 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, three feet grounded, every leg biting 2.6 mm into the bowl wall, 36 coals seated 6.4–15.7 mm into the ash with none interpenetrating, 54 mm of freeboard under the rim, and a 51.9 kg density-weighted mass centre 0.466 m up and 154 mm inside the support polygon — an 18.3° tip angle. --tuck-legs exits 19 at 10.2° while the feet still ground and the envelope is unchanged; --overfill exits 18 on the freeboard.",
+      "hero": "docs/gallery/assets/brazier-hero.webp",
+      "preview": "showcase/brazier/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

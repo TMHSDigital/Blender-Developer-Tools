@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>brazier — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/brazier/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="brazier — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/brazier/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/brazier-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="brazier — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/brazier-hero.webp" />
+  <meta name="twitter:image:alt" content="An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks." />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      color-scheme: dark;
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>brazier</h1>
+    <p>A procedural iron brazier — spun bowl with a rolled rim on three forged legs, a bed of ash and a heap of broken glowing charcoal — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks.">
+      <img src="../assets/brazier-hero.webp" alt="An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks." width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 6960 tris, three materials with 1680 iron, 2880 coal and 448 ash faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.696×0.696×0.612 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, three feet grounded, every leg biting 2.6 mm into the bowl wall, 36 coals seated 6.4–15.7 mm into the ash with none interpenetrating, 54 mm of freeboard under the rim, and a 51.9 kg density-weighted mass centre 0.466 m up and 154 mm inside the support polygon — an 18.3° tip angle. --tuck-legs exits 19 at 10.2° while the feet still ground and the envelope is unchanged; --overfill exits 18 on the freeboard.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/brazier/brazier.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A fire brazier: a spun-iron bowl with a rolled rim, three forged legs swept in one piece from the bowl wall to curled feet, a bed of ash in the bowl and a heap of thirty-six broken, glowing charcoal lumps on it. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2>What it composes</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>lathed bowl and ash, swept legs, cleaved coal lumps in one <code>bmesh</code></td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>rusted rough iron, pale ash, charcoal with emissive cracks masked by noise</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>one hull for the bowl, one per leg, merged into a compound</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<h2>The budget that matters</h2>
+<p>A brazier holds burning coals, so the thing it must not do is tip when someone knocks it. That is invisible to every envelope check: legs tucked in under the bowl still reach the floor, still ground the piece, and still fit inside the bowl&#x27;s own bounding box.</p>
+<p>The piece recomputes stability from the finished mesh:</p>
+<ul><li><strong>Centre of mass.</strong> Signed tetrahedra over every closed shell, each triangle weighted by its material&#x27;s density (iron 7850, coal 500, ash 600 kg/m³). The bowl dominates: 51.9 kg in all, centred on the axis at 0.466 m.</li><li><strong>Support polygon.</strong> The convex hull, in plan, of the leg vertices that lie on the floor.</li><li><strong>Tip angle.</strong> <code>atan(d / z)</code>, where <code>d</code> is the distance from the mass centre&#x27;s plan position to the nearest support edge and <code>z</code> is its height. This is the lean the brazier survives before it goes over. Measured 18.30° against a 13° floor.</li></ul>
+<p><code>--tuck-legs</code> is the falsifier built for exactly this. It brings the feet in from 0.29 m to 0.15 m of the axis. They still ground (zmin and the three-feet gate pass), the rim still sets the envelope (the AABB is unchanged), and every other budget passes. Only the tip angle sees it: 10.23°.</p>
+<h2>Budgets</h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; every one is byte-identical on 4.5.11 and 5.1.2 (only the glTF file size differs, by 4 bytes, which is exporter metadata and not a budget).</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>6600–8200</td><td>6960</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2198</td></tr><tr><td>Material slots</td><td>exactly 3, distinct</td><td>3</td></tr><tr><td>Iron faces</td><td>≥ 1400</td><td>1680</td></tr><tr><td>Coal faces</td><td>≥ 2800</td><td>2880</td></tr><tr><td>Ash faces</td><td>≥ 380</td><td>448</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0006, 0.0006)–(0.9994, 0.9994)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>0.696 × 0.696 × 0.612 m ± 0.020</td><td>0.6960 × 0.6960 × 0.6118</td></tr><tr><td>Collider triangles</td><td>≤ 400</td><td>240 (four hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~450 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Named feet</td><td>3 legs, each zmin ≤ 1e-3</td><td>3 at 0.00000</td></tr><tr><td>Legs bite the bowl</td><td>deepest leg vertex inside the bowl ≥ 1.5 mm</td><td>2.58 mm</td></tr><tr><td>Coal seat</td><td>36 coals, deepest vertex inside the ash 4–30 mm</td><td>6.40–15.69 mm</td></tr><tr><td>Freeboard</td><td>rim above the highest coal or ash ≥ 30 mm</td><td>53.95 mm</td></tr><tr><td>Tip angle</td><td>≥ 13°</td><td>18.30°</td></tr><tr><td>Coal interpenetration</td><td>0 pairs</td><td>0</td></tr><tr><td>Coal size spread</td><td>largest footprint over smallest ≥ 1.35</td><td>5.64</td></tr></tbody></table></div>
+<p>Real-world size: a 0.70 m bowl, rim 0.61 m off the floor — a courtyard or hall brazier.</p>
+<h2>Construction</h2>
+<ul><li><strong>Bowl.</strong> A half-ellipsoid spun from sheet iron, with a rolled bead at the lip. The inner wall is the outer one offset along its own normal by <code>WALL</code> (8 mm), so the wall keeps its thickness where the bowl runs flat.</li><li><strong>Legs.</strong> A chamfered-square bar (no 90° edges), swept in one piece:</li><li>The bar leaves the bowl along the wall&#x27;s normal, starting <code>LEG_BITE</code> inside the iron.</li><li>It bends down and out on a Bézier whose last handle is level, so it arrives flat.</li><li>It runs level on the floor with a flat face down, and ends in a curled toe.</li><li>The section frame is fixed to each leg&#x27;s own vertical plane.</li><li><strong>Ash.</strong> A lathed dome whose edge follows the inner wall <code>ASH_BITE</code> outside it. The bed is held by the bowl, not resting beside it.</li><li><strong>Coals.</strong> Each coal is an icosphere scaled to a lump, tumbled a few degrees and cleaved by three closed-form planes, so it reads as split charcoal and not a pebble (&quot;rock is broken&quot;). They are flat-shaded. Thirty-six are packed on a golden-angle spiral: each walks outward until it clears every placed coal by the two lumps&#x27; own plan radii (read off their vertices) plus <code>COAL_GAP</code>, and stays inside the inner wall. Each is then sunk into the ash by a fraction that varies with its index.</li></ul>
+<h2>Findings the budgets forced</h2>
+<ul><li><strong>Coal count.</strong> Packing &quot;as many coals as fit&quot; made the coal count, and so the triangle budget, move with any falsifier that changed the space or the spacing. <code>--overfill</code>, <code>--pile-coals</code> and <code>--uniform-coals</code> all exited 4 or 5 instead of their targets. The heap is now a fixed <code>N_COALS</code> = 36.</li><li><strong>Coplanar faces.</strong> One coplanar cross-shell pair: two buried underside triangles on neighbouring lumps, 0.2° apart in normal and 0.04 mm apart in plane. Stood level, similar lumps put near-parallel faces side by side. Each lump now leans a closed-form few degrees, and the count is 0.</li><li><strong>Stale face references.</strong> A dict keyed by <code>BMFace</code> returned the wrong face after <code>create_icosphere(subdivisions=2)</code> freed and reallocated face memory. UV islands now live in a face int layer, and the provisional strip UVs are written straight into the loop layer.</li></ul>
+<h2>Conventions walked</h2>
+<p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below, proven on all three binaries</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15</td></tr><tr><td>Named supports</td><td>yes</td><td>three feet (<code>--float-foot</code>)</td></tr><tr><td>A joint bites</td><td>yes</td><td>each leg&#x27;s deepest vertex inside the bowl by signed distance (<code>--short-legs</code>)</td></tr><tr><td>A bent bar is one sweep</td><td>yes</td><td>each leg is one sweep from bowl to toe</td></tr><tr><td>Iron is not chrome</td><td>yes</td><td>near-black and rust, roughness 0.55–0.85, metallic 0.65</td></tr><tr><td>A vessel has a base and a belly</td><td>yes</td><td>the bowl&#x27;s wall is offset along its normal</td></tr><tr><td>A vessel holds its contents</td><td>yes</td><td>the ash bites the inner wall; freeboard is asserted (<code>--overfill</code>)</td></tr><tr><td>Carried parts bite their bearers</td><td>yes</td><td>coals seated in the ash, banded (<code>--float-coals</code>)</td></tr><tr><td>Rock is broken, not smooth</td><td>yes</td><td>cleaved, flat-shaded lumps</td></tr><tr><td>Scattered parts do not interpenetrate</td><td>yes</td><td>exit 20 (<code>--pile-coals</code>)</td></tr><tr><td>Scatter varies in size</td><td>yes</td><td>exit 21 (<code>--uniform-coals</code>)</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>bowl and ash smooth (spun, powdery); legs flat (forged bar); coals flat (broken)</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>iron, coal, ash</td></tr><tr><td>Edge treatment: no right angles</td><td>yes, by construction</td><td>chamfered-square legs (45° steps), lathed bowl; not a separate budget</td></tr><tr><td>Sort bmesh operator inputs</td><td>n/a</td><td>no set-fed operator is run</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>every falsifier leaves the AABB unchanged</td></tr><tr><td>Timber, masonry, rope, fixtures, roofs, rings, paint</td><td>no</td><td>the piece has none of these</td></tr></tbody></table></div>
+<h2>Falsifiers</h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All ten were run on 4.5.11, 5.1.2 and 5.2.1 and exited the same declared code on all three.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex under the bowl</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-foot</code></td><td>named feet</td><td>lifts one foot 12 mm; the other two still ground the AABB</td><td>16</td></tr><tr><td><code>--short-legs</code></td><td>leg-to-bowl bite</td><td>starts every leg 12 mm off the wall; −10.0 mm</td><td>17</td></tr><tr><td><code>--float-coals</code></td><td>coal seat</td><td>lifts every coal 30 mm off the ash; −13.9 to −23.3 mm</td><td>18</td></tr><tr><td><code>--overfill</code></td><td>freeboard</td><td>raises the ash and heap 45 mm, still below the rim; 8.3 mm</td><td>18</td></tr><tr><td><code>--tuck-legs</code></td><td>tip angle</td><td>brings the feet in to 0.15 m of the axis; 10.23°</td><td>19</td></tr><tr><td><code>--pile-coals</code></td><td>coal interpenetration</td><td>packs coals at 0.6 of their spacing; 40 pairs</td><td>20</td></tr><tr><td><code>--uniform-coals</code></td><td>coal size spread</td><td>one size for every coal; 1.198</td><td>21</td></tr></tbody></table></div>
+<h2>Exit codes</h2>
+<p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a foot floating (<code>--lift-z</code>, <code>--float-foot</code>)</td></tr><tr><td>17</td><td>A leg not biting the bowl (<code>--short-legs</code>)</td></tr><tr><td>18</td><td>Coal seat or freeboard (<code>--float-coals</code>, <code>--overfill</code>)</td></tr><tr><td>19</td><td>Tip angle below floor (<code>--tuck-legs</code>)</td></tr><tr><td>20</td><td>Coals interpenetrate (<code>--pile-coals</code>)</td></tr><tr><td>21</td><td>Coal size spread below floor (<code>--uniform-coals</code>)</td></tr></tbody></table></div>
+<h2>Run it</h2>
+<pre><code># Budget check, no render. ~2.2 s on 4.5, ~2.0 s on 5.1, ~2.4 s on 5.2.
+blender --background --python brazier.py --
+
+# Falsifier: the legs tuck in under the bowl. Must exit 19.
+blender --background --python brazier.py -- --tuck-legs
+
+# Falsifier: the bowl is filled to the brim. Must exit 18.
+blender --background --python brazier.py -- --overfill
+
+# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
+blender --background --python brazier.py -- --output brazier.webp</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<p>The render adds two render-only lights of its own: a point light above the coals for the fire, and a spot for the warm floor pool. The camera is low and close, so the house area wedge landed on the back wall, and an area lamp brought near lit the whole floor.</p>
+<h2>Cross-version measurements</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>6960</td><td>6960</td><td>6960</td></tr><tr><td>LOD1 / LOD2 tris</td><td>3480 / 1530</td><td>same</td><td>same</td></tr><tr><td>Face counts (iron / coal / ash)</td><td>1680 / 2880 / 448</td><td>same</td><td>same</td></tr><tr><td>Outer AABB</td><td>0.6960 × 0.6960 × 0.6118</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>240</td><td>240</td><td>240</td></tr><tr><td>Mass / tip angle</td><td>51.87 kg / 18.30°</td><td>same</td><td>same</td></tr><tr><td>glTF bytes</td><td>450940</td><td>450940</td><td>450936</td></tr><tr><td>Check wall-clock</td><td>~2.2 s</td><td>~2.0 s</td><td>~2.4 s</td></tr></tbody></table></div>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/brazier/brazier.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/brazier/brazier.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready brazier — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural iron brazier: a spun bowl
+with a rolled rim on three forged legs, a bed of ash in the bowl and a
+heap of broken, glowing coals on it. Carried through UVs, three
+materials (iron, coal, ash), a high-to-low normal bake, an LOD chain, a
+compound convex collider, and a Unity glTF export.
+
+The budget that matters here is the one a brazier can fail invisibly: it
+holds burning coals, so it must not tip when it is knocked. The piece
+recomputes the centre of mass from the closed shells, weighted by the
+density of each material, and the support polygon from the feet that
+touch the floor, and asserts the angle it can lean before it tips.
+Legs tucked in under the bowl still ground the piece and still fit its
+bounding box; only the tip angle knows the difference.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--float-foot`` the named feet,
+``--short-legs`` the leg-to-bowl bite, ``--float-coals`` the coal seat,
+``--overfill`` the freeboard, ``--tuck-legs`` the tip angle,
+``--pile-coals`` coal interpenetration, ``--uniform-coals`` coal size
+variation.
+
+No randomness: every coal&#x27;s size, shape and cleave is a closed-form term
+of its index. DECIMATE COLLAPSE triangle counts are not byte-identical
+across Blender versions — the LOD gate is a ratio band.
+
+    blender --background --python brazier.py --
+    blender --background --python brazier.py -- --tuck-legs
+    blender --background --python brazier.py -- --output brazier.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># The bowl: a half-ellipsoid spun from sheet iron, rim at RIM_Z, with a</span>
+<span class="c"># rolled bead at the lip. The inner wall is the outer wall offset along</span>
+<span class="c"># its own normal by WALL.</span>
+RIM_R = <span class="n">0.340</span>
+RIM_Z = <span class="n">0.600</span>
+DEPTH = <span class="n">0.200</span>
+WALL = <span class="n">0.008</span>
+BEAD_R = <span class="n">0.010</span>
+BOWL_SEG = <span class="n">32</span>
+BOWL_STEPS = <span class="n">14</span>
+
+<span class="c"># Three forged legs: a chamfered-square bar swept in one piece from inside</span>
+<span class="c"># the bowl wall, out and down to a flat foot, ending in a small curl.</span>
+N_LEGS = <span class="n">3</span>
+LEG_A = <span class="n">0.011</span>
+LEG_CHAMFER = <span class="n">0.30</span>
+ATTACH_PHI = math.radians(<span class="n">40.0</span>)
+LEG_BITE = <span class="n">0.003</span>
+LEG_CONE = <span class="n">0.25</span>
+FOOT_R = <span class="n">0.290</span>
+TUCK_FOOT_R = <span class="n">0.150</span>
+SHORT_LEG_GAP = <span class="n">0.012</span>
+FLOAT_FOOT = <span class="n">0.012</span>
+
+<span class="c"># Ash: a shallow dome whose rim bites into the bowl&#x27;s inner wall.</span>
+ASH_Z = <span class="n">0.490</span>
+ASH_DOME = <span class="n">0.035</span>
+ASH_BITE = <span class="n">0.003</span>
+ASH_SEG = <span class="n">32</span>
+OVERFILL = <span class="n">0.045</span>
+
+<span class="c"># Coals: broken lumps (a cleaved icosphere, flat-shaded) sunk into the</span>
+<span class="c"># ash. Sizes vary by a closed-form draw on the index.</span>
+COAL_BASE = <span class="n">0.026</span>
+COAL_VAR = <span class="n">0.40</span>
+COAL_SINK = <span class="n">0.30</span>
+COAL_GAP = <span class="n">0.002</span>
+COAL_TRIES = <span class="n">90</span>
+<span class="c"># A heap is a fixed number of coals: packing as many as fit made the</span>
+<span class="c"># count, and so the triangle budget, move with every falsifier that</span>
+<span class="c"># changes the space or the spacing.</span>
+N_COALS = <span class="n">36</span>
+PILE_SCALE = <span class="n">0.60</span>
+FLOAT_COALS = <span class="n">0.030</span>
+
+DENSITY = {<span class="n">0</span>: <span class="n">7850.0</span>, <span class="n">1</span>: <span class="n">500.0</span>, <span class="n">2</span>: <span class="n">600.0</span>}
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">0.696</span>, <span class="n">0.696</span>, <span class="n">0.612</span>)
+
+BASE_TRIS_MIN = <span class="n">6600</span>
+BASE_TRIS_MAX = <span class="n">8200</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">3</span>
+IRON_FACES_MIN = <span class="n">1400</span>
+COAL_FACES_MIN = <span class="n">2800</span>
+ASH_FACES_MIN = <span class="n">380</span>
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">400</span>
+BAKE_RES = <span class="n">512</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+LIFT_Z = <span class="n">0.05</span>
+FOOT_Z_MAX = <span class="n">1e-3</span>
+LEG_BITE_MIN = <span class="n">0.0015</span>
+COAL_SEAT_MIN = <span class="n">0.004</span>
+COAL_SEAT_MAX = <span class="n">0.030</span>
+FREEBOARD_MIN = <span class="n">0.030</span>
+TIP_MIN = math.radians(<span class="n">13.0</span>)
+COAL_SPREAD_MIN = <span class="n">1.35</span>
+
+IRON_IDX = <span class="n">0</span>
+COAL_IDX = <span class="n">1</span>
+ASH_IDX = <span class="n">2</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="c"># --- profiles ---------------------------------------------------------------</span>
+
+
+<span class="k">def</span> outer_point(phi):
+    <span class="s">&quot;&quot;&quot;Outer bowl wall at polar angle phi (0 at the bottom pole, pi/2 at the rim).&quot;&quot;&quot;</span>
+    <span class="k">return</span> Vector((RIM_R * math.sin(phi), RIM_Z - DEPTH * math.cos(phi)))
+
+
+<span class="k">def</span> outer_normal(phi):
+    p = outer_point(phi)
+    n = Vector((p.x / RIM_R ** <span class="n">2</span>, (p.y - RIM_Z) / DEPTH ** <span class="n">2</span>))
+    <span class="k">return</span> n.normalized()
+
+
+<span class="k">def</span> bowl_profile():
+    <span class="s">&quot;&quot;&quot;(r, z) loop from the outer pole, over the rolled bead, to the inner pole.
+
+    The inner wall is the outer one offset along its own normal, so the
+    wall is WALL thick everywhere; a sideways offset thins it to nothing
+    where the bowl runs flat.
+    &quot;&quot;&quot;</span>
+    phi_top = math.acos((BEAD_R + <span class="n">0.002</span>) / DEPTH)
+    phis = [phi_top * k / BOWL_STEPS <span class="k">for</span> k <span class="k">in</span> range(BOWL_STEPS + <span class="n">1</span>)]
+    outer = [outer_point(p) <span class="k">for</span> p <span class="k">in</span> phis]
+    inner = [outer_point(p) - outer_normal(p) * WALL <span class="k">for</span> p <span class="k">in</span> phis]
+    centre = Vector((RIM_R - <span class="n">0.002</span>, RIM_Z + <span class="n">0.002</span>))
+    bead = []
+    lo = math.atan2(outer[-<span class="n">1</span>].y - centre.y, outer[-<span class="n">1</span>].x - centre.x)
+    hi = math.atan2(inner[-<span class="n">1</span>].y - centre.y, inner[-<span class="n">1</span>].x - centre.x) + <span class="n">2.0</span> * math.pi
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, <span class="n">8</span>):
+        a = lo + (hi - lo) * k / <span class="n">8</span>
+        bead.append(centre + Vector((math.cos(a), math.sin(a))) * BEAD_R)
+    loop = [Vector((<span class="n">0.0</span>, outer[<span class="n">0</span>].y))] + outer[<span class="n">1</span>:] + bead + list(reversed(inner[<span class="n">1</span>:]))
+    loop.append(Vector((<span class="n">0.0</span>, inner[<span class="n">0</span>].y)))
+    <span class="k">return</span> loop, inner
+
+
+<span class="k">def</span> inner_radius(inner, z):
+    <span class="s">&quot;&quot;&quot;Inner wall radius at height z, linear between the offset samples.&quot;&quot;&quot;</span>
+    pts = sorted(inner, key=<span class="k">lambda</span> p: p.y)
+    <span class="k">if</span> z &lt;= pts[<span class="n">0</span>].y:
+        <span class="k">return</span> <span class="n">0.0</span>
+    <span class="k">for</span> a, b <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
+        <span class="k">if</span> a.y &lt;= z &lt;= b.y:
+            f = (z - a.y) / (b.y - a.y) <span class="k">if</span> b.y &gt; a.y <span class="k">else</span> <span class="n">0.0</span>
+            <span class="k">return</span> a.x + (b.x - a.x) * f
+    <span class="k">return</span> pts[-<span class="n">1</span>].x
+
+
+<span class="c"># --- construction -----------------------------------------------------------</span>
+
+
+<span class="k">def</span> stamp(ctx, face, island, uvmap):
+    <span class="s">&quot;&quot;&quot;Tag ``face`` with its UV island and write its provisional strip UVs.
+
+    Kept in bmesh layers, not a dict keyed by BMFace: an operator that
+    frees and reallocates faces (create_icosphere with subdivisions=2)
+    hands a later face a dead face&#x27;s identity, and the dict then answers
+    for the wrong face.
+    &quot;&quot;&quot;</span>
+    face[ctx[<span class="s">&quot;isl&quot;</span>]] = island
+    <span class="k">for</span> loop <span class="k">in</span> face.loops:
+        loop[ctx[<span class="s">&quot;uv&quot;</span>]].uv = uvmap[loop.vert]
+
+
+<span class="k">def</span> new_island(ctx):
+    ctx[<span class="s">&quot;next&quot;</span>] += <span class="n">1</span>
+    <span class="k">return</span> ctx[<span class="s">&quot;next&quot;</span>]
+
+
+<span class="k">def</span> lathe(bm, profile, n, mat_idx, ctx, smooth=<span class="k">True</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about Z; r == 0 at the ends makes a pole.
+
+    One strip island (profile length by angle); pole fans put their pole
+    half a column over so no two faces overlap in UV.
+    &quot;&quot;&quot;</span>
+    island = new_island(ctx)
+    s = [<span class="n">0.0</span>]
+    <span class="k">for</span> a, b <span class="k">in</span> zip(profile, profile[<span class="n">1</span>:]):
+        s.append(s[-<span class="n">1</span>] + (b - a).length)
+    rings = []
+    <span class="k">for</span> p <span class="k">in</span> profile:
+        <span class="k">if</span> p.x &lt;= <span class="n">0.0</span>:
+            rings.append(bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, p.y)))
+            <span class="k">continue</span>
+        rings.append([bm.verts.new((p.x * math.cos(<span class="n">2</span> * math.pi * k / n),
+                                    p.x * math.sin(<span class="n">2</span> * math.pi * k / n), p.y))
+                      <span class="k">for</span> k <span class="k">in</span> range(n)])
+    faces = []
+    <span class="k">for</span> k <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+        a, b = rings[k], rings[k + <span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            <span class="k">if</span> isinstance(a, list) <span class="k">and</span> isinstance(b, list):
+                vs = (a[i], a[j], b[j], b[i])
+                uv = {a[i]: (s[k], i / n), a[j]: (s[k], (i + <span class="n">1</span>) / n),
+                      b[j]: (s[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n), b[i]: (s[k + <span class="n">1</span>], i / n)}
+            <span class="k">elif</span> isinstance(b, list):
+                vs = (a, b[j], b[i])
+                uv = {a: (s[k], (i + <span class="n">0.5</span>) / n), b[j]: (s[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n),
+                      b[i]: (s[k + <span class="n">1</span>], i / n)}
+            <span class="k">else</span>:
+                vs = (a[i], a[j], b)
+                uv = {a[i]: (s[k], i / n), a[j]: (s[k], (i + <span class="n">1</span>) / n),
+                      b: (s[k + <span class="n">1</span>], (i + <span class="n">0.5</span>) / n)}
+            f = bm.faces.new(vs)
+            f.material_index = mat_idx
+            f.smooth = smooth
+            stamp(ctx, f, island, uv)
+            faces.append(f)
+    <span class="k">return</span> faces
+
+
+<span class="k">def</span> leg_section():
+    <span class="s">&quot;&quot;&quot;A chamfered square bar, flat side down: (side, up) offsets.&quot;&quot;&quot;</span>
+    a, c = LEG_A, LEG_A * LEG_CHAMFER
+    pts = [(a, -(a - c)), (a, a - c), (a - c, a), (-(a - c), a),
+           (-a, a - c), (-a, -(a - c)), (-(a - c), -a), (a - c, -a)]
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> bezier(p0, p1, p2, p3, n):
+    out = []
+    <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>):
+        t = k / n
+        u = <span class="n">1.0</span> - t
+        out.append(p0 * u ** <span class="n">3</span> + p1 * <span class="n">3</span> * u * u * t + p2 * <span class="n">3</span> * u * t * t + p3 * t ** <span class="n">3</span>)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> leg_path(foot_r, short=<span class="k">False</span>, float_foot=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;(rho, z) centreline, from inside the bowl wall to the curled foot.
+
+    One sweep: the bar leaves the bowl along the wall&#x27;s normal, bends down
+    and out, runs level on the floor with a flat face down, and curls up.
+    &quot;&quot;&quot;</span>
+    base = outer_point(ATTACH_PHI)
+    n = outer_normal(ATTACH_PHI)
+    start = base + n * (SHORT_LEG_GAP <span class="k">if</span> short <span class="k">else</span> -LEG_BITE)
+    p1 = base + n * <span class="n">0.030</span>
+    lift = FLOAT_FOOT <span class="k">if</span> float_foot <span class="k">else</span> <span class="n">0.0</span>
+    foot0 = Vector((foot_r - <span class="n">0.015</span>, LEG_A + lift))
+    foot1 = Vector((foot_r + <span class="n">0.015</span>, LEG_A + lift))
+    pts = [start]
+    <span class="c"># The handle into the foot is level, so the bar arrives flat on the floor.</span>
+    pts += bezier(p1, p1 + n * <span class="n">0.10</span>, foot0 - Vector((<span class="n">0.10</span>, <span class="n">0.0</span>)), foot0, <span class="n">12</span>)
+    pts += [foot0 + (foot1 - foot0) * (k / <span class="n">3</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, <span class="n">4</span>)]
+    curl = bezier(foot1, foot1 + Vector((<span class="n">0.012</span>, <span class="n">0.0</span>)), foot1 + Vector((<span class="n">0.024</span>, <span class="n">0.006</span>)),
+                  foot1 + Vector((<span class="n">0.026</span>, <span class="n">0.020</span>)), <span class="n">4</span>)
+    pts += curl[<span class="n">1</span>:]
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> sweep_bar(bm, pts, section, side, mat_idx, ctx, cone=LEG_CONE):
+    <span class="s">&quot;&quot;&quot;Sweep ``section`` along ``pts`` (3D), frame fixed to the path&#x27;s plane.
+
+    Ends close in a blunt cone so there is no n-gon cap. Returns vertices.
+    &quot;&quot;&quot;</span>
+    island = new_island(ctx)
+    m = len(pts)
+    tans = []
+    <span class="k">for</span> i <span class="k">in</span> range(m):
+        d = pts[min(i + <span class="n">1</span>, m - <span class="n">1</span>)] - pts[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        tans.append(d.normalized())
+    n = len(section)
+    rings = []
+    <span class="k">for</span> p, t <span class="k">in</span> zip(pts, tans):
+        s = side - t * side.dot(t)
+        s.normalize()
+        up = t.cross(s)
+        rings.append([bm.verts.new(p + s * x + up * y) <span class="k">for</span> x, y <span class="k">in</span> section])
+    arc = [<span class="n">0.0</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, m):
+        arc.append(arc[-<span class="n">1</span>] + (pts[i] - pts[i - <span class="n">1</span>]).length)
+    <span class="k">for</span> k <span class="k">in</span> range(m - <span class="n">1</span>):
+        a, b = rings[k], rings[k + <span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            f = bm.faces.new((a[i], a[j], b[j], b[i]))
+            f.material_index = mat_idx
+            f.smooth = <span class="k">False</span>
+            stamp(ctx, f, island, {a[i]: (arc[k], i / n), a[j]: (arc[k], (i + <span class="n">1</span>) / n),
+                                   b[j]: (arc[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n), b[i]: (arc[k + <span class="n">1</span>], i / n)})
+    reach = cone * LEG_A
+    <span class="k">for</span> ring, p, t, sign, s_end <span class="k">in</span> ((rings[<span class="n">0</span>], pts[<span class="n">0</span>], tans[<span class="n">0</span>], -<span class="n">1.0</span>, arc[<span class="n">0</span>]),
+                                    (rings[-<span class="n">1</span>], pts[-<span class="n">1</span>], tans[-<span class="n">1</span>], <span class="n">1.0</span>, arc[-<span class="n">1</span>])):
+        pole = bm.verts.new(p + t * (sign * reach))
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            f = bm.faces.new((pole, ring[i], ring[j]))
+            f.material_index = mat_idx
+            f.smooth = <span class="k">False</span>
+            stamp(ctx, f, island, {pole: (s_end + sign * reach, (i + <span class="n">0.5</span>) / n),
+                                   ring[i]: (s_end, i / n), ring[j]: (s_end, (i + <span class="n">1</span>) / n)})
+    <span class="k">return</span> [v <span class="k">for</span> r <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> r]
+
+
+<span class="k">def</span> coal_size(i, uniform=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Closed-form size draw per coal: golden-ratio spacing, no RNG.&quot;&quot;&quot;</span>
+    <span class="k">if</span> uniform:
+        <span class="c"># One draw for every coal, small enough that the full heap still</span>
+        <span class="c"># fits: the coals do not set the envelope, so nothing else moves.</span>
+        <span class="k">return</span> COAL_BASE * (<span class="n">1.0</span> - COAL_VAR * <span class="n">0.5</span>)
+    f = (i * <span class="n">0.6180339887</span> + <span class="n">0.37</span>) % <span class="n">1.0</span>
+    <span class="k">return</span> COAL_BASE * (<span class="n">1.0</span> + COAL_VAR * (f - <span class="n">0.5</span>) * <span class="n">2.0</span>)
+
+
+<span class="k">def</span> coal_axes(i, size):
+    <span class="s">&quot;&quot;&quot;Ellipsoid half-axes: a charcoal lump is longer than it is tall.&quot;&quot;&quot;</span>
+    e = (i * <span class="n">0.4142135</span> + <span class="n">0.2</span>) % <span class="n">1.0</span>
+    <span class="k">return</span> (size * (<span class="n">1.15</span> + <span class="n">0.25</span> * e), size * (<span class="n">0.95</span> - <span class="n">0.15</span> * e), size * <span class="n">0.72</span>)
+
+
+_ICO = {}
+
+
+<span class="k">def</span> ico_unit():
+    <span class="s">&quot;&quot;&quot;Unit icosphere (subdivisions 2): vertex positions and face index lists.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="k">not</span> _ICO:
+        tmp = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_icosphere(tmp, subdivisions=<span class="n">2</span>, radius=<span class="n">1.0</span>)
+            tmp.verts.index_update()
+            _ICO[<span class="s">&quot;verts&quot;</span>] = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> tmp.verts]
+            _ICO[<span class="s">&quot;faces&quot;</span>] = [[v.index <span class="k">for</span> v <span class="k">in</span> f.verts] <span class="k">for</span> f <span class="k">in</span> tmp.faces]
+        <span class="k">finally</span>:
+            tmp.free()
+    <span class="k">return</span> _ICO[<span class="s">&quot;verts&quot;</span>], _ICO[<span class="s">&quot;faces&quot;</span>]
+
+
+<span class="k">def</span> coal_shape(axes, i):
+    <span class="s">&quot;&quot;&quot;A broken lump, centred on the origin: a scaled icosphere cleaved by three planes.
+
+    Every vertex beyond a plane is projected onto it, so the lump reads as
+    split charcoal rather than a pebble.
+    &quot;&quot;&quot;</span>
+    unit, _faces = ico_unit()
+    yaw = i * <span class="n">2.39996</span>
+    c, s = math.cos(yaw), math.sin(yaw)
+    pts = []
+    <span class="k">for</span> u <span class="k">in</span> unit:
+        x, y, z = u.x * axes[<span class="n">0</span>], u.y * axes[<span class="n">1</span>], u.z * axes[<span class="n">2</span>]
+        pts.append(Vector((c * x - s * y, s * x + c * y, z)))
+    <span class="c"># Tumbled, not set upright: each lump leans by a closed-form few</span>
+    <span class="c"># degrees. Stood level, two similar lumps once carried a pair of</span>
+    <span class="c"># near-parallel buried faces in one plane (a coplanar pair).</span>
+    tilt = Matrix.Rotation(<span class="n">0.18</span> * (((i * <span class="n">0.6180340</span>) % <span class="n">1.0</span>) - <span class="n">0.5</span>), <span class="n">3</span>, <span class="s">&quot;X&quot;</span>) @         Matrix.Rotation(<span class="n">0.18</span> * (((i * <span class="n">0.4142136</span>) % <span class="n">1.0</span>) - <span class="n">0.5</span>), <span class="n">3</span>, <span class="s">&quot;Y&quot;</span>)
+    pts = [tilt @ p <span class="k">for</span> p <span class="k">in</span> pts]
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>):
+        a = yaw + k * <span class="n">2.1</span> + <span class="n">0.4</span>
+        el = <span class="n">0.35</span> + <span class="n">0.25</span> * ((i + k) % <span class="n">3</span>)
+        nrm = Vector((math.cos(a) * math.cos(el), math.sin(a) * math.cos(el), math.sin(el)))
+        d = <span class="n">0.70</span> * min(axes) + <span class="n">0.18</span> * max(axes) * (((i * <span class="n">7</span> + k * <span class="n">3</span>) % <span class="n">5</span>) / <span class="n">5.0</span>)
+        <span class="k">for</span> p <span class="k">in</span> pts:
+            h = p.dot(nrm)
+            <span class="k">if</span> h &gt; d:
+                p -= nrm * (h - d)
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> add_coal(bm, centre, shape, mat_idx):
+    <span class="s">&quot;&quot;&quot;Emit a lump built by ``coal_shape`` at ``centre``. Flat-shaded.&quot;&quot;&quot;</span>
+    _unit, faces = ico_unit()
+    vs = [bm.verts.new(p + centre) <span class="k">for</span> p <span class="k">in</span> shape]
+    <span class="k">for</span> idx <span class="k">in</span> faces:
+        f = bm.faces.new([vs[k] <span class="k">for</span> k <span class="k">in</span> idx])
+        f.material_index = mat_idx
+        f.smooth = <span class="k">False</span>
+    <span class="k">return</span> vs
+
+
+<span class="k">def</span> coal_layout(inner, ash_z, r_edge, pile=<span class="k">False</span>, uniform=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Greedy sunflower packing: each coal at the smallest radius that clears the rest.
+
+    Coal ``i`` tries the golden angle times ``i`` and walks outward until
+    its centre is at least the sum of its own and each placed coal&#x27;s plan
+    radius bound (plus COAL_GAP) from every one of them, and its bound
+    stays inside the inner wall at the height of its base. Bounds come
+    from the same constants that size each coal, so a bigger coal takes
+    more room. ``pile`` shrinks the spacing so neighbours interpenetrate.
+    &quot;&quot;&quot;</span>
+    shapes = {}
+
+    <span class="k">def</span> shape(i):
+        <span class="k">if</span> i <span class="k">not</span> <span class="k">in</span> shapes:
+            shapes[i] = coal_shape(coal_axes(i, coal_size(i, uniform)), i)
+        <span class="k">return</span> shapes[i]
+
+    <span class="k">def</span> bound(i):
+        <span class="c"># The lump&#x27;s own plan radius after cleaving, read off its vertices.</span>
+        <span class="k">return</span> max(math.hypot(p.x, p.y) <span class="k">for</span> p <span class="k">in</span> shape(i))
+
+    <span class="k">def</span> ash_at(rho):
+        <span class="k">return</span> ash_z + ASH_DOME * (<span class="n">1.0</span> - min(<span class="n">1.0</span>, (rho / r_edge) ** <span class="n">2</span>))
+
+    scale = PILE_SCALE <span class="k">if</span> pile <span class="k">else</span> <span class="n">1.0</span>
+    placed = []
+    <span class="k">for</span> i <span class="k">in</span> range(COAL_TRIES):
+        <span class="k">if</span> len(placed) == N_COALS:
+            <span class="k">break</span>
+        b = bound(i)
+        theta = i * <span class="n">2.39996323</span>
+        rho = <span class="n">0.0</span>
+        <span class="k">while</span> <span class="k">True</span>:
+            x, y = rho * math.cos(theta), rho * math.sin(theta)
+            limit = inner_radius(inner, ash_at(rho) - <span class="n">0.02</span>) - COAL_GAP
+            <span class="k">if</span> rho + b &gt; limit:
+                <span class="k">break</span>
+            <span class="k">if</span> all(math.hypot(x - px, y - py) &gt;= (b + pb) * scale + COAL_GAP
+                   <span class="k">for</span> px, py, pb, _i <span class="k">in</span> placed):
+                placed.append((x, y, b, i))
+                <span class="k">break</span>
+            rho += <span class="n">0.002</span>
+    coals = []
+    <span class="k">for</span> x, y, _b, i <span class="k">in</span> placed:
+        size = coal_size(i, uniform)
+        axes = coal_axes(i, size)
+        <span class="c"># Each lump settles a little differently. Sunk to one fraction, two</span>
+        <span class="c"># buried undersides once landed in one plane (a coplanar pair).</span>
+        sink = COAL_SINK + <span class="n">0.06</span> * (((i * <span class="n">0.3819660</span>) % <span class="n">1.0</span>) - <span class="n">0.5</span>)
+        z = ash_at(math.hypot(x, y)) + axes[<span class="n">2</span>] * (<span class="n">1.0</span> - <span class="n">2.0</span> * sink)
+        coals.append((Vector((x, y, z)), shape(i), i))
+    <span class="k">return</span> coals
+
+
+<span class="k">def</span> pack_uvs(bm, ctx, margin=<span class="n">0.06</span>):
+    <span class="s">&quot;&quot;&quot;One grid cell per UV island: strip islands by their layer tag, else a face each.&quot;&quot;&quot;</span>
+    uv, isl = ctx[<span class="s">&quot;uv&quot;</span>], ctx[<span class="s">&quot;isl&quot;</span>]
+    bm.faces.index_update()
+    islands, order = {}, []
+    <span class="k">for</span> face <span class="k">in</span> bm.faces:
+        key = (<span class="s">&quot;s&quot;</span>, face[isl]) <span class="k">if</span> face[isl] <span class="k">else</span> (<span class="s">&quot;f&quot;</span>, face.index)
+        <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> islands:
+            islands[key] = []
+            order.append(key)
+        islands[key].append(face)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(len(order))))
+    rows = max(<span class="n">1</span>, math.ceil(len(order) / cols))
+    cw, ch = <span class="n">1.0</span> / cols, <span class="n">1.0</span> / rows
+    pu, pv = margin * cw * <span class="n">0.5</span>, margin * ch * <span class="n">0.5</span>
+    <span class="k">for</span> idx, key <span class="k">in</span> enumerate(order):
+        faces = islands[key]
+        coords = {}
+        <span class="k">for</span> face <span class="k">in</span> faces:
+            <span class="k">if</span> face[isl]:
+                coords[face.index] = [tuple(loop[uv].uv) <span class="k">for</span> loop <span class="k">in</span> face.loops]
+                <span class="k">continue</span>
+            nrm = face.normal
+            ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
+            pts = []
+            <span class="k">for</span> loop <span class="k">in</span> face.loops:
+                co = loop.vert.co
+                <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                    pts.append((co.x, co.y))
+                <span class="k">elif</span> ax &gt;= ay:
+                    pts.append((co.y, co.z))
+                <span class="k">else</span>:
+                    pts.append((co.x, co.z))
+            coords[face.index] = pts
+        allc = [c <span class="k">for</span> cs <span class="k">in</span> coords.values() <span class="k">for</span> c <span class="k">in</span> cs]
+        minx, maxx = min(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> allc), max(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        miny, maxy = min(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> allc), max(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        dx, dy = max(maxx - minx, <span class="n">1e-8</span>), max(maxy - miny, <span class="n">1e-8</span>)
+        ou, ov = (idx % cols) * cw + pu, (idx // cols) * ch + pv
+        <span class="k">for</span> face <span class="k">in</span> faces:
+            <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, coords[face.index]):
+                loop[uv].uv = (ou + (x - minx) / dx * (cw - <span class="n">2</span> * pu),
+                               ov + (y - miny) / dy * (ch - <span class="n">2</span> * pv))
+
+
+<span class="k">def</span> build_brazier_mesh(
+    name,
+    stray_vert=<span class="k">False</span>,
+    float_foot=<span class="k">False</span>,
+    short_legs=<span class="k">False</span>,
+    float_coals=<span class="k">False</span>,
+    overfill=<span class="k">False</span>,
+    tuck_legs=<span class="k">False</span>,
+    pile_coals=<span class="k">False</span>,
+    uniform_coals=<span class="k">False</span>,
+):
+    profile, inner = bowl_profile()
+    ash_z = ASH_Z + (OVERFILL <span class="k">if</span> overfill <span class="k">else</span> <span class="n">0.0</span>)
+    r_edge = inner_radius(inner, ash_z) + ASH_BITE
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        ctx = {<span class="s">&quot;uv&quot;</span>: bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>),
+               <span class="s">&quot;isl&quot;</span>: bm.faces.layers.int.new(<span class="s">&quot;UVIsland&quot;</span>), <span class="s">&quot;next&quot;</span>: <span class="n">0</span>}
+        lathe(bm, profile, BOWL_SEG, IRON_IDX, ctx)
+        foot_r = TUCK_FOOT_R <span class="k">if</span> tuck_legs <span class="k">else</span> FOOT_R
+        <span class="k">for</span> k <span class="k">in</span> range(N_LEGS):
+            az = <span class="n">2.0</span> * math.pi * k / N_LEGS + math.pi / <span class="n">2.0</span>
+            radial = Vector((math.cos(az), math.sin(az), <span class="n">0.0</span>))
+            side = Vector((-math.sin(az), math.cos(az), <span class="n">0.0</span>))
+            path = leg_path(foot_r, short=short_legs, float_foot=(float_foot <span class="k">and</span> k == <span class="n">0</span>))
+            pts = [radial * p.x + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, p.y)) <span class="k">for</span> p <span class="k">in</span> path]
+            sweep_bar(bm, pts, leg_section(), side, IRON_IDX, ctx)
+        <span class="c"># Ash: the dome, then down the inner wall (biting it) to the bottom.</span>
+        ash = [Vector((<span class="n">0.0</span>, inner[<span class="n">0</span>].y - ASH_BITE))]
+        lows = sorted(inner, key=<span class="k">lambda</span> p: p.y)
+        <span class="k">for</span> p <span class="k">in</span> lows:
+            <span class="k">if</span> inner[<span class="n">0</span>].y + <span class="n">0.004</span> &lt; p.y &lt; ash_z - <span class="n">0.004</span>:
+                ash.append(Vector((inner_radius(inner, p.y) + ASH_BITE, p.y)))
+        ash.append(Vector((r_edge, ash_z)))
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, <span class="n">6</span>):
+            rho = r_edge * (<span class="n">1.0</span> - k / <span class="n">6.0</span>)
+            ash.append(Vector((rho, ash_z + ASH_DOME * (<span class="n">1.0</span> - (rho / r_edge) ** <span class="n">2</span>))))
+        ash.append(Vector((<span class="n">0.0</span>, ash_z + ASH_DOME)))
+        lathe(bm, ash, ASH_SEG, ASH_IDX, ctx)
+        <span class="k">for</span> centre, shape, _i <span class="k">in</span> coal_layout(inner, ash_z, r_edge, pile=pile_coals,
+                                             uniform=uniform_coals):
+            <span class="k">if</span> float_coals:
+                centre = centre + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, FLOAT_COALS))
+            add_coal(bm, centre, shape, COAL_IDX)
+        <span class="k">if</span> stray_vert:
+            bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.25</span>))
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        pack_uvs(bm, ctx)
+        bm.faces.layers.int.remove(ctx[<span class="s">&quot;isl&quot;</span>])
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="c"># --- surface ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> iron_material(name):
+    <span class="s">&quot;&quot;&quot;Forged iron: near-black, rough, rusted in patches. Not chrome.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">14.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.45</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.035</span>, <span class="n">0.033</span>, <span class="n">0.031</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.78</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.20</span>, <span class="n">0.085</span>, <span class="n">0.035</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.65</span>
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.55</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.85</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> coal_material(name):
+    <span class="s">&quot;&quot;&quot;Charcoal: black and matte, glowing orange in the cracks.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.022</span>, <span class="n">0.020</span>, <span class="n">0.019</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.9</span>
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    vor = nt.nodes.new(<span class="s">&quot;ShaderNodeTexVoronoi&quot;</span>)
+    vor.feature = <span class="s">&quot;DISTANCE_TO_EDGE&quot;</span>
+    vor.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">60.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], vor.inputs[<span class="s">&quot;Vector&quot;</span>])
+    crack = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    crack.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.0</span>
+    crack.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.04</span>
+    crack.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">1.0</span>
+    crack.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.0</span>
+    nt.links.new(vor.outputs[<span class="s">&quot;Distance&quot;</span>], crack.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># Hotter lower down: the heap burns from the ash up.</span>
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    heat = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    heat.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.60</span>
+    heat.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.47</span>
+    heat.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.35</span>
+    heat.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], heat.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># Not every crack burns: a noise mask breaks the network up, so a lump</span>
+    <span class="c"># glows in patches instead of wearing an even honeycomb.</span>
+    mask_n = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    mask_n.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">22.0</span>
+    mask_n.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">3.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], mask_n.inputs[<span class="s">&quot;Vector&quot;</span>])
+    mask = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    mask.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.42</span>
+    mask.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(mask_n.outputs[<span class="s">&quot;Fac&quot;</span>], mask.inputs[<span class="s">&quot;Value&quot;</span>])
+    burn = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    burn.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(crack.outputs[<span class="s">&quot;Result&quot;</span>], burn.inputs[<span class="n">0</span>])
+    nt.links.new(mask.outputs[<span class="s">&quot;Result&quot;</span>], burn.inputs[<span class="n">1</span>])
+    glow = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    glow.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(burn.outputs[<span class="s">&quot;Value&quot;</span>], glow.inputs[<span class="n">0</span>])
+    nt.links.new(heat.outputs[<span class="s">&quot;Result&quot;</span>], glow.inputs[<span class="n">1</span>])
+    strength = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    strength.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    strength.inputs[<span class="n">1</span>].default_value = <span class="n">7.0</span>
+    nt.links.new(glow.outputs[<span class="s">&quot;Value&quot;</span>], strength.inputs[<span class="n">0</span>])
+    bsdf.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.32</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
+    nt.links.new(strength.outputs[<span class="s">&quot;Value&quot;</span>], bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> ash_material(name):
+    <span class="s">&quot;&quot;&quot;Ash: pale, matte, with darker cinders mottled through it.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">40.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.06</span>, <span class="n">0.056</span>, <span class="n">0.053</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.26</span>, <span class="n">0.245</span>, <span class="n">0.225</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.97</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> brazier_materials():
+    <span class="k">return</span> iron_material(<span class="s">&quot;BrazierIron&quot;</span>), coal_material(<span class="s">&quot;BrazierCoal&quot;</span>), ash_material(<span class="s">&quot;BrazierAsh&quot;</span>)
+
+
+<span class="k">def</span> assign_slots(obj, mats):
+    slots = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate(mats):
+        <span class="k">if</span> i &lt; len(slots):
+            slots[i] = mat
+        <span class="k">else</span>:
+            slots.append(mat)
+
+
+<span class="c"># --- measurement ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs, ys, zs = [c.x <span class="k">for</span> c <span class="k">in</span> corners], [c.y <span class="k">for</span> c <span class="k">in</span> corners], [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    span = max(<span class="n">1e-6</span>, max(a[<span class="n">2</span>] - a[<span class="n">0</span>] <span class="k">for</span> a <span class="k">in</span> aabbs), max(a[<span class="n">3</span>] - a[<span class="n">1</span>] <span class="k">for</span> a <span class="k">in</span> aabbs))
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        <span class="k">for</span> c <span class="k">in</span> range(int(a[<span class="n">0</span>] // span), int(a[<span class="n">2</span>] // span) + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(int(a[<span class="n">1</span>] // span), int(a[<span class="n">3</span>] // span) + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                overlap += max(<span class="n">0.0</span>, min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - max(a[<span class="n">0</span>], b[<span class="n">0</span>])) * max(
+                    <span class="n">0.0</span>, min(a[<span class="n">3</span>], b[<span class="n">3</span>]) - max(a[<span class="n">1</span>], b[<span class="n">1</span>]))
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        area += (me.vertices[idxs[i]].co - v0).cross(me.vertices[idxs[i + <span class="n">1</span>]].co - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {<span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e,
+            <span class="s">&quot;nonman&quot;</span>: nonman, <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles}
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            group.append(cur)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[cur]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* (copied from showcase/grindstone).&quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> shell_tree(me, group):
+    member = set(group)
+    remap = {v: k <span class="k">for</span> k, v <span class="k">in</span> enumerate(group)}
+    polys = [[remap[i] <span class="k">for</span> i <span class="k">in</span> p.vertices] <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> member]
+    <span class="k">return</span> BVHTree.FromPolygons([me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> group], polys)
+
+
+<span class="k">def</span> inside_depth(tree, pts):
+    <span class="s">&quot;&quot;&quot;Deepest point of ``pts`` inside ``tree``&#x27;s surface; negative is a gap.&quot;&quot;&quot;</span>
+    best = -<span class="n">99.0</span>
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        loc, nrm, _i, dist = tree.find_nearest(p)
+        <span class="k">if</span> loc <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        d = dist <span class="k">if</span> (p - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+        best = max(best, d)
+    <span class="k">return</span> best
+
+
+<span class="k">def</span> classify(me):
+    mats = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            mats.setdefault(i, p.material_index)
+    out = {<span class="s">&quot;bowl&quot;</span>: [], <span class="s">&quot;leg&quot;</span>: [], <span class="s">&quot;ash&quot;</span>: [], <span class="s">&quot;coal&quot;</span>: [], <span class="s">&quot;other&quot;</span>: []}
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        rec = {<span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;pts&quot;</span>: pts, <span class="s">&quot;c&quot;</span>: sum(pts, Vector()) / len(pts)}
+        m = mats.get(g[<span class="n">0</span>], -<span class="n">1</span>)
+        <span class="k">if</span> m == IRON_IDX:
+            out[<span class="s">&quot;bowl&quot;</span> <span class="k">if</span> len(g) &gt; <span class="n">400</span> <span class="k">else</span> <span class="s">&quot;leg&quot;</span>].append(rec)
+        <span class="k">elif</span> m == ASH_IDX:
+            out[<span class="s">&quot;ash&quot;</span>].append(rec)
+        <span class="k">elif</span> m == COAL_IDX:
+            out[<span class="s">&quot;coal&quot;</span>].append(rec)
+        <span class="k">else</span>:
+            out[<span class="s">&quot;other&quot;</span>].append(rec)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> mass_centre(me):
+    <span class="s">&quot;&quot;&quot;Centre of mass of the closed shells, each triangle weighted by density.
+
+    Signed tetrahedra from the origin: every shell is closed and wound
+    outward, so interior volumes cancel and each material contributes
+    its volume times its density.
+    &quot;&quot;&quot;</span>
+    me.calc_loop_triangles()
+    m_tot = <span class="n">0.0</span>
+    acc = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="k">for</span> tri <span class="k">in</span> me.loop_triangles:
+        a, b, c = (me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> tri.vertices)
+        v = a.dot(b.cross(c)) / <span class="n">6.0</span>
+        rho = DENSITY.get(me.polygons[tri.polygon_index].material_index, <span class="n">0.0</span>)
+        m_tot += v * rho
+        acc += (a + b + c) * (v * rho / <span class="n">4.0</span>)
+    <span class="k">return</span> acc / m_tot <span class="k">if</span> m_tot <span class="k">else</span> Vector(), m_tot
+
+
+<span class="k">def</span> convex_hull_2d(pts):
+    pts = sorted(set((round(p[<span class="n">0</span>], <span class="n">9</span>), round(p[<span class="n">1</span>], <span class="n">9</span>)) <span class="k">for</span> p <span class="k">in</span> pts))
+    <span class="k">if</span> len(pts) &lt; <span class="n">3</span>:
+        <span class="k">return</span> pts
+
+    <span class="k">def</span> cross(o, a, b):
+        <span class="k">return</span> (a[<span class="n">0</span>] - o[<span class="n">0</span>]) * (b[<span class="n">1</span>] - o[<span class="n">1</span>]) - (a[<span class="n">1</span>] - o[<span class="n">1</span>]) * (b[<span class="n">0</span>] - o[<span class="n">0</span>])
+
+    lower, upper = [], []
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        <span class="k">while</span> len(lower) &gt;= <span class="n">2</span> <span class="k">and</span> cross(lower[-<span class="n">2</span>], lower[-<span class="n">1</span>], p) &lt;= <span class="n">0</span>:
+            lower.pop()
+        lower.append(p)
+    <span class="k">for</span> p <span class="k">in</span> reversed(pts):
+        <span class="k">while</span> len(upper) &gt;= <span class="n">2</span> <span class="k">and</span> cross(upper[-<span class="n">2</span>], upper[-<span class="n">1</span>], p) &lt;= <span class="n">0</span>:
+            upper.pop()
+        upper.append(p)
+    <span class="k">return</span> lower[:-<span class="n">1</span>] + upper[:-<span class="n">1</span>]
+
+
+<span class="k">def</span> brazier_audit(me):
+    parts = classify(me)
+    bowl = parts[<span class="s">&quot;bowl&quot;</span>][<span class="n">0</span>] <span class="k">if</span> parts[<span class="s">&quot;bowl&quot;</span>] <span class="k">else</span> <span class="k">None</span>
+    ash = parts[<span class="s">&quot;ash&quot;</span>][<span class="n">0</span>] <span class="k">if</span> parts[<span class="s">&quot;ash&quot;</span>] <span class="k">else</span> <span class="k">None</span>
+    out = {k: len(v) <span class="k">for</span> k, v <span class="k">in</span> parts.items()}
+    out[<span class="s">&quot;foot_worst&quot;</span>] = max((min(p.z <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;leg&quot;</span>]), default=<span class="n">99.0</span>)
+
+    <span class="c"># Legs bite the bowl wall: deepest leg vertex inside the bowl shell.</span>
+    bowl_tree = shell_tree(me, bowl[<span class="s">&quot;g&quot;</span>]) <span class="k">if</span> bowl <span class="k">else</span> <span class="k">None</span>
+    bites = [inside_depth(bowl_tree, r[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;leg&quot;</span>]] <span class="k">if</span> bowl_tree <span class="k">else</span> []
+    out[<span class="s">&quot;leg_bite&quot;</span>] = min(bites, default=-<span class="n">99.0</span>)
+
+    <span class="c"># Coals sit in the ash: deepest coal vertex inside the ash shell.</span>
+    ash_tree = shell_tree(me, ash[<span class="s">&quot;g&quot;</span>]) <span class="k">if</span> ash <span class="k">else</span> <span class="k">None</span>
+    seats = [inside_depth(ash_tree, r[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;coal&quot;</span>]] <span class="k">if</span> ash_tree <span class="k">else</span> []
+    out[<span class="s">&quot;seat_min&quot;</span>] = min(seats, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;seat_max&quot;</span>] = max(seats, default=<span class="n">99.0</span>)
+
+    <span class="c"># Freeboard: the rim above the highest coal or ash.</span>
+    rim = max(p.z <span class="k">for</span> p <span class="k">in</span> bowl[<span class="s">&quot;pts&quot;</span>]) <span class="k">if</span> bowl <span class="k">else</span> <span class="n">0.0</span>
+    top = max((p.z <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;coal&quot;</span>] + parts[<span class="s">&quot;ash&quot;</span>] <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]), default=<span class="n">99.0</span>)
+    out[<span class="s">&quot;freeboard&quot;</span>] = rim - top
+
+    <span class="c"># Coals do not interpenetrate one another.</span>
+    trees = [shell_tree(me, r[<span class="s">&quot;g&quot;</span>]) <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;coal&quot;</span>]]
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(len(trees)):
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(trees)):
+            <span class="k">if</span> trees[i].overlap(trees[j]):
+                hits += <span class="n">1</span>
+    out[<span class="s">&quot;coal_hits&quot;</span>] = hits
+
+    <span class="c"># Coal sizes vary: largest footprint over smallest.</span>
+    foot = []
+    <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;coal&quot;</span>]:
+        xs = [p.x <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]]
+        ys = [p.y <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]]
+        foot.append((max(xs) - min(xs)) * (max(ys) - min(ys)))
+    out[<span class="s">&quot;coal_spread&quot;</span>] = (max(foot) / min(foot)) <span class="k">if</span> foot <span class="k">else</span> <span class="n">0.0</span>
+
+    <span class="c"># Tip angle: distance from the mass centre to the nearest edge of the</span>
+    <span class="c"># support polygon, over its height.</span>
+    com, mass = mass_centre(me)
+    contacts = [(p.x, p.y) <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;leg&quot;</span>] <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> p.z &lt;= <span class="n">1e-6</span>]
+    hull = convex_hull_2d(contacts)
+    d_edge = -<span class="n">99.0</span>
+    <span class="k">if</span> len(hull) &gt;= <span class="n">3</span>:
+        d_edge = <span class="n">99.0</span>
+        <span class="k">for</span> a, b <span class="k">in</span> zip(hull, hull[<span class="n">1</span>:] + hull[:<span class="n">1</span>]):
+            ex, ey = b[<span class="n">0</span>] - a[<span class="n">0</span>], b[<span class="n">1</span>] - a[<span class="n">1</span>]
+            ln = math.hypot(ex, ey)
+            d = (ex * (com.y - a[<span class="n">1</span>]) - ey * (com.x - a[<span class="n">0</span>])) / ln
+            d_edge = min(d_edge, d)
+    out[<span class="s">&quot;com&quot;</span>] = com
+    out[<span class="s">&quot;mass&quot;</span>] = mass
+    out[<span class="s">&quot;d_edge&quot;</span>] = d_edge
+    out[<span class="s">&quot;tip&quot;</span>] = math.atan2(d_edge, com.z) <span class="k">if</span> com.z &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">1.0</span>
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> hull_collider(obj, name):
+    <span class="s">&quot;&quot;&quot;Compound collider: one convex hull for the bowl and its contents, one per leg.
+
+    A single hull over the whole brazier fills the space between the legs,
+    which a character should be able to kick a foot through.
+    &quot;&quot;&quot;</span>
+    me = obj.data
+    parts = classify(me)
+    <span class="c"># Sampled in build order: the bowl is rings of BOWL_SEG, a leg rings</span>
+    <span class="c"># of eight. The ash and coals sit below the rim, inside the bowl&#x27;s hull.</span>
+    bowl = sorted(parts[<span class="s">&quot;bowl&quot;</span>][<span class="n">0</span>][<span class="s">&quot;g&quot;</span>])
+    groups = [[me.vertices[v].co.copy() <span class="k">for</span> k, v <span class="k">in</span> enumerate(bowl)
+               <span class="k">if</span> (k // BOWL_SEG) % <span class="n">2</span> == <span class="n">0</span> <span class="k">and</span> (k % BOWL_SEG) % <span class="n">4</span> == <span class="n">0</span>]
+              + [me.vertices[bowl[-<span class="n">1</span>]].co.copy()]]
+    <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;leg&quot;</span>]:
+        leg = sorted(r[<span class="s">&quot;g&quot;</span>])
+        groups.append([me.vertices[v].co.copy() <span class="k">for</span> k, v <span class="k">in</span> enumerate(leg)
+                       <span class="k">if</span> (k // <span class="n">8</span>) % <span class="n">4</span> == <span class="n">0</span> <span class="k">and</span> k % <span class="n">2</span> == <span class="n">0</span>] + [me.vertices[leg[-<span class="n">1</span>]].co.copy()])
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> pts <span class="k">in</span> groups:
+            tmp = bmesh.new()
+            <span class="k">try</span>:
+                vs = [tmp.verts.new(p) <span class="k">for</span> p <span class="k">in</span> pts]
+                bmesh.ops.convex_hull(tmp, input=vs)
+                remap = {}
+                <span class="k">for</span> f <span class="k">in</span> tmp.faces:
+                    <span class="k">for</span> v <span class="k">in</span> f.verts:
+                        <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> remap:
+                            remap[v] = bm.verts.new(v.co)
+                    bm.faces.new([remap[v] <span class="k">for</span> v <span class="k">in</span> f.verts])
+            <span class="k">finally</span>:
+                tmp.free()
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    col = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(col)
+    <span class="k">return</span> col
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size):
+    img = bpy.data.images.new(<span class="s">&quot;BrazierNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = IRON_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>, use_selected_to_active=<span class="k">True</span>, cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>, normal_space=<span class="s">&quot;TANGENT&quot;</span>, margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>, use_clear=<span class="k">True</span>, target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path, use_selection=<span class="k">True</span>, export_yup=<span class="k">True</span>, export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>, export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, **flags):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    low = build_brazier_mesh(<span class="s">&quot;BrazierLow&quot;</span>, **flags)
+    hi_flags = {k: v <span class="k">for</span> k, v <span class="k">in</span> flags.items() <span class="k">if</span> k != <span class="s">&quot;stray_vert&quot;</span>}
+    high = build_brazier_mesh(<span class="s">&quot;BrazierHigh&quot;</span>, **hi_flags)
+    mats = brazier_materials()
+    assign_slots(low, mats)
+    assign_slots(high, mats)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+    <span class="k">if</span> len(low.data.polygons) &lt; <span class="n">6</span> <span class="k">or</span> <span class="k">not</span> low.data.uv_layers:
+        <span class="k">return</span> (fail(<span class="s">&quot;brazier mesh did not build, or has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    slots = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat, distinct = len(slots), len({id(s) <span class="k">for</span> s <span class="k">in</span> slots})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, mats[IRON_IDX], BAKE_RES)
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;BrazierLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;BrazierLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = hull_collider(high, <span class="s">&quot;BrazierCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_brazier_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>)
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    ba = brazier_audit(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{dict(sorted(idx_counts.items()))}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured parts bowl=</span>{ba[<span class="s">&#x27;bowl&#x27;</span>]}<span class="s"> legs=</span>{ba[<span class="s">&#x27;leg&#x27;</span>]}<span class="s"> ash=</span>{ba[<span class="s">&#x27;ash&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">coals=</span>{ba[<span class="s">&#x27;coal&#x27;</span>]}<span class="s"> other=</span>{ba[<span class="s">&#x27;other&#x27;</span>]}<span class="s"> foot_worst=</span>{ba[<span class="s">&#x27;foot_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">leg_bite=</span>{ba[<span class="s">&#x27;leg_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> seat=(</span>{ba[<span class="s">&#x27;seat_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">,</span>{ba[<span class="s">&#x27;seat_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">freeboard=</span>{ba[<span class="s">&#x27;freeboard&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> coal_hits=</span>{ba[<span class="s">&#x27;coal_hits&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">coal_spread=</span>{ba[<span class="s">&#x27;coal_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured stability mass=</span>{ba[<span class="s">&#x27;mass&#x27;</span>]:<span class="s">.2f</span>}<span class="s">kg com=(</span>{ba[<span class="s">&#x27;com&#x27;</span>].x:<span class="s">.5f</span>}<span class="s">,</span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span>{ba[<span class="s">&#x27;com&#x27;</span>].y:<span class="s">.5f</span>}<span class="s">,</span>{ba[<span class="s">&#x27;com&#x27;</span>].z:<span class="s">.5f</span>}<span class="s">) d_edge=</span>{ba[<span class="s">&#x27;d_edge&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">tip=</span>{math.degrees(ba[<span class="s">&#x27;tip&#x27;</span>]):<span class="s">.2f</span>}<span class="s">deg</span><span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">for</span> idx, floor, label <span class="k">in</span> ((IRON_IDX, IRON_FACES_MIN, <span class="s">&quot;iron&quot;</span>),
+                              (COAL_IDX, COAL_FACES_MIN, <span class="s">&quot;coal&quot;</span>),
+                              (ASH_IDX, ASH_FACES_MIN, <span class="s">&quot;ash&quot;</span>)):
+        <span class="k">if</span> idx_counts.get(idx, <span class="n">0</span>) &lt; floor:
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span>{label}<span class="s"> faces </span>{idx_counts.get(idx, <span class="n">0</span>)}<span class="s"> &lt; </span>{floor}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+            <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+            <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">hygiene </span>{hyg}<span class="s"> zfight=</span>{zf}<span class="s"> (--stray-vert is the designed fail)</span><span class="s">&quot;</span>, <span class="n">15</span>),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;leg&quot;</span>] != N_LEGS <span class="k">or</span> ba[<span class="s">&quot;foot_worst&quot;</span>] &gt; FOOT_Z_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">feet: </span>{ba[<span class="s">&#x27;leg&#x27;</span>]}<span class="s"> of </span>{N_LEGS}<span class="s"> legs, worst foot z=</span>{ba[<span class="s">&#x27;foot_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">&gt; </span>{FOOT_Z_MAX}<span class="s"> (--float-foot is the designed fail)</span><span class="s">&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;leg_bite&quot;</span>] &lt; LEG_BITE_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">legs bite the bowl </span>{ba[<span class="s">&#x27;leg_bite&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{LEG_BITE_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--short-legs is the designed fail)&quot;</span>, <span class="n">17</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;seat_min&quot;</span>] &lt; COAL_SEAT_MIN <span class="k">or</span> ba[<span class="s">&quot;seat_max&quot;</span>] &gt; COAL_SEAT_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">coal seat (</span>{ba[<span class="s">&#x27;seat_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">, </span>{ba[<span class="s">&#x27;seat_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) outside </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">[</span>{COAL_SEAT_MIN}<span class="s">, </span>{COAL_SEAT_MAX}<span class="s">] (--float-coals is the designed fail)</span><span class="s">&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;freeboard&quot;</span>] &lt; FREEBOARD_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">freeboard </span>{ba[<span class="s">&#x27;freeboard&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{FREEBOARD_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--overfill is the designed fail)&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;tip&quot;</span>] &lt; TIP_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">tip angle </span>{math.degrees(ba[<span class="s">&#x27;tip&#x27;</span>]):<span class="s">.2f</span>}<span class="s"> deg &lt; </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span>{math.degrees(TIP_MIN):<span class="s">.1f</span>}<span class="s"> (--tuck-legs is the designed fail)</span><span class="s">&quot;</span>, <span class="n">19</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;coal_hits&quot;</span>]:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{ba[<span class="s">&#x27;coal_hits&#x27;</span>]}<span class="s"> coal pairs interpenetrate, need 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--pile-coals is the designed fail)&quot;</span>, <span class="n">20</span>),) + nothing
+    <span class="k">if</span> ba[<span class="s">&quot;coal_spread&quot;</span>] &lt; COAL_SPREAD_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">coal size spread </span>{ba[<span class="s">&#x27;coal_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> &lt; </span>{COAL_SPREAD_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--uniform-coals is the designed fail)&quot;</span>, <span class="n">21</span>),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, mats, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    nt = mat.node_tree
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>].inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, mats, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(mats[IRON_IDX], tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+    <span class="c"># Level on the floor: turned about Z only.</span>
+    low.rotation_euler.z = math.radians(<span class="n">8.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, kind, loc, energy, size, col, rot=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>)):
+        ld = bpy.data.lights.new(name, kind)
+        ld.energy = energy
+        <span class="k">if</span> kind == <span class="s">&quot;AREA&quot;</span>:
+            ld.size = size
+        <span class="k">else</span>:
+            ld.shadow_soft_size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">2.6</span>, -<span class="n">3.4</span>, <span class="n">3.8</span>), <span class="n">300.0</span>, <span class="n">3.5</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">3.4</span>, -<span class="n">2.6</span>, <span class="n">1.8</span>), <span class="n">40.0</span>, <span class="n">6.0</span>, (<span class="n">0.74</span>, <span class="n">0.84</span>, <span class="n">1.0</span>), (<span class="n">66</span>, <span class="n">0</span>, <span class="n">52</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">1.6</span>, <span class="n">2.8</span>, <span class="n">2.4</span>), <span class="n">200.0</span>, <span class="n">3.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">60</span>, <span class="n">0</span>, <span class="n">200</span>))
+    <span class="c"># The warm floor pool behind the piece: a spot aimed at a floor point.</span>
+    <span class="c"># This camera is low and close; the house area wedge put the pool on</span>
+    <span class="c"># the back wall, and an area lamp moved nearer lit the whole floor.</span>
+    ld = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;SPOT&quot;</span>)
+    ld.energy, ld.color = <span class="n">170.0</span>, (<span class="n">1.0</span>, <span class="n">0.66</span>, <span class="n">0.34</span>)
+    ld.spot_size, ld.spot_blend, ld.shadow_soft_size = math.radians(<span class="n">44.0</span>), <span class="n">1.0</span>, <span class="n">0.3</span>
+    wedge = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, ld)
+    wedge.location = (<span class="n">0.45</span>, <span class="n">1.55</span>, <span class="n">1.70</span>)
+    wedge.rotation_euler = (Vector((<span class="n">0.10</span>, <span class="n">0.30</span>, <span class="n">0.0</span>)) - wedge.location).to_track_quat(
+        <span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
+    scene.collection.objects.link(wedge)
+    <span class="c"># Render-only: the fire&#x27;s own light, well above the coals so the ash</span>
+    <span class="c"># is lit by it rather than burnt out.</span>
+    light(<span class="s">&quot;Fire&quot;</span>, <span class="s">&quot;POINT&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.78</span>), <span class="n">9.0</span>, <span class="n">0.25</span>, (<span class="n">1.0</span>, <span class="n">0.45</span>, <span class="n">0.14</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.10</span>, -<span class="n">1.95</span>, <span class="n">1.30</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.31</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-foot&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-coals&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--overfill&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--tuck-legs&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--pile-coals&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--uniform-coals&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, mats, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        float_foot=args.float_foot,
+        short_legs=args.short_legs,
+        float_coals=args.float_coals,
+        overfill=args.overfill,
+        tuck_legs=args.tuck_legs,
+        pile_coals=args.pile_coals,
+        uniform_coals=args.uniform_coals,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, mats, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;brazier OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <button class="lightbox-close" type="button" autofocus>Close</button>
+    <img src="../assets/brazier-hero.webp" alt="An iron fire bowl with a rolled rim on three S-curved forged legs with curled feet, filled with ash and a heap of charcoal glowing orange in its cracks." />
+  </dialog>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>showcase/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

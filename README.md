@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>30 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>31 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 30 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 31 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>30 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>31 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
@@ -139,6 +139,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/stone-archway/"><img src="showcase/stone-archway/preview.webp" width="24%" alt="Stone archway: a semicircular masonry arch with coursed piers, projecting imposts, nine voussoirs and a proud keystone, on a dark studio floor" /></a>
   <a href="showcase/rope-bridge/"><img src="showcase/rope-bridge/preview.webp" width="24%" alt="Rope bridge: a sagging plank deck on foot ropes between two pairs of log posts, with lashed hemp hand ropes, suspenders, and ropes staked to the ground, on a dark studio floor" /></a>
   <a href="showcase/grain-sacks/"><img src="showcase/grain-sacks/preview.webp" width="24%" alt="Grain sacks: three burlap sacks gathered and tied with twine, two standing and one lying slumped in front, one blue-striped and one red-striped, on a dark studio floor" /></a>
+  <a href="showcase/brazier/"><img src="showcase/brazier/preview.webp" width="24%" alt="Brazier: an iron fire bowl with a rolled rim on three S-curved forged legs, holding ash and a heap of glowing charcoal, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -196,6 +197,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`rope-bridge`](showcase/rope-bridge/) — procedural rope footbridge whose plank deck is fitted to a parabola recomputed from the plank tops, with lashed hand ropes and staked foot ropes, through the same pipeline. Falsifiers `--vee-deck` exits 19, `--float-suspenders` exits 18.
 
 [`grain-sacks`](showcase/grain-sacks/) — procedural pile of burlap grain sacks settled onto flat bases and tied with twine, through the same pipeline. Falsifiers `--round-bottom` exits 19, `--slip-tie` exits 17.
+
+[`brazier`](showcase/brazier/) — procedural iron brazier with ash and glowing charcoal whose tip angle is recomputed from a density-weighted mass centre and the feet on the floor, through the same pipeline. Falsifiers `--tuck-legs` exits 19, `--overfill` exits 18.
 
 </details>
 
