@@ -291,7 +291,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples, 28 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">51 examples, 29 showcase pieces</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -1210,6 +1210,17 @@
           <a class="card-link" href="stone-archway/">View showcase piece<span class="sr-only"> stone-archway</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase">
+        <a class="card-media" href="rope-bridge/" tabindex="-1" aria-hidden="true">
+          <img src="assets/rope-bridge-hero.webp" alt="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="rope-bridge/">rope-bridge</a></h2>
+          <p class="teaches">A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 8768 tris, two materials with 1356 timber and 3348 rope faces, UVs in 0..1 with zero AABB overlap and 18.8 baked texels per island, outer AABB 4.619×1.073×1.480 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four posts and four stakes grounded, every rope end and sill tenon biting its host, all 20 planks seated 4.0 mm on both foot ropes, 12 lashing turns hooped 2.4 mm, one connected assembly of 60 shells, posts plumb, plank pitch within 0.08 mm, hand ropes 0.87 m over the deck, and every plank top within 2.97 mm of a least-squares parabola with a 0.220 m sag. --vee-deck exits 19 on the parabola fit with its sag still in band; --float-suspenders exits 18 on the contact graph.</p>
+          <a class="card-link" href="rope-bridge/">View showcase piece<span class="sr-only"> rope-bridge</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>
@@ -1239,7 +1250,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '51 examples, 28 showcase pieces';
+      var COUNT_LABEL = '51 examples, 29 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

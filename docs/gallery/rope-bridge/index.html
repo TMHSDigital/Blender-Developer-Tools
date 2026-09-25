@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>rope-bridge — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/rope-bridge/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="rope-bridge — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/rope-bridge/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/rope-bridge-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="rope-bridge — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/rope-bridge-hero.webp" />
+  <meta name="twitter:image:alt" content="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      color-scheme: dark;
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>rope-bridge</h1>
+    <p>A procedural rope footbridge — log posts, through-tenoned sills, twenty planks on two sagging foot ropes, lashed hand ropes, suspenders and staked tie-offs — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes.">
+      <img src="../assets/rope-bridge-hero.webp" alt="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 8768 tris, two materials with 1356 timber and 3348 rope faces, UVs in 0..1 with zero AABB overlap and 18.8 baked texels per island, outer AABB 4.619×1.073×1.480 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four posts and four stakes grounded, every rope end and sill tenon biting its host, all 20 planks seated 4.0 mm on both foot ropes, 12 lashing turns hooped 2.4 mm, one connected assembly of 60 shells, posts plumb, plank pitch within 0.08 mm, hand ropes 0.87 m over the deck, and every plank top within 2.97 mm of a least-squares parabola with a 0.220 m sag. --vee-deck exits 19 on the parabola fit with its sag still in band; --float-suspenders exits 18 on the contact graph.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/rope-bridge/rope_bridge.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A rope footbridge — two pairs of log posts, a squared sill through-tenoned across each end, twenty planks laid on two foot ropes that hang between the sills, two hand ropes lashed to the posts, suspenders tying hand rope to foot rope, and the foot ropes run back over the sills to ground stakes. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2>What it composes</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>lathed logs, laid-rope sweeps, chamfered boards, UVs in one <code>bmesh</code></td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>timber grain along each member (<code>GrainDir</code>), per-member tone (<code>PlankTone</code>), hemp with a fibre bump</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<p><code>snippets/convex_hull_collider.py</code> is deliberately <strong>not</strong> used; see <em>Collider</em> below.</p>
+<h2>The budget that matters</h2>
+<p>A rope bridge can fail invisibly. A deck of planks laid on two straight ramps that meet at midspan has the same ends, the same sag, the same planks and the same bounding box as one that hangs; only the shape is wrong. A uniformly loaded cable hangs as a <strong>parabola</strong>, so the piece fits a least-squares parabola to the plank top-face centres read off the finished mesh — not to the function the generator used — and asserts every plank lands within 6 mm of it, with the fitted sag within 15 mm of the declared 0.22 m.</p>
+<p><code>--vee-deck</code> is the falsifier built for exactly this. It keeps the sill heights, the sag, the plank count, the pitch, every seat and the envelope, and swaps the parabola for two straight ramps. Its fitted sag is 0.215 m — inside the sag tolerance — and every other budget passes. Only the residual sees it: 32.5 mm against a 6 mm band.</p>
+<p>The measured residual on the true deck is 2.97 mm, not zero, and that is the model rather than noise: each plank&#x27;s underside is set from the foot rope&#x27;s own reach at its station (below), and the three-strand lay turns under the deck, so the planks ride a few millimetres up and down on the strands.</p>
+<h2>Budgets</h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; every one is byte-identical on 4.5.11 and 5.1.2.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>8300–9200</td><td>8768</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2199</td></tr><tr><td>Material slots</td><td>exactly 2, distinct</td><td>2</td></tr><tr><td>Timber faces</td><td>≥ 1100</td><td>1356</td></tr><tr><td>Rope faces</td><td>≥ 2800</td><td>3348</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0016, 0.0016)–(0.9984, 0.9984)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Baked texels per UV island</td><td>≥ 12</td><td>18.84 (610 islands, 512 px)</td></tr><tr><td>Outer AABB</td><td>4.619 × 1.073 × 1.480 m ± 0.020</td><td>4.6185 × 1.0733 × 1.4800</td></tr><tr><td>Collider triangles</td><td>≤ 400</td><td>360</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~300 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Named supports</td><td>4 posts + 4 stakes, each zmin ≤ 1e-3</td><td>8 at 0.00000</td></tr><tr><td>Hand-rope ends inside their posts</td><td>deepest vertex ≥ 0.030 m</td><td>0.05669</td></tr><tr><td>Foot-rope ends inside their stakes</td><td>deepest vertex ≥ 0.020 m</td><td>0.03347</td></tr><tr><td>Sill tenons inside their posts</td><td>deepest vertex ≥ 0.010 m</td><td>0.01980</td></tr><tr><td>Plank seat on each foot rope</td><td>20 planks, bite 0.002–0.008 m</td><td>0.00400 on all 40</td></tr><tr><td>Lashing hoop</td><td>12 turns, bite 0.0005–0.005 m</td><td>0.00238–0.00246</td></tr><tr><td>One connected assembly</td><td>1 component</td><td>1 (60 shells)</td></tr><tr><td>Plumb (posts and stakes)</td><td>bottom-to-top slab centroid ≤ 0.004 m</td><td>0.00000</td></tr><tr><td>Deck parabola</td><td>every plank top within 0.006 m; sag 0.22 ± 0.015 m</td><td>0.00297; 0.22037</td></tr><tr><td>Plank pitch</td><td>every gap within 0.003 m of the mean</td><td>0.00008 (mean 0.1689)</td></tr><tr><td>Rail height at midspan</td><td>0.80–1.00 m above the deck</td><td>0.86521</td></tr><tr><td>Right-angle edges</td><td>0</td><td>0</td></tr></tbody></table></div>
+<p>Real-world size: a 3.6 m span between post centres carrying a 3.2 m walkable deck of 0.80 m planks, hand ropes 0.87 m over the deck at midspan, posts 1.48 m tall — a garden or gorge footbridge module, 4.6 m overall with its stakes.</p>
+<h2>Construction</h2>
+<ul><li><strong>Laid rope.</strong> Every rope is a three-lobed section turned one vertex step per ring, so each lobe winds as a strand. The main ropes use 9 vertices; suspenders and lashings use 6. The section frame is fixed to each path&#x27;s plane: +Y for the ropes that run the span, +X for the suspenders, +Z for the lashings.</li><li><strong>Rope ends close in a blunt cone.</strong> A fan cap maps to overlapping UV triangles. A cone half the radius long maps as one more row of the rope&#x27;s strip island, so every rope is a single UV island with no overlap.</li><li><strong>The foot rope wraps the sill with one mitred ring.</strong> The bend radius over the arris is smaller than the rope. With a ring every few degrees of arc the section folded through itself and left six right-angle creases, which the edge budget found.</li><li><strong>Planks are seated from the host.</strong> Each plank&#x27;s underside is the foot rope&#x27;s own reach along the plank normal at its station, less <code>PLANK_BITE</code>. The bite is therefore exact (4.00 mm on all 40 seats) whatever the lay does under the plank.</li><li><strong>Lashings are hooped.</strong> Each turn&#x27;s inner radius is the post&#x27;s (or stake&#x27;s) own radius at that height, taken from its lathe profile, less <code>LASH_BITE</code>. The two turns on each post are rotated half a vertex step against each other. Stacked identically, their outer faces shared planes and the coplanar budget counted 84 pairs.</li><li><strong>Collider.</strong> A single convex hull over a sagging deck is a lens whose top is the chord between the sills: a character would walk 0.22 m above the planks at midspan. The collider is a compound, one oriented box per plank, sill, post and stake (30 boxes, 360 triangles). Ropes are left out.</li></ul>
+<h2>Conventions walked</h2>
+<p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>seed 31; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below, proven on all three binaries</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15; KD-tree range query, cross-shell</td></tr><tr><td>Named supports</td><td>yes</td><td>4 posts + 4 stakes (<code>--float-post</code>)</td></tr><tr><td>Joint-fit / a joint bites</td><td>yes</td><td>rope ends and sill tenons, deepest vertex by signed distance (<code>--short-rails</code>)</td></tr><tr><td>Diagonal from stations</td><td>yes</td><td>suspenders run from the foot-rope centre to the hand-rope centre at a plank gap</td></tr><tr><td>Even shaping terms / mirror symmetry</td><td>no</td><td>the laid rope is chiral: a right-hand lay mirrors to a left-hand one, so the body has no mirror partner by design</td></tr><tr><td>Wrappers follow the host&#x27;s profile</td><td>yes</td><td>lashings take the lathe profile&#x27;s radius at their height</td></tr><tr><td>Seat conformance (banded)</td><td>yes</td><td>plank seats and lashing hoops, both banded (<code>--float-planks</code>, <code>--loose-lashings</code>)</td></tr><tr><td>Plumb and real-world size</td><td>yes</td><td>posts and stakes plumb (<code>--lean-post</code>); rail height (<code>--slack-rails</code>)</td></tr><tr><td>Band hooped, never flush</td><td>yes</td><td>lashings bite 2.5 mm</td></tr><tr><td>Member tenoned into its seat</td><td>yes</td><td>sills end at the post centres</td></tr><tr><td>Segment counts are a silhouette budget</td><td>yes</td><td>16-segment posts, 12-segment stakes, smooth-shaded</td></tr><tr><td>Material face floors</td><td>yes</td><td>timber ≥ 1100, rope ≥ 2800</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>posts, stakes and ropes smooth (round, organic); planks and sills flat (sawn)</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>timber (posts, sills, planks, stakes), rope</td></tr><tr><td>Edge treatment: no right angles</td><td>yes</td><td>exit 20 (<code>--sharp-plank</code>)</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>bevel edges sorted by index</td></tr><tr><td>Variation into surface, never function</td><td>yes</td><td>plank length, tone and post wobble vary; plank pitch is asserted (<code>--drift-planks</code>)</td></tr><tr><td>A platform bears on something</td><td>yes</td><td>every plank seats on both foot ropes, counted</td></tr><tr><td>One connected assembly</td><td>yes</td><td>exit 18 (<code>--float-suspenders</code>)</td></tr><tr><td>Bake texels per UV cell</td><td>yes</td><td>exit 21 (<code>--low-bake</code>)</td></tr><tr><td>Bake cage narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Rope is laid, not piped</td><td>yes</td><td>above</td></tr><tr><td>Identical boards read as CG</td><td>yes</td><td><code>PlankTone</code> and <code>GrainDir</code> per shell</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>worst deltas: <code>--float-post</code> +12 mm Z, <code>--loose-lashings</code> +13 mm X/Y, against 20 mm</td></tr><tr><td>Masonry, vessels, scatter, fixtures, roofs, forgings, rings, iron, paint</td><td>no</td><td>the piece has no stone, vessel, scatter, plate, roof, forging, ring hardware or paint</td></tr></tbody></table></div>
+<h2>Falsifiers</h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All fourteen were run on 4.5.11, 5.1.2 and 5.2.1 and exited the same declared code on all three.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex above the deck, inside the envelope</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-post</code></td><td>named supports</td><td>floats one post 12 mm; the others still ground the AABB</td><td>16</td></tr><tr><td><code>--short-rails</code></td><td>joint bite</td><td>stops each hand rope 20 mm short of its post; deepest end vertex −19.3 mm</td><td>17</td></tr><tr><td><code>--float-planks</code></td><td>plank seat</td><td>lifts every plank 7 mm off the ropes; bite −3.0 mm</td><td>18</td></tr><tr><td><code>--loose-lashings</code></td><td>lashing hoop</td><td>sizes every lashing 6.5 mm wider; bite −4.0 mm</td><td>18</td></tr><tr><td><code>--float-suspenders</code></td><td>one connected assembly</td><td>stops both ends of every suspender 30 mm short; 15 components</td><td>18</td></tr><tr><td><code>--lean-post</code></td><td>plumb</td><td>leans one post 20 mm at the top, lashings and all; 19.4 mm off plumb</td><td>19</td></tr><tr><td><code>--vee-deck</code></td><td>deck parabola</td><td>two straight ramps with the same ends and sag; 32.5 mm off the fit</td><td>19</td></tr><tr><td><code>--drift-planks</code></td><td>plank pitch</td><td>shifts alternate planks ±15 mm along the rope; 31.7 mm off the mean gap</td><td>19</td></tr><tr><td><code>--slack-rails</code></td><td>rail height</td><td>hangs the hand ropes 0.40 m instead of 0.10 m; rail 0.565 m</td><td>19</td></tr><tr><td><code>--sharp-plank</code></td><td>edge treatment</td><td>leaves the middle plank unchamfered; 12 right-angle edges</td><td>20</td></tr><tr><td><code>--low-bake</code></td><td>baked texels per UV island</td><td>bakes at 256 px; 9.42 texels</td><td>21</td></tr></tbody></table></div>
+<h2>Exit codes</h2>
+<p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a named support floating (<code>--lift-z</code>, <code>--float-post</code>)</td></tr><tr><td>17</td><td>A rope end or sill tenon not biting its host (<code>--short-rails</code>)</td></tr><tr><td>18</td><td>Plank seat, lashing hoop, or the contact graph (<code>--float-planks</code>, <code>--loose-lashings</code>, <code>--float-suspenders</code>)</td></tr><tr><td>19</td><td>Plumb, deck parabola, plank pitch or rail height (<code>--lean-post</code>, <code>--vee-deck</code>, <code>--drift-planks</code>, <code>--slack-rails</code>)</td></tr><tr><td>20</td><td>Right-angle edges (<code>--sharp-plank</code>)</td></tr><tr><td>21</td><td>Baked texels per UV island below floor (<code>--low-bake</code>)</td></tr></tbody></table></div>
+<h2>Run it</h2>
+<pre><code># Budget check, no render. ~2.2 s on 4.5, ~2.0 s on 5.1, ~2.2 s on 5.2.
+blender --background --python rope_bridge.py --
+
+# Falsifier: the deck stops hanging as a parabola. Must exit 19.
+blender --background --python rope_bridge.py -- --vee-deck
+
+# Falsifier: every suspender stops short of both ropes. Must exit 18.
+blender --background --python rope_bridge.py -- --float-suspenders
+
+# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
+blender --background --python rope_bridge.py -- --output bridge.webp</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<h2>Cross-version measurements</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>8768</td><td>8768</td><td>8768</td></tr><tr><td>LOD1 tris / ratio</td><td>4384 / 0.5000</td><td>same</td><td>same</td></tr><tr><td>LOD2 tris / ratio</td><td>1928 / 0.2199</td><td>same</td><td>same</td></tr><tr><td>Face counts (timber / rope)</td><td>1356 / 3348</td><td>same</td><td>same</td></tr><tr><td>Outer AABB</td><td>4.6185 × 1.0733 × 1.4800</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>360</td><td>360</td><td>360</td></tr><tr><td>Deck fit residual / sag</td><td>0.00297 / 0.22037</td><td>same</td><td>same</td></tr><tr><td>glTF bytes</td><td>300212</td><td>300212</td><td>300212</td></tr><tr><td>Check wall-clock</td><td>~2.2 s</td><td>~2.0 s</td><td>~2.2 s</td></tr></tbody></table></div>
+<p><code>DECIMATE COLLAPSE</code> is the usual cross-version suspect. Here it happens to produce identical LOD counts on all three binaries; the gate is still a ratio band, not an exact count.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/rope-bridge/rope_bridge.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/rope-bridge/rope_bridge.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready rope bridge — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural rope footbridge: two log posts
+and a sill at each end, twenty planks laid on two foot ropes that hang
+between the sills, two hand ropes lashed to the posts, vertical ropes
+tying hand rope to foot rope, and foot ropes run back over the sills to
+ground stakes. Carried through UVs, two materials (timber, rope), a
+high-to-low normal bake, an LOD chain, a compound box collider, and a
+Unity glTF export.
+
+The budget that matters here is the one a rope bridge can fail
+invisibly: the deck must hang as a parabola between the sills — the
+shape a uniformly loaded cable takes — recomputed by a least-squares fit
+to the plank top faces rather than from the function the generator
+used. Two straight ramps meeting at midspan have the same ends, the same
+sag and the same bounding box; only the fit knows the difference.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--float-post`` the named
+supports, ``--short-rails`` the rope-end joint bite, ``--float-planks``
+the plank seat, ``--loose-lashings`` the lashing hoop,
+``--float-suspenders`` the one-assembly contact graph, ``--lean-post``
+plumb, ``--vee-deck`` the deck parabola, ``--drift-planks`` the plank
+pitch, ``--slack-rails`` the rail height, ``--sharp-plank`` the edge
+treatment, ``--low-bake`` the baked texels per UV cell.
+
+Fixed seed 31 for plank lengths, post wobble and tone. DECIMATE
+COLLAPSE triangle counts are not byte-identical across Blender versions
+— the LOD gate is a ratio band, not an exact count.
+
+    blender --background --python rope_bridge.py --
+    blender --background --python rope_bridge.py -- --vee-deck
+    blender --background --python rope_bridge.py -- --output bridge.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> random
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># A 3.6 m span between post centres, 0.8 m planks: a garden or gorge</span>
+<span class="c"># footbridge module. X runs along the span, Y across it, Z up.</span>
+SPAN = <span class="n">3.60</span>
+HALF = SPAN / <span class="n">2.0</span>
+BRIDGE_SEED = <span class="n">31</span>
+
+<span class="c"># Log posts, tapered and plumb, carrying the hand ropes.</span>
+POST_Y = <span class="n">0.46</span>
+POST_H = <span class="n">1.48</span>
+POST_R_BOT = <span class="n">0.068</span>
+POST_R_TOP = <span class="n">0.060</span>
+POST_SEG = <span class="n">16</span>
+POST_WOBBLE = <span class="n">0.03</span>
+<span class="c"># Sills: a squared beam across each end, through-tenoned to the post</span>
+<span class="c"># centres. The foot ropes ride over the top of it.</span>
+SILL_W = <span class="n">0.10</span>
+SILL_H = <span class="n">0.10</span>
+SILL_TOP = <span class="n">0.50</span>
+<span class="c"># Ground stakes behind each end, where the foot ropes are tied off.</span>
+STAKE_OUT = <span class="n">0.45</span>
+STAKE_R = <span class="n">0.042</span>
+STAKE_H = <span class="n">0.36</span>
+STAKE_SEG = <span class="n">12</span>
+STAKE_TIE = <span class="n">0.20</span>
+
+<span class="c"># Ropes are laid, not piped: a three-lobed section turned one vertex step</span>
+<span class="c"># per ring, so each lobe winds along the path as a strand.</span>
+ROPE_PIPE = <span class="n">9</span>
+ROPE_LOBE = <span class="n">0.20</span>
+THIN_PIPE = <span class="n">6</span>
+THIN_LOBE = <span class="n">0.15</span>
+FOOT_Y = <span class="n">0.33</span>
+FOOT_R = <span class="n">0.017</span>
+<span class="c"># The foot rope bites the sill top; below the lobe spread, so it never</span>
+<span class="c"># floats over a trough in the lay.</span>
+FOOT_BITE = <span class="n">0.006</span>
+HAND_R = <span class="n">0.016</span>
+HAND_Z = <span class="n">1.30</span>
+HAND_SAG = <span class="n">0.10</span>
+SUSP_R = <span class="n">0.008</span>
+SUSP_RINGS = <span class="n">6</span>
+<span class="c"># Suspenders tie every third plank gap, symmetric about midspan.</span>
+SUSP_EVERY = <span class="n">3</span>
+LASH_R = <span class="n">0.010</span>
+LASH_BITE = <span class="n">0.0025</span>
+LASH_TURNS = <span class="n">2</span>
+LASH_PITCH = <span class="n">0.021</span>
+POST_LASH_SEG = <span class="n">14</span>
+STAKE_LASH_SEG = <span class="n">12</span>
+<span class="c"># A rope end finishes in a short blunt cone this fraction of its radius</span>
+<span class="c"># long, so every end is closed without a fan cap.</span>
+CONE = <span class="n">0.5</span>
+
+<span class="c"># The deck: planks on the foot ropes, pitched evenly along the rope.</span>
+DECK_SAG = <span class="n">0.22</span>
+PLANK_N = <span class="n">20</span>
+PLANK_W = <span class="n">0.13</span>
+PLANK_T = <span class="n">0.030</span>
+PLANK_L = <span class="n">0.80</span>
+PLANK_L_JITTER = <span class="n">0.015</span>
+<span class="c"># The first and last plank centres, clear of the sill&#x27;s inner face.</span>
+DECK_END = HALF - <span class="n">0.20</span>
+<span class="c"># Each plank&#x27;s underside is set from the rope&#x27;s own reach at its station,</span>
+<span class="c"># so the bite is exact whatever the lay does under it.</span>
+PLANK_BITE = <span class="n">0.004</span>
+CHAMFER = <span class="n">0.005</span>
+
+<span class="c"># Parabola half-span: the foot rope reaches sill height at the sill&#x27;s</span>
+<span class="c"># inner face and runs level over it.</span>
+DECK_HP = HALF - SILL_W / <span class="n">2.0</span>
+FOOT_Z_END = SILL_TOP + FOOT_R - FOOT_BITE
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">4.619</span>, <span class="n">1.073</span>, <span class="n">1.480</span>)
+
+BASE_TRIS_MIN = <span class="n">8300</span>
+BASE_TRIS_MAX = <span class="n">9200</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">2</span>
+TIMBER_FACES_MIN = <span class="n">1100</span>
+ROPE_FACES_MIN = <span class="n">2800</span>
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">400</span>
+BAKE_RES = <span class="n">512</span>
+LOW_BAKE_RES = <span class="n">256</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+<span class="c"># A UV cell narrower than this many baked texels reads its neighbour&#x27;s</span>
+<span class="c"># normals across the border under bilinear lookup.</span>
+TEXELS_PER_CELL_MIN = <span class="n">12.0</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+RIGHT_ANGLE_TOL = math.radians(<span class="n">5.0</span>)
+LIFT_Z = <span class="n">0.05</span>
+
+SUPPORTS = <span class="n">8</span>
+SUPPORT_Z_MAX = <span class="n">1e-3</span>
+FLOAT_POST_LIFT = <span class="n">0.012</span>
+<span class="c"># Joint bites, as the deepest member vertex inside the host&#x27;s surface.</span>
+RAIL_EMBED_MIN = <span class="n">0.030</span>
+FOOT_EMBED_MIN = <span class="n">0.020</span>
+SILL_EMBED_MIN = <span class="n">0.010</span>
+SHORT_RAIL_GAP = <span class="n">0.020</span>
+<span class="c"># Plank seat on each foot rope, measured against the plank&#x27;s own underside.</span>
+PLANK_BITE_MIN = <span class="n">0.002</span>
+PLANK_BITE_MAX = <span class="n">0.008</span>
+FLOAT_PLANK_LIFT = <span class="n">0.007</span>
+<span class="c"># Lashing hoop: how far each turn bites into its host.</span>
+LASH_BITE_MIN = <span class="n">0.0005</span>
+LASH_BITE_MAX = <span class="n">0.0050</span>
+LOOSE_LASH_BITE = -<span class="n">0.004</span>
+FLOAT_SUSP_PULL = <span class="n">0.030</span>
+<span class="c"># Plumb: bottom-slab and top-slab centroids of each post and stake.</span>
+PLUMB_TOL = <span class="n">0.004</span>
+LEAN_TOP = <span class="n">0.020</span>
+<span class="c"># Deck parabola: every plank top centre within this of the fitted</span>
+<span class="c"># parabola, and the fitted sag within SAG_TOL of DECK_SAG.</span>
+CURVE_TOL = <span class="n">0.006</span>
+SAG_TOL = <span class="n">0.015</span>
+<span class="c"># Plank pitch: every gap between neighbouring plank tops within this of</span>
+<span class="c"># the mean. Feet find planks blind; spacing is function, not surface.</span>
+PITCH_TOL = <span class="n">0.003</span>
+DRIFT_PLANK = <span class="n">0.015</span>
+<span class="c"># Rail height: hand rope centre above the deck top at midspan.</span>
+RAIL_H_MIN = <span class="n">0.80</span>
+RAIL_H_MAX = <span class="n">1.00</span>
+SLACK_SAG = <span class="n">0.40</span>
+
+TIMBER_IDX = <span class="n">0</span>
+ROPE_IDX = <span class="n">1</span>
+PLANK_TONE_JITTER = <span class="n">0.26</span>
+WOOD_GRAIN_SCALE = <span class="n">42.0</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="c"># --- curves -----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> deck_z(x, vee=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Foot-rope centre height over the deck: a parabola between the sills.
+
+    A uniformly loaded cable hangs as a parabola. ``vee`` is the falsifier:
+    two straight ramps with the same ends and the same sag.
+    &quot;&quot;&quot;</span>
+    u = min(<span class="n">1.0</span>, abs(x) / DECK_HP)
+    <span class="k">if</span> vee:
+        <span class="k">return</span> FOOT_Z_END - DECK_SAG * (<span class="n">1.0</span> - u)
+    <span class="k">return</span> FOOT_Z_END - DECK_SAG * (<span class="n">1.0</span> - u * u)
+
+
+<span class="k">def</span> deck_slope(x, vee=<span class="k">False</span>):
+    <span class="k">if</span> abs(x) &gt;= DECK_HP:
+        <span class="k">return</span> <span class="n">0.0</span>
+    <span class="k">if</span> vee:
+        <span class="k">return</span> math.copysign(DECK_SAG / DECK_HP, x) <span class="k">if</span> x <span class="k">else</span> <span class="n">0.0</span>
+    <span class="k">return</span> <span class="n">2.0</span> * DECK_SAG * x / (DECK_HP * DECK_HP)
+
+
+<span class="k">def</span> catenary_a(half, sag):
+    <span class="s">&quot;&quot;&quot;Catenary parameter whose sag over ``half`` is ``sag``, by bisection.&quot;&quot;&quot;</span>
+    lo, hi = <span class="n">0.05</span>, <span class="n">200.0</span>
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">200</span>):
+        mid = <span class="n">0.5</span> * (lo + hi)
+        <span class="k">if</span> mid * (math.cosh(half / mid) - <span class="n">1.0</span>) &gt; sag:
+            lo = mid
+        <span class="k">else</span>:
+            hi = mid
+    <span class="k">return</span> <span class="n">0.5</span> * (lo + hi)
+
+
+<span class="k">def</span> hand_z(x, a, sag):
+    <span class="s">&quot;&quot;&quot;Hand-rope centre: a free catenary from post to post.&quot;&quot;&quot;</span>
+    <span class="k">return</span> HAND_Z - sag + a * (math.cosh(x / a) - <span class="n">1.0</span>)
+
+
+<span class="k">def</span> deck_stations(vee=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Plank centres, evenly pitched by arc length along the foot rope.&quot;&quot;&quot;</span>
+    n = <span class="n">4000</span>
+    xs = [-DECK_END + <span class="n">2.0</span> * DECK_END * i / n <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>)]
+    s = [<span class="n">0.0</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        dz = deck_z(xs[i + <span class="n">1</span>], vee) - deck_z(xs[i], vee)
+        s.append(s[-<span class="n">1</span>] + math.hypot(xs[i + <span class="n">1</span>] - xs[i], dz))
+    out = []
+    j = <span class="n">0</span>
+    <span class="k">for</span> k <span class="k">in</span> range(PLANK_N):
+        target = s[-<span class="n">1</span>] * k / (PLANK_N - <span class="n">1</span>)
+        <span class="k">while</span> j &lt; n <span class="k">and</span> s[j + <span class="n">1</span>] &lt; target:
+            j += <span class="n">1</span>
+        seg = s[j + <span class="n">1</span>] - s[j] <span class="k">if</span> j &lt; n <span class="k">else</span> <span class="n">1.0</span>
+        f = (target - s[j]) / seg <span class="k">if</span> seg &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">0.0</span>
+        out.append(xs[j] + f * (xs[min(j + <span class="n">1</span>, n)] - xs[j]))
+    out[<span class="n">0</span>], out[-<span class="n">1</span>] = -DECK_END, DECK_END
+    <span class="k">return</span> out
+
+
+<span class="c"># --- construction -----------------------------------------------------------</span>
+
+
+<span class="k">def</span> ring_offsets(t, side, r, n, lobe, idx, angle0=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Section offsets for ring ``idx``: a lobed circle, turned per ring.
+
+    The frame&#x27;s side vector is fixed to the path&#x27;s plane, so the lay never
+    jumps where the path turns. The lobe phase advances one vertex step per
+    ring, which winds each lobe along the path as a strand.
+    &quot;&quot;&quot;</span>
+    s = side - t * side.dot(t)
+    s.normalize()
+    up = t.cross(s)
+    out = []
+    <span class="k">for</span> k <span class="k">in</span> range(n):
+        a = <span class="n">2.0</span> * math.pi * k / n + angle0
+        rr = r
+        <span class="k">if</span> lobe:
+            rr = r * (<span class="n">1.0</span> + lobe * math.cos(<span class="n">3.0</span> * a - <span class="n">2.0</span> * math.pi * <span class="n">3.0</span> * idx / n))
+        out.append(s * (rr * math.cos(a)) + up * (rr * math.sin(a)))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> path_tangents(pts, closed=<span class="k">False</span>):
+    m = len(pts)
+    out = []
+    <span class="k">for</span> i <span class="k">in</span> range(m):
+        <span class="k">if</span> closed:
+            d = pts[(i + <span class="n">1</span>) % m] - pts[(i - <span class="n">1</span>) % m]
+        <span class="k">elif</span> i == <span class="n">0</span>:
+            d = pts[<span class="n">1</span>] - pts[<span class="n">0</span>]
+        <span class="k">elif</span> i == m - <span class="n">1</span>:
+            d = pts[-<span class="n">1</span>] - pts[-<span class="n">2</span>]
+        <span class="k">else</span>:
+            d = pts[i + <span class="n">1</span>] - pts[i - <span class="n">1</span>]
+        out.append(d.normalized())
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> sweep(bm, pts, r, n, lobe, side, mat_idx, strips, closed=<span class="k">False</span>, angle0=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Loft a laid rope along ``pts``; open ends close in a blunt cone.
+
+    Returns the shell&#x27;s vertices. UVs are recorded per face in ``strips``
+    as one strip island: arc length along, section angle around, so the
+    faces of one rope never overlap each other in UV. ``angle0`` turns the
+    section, so two turns of one lashing are not the same section stacked,
+    whose outer faces would share planes.
+    &quot;&quot;&quot;</span>
+    pts = [Vector(p) <span class="k">for</span> p <span class="k">in</span> pts]
+    tans = path_tangents(pts, closed)
+    rings = []
+    <span class="k">for</span> i, (p, t) <span class="k">in</span> enumerate(zip(pts, tans)):
+        offs = ring_offsets(t, side, r, n, lobe, i, angle0)
+        rings.append([bm.verts.new(p + o) <span class="k">for</span> o <span class="k">in</span> offs])
+    s = [<span class="n">0.0</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(pts)):
+        s.append(s[-<span class="n">1</span>] + (pts[i] - pts[i - <span class="n">1</span>]).length)
+    <span class="k">if</span> closed:
+        s.append(s[-<span class="n">1</span>] + (pts[<span class="n">0</span>] - pts[-<span class="n">1</span>]).length)
+    island = len({v[<span class="n">0</span>] <span class="k">for</span> v <span class="k">in</span> strips.values()})
+    m = len(rings)
+    spans = m <span class="k">if</span> closed <span class="k">else</span> m - <span class="n">1</span>
+    <span class="k">for</span> k <span class="k">in</span> range(spans):
+        a, b = rings[k], rings[(k + <span class="n">1</span>) % m]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            f = bm.faces.new((a[i], a[j], b[j], b[i]))
+            f.material_index = mat_idx
+            f.smooth = <span class="k">True</span>
+            strips[f] = (island, {
+                a[i]: (s[k], i / n), a[j]: (s[k], (i + <span class="n">1</span>) / n),
+                b[j]: (s[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n), b[i]: (s[k + <span class="n">1</span>], i / n),
+            })
+    <span class="k">if</span> <span class="k">not</span> closed:
+        <span class="k">for</span> ring, p, t, sign, s_end <span class="k">in</span> (
+            (rings[<span class="n">0</span>], pts[<span class="n">0</span>], tans[<span class="n">0</span>], -<span class="n">1.0</span>, s[<span class="n">0</span>]),
+            (rings[-<span class="n">1</span>], pts[-<span class="n">1</span>], tans[-<span class="n">1</span>], <span class="n">1.0</span>, s[len(pts) - <span class="n">1</span>]),
+        ):
+            pole = bm.verts.new(p + t * (sign * CONE * r))
+            s_pole = s_end + sign * CONE * r
+            <span class="k">for</span> i <span class="k">in</span> range(n):
+                j = (i + <span class="n">1</span>) % n
+                f = bm.faces.new((pole, ring[i], ring[j]))
+                f.material_index = mat_idx
+                f.smooth = <span class="k">True</span>
+                strips[f] = (island, {
+                    pole: (s_pole, (i + <span class="n">0.5</span>) / n),
+                    ring[i]: (s_end, i / n), ring[j]: (s_end, (i + <span class="n">1</span>) / n),
+                })
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> lathe(bm, axis_at, profile, n, mat_idx, strips):
+    <span class="s">&quot;&quot;&quot;A turned log: ``profile`` is (z, r) bottom to top, r == 0 at the poles.
+
+    ``axis_at(z)`` gives the axis&#x27;s XY at height z, so a leaning post keeps
+    every ring on its own axis. Smooth-shaded: a log is round, and equal
+    flat facets would read as a coopered stave.
+    &quot;&quot;&quot;</span>
+    island = len({v[<span class="n">0</span>] <span class="k">for</span> v <span class="k">in</span> strips.values()})
+    s = [<span class="n">0.0</span>]
+    <span class="k">for</span> (z0, r0), (z1, r1) <span class="k">in</span> zip(profile, profile[<span class="n">1</span>:]):
+        s.append(s[-<span class="n">1</span>] + math.hypot(z1 - z0, r1 - r0))
+    rings = []
+    <span class="k">for</span> z, r <span class="k">in</span> profile:
+        cx, cy = axis_at(z)
+        <span class="k">if</span> r &lt;= <span class="n">0.0</span>:
+            rings.append(bm.verts.new((cx, cy, z)))
+            <span class="k">continue</span>
+        rings.append([
+            bm.verts.new((cx + r * math.cos(<span class="n">2.0</span> * math.pi * k / n),
+                          cy + r * math.sin(<span class="n">2.0</span> * math.pi * k / n), z))
+            <span class="k">for</span> k <span class="k">in</span> range(n)
+        ])
+    <span class="k">for</span> k <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+        a, b = rings[k], rings[k + <span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            <span class="k">if</span> isinstance(a, list) <span class="k">and</span> isinstance(b, list):
+                vs = (a[i], a[j], b[j], b[i])
+                uv = {a[i]: (s[k], i / n), a[j]: (s[k], (i + <span class="n">1</span>) / n),
+                      b[j]: (s[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n), b[i]: (s[k + <span class="n">1</span>], i / n)}
+            <span class="k">elif</span> isinstance(b, list):
+                vs = (a, b[j], b[i])
+                uv = {a: (s[k], (i + <span class="n">0.5</span>) / n), b[j]: (s[k + <span class="n">1</span>], (i + <span class="n">1</span>) / n),
+                      b[i]: (s[k + <span class="n">1</span>], i / n)}
+            <span class="k">else</span>:
+                vs = (a[i], a[j], b)
+                uv = {a[i]: (s[k], i / n), a[j]: (s[k], (i + <span class="n">1</span>) / n),
+                      b: (s[k + <span class="n">1</span>], (i + <span class="n">0.5</span>) / n)}
+            f = bm.faces.new(vs)
+            f.material_index = mat_idx
+            f.smooth = <span class="k">True</span>
+            strips[f] = (island, uv)
+
+
+<span class="k">def</span> profile_radius(profile, z):
+    <span class="s">&quot;&quot;&quot;The lathe&#x27;s radius at height z, linear between rings as the mesh is.&quot;&quot;&quot;</span>
+    body = [(pz, pr) <span class="k">for</span> pz, pr <span class="k">in</span> profile <span class="k">if</span> pr &gt; <span class="n">0.0</span>]
+    <span class="k">for</span> (z0, r0), (z1, r1) <span class="k">in</span> zip(body, body[<span class="n">1</span>:]):
+        <span class="k">if</span> z0 &lt;= z &lt;= z1 <span class="k">and</span> z1 &gt; z0:
+            <span class="k">return</span> r0 + (r1 - r0) * (z - z0) / (z1 - z0)
+    <span class="k">return</span> body[-<span class="n">1</span>][<span class="n">1</span>]
+
+
+<span class="k">def</span> add_box(bm, centre, ax, ay, az, size, mat_idx):
+    <span class="s">&quot;&quot;&quot;A box on explicit axes; ``size`` is the full extent along each.&quot;&quot;&quot;</span>
+    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
+        c = v.co.copy()
+        v.co = centre + ax * (c.x * size[<span class="n">0</span>]) + ay * (c.y * size[<span class="n">1</span>]) + az * (c.z * size[<span class="n">2</span>])
+    <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+        f.material_index = mat_idx
+        f.smooth = <span class="k">False</span>
+    <span class="k">return</span> geo[<span class="s">&quot;verts&quot;</span>]
+
+
+<span class="k">def</span> pack_uvs(bm, strips, margin=<span class="n">0.08</span>):
+    <span class="s">&quot;&quot;&quot;One grid cell per UV island.
+
+    A rope, post or stake is one strip island (arc length by section
+    angle), recorded in ``strips`` as it was built; every other face is
+    its own planar island. Cells are sized from the island count, which is
+    what the baked-texel budget reads back.
+    &quot;&quot;&quot;</span>
+    uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+    bm.faces.index_update()
+    islands = {}
+    order = []
+    <span class="k">for</span> face <span class="k">in</span> bm.faces:
+        key = (<span class="s">&quot;s&quot;</span>, strips[face][<span class="n">0</span>]) <span class="k">if</span> face <span class="k">in</span> strips <span class="k">else</span> (<span class="s">&quot;f&quot;</span>, face.index)
+        <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> islands:
+            islands[key] = []
+            order.append(key)
+        islands[key].append(face)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(len(order))))
+    rows = max(<span class="n">1</span>, math.ceil(len(order) / cols))
+    cell_w, cell_h = <span class="n">1.0</span> / cols, <span class="n">1.0</span> / rows
+    pad_u, pad_v = margin * cell_w * <span class="n">0.5</span>, margin * cell_h * <span class="n">0.5</span>
+    usable_w, usable_h = cell_w - <span class="n">2.0</span> * pad_u, cell_h - <span class="n">2.0</span> * pad_v
+    <span class="k">for</span> idx, key <span class="k">in</span> enumerate(order):
+        faces = islands[key]
+        coords = {}
+        <span class="k">for</span> face <span class="k">in</span> faces:
+            <span class="k">if</span> face <span class="k">in</span> strips:
+                m = strips[face][<span class="n">1</span>]
+                coords[face] = [m[loop.vert] <span class="k">for</span> loop <span class="k">in</span> face.loops]
+                <span class="k">continue</span>
+            nrm = face.normal
+            ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
+            pts = []
+            <span class="k">for</span> loop <span class="k">in</span> face.loops:
+                co = loop.vert.co
+                <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                    pts.append((co.x, co.y))
+                <span class="k">elif</span> ax &gt;= ay:
+                    pts.append((co.y, co.z))
+                <span class="k">else</span>:
+                    pts.append((co.x, co.z))
+            coords[face] = pts
+        allc = [c <span class="k">for</span> cs <span class="k">in</span> coords.values() <span class="k">for</span> c <span class="k">in</span> cs]
+        minx = min(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        maxx = max(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        miny = min(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        maxy = max(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> allc)
+        dx = max(maxx - minx, <span class="n">1e-8</span>)
+        dy = max(maxy - miny, <span class="n">1e-8</span>)
+        ou = (idx % cols) * cell_w + pad_u
+        ov = (idx // cols) * cell_h + pad_v
+        <span class="k">for</span> face <span class="k">in</span> faces:
+            <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, coords[face]):
+                loop[uv].uv = (
+                    ou + (x - minx) / dx * usable_w,
+                    ov + (y - miny) / dy * usable_h,
+                )
+
+
+<span class="k">def</span> build_bridge_mesh(
+    name,
+    vee_deck=<span class="k">False</span>,
+    float_post=<span class="k">False</span>,
+    short_rails=<span class="k">False</span>,
+    float_planks=<span class="k">False</span>,
+    loose_lashings=<span class="k">False</span>,
+    float_suspenders=<span class="k">False</span>,
+    lean_post=<span class="k">False</span>,
+    drift_planks=<span class="k">False</span>,
+    slack_rails=<span class="k">False</span>,
+    sharp_plank=<span class="k">False</span>,
+    boxes=<span class="k">None</span>,
+):
+    <span class="s">&quot;&quot;&quot;The whole bridge in one bmesh. ``boxes`` collects collider boxes.&quot;&quot;&quot;</span>
+    rng = random.Random(BRIDGE_SEED)
+    hand_sag = SLACK_SAG <span class="k">if</span> slack_rails <span class="k">else</span> HAND_SAG
+    cat_a = catenary_a(HALF, hand_sag)
+    stations = deck_stations(vee_deck)
+    gaps = [<span class="n">0.5</span> * (a + b) <span class="k">for</span> a, b <span class="k">in</span> zip(stations, stations[<span class="n">1</span>:])]
+    susp_x = [g <span class="k">for</span> j, g <span class="k">in</span> enumerate(gaps) <span class="k">if</span> j % SUSP_EVERY == <span class="n">0</span>]
+    strips = {}
+    Y = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))
+    X = Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    Z = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+
+    <span class="c"># Foot-rope path, -X to +X: stake, down-line, over the sill&#x27;s outer</span>
+    <span class="c"># arris, level across the sill, the deck parabola, and back out.</span>
+    deck_x = sorted(set(
+        [round(x, <span class="n">9</span>) <span class="k">for</span> x <span class="k">in</span> stations + gaps]
+        + [-DECK_HP, DECK_HP, -<span class="n">0.5</span> * (DECK_HP + DECK_END), <span class="n">0.5</span> * (DECK_HP + DECK_END)]
+    ))
+
+    <span class="k">def</span> tail(sign):
+        corner = (sign * (HALF + SILL_W / <span class="n">2.0</span>), SILL_TOP)
+        stake = (sign * (HALF + STAKE_OUT), STAKE_TIE)
+        rho = FOOT_R - FOOT_BITE
+        dx, dz = stake[<span class="n">0</span>] - corner[<span class="n">0</span>], stake[<span class="n">1</span>] - corner[<span class="n">1</span>]
+        dist = math.hypot(dx, dz)
+        <span class="c"># The down-line leaves the arris on a tangent to the rope&#x27;s bend.</span>
+        base = math.atan2(dz, dx)
+        phi = base + sign * math.acos(rho / dist)
+        start = math.pi / <span class="n">2.0</span>
+        <span class="c"># Turn the short way round the arris, not through the sill.</span>
+        <span class="k">while</span> phi - start &gt; math.pi:
+            phi -= <span class="n">2.0</span> * math.pi
+        <span class="k">while</span> phi - start &lt; -math.pi:
+            phi += <span class="n">2.0</span> * math.pi
+        <span class="c"># One mitred ring on the bisector. The bend radius is smaller than</span>
+        <span class="c"># the rope, so a ring per few degrees of arc folds the section</span>
+        <span class="c"># through itself and leaves right-angle creases on the outside.</span>
+        half_turn = <span class="n">0.5</span> * abs(phi - start)
+        mid_ang = <span class="n">0.5</span> * (start + phi)
+        reach = rho / math.cos(half_turn)
+        pts = [(corner[<span class="n">0</span>] + reach * math.cos(mid_ang), corner[<span class="n">1</span>] + reach * math.sin(mid_ang))]
+        tx = corner[<span class="n">0</span>] + rho * math.cos(phi)
+        tz = corner[<span class="n">1</span>] + rho * math.sin(phi)
+        <span class="k">for</span> k <span class="k">in</span> (<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>):
+            f = k / <span class="n">4.0</span>
+            pts.append((tx + (stake[<span class="n">0</span>] - tx) * f, tz + (stake[<span class="n">1</span>] - tz) * f))
+        pts.append(stake)
+        <span class="k">return</span> pts
+
+    right = tail(<span class="n">1.0</span>)
+    left = [p <span class="k">for</span> p <span class="k">in</span> reversed(tail(-<span class="n">1.0</span>))]
+    mid = [(x, deck_z(x, vee_deck)) <span class="k">for</span> x <span class="k">in</span> deck_x]
+    foot_xz = left + mid + right
+    foot_idx = {round(x, <span class="n">9</span>): len(left) + k <span class="k">for</span> k, x <span class="k">in</span> enumerate(deck_x)}
+    foot_pts = [Vector((x, <span class="n">0.0</span>, z)) <span class="k">for</span> x, z <span class="k">in</span> foot_xz]
+    foot_tans = path_tangents(foot_pts)
+
+    <span class="c"># Planks: each one&#x27;s underside set from the rope&#x27;s own reach along the</span>
+    <span class="c"># plank normal at its station, less the bite.</span>
+    planks = []
+    <span class="k">for</span> i, x <span class="k">in</span> enumerate(stations):
+        k = foot_idx[round(x, <span class="n">9</span>)]
+        t = foot_tans[k]
+        nrm = t.cross(Y).normalized()
+        <span class="k">if</span> nrm.z &lt; <span class="n">0.0</span>:
+            nrm = -nrm
+        reach = max(o.dot(nrm) <span class="k">for</span> o <span class="k">in</span> ring_offsets(t, Y, FOOT_R, ROPE_PIPE, ROPE_LOBE, k))
+        lift = reach - PLANK_BITE + PLANK_T / <span class="n">2.0</span>
+        <span class="k">if</span> float_planks:
+            lift += FLOAT_PLANK_LIFT
+        centre = foot_pts[k] + nrm * lift
+        <span class="k">if</span> drift_planks:
+            centre = centre + t * (DRIFT_PLANK <span class="k">if</span> i % <span class="n">2</span> <span class="k">else</span> -DRIFT_PLANK)
+        length = PLANK_L + rng.uniform(-PLANK_L_JITTER, PLANK_L_JITTER)
+        planks.append((centre, t, nrm, length))
+
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bevel_edges = []
+        <span class="k">for</span> i, (centre, t, nrm, length) <span class="k">in</span> enumerate(planks):
+            vs = add_box(bm, centre, t, Y, nrm, (PLANK_W, length, PLANK_T), TIMBER_IDX)
+            <span class="k">if</span> boxes <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                boxes.append((centre, t, Y, nrm, (PLANK_W, length, PLANK_T)))
+            <span class="k">if</span> <span class="k">not</span> (sharp_plank <span class="k">and</span> i == PLANK_N // <span class="n">2</span>):
+                bevel_edges.extend({e <span class="k">for</span> v <span class="k">in</span> vs <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+        <span class="k">for</span> sign <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            c = Vector((sign * HALF, <span class="n">0.0</span>, SILL_TOP - SILL_H / <span class="n">2.0</span>))
+            vs = add_box(bm, c, X, Y, Z, (SILL_W, <span class="n">2.0</span> * POST_Y, SILL_H), TIMBER_IDX)
+            <span class="k">if</span> boxes <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                boxes.append((c, X, Y, Z, (SILL_W, <span class="n">2.0</span> * POST_Y, SILL_H)))
+            bevel_edges.extend({e <span class="k">for</span> v <span class="k">in</span> vs <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+        bm.edges.index_update()
+        bevel_edges = sorted(set(bevel_edges), key=<span class="k">lambda</span> e: e.index)
+        <span class="k">if</span> bevel_edges:
+            bmesh.ops.bevel(
+                bm,
+                geom=bevel_edges,
+                offset=CHAMFER,
+                segments=<span class="n">1</span>,
+                profile=<span class="n">0.5</span>,
+                affect=<span class="s">&quot;EDGES&quot;</span>,
+                clamp_overlap=<span class="k">True</span>,
+                material=TIMBER_IDX,
+            )
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">False</span>
+
+        <span class="c"># Posts and stakes: tapered, faintly wobbled logs, plumb unless the</span>
+        <span class="c"># falsifier leans one. Every ring sits on the post&#x27;s own axis.</span>
+        posts = []
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                cx, cy = sx * HALF, sy * POST_Y
+                lift = FLOAT_POST_LIFT <span class="k">if</span> (float_post <span class="k">and</span> sx &lt; <span class="n">0</span> <span class="k">and</span> sy &lt; <span class="n">0</span>) <span class="k">else</span> <span class="n">0.0</span>
+                lean = LEAN_TOP <span class="k">if</span> (lean_post <span class="k">and</span> sx &gt; <span class="n">0</span> <span class="k">and</span> sy &lt; <span class="n">0</span>) <span class="k">else</span> <span class="n">0.0</span>
+                w = <span class="n">1.0</span> + rng.uniform(-POST_WOBBLE, POST_WOBBLE)
+
+                <span class="k">def</span> r_at(z):
+                    <span class="k">return</span> POST_R_BOT + (POST_R_TOP - POST_R_BOT) * z / POST_H
+
+                prof = [
+                    (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.86</span> * r_at(<span class="n">0.0</span>)), (<span class="n">0.014</span>, r_at(<span class="n">0.014</span>)),
+                    (<span class="n">0.5</span> * POST_H, r_at(<span class="n">0.5</span> * POST_H) * w),
+                    (POST_H - <span class="n">0.044</span>, r_at(POST_H - <span class="n">0.044</span>)),
+                    <span class="c"># A two-step round-over: one ring left the dome faceted.</span>
+                    (POST_H - <span class="n">0.018</span>, <span class="n">0.90</span> * r_at(POST_H)),
+                    (POST_H - <span class="n">0.004</span>, <span class="n">0.56</span> * r_at(POST_H)), (POST_H, <span class="n">0.0</span>),
+                ]
+                prof = [(z + lift, r) <span class="k">for</span> z, r <span class="k">in</span> prof]
+
+                <span class="k">def</span> axis_at(z, cx=cx, cy=cy, lean=lean):
+                    <span class="k">return</span> cx + lean * z / POST_H, cy
+
+                lathe(bm, axis_at, prof, POST_SEG, TIMBER_IDX, strips)
+                posts.append((sx, sy, axis_at, prof))
+                <span class="k">if</span> boxes <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                    r0 = POST_R_BOT
+                    boxes.append((Vector((cx, cy, lift + POST_H / <span class="n">2.0</span>)), X, Y, Z,
+                                  (<span class="n">2.0</span> * r0, <span class="n">2.0</span> * r0, POST_H)))
+        stakes = []
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+                cx, cy = sx * (HALF + STAKE_OUT), sy * FOOT_Y
+                w = <span class="n">1.0</span> + rng.uniform(-POST_WOBBLE, POST_WOBBLE)
+                prof = [
+                    (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.88</span> * STAKE_R), (<span class="n">0.012</span>, STAKE_R),
+                    (<span class="n">0.5</span> * STAKE_H, STAKE_R * w), (STAKE_H - <span class="n">0.030</span>, STAKE_R),
+                    (STAKE_H - <span class="n">0.012</span>, <span class="n">0.88</span> * STAKE_R),
+                    (STAKE_H - <span class="n">0.003</span>, <span class="n">0.54</span> * STAKE_R), (STAKE_H, <span class="n">0.0</span>),
+                ]
+
+                <span class="k">def</span> axis_at(z, cx=cx, cy=cy):
+                    <span class="k">return</span> cx, cy
+
+                lathe(bm, axis_at, prof, STAKE_SEG, TIMBER_IDX, strips)
+                stakes.append((sx, sy, axis_at, prof))
+                <span class="k">if</span> boxes <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                    boxes.append((Vector((cx, cy, STAKE_H / <span class="n">2.0</span>)), X, Y, Z,
+                                  (<span class="n">2.0</span> * STAKE_R, <span class="n">2.0</span> * STAKE_R, STAKE_H)))
+
+        <span class="c"># Foot ropes, both sides, on the one path.</span>
+        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            pts = [Vector((p.x, sy * FOOT_Y, p.z)) <span class="k">for</span> p <span class="k">in</span> foot_pts]
+            sweep(bm, pts, FOOT_R, ROPE_PIPE, ROPE_LOBE, Y, ROPE_IDX, strips)
+
+        <span class="c"># Hand ropes: post centre to post centre, a free catenary. The</span>
+        <span class="c"># falsifier stops each end short of the post&#x27;s surface.</span>
+        hx = sorted(set([round(x, <span class="n">9</span>) <span class="k">for</span> x <span class="k">in</span> deck_x] + [-HALF, HALF]))
+        <span class="k">if</span> short_rails:
+            end = HALF - POST_R_BOT - SHORT_RAIL_GAP
+            hx = [x <span class="k">for</span> x <span class="k">in</span> hx <span class="k">if</span> abs(x) &lt; end] + [-end, end]
+            hx = sorted(hx)
+        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            pts = [Vector((x, sy * POST_Y, hand_z(x, cat_a, hand_sag))) <span class="k">for</span> x <span class="k">in</span> hx]
+            sweep(bm, pts, HAND_R, ROPE_PIPE, ROPE_LOBE, Y, ROPE_IDX, strips)
+
+        <span class="c"># Suspenders: foot-rope centre to hand-rope centre at every third</span>
+        <span class="c"># plank gap, so each end is buried in the rope it ties.</span>
+        pull = FLOAT_SUSP_PULL <span class="k">if</span> float_suspenders <span class="k">else</span> <span class="n">0.0</span>
+        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            <span class="k">for</span> x <span class="k">in</span> susp_x:
+                a = Vector((x, sy * FOOT_Y, deck_z(x, vee_deck)))
+                b = Vector((x, sy * POST_Y, hand_z(x, cat_a, hand_sag)))
+                d = (b - a).normalized()
+                a, b = a + d * pull, b - d * pull
+                pts = [a + (b - a) * (k / (SUSP_RINGS - <span class="n">1</span>)) <span class="k">for</span> k <span class="k">in</span> range(SUSP_RINGS)]
+                sweep(bm, pts, SUSP_R, THIN_PIPE, THIN_LOBE, X, ROPE_IDX, strips)
+
+        <span class="c"># Lashings: turns hooped onto the host, the inner radius a named</span>
+        <span class="c"># bite inside the host&#x27;s own radius at that height.</span>
+        bite = LOOSE_LASH_BITE <span class="k">if</span> loose_lashings <span class="k">else</span> LASH_BITE
+
+        <span class="k">def</span> lash(axis_at, prof, z, seg, angle0=<span class="n">0.0</span>):
+            cx, cy = axis_at(z)
+            rm = profile_radius(prof, z) - bite + LASH_R
+            pts = [
+                Vector((cx + rm * math.cos(<span class="n">2.0</span> * math.pi * k / seg),
+                        cy + rm * math.sin(<span class="n">2.0</span> * math.pi * k / seg), z))
+                <span class="k">for</span> k <span class="k">in</span> range(seg)
+            ]
+            sweep(bm, pts, LASH_R, THIN_PIPE, THIN_LOBE, Z, ROPE_IDX, strips,
+                  closed=<span class="k">True</span>, angle0=angle0)
+
+        <span class="k">for</span> _sx, _sy, axis_at, prof <span class="k">in</span> posts:
+            z0 = HAND_Z - <span class="n">0.5</span> * (LASH_TURNS - <span class="n">1</span>) * LASH_PITCH
+            <span class="k">for</span> k <span class="k">in</span> range(LASH_TURNS):
+                <span class="c"># Each turn&#x27;s section half a vertex step round from the last.</span>
+                lash(axis_at, prof, z0 + k * LASH_PITCH, POST_LASH_SEG,
+                     angle0=k * math.pi / THIN_PIPE)
+        <span class="k">for</span> _sx, _sy, axis_at, prof <span class="k">in</span> stakes:
+            lash(axis_at, prof, STAKE_TIE, STAKE_LASH_SEG)
+
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        pack_uvs(bm, strips)
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    paint_planks(me)
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="c"># --- surface ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> _long_axis(pts):
+    <span class="s">&quot;&quot;&quot;Principal axis of a point set, by power iteration on its covariance.&quot;&quot;&quot;</span>
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">1.0</span>, <span class="n">0.3</span>, <span class="n">0.1</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">30</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> v
+
+
+<span class="k">def</span> paint_planks(me):
+    <span class="s">&quot;&quot;&quot;Per-shell ``PlankTone`` and ``GrainDir`` face attributes.
+
+    Twenty planks cut from one material are one plank repeated. Each shell
+    gets a seeded tone and grain along its own long axis: across the deck
+    on a plank, up a post.
+    &quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    grain = [(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)] * len(me.polygons)
+    owner = {}
+    rng = random.Random(BRIDGE_SEED * <span class="n">17</span>)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        d = _long_axis(pts) <span class="k">if</span> len(pts) &gt; <span class="n">2</span> <span class="k">else</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+        t = <span class="n">0.5</span> + rng.uniform(-PLANK_TONE_JITTER, PLANK_TONE_JITTER)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (t, tuple(d))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        t, d = owner[poly.vertices[<span class="n">0</span>]]
+        tone[poly.index] = t
+        grain[poly.index] = d
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="s">&quot;&quot;&quot;A Mix-node socket by identifier; its A/B/Result names repeat per type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Grain along each member (``GrainDir``), tone per member (``PlankTone``).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = WOOD_GRAIN_SCALE
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.11</span>, <span class="n">0.060</span>, <span class="n">0.030</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.34</span>, <span class="n">0.20</span>, <span class="n">0.100</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.1</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.45</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.74</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.56</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> rope_material(name):
+    <span class="s">&quot;&quot;&quot;Hemp: pale fibre, darker in the lay, matte, with a fine fibre bump.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">70.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.26</span>, <span class="n">0.19</span>, <span class="n">0.10</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.68</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.56</span>, <span class="n">0.45</span>, <span class="n">0.28</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.88</span>
+    bmp = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bmp.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.35</span>
+    bmp.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], bmp.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bmp.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> bridge_materials():
+    <span class="s">&quot;&quot;&quot;(timber, rope): shared by the check, the render and inspection.&quot;&quot;&quot;</span>
+    <span class="k">return</span> wood_material(<span class="s">&quot;BridgeTimber&quot;</span>), rope_material(<span class="s">&quot;BridgeRope&quot;</span>)
+
+
+<span class="k">def</span> assign_slots(obj, timber, rope):
+    mats = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate((timber, rope)):
+        <span class="k">if</span> i &lt; len(mats):
+            mats[i] = mat
+        <span class="k">else</span>:
+            mats.append(mat)
+
+
+<span class="c"># --- measurement ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
+    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
+    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    span = max(
+        <span class="n">1e-6</span>,
+        max((a[<span class="n">2</span>] - a[<span class="n">0</span>]) <span class="k">for</span> a <span class="k">in</span> aabbs),
+        max((a[<span class="n">3</span>] - a[<span class="n">1</span>]) <span class="k">for</span> a <span class="k">in</span> aabbs),
+    )
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        <span class="k">for</span> c <span class="k">in</span> range(int(a[<span class="n">0</span>] // span), int(a[<span class="n">2</span>] // span) + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(int(a[<span class="n">1</span>] // span), int(a[<span class="n">3</span>] // span) + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                overlap += max(<span class="n">0.0</span>, min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - max(a[<span class="n">0</span>], b[<span class="n">0</span>])) * max(
+                    <span class="n">0.0</span>, min(a[<span class="n">3</span>], b[<span class="n">3</span>]) - max(a[<span class="n">1</span>], b[<span class="n">1</span>])
+                )
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> uv_island_texels(mesh, res):
+    <span class="s">&quot;&quot;&quot;Smallest UV island extent in baked texels, islands found from the UVs.
+
+    Two faces are one island when they share a vertex at the same UV. The
+    cell size is read back from the mesh and the image, not from the grid
+    the packer used.
+    &quot;&quot;&quot;</span>
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0</span>
+    parent = list(range(len(mesh.polygons)))
+
+    <span class="k">def</span> find(i):
+        <span class="k">while</span> parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        <span class="k">return</span> i
+
+    first = {}
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
+            u, v = uv.data[li].uv
+            key = (mesh.loops[li].vertex_index, round(u, <span class="n">6</span>), round(v, <span class="n">6</span>))
+            <span class="k">if</span> key <span class="k">in</span> first:
+                a, b = find(first[key]), find(poly.index)
+                <span class="k">if</span> a != b:
+                    parent[a] = b
+            <span class="k">else</span>:
+                first[key] = poly.index
+    boxes = {}
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        root = find(poly.index)
+        <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
+            u, v = uv.data[li].uv
+            b = boxes.setdefault(root, [u, v, u, v])
+            b[<span class="n">0</span>], b[<span class="n">1</span>] = min(b[<span class="n">0</span>], u), min(b[<span class="n">1</span>], v)
+            b[<span class="n">2</span>], b[<span class="n">3</span>] = max(b[<span class="n">2</span>], u), max(b[<span class="n">3</span>], v)
+    ext = min(min(b[<span class="n">2</span>] - b[<span class="n">0</span>], b[<span class="n">3</span>] - b[<span class="n">1</span>]) <span class="k">for</span> b <span class="k">in</span> boxes.values())
+    <span class="k">return</span> ext * res, len(boxes)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    <span class="k">if</span> len(idxs) &lt; <span class="n">3</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        a = me.vertices[idxs[i]].co
+        b = me.vertices[idxs[i + <span class="n">1</span>]].co
+        area += (a - v0).cross(b - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {
+        <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf, <span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose_v&quot;</span>: loose_v,
+        <span class="s">&quot;loose_e&quot;</span>: loose_e, <span class="s">&quot;nonman&quot;</span>: nonman, <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;doubles&quot;</span>: doubles,
+    }
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            group.append(cur)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[cur]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* — the z-fighting budget.
+
+    Cross-shell, not merely share-no-vertex: two faces of one post&#x27;s flat
+    bottom fan are coplanar by construction. Z-fighting is two separate
+    bodies landing on one plane. Candidate pairs come from a KD-tree range
+    query at COPLANAR_CENTRE_MAX (copied from showcase/grindstone; do not
+    import across pieces).
+    &quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> right_angle_edges(me):
+    <span class="s">&quot;&quot;&quot;Manifold edges whose two faces meet at 90 degrees.
+
+    Every plank and sill is chamfered, the logs are lathed with a chamfer
+    ring at each end, and a rope section turns 40 or 60 degrees per edge.
+    An edge still at 90 is a bevel pass that was skipped.
+    &quot;&quot;&quot;</span>
+    n = <span class="n">0</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(e.calc_face_angle(<span class="n">0.0</span>) - math.pi / <span class="n">2.0</span>) &lt;= RIGHT_ANGLE_TOL:
+                n += <span class="n">1</span>
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> n
+
+
+<span class="k">def</span> shell_tree(me, group):
+    <span class="s">&quot;&quot;&quot;A BVH for one shell.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        member = set(group)
+        drop = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> <span class="k">not</span> all(v.index <span class="k">in</span> member <span class="k">for</span> v <span class="k">in</span> f.verts)]
+        <span class="k">if</span> drop:
+            bmesh.ops.delete(bm, geom=drop, context=<span class="s">&quot;FACES&quot;</span>)
+        <span class="k">if</span> <span class="k">not</span> bm.faces:
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="k">return</span> BVHTree.FromBMesh(bm)
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> classify(me):
+    <span class="s">&quot;&quot;&quot;Name every shell from its material and its own extent.
+
+    Timber: a plank or sill is long across the deck (sills sit at the post
+    stations), a post is tall, a stake is short and grounded. Rope: a main
+    rope runs the span (foot if it reaches down to a stake, else hand), a
+    suspender is tall and thin, a lashing is a flat loop.
+    &quot;&quot;&quot;</span>
+    out = {k: [] <span class="k">for</span> k <span class="k">in</span> (
+        <span class="s">&quot;plank&quot;</span>, <span class="s">&quot;sill&quot;</span>, <span class="s">&quot;post&quot;</span>, <span class="s">&quot;stake&quot;</span>, <span class="s">&quot;foot&quot;</span>, <span class="s">&quot;hand&quot;</span>, <span class="s">&quot;susp&quot;</span>, <span class="s">&quot;lash&quot;</span>, <span class="s">&quot;other&quot;</span>)}
+    face_mat = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            face_mat.setdefault(i, p.material_index)
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        xs, ys, zs = [p.x <span class="k">for</span> p <span class="k">in</span> pts], [p.y <span class="k">for</span> p <span class="k">in</span> pts], [p.z <span class="k">for</span> p <span class="k">in</span> pts]
+        a = (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+        ex, ey, ez = a[<span class="n">3</span>] - a[<span class="n">0</span>], a[<span class="n">4</span>] - a[<span class="n">1</span>], a[<span class="n">5</span>] - a[<span class="n">2</span>]
+        c = Vector(((a[<span class="n">0</span>] + a[<span class="n">3</span>]) / <span class="n">2</span>, (a[<span class="n">1</span>] + a[<span class="n">4</span>]) / <span class="n">2</span>, (a[<span class="n">2</span>] + a[<span class="n">5</span>]) / <span class="n">2</span>))
+        rec = {<span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;pts&quot;</span>: pts, <span class="s">&quot;aabb&quot;</span>: a, <span class="s">&quot;c&quot;</span>: c}
+        mat = face_mat.get(g[<span class="n">0</span>], -<span class="n">1</span>)
+        <span class="k">if</span> mat == TIMBER_IDX:
+            <span class="k">if</span> ey &gt; <span class="n">0.5</span> <span class="k">and</span> ez &lt; <span class="n">0.2</span>:
+                out[<span class="s">&quot;sill&quot;</span> <span class="k">if</span> abs(c.x) &gt; HALF - <span class="n">0.1</span> <span class="k">else</span> <span class="s">&quot;plank&quot;</span>].append(rec)
+            <span class="k">elif</span> ez &gt; <span class="n">1.0</span>:
+                out[<span class="s">&quot;post&quot;</span>].append(rec)
+            <span class="k">elif</span> ez &gt; <span class="n">0.2</span> <span class="k">and</span> max(ex, ey) &lt; <span class="n">0.2</span>:
+                out[<span class="s">&quot;stake&quot;</span>].append(rec)
+            <span class="k">else</span>:
+                out[<span class="s">&quot;other&quot;</span>].append(rec)
+        <span class="k">elif</span> mat == ROPE_IDX:
+            <span class="k">if</span> ex &gt; <span class="n">2.0</span>:
+                out[<span class="s">&quot;foot&quot;</span> <span class="k">if</span> a[<span class="n">2</span>] &lt; STAKE_H <span class="k">else</span> <span class="s">&quot;hand&quot;</span>].append(rec)
+            <span class="k">elif</span> ez &gt; <span class="n">0.3</span>:
+                out[<span class="s">&quot;susp&quot;</span>].append(rec)
+            <span class="k">elif</span> ez &lt; <span class="n">0.06</span>:
+                out[<span class="s">&quot;lash&quot;</span>].append(rec)
+            <span class="k">else</span>:
+                out[<span class="s">&quot;other&quot;</span>].append(rec)
+        <span class="k">else</span>:
+            out[<span class="s">&quot;other&quot;</span>].append(rec)
+    out[<span class="s">&quot;plank&quot;</span>].sort(key=<span class="k">lambda</span> r: r[<span class="s">&quot;c&quot;</span>].x)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> inside_depth(tree, pts):
+    <span class="s">&quot;&quot;&quot;Deepest point of ``pts`` inside the (convex) shell ``tree``.
+
+    Signed by the nearest face&#x27;s normal: positive inside. Negative means
+    every point is outside, by at least that much.
+    &quot;&quot;&quot;</span>
+    best = -<span class="n">99.0</span>
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        loc, nrm, _i, dist = tree.find_nearest(p)
+        <span class="k">if</span> loc <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        d = dist <span class="k">if</span> (p - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+        best = max(best, d)
+    <span class="k">return</span> best
+
+
+<span class="k">def</span> nearest(recs, p):
+    <span class="k">return</span> min(recs, key=<span class="k">lambda</span> r: (Vector((r[<span class="s">&quot;c&quot;</span>].x, r[<span class="s">&quot;c&quot;</span>].y, <span class="n">0.0</span>))
+                                    - Vector((p.x, p.y, <span class="n">0.0</span>))).length)
+
+
+<span class="k">def</span> bridge_audit(me):
+    <span class="s">&quot;&quot;&quot;Supports, joint bites, seats, contact graph, plumb and the deck.&quot;&quot;&quot;</span>
+    parts = classify(me)
+    trees = {}
+
+    <span class="k">def</span> tree(rec):
+        key = id(rec)
+        <span class="k">if</span> key <span class="k">not</span> <span class="k">in</span> trees:
+            trees[key] = shell_tree(me, rec[<span class="s">&quot;g&quot;</span>])
+        <span class="k">return</span> trees[key]
+
+    out = {
+        <span class="s">&quot;n&quot;</span>: {k: len(v) <span class="k">for</span> k, v <span class="k">in</span> parts.items()},
+        <span class="s">&quot;support_worst&quot;</span>: max(
+            (r[<span class="s">&quot;aabb&quot;</span>][<span class="n">2</span>] <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;post&quot;</span>] + parts[<span class="s">&quot;stake&quot;</span>]), default=<span class="n">99.0</span>),
+        <span class="s">&quot;n_support&quot;</span>: len(parts[<span class="s">&quot;post&quot;</span>]) + len(parts[<span class="s">&quot;stake&quot;</span>]),
+    }
+
+    <span class="c"># Joint bites: every rope end and sill end deepest inside its host.</span>
+    rail = []
+    <span class="k">for</span> rope <span class="k">in</span> parts[<span class="s">&quot;hand&quot;</span>]:
+        <span class="k">for</span> end <span class="k">in</span> (min, max):
+            x_end = end(p.x <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>])
+            tip = [p <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> abs(p.x - x_end) &lt; <span class="n">0.10</span>]
+            post = nearest(parts[<span class="s">&quot;post&quot;</span>], Vector((x_end, rope[<span class="s">&quot;c&quot;</span>].y, <span class="n">0.0</span>)))
+            rail.append(inside_depth(tree(post), tip))
+    foot = []
+    <span class="k">for</span> rope <span class="k">in</span> parts[<span class="s">&quot;foot&quot;</span>]:
+        <span class="k">for</span> end <span class="k">in</span> (min, max):
+            x_end = end(p.x <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>])
+            tip = [p <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> abs(p.x - x_end) &lt; <span class="n">0.10</span>]
+            stake = nearest(parts[<span class="s">&quot;stake&quot;</span>], Vector((x_end, rope[<span class="s">&quot;c&quot;</span>].y, <span class="n">0.0</span>)))
+            foot.append(inside_depth(tree(stake), tip))
+    sill = []
+    <span class="k">for</span> s <span class="k">in</span> parts[<span class="s">&quot;sill&quot;</span>]:
+        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            post = nearest(parts[<span class="s">&quot;post&quot;</span>], Vector((s[<span class="s">&quot;c&quot;</span>].x, sy * POST_Y, <span class="n">0.0</span>)))
+            end = [p <span class="k">for</span> p <span class="k">in</span> s[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> p.y * sy &gt; <span class="n">0.0</span>]
+            sill.append(inside_depth(tree(post), end))
+    out[<span class="s">&quot;rail_embed&quot;</span>] = min(rail, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;foot_embed&quot;</span>] = min(foot, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;sill_embed&quot;</span>] = min(sill, default=-<span class="n">99.0</span>)
+
+    <span class="c"># Plank seats: how far each foot rope stands into the plank&#x27;s</span>
+    <span class="c"># underside, measured in the plank&#x27;s own frame at its own station.</span>
+    bites = []
+    <span class="k">for</span> plank <span class="k">in</span> parts[<span class="s">&quot;plank&quot;</span>]:
+        members = set(plank[<span class="s">&quot;g&quot;</span>])
+        faces = [p <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> members]
+        top = max(faces, key=<span class="k">lambda</span> p: (p.normal.z &gt; <span class="n">0.9</span>, p.area))
+        n = top.normal.copy()
+        t = n.cross(Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))).normalized()
+        base = min(p.dot(n) <span class="k">for</span> p <span class="k">in</span> plank[<span class="s">&quot;pts&quot;</span>])
+        half_w = max(abs((p - plank[<span class="s">&quot;c&quot;</span>]).dot(t)) <span class="k">for</span> p <span class="k">in</span> plank[<span class="s">&quot;pts&quot;</span>])
+        plank[<span class="s">&quot;top&quot;</span>] = top.center.copy()
+        <span class="k">for</span> rope <span class="k">in</span> parts[<span class="s">&quot;foot&quot;</span>]:
+            under = [
+                p <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>]
+                <span class="k">if</span> abs((p - plank[<span class="s">&quot;c&quot;</span>]).dot(t)) &lt;= half_w
+            ]
+            bites.append(max((p.dot(n) <span class="k">for</span> p <span class="k">in</span> under), default=-<span class="n">99.0</span>) - base)
+    out[<span class="s">&quot;plank_bite_min&quot;</span>] = min(bites, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;plank_bite_max&quot;</span>] = max(bites, default=<span class="n">99.0</span>)
+
+    <span class="c"># Lashing hoop: each turn bites its host (a post or a stake).</span>
+    hosts = parts[<span class="s">&quot;post&quot;</span>] + parts[<span class="s">&quot;stake&quot;</span>]
+    lash = []
+    <span class="k">for</span> rec <span class="k">in</span> parts[<span class="s">&quot;lash&quot;</span>]:
+        host = nearest(hosts, rec[<span class="s">&quot;c&quot;</span>])
+        lash.append(inside_depth(tree(host), rec[<span class="s">&quot;pts&quot;</span>]))
+    out[<span class="s">&quot;lash_min&quot;</span>] = min(lash, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;lash_max&quot;</span>] = max(lash, default=<span class="n">99.0</span>)
+
+    <span class="c"># One connected assembly: union every pair of shells whose surfaces</span>
+    <span class="c"># cross. Per-part budgets pass a rope resting a hair off its host.</span>
+    recs = [r <span class="k">for</span> k <span class="k">in</span> parts <span class="k">for</span> r <span class="k">in</span> parts[k]]
+    parent = list(range(len(recs)))
+
+    <span class="k">def</span> find(i):
+        <span class="k">while</span> parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        <span class="k">return</span> i
+
+    <span class="k">for</span> i <span class="k">in</span> range(len(recs)):
+        ai = recs[i][<span class="s">&quot;aabb&quot;</span>]
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(recs)):
+            aj = recs[j][<span class="s">&quot;aabb&quot;</span>]
+            <span class="k">if</span> any(ai[k] &gt; aj[k + <span class="n">3</span>] + <span class="n">1e-4</span> <span class="k">or</span> aj[k] &gt; ai[k + <span class="n">3</span>] + <span class="n">1e-4</span> <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)):
+                <span class="k">continue</span>
+            ti, tj = tree(recs[i]), tree(recs[j])
+            <span class="k">if</span> ti <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> tj <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> ti.overlap(tj):
+                a, b = find(i), find(j)
+                <span class="k">if</span> a != b:
+                    parent[a] = b
+    out[<span class="s">&quot;components&quot;</span>] = len({find(i) <span class="k">for</span> i <span class="k">in</span> range(len(recs))})
+
+    <span class="c"># Plumb: bottom-slab against top-slab centroid, per post and stake.</span>
+    plumb = <span class="n">0.0</span>
+    <span class="k">for</span> rec <span class="k">in</span> parts[<span class="s">&quot;post&quot;</span>] + parts[<span class="s">&quot;stake&quot;</span>]:
+        z0, z1 = rec[<span class="s">&quot;aabb&quot;</span>][<span class="n">2</span>], rec[<span class="s">&quot;aabb&quot;</span>][<span class="n">5</span>]
+        h = z1 - z0
+        lo = [p <span class="k">for</span> p <span class="k">in</span> rec[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> z0 + <span class="n">0.01</span> &lt; p.z &lt; z0 + <span class="n">0.25</span> * h]
+        hi = [p <span class="k">for</span> p <span class="k">in</span> rec[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> z1 - <span class="n">0.30</span> * h &lt; p.z &lt; z1 - <span class="n">0.01</span>]
+        <span class="k">if</span> <span class="k">not</span> lo <span class="k">or</span> <span class="k">not</span> hi:
+            plumb = <span class="n">99.0</span>
+            <span class="k">continue</span>
+        cl = sum(lo, Vector()) / len(lo)
+        ch = sum(hi, Vector()) / len(hi)
+        plumb = max(plumb, math.hypot(ch.x - cl.x, ch.y - cl.y))
+    out[<span class="s">&quot;plumb&quot;</span>] = plumb
+
+    <span class="c"># The deck: least-squares parabola through the plank top centres.</span>
+    tops = [p[<span class="s">&quot;top&quot;</span>] <span class="k">for</span> p <span class="k">in</span> parts[<span class="s">&quot;plank&quot;</span>] <span class="k">if</span> <span class="s">&quot;top&quot;</span> <span class="k">in</span> p]
+    fit_dev, fit_sag, apex = <span class="n">99.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>
+    <span class="k">if</span> len(tops) &gt;= <span class="n">3</span>:
+        s = [<span class="n">0.0</span>] * <span class="n">5</span>
+        r = [<span class="n">0.0</span>] * <span class="n">3</span>
+        <span class="k">for</span> p <span class="k">in</span> tops:
+            xp = <span class="n">1.0</span>
+            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">5</span>):
+                s[k] += xp
+                <span class="k">if</span> k &lt; <span class="n">3</span>:
+                    r[k] += xp * p.z
+                xp *= p.x
+        m = Matrix(((s[<span class="n">0</span>], s[<span class="n">1</span>], s[<span class="n">2</span>]), (s[<span class="n">1</span>], s[<span class="n">2</span>], s[<span class="n">3</span>]), (s[<span class="n">2</span>], s[<span class="n">3</span>], s[<span class="n">4</span>])))
+        c0, c1, c2 = m.inverted() @ Vector(r)
+        fit_dev = max(abs(c0 + c1 * p.x + c2 * p.x * p.x - p.z) <span class="k">for</span> p <span class="k">in</span> tops)
+        fit_sag = c2 * DECK_HP * DECK_HP
+        apex = c0
+    out[<span class="s">&quot;fit_dev&quot;</span>] = fit_dev
+    out[<span class="s">&quot;fit_sag&quot;</span>] = fit_sag
+    gaps = [(b - a).length <span class="k">for</span> a, b <span class="k">in</span> zip(tops, tops[<span class="n">1</span>:])]
+    mean = sum(gaps) / len(gaps) <span class="k">if</span> gaps <span class="k">else</span> <span class="n">0.0</span>
+    out[<span class="s">&quot;pitch_mean&quot;</span>] = mean
+    out[<span class="s">&quot;pitch_dev&quot;</span>] = max((abs(g - mean) <span class="k">for</span> g <span class="k">in</span> gaps), default=<span class="n">99.0</span>)
+    mids = [p.z <span class="k">for</span> rope <span class="k">in</span> parts[<span class="s">&quot;hand&quot;</span>] <span class="k">for</span> p <span class="k">in</span> rope[<span class="s">&quot;pts&quot;</span>] <span class="k">if</span> abs(p.x) &lt; <span class="n">0.03</span>]
+    out[<span class="s">&quot;rail_h&quot;</span>] = (sum(mids) / len(mids) - apex) <span class="k">if</span> mids <span class="k">else</span> <span class="n">0.0</span>
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> add_stray_vert(me):
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.9</span>))
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> box_collider(boxes, name):
+    <span class="s">&quot;&quot;&quot;Compound collider: one box per timber member.
+
+    One convex hull over a sagging deck is a lens whose top is the chord
+    between the sills, so a walker would float 0.22 m over midspan. A box
+    per plank follows the sag; ropes are left out, as thin rope is not
+    something a character collides with.
+    &quot;&quot;&quot;</span>
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> centre, ax, ay, az, size <span class="k">in</span> boxes:
+            add_box(bm, centre, ax, ay, az, size, <span class="n">0</span>)
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    collider = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(collider)
+    <span class="k">return</span> collider
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size):
+    <span class="k">if</span> <span class="k">not</span> obj.data.uv_layers:
+        <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
+    img = bpy.data.images.new(<span class="s">&quot;BridgeNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = TIMBER_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>,
+        use_selected_to_active=<span class="k">True</span>,
+        cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>,
+        normal_space=<span class="s">&quot;TANGENT&quot;</span>,
+        margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>,
+        use_clear=<span class="k">True</span>,
+        target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path,
+        use_selection=<span class="k">True</span>,
+        export_yup=<span class="k">True</span>,
+        export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>,
+        export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, low_bake=<span class="k">False</span>, **flags):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    boxes = []
+    low = build_bridge_mesh(<span class="s">&quot;BridgeLow&quot;</span>, boxes=boxes, **flags)
+    high = build_bridge_mesh(<span class="s">&quot;BridgeHigh&quot;</span>, **flags)
+    timber, rope = bridge_materials()
+    assign_slots(low, timber, rope)
+    assign_slots(high, timber, rope)
+    <span class="k">if</span> stray_vert:
+        add_stray_vert(low.data)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+
+    <span class="k">if</span> low.data <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> len(low.data.polygons) &lt; <span class="n">6</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;bridge mesh did not build&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat = len(mats)
+    distinct = len({id(s) <span class="k">for</span> s <span class="k">in</span> mats})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    res = LOW_BAKE_RES <span class="k">if</span> low_bake <span class="k">else</span> BAKE_RES
+    img, tex = setup_bake_image(low, timber, res)
+    <span class="k">if</span> img <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;bridge has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+    bake_result = bake_normal(high, low)
+    texels, n_islands = uv_island_texels(low.data, img.size[<span class="n">0</span>])
+
+    lod1 = make_lod(low, <span class="s">&quot;BridgeLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;BridgeLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = box_collider(boxes, <span class="s">&quot;BridgeCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(
+        tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_rope_bridge_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>
+    )
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    e90 = right_angle_edges(low.data)
+    br = bridge_audit(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{dict(sorted(idx_counts.items()))}<span class="s">&quot;</span>)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s"> islands=</span>{n_islands}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">texels_per_cell=</span>{texels:<span class="s">.2f</span>}<span class="s"> bake_res=</span>{img.size[<span class="n">0</span>]}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> edge90=</span>{e90}<span class="s">&quot;</span>
+    )
+    print(<span class="s">f&quot;</span><span class="s">measured parts </span>{br[<span class="s">&#x27;n&#x27;</span>]}<span class="s">&quot;</span>)
+    print(
+        <span class="s">f&quot;</span><span class="s">measured joints supports=</span>{br[<span class="s">&#x27;n_support&#x27;</span>]}<span class="s"> support_worst=</span>{br[<span class="s">&#x27;support_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">rail_embed=</span>{br[<span class="s">&#x27;rail_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> foot_embed=</span>{br[<span class="s">&#x27;foot_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">sill_embed=</span>{br[<span class="s">&#x27;sill_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured seats plank_bite=(</span>{br[<span class="s">&#x27;plank_bite_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">,</span>{br[<span class="s">&#x27;plank_bite_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">lash=(</span>{br[<span class="s">&#x27;lash_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">,</span>{br[<span class="s">&#x27;lash_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) components=</span>{br[<span class="s">&#x27;components&#x27;</span>]}<span class="s">&quot;</span>
+    )
+    print(
+        <span class="s">f&quot;</span><span class="s">measured deck plumb=</span>{br[<span class="s">&#x27;plumb&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> fit_dev=</span>{br[<span class="s">&#x27;fit_dev&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">fit_sag=</span>{br[<span class="s">&#x27;fit_sag&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> pitch_mean=</span>{br[<span class="s">&#x27;pitch_mean&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">pitch_dev=</span>{br[<span class="s">&#x27;pitch_dev&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> rail_h=</span>{br[<span class="s">&#x27;rail_h&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>
+    )
+
+    n = br[<span class="s">&quot;n&quot;</span>]
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>
+        ),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> idx_counts.get(TIMBER_IDX, <span class="n">0</span>) &lt; TIMBER_FACES_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">timber faces </span>{idx_counts.get(TIMBER_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{TIMBER_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> idx_counts.get(ROPE_IDX, <span class="n">0</span>) &lt; ROPE_FACES_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">rope faces </span>{idx_counts.get(ROPE_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{ROPE_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>
+        ),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>
+        ),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (
+        abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+        <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>
+        ),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>
+        ),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>
+        ),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>
+        ),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (
+        hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+        <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--stray-vert is the designed fail)&quot;</span>, <span class="n">15</span>
+        ),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>
+        ),) + nothing
+    <span class="k">if</span> br[<span class="s">&quot;n_support&quot;</span>] != SUPPORTS <span class="k">or</span> br[<span class="s">&quot;support_worst&quot;</span>] &gt; SUPPORT_Z_MAX:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">supports </span>{br[<span class="s">&#x27;n_support&#x27;</span>]}<span class="s"> of </span>{SUPPORTS}<span class="s">, worst base z=</span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{br[<span class="s">&#x27;support_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{SUPPORT_Z_MAX}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-post is the designed fail)&quot;</span>, <span class="n">16</span>
+        ),) + nothing
+    <span class="k">if</span> (
+        n[<span class="s">&quot;hand&quot;</span>] != <span class="n">2</span> <span class="k">or</span> n[<span class="s">&quot;foot&quot;</span>] != <span class="n">2</span> <span class="k">or</span> n[<span class="s">&quot;sill&quot;</span>] != <span class="n">2</span>
+        <span class="k">or</span> br[<span class="s">&quot;rail_embed&quot;</span>] &lt; RAIL_EMBED_MIN
+        <span class="k">or</span> br[<span class="s">&quot;foot_embed&quot;</span>] &lt; FOOT_EMBED_MIN
+        <span class="k">or</span> br[<span class="s">&quot;sill_embed&quot;</span>] &lt; SILL_EMBED_MIN
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">joint bites: hand-rope ends </span>{br[<span class="s">&#x27;rail_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{RAIL_EMBED_MIN}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">foot-rope ends </span>{br[<span class="s">&#x27;foot_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{FOOT_EMBED_MIN}<span class="s"> or sill </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">tenons </span>{br[<span class="s">&#x27;sill_embed&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{SILL_EMBED_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(hand </span>{n[<span class="s">&#x27;hand&#x27;</span>]}<span class="s">, foot </span>{n[<span class="s">&#x27;foot&#x27;</span>]}<span class="s">, sill </span>{n[<span class="s">&#x27;sill&#x27;</span>]}<span class="s">) </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--short-rails is the designed fail)&quot;</span>, <span class="n">17</span>
+        ),) + nothing
+    <span class="k">if</span> (
+        n[<span class="s">&quot;plank&quot;</span>] != PLANK_N
+        <span class="k">or</span> br[<span class="s">&quot;plank_bite_min&quot;</span>] &lt; PLANK_BITE_MIN
+        <span class="k">or</span> br[<span class="s">&quot;plank_bite_max&quot;</span>] &gt; PLANK_BITE_MAX
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">plank seats: </span>{n[<span class="s">&#x27;plank&#x27;</span>]}<span class="s"> of </span>{PLANK_N}<span class="s"> planks, bite </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">(</span>{br[<span class="s">&#x27;plank_bite_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">, </span>{br[<span class="s">&#x27;plank_bite_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) outside </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">[</span>{PLANK_BITE_MIN}<span class="s">, </span>{PLANK_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-planks is the designed fail)&quot;</span>, <span class="n">18</span>
+        ),) + nothing
+    n_lash = <span class="n">4</span> * LASH_TURNS + <span class="n">4</span>
+    <span class="k">if</span> (
+        n[<span class="s">&quot;lash&quot;</span>] != n_lash
+        <span class="k">or</span> br[<span class="s">&quot;lash_min&quot;</span>] &lt; LASH_BITE_MIN
+        <span class="k">or</span> br[<span class="s">&quot;lash_max&quot;</span>] &gt; LASH_BITE_MAX
+    ):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">lashings: </span>{n[<span class="s">&#x27;lash&#x27;</span>]}<span class="s"> of </span>{n_lash}<span class="s">, bite (</span>{br[<span class="s">&#x27;lash_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">, </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{br[<span class="s">&#x27;lash_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) outside [</span>{LASH_BITE_MIN}<span class="s">, </span>{LASH_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--loose-lashings is the designed fail)&quot;</span>, <span class="n">18</span>
+        ),) + nothing
+    <span class="k">if</span> br[<span class="s">&quot;components&quot;</span>] != <span class="n">1</span>:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">contact graph has </span>{br[<span class="s">&#x27;components&#x27;</span>]}<span class="s"> components, need 1 </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--float-suspenders is the designed fail)&quot;</span>, <span class="n">18</span>
+        ),) + nothing
+    <span class="k">if</span> br[<span class="s">&quot;plumb&quot;</span>] &gt; PLUMB_TOL:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">a post or stake is </span>{br[<span class="s">&#x27;plumb&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> off plumb &gt; </span>{PLUMB_TOL}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--lean-post is the designed fail)&quot;</span>, <span class="n">19</span>
+        ),) + nothing
+    <span class="k">if</span> br[<span class="s">&quot;fit_dev&quot;</span>] &gt; CURVE_TOL <span class="k">or</span> abs(br[<span class="s">&quot;fit_sag&quot;</span>] - DECK_SAG) &gt; SAG_TOL:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">deck off its parabola by </span>{br[<span class="s">&#x27;fit_dev&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{CURVE_TOL}<span class="s"> or fitted </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span><span class="s">sag </span>{br[<span class="s">&#x27;fit_sag&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> off </span>{DECK_SAG}<span class="s"> by more than </span>{SAG_TOL}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--vee-deck is the designed fail)&quot;</span>, <span class="n">19</span>
+        ),) + nothing
+    <span class="k">if</span> br[<span class="s">&quot;pitch_dev&quot;</span>] &gt; PITCH_TOL:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">plank pitch off its mean by </span>{br[<span class="s">&#x27;pitch_dev&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{PITCH_TOL}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--drift-planks is the designed fail)&quot;</span>, <span class="n">19</span>
+        ),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (RAIL_H_MIN &lt;= br[<span class="s">&quot;rail_h&quot;</span>] &lt;= RAIL_H_MAX):
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">rail height </span>{br[<span class="s">&#x27;rail_h&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> not in [</span>{RAIL_H_MIN}<span class="s">, </span>{RAIL_H_MAX}<span class="s">] </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--slack-rails is the designed fail)&quot;</span>, <span class="n">19</span>
+        ),) + nothing
+    <span class="k">if</span> e90:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span>{e90}<span class="s"> right-angle edges, need 0 (--sharp-plank is the designed fail)</span><span class="s">&quot;</span>, <span class="n">20</span>
+        ),) + nothing
+    <span class="k">if</span> texels &lt; TEXELS_PER_CELL_MIN:
+        <span class="k">return</span> (fail(
+            <span class="s">f&quot;</span><span class="s">smallest UV island </span>{texels:<span class="s">.2f</span>}<span class="s"> baked texels &lt; </span>{TEXELS_PER_CELL_MIN}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">&quot;(--low-bake is the designed fail)&quot;</span>, <span class="n">21</span>
+        ),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, timber, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    <span class="s">&quot;&quot;&quot;Baked normal map into the timber BSDF.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nrm.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, timber, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(timber, tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+
+    <span class="c"># Level on the floor: turned about Z only.</span>
+    low.rotation_euler.z = math.radians(-<span class="n">14.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
+    )
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.2</span>, -<span class="n">5.4</span>, <span class="n">6.2</span>), <span class="n">660.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.4</span>, -<span class="n">4.0</span>, <span class="n">2.6</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.74</span>, <span class="n">0.84</span>, <span class="n">1.0</span>), (<span class="n">66</span>, <span class="n">0</span>, <span class="n">52</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">2.6</span>, <span class="n">4.2</span>, <span class="n">3.6</span>), <span class="n">420.0</span>, <span class="n">4.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">60</span>, <span class="n">0</span>, <span class="n">200</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.6</span>, <span class="n">4.6</span>, <span class="n">2.5</span>), <span class="n">760.0</span>, <span class="n">6.5</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.38</span>), (-<span class="n">94</span>, <span class="n">0</span>, <span class="n">194</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">2.2</span>, -<span class="n">6.6</span>, <span class="n">2.5</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.15</span>, <span class="n">0.0</span>, <span class="n">0.56</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = (
+        <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    )
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=[low], elements=[low], stage=[floor, wall],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-post&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-rails&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-planks&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--loose-lashings&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-suspenders&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lean-post&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--vee-deck&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--drift-planks&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--slack-rails&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--sharp-plank&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--low-bake&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, timber, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        low_bake=args.low_bake,
+        vee_deck=args.vee_deck,
+        float_post=args.float_post,
+        short_rails=args.short_rails,
+        float_planks=args.float_planks,
+        loose_lashings=args.loose_lashings,
+        float_suspenders=args.float_suspenders,
+        lean_post=args.lean_post,
+        drift_planks=args.drift_planks,
+        slack_rails=args.slack_rails,
+        sharp_plank=args.sharp_plank,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, timber, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;rope-bridge OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <button class="lightbox-close" type="button" autofocus>Close</button>
+    <img src="../assets/rope-bridge-hero.webp" alt="A wooden rope bridge whose plank deck sags between two pairs of log posts, with hemp hand ropes lashed to the posts, vertical ropes tying rail to deck, and foot ropes run back to ground stakes." />
+  </dialog>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>showcase/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
