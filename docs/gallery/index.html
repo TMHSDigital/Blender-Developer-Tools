@@ -291,7 +291,7 @@
             autocomplete="off" spellcheck="false" aria-label="Search examples and showcase pieces" />
           <button class="q-clear" id="qClear" type="button" aria-label="Clear search" hidden>&times;</button>
         </div>
-        <span class="count" id="count" role="status" aria-live="polite">51 examples, 32 showcase pieces</span>
+        <span class="count" id="count" role="status" aria-live="polite">51 examples, 33 showcase pieces</span>
         <div class="density" role="group" aria-label="Card density">
           <button class="density-btn" data-density="compact" type="button" aria-pressed="false">Compact</button>
           <button class="density-btn" data-density="detailed" type="button" aria-pressed="false">Detailed</button>
@@ -1254,6 +1254,17 @@
           <a class="card-link" href="apothecary-shelf/">View showcase piece<span class="sr-only"> apothecary-shelf</span> <span aria-hidden="true">&rarr;</span></a>
         </div>
       </article>
+      <article class="card" data-tags="mesh export showcase">
+        <a class="card-media" href="wooden-yoke/" tabindex="-1" aria-hidden="true">
+          <img src="assets/wooden-yoke-hero.webp" alt="A carved oak ox yoke with upturned ends standing on two bent hickory bows pinned above the beam, with a rusted iron ring hung from a staple under its centre." loading="lazy" decoding="async" />
+        </a>
+        <div class="card-body">
+          <h2><a href="wooden-yoke/">wooden-yoke</a></h2>
+          <p class="teaches">A procedural double ox yoke — a carved oak beam with neck saddles and upturned ends on two bent hickory bows pinned above it, with a staple and a hung iron ring — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+          <p class="witnesses"><span class="tag">witnesses</span> Recomputed: 5288 tris, three materials with 1088 oak, 720 hickory and 936 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.424×0.140×0.640 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both bows standing on the floor, every leg 52.7 mm proud of the beam, the staple 17.5 mm into it, four pins resting 1.5 mm into its crown, a ring threaded along the staple&#x27;s bar and hung 1.0 mm onto it, two mirrored bows, and each neck opening 266 mm wide and 371 mm high. --pinch-bows exits 19 at 196 mm while the bows still ground and the envelope is unchanged; --edge-on-ring exits 17.</p>
+          <a class="card-link" href="wooden-yoke/">View showcase piece<span class="sr-only"> wooden-yoke</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </article>
     </div>
     <p class="noresults" id="noResults" hidden>Nothing matches the current filters.
       <button class="chip" id="resetFilters" type="button">Clear search and tags</button></p>
@@ -1283,7 +1294,7 @@
       var tagsToggle = document.getElementById('tagsToggle');
       var toTop = document.getElementById('toTop');
       var total = cards.length;
-      var COUNT_LABEL = '51 examples, 32 showcase pieces';
+      var COUNT_LABEL = '51 examples, 33 showcase pieces';
       var LS_KEY = 'bdt-gallery-density';
       var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

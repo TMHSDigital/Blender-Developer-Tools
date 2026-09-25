@@ -105,5 +105,6 @@
   {"name": "rope-bridge", "script": "showcase/rope-bridge/rope_bridge.py"},
   {"name": "grain-sacks", "script": "showcase/grain-sacks/grain_sacks.py"},
   {"name": "brazier", "script": "showcase/brazier/brazier.py"},
-  {"name": "apothecary-shelf", "script": "showcase/apothecary-shelf/apothecary_shelf.py"}
+  {"name": "apothecary-shelf", "script": "showcase/apothecary-shelf/apothecary_shelf.py"},
+  {"name": "wooden-yoke", "script": "showcase/wooden-yoke/wooden_yoke.py"}
 ]

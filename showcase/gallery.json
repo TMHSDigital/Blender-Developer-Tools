@@ -426,6 +426,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "wooden-yoke",
+      "dir": "showcase/wooden-yoke",
+      "teaches": "A procedural double ox yoke — a carved oak beam with neck saddles and upturned ends on two bent hickory bows pinned above it, with a staple and a hung iron ring — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A carved oak ox yoke with upturned ends standing on two bent hickory bows pinned above the beam, with a rusted iron ring hung from a staple under its centre.",
+      "witnessesFix": "Recomputed: 5288 tris, three materials with 1088 oak, 720 hickory and 936 iron faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.424×0.140×0.640 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both bows standing on the floor, every leg 52.7 mm proud of the beam, the staple 17.5 mm into it, four pins resting 1.5 mm into its crown, a ring threaded along the staple's bar and hung 1.0 mm onto it, two mirrored bows, and each neck opening 266 mm wide and 371 mm high. --pinch-bows exits 19 at 196 mm while the bows still ground and the envelope is unchanged; --edge-on-ring exits 17.",
+      "hero": "docs/gallery/assets/wooden-yoke-hero.webp",
+      "preview": "showcase/wooden-yoke/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }
