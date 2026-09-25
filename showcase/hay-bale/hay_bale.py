@@ -46,10 +46,15 @@ BALE_X = 0.90
 BALE_Y = 0.48
 BALE_Z = 0.38
 # Baling twine is a cord, not a strap. At 16 x 24 mm the wrap read as
-# packing tape on a parcel; 8 x 10 mm reads as cord pulled into the straw.
-TWINE_T = 0.008
-TWINE_W = 0.010
+# packing tape on a parcel. At 8 x 10 mm, 4 mm of it stood proud of a
+# waisted loaf and read as a scored groove; 10 x 14 mm stands 6 mm proud
+# and reads as cord pulled into the straw.
+TWINE_T = 0.010
+TWINE_W = 0.014
 TWINE_EMBED = 0.004
+# The knot: a tight loop standing on the cord in the belt's own plane. A
+# 60 mm ring lying flat on the top read as a printed symbol, not a tie.
+KNOT_MAJOR = 0.013
 BELT_XS = (-0.225, 0.225)
 LOAF_CUTS = 8
 # The high mesh carries the straw; the bake moves it onto the low mesh. A
@@ -59,10 +64,13 @@ LOAF_CUTS_HIGH = 20
 FLAKE_W = 0.075
 FLAKE_AMP = 0.011
 BULGE = 0.055
-RIDGE_AMP = 0.014
+# Longitudinal straw ridge. At 14 mm it crumpled the top edge in profile,
+# and the bale read as a stuffed sack; the flakes on the high mesh carry
+# the straw texture through the bake instead.
+RIDGE_AMP = 0.006
 BBOX_TOL = 0.01
 # Fitted after locking geometry. Recomputed from bound_box.
-OUTER_SIZE = (0.922, 0.530, 0.409)
+OUTER_SIZE = (0.921, 0.508, 0.417)
 
 # The belt follows the loaf's own cross-section, sampled by raycast, instead
 # of being a constant rectangle: a rectangle stands proud at the middle of
@@ -90,8 +98,15 @@ MATERIAL_COUNT = 2
 UV_EPS = 1e-4
 UV_OVERLAP_MAX = 1e-5
 COLLIDER_TRIS_MAX = 400
-BAKE_RES = 256
-CAGE_EXTRUSION = 0.04
+# One UV cell per face: at 256 px each cell got 5.6 texels, and the
+# bilinear lookup smeared neighbouring cells' normals into streaks across
+# the straw (tavern-stool's defect). 1024 px, with a floor asserted.
+BAKE_RES = 1024
+LOW_BAKE_RES = 256
+TEXEL_MIN = 12.0
+# The cage covers the flake relief on the high mesh (11 mm) and the bevel
+# difference; at 0.04 it reached the twine standing proud of the loaf.
+CAGE_EXTRUSION = 0.02
 HAY_FACES_MIN = 24
 TWINE_FACES_MIN = 24
 
@@ -137,11 +152,14 @@ CINCH_MIN = 0.006
 CINCH_MAX = 0.020
 # Loaf length and height against the stated real-world bale. Y is left to
 # the cinch budget above, since the pillow bulge dominates it.
-LOAF_XZ = (0.922, 0.409)
+LOAF_XZ = (0.921, 0.393)
 LOAF_XZ_TOL = 0.02
 
-FLOAT_BELT_Z = 0.02
-SLACK_BELT = 0.010
+# Sized to their own budgets and kept inside BBOX_TOL: with the ridge at
+# 6 mm the knot sets the envelope top, and 20 / 10 mm moved it past the
+# bounding box, which then fired (exit 8) instead of 16 / 18.
+FLOAT_BELT_Z = 0.008
+SLACK_BELT = 0.006
 SKEW_BELT_X = 0.004
 
 HAY_IDX = 0
@@ -735,17 +753,18 @@ def build_bale_mesh(name, bevel_offset, bevel_segments, cuts=LOAF_CUTS,
             # alongside its belt. Standing it upright made a wire hoop that
             # broke the silhouette; laying it in XY reads as tied cord.
             top_z = max(pz for _py, pz in profile)
+            # The knot loop stands in the belt's plane (YZ), centred on the
+            # belt's station, its foot sunk to the cord's mid-line so it grows
+            # out of the wrap. The tube is the same cord as the wrap.
+            minor = TWINE_T * 0.39
             add_rim(
                 bm,
-                # Offset outward from the centre, not along +X: a bare
-                # `x + TWINE_W` put the two loops at -0.201 and +0.249.
-                (x + math.copysign(TWINE_W, x), 0.052,
-                 top_z - TWINE_EMBED + TWINE_T * 0.45),
-                0.030,
-                # The loop is the same cord as the wrap: tube sized from it.
-                TWINE_T * 0.39,
+                (x, 0.052,
+                 top_z - TWINE_EMBED + TWINE_T * 0.5 + KNOT_MAJOR + minor * 0.5),
+                KNOT_MAJOR,
+                minor,
                 TWINE_IDX,
-                euler=(0.0, 0.0, 0.0),
+                euler=(0.0, math.pi / 2.0, 0.0),
                 n_major=12,
                 n_minor=6,
             )
@@ -897,9 +916,11 @@ def straw_material(name):
 def bale_materials():
     """(hay, twine): shared by the check, the render and inspection."""
     hay = straw_material("BaleHay")
+    # Orange polypropylene baling twine. A dark brown cord lying in the
+    # straw's waist read as a scored cut in every view, not as a tie.
     twine = principled(
-        "BaleTwine", (0.30, 0.22, 0.11, 1.0), 0.0, 0.62,
-        noise_scale=60.0, wear=(0.17, 0.12, 0.06, 1.0),
+        "BaleTwine", (0.62, 0.20, 0.035, 1.0), 0.0, 0.48,
+        noise_scale=60.0, wear=(0.44, 0.13, 0.025, 1.0),
     )
     return hay, twine
 
@@ -1039,8 +1060,26 @@ def export_unity(path, objects):
     )
 
 
+def texel_audit(mesh, img):
+    """Smallest UV cell, in baked texels along its longer side.
+
+    Copied from showcase/tavern-stool (do not import across pieces).
+    """
+    uv = mesh.uv_layers.active
+    if uv is None or img is None:
+        return 0.0
+    res = min(img.size[0], img.size[1])
+    data = uv.data
+    worst = 1e9
+    for poly in mesh.polygons:
+        us = [data[i].uv[0] for i in poly.loop_indices]
+        vs = [data[i].uv[1] for i in poly.loop_indices]
+        worst = min(worst, max(max(us) - min(us), max(vs) - min(vs)) * res)
+    return worst
+
+
 def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
-          float_belts=False, skew_belt=False, odd_loaf=False):
+          float_belts=False, skew_belt=False, odd_loaf=False, low_bake=False):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_bale_mesh(
         "BaleLow", bevel_offset=0.016, bevel_segments=2,
@@ -1088,10 +1127,12 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
     size_y = bb[4] - bb[1]
     size_z = bb[5] - bb[2]
 
-    img, tex = setup_bake_image(low, hay)
+    img, tex = setup_bake_image(low, hay, LOW_BAKE_RES if low_bake else BAKE_RES)
     if img is None:
         return fail("hay bale has no UV layer", 3), None, None, None, None, None
     bake_result = bake_normal(high, low)
+    texel = texel_audit(low.data, img)
+    print(f"measured bake_res={img.size[0]} texel_min={texel:.2f}")
 
     lod1 = make_lod(low, "BaleLOD1", LOD1_TARGET, skip_decimate)
     lod2 = make_lod(low, "BaleLOD2", LOD2_TARGET, skip_decimate)
@@ -1390,6 +1431,12 @@ def check(skip_decimate, lift_z=False, stray_vert=False, slack_belt=False,
             f"{LOAF_XZ} m bale",
             19,
         ), None, None, None, None, None
+    if texel < TEXEL_MIN:
+        return fail(
+            f"bake texel density {texel:.2f} px per UV cell < {TEXEL_MIN} "
+            "(--low-bake is the designed fail)",
+            20,
+        ), None, None, None, None, None
     return 0, low, high, hay, tex, collider
 
 
@@ -1556,6 +1603,12 @@ def main():
         help="falsification: use the odd sin() ridge term so the loaf stops "
              "being mirror-symmetric in X",
     )
+    p.add_argument(
+        "--low-bake",
+        action="store_true",
+        help="falsification: bake the normal map at 256 px, so the "
+             "texel-density budget fails",
+    )
     args = p.parse_args(argv)
 
     code, low, _high, hay, tex, _col = check(
@@ -1566,6 +1619,7 @@ def main():
         slack_belt=args.slack_belt,
         skew_belt=args.skew_belt,
         odd_loaf=args.odd_loaf,
+        low_bake=args.low_bake,
     )
     if code:
         return code
