@@ -21,6 +21,11 @@ check. Pass --output to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Vector
 
+# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
+import gallery_framing
+
 TEETH = 14
 R_ROOT = 1.0
 R_TIP = 1.25
@@ -32,6 +37,15 @@ TOOTH_DUTY = 0.45
 STAGE_BITE = 0.003    # contact depth into the floor and into the gear's back
 WEDGE_SLOPE = 1.55    # display wedge slope length, up the gear's back face
 WEDGE_WIDTH = 1.8     # display wedge width across the gear
+CAP_RING_SCALE = 150.0  # lathe turning marks: finer than a pixel at gallery scale
+CAP_ROUGH = (0.17, 0.21)  # faced caps: a narrow satin band, not a stripe pattern
+CAP_BUMP = 0.05       # whisper of bump from the turning marks
+FLANK_ROUGH = 0.55    # hobbed tooth flanks: rougher, so every facet catches light
+BOUNCE_W = 120.0      # low front card for the downward tooth flanks
+CARD_W = 45.0        # softbox whose reflection is the face's key highlight
+CARD_SIZE = 2.5
+CARD_DIST = 5.0
+CARD_OFFSET = Vector((-0.35, 0.0, 0.25))  # push the reflection off-centre
 
 
 def gear_profile():
@@ -101,33 +115,83 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+def machined_brass():
+    """Brass finished the way a gear blank is actually cut.
+
+    The two caps are faced on a lathe: turning marks run concentric about the
+    gear axis, far finer than a pixel at gallery scale, so they read only as
+    a slight satin sheen and a whisper of bump, never as stripes. The tooth
+    flanks are hobbed, a rougher milled finish that spreads the key and fill
+    across each facet so every flank reads against the stage. Caps and flanks
+    are told apart by the object-space face normal, so the finish follows
+    the geometry wherever the gear is posed.
+    """
+    mat = bpy.data.materials.new("MachinedBrass")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nodes, links = nt.nodes, nt.links
+    bsdf = nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (0.80, 0.47, 0.12, 1.0)
+    bsdf.inputs["Metallic"].default_value = 1.0
+
+    # turning marks: rings about the object Z axis (the gear axis), centred
+    # on the gear's own origin — Generated coordinates would centre them on
+    # the bounding-box corner and turn the face into off-axis arcs
+    coords = nodes.new("ShaderNodeTexCoord")
+    rings = nodes.new("ShaderNodeTexWave")
+    rings.wave_type = 'RINGS'
+    rings.rings_direction = 'Z'
+    rings.inputs["Scale"].default_value = CAP_RING_SCALE
+    rings.inputs["Distortion"].default_value = 0.0
+    links.new(coords.outputs["Object"], rings.inputs["Vector"])
+
+    # cap mask: 1 on the faced caps, 0 on the hobbed flanks
+    geo = nodes.new("ShaderNodeNewGeometry")
+    to_obj = nodes.new("ShaderNodeVectorTransform")
+    to_obj.vector_type = 'NORMAL'
+    to_obj.convert_from = 'WORLD'
+    to_obj.convert_to = 'OBJECT'
+    links.new(geo.outputs["Normal"], to_obj.inputs["Vector"])
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(to_obj.outputs["Vector"], sep.inputs["Vector"])
+    absz = nodes.new("ShaderNodeMath")
+    absz.operation = 'ABSOLUTE'
+    links.new(sep.outputs["Z"], absz.inputs[0])
+    cap = nodes.new("ShaderNodeMath")
+    cap.operation = 'GREATER_THAN'
+    cap.inputs[1].default_value = 0.5
+    links.new(absz.outputs["Value"], cap.inputs[0])
+
+    # narrow roughness band on the caps: a satin sheen, not a stripe pattern
+    cap_rough = nodes.new("ShaderNodeMapRange")
+    cap_rough.inputs["To Min"].default_value = CAP_ROUGH[0]
+    cap_rough.inputs["To Max"].default_value = CAP_ROUGH[1]
+    links.new(rings.outputs["Fac"], cap_rough.inputs["Value"])
+    rough = nodes.new("ShaderNodeMapRange")  # cap mask 0..1 -> flank..cap
+    rough.clamp = True
+    links.new(cap.outputs["Value"], rough.inputs["Value"])
+    rough.inputs["To Min"].default_value = FLANK_ROUGH
+    links.new(cap_rough.outputs["Result"], rough.inputs["To Max"])
+    links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+
+    # a gentle bump from the same marks, caps only
+    height = nodes.new("ShaderNodeMath")
+    height.operation = 'MULTIPLY'
+    links.new(rings.outputs["Fac"], height.inputs[0])
+    links.new(cap.outputs["Value"], height.inputs[1])
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = CAP_BUMP
+    bump.inputs["Distance"].default_value = 0.002
+    links.new(height.outputs["Value"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
 def render_still(obj, path, engine):
     scene = bpy.context.scene
     for poly in obj.data.polygons:
         poly.use_smooth = False  # crisp machined facets
-    # machined brass: a flat metal face lit by area lights renders as one
-    # featureless gradient, so the finish carries the design — concentric
-    # turning marks (a RINGS wave driving roughness) break the face into
-    # rings that each catch the key at a different angle
-    mat = bpy.data.materials.new("MachinedBrass")
-    mat.use_nodes = True
-    nt = mat.node_tree
-    bsdf = nt.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = (0.72, 0.44, 0.16, 1.0)
-    bsdf.inputs["Metallic"].default_value = 1.0
-    rings = nt.nodes.new("ShaderNodeTexWave")
-    rings.wave_type = 'RINGS'
-    rings.rings_direction = 'SPHERICAL'  # concentric from center, not X-axis bands
-    rings.inputs["Scale"].default_value = 16.0
-    rings.inputs["Distortion"].default_value = 0.5
-    rough = nt.nodes.new("ShaderNodeMapRange")
-    rough.inputs["From Min"].default_value = 0.0
-    rough.inputs["From Max"].default_value = 1.0
-    rough.inputs["To Min"].default_value = 0.14
-    rough.inputs["To Max"].default_value = 0.36
-    nt.links.new(rings.outputs["Fac"], rough.inputs["Value"])
-    nt.links.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
-    obj.data.materials.append(mat)
+    obj.data.materials.append(machined_brass())
     # the gear leans back on an inclined display wedge. Both contacts are
     # derived from the posed mesh: the lowest back-cap vertex bites into
     # the floor, and the wedge's slope lies in the back-cap plane, sunk into
@@ -174,7 +238,8 @@ def render_still(obj, path, engine):
     spec = wb.inputs.get("Specular IOR Level") or wb.inputs.get("Specular")
     spec.default_value = 0.1
     wedge_me.materials.append(wmat)
-    scene.collection.objects.link(bpy.data.objects.new("Wedge", wedge_me))
+    wedge = bpy.data.objects.new("Wedge", wedge_me)
+    scene.collection.objects.link(wedge)
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
@@ -202,12 +267,15 @@ def render_still(obj, path, engine):
     world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.02, 0.022, 0.028, 1.0)
     scene.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, rot=None, aim=None):
         ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        if aim is not None:  # area lights emit along local -Z
+            ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
+        else:
+            ob.rotation_euler = tuple(math.radians(a) for a in rot)
         scene.collection.objects.link(ob)
 
     # metals live on reflections: soft warm key, restrained cool fill, and the
@@ -215,15 +283,27 @@ def render_still(obj, path, engine):
     light("Key", (-3.5, -4.5, 5.5), 550.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
     light("Fill", (5.0, -3.5, 2.5), 130.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
     light("Wedge", (2.5, 5.5, 4.0), 380.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
-    # a small hot glint: brass needs one crisp specular streak to read machined
-    light("Glint", (1.8, -5.2, 6.2), 900.0, 0.9, (1.0, 0.9, 0.7), (40, 0, 18))
+    # the camera rides with the gear's derived seat height (it was posed for
+    # a gear hung at z=0.85), so the composition is unchanged
+    cam_loc = Vector((0.0, -7.6, 4.2 + obj.location.z - 0.85))
+    # a polished face shows the key only where it mirrors it. The softbox is
+    # placed on the camera ray's reflection about the front cap, offset
+    # toward the upper left, so its soft reflection sweeps across the face
+    # as one legible highlight instead of missing the face altogether
+    face_c = mw @ Vector((0.0, 0.0, DEPTH))
+    view = (face_c - cam_loc).normalized()
+    mirror = view - 2.0 * view.dot(into) * into
+    card = face_c + (mirror + CARD_OFFSET).normalized() * CARD_DIST
+    light("Card", tuple(card), CARD_W, CARD_SIZE, (1.0, 0.93, 0.82), aim=face_c)
+    # metal flanks mirror whatever faces them, and here that is the black
+    # stage: a low bounce card in front gives the downward flanks something
+    # to reflect (it aims up at the gear, so the floor in front stays dark)
+    light("Bounce", (0.6, -2.6, 0.35), BOUNCE_W, 2.0, (1.0, 0.9, 0.78), aim=centre)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 55.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    # the camera rides with the gear's derived seat height (it was posed for
-    # a gear hung at z=0.85), so the composition is unchanged
-    cam.location = (0.0, -7.6, 4.2 + obj.location.z - 0.85)
+    cam.location = cam_loc
     cam.rotation_euler = (math.radians(66), 0.0, 0.0)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -242,8 +322,22 @@ def render_still(obj, path, engine):
     scene.render.filepath = path
     # AgX would flatten the steel toward chalk (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
+    # the beauty render so a defective composition ships no artifact. The
+    # display wedge is staging, hidden from the matte like the floor and wall.
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj],
+        stage=[floor, wall, wedge],
+    )
+    if fcode:
+        return fcode
     bpy.ops.render.render(write_still=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+    if not (os.path.exists(path) and os.path.getsize(path) > 0):
+        print("ERROR: render produced no file", file=sys.stderr)
+        return 6
+    return 0
 
 
 def main():
@@ -262,9 +356,9 @@ def main():
         return code
 
     if args.output:
-        if not render_still(obj, os.path.abspath(args.output), args.engine):
-            print("ERROR: render produced no file", file=sys.stderr)
-            return 6
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        if rcode:
+            return rcode
         print(f"rendered still {args.output}")
 
     print("bmesh-gear OK")

@@ -16,6 +16,19 @@ contacts are derived from the posed mesh: the lowest back-cap vertex sits 3 mm
 into the floor, and the wedge's slope lies in the back-cap plane, so the lean
 is carried rather than held in the air.
 
+The finish follows how a gear blank is actually cut, and the render path
+changes only the material and lights — the mesh the check counts is untouched.
+The caps are lathe-faced: turning marks run concentric about the gear's own
+axis (object coordinates, so they centre on that axis rather than on a
+bounding-box corner), far finer than a pixel, so they read only as a narrow
+satin roughness band and a whisper of bump — the soft highlight that fans
+from the centre. The tooth flanks are hobbed, a rougher finish that spreads
+the light across every facet. The key highlight on the face is a softbox
+placed on the camera ray's reflection about the front cap, and a low bounce
+card gives the downward flanks something to mirror. There is no bore: the
+closed-form topology check counts exactly two rings and two caps, so the
+gear stays a solid blank rather than faking a hole in the shader.
+
 ## Run
 
 ```bash
@@ -43,6 +56,7 @@ against it.
 | 3 | Topology ≠ closed form (`--no-extrude` lands here) |
 | 4 | Non-manifold edges |
 | 6 | `--output` produced no file |
+| 10 | `--output` framing violation (Layer 1 fill / margin gate, `gallery_framing`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
