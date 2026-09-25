@@ -103,5 +103,6 @@
   {"name": "crate-stack", "script": "showcase/crate-stack/crate_stack.py"},
   {"name": "stone-archway", "script": "showcase/stone-archway/stone_archway.py"},
   {"name": "rope-bridge", "script": "showcase/rope-bridge/rope_bridge.py"},
-  {"name": "grain-sacks", "script": "showcase/grain-sacks/grain_sacks.py"}
+  {"name": "grain-sacks", "script": "showcase/grain-sacks/grain_sacks.py"},
+  {"name": "brazier", "script": "showcase/brazier/brazier.py"}
 ]
