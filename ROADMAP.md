@@ -134,7 +134,7 @@ Not committed; target list for the next content version. (v0.3.0 shipped the smo
 - ~~Stack of shipping crates as a game-prop showcase piece~~ **SHIPPED** as `showcase/crate-stack/` — one generator called three times with a per-instance seed driving yaw and plank widths, crates seated on the lid below; `--same-seed` exits 20 on the per-instance variation budget, `--float-stack` exits 18 on the seat
 - ~~Keystone archway with voussoirs as a game-prop showcase piece~~ **SHIPPED** as `showcase/stone-archway/` — coursed piers, projecting imposts, nine voussoirs, proud keystone; the intrados circle fit is recomputed from vertex positions and `--off-circle` exits 19 on it while leaving every other budget passing
 - ~~Rope bridge (planks, rope rails, sag between anchors) as a game-prop showcase piece~~ **SHIPPED** as `showcase/rope-bridge/` — log posts, through-tenoned sills, twenty planks seated on laid foot ropes, lashed hand ropes, suspenders, staked tie-offs; a least-squares parabola is fitted to the plank tops and `--vee-deck` exits 19 on it with the sag still in band
-- Grain sacks (cloth sacks, some slumped, tied necks) as a game-prop showcase piece
+- ~~Grain sacks (cloth sacks, some slumped, tied necks) as a game-prop showcase piece~~ **SHIPPED** as `showcase/grain-sacks/` — three settled, pleated burlap sacks, one lying, twine ties seated in the neck waist, sacks pressed into one another; flat contact patch summed from the mesh, `--round-bottom` exits 19 on it while zmin still passes
 - Brazier (iron bowl on legs, coals, ash) as a game-prop showcase piece
 - Apothecary shelf (shelf unit, bottles and jars of varied form) as a game-prop showcase piece
 - Wooden yoke (oxbow, iron rings) as a game-prop showcase piece

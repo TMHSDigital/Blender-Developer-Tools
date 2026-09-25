@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>grain-sacks — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A procedural pile of burlap grain sacks — settled onto flat bases, pressed into one another, gathered under twine ties with pleated crowns — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/grain-sacks/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="grain-sacks — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural pile of burlap grain sacks — settled onto flat bases, pressed into one another, gathered under twine ties with pleated crowns — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/grain-sacks/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grain-sacks-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="grain-sacks — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural pile of burlap grain sacks — settled onto flat bases, pressed into one another, gathered under twine ties with pleated crowns — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/grain-sacks-hero.webp" />
+  <meta name="twitter:image:alt" content="Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other." />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      color-scheme: dark;
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>grain-sacks</h1>
+    <p>A procedural pile of burlap grain sacks — settled onto flat bases, pressed into one another, gathered under twine ties with pleated crowns — carried through UVs, bake, LOD, compound collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other.">
+      <img src="../assets/grain-sacks-hero.webp" alt="Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other." width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 8640 tris, two materials with 3264 burlap and 1152 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.914×0.905×0.636 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, all three sacks grounded, every tie in a neck waist 13–15 mm narrower than the cloth 40 mm either side, six twine turns seated 3.6–5.2 mm into the cloth, sacks pressing 12 mm into one another, bellies settled low (0.25–0.32 of the body), and flat contact patches of 0.035, 0.099 and 0.117 m² under the three sacks. --round-bottom exits 19 with every patch at 0 while zmin and the supports still pass; --slip-tie exits 17 on the waist.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/grain-sacks/grain_sacks.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A pile of three burlap grain sacks. Two stand, one lies slumped in front of them, and each is gathered at the neck under a two-turn twine tie with a pleated crown above it. The sacks have settled onto flat bases and press into each other where they lean. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2>What it composes</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>lofted, pleated sack bodies and laid twine in one <code>bmesh</code></td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>hessian weave and stripes on the cloth&#x27;s own coordinates (a second UV layer), per-sack tone</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>one hull per sack, merged into a compound</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<h2>The budget that matters</h2>
+<p>A sack full of grain settles. Its contents slump into the bottom and it rests on a flat patch of cloth pressed against the floor. An egg-bottomed sack still touches the floor at its lowest vertex, so the grounded-zmin gate and the per-sack support gate both pass it, but it reads as a balloon rocking on a point. The piece sums, per sack, the area of the faces that lie flat on the floor (every vertex at z = 0) and asserts each is at least 0.012 m².</p>
+<p><code>--round-bottom</code> is the falsifier built for exactly this. It sinks each sack by the same amount and folds the same height, but squashes the base linearly instead of flattening it, so every sack keeps its height, its footprint and its single lowest point on the floor. Every other budget passes. Only the patch sees it: 0 m² on all three.</p>
+<h2>Settling and pressing</h2>
+<ul><li><strong>Settle.</strong> Each sack is built standing (or laid on its flat side and squashed 16%), sunk <code>SINK</code> = 60 mm into the floor, and everything under <code>SETTLE_C</code> = 30 mm is folded back up by g(u) = ((u + 1) / 2)², clamped to 0 below u = −1. The fold is C1 at its top and exactly flat where the grain presses the floor. The squashed height goes outward from the sack&#x27;s own axis (<code>SPREAD</code>), so the base bulges the way a filled sack does.</li><li><strong>Press.</strong> Sacks are placed, then slid along the line between centres until the moving sack&#x27;s deepest vertex inside the sack it leans on reaches <code>PRESS</code> = 12 mm. This uses bisection on the real meshes, so the press is exact whatever the lumps and pleats do where the two meet.</li><li><strong>Tie.</strong> Each twine turn&#x27;s centreline is the host&#x27;s own section at its station, pushed out along each vertex&#x27;s radial by the twine radius less <code>TIE_BITE</code>. The turn follows the pleats instead of standing proud of the valleys and sinking into the crests.</li></ul>
+<h2>Budgets</h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; every one is byte-identical on 4.5.11 and 5.1.2.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>8000–9300</td><td>8640</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2199</td></tr><tr><td>Material slots</td><td>exactly 2, distinct</td><td>2</td></tr><tr><td>Cloth faces</td><td>≥ 2600</td><td>3264</td></tr><tr><td>Twine faces</td><td>≥ 900</td><td>1152</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0133, 0.0133)–(0.9867, 0.9867)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>0.914 × 0.905 × 0.636 m ± 0.020</td><td>0.9139 × 0.9054 × 0.6360</td></tr><tr><td>Collider triangles</td><td>≤ 450</td><td>376 (three hulls)</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~280 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Named supports</td><td>3 sacks, each zmin ≤ 1e-3</td><td>3 at 0.00000</td></tr><tr><td>Tie in the waist</td><td>host under the tie ≥ 8 mm narrower than 40 mm either side, per sack</td><td>14.25 / 15.04 / 13.11 mm</td></tr><tr><td>Tie seat</td><td>6 turns, deepest twine vertex inside the cloth 1.0–6.0 mm</td><td>3.57–5.21 mm</td></tr><tr><td>Press between sacks</td><td>each sack&#x27;s deepest vertex inside another 6–20 mm</td><td>11.96 / 12.00 / 12.00 mm</td></tr><tr><td>Contact patch</td><td>each sack ≥ 0.012 m² flat on the floor</td><td>0.0352 / 0.0988 / 0.1168 m²</td></tr><tr><td>Settled belly</td><td>widest station ≤ 0.42 of the body from its base</td><td>0.251 / 0.280 / 0.316</td></tr></tbody></table></div>
+<p>Real-world size: the tall sack stands 0.64 m and is 0.47 m across the belly — a 50 kg grain sack. The outer AABB is the three sacks themselves, with no appendage above or beside them, so the AABB gate already holds the bodies to their stated size.</p>
+<h2>Surface</h2>
+<ul><li><strong>Weave.</strong> Hessian is two perpendicular sine gratings on a second UV layer, <code>ClothCo</code>: metres round the sack from its front, and metres up it. The weave follows the cloth whichever way up the sack lies. A 6 mm period aliased into moiré at hero distance, so the period is 12 mm with a soft bump.</li><li><strong>Stripes.</strong> Stripes are the old feed-sack marking, centred on each sack&#x27;s front face (the broad face a viewer sees): one broad blue band on the tall sack, three thin red ones on the lying sack, none on the third. Each sack also has its own tone.</li><li><strong>Twine.</strong> Twine is paler and yellower than the hessian, so the tie reads against the neck.</li></ul>
+<h2>Conventions walked</h2>
+<p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG at all; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below, proven on all three binaries</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15. A twine face parallel to the cloth it hugs, one column over, first shared its plane (2 pairs); the turns now sit a quarter step off the body&#x27;s columns</td></tr><tr><td>Named supports</td><td>yes</td><td>every sack grounded (<code>--float-sack</code>)</td></tr><tr><td>Wrappers follow the host&#x27;s profile</td><td>yes</td><td>the tie is built on the host&#x27;s own pleated section</td></tr><tr><td>Band hooped, never flush / seat conformance</td><td>yes</td><td>tie bite banded (<code>--loose-tie</code>)</td></tr><tr><td>One connected assembly / carried parts bite</td><td>yes</td><td>sacks press a banded depth into one another (<code>--part-sacks</code>)</td></tr><tr><td>A vessel has a base and a belly</td><td>yes</td><td>settled belly low (<code>--high-belly</code>) and the contact patch (<code>--round-bottom</code>)</td></tr><tr><td>Plumb and real-world size</td><td>partly</td><td>a slumped sack is not plumb by design; size is held by the AABB, which is the bodies themselves</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>cloth and twine smooth-shaded: nothing on a sack is faceted in life</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>burlap, twine</td></tr><tr><td>Rope is laid, not piped</td><td>yes</td><td>three-lobed 6-vertex twine section, turned per ring</td></tr><tr><td>Two identical sections stacked share planes</td><td>yes</td><td>the two tie turns are half a step apart</td></tr><tr><td>Identical parts read as CG</td><td>yes</td><td>each sack has its own height, width, depth, pleat phase, tone and stripe</td></tr><tr><td>Sort bmesh operator inputs</td><td>n/a</td><td>no bevel or other set-fed operator is run</td></tr><tr><td>Edge treatment: no right angles</td><td>n/a</td><td>no boxes; every surface is lofted cloth or twine</td></tr><tr><td>Bake texels per UV cell</td><td>n/a</td><td>nine UV islands, one per shell, each a ninth of the sheet</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>worst deltas: <code>--high-belly</code> −16.2 mm Y, <code>--part-sacks</code> +15.5 mm Y, against 20 mm</td></tr><tr><td>Timber, iron, masonry, scatter, fixtures, roofs, rings</td><td>no</td><td>the piece has none of these</td></tr></tbody></table></div>
+<h2>Falsifiers</h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All nine were run on 4.5.11, 5.1.2 and 5.2.1 and exited the same declared code on all three.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the pile</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-sack</code></td><td>named supports</td><td>floats the lying sack 12 mm; the standing ones still ground the AABB</td><td>16</td></tr><tr><td><code>--slip-tie</code></td><td>tie in the waist</td><td>slides every tie 50 mm up onto the crown, still seated on it; margin −13.4 to −44.6 mm</td><td>17</td></tr><tr><td><code>--loose-tie</code></td><td>tie seat</td><td>sizes each turn 6 mm wider; shallowest turn −1.67 mm</td><td>18</td></tr><tr><td><code>--part-sacks</code></td><td>press between sacks</td><td>stops the lying sack 4 mm short of the one it leans on</td><td>18</td></tr><tr><td><code>--round-bottom</code></td><td>contact patch</td><td>squashes the bases round instead of flat; 0 m² on all three</td><td>19</td></tr><tr><td><code>--high-belly</code></td><td>settled belly</td><td>moves the widest station up to 0.52 of the body, same widths; 0.535–0.586</td><td>19</td></tr></tbody></table></div>
+<h2>Exit codes</h2>
+<p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a sack floating (<code>--lift-z</code>, <code>--float-sack</code>)</td></tr><tr><td>17</td><td>A tie not in its neck&#x27;s waist (<code>--slip-tie</code>)</td></tr><tr><td>18</td><td>Tie seat, or press between sacks (<code>--loose-tie</code>, <code>--part-sacks</code>)</td></tr><tr><td>19</td><td>Contact patch or settled belly (<code>--round-bottom</code>, <code>--high-belly</code>)</td></tr></tbody></table></div>
+<h2>Run it</h2>
+<pre><code># Budget check, no render. ~1.9 s on 4.5, ~1.7 s on 5.1, ~2.1 s on 5.2.
+blender --background --python grain_sacks.py --
+
+# Falsifier: the sacks stop settling onto flat bases. Must exit 19.
+blender --background --python grain_sacks.py -- --round-bottom
+
+# Falsifier: every tie rides up onto its crown. Must exit 17.
+blender --background --python grain_sacks.py -- --slip-tie
+
+# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
+blender --background --python grain_sacks.py -- --output sacks.webp</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<h2>Cross-version measurements</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>8640</td><td>8640</td><td>8640</td></tr><tr><td>LOD1 / LOD2 tris</td><td>4320 / 1900</td><td>same</td><td>same</td></tr><tr><td>Face counts (cloth / twine)</td><td>3264 / 1152</td><td>same</td><td>same</td></tr><tr><td>Outer AABB</td><td>0.9139 × 0.9054 × 0.6360</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>376</td><td>376</td><td>376</td></tr><tr><td>Contact patches (m²)</td><td>0.0352 / 0.0988 / 0.1168</td><td>same</td><td>same</td></tr><tr><td>glTF bytes</td><td>identical</td><td>identical</td><td>identical</td></tr><tr><td>Check wall-clock</td><td>~1.9 s</td><td>~1.7 s</td><td>~2.1 s</td></tr></tbody></table></div>
+<p><code>DECIMATE COLLAPSE</code> is the usual cross-version suspect. Here it produces identical LOD counts on all three binaries; the gate is still a ratio band, not an exact count.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/grain-sacks/grain_sacks.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/grain-sacks/grain_sacks.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready grain sacks — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural pile of three burlap grain
+sacks: two standing, one lying slumped against them, each gathered at the
+neck under a two-turn twine tie. Carried through UVs, two materials
+(burlap, twine), a high-to-low normal bake, an LOD chain, a compound
+convex collider, and a Unity glTF export.
+
+The budget that matters here is the one a sack can fail invisibly: a
+sack full of grain settles, so it rests on a flat contact patch, not on
+a point. An egg-bottomed sack still touches the floor, so the grounded
+zmin gate passes it; only the patch area, summed from the faces that lie
+flat on the floor, knows the difference.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--float-sack`` the named
+supports, ``--slip-tie`` the tie-at-waist fit, ``--loose-tie`` the tie
+seat, ``--part-sacks`` the press between sacks, ``--round-bottom`` the
+contact patch, ``--high-belly`` the settled belly.
+
+No randomness: every lump, pleat and tone is a closed-form term of the
+sack&#x27;s own parameters. DECIMATE COLLAPSE triangle counts are not
+byte-identical across Blender versions — the LOD gate is a ratio band.
+
+    blender --background --python grain_sacks.py --
+    blender --background --python grain_sacks.py -- --round-bottom
+    blender --background --python grain_sacks.py -- --output sacks.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># Three sacks: two stood up, one laid down in front. Heights are the</span>
+<span class="c"># unsettled body length; W is the belly half-width, D the depth ratio of</span>
+<span class="c"># the flattened sack section (two sewn panels, not a tube).</span>
+SACKS = (
+    {<span class="s">&quot;name&quot;</span>: <span class="s">&quot;A&quot;</span>, <span class="s">&quot;at&quot;</span>: (-<span class="n">0.24</span>, <span class="n">0.10</span>), <span class="s">&quot;yaw&quot;</span>: <span class="n">16.0</span>, <span class="s">&quot;H&quot;</span>: <span class="n">0.80</span>, <span class="s">&quot;W&quot;</span>: <span class="n">0.235</span>,
+     <span class="s">&quot;D&quot;</span>: <span class="n">0.70</span>, <span class="s">&quot;lying&quot;</span>: <span class="k">False</span>, <span class="s">&quot;stripe&quot;</span>: <span class="n">1</span>, <span class="s">&quot;front&quot;</span>: <span class="n">0.75</span>, <span class="s">&quot;phase&quot;</span>: <span class="n">0.0</span>, <span class="s">&quot;tone&quot;</span>: <span class="n">0.56</span>},
+    {<span class="s">&quot;name&quot;</span>: <span class="s">&quot;B&quot;</span>, <span class="s">&quot;at&quot;</span>: (<span class="n">0.30</span>, <span class="n">0.16</span>), <span class="s">&quot;yaw&quot;</span>: -<span class="n">28.0</span>, <span class="s">&quot;H&quot;</span>: <span class="n">0.68</span>, <span class="s">&quot;W&quot;</span>: <span class="n">0.250</span>,
+     <span class="s">&quot;D&quot;</span>: <span class="n">0.74</span>, <span class="s">&quot;lying&quot;</span>: <span class="k">False</span>, <span class="s">&quot;stripe&quot;</span>: <span class="n">0</span>, <span class="s">&quot;front&quot;</span>: <span class="n">0.75</span>, <span class="s">&quot;phase&quot;</span>: <span class="n">0.9</span>, <span class="s">&quot;tone&quot;</span>: <span class="n">0.44</span>},
+    {<span class="s">&quot;name&quot;</span>: <span class="s">&quot;C&quot;</span>, <span class="s">&quot;at&quot;</span>: (<span class="n">0.04</span>, -<span class="n">0.52</span>), <span class="s">&quot;yaw&quot;</span>: <span class="n">72.0</span>, <span class="s">&quot;H&quot;</span>: <span class="n">0.82</span>, <span class="s">&quot;W&quot;</span>: <span class="n">0.235</span>,
+     <span class="s">&quot;D&quot;</span>: <span class="n">0.66</span>, <span class="s">&quot;lying&quot;</span>: <span class="k">True</span>, <span class="s">&quot;stripe&quot;</span>: <span class="n">2</span>, <span class="s">&quot;front&quot;</span>: <span class="n">0.25</span>, <span class="s">&quot;phase&quot;</span>: <span class="n">2.1</span>, <span class="s">&quot;tone&quot;</span>: <span class="n">0.50</span>},
+)
+<span class="c"># Order in which sacks are slid into contact: each one presses the sack</span>
+<span class="c"># named here, along the line between their starting centres.</span>
+PRESS_INTO = {<span class="s">&quot;B&quot;</span>: <span class="s">&quot;A&quot;</span>, <span class="s">&quot;C&quot;</span>: <span class="s">&quot;A&quot;</span>}
+
+SEG = <span class="n">32</span>
+<span class="c"># Body profile: (height fraction, radius fraction). Round bottom, belly</span>
+<span class="c"># low where the grain settles, a shoulder, the gathered neck under the</span>
+<span class="c"># tie, and the pleated crown above it closing to a pole.</span>
+PROFILE = (
+    (<span class="n">0.000</span>, <span class="n">0.00</span>), (<span class="n">0.020</span>, <span class="n">0.52</span>), (<span class="n">0.060</span>, <span class="n">0.80</span>), (<span class="n">0.140</span>, <span class="n">0.96</span>), (<span class="n">0.260</span>, <span class="n">1.00</span>),
+    (<span class="n">0.400</span>, <span class="n">0.97</span>), (<span class="n">0.520</span>, <span class="n">0.88</span>), (<span class="n">0.610</span>, <span class="n">0.68</span>), (<span class="n">0.680</span>, <span class="n">0.36</span>), (<span class="n">0.720</span>, <span class="n">0.19</span>),
+    (<span class="n">0.750</span>, <span class="n">0.21</span>), (<span class="n">0.800</span>, <span class="n">0.33</span>), (<span class="n">0.840</span>, <span class="n">0.30</span>), (<span class="n">0.870</span>, <span class="n">0.00</span>),
+)
+<span class="c"># --high-belly: same widths, the widest ring moved up to 0.52 of the body.</span>
+HIGH_BELLY_PROFILE = (
+    (<span class="n">0.000</span>, <span class="n">0.00</span>), (<span class="n">0.020</span>, <span class="n">0.50</span>), (<span class="n">0.060</span>, <span class="n">0.72</span>), (<span class="n">0.140</span>, <span class="n">0.82</span>), (<span class="n">0.260</span>, <span class="n">0.90</span>),
+    (<span class="n">0.400</span>, <span class="n">0.97</span>), (<span class="n">0.520</span>, <span class="n">1.00</span>), (<span class="n">0.610</span>, <span class="n">0.78</span>), (<span class="n">0.680</span>, <span class="n">0.36</span>), (<span class="n">0.720</span>, <span class="n">0.19</span>),
+    (<span class="n">0.750</span>, <span class="n">0.21</span>), (<span class="n">0.800</span>, <span class="n">0.33</span>), (<span class="n">0.840</span>, <span class="n">0.30</span>), (<span class="n">0.870</span>, <span class="n">0.00</span>),
+)
+BODY_RINGS = <span class="n">30</span>
+NECK_T = <span class="n">0.720</span>
+<span class="c"># Pleats gather where the tie cinches: none on the belly, deep on the</span>
+<span class="c"># crown, shallow under the tie itself so the tie has a round seat.</span>
+PLEATS = <span class="n">11</span>
+PLEAT_SHOULDER = <span class="n">0.09</span>
+PLEAT_TIE = <span class="n">0.025</span>
+PLEAT_CROWN = <span class="n">0.20</span>
+LUMP = <span class="n">0.035</span>
+
+<span class="c"># Twine tie: two turns hooped onto the neck, the second half a vertex</span>
+<span class="c"># step round from the first so the two are not one section stacked.</span>
+TIE_R = <span class="n">0.0065</span>
+TIE_PIPE = <span class="n">6</span>
+TIE_LOBE = <span class="n">0.12</span>
+TIE_BITE = <span class="n">0.003</span>
+TIE_PITCH = <span class="n">0.012</span>
+LOOSE_TIE_BITE = -<span class="n">0.003</span>
+SLIP_TIE = <span class="n">0.050</span>
+
+<span class="c"># Settling: the body is sunk SINK below the floor and everything under</span>
+<span class="c"># SETTLE_C is folded up onto it, flat where the grain presses, and pushed</span>
+<span class="c"># outward so the squashed base bulges.</span>
+SINK = <span class="n">0.060</span>
+SETTLE_C = <span class="n">0.030</span>
+SPREAD = <span class="n">0.55</span>
+LYING_SQUASH = <span class="n">0.84</span>
+<span class="c"># Sacks press into each other by this much, found by sliding each one in</span>
+<span class="c"># along the line between centres until its deepest vertex inside the</span>
+<span class="c"># other reaches it.</span>
+PRESS = <span class="n">0.012</span>
+PART_GAP = -<span class="n">0.004</span>
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">0.914</span>, <span class="n">0.905</span>, <span class="n">0.636</span>)
+
+BASE_TRIS_MIN = <span class="n">8000</span>
+BASE_TRIS_MAX = <span class="n">9300</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">2</span>
+CLOTH_FACES_MIN = <span class="n">2600</span>
+TWINE_FACES_MIN = <span class="n">900</span>
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">450</span>
+COLLIDER_STRIDE = <span class="n">3</span>
+BAKE_RES = <span class="n">256</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+LIFT_Z = <span class="n">0.05</span>
+FLOAT_SACK = <span class="n">0.012</span>
+SUPPORT_Z_MAX = <span class="n">1e-3</span>
+<span class="c"># Tie at the waist: the host under the tie is narrower than the host</span>
+<span class="c"># WAIST_PROBE above and below it, by at least WAIST_MARGIN. A tie that is</span>
+<span class="c"># not in a waist slides off.</span>
+WAIST_PROBE = <span class="n">0.040</span>
+WAIST_BAND = <span class="n">0.012</span>
+WAIST_MARGIN = <span class="n">0.008</span>
+<span class="c"># Tie seat: deepest twine vertex inside the cloth, per turn.</span>
+TIE_SEAT_MIN = <span class="n">0.0010</span>
+TIE_SEAT_MAX = <span class="n">0.0060</span>
+<span class="c"># Press: each slid sack&#x27;s deepest vertex inside the sack it leans on.</span>
+PRESS_MIN = <span class="n">0.006</span>
+PRESS_MAX = <span class="n">0.020</span>
+<span class="c"># Contact patch: flat-on-floor area under each sack.</span>
+PATCH_MIN = <span class="n">0.012</span>
+<span class="c"># Settled belly: the widest station in the lower part of the body.</span>
+BELLY_MAX = <span class="n">0.42</span>
+
+CLOTH_IDX = <span class="n">0</span>
+<span class="c"># Weave period on the cloth. 6 mm aliased into moire at hero distance.</span>
+WEAVE = <span class="n">0.012</span>
+TWINE_IDX = <span class="n">1</span>
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="c"># --- profile ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> pchip(knots, t):
+    <span class="s">&quot;&quot;&quot;Monotone cubic (Fritsch-Carlson) through ``knots`` at ``t``.
+
+    Smooth through the knots without the overshoot a Catmull-Rom spline
+    puts into the neck, which would pinch the cloth below the tie.
+    &quot;&quot;&quot;</span>
+    xs = [k[<span class="n">0</span>] <span class="k">for</span> k <span class="k">in</span> knots]
+    ys = [k[<span class="n">1</span>] <span class="k">for</span> k <span class="k">in</span> knots]
+    n = len(xs)
+    h = [xs[i + <span class="n">1</span>] - xs[i] <span class="k">for</span> i <span class="k">in</span> range(n - <span class="n">1</span>)]
+    d = [(ys[i + <span class="n">1</span>] - ys[i]) / h[i] <span class="k">for</span> i <span class="k">in</span> range(n - <span class="n">1</span>)]
+    m = [<span class="n">0.0</span>] * n
+    m[<span class="n">0</span>], m[-<span class="n">1</span>] = d[<span class="n">0</span>], d[-<span class="n">1</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, n - <span class="n">1</span>):
+        <span class="k">if</span> d[i - <span class="n">1</span>] * d[i] &lt;= <span class="n">0.0</span>:
+            m[i] = <span class="n">0.0</span>
+        <span class="k">else</span>:
+            w1 = <span class="n">2.0</span> * h[i] + h[i - <span class="n">1</span>]
+            w2 = h[i] + <span class="n">2.0</span> * h[i - <span class="n">1</span>]
+            m[i] = (w1 + w2) / (w1 / d[i - <span class="n">1</span>] + w2 / d[i])
+    t = min(max(t, xs[<span class="n">0</span>]), xs[-<span class="n">1</span>])
+    i = min(n - <span class="n">2</span>, max(<span class="n">0</span>, next((j <span class="k">for</span> j <span class="k">in</span> range(n - <span class="n">1</span>) <span class="k">if</span> t &lt;= xs[j + <span class="n">1</span>]), n - <span class="n">2</span>)))
+    s = (t - xs[i]) / h[i]
+    h00 = (<span class="n">1</span> + <span class="n">2</span> * s) * (<span class="n">1</span> - s) ** <span class="n">2</span>
+    h10 = s * (<span class="n">1</span> - s) ** <span class="n">2</span>
+    h01 = s * s * (<span class="n">3</span> - <span class="n">2</span> * s)
+    h11 = s * s * (s - <span class="n">1</span>)
+    <span class="k">return</span> h00 * ys[i] + h10 * h[i] * m[i] + h01 * ys[i + <span class="n">1</span>] + h11 * h[i] * m[i + <span class="n">1</span>]
+
+
+<span class="k">def</span> pleat_amp(t):
+    <span class="s">&quot;&quot;&quot;Pleat depth along the body: nothing on the belly, gathered at the neck.&quot;&quot;&quot;</span>
+    <span class="k">if</span> t &lt; <span class="n">0.52</span>:
+        <span class="k">return</span> <span class="n">0.0</span>
+    <span class="k">if</span> t &lt; <span class="n">0.68</span>:
+        <span class="k">return</span> PLEAT_SHOULDER * (t - <span class="n">0.52</span>) / <span class="n">0.16</span>
+    <span class="k">if</span> t &lt; NECK_T:
+        <span class="k">return</span> PLEAT_SHOULDER + (PLEAT_TIE - PLEAT_SHOULDER) * (t - <span class="n">0.68</span>) / (NECK_T - <span class="n">0.68</span>)
+    <span class="k">if</span> t &lt; <span class="n">0.78</span>:
+        <span class="k">return</span> PLEAT_TIE + (PLEAT_CROWN - PLEAT_TIE) * (t - NECK_T) / (<span class="n">0.78</span> - NECK_T)
+    <span class="k">return</span> PLEAT_CROWN
+
+
+<span class="k">def</span> section_point(sack, prof, t, a):
+    <span class="s">&quot;&quot;&quot;Body surface at height fraction ``t`` and section angle ``a``, local frame.&quot;&quot;&quot;</span>
+    f = pchip(prof, t)
+    ratio = sack[<span class="s">&quot;D&quot;</span>] + (<span class="n">1.0</span> - sack[<span class="s">&quot;D&quot;</span>]) * (<span class="n">1.0</span> - min(<span class="n">1.0</span>, f))
+    m = <span class="n">1.0</span> + pleat_amp(t) * math.cos(PLEATS * a + sack[<span class="s">&quot;phase&quot;</span>])
+    <span class="c"># Grain lumps: low-order, closed-form, fading out toward the neck.</span>
+    m += LUMP * max(<span class="n">0.0</span>, <span class="n">1.0</span> - t / <span class="n">0.6</span>) * math.cos(<span class="n">2.0</span> * a + <span class="n">3.0</span> * t + sack[<span class="s">&quot;phase&quot;</span>])
+    r = sack[<span class="s">&quot;W&quot;</span>] * f * m
+    <span class="k">return</span> Vector((r * math.cos(a), r * ratio * math.sin(a), t * sack[<span class="s">&quot;H&quot;</span>]))
+
+
+<span class="c"># --- parts ------------------------------------------------------------------</span>
+
+
+<span class="k">class</span> Part:
+    <span class="s">&quot;&quot;&quot;Loose geometry for one shell: verts, faces, per-corner UVs, metadata.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self, kind, sack, mat):
+        self.kind = kind
+        self.sack = sack
+        self.mat = mat
+        self.verts = []
+        self.faces = []
+        self.uvs = []
+        self.cloth = []
+
+    <span class="k">def</span> add(self, co):
+        self.verts.append(Vector(co))
+        <span class="k">return</span> len(self.verts) - <span class="n">1</span>
+
+
+<span class="k">def</span> grid_faces(part, rings, s_vals, n, poles=<span class="k">None</span>, closed=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Quads between consecutive rings (and pole fans), with strip UVs.
+
+    ``poles`` maps &#x27;start&#x27;/&#x27;end&#x27; to (vertex index, s) for a fan to a pole;
+    the pole&#x27;s UV sits half a column over, so every fan triangle has its
+    own UV rectangle and nothing overlaps.
+    &quot;&quot;&quot;</span>
+    m = len(rings)
+    spans = m <span class="k">if</span> closed <span class="k">else</span> m - <span class="n">1</span>
+    <span class="k">for</span> k <span class="k">in</span> range(spans):
+        a, b = rings[k], rings[(k + <span class="n">1</span>) % m]
+        s0, s1 = s_vals[k], s_vals[k + <span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            part.faces.append((a[i], a[j], b[j], b[i]))
+            part.uvs.append(((s0, i / n), (s0, (i + <span class="n">1</span>) / n), (s1, (i + <span class="n">1</span>) / n), (s1, i / n)))
+    <span class="k">for</span> key, ring, s_ring <span class="k">in</span> ((<span class="s">&quot;start&quot;</span>, rings[<span class="n">0</span>], s_vals[<span class="n">0</span>]), (<span class="s">&quot;end&quot;</span>, rings[-<span class="n">1</span>], s_vals[m - <span class="n">1</span>])):
+        <span class="k">if</span> <span class="k">not</span> poles <span class="k">or</span> key <span class="k">not</span> <span class="k">in</span> poles:
+            <span class="k">continue</span>
+        pole, s_pole = poles[key]
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            <span class="c"># Wound outward: the base fan runs the other way round from the crown&#x27;s.</span>
+            <span class="k">if</span> key == <span class="s">&quot;start&quot;</span>:
+                part.faces.append((pole, ring[j], ring[i]))
+                part.uvs.append(((s_pole, (i + <span class="n">0.5</span>) / n), (s_ring, (i + <span class="n">1</span>) / n), (s_ring, i / n)))
+            <span class="k">else</span>:
+                part.faces.append((pole, ring[i], ring[j]))
+                part.uvs.append(((s_pole, (i + <span class="n">0.5</span>) / n), (s_ring, i / n), (s_ring, (i + <span class="n">1</span>) / n)))
+
+
+<span class="k">def</span> body_part(sack, prof):
+    <span class="s">&quot;&quot;&quot;The sack body: a lofted, pleated, lumpy bag closed at both poles.&quot;&quot;&quot;</span>
+    part = Part(<span class="s">&quot;body&quot;</span>, sack[<span class="s">&quot;name&quot;</span>], CLOTH_IDX)
+    top = prof[-<span class="n">1</span>][<span class="n">0</span>]
+    ts = [<span class="n">0.012</span> + (top - <span class="n">0.024</span>) * k / (BODY_RINGS - <span class="n">1</span>) <span class="k">for</span> k <span class="k">in</span> range(BODY_RINGS)]
+    ts += [NECK_T + d * TIE_PITCH / sack[<span class="s">&quot;H&quot;</span>] <span class="k">for</span> d <span class="k">in</span> (-<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">0.5</span>)]
+    ts = sorted(set(round(t, <span class="n">6</span>) <span class="k">for</span> t <span class="k">in</span> ts))
+    rings = []
+    <span class="k">for</span> t <span class="k">in</span> ts:
+        rings.append([part.add(section_point(sack, prof, t, <span class="n">2.0</span> * math.pi * i / SEG))
+                      <span class="k">for</span> i <span class="k">in</span> range(SEG)])
+    bottom = part.add((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    crown = part.add((<span class="n">0.0</span>, <span class="n">0.0</span>, top * sack[<span class="s">&quot;H&quot;</span>]))
+    s = [t * sack[<span class="s">&quot;H&quot;</span>] <span class="k">for</span> t <span class="k">in</span> ts]
+    grid_faces(part, rings, s, SEG, poles={<span class="s">&quot;start&quot;</span>: (bottom, <span class="n">0.0</span>),
+                                           <span class="s">&quot;end&quot;</span>: (crown, top * sack[<span class="s">&quot;H&quot;</span>])})
+    <span class="c"># Cloth coordinates for the weave and stripes: metres round the sack</span>
+    <span class="c"># and metres up it, read by the shader so the weave follows the cloth</span>
+    <span class="c"># whatever way up the sack lies.</span>
+    <span class="c"># Round the sack is measured from its front (the broad face a viewer</span>
+    <span class="c"># sees: -Y stood up, +Y laid down), so stripes centre on it.</span>
+    circ = <span class="n">2.0</span> * math.pi * sack[<span class="s">&quot;W&quot;</span>] * (<span class="n">1.0</span> + sack[<span class="s">&quot;D&quot;</span>]) / <span class="n">2.0</span>
+
+    <span class="k">def</span> around(v):
+        <span class="k">return</span> ((v - sack[<span class="s">&quot;front&quot;</span>] + <span class="n">0.5</span>) % <span class="n">1.0</span> - <span class="n">0.5</span>) * circ
+
+    part.cloth = []
+    <span class="k">for</span> corner_uvs <span class="k">in</span> part.uvs:
+        vs = [v <span class="k">for</span> _u, v <span class="k">in</span> corner_uvs]
+        <span class="c"># A face straddling the back seam keeps its corners on one side.</span>
+        ref = around(vs[<span class="n">0</span>])
+        row = []
+        <span class="k">for</span> u, v <span class="k">in</span> corner_uvs:
+            a = around(v)
+            <span class="k">if</span> abs(a - ref) &gt; <span class="n">0.5</span> * circ:
+                a += circ <span class="k">if</span> a &lt; ref <span class="k">else</span> -circ
+            row.append((a, u))
+        part.cloth.append(tuple(row))
+    <span class="k">return</span> part
+
+
+<span class="k">def</span> ring_offsets(t, side, r, n, lobe, idx, angle0=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Section offsets for ring ``idx``: a lobed circle, turned per ring.&quot;&quot;&quot;</span>
+    s = side - t * side.dot(t)
+    s.normalize()
+    up = t.cross(s)
+    out = []
+    <span class="k">for</span> k <span class="k">in</span> range(n):
+        a = <span class="n">2.0</span> * math.pi * k / n + angle0
+        rr = r * (<span class="n">1.0</span> + lobe * math.cos(<span class="n">3.0</span> * a - <span class="n">2.0</span> * math.pi * <span class="n">3.0</span> * idx / n))
+        out.append(s * (rr * math.cos(a)) + up * (rr * math.sin(a)))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> tie_part(sack, prof, t_station, bite, angle0):
+    <span class="s">&quot;&quot;&quot;One twine turn hooped onto the neck at ``t_station``.
+
+    The centreline follows the host&#x27;s own section at that station — every
+    body vertex of that ring, pushed out along its radial by the twine
+    radius less the bite — so the turn hugs the pleats rather than a
+    circle that stands proud of the valleys and sinks into the crests.
+    &quot;&quot;&quot;</span>
+    part = Part(<span class="s">&quot;tie&quot;</span>, sack[<span class="s">&quot;name&quot;</span>], TWINE_IDX)
+    pts = []
+    <span class="k">for</span> i <span class="k">in</span> range(SEG):
+        p = section_point(sack, prof, t_station, <span class="n">2.0</span> * math.pi * i / SEG)
+        radial = Vector((p.x, p.y, <span class="n">0.0</span>))
+        pts.append(p + radial.normalized() * (TIE_R - bite))
+    m = len(pts)
+    tans = [(pts[(i + <span class="n">1</span>) % m] - pts[(i - <span class="n">1</span>) % m]).normalized() <span class="k">for</span> i <span class="k">in</span> range(m)]
+    side = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    rings = []
+    <span class="k">for</span> i, (p, t) <span class="k">in</span> enumerate(zip(pts, tans)):
+        rings.append([part.add(p + o) <span class="k">for</span> o <span class="k">in</span> ring_offsets(
+            t, side, TIE_R, TIE_PIPE, TIE_LOBE, i, angle0)])
+    s = [<span class="n">0.0</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, m + <span class="n">1</span>):
+        s.append(s[-<span class="n">1</span>] + (pts[i % m] - pts[i - <span class="n">1</span>]).length)
+    grid_faces(part, rings, s, TIE_PIPE, closed=<span class="k">True</span>)
+    part.cloth = [tuple((<span class="n">0.0</span>, <span class="n">0.0</span>) <span class="k">for</span> _ <span class="k">in</span> uv) <span class="k">for</span> uv <span class="k">in</span> part.uvs]
+    <span class="k">return</span> part
+
+
+<span class="k">def</span> orient(parts, sack):
+    <span class="s">&quot;&quot;&quot;Stand or lay the sack, turn it by its yaw; returns its axis in world.&quot;&quot;&quot;</span>
+    rot = Matrix.Identity(<span class="n">3</span>)
+    <span class="k">if</span> sack[<span class="s">&quot;lying&quot;</span>]:
+        <span class="c"># Lay it on its flat side: the section&#x27;s narrow axis becomes Z.</span>
+        rot = Matrix.Rotation(math.radians(<span class="n">90.0</span>), <span class="n">3</span>, <span class="s">&quot;X&quot;</span>) @ rot
+        squash = Matrix.Diagonal((<span class="n">1.0</span>, <span class="n">1.0</span>, LYING_SQUASH))
+        rot = squash @ rot
+    rot = Matrix.Rotation(math.radians(sack[<span class="s">&quot;yaw&quot;</span>]), <span class="n">3</span>, <span class="s">&quot;Z&quot;</span>) @ rot
+    <span class="k">for</span> part <span class="k">in</span> parts:
+        part.verts = [rot @ v <span class="k">for</span> v <span class="k">in</span> part.verts]
+    axis = (rot @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))).normalized()
+    <span class="k">return</span> axis
+
+
+<span class="k">def</span> settle(parts, axis, round_bottom=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Sink the sack SINK into the floor and fold everything under SETTLE_C up.
+
+    Below SETTLE_C the height is remapped by g(u) = ((u + 1) / 2)^2 on
+    u = z / SETTLE_C, clamped to 0 below u = -1: C1 at the fold, and
+    exactly flat where the grain presses the floor. The squashed height
+    goes outward, away from the sack&#x27;s axis, so the base bulges.
+
+    ``round_bottom`` is the falsifier: the same sink and the same fold
+    height, but a linear squash that keeps the base round, touching the
+    floor at one point.
+    &quot;&quot;&quot;</span>
+    zmin = min(v.z <span class="k">for</span> p <span class="k">in</span> parts <span class="k">for</span> v <span class="k">in</span> p.verts)
+    shift = -zmin - SINK
+    centre = sum((v <span class="k">for</span> v <span class="k">in</span> parts[<span class="n">0</span>].verts), Vector()) / len(parts[<span class="n">0</span>].verts)
+    <span class="k">for</span> part <span class="k">in</span> parts:
+        out = []
+        <span class="k">for</span> v <span class="k">in</span> part.verts:
+            z = v.z + shift
+            <span class="k">if</span> z &gt;= SETTLE_C:
+                out.append(Vector((v.x, v.y, z)))
+                <span class="k">continue</span>
+            <span class="k">if</span> round_bottom:
+                z2 = (z + SINK) * SETTLE_C / (SETTLE_C + SINK)
+                out.append(Vector((v.x, v.y, z2)))
+                <span class="k">continue</span>
+            u = z / SETTLE_C
+            z2 = <span class="n">0.0</span> <span class="k">if</span> u &lt;= -<span class="n">1.0</span> <span class="k">else</span> SETTLE_C * ((u + <span class="n">1.0</span>) / <span class="n">2.0</span>) ** <span class="n">2</span>
+            w = Vector((v.x, v.y, z)) - centre
+            w = w - axis * w.dot(axis)
+            w.z = <span class="n">0.0</span>
+            <span class="k">if</span> w.length &gt; <span class="n">1e-9</span>:
+                w.normalize()
+            out.append(Vector((v.x, v.y, z2)) + w * (SPREAD * (z2 - z)))
+        part.verts = out
+
+
+<span class="k">def</span> translate(parts, d):
+    <span class="k">for</span> part <span class="k">in</span> parts:
+        part.verts = [v + d <span class="k">for</span> v <span class="k">in</span> part.verts]
+
+
+<span class="k">def</span> body_tree(part):
+    <span class="k">return</span> BVHTree.FromPolygons(part.verts, part.faces)
+
+
+<span class="k">def</span> inside_depth(tree, pts):
+    <span class="s">&quot;&quot;&quot;Deepest point of ``pts`` inside ``tree``&#x27;s surface; negative is a gap.&quot;&quot;&quot;</span>
+    best = -<span class="n">99.0</span>
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        loc, nrm, _i, dist = tree.find_nearest(p)
+        <span class="k">if</span> loc <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        d = dist <span class="k">if</span> (p - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+        best = max(best, d)
+    <span class="k">return</span> best
+
+
+<span class="k">def</span> slide_into(moving, fixed, target):
+    <span class="s">&quot;&quot;&quot;Slide ``moving`` along the line to ``fixed`` until it presses ``target``.
+
+    Bisection on the offset, measuring the deepest vertex of the moving body
+    inside the fixed one after each move. The press is then exact whatever
+    the lumps and pleats do where the two meet.
+    &quot;&quot;&quot;</span>
+    body_m, body_f = moving[<span class="n">0</span>], fixed[<span class="n">0</span>]
+    cm = sum(body_m.verts, Vector()) / len(body_m.verts)
+    cf = sum(body_f.verts, Vector()) / len(body_f.verts)
+    d = Vector((cf.x - cm.x, cf.y - cm.y, <span class="n">0.0</span>)).normalized()
+    tree = body_tree(body_f)
+    base = [v.copy() <span class="k">for</span> v <span class="k">in</span> body_m.verts]
+
+    <span class="k">def</span> depth(off):
+        pts = [v + d * off <span class="k">for</span> v <span class="k">in</span> base]
+        <span class="k">return</span> inside_depth(tree, pts)
+
+    lo, hi = -<span class="n">0.40</span>, <span class="n">0.60</span>
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">40</span>):
+        mid = <span class="n">0.5</span> * (lo + hi)
+        <span class="k">if</span> depth(mid) &gt; target:
+            hi = mid
+        <span class="k">else</span>:
+            lo = mid
+    translate(moving, d * (<span class="n">0.5</span> * (lo + hi)))
+
+
+<span class="k">def</span> build_parts(
+    slip_tie=<span class="k">False</span>,
+    loose_tie=<span class="k">False</span>,
+    part_sacks=<span class="k">False</span>,
+    round_bottom=<span class="k">False</span>,
+    high_belly=<span class="k">False</span>,
+    float_sack=<span class="k">False</span>,
+):
+    <span class="s">&quot;&quot;&quot;Every shell of the pile, placed, settled and pressed together.&quot;&quot;&quot;</span>
+    bite = LOOSE_TIE_BITE <span class="k">if</span> loose_tie <span class="k">else</span> TIE_BITE
+    prof = HIGH_BELLY_PROFILE <span class="k">if</span> high_belly <span class="k">else</span> PROFILE
+    groups = {}
+    axes = {}
+    <span class="k">for</span> sack <span class="k">in</span> SACKS:
+        parts = [body_part(sack, prof)]
+        t0 = NECK_T + (SLIP_TIE / sack[<span class="s">&quot;H&quot;</span>] <span class="k">if</span> slip_tie <span class="k">else</span> <span class="n">0.0</span>)
+        <span class="k">for</span> k, dt <span class="k">in</span> enumerate((-<span class="n">0.5</span>, <span class="n">0.5</span>)):
+            <span class="c"># A quarter step off the body&#x27;s columns, and each turn half a</span>
+            <span class="c"># step off the other: a twine face parallel to the cloth face it</span>
+            <span class="c"># hugs, one column over, shared its plane.</span>
+            parts.append(tie_part(sack, prof, t0 + dt * TIE_PITCH / sack[<span class="s">&quot;H&quot;</span>], bite,
+                                  (<span class="n">0.5</span> + k) * math.pi / TIE_PIPE))
+        axis = orient(parts, sack)
+        settle(parts, axis, round_bottom=round_bottom)
+        body = parts[<span class="n">0</span>]
+        c = sum(body.verts, Vector()) / len(body.verts)
+        translate(parts, Vector((sack[<span class="s">&quot;at&quot;</span>][<span class="n">0</span>] - c.x, sack[<span class="s">&quot;at&quot;</span>][<span class="n">1</span>] - c.y, <span class="n">0.0</span>)))
+        groups[sack[<span class="s">&quot;name&quot;</span>]] = parts
+        axes[sack[<span class="s">&quot;name&quot;</span>]] = axis
+    <span class="k">for</span> name, onto <span class="k">in</span> PRESS_INTO.items():
+        target = PART_GAP <span class="k">if</span> (part_sacks <span class="k">and</span> name == <span class="s">&quot;C&quot;</span>) <span class="k">else</span> PRESS
+        slide_into(groups[name], groups[onto], target)
+    <span class="k">if</span> float_sack:
+        translate(groups[<span class="s">&quot;C&quot;</span>], Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, FLOAT_SACK)))
+    <span class="k">return</span> groups, axes
+
+
+<span class="k">def</span> pack_uvs(bm, islands, margin=<span class="n">0.08</span>):
+    <span class="s">&quot;&quot;&quot;One grid cell per UV island; each island normalised into its cell.&quot;&quot;&quot;</span>
+    uv = bm.loops.layers.uv.active
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(len(islands))))
+    rows = max(<span class="n">1</span>, math.ceil(len(islands) / cols))
+    cell_w, cell_h = <span class="n">1.0</span> / cols, <span class="n">1.0</span> / rows
+    pad_u, pad_v = margin * cell_w * <span class="n">0.5</span>, margin * cell_h * <span class="n">0.5</span>
+    <span class="k">for</span> idx, faces <span class="k">in</span> enumerate(islands):
+        coords = [c <span class="k">for</span> f <span class="k">in</span> faces <span class="k">for</span> c <span class="k">in</span> (loop[uv].uv.copy() <span class="k">for</span> loop <span class="k">in</span> f.loops)]
+        minx = min(c.x <span class="k">for</span> c <span class="k">in</span> coords)
+        maxx = max(c.x <span class="k">for</span> c <span class="k">in</span> coords)
+        miny = min(c.y <span class="k">for</span> c <span class="k">in</span> coords)
+        maxy = max(c.y <span class="k">for</span> c <span class="k">in</span> coords)
+        dx, dy = max(maxx - minx, <span class="n">1e-8</span>), max(maxy - miny, <span class="n">1e-8</span>)
+        ou = (idx % cols) * cell_w + pad_u
+        ov = (idx // cols) * cell_h + pad_v
+        <span class="k">for</span> f <span class="k">in</span> faces:
+            <span class="k">for</span> loop <span class="k">in</span> f.loops:
+                c = loop[uv].uv
+                loop[uv].uv = (ou + (c.x - minx) / dx * (cell_w - <span class="n">2</span> * pad_u),
+                               ov + (c.y - miny) / dy * (cell_h - <span class="n">2</span> * pad_v))
+
+
+<span class="k">def</span> build_sacks_mesh(name, stray_vert=<span class="k">False</span>, **flags):
+    groups, _axes = build_parts(**flags)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+        cloth = bm.loops.layers.uv.new(<span class="s">&quot;ClothCo&quot;</span>)
+        islands = []
+        <span class="k">for</span> sack <span class="k">in</span> SACKS:
+            <span class="k">for</span> part <span class="k">in</span> groups[sack[<span class="s">&quot;name&quot;</span>]]:
+                vs = [bm.verts.new(v) <span class="k">for</span> v <span class="k">in</span> part.verts]
+                faces = []
+                <span class="k">for</span> f, uvs, cls <span class="k">in</span> zip(part.faces, part.uvs, part.cloth):
+                    face = bm.faces.new([vs[i] <span class="k">for</span> i <span class="k">in</span> f])
+                    face.material_index = part.mat
+                    face.smooth = <span class="k">True</span>
+                    <span class="k">for</span> loop, u, c <span class="k">in</span> zip(face.loops, uvs, cls):
+                        loop[uv].uv = u
+                        loop[cloth].uv = c
+                    faces.append(face)
+                islands.append(faces)
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        pack_uvs(bm, islands)
+        <span class="k">if</span> stray_vert:
+            bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.3</span>))
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    uvl = me.uv_layers.get(<span class="s">&quot;UVMap&quot;</span>)
+    <span class="k">if</span> uvl <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        me.uv_layers.active = uvl
+    paint_sacks(me)
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> paint_sacks(me):
+    <span class="s">&quot;&quot;&quot;``SackTone`` and ``Stripe`` face attributes from each sack&#x27;s parameters.&quot;&quot;&quot;</span>
+    tone = [<span class="n">0.5</span>] * len(me.polygons)
+    stripe = [<span class="n">0.0</span>] * len(me.polygons)
+    owner = {}
+    <span class="c"># Each body takes the parameters of the sack placed nearest its centre;</span>
+    <span class="c"># a tie keeps the neutral values, which the twine shader ignores.</span>
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        <span class="k">if</span> len(g) &lt;= <span class="n">400</span>:
+            <span class="k">continue</span>
+        c = sum((me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g), Vector()) / len(g)
+        sack = min(SACKS, key=<span class="k">lambda</span> s: (s[<span class="s">&quot;at&quot;</span>][<span class="n">0</span>] - c.x) ** <span class="n">2</span> + (s[<span class="s">&quot;at&quot;</span>][<span class="n">1</span>] - c.y) ** <span class="n">2</span>)
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = (sack[<span class="s">&quot;tone&quot;</span>], float(sack[<span class="s">&quot;stripe&quot;</span>]))
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        t, s = owner.get(p.vertices[<span class="n">0</span>], (<span class="n">0.5</span>, <span class="n">0.0</span>))
+        tone[p.index] = t
+        stripe[p.index] = s
+    a = me.attributes.new(<span class="s">&quot;SackTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;Stripe&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;value&quot;</span>, stripe)
+
+
+<span class="c"># --- surface ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> burlap_material(name):
+    <span class="s">&quot;&quot;&quot;Hessian: a weave on the cloth&#x27;s own coordinates, stripes, dust at the base.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    co = nt.nodes.new(<span class="s">&quot;ShaderNodeUVMap&quot;</span>)
+    co.uv_map = <span class="s">&quot;ClothCo&quot;</span>
+    sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    nt.links.new(co.outputs[<span class="s">&quot;UV&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    <span class="c"># Weave: two perpendicular sine gratings on the cloth coordinates.</span>
+    weave = []
+    <span class="k">for</span> axis <span class="k">in</span> (<span class="s">&quot;X&quot;</span>, <span class="s">&quot;Y&quot;</span>):
+        mul = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        mul.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+        mul.inputs[<span class="n">1</span>].default_value = <span class="n">2.0</span> * math.pi / WEAVE
+        nt.links.new(sep.outputs[axis], mul.inputs[<span class="n">0</span>])
+        sn = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        sn.operation = <span class="s">&quot;SINE&quot;</span>
+        nt.links.new(mul.outputs[<span class="s">&quot;Value&quot;</span>], sn.inputs[<span class="n">0</span>])
+        weave.append(sn)
+    prod = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    prod.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(weave[<span class="n">0</span>].outputs[<span class="s">&quot;Value&quot;</span>], prod.inputs[<span class="n">0</span>])
+    nt.links.new(weave[<span class="n">1</span>].outputs[<span class="s">&quot;Value&quot;</span>], prod.inputs[<span class="n">1</span>])
+    wv = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    wv.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = -<span class="n">1.0</span>
+    wv.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.90</span>
+    wv.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.04</span>
+    nt.links.new(prod.outputs[<span class="s">&quot;Value&quot;</span>], wv.inputs[<span class="s">&quot;Value&quot;</span>])
+    <span class="c"># Fibre mottling in object space.</span>
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">9.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.30</span>, <span class="n">0.22</span>, <span class="n">0.13</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.75</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.52</span>, <span class="n">0.41</span>, <span class="n">0.26</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    <span class="c"># Stripes down the front: Stripe 1 is one broad blue band, 2 is three</span>
+    <span class="c"># thin red ones, 0 is plain. Centred on the cloth&#x27;s front (u = 1/4 turn).</span>
+    stripe = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    stripe.attribute_type = <span class="s">&quot;GEOMETRY&quot;</span>
+    stripe.attribute_name = <span class="s">&quot;Stripe&quot;</span>
+    circ_u = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    circ_u.operation = <span class="s">&quot;PINGPONG&quot;</span>
+    circ_u.inputs[<span class="n">1</span>].default_value = <span class="n">0.09</span>
+    shifted = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    shifted.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    shifted.inputs[<span class="n">1</span>].default_value = <span class="n">0.0</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;X&quot;</span>], shifted.inputs[<span class="n">0</span>])
+    absu = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    absu.operation = <span class="s">&quot;ABSOLUTE&quot;</span>
+    nt.links.new(shifted.outputs[<span class="s">&quot;Value&quot;</span>], absu.inputs[<span class="n">0</span>])
+    nt.links.new(absu.outputs[<span class="s">&quot;Value&quot;</span>], circ_u.inputs[<span class="n">0</span>])
+    broad = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    broad.operation = <span class="s">&quot;LESS_THAN&quot;</span>
+    broad.inputs[<span class="n">1</span>].default_value = <span class="n">0.028</span>
+    nt.links.new(absu.outputs[<span class="s">&quot;Value&quot;</span>], broad.inputs[<span class="n">0</span>])
+    thin = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    thin.operation = <span class="s">&quot;LESS_THAN&quot;</span>
+    thin.inputs[<span class="n">1</span>].default_value = <span class="n">0.010</span>
+    rep = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    rep.operation = <span class="s">&quot;PINGPONG&quot;</span>
+    rep.inputs[<span class="n">1</span>].default_value = <span class="n">0.025</span>
+    nt.links.new(absu.outputs[<span class="s">&quot;Value&quot;</span>], rep.inputs[<span class="n">0</span>])
+    nt.links.new(rep.outputs[<span class="s">&quot;Value&quot;</span>], thin.inputs[<span class="n">0</span>])
+    within = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    within.operation = <span class="s">&quot;LESS_THAN&quot;</span>
+    within.inputs[<span class="n">1</span>].default_value = <span class="n">0.07</span>
+    nt.links.new(absu.outputs[<span class="s">&quot;Value&quot;</span>], within.inputs[<span class="n">0</span>])
+    thin_m = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    thin_m.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(thin.outputs[<span class="s">&quot;Value&quot;</span>], thin_m.inputs[<span class="n">0</span>])
+    nt.links.new(within.outputs[<span class="s">&quot;Value&quot;</span>], thin_m.inputs[<span class="n">1</span>])
+    is1 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    is1.operation = <span class="s">&quot;COMPARE&quot;</span>
+    is1.inputs[<span class="n">1</span>].default_value = <span class="n">1.0</span>
+    is1.inputs[<span class="n">2</span>].default_value = <span class="n">0.1</span>
+    nt.links.new(stripe.outputs[<span class="s">&quot;Fac&quot;</span>], is1.inputs[<span class="n">0</span>])
+    is2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    is2.operation = <span class="s">&quot;COMPARE&quot;</span>
+    is2.inputs[<span class="n">1</span>].default_value = <span class="n">2.0</span>
+    is2.inputs[<span class="n">2</span>].default_value = <span class="n">0.1</span>
+    nt.links.new(stripe.outputs[<span class="s">&quot;Fac&quot;</span>], is2.inputs[<span class="n">0</span>])
+    m1 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    m1.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(is1.outputs[<span class="s">&quot;Value&quot;</span>], m1.inputs[<span class="n">0</span>])
+    nt.links.new(broad.outputs[<span class="s">&quot;Value&quot;</span>], m1.inputs[<span class="n">1</span>])
+    m2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    m2.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(is2.outputs[<span class="s">&quot;Value&quot;</span>], m2.inputs[<span class="n">0</span>])
+    nt.links.new(thin_m.outputs[<span class="s">&quot;Value&quot;</span>], m2.inputs[<span class="n">1</span>])
+    <span class="c"># Stripes stop short of the neck and of the settled base.</span>
+    band_lo = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    band_lo.operation = <span class="s">&quot;GREATER_THAN&quot;</span>
+    band_lo.inputs[<span class="n">1</span>].default_value = <span class="n">0.10</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], band_lo.inputs[<span class="n">0</span>])
+    band_hi = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    band_hi.operation = <span class="s">&quot;LESS_THAN&quot;</span>
+    band_hi.inputs[<span class="n">1</span>].default_value = <span class="n">0.44</span>
+    nt.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], band_hi.inputs[<span class="n">0</span>])
+    band = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    band.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(band_lo.outputs[<span class="s">&quot;Value&quot;</span>], band.inputs[<span class="n">0</span>])
+    nt.links.new(band_hi.outputs[<span class="s">&quot;Value&quot;</span>], band.inputs[<span class="n">1</span>])
+    col1 = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    col1.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(col1.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    _sock(col1.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.07</span>, <span class="n">0.12</span>, <span class="n">0.26</span>, <span class="n">1.0</span>)
+    f1 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    f1.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(m1.outputs[<span class="s">&quot;Value&quot;</span>], f1.inputs[<span class="n">0</span>])
+    nt.links.new(band.outputs[<span class="s">&quot;Value&quot;</span>], f1.inputs[<span class="n">1</span>])
+    nt.links.new(f1.outputs[<span class="s">&quot;Value&quot;</span>], _sock(col1.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    col2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    col2.data_type = <span class="s">&quot;RGBA&quot;</span>
+    nt.links.new(_sock(col1.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(col2.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    _sock(col2.inputs, <span class="s">&quot;B_Color&quot;</span>).default_value = (<span class="n">0.30</span>, <span class="n">0.06</span>, <span class="n">0.04</span>, <span class="n">1.0</span>)
+    f2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    f2.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(m2.outputs[<span class="s">&quot;Value&quot;</span>], f2.inputs[<span class="n">0</span>])
+    nt.links.new(band.outputs[<span class="s">&quot;Value&quot;</span>], f2.inputs[<span class="n">1</span>])
+    nt.links.new(f2.outputs[<span class="s">&quot;Value&quot;</span>], _sock(col2.inputs, <span class="s">&quot;Factor_Float&quot;</span>))
+    <span class="c"># Per-sack tone and the weave.</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_type = <span class="s">&quot;GEOMETRY&quot;</span>
+    tone.attribute_name = <span class="s">&quot;SackTone&quot;</span>
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">0.8</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.6</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    g2 = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    g2.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], g2.inputs[<span class="n">0</span>])
+    nt.links.new(wv.outputs[<span class="s">&quot;Result&quot;</span>], g2.inputs[<span class="n">1</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(_sock(col2.outputs, <span class="s">&quot;Result_Color&quot;</span>), _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(g2.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.92</span>
+    bmp = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bmp.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.15</span>
+    bmp.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.0015</span>
+    nt.links.new(prod.outputs[<span class="s">&quot;Value&quot;</span>], bmp.inputs[<span class="s">&quot;Height&quot;</span>])
+    nt.links.new(bmp.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> twine_material(name):
+    <span class="s">&quot;&quot;&quot;Sisal twine: paler and yellower than the hessian, matte.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">120.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.40</span>, <span class="n">0.33</span>, <span class="n">0.18</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.70</span>, <span class="n">0.60</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> sack_materials():
+    <span class="k">return</span> burlap_material(<span class="s">&quot;SackBurlap&quot;</span>), twine_material(<span class="s">&quot;SackTwine&quot;</span>)
+
+
+<span class="k">def</span> assign_slots(obj, cloth, twine):
+    mats = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate((cloth, twine)):
+        <span class="k">if</span> i &lt; len(mats):
+            mats[i] = mat
+        <span class="k">else</span>:
+            mats.append(mat)
+
+
+<span class="c"># --- measurement ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs = [c.x <span class="k">for</span> c <span class="k">in</span> corners]
+    ys = [c.y <span class="k">for</span> c <span class="k">in</span> corners]
+    zs = [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.get(<span class="s">&quot;UVMap&quot;</span>)
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    span = max(<span class="n">1e-6</span>, max(a[<span class="n">2</span>] - a[<span class="n">0</span>] <span class="k">for</span> a <span class="k">in</span> aabbs), max(a[<span class="n">3</span>] - a[<span class="n">1</span>] <span class="k">for</span> a <span class="k">in</span> aabbs))
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        <span class="k">for</span> c <span class="k">in</span> range(int(a[<span class="n">0</span>] // span), int(a[<span class="n">2</span>] // span) + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(int(a[<span class="n">1</span>] // span), int(a[<span class="n">3</span>] // span) + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                overlap += max(<span class="n">0.0</span>, min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - max(a[<span class="n">0</span>], b[<span class="n">0</span>])) * max(
+                    <span class="n">0.0</span>, min(a[<span class="n">3</span>], b[<span class="n">3</span>]) - max(a[<span class="n">1</span>], b[<span class="n">1</span>]))
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        area += (me.vertices[idxs[i]].co - v0).cross(me.vertices[idxs[i + <span class="n">1</span>]].co - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {<span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e,
+            <span class="s">&quot;nonman&quot;</span>: nonman, <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles}
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            group.append(cur)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[cur]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* (copied from showcase/grindstone).
+
+    Every sack lays a flat patch on the floor, so the budget is what keeps
+    two sacks&#x27; patches from meeting on one plane side by side.
+    &quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> shell_tree(me, group):
+    member = set(group)
+    polys = [list(p.vertices) <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> member]
+    remap = {v: k <span class="k">for</span> k, v <span class="k">in</span> enumerate(group)}
+    <span class="k">return</span> BVHTree.FromPolygons(
+        [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> group],
+        [[remap[i] <span class="k">for</span> i <span class="k">in</span> p] <span class="k">for</span> p <span class="k">in</span> polys],
+    )
+
+
+<span class="k">def</span> _long_axis(pts):
+    c = sum(pts, Vector()) / len(pts)
+    cov = [[<span class="n">0.0</span>] * <span class="n">3</span> <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> p <span class="k">in</span> pts:
+        d = p - c
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>):
+                cov[i][j] += d[i] * d[j]
+    v = Vector((<span class="n">0.3</span>, <span class="n">0.2</span>, <span class="n">1.0</span>))
+    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">60</span>):
+        w = Vector([sum(cov[i][j] * v[j] <span class="k">for</span> j <span class="k">in</span> range(<span class="n">3</span>)) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+        <span class="k">if</span> w.length &lt; <span class="n">1e-12</span>:
+            <span class="k">break</span>
+        v = w.normalized()
+    <span class="k">return</span> c, v
+
+
+<span class="k">def</span> classify(me):
+    <span class="s">&quot;&quot;&quot;Bodies are the big cloth shells; each tie turn joins its nearest body.&quot;&quot;&quot;</span>
+    mats = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            mats.setdefault(i, p.material_index)
+    bodies, ties, other = [], [], []
+    <span class="k">for</span> g <span class="k">in</span> shells(me):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        rec = {<span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;pts&quot;</span>: pts, <span class="s">&quot;c&quot;</span>: sum(pts, Vector()) / len(pts)}
+        m = mats.get(g[<span class="n">0</span>], -<span class="n">1</span>)
+        <span class="k">if</span> m == CLOTH_IDX <span class="k">and</span> len(g) &gt; <span class="n">400</span>:
+            bodies.append(rec)
+        <span class="k">elif</span> m == TWINE_IDX:
+            ties.append(rec)
+        <span class="k">else</span>:
+            other.append(rec)
+    <span class="k">for</span> t <span class="k">in</span> ties:
+        t[<span class="s">&quot;body&quot;</span>] = min(range(len(bodies)),
+                        key=<span class="k">lambda</span> k: min((p - t[<span class="s">&quot;c&quot;</span>]).length <span class="k">for</span> p <span class="k">in</span> bodies[k][<span class="s">&quot;pts&quot;</span>]))
+    <span class="k">return</span> bodies, ties, other
+
+
+<span class="k">def</span> sack_audit(me):
+    <span class="s">&quot;&quot;&quot;Supports, tie waist and seat, press, contact patch and belly, per sack.&quot;&quot;&quot;</span>
+    bodies, ties, other = classify(me)
+    trees = [shell_tree(me, b[<span class="s">&quot;g&quot;</span>]) <span class="k">for</span> b <span class="k">in</span> bodies]
+    out = {<span class="s">&quot;n_body&quot;</span>: len(bodies), <span class="s">&quot;n_tie&quot;</span>: len(ties), <span class="s">&quot;n_other&quot;</span>: len(other)}
+    out[<span class="s">&quot;support_worst&quot;</span>] = max((min(p.z <span class="k">for</span> p <span class="k">in</span> b[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> b <span class="k">in</span> bodies), default=<span class="n">99.0</span>)
+
+    <span class="c"># Contact patch: faces lying flat on the floor under each body.</span>
+    patch = []
+    <span class="k">for</span> b <span class="k">in</span> bodies:
+        member = set(b[<span class="s">&quot;g&quot;</span>])
+        area = <span class="n">0.0</span>
+        <span class="k">for</span> p <span class="k">in</span> me.polygons:
+            <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> member <span class="k">and</span> all(me.vertices[i].co.z &lt;= <span class="n">1e-6</span> <span class="k">for</span> i <span class="k">in</span> p.vertices):
+                area += face_area(me, p)
+        patch.append(area)
+    out[<span class="s">&quot;patch&quot;</span>] = [round(a, <span class="n">5</span>) <span class="k">for</span> a <span class="k">in</span> patch]
+    out[<span class="s">&quot;patch_min&quot;</span>] = min(patch, default=<span class="n">0.0</span>)
+
+    <span class="c"># Each body&#x27;s axis, oriented from its base to its tie.</span>
+    waist, belly = [], []
+    <span class="k">for</span> k, b <span class="k">in</span> enumerate(bodies):
+        c, axis = _long_axis(b[<span class="s">&quot;pts&quot;</span>])
+        own = [t <span class="k">for</span> t <span class="k">in</span> ties <span class="k">if</span> t[<span class="s">&quot;body&quot;</span>] == k]
+        <span class="k">if</span> <span class="k">not</span> own:
+            waist.append(-<span class="n">99.0</span>)
+            <span class="k">continue</span>
+        tc = sum((t[<span class="s">&quot;c&quot;</span>] <span class="k">for</span> t <span class="k">in</span> own), Vector()) / len(own)
+        <span class="k">if</span> (tc - c).dot(axis) &lt; <span class="n">0.0</span>:
+            axis = -axis
+        proj = [(p - c).dot(axis) <span class="k">for</span> p <span class="k">in</span> b[<span class="s">&quot;pts&quot;</span>]]
+        lo, hi = min(proj), max(proj)
+        bins = {}
+        <span class="k">for</span> p, s <span class="k">in</span> zip(b[<span class="s">&quot;pts&quot;</span>], proj):
+            r = ((p - c) - axis * s).length
+            bins.setdefault(round(s / <span class="n">0.004</span>), []).append(r)
+        stations = sorted((key * <span class="n">0.004</span>, sum(v) / len(v)) <span class="k">for</span> key, v <span class="k">in</span> bins.items() <span class="k">if</span> len(v) &gt;= <span class="n">8</span>)
+        widest = max(stations, key=<span class="k">lambda</span> x: x[<span class="n">1</span>])
+        belly.append((widest[<span class="n">0</span>] - lo) / (hi - lo))
+        <span class="c"># Waist: host radius at the tie&#x27;s station against the host radius</span>
+        <span class="c"># WAIST_PROBE along the axis either side of it.</span>
+        st = (tc - c).dot(axis)
+
+        <span class="k">def</span> radius_at(s0):
+            rs = [((p - c) - axis * s).length <span class="k">for</span> p, s <span class="k">in</span> zip(b[<span class="s">&quot;pts&quot;</span>], proj)
+                  <span class="k">if</span> abs(s - s0) &lt;= WAIST_BAND]
+            <span class="k">return</span> sum(rs) / len(rs) <span class="k">if</span> rs <span class="k">else</span> <span class="n">0.0</span>
+
+        waist.append(min(radius_at(st - WAIST_PROBE), radius_at(st + WAIST_PROBE))
+                     - radius_at(st))
+    out[<span class="s">&quot;waist&quot;</span>] = [round(x, <span class="n">5</span>) <span class="k">for</span> x <span class="k">in</span> waist]
+    out[<span class="s">&quot;waist_min&quot;</span>] = min(waist, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;belly_max&quot;</span>] = max(belly, default=<span class="n">99.0</span>)
+    out[<span class="s">&quot;belly&quot;</span>] = [round(x, <span class="n">3</span>) <span class="k">for</span> x <span class="k">in</span> belly]
+
+    <span class="c"># Tie seat: deepest twine vertex inside its body, per turn.</span>
+    seats = [inside_depth(trees[t[<span class="s">&quot;body&quot;</span>]], t[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> t <span class="k">in</span> ties]
+    out[<span class="s">&quot;tie_min&quot;</span>] = min(seats, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;tie_max&quot;</span>] = max(seats, default=<span class="n">99.0</span>)
+
+    <span class="c"># Press: each body&#x27;s deepest vertex inside any other body.</span>
+    press = []
+    <span class="k">for</span> k, b <span class="k">in</span> enumerate(bodies):
+        best = max((inside_depth(trees[j], b[<span class="s">&quot;pts&quot;</span>]) <span class="k">for</span> j <span class="k">in</span> range(len(bodies)) <span class="k">if</span> j != k),
+                   default=-<span class="n">99.0</span>)
+        press.append(best)
+    out[<span class="s">&quot;press&quot;</span>] = [round(x, <span class="n">5</span>) <span class="k">for</span> x <span class="k">in</span> press]
+    out[<span class="s">&quot;press_min&quot;</span>] = min(press, default=-<span class="n">99.0</span>)
+    out[<span class="s">&quot;press_max&quot;</span>] = max(press, default=<span class="n">99.0</span>)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> hull_collider(obj, name):
+    <span class="s">&quot;&quot;&quot;Compound collider: one convex hull per sack body, every third ring, fourth column.
+
+    One hull over the pile would fill the wedge between the lying sack and
+    the standing ones; a hull per sack keeps it. Striding the rings keeps
+    each hull&#x27;s triangle count down without leaving the silhouette.
+    &quot;&quot;&quot;</span>
+    me = obj.data
+    bodies, _ties, _other = classify(me)
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> b <span class="k">in</span> bodies:
+            <span class="c"># Body vertices in build order are ring after ring of SEG, so</span>
+            <span class="c"># stride rings and columns alike.</span>
+            order = sorted(b[<span class="s">&quot;g&quot;</span>])
+            pts = [me.vertices[v].co.copy() <span class="k">for</span> k, v <span class="k">in</span> enumerate(order)
+                   <span class="k">if</span> (k // SEG) % COLLIDER_STRIDE == <span class="n">0</span> <span class="k">and</span> (k % SEG) % <span class="n">4</span> == <span class="n">0</span>]
+            tmp = bmesh.new()
+            <span class="k">try</span>:
+                vs = [tmp.verts.new(p) <span class="k">for</span> p <span class="k">in</span> pts]
+                bmesh.ops.convex_hull(tmp, input=vs)
+                <span class="c"># Only the hull&#x27;s own vertices: interior points have no face.</span>
+                remap = {}
+                <span class="k">for</span> f <span class="k">in</span> tmp.faces:
+                    <span class="k">for</span> v <span class="k">in</span> f.verts:
+                        <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> remap:
+                            remap[v] = bm.verts.new(v.co)
+                    bm.faces.new([remap[v] <span class="k">for</span> v <span class="k">in</span> f.verts])
+            <span class="k">finally</span>:
+                tmp.free()
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    col = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(col)
+    <span class="k">return</span> col
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size):
+    img = bpy.data.images.new(<span class="s">&quot;SackNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = CLOTH_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>, use_selected_to_active=<span class="k">True</span>, cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>, normal_space=<span class="s">&quot;TANGENT&quot;</span>, margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>, use_clear=<span class="k">True</span>, target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+        uv_layer=<span class="s">&quot;UVMap&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path, use_selection=<span class="k">True</span>, export_yup=<span class="k">True</span>, export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>, export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, stray_vert=<span class="k">False</span>, **flags):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    low = build_sacks_mesh(<span class="s">&quot;SacksLow&quot;</span>, stray_vert=stray_vert, **flags)
+    high = build_sacks_mesh(<span class="s">&quot;SacksHigh&quot;</span>, **flags)
+    cloth, twine = sack_materials()
+    assign_slots(low, cloth, twine)
+    assign_slots(high, cloth, twine)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+    <span class="k">if</span> len(low.data.polygons) &lt; <span class="n">6</span> <span class="k">or</span> low.data.uv_layers.get(<span class="s">&quot;UVMap&quot;</span>) <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;sack mesh did not build, or has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    mats = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat, distinct = len(mats), len({id(s) <span class="k">for</span> s <span class="k">in</span> mats})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, cloth, BAKE_RES)
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;SacksLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;SacksLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = hull_collider(high, <span class="s">&quot;SacksCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_grain_sacks_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>)
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sa = sack_audit(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{dict(sorted(idx_counts.items()))}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured sacks bodies=</span>{sa[<span class="s">&#x27;n_body&#x27;</span>]}<span class="s"> ties=</span>{sa[<span class="s">&#x27;n_tie&#x27;</span>]}<span class="s"> other=</span>{sa[<span class="s">&#x27;n_other&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">support_worst=</span>{sa[<span class="s">&#x27;support_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> waist=</span>{sa[<span class="s">&#x27;waist&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">tie=(</span>{sa[<span class="s">&#x27;tie_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">,</span>{sa[<span class="s">&#x27;tie_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) press=</span>{sa[<span class="s">&#x27;press&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">patch=</span>{sa[<span class="s">&#x27;patch&#x27;</span>]}<span class="s"> belly=</span>{sa[<span class="s">&#x27;belly&#x27;</span>]}<span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> idx_counts.get(CLOTH_IDX, <span class="n">0</span>) &lt; CLOTH_FACES_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">cloth faces </span>{idx_counts.get(CLOTH_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{CLOTH_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> idx_counts.get(TWINE_IDX, <span class="n">0</span>) &lt; TWINE_FACES_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">twine faces </span>{idx_counts.get(TWINE_IDX, <span class="n">0</span>)}<span class="s"> &lt; </span>{TWINE_FACES_MIN}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+            <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+            <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">hygiene </span>{hyg}<span class="s"> zfight=</span>{zf}<span class="s"> (--stray-vert is the designed fail)</span><span class="s">&quot;</span>, <span class="n">15</span>),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;n_body&quot;</span>] != len(SACKS) <span class="k">or</span> sa[<span class="s">&quot;support_worst&quot;</span>] &gt; SUPPORT_Z_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">supports: </span>{sa[<span class="s">&#x27;n_body&#x27;</span>]}<span class="s"> of </span>{len(SACKS)}<span class="s"> sacks, worst base z=</span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span>{sa[<span class="s">&#x27;support_worst&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{SUPPORT_Z_MAX}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--float-sack is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;n_tie&quot;</span>] != <span class="n">2</span> * len(SACKS) <span class="k">or</span> sa[<span class="s">&quot;waist_min&quot;</span>] &lt; WAIST_MARGIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">ties: </span>{sa[<span class="s">&#x27;n_tie&#x27;</span>]}<span class="s"> turns; host under the tie narrower than </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span>{WAIST_PROBE}<span class="s"> m either side by </span>{sa[<span class="s">&#x27;waist&#x27;</span>]}<span class="s">, need &gt;= </span>{WAIST_MARGIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--slip-tie is the designed fail)&quot;</span>, <span class="n">17</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;tie_min&quot;</span>] &lt; TIE_SEAT_MIN <span class="k">or</span> sa[<span class="s">&quot;tie_max&quot;</span>] &gt; TIE_SEAT_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">tie seat (</span>{sa[<span class="s">&#x27;tie_min&#x27;</span>]:<span class="s">.5f</span>}<span class="s">, </span>{sa[<span class="s">&#x27;tie_max&#x27;</span>]:<span class="s">.5f</span>}<span class="s">) outside </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">[</span>{TIE_SEAT_MIN}<span class="s">, </span>{TIE_SEAT_MAX}<span class="s">] (--loose-tie is the designed fail)</span><span class="s">&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;press_min&quot;</span>] &lt; PRESS_MIN <span class="k">or</span> sa[<span class="s">&quot;press_max&quot;</span>] &gt; PRESS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">press between sacks </span>{sa[<span class="s">&#x27;press&#x27;</span>]}<span class="s"> outside [</span>{PRESS_MIN}<span class="s">, </span>{PRESS_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--part-sacks is the designed fail)&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;patch_min&quot;</span>] &lt; PATCH_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">contact patch </span>{sa[<span class="s">&#x27;patch&#x27;</span>]}<span class="s"> m^2, smallest &lt; </span>{PATCH_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--round-bottom is the designed fail)&quot;</span>, <span class="n">19</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;belly_max&quot;</span>] &gt; BELLY_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">widest station at </span>{sa[<span class="s">&#x27;belly&#x27;</span>]}<span class="s"> of the body &gt; </span>{BELLY_MAX}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--high-belly is the designed fail)&quot;</span>, <span class="n">19</span>),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, cloth, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    <span class="s">&quot;&quot;&quot;Baked normal map under the weave bump.&quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    bump = next(n <span class="k">for</span> n <span class="k">in</span> nt.nodes <span class="k">if</span> n.bl_idname == <span class="s">&quot;ShaderNodeBump&quot;</span>)
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], bump.inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, cloth, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(cloth, tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+    <span class="c"># Level on the floor: turned about Z only.</span>
+    low.rotation_euler.z = math.radians(-<span class="n">10.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.2</span>, -<span class="n">4.2</span>, <span class="n">4.8</span>), <span class="n">480.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.2</span>, -<span class="n">3.2</span>, <span class="n">2.2</span>), <span class="n">60.0</span>, <span class="n">8.0</span>, (<span class="n">0.74</span>, <span class="n">0.84</span>, <span class="n">1.0</span>), (<span class="n">66</span>, <span class="n">0</span>, <span class="n">52</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (-<span class="n">2.0</span>, <span class="n">3.4</span>, <span class="n">2.8</span>), <span class="n">260.0</span>, <span class="n">3.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">60</span>, <span class="n">0</span>, <span class="n">200</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.4</span>, <span class="n">3.8</span>, <span class="n">2.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.38</span>), (-<span class="n">94</span>, <span class="n">0</span>, <span class="n">194</span>))
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.22</span>, -<span class="n">2.30</span>, <span class="n">1.18</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.02</span>, -<span class="n">0.08</span>, <span class="n">0.30</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-sack&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--slip-tie&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--loose-tie&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--part-sacks&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--round-bottom&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--high-belly&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, cloth, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        float_sack=args.float_sack,
+        slip_tie=args.slip_tie,
+        loose_tie=args.loose_tie,
+        part_sacks=args.part_sacks,
+        round_bottom=args.round_bottom,
+        high_belly=args.high_belly,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, cloth, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;grain-sacks OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <button class="lightbox-close" type="button" autofocus>Close</button>
+    <img src="../assets/grain-sacks-hero.webp" alt="Three burlap grain sacks tied at the neck with twine, two standing and one lying in front, with a blue stripe on one and red stripes on the other." />
+  </dialog>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>showcase/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>
