@@ -14,8 +14,9 @@ often gets wrong.
   strokes (proven in the same check pass). Restoring it recovers the contour.
 - **Edge-type flags matter.** A freshly added LINEART with `use_contour` and
   `use_crease` both off emits **0** strokes; turning contour (+ crease) back on
-  recovers the silhouette (**10** strokes / **34** points on both binaries for
-  this crystal + camera).
+  recovers the silhouette (**2** strokes / **12** points on every binary for
+  this crystal + camera; Line Art chains the bipyramid's edges into long
+  strokes, so the count is low and the gates are lower bounds).
 - **Stroke width renamed.** 4.5 exposes both `thickness` (legacy px, set to 45
   here) and `radius`; 5.1 removes `thickness` (`AttributeError`) and keeps
   `radius` only (portable path: `mod.radius = 0.028`).
@@ -27,8 +28,15 @@ often gets wrong.
 `source_object` assignment (exit 4), contour too thin (exit 5), source clear
 not zeroing strokes (exit 6), flags-off or restore failure (exit 7).
 
-**Version witness:** stroke counts match on 4.5.11 LTS and 5.1.2
-(10 strokes / 34 points). The divergence is `thickness` vs `radius`.
+**Version witness:** stroke counts match on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS
+(2 strokes / 12 points). The divergence is `thickness` vs `radius`.
+
+**The still:** the crystal is a hexagonal bipyramid (an equator ring and two
+apexes), set tip-down in a two-tier hex mount on the floor. The mount is
+render staging, derived from the crystal's lowest evaluated vertex; it is built
+after the check, so it never enters the Line Art counts. The still's camera
+drops its aim and dollies in along the check camera's bearing, so the crystal
+fills the frame with the mount's foot inside it.
 
 ## Run
 

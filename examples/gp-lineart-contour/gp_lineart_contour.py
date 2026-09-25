@@ -38,9 +38,18 @@ from mathutils import Matrix
 
 # Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail
 CRYSTAL_SCALE = 1.15
+CRYSTAL_R = 0.72        # bipyramid equator radius (before CRYSTAL_SCALE)
+CRYSTAL_APEX = 0.88     # apex height above/below the equator
 STROKE_MIN = 1
 POINT_MIN = 4
 RADIUS = 0.028
+
+# render staging only (not part of the check)
+MOUNT_R = 0.46          # hex plinth base radius
+MOUNT_BASE_H = 0.07     # base tier height, standing on the floor
+MOUNT_SOCKET = 0.10     # depth the crystal's lower tip sinks into the mount
+STILL_AIM_Z = 1.05      # still camera aim height (the check's is 1.15)
+STILL_DOLLY = 0.94     # still camera distance, relative to the check's
 
 
 def eevee_engine_id():
@@ -82,19 +91,16 @@ def build_crystal(sc):
     me = bpy.data.meshes.new("Crystal")
     bm = bmesh.new()
     try:
-        # Dual cone = octahedron-like crystal
-        bmesh.ops.create_cone(
-            bm, cap_ends=False, cap_tris=True,
-            segments=6, radius1=0.85, radius2=0.0, depth=1.4,
-        )
-        # second tip downward
-        geom = bmesh.ops.duplicate(bm, geom=list(bm.verts) + list(bm.edges) + list(bm.faces))
-        verts = [e for e in geom["geom"] if isinstance(e, bmesh.types.BMVert)]
-        bmesh.ops.rotate(
-            bm, verts=verts, cent=(0, 0, 0),
-            matrix=Matrix.Rotation(math.pi, 3, "X"),
-        )
-        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
+        # Hexagonal bipyramid: one equator ring, an apex above and below.
+        # (Two overlapped open cones, the earlier build, crossed into an
+        # hourglass with open ends and an inner spike.)
+        ring = [bm.verts.new((CRYSTAL_R * math.cos(math.pi * k / 3),
+                              CRYSTAL_R * math.sin(math.pi * k / 3), 0.0))
+                for k in range(6)]
+        for apex_z in (CRYSTAL_APEX, -CRYSTAL_APEX):
+            apex = bm.verts.new((0.0, 0.0, apex_z))
+            for k in range(6):
+                bm.faces.new((ring[k], ring[(k + 1) % 6], apex))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bmesh.ops.scale(bm, vec=(CRYSTAL_SCALE,) * 3, verts=bm.verts)
         bm.to_mesh(me)
@@ -362,7 +368,54 @@ def build_studio(sc):
     light("Wedge", (2.5, 5.5, 4.0), 280.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 190))
 
 
+def build_mount(sc, crystal):
+    """Render staging only: a two-tier hex plinth seated on the floor whose
+    top swallows the crystal's lower tip, so the crystal is set in a mount
+    instead of hovering. Derived from the evaluated crystal; the crystal
+    itself (and so every Line Art count above) is untouched."""
+    bpy.context.view_layer.update()
+    mw = crystal.matrix_world
+    tip = min((mw @ v.co for v in crystal.data.vertices), key=lambda p: p.z)
+    top = tip.z + MOUNT_SOCKET
+    me = bpy.data.meshes.new("Mount")
+    bm = bmesh.new()
+    try:
+        for r, z0, z1 in ((MOUNT_R, -0.003, MOUNT_BASE_H),
+                          (MOUNT_R * 0.72, MOUNT_BASE_H - 0.003, top)):
+            bmesh.ops.create_cone(
+                bm, cap_ends=True, segments=6, radius1=r, radius2=r,
+                depth=z1 - z0,
+                matrix=Matrix.Translation((tip.x, tip.y, (z0 + z1) / 2))
+                @ Matrix.Rotation(crystal.rotation_euler.z, 4, "Z"),
+            )
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for p in me.polygons:
+        p.use_smooth = False
+    mat = bpy.data.materials.new("MountStone")
+    mat.use_nodes = True
+    b = mat.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (0.06, 0.062, 0.07, 1.0)
+    b.inputs["Roughness"].default_value = 0.55
+    me.materials.append(mat)
+    ob = bpy.data.objects.new("Mount", me)
+    sc.collection.objects.link(ob)
+    return ob
+
+
 def render_still(sc, path, engine):
+    source = sc.objects["Crystal"]
+    mount = build_mount(sc, source)
+    # reframe for the still only (the check ran from the setup_camera view):
+    # lower the aim so the mount's foot clears the bottom edge, and dolly in
+    # along the same bearing so the crystal still fills the frame
+    aim = sc.objects["Aim"]
+    cam = sc.camera
+    bearing = cam.location - aim.location
+    aim.location.z = STILL_AIM_Z
+    cam.location = aim.location + bearing * STILL_DOLLY
+    bpy.context.view_layer.update()
     sc.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
         sc.cycles.device = "CPU"
@@ -380,16 +433,17 @@ def render_still(sc, path, engine):
     sc.view_settings.view_transform = "Standard"
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact. The two
-    # renderable subjects are the crystal source mesh and the GP stroke object.
+    # hero subjects are the crystal source mesh and the GP stroke object; the
+    # mount is staging, so it must clear the edges but does not count as fill.
     stage = [o for o in sc.objects if o.name in {"Floor", "Wall"}]
     hero = [
         o for o in sc.objects
-        if o.type in {"MESH", "GREASEPENCIL"} and o not in stage
+        if o.type in {"MESH", "GREASEPENCIL"} and o not in stage and o != mount
     ]
     fcode = gallery_framing.check_framing(
         sc, sc.camera,
         hero=hero,
-        elements=hero,
+        elements=hero + [mount],
         stage=stage,
     )
     if fcode:
