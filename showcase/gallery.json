@@ -195,8 +195,8 @@
       "name": "water-trough",
       "dir": "showcase/water-trough",
       "teaches": "A procedural watertight water trough through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
-      "alt": "A staved wooden water trough with solid half-round end boards on crossed trestle legs, half full of dark water.",
-      "witnessesFix": "Recomputed: 3700 tris, three materials with 1674 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093×0.552×0.504 m, zmin 0, four shoes planted, U end-cap rim span 5 mm, strap BVH gap 0, water-hull gap 2.6 mm, hull 1.045×0.466 m, LOD ratios in band, convex collider 64 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap 18; --narrow-hull 19.",
+      "alt": "A staved wooden water trough with half-round ends built of three boards, on crossed trestle legs, half full of dark water.",
+      "witnessesFix": "Recomputed: 3316 tris, three materials with 1482 wood, 156 metal and 29 water faces, UVs in 0..1 with zero AABB overlap, outer AABB 1.093x0.552x0.5055 m, zmin 0, four shoes planted, each end three lapped boards, end rim span 21 mm, strap BVH gap 0, water-hull gap 2.6 mm, water contained on 66 of 66 rays, hull 1.045x0.466 m, LOD ratios in band, convex collider 68 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z/--short-legs 16; --box-ends 17; --float-strap/--open-ends 18; --narrow-hull 19; --slab-ends 20.",
       "hero": "docs/gallery/assets/water-trough-hero.webp",
       "preview": "showcase/water-trough/preview.webp",
       "tags": [
