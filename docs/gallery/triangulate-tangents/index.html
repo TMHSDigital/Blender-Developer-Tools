@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/triangulate-tangents-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A round silver buckler on a stand, its face brushed in circular grooves with an anisotropic highlight." />
+  <meta property="og:image:alt" content="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="triangulate-tangents — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A machined buckler verifying the tangent-space contract a game engine&#x27;s normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/triangulate-tangents-hero.webp" />
-  <meta name="twitter:image:alt" content="A round silver buckler on a stand, its face brushed in circular grooves with an anisotropic highlight." />
+  <meta name="twitter:image:alt" content="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A machined buckler verifying the tangent-space contract a game engine&#x27;s normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round silver buckler on a stand, its face brushed in circular grooves with an anisotropic highlight.">
-      <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler on a stand, its face brushed in circular grooves with an anisotropic highlight." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight.">
+      <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> calc_tangents aborts on any ngon; planar UVs on a cylindrical wall collapse tangents onto normals; a MeshUVLoopLayer handle held across calc_tangents dangles on 4.5 (471 phantom flips, silent exit 0) while the mikktspace math is byte-identical on both versions.</div>
@@ -284,7 +284,7 @@
 <ul><li><strong>Deterministic triangulation and the engine basis.</strong> <code>calc_loop_triangles</code> yields the closed-form count (two tris per quad + the cap fan, 720), and every loop tangent is unit length (err 1.3e-07) and exactly orthogonal to its loop normal (err 6.0e-08), with the bitangent exactly <code>bitangent_sign * (normal x tangent)</code> (err 0.0). One ngon anywhere in the mesh and <code>calc_tangents</code> <strong>aborts the whole call</strong> — the back cap is an explicit fan for exactly that reason.</li><li><strong>The tangent frame follows the UVs.</strong> On smooth-field triangles the per-loop tangents match the independently derived edge/UV-delta formula within mikktspace&#x27;s vertex-welding tolerance (measured 2.3e-06, tol 0.15); a flipped frame inside a smooth field is never legal (0 measured). At UV seams the frame orientation is implementation-defined — 42 seam flips, 9 at chart seams, identical on both versions — and planar UVs on a cylindrical wall are degenerate: they collapse the tangent onto the normal (dot 0.998, measured and fixed by unwrapping strips).</li><li><strong>The reference-lifetime hazard (the real divergence).</strong> A <code>MeshUVLoopLayer</code> handle held across <code>calc_tangents()</code> dangles: on Blender 4.5 reads through it return tangent floats, not UVs — measured while authoring as a phantom <strong>471 flipped frames and 385 phantom seam positions, exit 0, a silent wrong answer</strong>. On 5.1 the same stale read survives by memory-layout luck. The mikktspace math itself is byte-identical on 4.5.11 and 5.1.2; the apparent version divergence was entirely the corrupt handle. Never hold layer handles across CustomData-reallocating calls — re-fetch by name.</li></ul>
 <p><strong>What each check catches on failure:</strong> a remeshed asset breaking the triangulation count (probe: dropped profile ring, exit 3, 624 vs 720); a wrong tangent formula in the independent derivation (probe: swapped du/dv, exit 7, weld 1.459); and the stale-handle read (probe: no re-fetch — corrupt measurements on 4.5, correct values on 5.1 by luck).</p>
 <p><strong>Version witness:</strong> mikktspace output is identical on Blender 4.5.11 LTS and 5.1.2 (same weld deviations, same seam flips). The <code>calc_tangents(uvmap=)</code> signature is stable. The lifetime hazard above is the only behavioral split, and it corrupts measurements rather than raising.</p>
-<p>The render shows the buckler on its cradle: brushed grooves circulating the boss with the anisotropic sweep riding them — the circulating tangent field made visible.</p>
+<p>The render shows the buckler on its cradle: brushed grooves circulating the boss with the anisotropic sweep riding them — the circulating tangent field made visible. The staging is derived from the posed mesh: the stand rests on the floor, the rim&#x27;s lowest vertex sits 1 cm into its top, and a kickstand strut runs from the buckler&#x27;s back (found by a local-space ray) to the floor behind it.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python triangulate_tangents.py --
@@ -358,6 +358,13 @@ DOT_TOL = <span class="n">1e-4</span>                  <span class="c"># |t . n|
 WELD_TOL = <span class="n">0.15</span>                 <span class="c"># mikktspace vertex welding vs per-triangle formula</span>
 BTN_TOL = <span class="n">1e-4</span>                  <span class="c"># bitangent == sign * (n x t)</span>
 UV_TOL = <span class="n">1e-6</span>                   <span class="c"># re-fetched UV layer vs authored closed form</span>
+
+<span class="c"># render staging only (not part of the check)</span>
+STAND_H = <span class="n">0.12</span>                  <span class="c"># display stand height, resting on the floor</span>
+SEAT_BITE = <span class="n">0.01</span>                <span class="c"># rim&#x27;s lowest vertex sunk into the stand top</span>
+STRUT_V = <span class="n">0.25</span>                  <span class="c"># local v where the kickstand meets the back</span>
+STRUT_BITE = <span class="n">0.02</span>               <span class="c"># strut ends buried in the back face / floor</span>
+STRUT_LEAN = <span class="n">0.45</span>               <span class="c"># horizontal run per metre of strut height</span>
 
 <span class="c"># dome profile: (r, z) rings from center out, then the raised rim lip</span>
 PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span class="n">0.30</span>, <span class="n">0.30</span>), (<span class="n">0.55</span>, <span class="n">0.22</span>), (<span class="n">0.78</span>, <span class="n">0.12</span>),
@@ -620,28 +627,56 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
     obj.data.materials.append(mat)
 
-    <span class="c"># presentation: the buckler leaning back on a low display stand</span>
-    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.55</span>)
-    obj.rotation_euler = (math.radians(<span class="n">70</span>), <span class="n">0.0</span>, math.radians(-<span class="n">12</span>))
-    stand_me = bpy.data.meshes.new(<span class="s">&quot;Stand&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                              matrix=mathutils.Matrix.Diagonal((<span class="n">0.9</span>, <span class="n">0.5</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)))
-        bm.to_mesh(stand_me)
-    <span class="k">finally</span>:
-        bm.free()
+    <span class="c"># presentation: the buckler leaning back on a low display stand, held by</span>
+    <span class="c"># a kickstand strut behind it. Every contact is derived from the posed</span>
+    <span class="c"># mesh: the stand sits on the floor, the rim&#x27;s lowest vertex bites into</span>
+    <span class="c"># the stand&#x27;s top, and the strut runs from the buckler&#x27;s back to the floor.</span>
+    yaw = math.radians(-<span class="n">12</span>)
+    obj.rotation_euler = (math.radians(<span class="n">70</span>), <span class="n">0.0</span>, yaw)
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    bpy.context.view_layer.update()
+    low = min((obj.matrix_world @ v.co <span class="k">for</span> v <span class="k">in</span> obj.data.vertices), key=<span class="k">lambda</span> p: p.z)
+    lift = STAND_H - SEAT_BITE - low.z
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, lift)
+    bpy.context.view_layer.update()
+    mw = obj.matrix_world
+    low.z += lift
+
     smat = bpy.data.materials.new(<span class="s">&quot;StandMetal&quot;</span>)
     smat.use_nodes = <span class="k">True</span>
     sb = smat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     sb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.09</span>, <span class="n">0.10</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)
     sb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.85</span>
     sb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
-    stand_me.materials.append(smat)
-    stand = bpy.data.objects.new(<span class="s">&quot;Stand&quot;</span>, stand_me)
-    <span class="c"># under the leaning rim&#x27;s contact patch, so the cradle visibly carries it</span>
-    stand.location = (<span class="n">0.0</span>, -<span class="n">0.34</span>, <span class="n">0.55</span>)
-    scene.collection.objects.link(stand)
+
+    <span class="k">def</span> box(name, dims, loc, rot):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                  matrix=mathutils.Matrix.Diagonal((*dims, <span class="n">1.0</span>)))
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(smat)
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
+        scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
+
+    <span class="c"># the stand: on the floor, centred under the rim&#x27;s contact vertex</span>
+    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.5</span>, STAND_H), (low.x, low.y, STAND_H / <span class="n">2</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, yaw))
+    <span class="c"># the strut: its top buried in the buckler&#x27;s back face (found by a</span>
+    <span class="c"># local-space ray), its foot bitten into the floor behind</span>
+    hit = obj.ray_cast((<span class="n">0.0</span>, STRUT_V, -<span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))[<span class="n">1</span>]
+    back_n = (mw.to_3x3() @ mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">1.0</span>))).normalized()
+    top = mw @ hit - back_n * STRUT_BITE
+    out = mathutils.Vector((back_n.x, back_n.y, <span class="n">0.0</span>)).normalized()
+    foot = mathutils.Vector((top.x, top.y, -STRUT_BITE)) + out * top.z * STRUT_LEAN
+    axis = top - foot
+    box(<span class="s">&quot;Strut&quot;</span>, (<span class="n">0.08</span>, <span class="n">0.04</span>, axis.length), (top + foot) / <span class="n">2</span>,
+        axis.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler())
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -690,10 +725,12 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     <span class="c"># Reframed: the old (0.6,-8.8,2.8) left the buckler at 0.334 fill adrift</span>
     <span class="c"># in the stage; moved in ~2.2x so the brushed-steel tangent sweep fills</span>
     <span class="c"># the frame — the grooves are the tangent-field evidence.</span>
-    cam.location = (<span class="n">0.6</span>, -<span class="n">6.35</span>, <span class="n">2.62</span>)
+    <span class="c"># Seated on the floor (was hung 0.49 m up): camera and aim ride with the</span>
+    <span class="c"># buckler&#x27;s derived lift, so the composition is unchanged.</span>
+    cam.location = (<span class="n">0.6</span>, -<span class="n">6.35</span>, lift + <span class="n">1.07</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.42</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, lift - <span class="n">0.13</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -715,11 +752,11 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact.</span>
-    stand_ob = scene.objects.get(<span class="s">&quot;Stand&quot;</span>)
+    props = [scene.objects[n] <span class="k">for</span> n <span class="k">in</span> (<span class="s">&quot;Stand&quot;</span>, <span class="s">&quot;Strut&quot;</span>)]
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj] + ([stand_ob] <span class="k">if</span> stand_ob <span class="k">else</span> []),
+        elements=[obj] + props,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
@@ -771,7 +808,7 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler on a stand, its face brushed in circular grooves with an anisotropic highlight." />
+    <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
   </dialog>
   <footer>
     <div class="statusbar">

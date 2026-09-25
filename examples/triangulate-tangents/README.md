@@ -51,7 +51,10 @@ and it corrupts measurements rather than raising.
 
 The render shows the buckler on its cradle: brushed grooves circulating the
 boss with the anisotropic sweep riding them — the circulating tangent field
-made visible.
+made visible. The staging is derived from the posed mesh: the stand rests on
+the floor, the rim's lowest vertex sits 1 cm into its top, and a kickstand
+strut runs from the buckler's back (found by a local-space ray) to the floor
+behind it.
 
 ## Run
 
