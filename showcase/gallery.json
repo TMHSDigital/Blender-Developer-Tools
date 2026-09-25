@@ -339,8 +339,8 @@
       "name": "hay-bale",
       "dir": "showcase/hay-bale",
       "teaches": "A bound hay bale whose twine belts follow the loaf's own raycast cross-section, asserting recomputed geometry budgets, not an API contract.",
-      "alt": "A golden fibrous hay bale bound by two thin twine cords with knotted loops on top.",
-      "witnessesFix": "Recomputed: 2012 tris, two materials with 712 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.530x0.409 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 2.6 mm, banded belt seat depth 4.0-16.8 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 14.2 mm, LOD ratios in band, convex collider 156 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt 19.",
+      "alt": "A golden fibrous hay bale, square-edged and slightly bulging, bound by two orange twine cords with a small knot loop standing on each.",
+      "witnessesFix": "Recomputed: 2044 tris, two materials with 1436 hay and 304 twine faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.921x0.508x0.417 m, zmin 0, hygiene and cross-shell z-fight 0, 5 shells, each belt wrapping under the loaf at zmin 1.5 mm, banded belt seat depth 4.0-11.1 mm over 20/20 stations on both belts, belt mirror error 0, cinch depth 10.5 mm, loaf 0.921x0.393 m, 22.4 bake texels per UV cell, LOD ratios in band, convex collider 140 tris, non-empty glTF. --skip-decimate exits 9; --stray-vert 15; --lift-z and --float-belts 16; --slack-belt 18; --skew-belt and --odd-loaf 19; --low-bake 20.",
       "hero": "docs/gallery/assets/hay-bale-hero.webp",
       "preview": "showcase/hay-bale/preview.webp",
       "tags": [

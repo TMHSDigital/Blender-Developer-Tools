@@ -402,7 +402,13 @@ entry in `showcase/gallery.json`, and a rendered still.
   tolerance, so a 1.5 mm model change tipped it from exit 16 to exit 8.
   Make the falsifier move only what its budget measures — the shoes
   float, the legs stretch to the floor — and check its AABB delta against
-  the tolerance, not just its exit code.
+  the tolerance, not just its exit code. Re-check it whenever a design
+  change moves which part sets the envelope. `hay-bale`'s ridge dropped
+  from 14 mm to 6 mm, which made the knot loops the top of the box. The
+  twine falsifiers, sized at 20 mm and 10 mm when the loaf's crest was the
+  top, then lifted the knots past `BBOX_TOL` and exited 8. The fix was to
+  size each one to its own budget, 8 mm against a 6 mm wrap gate and 6 mm
+  against a 2 mm seat floor, never to widen the tolerance.
 - **Stone is not noise stretched over a block.** A noise-driven colour
   mix sampled so its features streak read as wood grain on
   `stone-archway` at hero scale. Stone wants isotropic object-space
