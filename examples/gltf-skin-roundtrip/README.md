@@ -46,6 +46,11 @@ deviates 0.90).
 
 The render stages the authored scorpion beside the actual re-imported one —
 same curl, same glowing stinger — proof the skin rode the format through.
+Both rigs are turned three-quarters to the camera. The tail curls in the
+rig's own Y-Z plane, so a head-on view saw the curl end-on: the tail stood
+straight up behind the body like a chimney. The yaw is composed into each
+armature's world matrix, because the glTF importer leaves its armature in
+quaternion mode, where `rotation_euler` does nothing.
 
 ## Run
 
