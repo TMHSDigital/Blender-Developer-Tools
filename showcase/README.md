@@ -187,12 +187,21 @@ entry in `showcase/gallery.json`, and a rendered still.
   shoe cup so the seated-post budget fails (exit 19) while the sole
   still grounds the AABB.
 - **Sampled host seat (exit 17/18 on scatter).** Instanced scatter
-  seats by sampling the host surface Z at each instance's XY, biting a
-  named depth, then clamping instance verts above the slab floor. A
-  closed-form icosphere (or equivalent) replaces the GN cube so the
-  scatter is stones, not open crates; a per-shell face floor is the
-  budget that catches a cube leftover (exit 19). `--poke-rock` skips
-  the clamp and over-bites; `--float-rocks` seats above the host.
+  seats by sampling the host surface, then clamping instance verts above
+  the slab floor. A closed-form icosphere (or equivalent) replaces the GN
+  cube so the scatter is stones, not open crates; a per-shell face floor
+  is the budget that catches a cube leftover (exit 19). `--poke-rock`
+  skips the clamp and over-bites; `--float-rocks` seats above the host.
+- **A seated part is sealed all round (file-local code).** Sampling the
+  host once, at the part's centre, and biting the lowest point below it
+  leaves daylight under the downhill side of anything on a slope:
+  `terrain-scatter`'s stones were sealed in at most 6 of 8 sectors, two
+  in only 4, and the gap showed in the ground-contact view. Split the
+  azimuth around each part's centroid into sectors, sample the host
+  under every vertex (a ray down onto the host alone), and sink the part
+  until each sector's most-buried vertex is below the ground. Assert
+  every part is sealed in every sector. The falsifier restores the
+  centre-sample rule (`--perch-rocks`).
 - **Orthogonal members (exit 19).** Boards, planks or arms that should
   sit on a world axis assert their AABB secondary extent stays within a
   named bound of the member thickness. A closed-form yaw of 0.12 rad
@@ -321,6 +330,16 @@ entry in `showcase/gallery.json`, and a rendered still.
   and the iron plates rendered — and were classified — as timber.
   `--sharp-iron` is the falsifier. 15–19 are reserved, so the code is
   the piece's next free one.
+- **A rim over a slope is bounded by its tilt step (file-local code).**
+  The count above assumes box edges. Where a curved or sloping surface
+  turns down into a wall — a terrain tile's edge, a mound's skirt — the
+  fold runs from well under 90° to well over it, so bevel it with enough
+  segments and bound the largest step in normal elevation between
+  adjacent faces. Use elevation, not the dihedral: at a tile's corners two
+  chamfer strips meet at a right angle in plan, which is a rounded
+  corner, not a knife. Bevel gives the middle folds twice the end ones,
+  so two segments leave 45° of a 90° edge in one step. The falsifier
+  skips the bevel (`--sharp-rim`).
 - **An L-section is one shell, not two boxes (exit 15).** Two
   overlapping boxes for the legs of an angle strap share the outer
   corner edge; chamfer them and both lay a strip on the same line — a
@@ -358,11 +377,17 @@ entry in `showcase/gallery.json`, and a rendered still.
   scatter pushes neighbours into each other, and nothing else in the
   hygiene family compares one scattered part with another. BVH-test every
   pair and assert **0** overlaps. Space the parts structurally: relax
-  their centres apart to twice a radius bound **derived** from the same
-  constants that size them, so scaling the parts widens the spacing too.
-  A falsifier that only skips the relaxation proves nothing if the parts
-  happen to miss anyway; `terrain-scatter`'s `--pile-rocks` also draws
-  the scatter inward so collisions are guaranteed.
+  each pair of centres apart to the sum of the two parts' own radius
+  bounds, each **derived** from the same constants that size that part,
+  so scaling a part widens the spacing around it. A falsifier that only
+  skips the relaxation proves nothing if the parts happen to miss anyway;
+  `terrain-scatter`'s `--pile-rocks` also draws the scatter inward so
+  collisions are guaranteed.
+- **Scatter varies in size (file-local code).** Nine stones within 20%
+  of one size, on a relaxed grid, read as planted. Give each scatter
+  point a size factor (boulders among cobbles), and assert the ratio of
+  the largest to the smallest footprint clears a floor. The falsifier
+  sets every factor to 1 (`--uniform-rocks`).
 - **Assert a body's symmetry on the body (exit 19).** Where mirrored
   parts are hung on a body, the body itself must be mirror-symmetric:
   give every vertex a partner at its mirror position within a named
