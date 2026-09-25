@@ -458,6 +458,14 @@ entry in `showcase/gallery.json`, and a rendered still.
   not by a radius: a quarter of the head's width is smaller than any
   "round" test built for the whole disk. `--one-piece-head` /
   `--one-piece-bottom` are the falsifiers.
+
+  The same holds for any end that closes a vessel. `water-trough`'s ends
+  were one D-shaped slab each; they are three vertical boards. Where the
+  boards must also hold water, lap them a millimetre into each other
+  rather than leaving a seam: a through gap leaks, and lets a containment
+  ray through, while the bevel on the boards' face edges still shows the
+  joint. Read any rim test on the union of an end's boards, or a board's
+  inner edge at a joint is taken for the rim (`--slab-ends`).
 - **Rope is laid, not piped.** A smooth tube with a rope material is a
   plastic hose. Loft a three-lobed section and turn it one vertex step per
   ring, so each lobe winds along the path as a strand. That costs the same

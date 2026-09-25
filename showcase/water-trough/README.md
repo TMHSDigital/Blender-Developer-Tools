@@ -1,13 +1,13 @@
 # Water trough
 
 A showcase piece, not an example. Procedural staved water trough on a
-timber stand (watertight U-hull, solid end boards, contained water, iron
+timber stand (watertight U-hull, board-built ends, contained water, iron
 straps, trestle legs) then the shipped pipeline: unique-cell UVs, Cycles
 high-to-low normal bake, LOD chain, convex collider, Unity glTF export.
 
 The hull, ends, straps and water all sample the same YZ arc. Each end
-is a solid board whose bottom follows the hull's outer arc and whose top
-is level, and the staves tenon into it. It is neither a bounding-box slab
+is three vertical boards whose bottoms follow the hull's outer arc and
+whose tops are level, and the staves tenon into them. It is neither a bounding-box slab
 around the U (`--box-ends`) nor an open U-band (`--open-ends`). Straps sit at `STRAP_X`, offset from `LEG_X`, so the trestle does not
 punch through the iron. Stretchers span the inner faces of the legs.
 `--round-band` is not used; `--float-strap` is the seat falsifier.
@@ -33,20 +33,21 @@ materials, UVs, evaluated LOD, collider, or export file.
 
 | Axis | Declared | Measured (4.5.11 / 5.1.2 / 5.2.1) |
 | --- | --- | --- |
-| Base triangles | 2800–3500 | 3124 / 3124 / 3124 |
+| Base triangles | 2800–3500 | 3316 / 3316 / 3316 |
 | LOD1 ratio | 0.32–0.62 of base | 0.5000 / 0.5000 / 0.5000 |
-| LOD2 ratio | 0.10–0.35 of base | 0.2200 / 0.2200 / 0.2200 |
-| Materials | exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water | 3 slots; 1386 / 156 / 29 |
+| LOD2 ratio | 0.10–0.35 of base | 0.2195 / 0.2195 / 0.2195 |
+| Materials | exactly 3 distinct; ≥24 wood, ≥24 metal, ≥6 water | 3 slots; 1482 / 156 / 29 |
 | UVs | in `0..1`, AABB overlap ≤ 1e-5 | in range, overlap 0 |
 | Outer AABB | (1.093, 0.552, 0.5055) m ± 0.01 | (1.0932, 0.5520, 0.5055), zmin 0 |
-| Collider tris | ≤ 80 | 64 |
-| Export | written, size > 0 | 228520 / 228520 / 228504 bytes |
+| Collider tris | ≤ 80 | 68 |
+| Export | written, size > 0 | 242240 / 242240 / 242224 bytes |
 
 Base triangles rose from **2484 to 3700** in the first quality pass: box
 end slabs and a single extruded U became ten jittered staves, U end-caps,
 continuous straps offset from the legs, and stretchers that meet the
 inner faces. The second pass took them to **3124**: the open U-band ends
-became solid end boards, which close the section with fewer faces.
+became solid end boards, which close the section with fewer faces. The
+third pass took them to **3316**: each end became three boards.
 
 DECIMATE COLLAPSE triangle counts are **not** identical across series —
 the gate is a ratio band, not an exact count. Bake pixels are
@@ -79,10 +80,11 @@ Recomputed from the generated mesh, not asserted about the script.
 
 | Axis | Declared | Measured (all three) |
 | --- | --- | --- |
-| End-cap rim Z-span | ≤ 0.080 m | 0.0050 |
+| End-cap rim Z-span (union of an end's boards) | ≤ 0.080 m | 0.0208 |
 | Strap-to-hull BVH gap | ≤ 0.008 m | 0.00000 |
 | Water-to-hull BVH gap | ≤ 0.008 m | 0.00260 |
 | Water contained by the end boards | 0 misses over 66 outward rays | 0 of 66 |
+| **End boards** per end | ≥ 3 | 3 |
 
 ### Why the ends are solid boards
 
@@ -101,6 +103,23 @@ tested and not only the rim a band would cover. Every ray must hit
 timber within `1.5 × END_T`. `--open-ends` restores the U-bands: all 66
 rays miss, and the piece exits 18.
 
+### Why each end is three boards
+
+The third pass found each end was one D-shaped slab: a single board
+from rim to rim, one tone, no joint, the thing the showcase's "a head or
+bottom is boards, not a slab" rule exists to prevent (end orthos,
+end-cap close-ups, the hero). Each end is now three vertical boards of
+uneven width (`END_BOARD_FRACS`), each with its own tone and grain, its
+bottom following the hull arc under its own span. Neighbours lap 1 mm
+into each other (`END_BOARD_LAP`), so the joint is tight: a through
+seam would let the water out and a containment ray through, and the
+bevel on each board's face edges shows the joint as a groove. The rim
+span is now read on the union of an end's boards, so the inner edge of
+a board at a joint is not taken for the end's rim. Each board follows
+the arc with three samples (`END_BOARD_SAMPLES`); four cost 3556
+triangles, over the 3500 ceiling. `--slab-ends` restores the one-piece
+board and exits 20.
+
 ### Surface
 
 Staves, boards and legs came out of one flat material, so every board was
@@ -114,10 +133,14 @@ either mirrored as a white sheet or showed nothing, and its spill lifted
 the dark stage. The fill dropped from 68% to 50%, so the inner stave
 walls show above the waterline; at 68% the surface sat nearly flush with
 the rim and read as felt in a frame. Straps widened from 28 to 40 mm.
+The third pass darkened the grazing tint from a pale grey-blue (0.20,
+0.27, 0.29) to a deep teal (0.055, 0.105, 0.115): the hero looks across
+the surface near grazing, where that tint wins, and it read as a
+painted slab.
 
 ### Falsifiers
 
-Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
+Each violates one named budget. All nine were run on 4.5.11, 5.1.2 and
 5.2.1 and returned the same code on each.
 
 | Flag | Budget violated | Exit |
@@ -130,6 +153,7 @@ Each violates one named budget. All eight were run on 4.5.11, 5.1.2 and
 | `--float-strap` | strap-to-hull gap | 18 |
 | `--narrow-hull` | hull plan vs stated size | 19 |
 | `--open-ends` | water contained by the end boards (restores the open U-band ends) | 18 |
+| `--slab-ends` | end boards per end (restores the one-piece D board; measures 1) | 20 |
 
 `--short-legs` lifts the shoes and stretches each leg's foot down to the
 floor, so AABB `zmin` stays 0 (the legs still plant) and the
@@ -150,6 +174,7 @@ blender --background --python water_trough.py -- --box-ends
 blender --background --python water_trough.py -- --float-strap
 blender --background --python water_trough.py -- --narrow-hull
 blender --background --python water_trough.py -- --open-ends
+blender --background --python water_trough.py -- --slab-ends
 blender --background --python water_trough.py -- --output trough.png
 ```
 
@@ -183,3 +208,4 @@ hygiene and joint-fit family.
 | 17 | Joint fit: end-cap U-rim span (`--box-ends`) |
 | 18 | Seat: strap or water BVH gap (`--float-strap`), or water not contained by the end boards (`--open-ends`) |
 | 19 | Hull length or width off the stated real-world size (`--narrow-hull`) |
+| 20 | An end is fewer than three boards (`--slab-ends`) |

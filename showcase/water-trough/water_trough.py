@@ -1,15 +1,15 @@
 """Game-ready wooden water trough — a showcase piece, not an example.
 
 Asserts budget conformance of a procedural staved trough on a timber
-stand (U-staves and solid end boards from one radius function, contained
+stand (U-staves and board-built ends from one radius function, contained
 water, iron straps lofted on that same host, trestle legs) after
 composing shipped pipeline pieces: bmesh construction, UVs, three
 materials, high-to-low normal bake, LOD chain, convex collider, Unity
 glTF export.
 
 The hull, ends, straps and water all sample the same YZ arc. Each end
-is a solid board on the hull's outer arc that the staves tenon into:
-not a bounding-box slab, not an open U-band. Legs run from a hull-outer station to a shoe at Z=0.
+is three lapped vertical boards on the hull's outer arc that the staves
+tenon into: not a bounding-box slab, not an open U-band, not one slab. Legs run from a hull-outer station to a shoe at Z=0.
 
 Budgets are declared below and recomputed from the generated result.
 They are not API-contract witnesses. Each falsifier violates one named
@@ -17,7 +17,7 @@ budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
 hygiene, ``--lift-z`` grounded zmin, ``--short-legs`` named shoe
 supports, ``--box-ends`` end-cap U-fit, ``--float-strap`` strap seat,
 ``--narrow-hull`` hull real-world size, ``--open-ends`` water
-containment.
+containment, ``--slab-ends`` end boards per end.
 
 Stave seams use closed-form ``sin(i)``; the only RNG is plank tone,
 seeded with ``TONE_SEED``. DECIMATE COLLAPSE
@@ -69,6 +69,12 @@ STRETCHER_Z = 0.115
 STRETCHER_T = 0.028
 LEG_W = 0.048
 WATER_GAP = 0.004
+# Each end is three vertical boards of uneven width, lapped 1 mm into each
+# other, not one D-shaped slab (the barrel's head rule, applied here).
+END_BOARD_FRACS = (0.36, 0.30, 0.34)
+END_BOARD_LAP = 0.001
+END_BOARD_SAMPLES = 3
+END_BOARDS_MIN = 3
 # Half full: at 0.68 the surface sat nearly flush with the rim and hid the
 # inner stave walls, so nothing said vessel.
 WATER_FILL = 0.50
@@ -273,6 +279,47 @@ def add_end_board(bm, x0, x1, r_arc, z_top, n_seg, zc, a_span, mat_idx):
     return verts
 
 
+def add_end_boards(bm, x0, x1, r_arc, z_top, zc, a_span, fracs, mat_idx):
+    """An end made of vertical boards side by side, not one slab.
+
+    ``fracs`` splits the end's width into boards (uneven, as sawn boards
+    are). Each board's bottom follows the hull's outer arc under its own
+    span and its top is level at ``z_top``. Neighbours overlap by
+    END_BOARD_LAP, so the joint is tight (no through-gap for water or for
+    a containment ray) and the bevel on each board's face edges shows it
+    as a groove.
+    """
+    y_max = r_arc * math.sin(a_span)
+    edges = [-y_max]
+    for f in fracs:
+        edges.append(edges[-1] + 2.0 * y_max * f)
+    edges[-1] = y_max
+    verts = []
+    for k in range(len(fracs)):
+        y0 = max(-y_max, edges[k] - END_BOARD_LAP)
+        y1 = min(y_max, edges[k + 1] + END_BOARD_LAP)
+        ys = [y0 + (y1 - y0) * i / END_BOARD_SAMPLES for i in range(END_BOARD_SAMPLES + 1)]
+
+        def ring(x):
+            arc = [bm.verts.new((x, y, hull_z_at_y(y, r_arc, zc))) for y in ys]
+            top = [bm.verts.new((x, y, z_top)) for y in ys]
+            return arc, top
+
+        arc0, top0 = ring(x0)
+        arc1, top1 = ring(x1)
+        n = END_BOARD_SAMPLES
+        for i in range(n):
+            j = i + 1
+            _face(bm, (arc0[i], top0[i], top0[j], arc0[j]), mat_idx)
+            _face(bm, (arc1[j], top1[j], top1[i], arc1[i]), mat_idx)
+            _face(bm, (arc0[j], arc1[j], arc1[i], arc0[i]), mat_idx)
+            _face(bm, (top0[i], top1[i], top1[j], top0[j]), mat_idx)
+        _face(bm, (arc0[0], arc1[0], top1[0], top0[0]), mat_idx)
+        _face(bm, (arc0[n], top0[n], top1[n], arc1[n]), mat_idx)
+        verts.extend(arc0 + top0 + arc1 + top1)
+    return verts
+
+
 def add_box_end(bm, x_mid, radius, zc, a_span, thick, mat_idx):
     y_span = 2.0 * radius * math.sin(a_span)
     z_lo = zc - radius
@@ -364,6 +411,7 @@ def build_trough_mesh(
     short_legs=False,
     narrow_hull=False,
     open_ends=False,
+    slab_ends=False,
 ):
     bm = bmesh.new()
     try:
@@ -406,12 +454,15 @@ def build_trough_mesh(
         elif not box_ends:
             # Top sits at the band's inner rim, 6 mm proud of the staves.
             z_top = zc - r_cap_in * math.cos(A_SPAN)
-            for xa, xb in ((x_cap_l0, x_cap_l1), (x_cap_r0, x_cap_r1)):
-                wood.extend(
-                    add_end_board(
-                        bm, xa, xb, r_cap_out, z_top, N_STAVES, zc, A_SPAN, WOOD_IDX
-                    )
-                )
+            for (xa, xb), fracs in (((x_cap_l0, x_cap_l1), END_BOARD_FRACS),
+                                    ((x_cap_r0, x_cap_r1), END_BOARD_FRACS[::-1])):
+                if slab_ends:
+                    # --slab-ends: the one-piece D board of the first pass
+                    wood.extend(add_end_board(
+                        bm, xa, xb, r_cap_out, z_top, N_STAVES, zc, A_SPAN, WOOD_IDX))
+                else:
+                    wood.extend(add_end_boards(
+                        bm, xa, xb, r_cap_out, z_top, zc, A_SPAN, fracs, WOOD_IDX))
 
         top_z = hull_z_at_y(LEG_TOP_Y, r_out, zc)
         bot_z = SHOE_H * 0.55
@@ -716,7 +767,9 @@ def water_material(name):
     tint = nt.nodes.new("ShaderNodeMix")
     tint.data_type = "RGBA"
     _sock(tint.inputs, "A_Color").default_value = (0.010, 0.040, 0.046, 1.0)
-    _sock(tint.inputs, "B_Color").default_value = (0.20, 0.27, 0.29, 1.0)
+    # The hero looks across the surface near grazing, where this tint wins:
+    # a pale grey-blue (0.20, 0.27, 0.29) read as a painted slab, not water.
+    _sock(tint.inputs, "B_Color").default_value = (0.055, 0.105, 0.115, 1.0)
     nt.links.new(facing.outputs["Facing"], _sock(tint.inputs, "Factor_Float"))
     nt.links.new(_sock(tint.outputs, "Result_Color"), bsdf.inputs["Base Color"])
     coord = nt.nodes.new("ShaderNodeTexCoord")
@@ -970,7 +1023,8 @@ def joint_audit(me):
         if mat == WOOD_IDX and dx > TRAY_L * 0.5:
             staves.append((g, a))
             continue
-        if mat == WOOD_IDX and dx < END_T * 3.5 and dy > 0.25 and abs(cx) > TRAY_L * 0.35:
+        # an end is one or more boards: thin in X, out past the legs
+        if mat == WOOD_IDX and dx < END_T * 3.5 and dy > 0.08 and abs(cx) > TRAY_L * 0.35:
             ends.append((g, a))
             continue
         if mat == METAL_IDX and dy > 0.15 and dz > 0.10:
@@ -979,9 +1033,15 @@ def joint_audit(me):
         if mat == WATER_IDX:
             waters.append((g, a))
     hulls = staves
-    rim_span = 0.0
+    # Group each end's boards; the rim span is read on the union of an end's
+    # boards, at its outermost Y, so a board's inner edge at a joint between
+    # boards is not mistaken for the end's rim.
+    by_end = {}
     for g, a in ends:
-        pts = [me.vertices[i].co for i in g]
+        by_end.setdefault(1 if a[0] + a[3] > 0.0 else -1, []).append(g)
+    rim_span = 0.0
+    for gs in by_end.values():
+        pts = [me.vertices[i].co for g in gs for i in g]
         ymax = max(abs(p.y) for p in pts)
         rim = [p for p in pts if abs(abs(p.y) - ymax) < 0.025]
         if rim:
@@ -1002,7 +1062,8 @@ def joint_audit(me):
     return {
         "parts": len(groups),
         "hulls": len(hulls),
-        "ends": len(ends),
+        "ends": len(by_end),
+        "end_boards": min((len(gs) for gs in by_end.values()), default=0),
         "straps": len(straps),
         "waters": len(waters),
         "rim_span": rim_span,
@@ -1155,6 +1216,7 @@ def check(
     short_legs=False,
     narrow_hull=False,
     open_ends=False,
+    slab_ends=False,
 ):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     low = build_trough_mesh(
@@ -1166,6 +1228,7 @@ def check(
         short_legs=short_legs,
         narrow_hull=narrow_hull,
         open_ends=open_ends,
+        slab_ends=slab_ends,
     )
     high = build_trough_mesh(
         "TroughHigh",
@@ -1176,6 +1239,7 @@ def check(
         short_legs=short_legs,
         narrow_hull=narrow_hull,
         open_ends=open_ends,
+        slab_ends=slab_ends,
     )
     wood, metal, water = trough_materials()
     assign_slots(low, wood, metal, water)
@@ -1267,7 +1331,7 @@ def check(
         f"measured shoes={sup['shoes']} shoe_z={sup['shoe_z']:.5f} "
         f"rim_span={jnt['rim_span']:.4f} strap_gap={jnt['strap_gap']:.5f} "
         f"water_gap={jnt['water_gap']:.5f} hull_xy={jnt['hull_xy']} "
-        f"ends={jnt['ends']} straps={jnt['straps']}"
+        f"ends={jnt['ends']} end_boards={jnt['end_boards']} straps={jnt['straps']}"
     )
     print(f"measured containment rays={con['rays']} misses={con['misses']}")
 
@@ -1392,6 +1456,12 @@ def check(
             "(--open-ends is the designed fail)",
             18,
         ), None, None, None, None, None
+    if jnt["end_boards"] < END_BOARDS_MIN:
+        return fail(
+            f"end made of {jnt['end_boards']} board(s), need {END_BOARDS_MIN} "
+            "(--slab-ends is the designed fail)",
+            20,
+        ), None, None, None, None, None
     return 0, low, high, wood, tex, collider
 
 
@@ -1513,6 +1583,7 @@ def main():
     p.add_argument("--float-strap", action="store_true")
     p.add_argument("--narrow-hull", action="store_true")
     p.add_argument("--open-ends", action="store_true")
+    p.add_argument("--slab-ends", action="store_true")
     args = p.parse_args(argv)
 
     code, low, _high, wood, tex, _col = check(
@@ -1524,6 +1595,7 @@ def main():
         short_legs=args.short_legs,
         narrow_hull=args.narrow_hull,
         open_ends=args.open_ends,
+        slab_ends=args.slab_ends,
     )
     if code:
         return code
