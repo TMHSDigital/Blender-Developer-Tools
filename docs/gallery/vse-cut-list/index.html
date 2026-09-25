@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-cut-list-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A monitor on a plinth showing a sequencer frame of four colour blocks with a cut-list caption strip." />
+  <meta property="og:image:alt" content="A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="vse-cut-list — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-cut-list-hero.webp" />
-  <meta name="twitter:image:alt" content="A monitor on a plinth showing a sequencer frame of four colour blocks with a cut-list caption strip." />
+  <meta name="twitter:image:alt" content="A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>The sequencer API rename from 4.5 LTS to 5.x — strips (never .sequences), new_effect ending in length= vs frame_end=, and left_handle/right_handle/duration replacing the deprecated frame_final_*. A deterministic cut list — color programs, a clamped GAMMA_CROSS, a scene strip, a text strip — asserted before and after save/reload.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A monitor on a plinth showing a sequencer frame of four colour blocks with a cut-list caption strip.">
-      <img src="../assets/vse-cut-list-hero.webp" alt="A monitor on a plinth showing a sequencer frame of four colour blocks with a cut-list caption strip." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip.">
+      <img src="../assets/vse-cut-list-hero.webp" alt="A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Each side hard-fails the other&#x27;s spelling: TypeError on the wrong end kwarg, AttributeError on .sequences. The cross clamps to the source overlap, effect strips consume their inputs only when stacked above them, and a same-scene scene strip renders transparent.</div>
@@ -287,6 +287,7 @@
 <ul><li>A GAMMA_CROSS asked to outlast its inputs&#x27; overlap is <strong>silently clamped</strong> to the overlap — request length 9 over a (25, 33) overlap, get (25, 33).</li><li>A scene strip pointing at its <strong>own</strong> scene is a feedback loop and renders transparent (alpha 0) — the &quot;stage&quot; is silently absent. Source a separate scene.</li><li>Effect strips <strong>consume</strong> their inputs: input strips never composite on their own channel, and the effect&#x27;s transform applies on top of the inputs&#x27; transforms. Consumption requires the effect on a channel <strong>above</strong> its inputs; below, they keep painting independently.</li><li>An empty <code>bpy_prop_collection</code> is falsy — <code>se.strips or se.sequences</code> silently falls through to the legacy accessor on an empty timeline. Always branch on <code>hasattr</code>.</li></ul>
 <p><strong>Version divergence:</strong> the whole example is the divergence — gated on the <code>bpy.app.version</code> tuple (<code>&gt;= (5, 0, 0)</code>), never on <code>version_string</code> (<code>&quot;4.5.11 LTS&quot;</code> is not bare semver). Each side asserts its own canonical contract plus the other side&#x27;s removal/bridge state. Measured values are identical on 4.5.11 and 5.1.2, including the pixel witness. <strong>5.2 LTS COLOR strips bake readonly <code>width</code>/<code>height</code> from the scene render resolution at <code>new_effect</code> time</strong> (4.5/5.1 have no intrinsic size — scale is a fraction of the output frame). The pixel check sets 96×54 <em>before</em> building the cut list; creating at factory 1920×1080 then rendering 96×54 makes 0.36-scaled cells larger than the output, C covers the frame, and TL samples amber <code>(0.949, 0.62, 0.102)</code> instead of crimson.</p>
 <p><strong>Render:</strong> the program wall <em>is</em> the sequencer output at frame 29 (mid cross) — crimson A, teal B, amber long-runner C, and the 50/50 cross blend, over the Stage scene strip showing the dark studio. An off-by-one in end-exclusive span math drops its cell to the dark stage; the caption strip carries the closed form. The hero presents that authentic frame on a reference monitor in a dark-studio editing bay — the pixels on the screen are the genuine sequencer output (evidence); only the bay around them is staged (presentation). Rendered locally with EEVEE (GPU host); the checks and <code>--check-pixels</code> need no GPU (Cycles CPU).</p>
+<p>In the bay, each part bites the one it rests on. The monitor&#x27;s neck rises 0.10 m into the bezel, the stand base sits 5 mm into the desk, and the &quot;PROGRAM&quot; caption stands on the desk&#x27;s front face. The neck used to butt its top face onto the bezel&#x27;s bottom on one plane, with half its depth hanging out behind, and the caption lay flat on the desk top 6 mm up, where the camera read it as a smear. None of this touches the sequencer frame or any check.</p>
 <h2>Framing measurement</h2>
 <p>The gallery still renders from the dedicated <code>Bay</code> scene (camera <code>BayCam</code>), not <code>bpy.context.scene</code> — a framing measurement with <code>examples/gallery_framing.py</code> must be handed that (scene, camera) pair explicitly.</p>
 <h2>Run</h2>
@@ -790,10 +791,20 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     deskmat = pbr(<span class="s">&quot;DeskTop&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.80</span>)
 
     <span class="c"># desk slab, stand, and the monitor bezel (screen face toward -Y)</span>
-    box(<span class="s">&quot;Desk&quot;</span>, (<span class="n">2.80</span>, <span class="n">1.10</span>, <span class="n">0.72</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.36</span>), deskmat)
-    box(<span class="s">&quot;StandBase&quot;</span>, (<span class="n">0.70</span>, <span class="n">0.50</span>, <span class="n">0.06</span>), (<span class="n">0.0</span>, <span class="n">0.05</span>, <span class="n">0.75</span>), gunmetal)
-    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.18</span>, <span class="n">0.12</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, <span class="n">0.05</span>, <span class="n">0.99</span>), gunmetal)
-    box(<span class="s">&quot;Bezel&quot;</span>, (<span class="n">2.06</span>, <span class="n">0.09</span>, <span class="n">1.30</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.89</span>), gunmetal)
+    <span class="c"># Each part bites the one it rests on. The neck used to butt its top face</span>
+    <span class="c"># onto the bezel&#x27;s bottom face (one plane, no joint) with half its depth</span>
+    <span class="c"># hanging out behind, and the base sat exactly on the desk top.</span>
+    desk_top, base_h, base_bite = <span class="n">0.72</span>, <span class="n">0.06</span>, <span class="n">0.005</span>
+    bezel_z, bezel_h, bezel_d = <span class="n">1.89</span>, <span class="n">1.30</span>, <span class="n">0.09</span>
+    neck_bite, neck_d = <span class="n">0.10</span>, <span class="n">0.07</span>
+    base_z0 = desk_top - base_bite
+    neck_z0 = base_z0 + base_h - base_bite
+    neck_z1 = bezel_z - bezel_h / <span class="n">2</span> + neck_bite
+    box(<span class="s">&quot;Desk&quot;</span>, (<span class="n">2.80</span>, <span class="n">1.10</span>, desk_top), (<span class="n">0.0</span>, <span class="n">0.0</span>, desk_top / <span class="n">2</span>), deskmat)
+    box(<span class="s">&quot;StandBase&quot;</span>, (<span class="n">0.70</span>, <span class="n">0.50</span>, base_h), (<span class="n">0.0</span>, <span class="n">0.05</span>, base_z0 + base_h / <span class="n">2</span>), gunmetal)
+    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.18</span>, neck_d, neck_z1 - neck_z0),
+        (<span class="n">0.0</span>, bezel_d / <span class="n">2</span> - neck_d / <span class="n">2</span> + <span class="n">0.02</span>, <span class="n">0.5</span> * (neck_z0 + neck_z1)), gunmetal)
+    box(<span class="s">&quot;Bezel&quot;</span>, (<span class="n">2.06</span>, bezel_d, bezel_h), (<span class="n">0.0</span>, <span class="n">0.0</span>, bezel_z), gunmetal)
 
     <span class="c"># the screen: one unlit quad sampling the authentic frame end to end —</span>
     <span class="c"># emission only, so the VSE pixels read exactly as the sequencer wrote them</span>
@@ -836,7 +847,10 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
     cu.size = <span class="n">0.10</span>
     cu.extrude = <span class="n">0.004</span>
     cob = bpy.data.objects.new(<span class="s">&quot;BayCaption&quot;</span>, cu)
-    cob.location = (<span class="n">0.0</span>, -<span class="n">0.40</span>, <span class="n">0.73</span>)
+    <span class="c"># upright on the desk&#x27;s front face, set 1 mm into it: laid flat on the</span>
+    <span class="c"># top it floated 6 mm up and read as a smear at the camera&#x27;s grazing angle</span>
+    cob.location = (<span class="n">0.0</span>, -<span class="n">0.55</span> - cu.extrude + <span class="n">0.001</span>, desk_top - <span class="n">0.16</span>)
+    cob.rotation_euler = (math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     cob.data.materials.append(cmat)
     sc.collection.objects.link(cob)
 
@@ -1054,7 +1068,7 @@ PX_TOL = <span class="n">0.10</span>        <span class="c"># per-channel tolera
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/vse-cut-list-hero.webp" alt="A monitor on a plinth showing a sequencer frame of four colour blocks with a cut-list caption strip." />
+    <img src="../assets/vse-cut-list-hero.webp" alt="A monitor on a desk labelled PROGRAM, showing a sequencer frame of four colour blocks with a cut-list caption strip." />
   </dialog>
   <footer>
     <div class="statusbar">
