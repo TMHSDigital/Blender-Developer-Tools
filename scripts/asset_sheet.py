@@ -66,6 +66,7 @@ SELECT = {
     "rope-bridge": (r"^BridgeLow$", None),
     "wheelbarrow": (r"^BarrowLow$", None),
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
+    "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
