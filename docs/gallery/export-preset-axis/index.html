@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>export-preset-axis — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
+  <meta name="description" content="A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/export-preset-axis/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="export-preset-axis — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
+  <meta property="og:description" content="A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/export-preset-axis/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/export-preset-axis-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side." />
+  <meta property="og:image:alt" content="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="export-preset-axis — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
+  <meta name="twitter:description" content="A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation" />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/export-preset-axis-hero.webp" />
-  <meta name="twitter:image:alt" content="Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side." />
+  <meta name="twitter:image:alt" content="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>export-preset-axis</h1>
-    <p>A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation</p>
+    <p>A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side.">
-      <img src="../assets/export-preset-axis-hero.webp" alt="Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast.">
+      <img src="../assets/export-preset-axis-hero.webp" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Unity export_yup=True round-trips standing (x,y,z); Godot export_yup=False reimports lying along -Y as (x,-z,y); --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly</div>
@@ -278,11 +278,12 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that exports the same radio-beacon mesh under the Unity and Godot glTF presets from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/engine-export-presets/SKILL.md"><code>engine-export-presets</code></a> and re-imports both files. The check is on coordinates, not a screenshot: Unity (<code>export_yup=True</code>) stands; Godot (<code>export_yup=False</code>) lies.</p>
+<p>A runnable example that exports the same radio-mast mesh under the Unity and Godot glTF presets from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/engine-export-presets/SKILL.md"><code>engine-export-presets</code></a> and re-imports both files. The check is on coordinates, not a screenshot: Unity (<code>export_yup=True</code>) stands; Godot (<code>export_yup=False</code>) lies.</p>
 <p><strong>What it witnesses:</strong> named engine presets are not comments on the same kwargs. glTF axis RNA is <code>export_yup</code>, not FBX <code>axis_forward</code> / <code>axis_up</code>.</p>
 <ul><li><strong>Disk POSITION follows the closed form.</strong> Unity bakes <code>(x, y, z) -&gt; (x, z, -y)</code> with no node rotation. Godot writes raw Z-up <code>(x, y, z)</code>. The check reads accessor min/max from the <code>.gltf</code> JSON.</li><li><strong>Re-import proves the conversion.</strong> Blender&#x27;s importer always treats the file as Y-up: <code>blender = (gltf.x, -gltf.z, gltf.y)</code>. Unity restores the source. Godot permutes again, so the mast lies along <code>-Y</code>.</li><li><strong>The two reimports differ.</strong> Unity <code>z_span</code> matches source height; Godot <code>y_span</code> matches that height. <code>--same-axis</code> exports both with <code>export_yup=True</code>; both stand and the differ check exits 9.</li><li><strong>Exporter RNA is guarded.</strong> Every kwarg passed must still exist on <code>bpy.ops.export_scene.gltf</code>.</li></ul>
 <p>Neighbor of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> (Y-up bake vs Z-up on disk for one file) and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/unapplied-scale-gltf"><code>unapplied-scale-gltf</code></a> (<code>export_apply</code> is modifiers, not object scale). This example names the Unity vs Godot presets and asserts the re-imported orientations diverge.</p>
-<p>The still stages the two reimports side by side: standing Unity left, lying Godot right. If <code>export_yup</code> were the same on both, the pair would match.</p>
+<p>The subject is a radio mast chosen because &quot;up&quot; is unmistakable on it: a stepped concrete footing, a bolted base flange, a tapered mast in red and white aviation bands with steel collars, three sector panel antennas, a shrouded microwave dish on a raked arm, an equipment cabinet, and a red obstruction lamp under a lightning rod. The rod&#x27;s point is the witnessed tip vertex.</p>
+<p>The still stages the two re-imports side by side: the Unity copy standing on the left, the Godot copy lying along the floor on the right. Beside each sits a modelled X/Y/Z axis gizmo (red, green, blue) showing that re-import&#x27;s frame. The gizmo is measured, not placed: the render path tries all 24 axis-aligned rotations and keeps the one that maps the source vertices onto the re-imported vertices (worst nearest-vertex distance, printed as <code>fit_err</code>; exit 12 if it exceeds 1 mm). The Unity gizmo comes out as the identity, blue Z up. The Godot gizmo comes out as <code>Y -&gt; +Z, Z -&gt; -Y</code>: green Y points up and blue Z runs along the lying mast. The mast didn&#x27;t fall over. The Godot file stores Z-up coordinates, and the importer reads them as Y-up. If <code>export_yup</code> were the same on both, the two copies and both gizmos would match.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) - the CI check:
 blender --background --python export_preset_axis.py --
@@ -291,11 +292,11 @@ blender --background --python export_preset_axis.py --
 blender --background --python export_preset_axis.py -- --same-axis
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
-blender --background --python export_preset_axis.py -- --output beacon.png
-blender --background --python export_preset_axis.py -- --output beacon.png --engine cycles</code></pre>
+blender --background --python export_preset_axis.py -- --output mast.png
+blender --background --python export_preset_axis.py -- --output mast.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also exporter RNA missing expected glTF kwargs</td></tr><tr><td>3</td><td>Source mast is not Z-dominant, or tip drifted</td></tr><tr><td>4</td><td>glTF reimport produced no mesh</td></tr><tr><td>5</td><td>Unity disk POSITION is not <code>(x, z, -y)</code>, or Unity node has rotation</td></tr><tr><td>6</td><td>Godot disk POSITION is not raw Z-up; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Unity reimport is not standing</td></tr><tr><td>8</td><td>Godot reimport is not lying along Y, or reimported tip mismatch</td></tr><tr><td>9</td><td>Reimported orientations did not differ (<code>--same-axis</code> lands here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td><code>--same-axis</code> did not collapse the axis difference</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper and <code>11</code> on the render path is the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also exporter RNA missing expected glTF kwargs</td></tr><tr><td>3</td><td>Source mast is not Z-dominant, or tip drifted</td></tr><tr><td>4</td><td>glTF reimport produced no mesh</td></tr><tr><td>5</td><td>Unity disk POSITION is not <code>(x, z, -y)</code>, or Unity node has rotation</td></tr><tr><td>6</td><td>Godot disk POSITION is not raw Z-up; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Unity reimport is not standing</td></tr><tr><td>8</td><td>Godot reimport is not lying along Y, or reimported tip mismatch</td></tr><tr><td>9</td><td>Reimported orientations did not differ (<code>--same-axis</code> lands here)</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td><code>--same-axis</code> did not collapse the axis difference; also asset-quality floor violation (render path)</td></tr><tr><td>12</td><td>Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-axis</code>.</p>
     </section>
     <section class="detail-section src">
@@ -311,6 +312,12 @@ repo is Z-up glTF (`export_yup=False`). Re-importing each file through Blender&#
 Y-up glTF importer proves the axis conversion actually happened: Unity stands
 (mast along +Z, original coords), Godot lies (mast along -Y). The check is on
 re-imported coordinates, not a screenshot.
+
+The source is a radio mast: a stepped concrete footing, a bolted base flange,
+a tapered red-and-white aviation-banded mast with steel collars, three sector
+panel antennas, a shrouded microwave dish on a side arm, an equipment cabinet,
+and a red obstruction lamp under a lightning rod whose point is the witnessed
+tip vertex. &quot;Up&quot; is unmistakable on it, which is the whole point.
 
 Closed form (Blender Z-up source `(x, y, z)`):
 
@@ -331,6 +338,7 @@ check. Pass --output to also render a still:
     blender --background --python export_preset_axis.py -- --same-axis
 &quot;&quot;&quot;</span>
 <span class="k">import</span> argparse
+<span class="k">import</span> itertools
 <span class="k">import</span> json
 <span class="k">import</span> math
 <span class="k">import</span> os
@@ -339,28 +347,32 @@ check. Pass --output to also render a still:
 
 <span class="k">import</span> bpy
 <span class="k">import</span> bmesh
-<span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
 
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 EPS = <span class="n">2e-4</span>
 SPAN_GAP = <span class="n">0.4</span>
 
-<span class="c"># Full extents (not half-sizes). create_cube(size=1) verts are +/- 0.5.</span>
-PARTS = (
-    (<span class="s">&quot;base&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.08</span>), (<span class="n">0.90</span>, <span class="n">0.90</span>, <span class="n">0.16</span>)),
-    (<span class="s">&quot;step&quot;</span>, (<span class="n">0.0</span>, -<span class="n">0.51</span>, <span class="n">0.04</span>), (<span class="n">0.28</span>, <span class="n">0.12</span>, <span class="n">0.08</span>)),
-    (<span class="s">&quot;pedestal&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.26</span>), (<span class="n">0.26</span>, <span class="n">0.26</span>, <span class="n">0.20</span>)),
-    (<span class="s">&quot;mast&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.21</span>), (<span class="n">0.09</span>, <span class="n">0.09</span>, <span class="n">1.70</span>)),
-    (<span class="s">&quot;yard&quot;</span>, (<span class="n">0.31</span>, <span class="n">0.0</span>, <span class="n">1.85</span>), (<span class="n">0.62</span>, <span class="n">0.07</span>, <span class="n">0.07</span>)),
-    (<span class="s">&quot;dish&quot;</span>, (<span class="n">0.73</span>, <span class="n">0.0</span>, <span class="n">1.85</span>), (<span class="n">0.22</span>, <span class="n">0.28</span>, <span class="n">0.28</span>)),
-    (<span class="s">&quot;cap&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.11</span>), (<span class="n">0.14</span>, <span class="n">0.14</span>, <span class="n">0.10</span>)),
-)
+<span class="c"># Material slots of the source mesh, in order.</span>
+(MAT_CONCRETE, MAT_STEEL, MAT_RED, MAT_WHITE, MAT_LAMP, MAT_DARK, MAT_RADOME,
+ MAT_CABINET) = range(<span class="n">8</span>)
 
-CAP_Z = <span class="n">2.06</span>
-TIP = Vector((<span class="n">0.07</span>, <span class="n">0.07</span>, <span class="n">2.16</span>))
+<span class="c"># Mast geometry (metres, Z-up, origin at the footing&#x27;s underside).</span>
+FOOT_LO = (<span class="n">0.96</span>, <span class="n">0.18</span>)          <span class="c"># lower footing tier: side, height</span>
+FOOT_HI = (<span class="n">0.46</span>, <span class="n">0.12</span>)          <span class="c"># upper footing tier</span>
+FLANGE_Z0 = FOOT_LO[<span class="n">1</span>] + FOOT_HI[<span class="n">1</span>]
+FLANGE_H = <span class="n">0.035</span>
+MAST_Z0 = FLANGE_Z0 + FLANGE_H
+MAST_Z1 = <span class="n">2.08</span>
+MAST_R0, MAST_R1 = <span class="n">0.085</span>, <span class="n">0.05</span>
+BANDS = <span class="n">7</span>
+ROD_Z0 = <span class="n">2.24</span>
+TIP = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.46</span>))   <span class="c"># lightning-rod point: the witnessed tip vertex</span>
 
 UNITY_KWARGS = dict(
     export_format=<span class="s">&quot;GLTF_SEPARATE&quot;</span>,
@@ -416,40 +428,172 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     <span class="k">return</span> g, umin, umax, node
 
 
-<span class="k">def</span> add_box(bm, center, size):
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># Modelling. Every part is built in one bmesh; each helper tags the faces it</span>
+<span class="c"># creates with a material slot and a shading mode.</span>
+
+
+<span class="k">class</span> Part:
+    <span class="s">&quot;&quot;&quot;Context for one part: new verts/faces are the set difference.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self, bm):
+        self.bm = bm
+        self.v0 = set(bm.verts)
+        self.f0 = set(bm.faces)
+
+    <span class="k">def</span> verts(self):
+        <span class="k">return</span> [v <span class="k">for</span> v <span class="k">in</span> self.bm.verts <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> self.v0]
+
+    <span class="k">def</span> finish(self, mat, smooth_axis=<span class="k">None</span>):
+        <span class="k">for</span> f <span class="k">in</span> self.bm.faces:
+            <span class="k">if</span> f <span class="k">in</span> self.f0:
+                <span class="k">continue</span>
+            f.material_index = mat
+            <span class="k">if</span> smooth_axis <span class="k">is</span> <span class="k">None</span>:
+                f.smooth = <span class="k">False</span>
+            <span class="k">else</span>:
+                f.normal_update()
+                <span class="c"># Round sides smooth, caps (normal along the axis) flat.</span>
+                f.smooth = abs(f.normal.dot(smooth_axis)) &lt; <span class="n">0.9</span>
+
+
+<span class="k">def</span> box(bm, center, size, mat, bevel=<span class="n">0.0</span>):
+    part = Part(bm)
     geom = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-    cx, cy, cz = center
-    sx, sy, sz = size
-    <span class="k">for</span> vert <span class="k">in</span> geom[<span class="s">&quot;verts&quot;</span>]:
-        vert.co.x = vert.co.x * sx + cx
-        vert.co.y = vert.co.y * sy + cy
-        vert.co.z = vert.co.z * sz + cz
+    <span class="k">for</span> v <span class="k">in</span> geom[<span class="s">&quot;verts&quot;</span>]:
+        v.co = Vector((v.co.x * size[<span class="n">0</span>], v.co.y * size[<span class="n">1</span>], v.co.z * size[<span class="n">2</span>])) + Vector(center)
+    <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+        edges = list({e <span class="k">for</span> v <span class="k">in</span> geom[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+        bmesh.ops.bevel(
+            bm, geom=edges, offset=bevel, segments=<span class="n">2</span>, profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>,
+            clamp_overlap=<span class="k">True</span>,
+        )
+    part.finish(mat)
+
+
+<span class="k">def</span> _axis_matrix(axis):
+    <span class="s">&quot;&quot;&quot;Rotation taking +Z onto *axis* (a unit Vector).&quot;&quot;&quot;</span>
+    <span class="k">return</span> Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)).rotation_difference(axis).to_matrix().to_4x4()
+
+
+<span class="k">def</span> cyl(bm, start, axis, length, r0, r1, mat, segs=<span class="n">24</span>, smooth=<span class="k">True</span>):
+    <span class="s">&quot;&quot;&quot;Frustum from *start* along unit *axis*, radius r0 -&gt; r1.&quot;&quot;&quot;</span>
+    part = Part(bm)
+    axis = Vector(axis).normalized()
+    bmesh.ops.create_cone(
+        bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=segs,
+        radius1=r0, radius2=r1, depth=length,
+    )
+    mat4 = Matrix.Translation(Vector(start) + axis * (length * <span class="n">0.5</span>)) @ _axis_matrix(axis)
+    bmesh.ops.transform(bm, matrix=mat4, verts=part.verts())
+    part.finish(mat, axis <span class="k">if</span> smooth <span class="k">else</span> <span class="k">None</span>)
+
+
+<span class="k">def</span> mast_radius(z):
+    t = (z - MAST_Z0) / (MAST_Z1 - MAST_Z0)
+    <span class="k">return</span> MAST_R0 + (MAST_R1 - MAST_R0) * t
+
+
+<span class="k">def</span> build_mast(bm):
+    up = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    <span class="c"># Footing: two chamfered concrete tiers.</span>
+    box(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, FOOT_LO[<span class="n">1</span>] * <span class="n">0.5</span>), (FOOT_LO[<span class="n">0</span>], FOOT_LO[<span class="n">0</span>], FOOT_LO[<span class="n">1</span>]),
+        MAT_CONCRETE, bevel=<span class="n">0.03</span>)
+    box(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, FOOT_LO[<span class="n">1</span>] + FOOT_HI[<span class="n">1</span>] * <span class="n">0.5</span>),
+        (FOOT_HI[<span class="n">0</span>], FOOT_HI[<span class="n">0</span>], FOOT_HI[<span class="n">1</span>]), MAT_CONCRETE, bevel=<span class="n">0.02</span>)
+    <span class="c"># Base flange with eight anchor nuts.</span>
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, FLANGE_Z0), up, FLANGE_H, <span class="n">0.175</span>, <span class="n">0.175</span>, MAT_STEEL, segs=<span class="n">32</span>)
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>):
+        a = <span class="n">2.0</span> * math.pi * (i + <span class="n">0.5</span>) / <span class="n">8</span>
+        c = (<span class="n">0.135</span> * math.cos(a), <span class="n">0.135</span> * math.sin(a), MAST_Z0)
+        cyl(bm, c, up, <span class="n">0.028</span>, <span class="n">0.019</span>, <span class="n">0.019</span>, MAT_DARK, segs=<span class="n">6</span>, smooth=<span class="k">False</span>)
+    <span class="c"># Tapered mast in aviation bands, red at base and top, steel collars at</span>
+    <span class="c"># every band joint.</span>
+    band_h = (MAST_Z1 - MAST_Z0) / BANDS
+    <span class="k">for</span> i <span class="k">in</span> range(BANDS):
+        z0 = MAST_Z0 + i * band_h
+        cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, z0), up, band_h, mast_radius(z0), mast_radius(z0 + band_h),
+            MAT_RED <span class="k">if</span> i % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> MAT_WHITE, segs=<span class="n">24</span>)
+    <span class="k">for</span> i <span class="k">in</span> range(BANDS + <span class="n">1</span>):
+        z = MAST_Z0 + i * band_h
+        r = mast_radius(z) + <span class="n">0.012</span>
+        cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, z - <span class="n">0.018</span>), up, <span class="n">0.036</span>, r, r, MAT_STEEL, segs=<span class="n">24</span>)
+    <span class="c"># Sector panel antennas on standoff brackets, 120 degrees apart.</span>
+    <span class="k">for</span> az <span class="k">in</span> (<span class="n">180.0</span>, <span class="n">60.0</span>, -<span class="n">60.0</span>):
+        a = math.radians(az)
+        d = Vector((math.cos(a), math.sin(a), <span class="n">0.0</span>))
+        part = Part(bm)
+        box(bm, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0.05</span>, <span class="n">0.12</span>, <span class="n">0.44</span>), MAT_RADOME, bevel=<span class="n">0.012</span>)
+        rot = Matrix.Rotation(a, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+        bmesh.ops.transform(
+            bm, matrix=Matrix.Translation(d * <span class="n">0.155</span> + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1.80</span>))) @ rot,
+            verts=part.verts())
+        <span class="k">for</span> zb <span class="k">in</span> (<span class="n">1.64</span>, <span class="n">1.96</span>):
+            cyl(bm, Vector((<span class="n">0</span>, <span class="n">0</span>, zb)) + d * <span class="n">0.03</span>, d, <span class="n">0.105</span>, <span class="n">0.014</span>, <span class="n">0.014</span>, MAT_STEEL, segs=<span class="n">8</span>)
+    <span class="c"># Microwave link dish on a side arm: shroud drum, back cone, radome face.</span>
+    <span class="c"># The dish faces -X, off a side arm to +Y.</span>
+    dz = <span class="n">1.34</span>
+    fwd = Vector((-<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    dish_c = Vector((<span class="n">0.0</span>, <span class="n">0.44</span>, dz))
+    back = dish_c - fwd * <span class="n">0.07</span>
+    cyl(bm, back, fwd, <span class="n">0.13</span>, <span class="n">0.215</span>, <span class="n">0.215</span>, MAT_WHITE, segs=<span class="n">40</span>)
+    cyl(bm, back, -fwd, <span class="n">0.10</span>, <span class="n">0.215</span>, <span class="n">0.07</span>, MAT_STEEL, segs=<span class="n">40</span>)
+    cyl(bm, dish_c + fwd * <span class="n">0.06</span>, fwd, <span class="n">0.018</span>, <span class="n">0.205</span>, <span class="n">0.19</span>, MAT_RADOME, segs=<span class="n">40</span>)
+    cyl(bm, back, fwd, <span class="n">0.016</span>, <span class="n">0.228</span>, <span class="n">0.228</span>, MAT_DARK, segs=<span class="n">40</span>)
+    cyl(bm, back - fwd * <span class="n">0.10</span>, -fwd, <span class="n">0.03</span>, <span class="n">0.05</span>, <span class="n">0.05</span>, MAT_DARK, segs=<span class="n">16</span>)
+    <span class="c"># Clamp collar on the mast and a raked arm to the back of the dish.</span>
+    r_dz = mast_radius(dz)
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, dz - <span class="n">0.05</span>), up, <span class="n">0.10</span>, r_dz + <span class="n">0.02</span>, r_dz + <span class="n">0.02</span>, MAT_DARK, segs=<span class="n">20</span>)
+    arm_end = back - fwd * <span class="n">0.10</span>
+    arm = Vector((arm_end.x, arm_end.y, <span class="n">0.0</span>))
+    cyl(bm, (<span class="n">0.0</span>, <span class="n">0.0</span>, dz), arm.normalized(), arm.length, <span class="n">0.02</span>, <span class="n">0.02</span>, MAT_STEEL, segs=<span class="n">12</span>)
+    <span class="c"># Equipment cabinet with a rain hood, door handle, and conduit to the mast.</span>
+    cab = Vector((-<span class="n">0.30</span>, -<span class="n">0.28</span>, FOOT_LO[<span class="n">1</span>] + <span class="n">0.17</span>))
+    box(bm, tuple(cab), (<span class="n">0.20</span>, <span class="n">0.26</span>, <span class="n">0.34</span>), MAT_CABINET, bevel=<span class="n">0.014</span>)
+    box(bm, tuple(cab + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.185</span>))), (<span class="n">0.24</span>, <span class="n">0.30</span>, <span class="n">0.03</span>), MAT_DARK,
+        bevel=<span class="n">0.006</span>)
+    box(bm, tuple(cab + Vector((-<span class="n">0.104</span>, <span class="n">0.07</span>, <span class="n">0.02</span>))), (<span class="n">0.012</span>, <span class="n">0.022</span>, <span class="n">0.10</span>), MAT_DARK,
+        bevel=<span class="n">0.003</span>)
+    c0 = Vector((-<span class="n">0.20</span>, -<span class="n">0.20</span>, <span class="n">0.44</span>))
+    c1 = Vector((-<span class="n">0.06</span>, -<span class="n">0.06</span>, <span class="n">0.44</span>))
+    cyl(bm, c0, (c1 - c0).normalized(), (c1 - c0).length, <span class="n">0.02</span>, <span class="n">0.02</span>, MAT_DARK, segs=<span class="n">10</span>)
+    <span class="c"># Top: cap plate, obstruction lamp, lightning rod.</span>
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, MAST_Z1), up, <span class="n">0.03</span>, <span class="n">0.075</span>, <span class="n">0.075</span>, MAT_STEEL, segs=<span class="n">24</span>)
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, MAST_Z1 + <span class="n">0.03</span>), up, <span class="n">0.04</span>, <span class="n">0.045</span>, <span class="n">0.045</span>, MAT_DARK, segs=<span class="n">16</span>)
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, MAST_Z1 + <span class="n">0.07</span>), up, <span class="n">0.06</span>, <span class="n">0.05</span>, <span class="n">0.05</span>, MAT_LAMP, segs=<span class="n">24</span>)
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, MAST_Z1 + <span class="n">0.13</span>), up, ROD_Z0 - MAST_Z1 - <span class="n">0.13</span>, <span class="n">0.05</span>, <span class="n">0.02</span>,
+        MAT_DARK, segs=<span class="n">16</span>)
+    cyl(bm, (<span class="n">0</span>, <span class="n">0</span>, ROD_Z0), up, TIP.z - ROD_Z0, <span class="n">0.009</span>, <span class="n">0.0</span>, MAT_STEEL, segs=<span class="n">8</span>)
 
 
 <span class="k">def</span> build():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    me = bpy.data.meshes.new(<span class="s">&quot;Beacon&quot;</span>)
+    me = bpy.data.meshes.new(<span class="s">&quot;RadioMast&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        <span class="k">for</span> _name, center, size <span class="k">in</span> PARTS:
-            add_box(bm, center, size)
+        build_mast(bm)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=<span class="n">1e-6</span>)
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
-    obj = bpy.data.objects.new(<span class="s">&quot;Beacon&quot;</span>, me)
+    obj = bpy.data.objects.new(<span class="s">&quot;RadioMast&quot;</span>, me)
     bpy.context.collection.objects.link(obj)
-    hull = principled(<span class="s">&quot;Hull&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.28</span>, <span class="n">0.18</span>, <span class="n">1.0</span>), <span class="n">0.35</span>, <span class="n">0.38</span>)
-    glow = principled(<span class="s">&quot;Beacon&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.55</span>, <span class="n">0.48</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.22</span>)
-    emit = (<span class="n">0.05</span>, <span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">1.0</span>)
-    bsdf = glow.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    mats = (
+        principled(<span class="s">&quot;Concrete&quot;</span>, (<span class="n">0.36</span>, <span class="n">0.35</span>, <span class="n">0.33</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
+        principled(<span class="s">&quot;GalvanizedSteel&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.57</span>, <span class="n">0.6</span>, <span class="n">1.0</span>), <span class="n">0.6</span>, <span class="n">0.38</span>),
+        principled(<span class="s">&quot;AviationRed&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.07</span>, <span class="n">0.03</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.38</span>),
+        principled(<span class="s">&quot;AviationWhite&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.78</span>, <span class="n">0.75</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.42</span>),
+        principled(<span class="s">&quot;ObstructionLamp&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.05</span>, <span class="n">0.02</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.2</span>),
+        principled(<span class="s">&quot;DarkSteel&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.052</span>, <span class="n">0.058</span>, <span class="n">1.0</span>), <span class="n">0.6</span>, <span class="n">0.45</span>),
+        principled(<span class="s">&quot;Radome&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.63</span>, <span class="n">0.6</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.6</span>),
+        principled(<span class="s">&quot;CabinetPaint&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.30</span>, <span class="n">0.25</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.5</span>),
+    )
+    bsdf = mats[MAT_LAMP].node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     sock = bsdf.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> bsdf.inputs[<span class="s">&quot;Emission&quot;</span>]
-    sock.default_value = emit
-    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">4.0</span>
-    me.materials.append(hull)
-    me.materials.append(glow)
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">True</span>
-        poly.material_index = <span class="n">1</span> <span class="k">if</span> poly.center.z &gt; CAP_Z <span class="k">else</span> <span class="n">0</span>
+    sock.default_value = (<span class="n">1.0</span>, <span class="n">0.012</span>, <span class="n">0.006</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">3.0</span>
+    <span class="k">for</span> m <span class="k">in</span> mats:
+        me.materials.append(m)
     obj.select_set(<span class="k">True</span>)
     bpy.context.view_layer.objects.active = obj
     <span class="k">return</span> obj
@@ -664,6 +808,38 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     <span class="k">return</span> <span class="n">0</span>, unity_objs, godot_objs
 
 
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># Render path only.</span>
+
+
+<span class="k">def</span> fitted_rotation(src, objs):
+    <span class="s">&quot;&quot;&quot;The axis-aligned rotation that maps the source onto a re-import.
+
+    Tries all 24 proper signed-permutation matrices and keeps the one whose
+    rotated source vertices land closest to the re-imported vertices (worst
+    nearest-neighbour distance). The gizmo drawn beside each re-import is
+    this measured frame, not a hand-placed one.
+    &quot;&quot;&quot;</span>
+    dst = all_world_points(objs)
+    tree = KDTree(len(dst))
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(dst):
+        tree.insert(p, i)
+    tree.balance()
+    src_pts = world_points(src)
+    best = <span class="k">None</span>
+    <span class="k">for</span> perm <span class="k">in</span> itertools.permutations(range(<span class="n">3</span>)):
+        <span class="k">for</span> signs <span class="k">in</span> itertools.product((<span class="n">1.0</span>, -<span class="n">1.0</span>), repeat=<span class="n">3</span>):
+            m = Matrix(((<span class="n">0.0</span>,) * <span class="n">3</span>,) * <span class="n">3</span>)
+            <span class="k">for</span> row, col <span class="k">in</span> enumerate(perm):
+                m[row][col] = signs[row]
+            <span class="k">if</span> m.determinant() &lt; <span class="n">0.5</span>:
+                <span class="k">continue</span>
+            worst = max(tree.find(m @ p)[<span class="n">2</span>] <span class="k">for</span> p <span class="k">in</span> src_pts)
+            <span class="k">if</span> best <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> worst &lt; best[<span class="n">0</span>]:
+                best = (worst, m)
+    <span class="k">return</span> best
+
+
 <span class="k">def</span> sit_on_floor(objs, x, y):
     bpy.context.view_layer.update()
     pts = all_world_points(objs)
@@ -682,25 +858,76 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     bpy.context.view_layer.update()
 
 
-<span class="k">def</span> light(scene, name, loc, energy, size, col, rot):
+<span class="k">def</span> light(scene, name, loc, energy, size, col, target):
     ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
     ld.energy = energy
     ld.size = size
     ld.color = col
     ob = bpy.data.objects.new(name, ld)
     ob.location = loc
-    ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+    aim = Vector(target) - Vector(loc)
+    ob.rotation_euler = aim.to_track_quat(<span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
     scene.collection.objects.link(ob)
+
+
+<span class="k">def</span> gizmo_material(name, color):
+    mat = principled(name, color, <span class="n">0.0</span>, <span class="n">0.35</span>)
+    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    sock = bsdf.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> bsdf.inputs[<span class="s">&quot;Emission&quot;</span>]
+    sock.default_value = color
+    bsdf.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.25</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_gizmo(scene, name, origin, rot, mats, length=<span class="n">0.72</span>):
+    <span class="s">&quot;&quot;&quot;Modelled axis triad: hub plus X/Y/Z arrows along the columns of *rot*.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        part = Part(bm)
+        bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">12</span>, radius=<span class="n">0.075</span>)
+        part.finish(<span class="n">3</span>, Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)))
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+            axis = Vector((rot[<span class="n">0</span>][i], rot[<span class="n">1</span>][i], rot[<span class="n">2</span>][i]))
+            shaft = length - <span class="n">0.2</span>
+            cyl(bm, axis * <span class="n">0.05</span>, axis, shaft - <span class="n">0.05</span>, <span class="n">0.03</span>, <span class="n">0.03</span>, i, segs=<span class="n">20</span>)
+            cyl(bm, axis * shaft, axis, <span class="n">0.2</span>, <span class="n">0.075</span>, <span class="n">0.0</span>, i, segs=<span class="n">24</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> m <span class="k">in</span> mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = origin
+    scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
 
 
 <span class="k">def</span> render_still(source, unity_objs, godot_objs, path, engine):
     scene = bpy.context.scene
     source.hide_render = <span class="k">True</span>
     source.hide_viewport = <span class="k">True</span>
-    <span class="c"># Closer together: at -2.15 / +1.95 the pair left an empty metre of floor</span>
-    <span class="c"># between them, and each prop was small in its half of the frame.</span>
-    sit_on_floor(unity_objs, -<span class="n">1.35</span>, <span class="n">0.0</span>)
-    sit_on_floor(godot_objs, <span class="n">1.35</span>, <span class="n">0.0</span>)
+
+    <span class="c"># Measure each re-import&#x27;s frame before moving anything.</span>
+    frames = {}
+    <span class="k">for</span> key, objs <span class="k">in</span> ((<span class="s">&quot;Unity&quot;</span>, unity_objs), (<span class="s">&quot;Godot&quot;</span>, godot_objs)):
+        worst, rot = fitted_rotation(source, objs)
+        cols = [<span class="s">&quot;&quot;</span>.join(<span class="s">f&quot;</span>{v:<span class="s">+.0f</span>}<span class="s">&quot;</span> <span class="k">for</span> v <span class="k">in</span> (rot[<span class="n">0</span>][i], rot[<span class="n">1</span>][i], rot[<span class="n">2</span>][i]))
+                <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)]
+        print(<span class="s">f&quot;</span>{key.lower()}<span class="s">_frame X-&gt;</span>{cols[<span class="n">0</span>]}<span class="s"> Y-&gt;</span>{cols[<span class="n">1</span>]}<span class="s"> Z-&gt;</span>{cols[<span class="n">2</span>]}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">fit_err=</span>{worst:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+        <span class="k">if</span> worst &gt; <span class="n">1e-3</span>:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: no axis-aligned rotation maps the source onto the </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{key}<span class="s"> re-import (best </span>{worst:<span class="s">.3e</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">12</span>
+        frames[key] = rot
+        <span class="k">for</span> i, ob <span class="k">in</span> enumerate(objs):
+            ob.name = <span class="s">f&quot;</span><span class="s">RadioMast.</span>{key}<span class="s">&quot;</span> + (<span class="s">f&quot;</span><span class="s">.</span>{i}<span class="s">&quot;</span> <span class="k">if</span> i <span class="k">else</span> <span class="s">&quot;&quot;</span>)
+
+    <span class="c"># The camera looks along +X, so the pair sits side by side along Y and the</span>
+    <span class="c"># lying Godot mast (along -Y) shows its full length across the frame.</span>
+    sit_on_floor(unity_objs, <span class="n">0.35</span>, <span class="n">1.45</span>)
+    sit_on_floor(godot_objs, -<span class="n">0.05</span>, -<span class="n">1.15</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -713,11 +940,18 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.data.materials.clear()
-    wall.data.materials.append(principled(<span class="s">&quot;Wall&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
-    wall.rotation_euler = (math.pi / <span class="n">2</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">7.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (<span class="n">0.0</span>, math.pi / <span class="n">2</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
+
+    gmats = (
+        gizmo_material(<span class="s">&quot;AxisX&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.08</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)),
+        gizmo_material(<span class="s">&quot;AxisY&quot;</span>, (<span class="n">0.25</span>, <span class="n">0.85</span>, <span class="n">0.08</span>, <span class="n">1.0</span>)),
+        gizmo_material(<span class="s">&quot;AxisZ&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.32</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)),
+        principled(<span class="s">&quot;AxisHub&quot;</span>, (<span class="n">0.8</span>, <span class="n">0.8</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), <span class="n">0.0</span>, <span class="n">0.4</span>),
+    )
+    giz_u = build_gizmo(scene, <span class="s">&quot;Gizmo.Unity&quot;</span>, (-<span class="n">0.85</span>, <span class="n">2.0</span>, <span class="n">0.09</span>), frames[<span class="s">&quot;Unity&quot;</span>], gmats)
+    giz_g = build_gizmo(scene, <span class="s">&quot;Gizmo.Godot&quot;</span>, (-<span class="n">0.9</span>, -<span class="n">0.95</span>, <span class="n">0.09</span>), frames[<span class="s">&quot;Godot&quot;</span>], gmats)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
@@ -729,21 +963,20 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     )
     scene.world = world
 
-    light(scene, <span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">650.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(scene, <span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(scene, <span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    <span class="c"># Rig rotated with the camera: key upper left, fill low right, rim and</span>
+    <span class="c"># wedge behind the pair, the wedge raking the back wall at x = 7.</span>
+    light(scene, <span class="s">&quot;Key&quot;</span>, (-<span class="n">5.0</span>, <span class="n">4.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.8</span>))
+    light(scene, <span class="s">&quot;Fill&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">5.5</span>, <span class="n">2.5</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.8</span>))
+    light(scene, <span class="s">&quot;Rim&quot;</span>, (<span class="n">3.5</span>, -<span class="n">2.5</span>, <span class="n">4.5</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.8</span>))
+    light(scene, <span class="s">&quot;Wedge&quot;</span>, (<span class="n">4.2</span>, <span class="n">1.0</span>, <span class="n">3.2</span>), <span class="n">320.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">7.0</span>, <span class="n">0.3</span>, <span class="n">1.6</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Oblique rather than straight down +Y: the Godot reimport lies with its</span>
-    <span class="c"># mast along -Y, and a camera looking along Y foreshortened that mast to</span>
-    <span class="c"># a stub in front of the base plate, so the one thing the check proves</span>
-    <span class="c"># (it lies) barely read. From the side-front the mast shows its length.</span>
-    cam.location = (<span class="n">4.9</span>, -<span class="n">5.1</span>, <span class="n">2.2</span>)
+    cam.location = (-<span class="n">7.0</span>, -<span class="n">2.6</span>, <span class="n">2.6</span>)
     scene.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.40</span>, -<span class="n">0.30</span>, <span class="n">1.00</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.92</span>)
     scene.collection.objects.link(aim)
     con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     con.target = aim
@@ -763,17 +996,23 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     scene.render.filepath = path
+    <span class="c"># Standard, not AgX: AgX pales the aviation red and lifts the stage.</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
+    hero = unity_objs + godot_objs
     fcode = gallery_framing.check_framing(
         scene,
         cam,
-        hero=unity_objs + godot_objs,
-        elements=unity_objs + godot_objs,
+        hero=hero,
+        elements=hero + [giz_u, giz_g],
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hero=unity_objs, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -829,7 +1068,7 @@ GODOT_KWARGS[<span class="s">&quot;export_yup&quot;</span>] = <span class="k">Fa
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/export-preset-axis-hero.webp" alt="Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side." />
+    <img src="../assets/export-preset-axis-hero.webp" alt="Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast." />
   </dialog>
   <footer>
     <div class="statusbar">

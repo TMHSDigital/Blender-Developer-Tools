@@ -1,6 +1,6 @@
 # Export Preset Axis
 
-A runnable example that exports the same radio-beacon mesh under the Unity
+A runnable example that exports the same radio-mast mesh under the Unity
 and Godot glTF presets from
 [`engine-export-presets`](../../skills/engine-export-presets/SKILL.md) and
 re-imports both files. The check is on coordinates, not a screenshot: Unity
@@ -26,8 +26,25 @@ vs Z-up on disk for one file) and [`unapplied-scale-gltf`](../unapplied-scale-gl
 (`export_apply` is modifiers, not object scale). This example names the
 Unity vs Godot presets and asserts the re-imported orientations diverge.
 
-The still stages the two reimports side by side: standing Unity left, lying
-Godot right. If `export_yup` were the same on both, the pair would match.
+The subject is a radio mast chosen because "up" is unmistakable on it: a
+stepped concrete footing, a bolted base flange, a tapered mast in red and
+white aviation bands with steel collars, three sector panel antennas, a
+shrouded microwave dish on a raked arm, an equipment cabinet, and a red
+obstruction lamp under a lightning rod. The rod's point is the witnessed tip
+vertex.
+
+The still stages the two re-imports side by side: the Unity copy standing on
+the left, the Godot copy lying along the floor on the right. Beside each sits
+a modelled X/Y/Z axis gizmo (red, green, blue) showing that re-import's
+frame. The gizmo is measured, not placed: the render path tries all 24
+axis-aligned rotations and keeps the one that maps the source vertices onto
+the re-imported vertices (worst nearest-vertex distance, printed as
+`fit_err`; exit 12 if it exceeds 1 mm). The Unity gizmo comes out as the
+identity, blue Z up. The Godot gizmo comes out as `Y -> +Z, Z -> -Y`: green
+Y points up and blue Z runs along the lying mast. The mast didn't fall over.
+The Godot file stores Z-up coordinates, and the importer reads them as
+Y-up. If `export_yup` were the same on both, the two copies and both gizmos
+would match.
 
 ## Run
 
@@ -39,14 +56,15 @@ blender --background --python export_preset_axis.py --
 blender --background --python export_preset_axis.py -- --same-axis
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
-blender --background --python export_preset_axis.py -- --output beacon.png
-blender --background --python export_preset_axis.py -- --output beacon.png --engine cycles
+blender --background --python export_preset_axis.py -- --output mast.png
+blender --background --python export_preset_axis.py -- --output mast.png --engine cycles
 ```
 
 ## Exit codes
 
 Per-script sequential checks. `9` is a valid check code; there is no rule
-against it. `10` is the shared framing helper.
+against it. `10` is the shared framing helper and `11` on the render path is
+the shared asset-quality helper.
 
 | Code | Meaning |
 | --- | --- |
@@ -61,7 +79,8 @@ against it. `10` is the shared framing helper.
 | 8 | Godot reimport is not lying along Y, or reimported tip mismatch |
 | 9 | Reimported orientations did not differ (`--same-axis` lands here) |
 | 10 | Gallery framing violation |
-| 11 | `--same-axis` did not collapse the axis difference |
+| 11 | `--same-axis` did not collapse the axis difference; also asset-quality floor violation (render path) |
+| 12 | Render path: no axis-aligned rotation maps the source onto a re-import, so the gizmo frame could not be measured |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

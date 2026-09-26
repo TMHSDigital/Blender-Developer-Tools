@@ -341,8 +341,8 @@
     {
       "name": "export-preset-axis",
       "dir": "examples/export-preset-axis",
-      "teaches": "A radio beacon exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation",
-      "alt": "Two copies of a lamp-post beacon: the left one standing upright, the right one lying on its side.",
+      "teaches": "A radio mast exported under Unity and Godot glTF presets and re-imported, proving the two files have different vertex orientation",
+      "alt": "Two re-imports of a red-and-white radio mast with axis gizmos: the Unity copy stands with blue Z up, the Godot copy lies on the floor with green Y up and blue Z along the mast.",
       "witnessesFix": "Unity export_yup=True round-trips standing (x,y,z); Godot export_yup=False reimports lying along -Y as (x,-z,y); --same-axis exits 9; exporter RNA is guarded so a future kwarg rename fails loudly",
       "hero": "docs/gallery/assets/export-preset-axis-hero.webp",
       "preview": "examples/export-preset-axis/preview.webp",
