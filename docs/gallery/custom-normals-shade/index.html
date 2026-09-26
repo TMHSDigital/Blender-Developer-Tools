@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>custom-normals-shade — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <meta name="description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact)." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/custom-normals-shade/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="custom-normals-shade — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <meta property="og:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact)." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/custom-normals-shade/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three olive jerry cans with embossed X ribs, shaded flat, smooth and smooth-by-angle." />
+  <meta property="og:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="custom-normals-shade — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact)." />
+  <meta name="twitter:description" content="A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact)." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/custom-normals-shade-hero.webp" />
-  <meta name="twitter:image:alt" content="Three olive jerry cans with embossed X ribs, shaded flat, smooth and smooth-by-angle." />
+  <meta name="twitter:image:alt" content="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,27 +265,27 @@
   </div>
   <header class="hero">
     <h1>custom-normals-shade</h1>
-    <p>A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (1.407e-04, not float-exact).</p>
+    <p>A jerry can prop shaded three ways to prove the post-4.1 shading contract: hard edges are mesh data, landing exactly where the dihedral crosses. Face smooth flags plus a sharp_edge attribute, verified against an independently recomputed dihedral test, and per-loop custom normals surviving depsgraph evaluation within their int16 storage quantization (3.904e-05 over 8196 loops, not float-exact).</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three olive jerry cans with embossed X ribs, shaded flat, smooth and smooth-by-angle.">
-      <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with embossed X ribs, shaded flat, smooth and smooth-by-angle." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines.">
+      <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (188 of 388 edges over 3 meshes).</div>
+    <div class="callout"><span class="tag">witnesses</span> use_auto_smooth, use_custom_normals and calc_normals are AttributeError on BOTH 4.5 LTS and 5.1 - AI code still emits them. The legacy shade_auto_smooth operator CANCELS headless on 4.5 (asset load never finishes; mesh untouched; no exception) while 5.1 FINISHES with the Smooth by Angle NODES modifier. By-angle sharp sets match the independent dihedral recompute exactly (1304 of 4738 edges over 3 meshes).</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/custom-normals-shade/custom_normals_shade.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a jerry can prop — rounded-slab shell, pressed X ribs, spout and cap, three-post handle — and verifies the shading contract a game prop&#x27;s silhouette depends on: which edges read hard and which read smooth is mesh DATA, carried since Blender 4.1 by face smooth flags plus a <code>sharp_edge</code> attribute, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p>A runnable example that builds a jerry can prop — a pressed-steel shell whose front and back carry four raised rounded-triangle panels (the X is the channel between them), a weld-seam bead round the side band, a triple carry handle on welded feet, and a spout with red seal, domed cap, cam lever, hinge and locking pin; olive paint chipped to steel on exposed edges by a <code>wear</code> point attribute — and verifies the shading contract a game prop&#x27;s silhouette depends on: which edges read hard and which read smooth is mesh DATA, carried since Blender 4.1 by face smooth flags plus a <code>sharp_edge</code> attribute, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc neighbor:</strong> collision in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a> (the pair partner — same prop-pipeline audience), tangent space in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a> — normal maps are baked against exactly this shading, and engines harden or soften the same edges at ingest.</p>
 <p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on. It is not an engine exporter and does not claim engine/FiveM compatibility — it proves the mesh-data properties such an asset&#x27;s shading must have.</p>
 <p><strong>What it witnesses:</strong></p>
-<ul><li><strong>The legacy shading API is gone — on both supported versions.</strong> <code>use_auto_smooth</code>, <code>use_custom_normals</code>, and <code>calc_normals</code> are AttributeError on 4.5 LTS <em>and</em> 5.1. AI-generated Blender code still emits <code>mesh.use_auto_smooth = True</code> constantly; any script carrying that habit dies immediately, and this check keeps it dead.</li><li><strong>Shade-by-angle is exact.</strong> <code>mesh.set_sharp_from_angle(30°)</code> (which also sets the face smooth flags — probed on both versions) marks sharp exactly the edges whose <em>independently recomputed</em> dihedral angle crosses the threshold: Shell 48 of 72 edges, rib 12 of 12, neck 128 of 304 — an exact set match, not a count approximation.</li><li><strong>The evaluated shading matches the attribute&#x27;s promise.</strong> Through depsgraph evaluation, loop normals across a smooth edge are welded (deviation 0.0, tol 1e-3) and loop normals across a sharp edge carry their face normals split by exactly the dihedral (angle error 0.0 rad, tol 5e-3), all unit length (err 5.6e-08).</li><li><strong>Custom split normals survive depsgraph evaluation</strong> — with a quantization budget, not float precision: <code>normals_split_custom_set</code> stores per-loop normals in int16, so a 144-loop round-trip reads back within <strong>1.407e-04</strong> (tol 2e-4), unit length within 1.1e-07. Asserting float-exact custom normals is a real bug this check catches.</li><li><strong>The divergence: the legacy <code>shade_auto_smooth</code> OPERATOR is a version-split trap.</strong> It builds the Smooth-by-Angle node-group modifier from a bundled asset. Headless on <strong>4.5 LTS the asset load never finishes</strong>: the op returns <code>{&#x27;CANCELLED&#x27;}</code> — no exception — and the mesh stays <strong>untouched</strong> (measured: 0 smooth faces, 0 modifiers). Any script that ignores the return set ships flat shading and never knows. On <strong>5.1</strong> it FINISHES and adds the <code>Smooth by Angle</code> NODES modifier. The portable path is the data API above, version-gated here explicitly.</li></ul>
-<p><strong>What each check catches on failure:</strong> author/audit threshold drift (probe: sharp marks applied at 20° but audited at 30°, exit 5, 4 extra edges); the two halves of the contract out of sync (probe: <code>sharp_edge</code> set but face smooth flags lost, exit 6, smooth-edge loops split by 3.83e-01); float-exactness assumed of custom normals (probe: tolerance 1e-6, exit 7, measured 1.407e-04); and any future version that resurrects the legacy API or changes the operator&#x27;s headless behavior (exit 3/8).</p>
-<p><strong>Version witness:</strong> every value above is identical on Blender 4.5.11 LTS and 5.1.2 except the <code>shade_auto_smooth</code> operator behavior, which is asserted per version (CANCELLED + untouched on 4.5, FINISHED + NODES modifier on 5.1).</p>
-<p>The render shows the same can shaded three ways — flat (faceted corners), smooth-everywhere (the smeared AI bug: ribs melt, highlights warp at the rim), and by-angle (the contract: smooth walls, crisp edges) — under a strip light whose reflection exposes every normal discontinuity.</p>
+<ul><li><strong>The legacy shading API is gone — on both supported versions.</strong> <code>use_auto_smooth</code>, <code>use_custom_normals</code>, and <code>calc_normals</code> are AttributeError on 4.5 LTS <em>and</em> 5.1. AI-generated Blender code still emits <code>mesh.use_auto_smooth = True</code> constantly; any script carrying that habit dies immediately, and this check keeps it dead.</li><li><strong>Shade-by-angle is exact.</strong> <code>mesh.set_sharp_from_angle(30°)</code> (which also sets the face smooth flags — probed on both versions) marks sharp exactly the edges whose <em>independently recomputed</em> dihedral angle crosses the threshold: Shell 1144 of 4098 edges, Handle 32 of 368, Neck 128 of 272 (1304 of 4738) — an exact set match, not a count approximation.</li><li><strong>The evaluated shading matches the attribute&#x27;s promise.</strong> Through depsgraph evaluation, loop normals across a smooth edge are welded (deviation 0.0, tol 1e-3) and loop normals across a sharp edge are split by the dihedral (angle error 1.898e-03 rad, tol 5e-3 — the curved side band and the panels&#x27; rounded wall corners average a fan whose facets step at most 22.5 and 10 deg), all unit length (err 1.0e-07).</li><li><strong>Custom split normals survive depsgraph evaluation</strong> — with a quantization budget, not float precision: <code>normals_split_custom_set</code> stores per-loop normals in int16, so an 8196-loop round-trip reads back within <strong>3.904e-05</strong> (tol 2e-4), unit length within 1.7e-07. Asserting float-exact custom normals is a real bug this check catches. Each corner requests its face normal tilted 20 deg toward the corner bisector. The pattern matters: Blender&#x27;s lnor encoder merges requests within one fan that sit closer than ~0.81 deg and snaps an in-plane angle under 0.81 deg to zero. On this shell an index-swept pattern measured the merge (1.38e-02) and a 144-direction cycle hit the snap on 13 corners (9.1e-03). Neither is storage precision, so the check keeps clear of both.</li><li><strong>The divergence: the legacy <code>shade_auto_smooth</code> OPERATOR is a version-split trap.</strong> It builds the Smooth-by-Angle node-group modifier from a bundled asset. Headless on <strong>4.5 LTS the asset load never finishes</strong>: the op returns <code>{&#x27;CANCELLED&#x27;}</code> — no exception — and the mesh stays <strong>untouched</strong> (measured: 0 smooth faces, 0 modifiers). Any script that ignores the return set ships flat shading and never knows. On <strong>5.1</strong> it FINISHES and adds the <code>Smooth by Angle</code> NODES modifier. The portable path is the data API above, version-gated here explicitly.</li></ul>
+<p><strong>What each check catches on failure:</strong> author/audit threshold drift (probe: sharp marks applied at 20° but audited at 30°, exit 5, 48 extra edges on the shell); the two halves of the contract out of sync (probe: <code>sharp_edge</code> set but face smooth flags lost, exit 6, smooth-edge loops split by 3.902e-01); float-exactness assumed of custom normals (probe: tolerance 1e-6, exit 7, measured 3.904e-05); and any future version that resurrects the legacy API or changes the operator&#x27;s headless behavior (exit 3/8). The render path adds the Layer 1 gates: framing (exit 10) and asset quality (exit 11).</p>
+<p><strong>Version witness:</strong> every value above is identical on Blender 4.5.11 LTS, 5.1.2 and 5.2.1 LTS except the <code>shade_auto_smooth</code> operator behavior, which is asserted per version (CANCELLED + untouched on 4.5, FINISHED + NODES modifier on 5.1 and 5.2).</p>
+<p>The render shows three fresh builds of the same can, one per shading treatment. Left, flat: the side-band corners, cap and handle break into facets. Middle, smooth-everywhere (the shade-smooth-and-forget AI habit): the flat fields smear into gradients and the pressed panels go pillowy. Right, by-angle (the contract): crisp creases and smooth rounds, with the <code>sharp_edge</code> attribute read back from the mesh and traced as thin cyan lines, so the viewer sees exactly which edges the data marked hard. A low strip light makes the highlight shapes diverge between the three.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python custom_normals_shade.py --
@@ -298,7 +298,7 @@ blender --background --python custom_normals_shade.py -- --output cans.png
 blender --background --python custom_normals_shade.py -- --output cans.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Legacy shading API present, or modern path missing</td></tr><tr><td>4</td><td>Non-manifold edges (dihedral test undefined)</td></tr><tr><td>5</td><td>Sharp set ≠ independent dihedral (<code>--mismatch-angle</code> lands here)</td></tr><tr><td>6</td><td>Evaluated loop normals not welded/split as the sharp set promises</td></tr><tr><td>7</td><td>Custom split normals lost or dequantized in evaluation</td></tr><tr><td>8</td><td><code>shade_auto_smooth</code> operator behavior drifted from the version split</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Legacy shading API present, or modern path missing</td></tr><tr><td>4</td><td>Non-manifold edges (dihedral test undefined)</td></tr><tr><td>5</td><td>Sharp set ≠ independent dihedral (<code>--mismatch-angle</code> lands here)</td></tr><tr><td>6</td><td>Evaluated loop normals not welded/split as the sharp set promises</td></tr><tr><td>7</td><td>Custom split normals lost or dequantized in evaluation</td></tr><tr><td>8</td><td><code>shade_auto_smooth</code> operator behavior drifted from the version split</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Render path: Layer 1 framing violation (<code>gallery_framing</code>)</td></tr><tr><td>11</td><td>Render path: asset-quality floor violation (<code>gallery_asset_quality</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--mismatch-angle</code>.</p>
     </section>
     <section class="detail-section src">
@@ -327,7 +327,9 @@ this example asserts what the supported versions actually expose:
                   carry their face normals (split by the dihedral)
   custom normals— per-loop normals set with `normals_split_custom_set`
                   survive depsgraph evaluation within the int16 storage
-                  quantization (~7.5e-05 measured, tol 2e-4), unit length
+                  quantization (3.9e-05 measured over 8196 loops, tol 2e-4),
+                  unit length; the request pattern stays clear of the
+                  encoder&#x27;s 0.81-deg merge/snap threshold (see that check)
   divergence    — the legacy `shade_auto_smooth` OPERATOR needs the bundled
                   Smooth-by-Angle node-group asset: headless on 4.5 LTS it
                   returns {&#x27;CANCELLED&#x27;} (&quot;Asset loading is unfinished&quot;) and
@@ -340,15 +342,25 @@ dihedral set, so the sharp-set match fails. That is the falsifier
 (``--same-axis`` in export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
-check. Pass --output to also render a still (the same can shaded flat /
-smooth-everywhere / by-angle, so a broken path reads as faceting or smear):
+check. Pass --output to also render a still: three fresh builds of the can
+shaded flat (faceted corners, cap and handle), smooth-everywhere (the flat
+fields smear, the pressed panels go pillowy) and by-angle (crisp creases,
+smooth rounds), with the by-angle can&#x27;s `sharp_edge` set read back from the
+mesh and traced as thin cyan lines. The render path is gated by
+gallery_framing (exit 10) and gallery_asset_quality (exit 11):
 
     blender --background --python custom_normals_shade.py --                 # check only
     blender --background --python custom_normals_shade.py -- --mismatch-angle
     blender --background --python custom_normals_shade.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
-<span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+
+<span class="c"># Shared Layer 1 framing + asset-quality gates (render path only) — see</span>
+<span class="c"># gallery_framing.py for the import contract.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
 
 ANGLE_DEG = <span class="n">30.0</span>          <span class="c"># shade-by-angle threshold</span>
 ANGLE = math.radians(ANGLE_DEG)
@@ -356,15 +368,42 @@ TOL_NORMAL = <span class="n">2e-4</span>         <span class="c"># custom-normal
 TOL_UNIT = <span class="n">1e-6</span>           <span class="c"># unit-length tolerance for evaluated normals (measured 4.5e-08)</span>
 TOL_SMOOTH = <span class="n">1e-3</span>         <span class="c"># loop-normal equality across a welded (smooth) edge</span>
 TOL_SHARP = <span class="n">5e-3</span>          <span class="c"># radians: split-normal angle vs dihedral across a sharp edge</span>
+CUSTOM_TILT = math.radians(<span class="n">20.0</span>)  <span class="c"># custom-normal round-trip request (see that check)</span>
 
 <span class="c"># ---------------------------------------------------------------------------</span>
-<span class="c"># Prop construction. A 20-unit jerry can: rounded-slab shell, pressed X ribs</span>
-<span class="c"># floating on both faces, spout neck + cap, three-post carry handle. All</span>
-<span class="c"># dimensions invented for this prop; ribs are floater prisms, the game-prop</span>
-<span class="c"># norm — every checked mesh is itself closed and manifold.</span>
+<span class="c"># Prop construction. A 20-litre-style jerry can in scene units: a pressed</span>
+<span class="c"># steel shell (rounded side band, X-stamped front and back faces: four</span>
+<span class="c"># raised rounded-triangle panels with 45-degree walls, the X is the channel</span>
+<span class="c"># between them), a weld-seam bead round the band, a triple carry handle on</span>
+<span class="c"># welded feet, and a spout with red seal, cap, cam lever, hinge and locking</span>
+<span class="c"># pin. Every part is its own closed manifold mesh (the game-prop norm), and</span>
+<span class="c"># the facet angles are chosen for the by-angle contract: curved surfaces</span>
+<span class="c"># step at &lt;= 22.5 deg (smooth under the 30 deg threshold), pressed creases</span>
+<span class="c"># break at 45 or 90 deg (sharp), nothing sits near 30.</span>
+<span class="c">#</span>
+<span class="c"># A `wear` POINT attribute (1 on exposed convex edges, 0 a support ring</span>
+<span class="c"># away) drives the paint-chip mask in the material; support rings are</span>
+<span class="c"># coplanar, so they add no shading break and no dihedral.</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
-SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n">1.8</span>, <span class="n">0.62</span>, <span class="n">0.28</span>
+W, H, D = <span class="n">1.30</span>, <span class="n">1.80</span>, <span class="n">0.62</span>      <span class="c"># shell width (X), height (Z), depth (Y)</span>
+R = <span class="n">0.24</span>                        <span class="c"># front-view corner radius of the side band</span>
+CORNER_SEGS = <span class="n">4</span>                 <span class="c"># 22.5 deg facets: smooth under the threshold</span>
+EDGE_BAND = <span class="n">0.07</span>                <span class="c"># side-band wear ring distance from each face</span>
+FACE_BORDER = <span class="n">0.04</span>              <span class="c"># flat border inside the face outline</span>
+PANEL_MARGIN = <span class="n">0.015</span>
+CHANNEL = <span class="n">0.045</span>                 <span class="c"># half-width of the X channel between panels</span>
+PANEL_R = <span class="n">0.09</span>                  <span class="c"># panel base corner radius</span>
+PRESS_H = <span class="n">0.04</span>                  <span class="c"># panel height; 45 deg walls (run == rise)</span>
+ARC_STEP = <span class="n">10.0</span>                 <span class="c"># max degrees per panel-corner facet</span>
+FIELD_STEP = <span class="n">0.08</span>               <span class="c"># max straight-run edge length (fill quality)</span>
+WEAR = <span class="s">&quot;wear&quot;</span>
+
+HANDLE_Y = <span class="n">0.10</span>
+HANDLE_X = (-<span class="n">0.50</span>, -<span class="n">0.22</span>, <span class="n">0.06</span>)  <span class="c"># left leg, centre post, right leg</span>
+HANDLE_TOP = H + <span class="n">0.26</span>
+SPOUT_AT = (<span class="n">0.27</span>, -<span class="n">0.07</span>)
+SPOUT_TILT = <span class="n">12.0</span>               <span class="c"># degrees, leaning out over the corner</span>
 
 
 <span class="k">def</span> signed_volume(me):
@@ -378,9 +417,11 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     <span class="k">return</span> vol
 
 
-<span class="k">def</span> finish_mesh(name, bm):
+<span class="k">def</span> finish_mesh(name, bm, matrix=<span class="k">None</span>):
     me = bpy.data.meshes.new(name)
     <span class="k">try</span>:
+        <span class="k">if</span> matrix <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            bmesh.ops.transform(bm, matrix=matrix, verts=bm.verts)
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(me)
     <span class="k">finally</span>:
@@ -393,119 +434,300 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     <span class="k">return</span> obj
 
 
-<span class="k">def</span> rounded_rect_profile(w, h, r, segs):
-    <span class="s">&quot;&quot;&quot;(x, z) loop of a rounded rectangle, z from 0 to h, CCW seen from -Y.&quot;&quot;&quot;</span>
+<span class="k">def</span> rrect(inset, segs=CORNER_SEGS):
+    <span class="s">&quot;&quot;&quot;(x, z) loop of the shell&#x27;s front-view rounded rectangle, inset by
+    `inset`, CCW in (x, z). Corners include both arc ends, so the straight
+    runs between them are exactly axis-aligned; the runs are split every
+    ~FIELD_STEP so the pressed-face fill triangulates without slivers.&quot;&quot;&quot;</span>
+    rr = R - inset
+    cx = W / <span class="n">2</span> - R
+    corners = ((cx, R, -<span class="n">90</span>), (cx, H - R, <span class="n">0</span>), (-cx, H - R, <span class="n">90</span>), (-cx, R, <span class="n">180</span>))
     pts = []
-    <span class="k">for</span> cx, cz, a0 <span class="k">in</span> ((w / <span class="n">2</span> - r, r, -<span class="n">90</span>), (w / <span class="n">2</span> - r, h - r, <span class="n">0</span>),
-                       (-(w / <span class="n">2</span> - r), h - r, <span class="n">90</span>), (-(w / <span class="n">2</span> - r), r, <span class="n">180</span>)):
-        <span class="k">for</span> i <span class="k">in</span> range(segs):
+    <span class="k">for</span> k, (ccx, ccz, a0) <span class="k">in</span> enumerate(corners):
+        <span class="k">for</span> i <span class="k">in</span> range(segs + <span class="n">1</span>):
             a = math.radians(a0 + <span class="n">90.0</span> * i / segs)
-            pts.append((cx + r * math.cos(a), cz + r * math.sin(a)))
+            pts.append((ccx + rr * math.cos(a), ccz + rr * math.sin(a)))
+        nx, nz, b0 = corners[(k + <span class="n">1</span>) % <span class="n">4</span>]
+        q = (nx + rr * math.cos(math.radians(b0)), nz + rr * math.sin(math.radians(b0)))
+        p0 = pts[-<span class="n">1</span>]
+        cuts = max(<span class="n">1</span>, math.ceil(math.hypot(q[<span class="n">0</span>] - p0[<span class="n">0</span>], q[<span class="n">1</span>] - p0[<span class="n">1</span>]) / FIELD_STEP))
+        pts.extend((p0[<span class="n">0</span>] + (q[<span class="n">0</span>] - p0[<span class="n">0</span>]) * t / cuts, p0[<span class="n">1</span>] + (q[<span class="n">1</span>] - p0[<span class="n">1</span>]) * t / cuts)
+                   <span class="k">for</span> t <span class="k">in</span> range(<span class="n">1</span>, cuts))
     <span class="k">return</span> pts
 
 
-<span class="k">def</span> build_shell():
-    <span class="s">&quot;&quot;&quot;Loft the rounded-rect profile along Y; caps are the end ngons.&quot;&quot;&quot;</span>
-    prof = rounded_rect_profile(SHELL_W, SHELL_H, SHELL_R, <span class="n">6</span>)
-    n = len(prof)
-    y0, y1 = -SHELL_D / <span class="n">2</span>, SHELL_D / <span class="n">2</span>
-    bm = bmesh.new()
-    front = [bm.verts.new((x, y0, z)) <span class="k">for</span> x, z <span class="k">in</span> prof]
-    back = [bm.verts.new((x, y1, z)) <span class="k">for</span> x, z <span class="k">in</span> prof]
+<span class="k">def</span> _ccw(poly):
+    area = sum(poly[i][<span class="n">0</span>] * poly[(i + <span class="n">1</span>) % len(poly)][<span class="n">1</span>]
+               - poly[(i + <span class="n">1</span>) % len(poly)][<span class="n">0</span>] * poly[i][<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> range(len(poly)))
+    <span class="k">return</span> poly <span class="k">if</span> area &gt; <span class="n">0</span> <span class="k">else</span> poly[::-<span class="n">1</span>]
+
+
+<span class="k">def</span> _inset_poly(poly, d):
+    <span class="s">&quot;&quot;&quot;Convex CCW polygon with every edge moved inward by d.&quot;&quot;&quot;</span>
+    n = len(poly)
+    lines = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        p, q = Vector(poly[i]), Vector(poly[(i + <span class="n">1</span>) % n])
+        t = (q - p).normalized()
+        lines.append((p + Vector((-t.y, t.x)) * d, t))
+    out = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        (p1, t1), (p2, t2) = lines[i - <span class="n">1</span>], lines[i]
+        den = t1.x * t2.y - t1.y * t2.x
+        s = ((p2.x - p1.x) * t2.y - (p2.y - p1.y) * t2.x) / den
+        out.append(p1 + t1 * s)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> rounded_outline(tri, off, r):
+    <span class="s">&quot;&quot;&quot;Arc samples [(core point, angle)] of a convex polygon inset by `off`
+    with its corners rounded to radius r. Sampling a smaller radius with
+    the same list gives a concentric outline (a 45-deg wall or a flat ring
+    between them).&quot;&quot;&quot;</span>
+    core = _inset_poly(_ccw(tri), off + r)
+    n = len(core)
+    samples = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        t_in = (core[i] - core[i - <span class="n">1</span>]).normalized()
+        t_out = (core[(i + <span class="n">1</span>) % n] - core[i]).normalized()
+        a0 = math.atan2(-t_in.x, t_in.y)          <span class="c"># outward normal, incoming edge</span>
+        a1 = math.atan2(-t_out.x, t_out.y)        <span class="c"># outward normal, outgoing edge</span>
+        sweep = (a1 - a0) % (<span class="n">2.0</span> * math.pi)
+        k = max(<span class="n">1</span>, math.ceil(math.degrees(sweep) / ARC_STEP))
+        samples.extend((core[i], a0 + sweep * j / k) <span class="k">for</span> j <span class="k">in</span> range(k + <span class="n">1</span>))
+        run = core[(i + <span class="n">1</span>) % n] - core[i]
+        cuts = max(<span class="n">1</span>, math.ceil(run.length / FIELD_STEP))
+        samples.extend((core[i] + run * (t / cuts), a1) <span class="k">for</span> t <span class="k">in</span> range(<span class="n">1</span>, cuts))
+    <span class="k">return</span> samples
+
+
+<span class="k">def</span> panel_triangles():
+    <span class="s">&quot;&quot;&quot;The four stamped panels; the X is what is left between them.&quot;&quot;&quot;</span>
+    a = W / <span class="n">2</span> - FACE_BORDER - PANEL_MARGIN
+    zt, zb, zc = H - FACE_BORDER - PANEL_MARGIN, FACE_BORDER + PANEL_MARGIN, H / <span class="n">2</span>
+    <span class="k">return</span> [((-a, zt), (<span class="n">0.0</span>, zc), (a, zt)), ((-a, zb), (a, zb), (<span class="n">0.0</span>, zc)),
+            ((-a, zt), (-a, zb), (<span class="n">0.0</span>, zc)), ((a, zb), (a, zt), (<span class="n">0.0</span>, zc))]
+
+
+<span class="k">def</span> pressed_face(bm, wl, outline, y0, s):
+    <span class="s">&quot;&quot;&quot;Front (s=-1) or back (s=+1) face: flat border ring, four raised
+    panels, and a triangle fill of the flat field between them.&quot;&quot;&quot;</span>
+    inner = [bm.verts.new((x, y0, z)) <span class="k">for</span> x, z <span class="k">in</span> rrect(FACE_BORDER)]
+    n = len(inner)
     <span class="k">for</span> i <span class="k">in</span> range(n):
         j = (i + <span class="n">1</span>) % n
-        bm.faces.new((front[i], back[i], back[j], front[j]))
-    bm.faces.new(front)
-    bm.faces.new(back)
-    <span class="k">return</span> finish_mesh(<span class="s">&quot;Shell&quot;</span>, bm)
+        bm.faces.new((outline[i], outline[j], inner[j], inner[i]))
+    fill = [bm.edges.get((inner[i], inner[(i + <span class="n">1</span>) % n])) <span class="k">for</span> i <span class="k">in</span> range(n)]
+    <span class="k">for</span> tri <span class="k">in</span> panel_triangles():
+        samples = rounded_outline(tri, CHANNEL, PANEL_R)
+
+        <span class="k">def</span> ring(r, lift, wear):
+            vs = []
+            <span class="k">for</span> c, a <span class="k">in</span> samples:
+                v = bm.verts.new((c.x + r * math.cos(a), y0 + s * lift, c.y + r * math.sin(a)))
+                v[wl] = wear
+                vs.append(v)
+            <span class="k">return</span> vs
+        base = ring(PANEL_R, <span class="n">0.0</span>, <span class="n">0.15</span>)
+        top = ring(PANEL_R - PRESS_H, PRESS_H, <span class="n">1.0</span>)
+        top_in = ring(PANEL_R - PRESS_H - <span class="n">0.022</span>, PRESS_H, <span class="n">0.0</span>)
+        m = len(base)
+        <span class="k">for</span> i <span class="k">in</span> range(m):
+            j = (i + <span class="n">1</span>) % m
+            bm.faces.new((base[i], base[j], top[j], top[i]))
+            bm.faces.new((top[i], top[j], top_in[j], top_in[i]))
+        bm.faces.new(top_in)
+        fill += [bm.edges.get((base[i], base[(i + <span class="n">1</span>) % m])) <span class="k">for</span> i <span class="k">in</span> range(m)]
+    bmesh.ops.triangle_fill(bm, use_beauty=<span class="k">True</span>, use_dissolve=<span class="k">False</span>,
+                            edges=fill, normal=(<span class="n">0.0</span>, s, <span class="n">0.0</span>))
 
 
-<span class="k">def</span> build_rib(name, p0, p1, face_y, outward):
-    <span class="s">&quot;&quot;&quot;Trapezoid-section pressed rib from p0 to p1 (x, z), raised off the
-    face plane by `outward` (-1 front, +1 back).&quot;&quot;&quot;</span>
-    wb, wt, hgt = <span class="n">0.09</span>, <span class="n">0.06</span>, <span class="n">0.045</span>
-    d = Vector((p1[<span class="n">0</span>] - p0[<span class="n">0</span>], <span class="n">0.0</span>, p1[<span class="n">1</span>] - p0[<span class="n">1</span>])).normalized()
-    side = Vector((-d.z, <span class="n">0.0</span>, d.x))
-    up = Vector((<span class="n">0.0</span>, outward, <span class="n">0.0</span>))
+<span class="k">def</span> build_shell(name):
+    <span class="s">&quot;&quot;&quot;Side band lofted along Y through wear-ring stations, capped by the
+    two pressed faces. The face/band edge is a true 90-deg break.&quot;&quot;&quot;</span>
     bm = bmesh.new()
-    ends = []
-    <span class="k">for</span> px, pz <span class="k">in</span> (p0, p1):
-        c = Vector((px, face_y, pz))
-        ends.append([bm.verts.new(c - side * wb), bm.verts.new(c + side * wb),
-                     bm.verts.new(c + side * wt + up * hgt),
-                     bm.verts.new(c - side * wt + up * hgt)])
-    a, b = ends
-    bm.faces.new((a[<span class="n">0</span>], a[<span class="n">1</span>], a[<span class="n">2</span>], a[<span class="n">3</span>]))
-    bm.faces.new((b[<span class="n">1</span>], b[<span class="n">0</span>], b[<span class="n">3</span>], b[<span class="n">2</span>]))
-    bm.faces.new((a[<span class="n">1</span>], b[<span class="n">1</span>], b[<span class="n">2</span>], a[<span class="n">2</span>]))
-    bm.faces.new((a[<span class="n">3</span>], b[<span class="n">3</span>], b[<span class="n">0</span>], a[<span class="n">0</span>]))
-    bm.faces.new((a[<span class="n">0</span>], b[<span class="n">0</span>], b[<span class="n">1</span>], a[<span class="n">1</span>]))
-    bm.faces.new((a[<span class="n">2</span>], b[<span class="n">2</span>], b[<span class="n">3</span>], a[<span class="n">3</span>]))
+    wl = bm.verts.layers.float.new(WEAR)
+    prof = rrect(<span class="n">0.0</span>)
+    n = len(prof)
+    rings = []
+    <span class="k">for</span> y, wear <span class="k">in</span> ((-D / <span class="n">2</span>, <span class="n">1.0</span>), (-D / <span class="n">2</span> + EDGE_BAND, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>),
+                    (D / <span class="n">2</span> - EDGE_BAND, <span class="n">0.0</span>), (D / <span class="n">2</span>, <span class="n">1.0</span>)):
+        ring = [bm.verts.new((x, y, z)) <span class="k">for</span> x, z <span class="k">in</span> prof]
+        <span class="k">for</span> v <span class="k">in</span> ring:
+            v[wl] = wear
+        rings.append(ring)
+    <span class="k">for</span> ra, rb <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            bm.faces.new((ra[i], ra[j], rb[j], rb[i]))
+    pressed_face(bm, wl, rings[<span class="n">0</span>], -D / <span class="n">2</span>, -<span class="n">1.0</span>)
+    pressed_face(bm, wl, rings[-<span class="n">1</span>], D / <span class="n">2</span>, <span class="n">1.0</span>)
     <span class="k">return</span> finish_mesh(name, bm)
 
 
-<span class="k">def</span> lathe(name, profile, segments):
-    <span class="s">&quot;&quot;&quot;Spin an (r, z) profile around Z; r == 0 ends become poles.&quot;&quot;&quot;</span>
+<span class="k">def</span> sweep(name, path, section, axis, closed=<span class="k">False</span>, wear=<span class="n">0.0</span>, matrix=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Sweep a closed 2D section (u along the in-plane normal, v along
+    `axis`) down a path lying in the plane normal to `axis`. Open paths are
+    capped with ngons.&quot;&quot;&quot;</span>
+    axis = Vector(axis)
+    pts = [Vector(p) <span class="k">for</span> p <span class="k">in</span> path]
+    n = len(pts)
     bm = bmesh.new()
+    wl = bm.verts.layers.float.new(WEAR)
+    rings = []
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(pts):
+        <span class="k">if</span> closed:
+            t = (pts[(i + <span class="n">1</span>) % n] - pts[i - <span class="n">1</span>])
+        <span class="k">else</span>:
+            t = pts[min(i + <span class="n">1</span>, n - <span class="n">1</span>)] - pts[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        nrm = axis.cross(t.normalized()).normalized()   <span class="c"># outward for CCW paths</span>
+        ring = [bm.verts.new(p + nrm * u + axis * v) <span class="k">for</span> u, v <span class="k">in</span> section]
+        <span class="k">for</span> v <span class="k">in</span> ring:
+            v[wl] = wear
+        rings.append(ring)
+    k = len(section)
+    <span class="k">for</span> i <span class="k">in</span> range(n <span class="k">if</span> closed <span class="k">else</span> n - <span class="n">1</span>):
+        ra, rb = rings[i], rings[(i + <span class="n">1</span>) % n]
+        <span class="k">for</span> j <span class="k">in</span> range(k):
+            jj = (j + <span class="n">1</span>) % k
+            bm.faces.new((ra[j], ra[jj], rb[jj], rb[j]))
+    <span class="k">if</span> <span class="k">not</span> closed:
+        bm.faces.new(rings[<span class="n">0</span>])
+        bm.faces.new(rings[-<span class="n">1</span>][::-<span class="n">1</span>])
+    <span class="k">return</span> finish_mesh(name, bm, matrix)
+
+
+<span class="k">def</span> circle(r, segs=<span class="n">16</span>):
+    <span class="k">return</span> [(r * math.cos(<span class="n">2</span> * math.pi * i / segs), r * math.sin(<span class="n">2</span> * math.pi * i / segs))
+            <span class="k">for</span> i <span class="k">in</span> range(segs)]
+
+
+<span class="k">def</span> lathe(name, profile, segments=<span class="n">16</span>, closed=<span class="k">False</span>, wear=<span class="k">None</span>, matrix=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Spin an (r, z) profile around Z; r == 0 ends become poles, a closed
+    profile makes a ring. `wear` is an optional per-profile-point list.&quot;&quot;&quot;</span>
+    wear = list(wear) <span class="k">if</span> wear <span class="k">else</span> [<span class="n">0.0</span>] * len(profile)
+    bm = bmesh.new()
+    wl = bm.verts.layers.float.new(WEAR)
     bot = top = <span class="k">None</span>
-    <span class="k">if</span> profile[<span class="n">0</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+    <span class="k">if</span> <span class="k">not</span> closed <span class="k">and</span> profile[<span class="n">0</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
         bot = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[<span class="n">0</span>][<span class="n">1</span>]))
-        profile = profile[<span class="n">1</span>:]
-    <span class="k">if</span> profile[-<span class="n">1</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
+        profile, wear = profile[<span class="n">1</span>:], wear[<span class="n">1</span>:]
+    <span class="k">if</span> <span class="k">not</span> closed <span class="k">and</span> profile[-<span class="n">1</span>][<span class="n">0</span>] == <span class="n">0.0</span>:
         top = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[-<span class="n">1</span>][<span class="n">1</span>]))
-        profile = profile[:-<span class="n">1</span>]
+        profile, wear = profile[:-<span class="n">1</span>], wear[:-<span class="n">1</span>]
     rings = []
     <span class="k">for</span> i <span class="k">in</span> range(segments):
         a = <span class="n">2.0</span> * math.pi * i / segments
-        rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
-                      <span class="k">for</span> r, z <span class="k">in</span> profile])
+        ring = [bm.verts.new((r * math.cos(a), r * math.sin(a), z)) <span class="k">for</span> r, z <span class="k">in</span> profile]
+        <span class="k">for</span> v, w <span class="k">in</span> zip(ring, wear):
+            v[wl] = w
+        rings.append(ring)
+    m = len(profile)
     <span class="k">for</span> i <span class="k">in</span> range(segments):
         j = (i + <span class="n">1</span>) % segments
-        <span class="k">for</span> k <span class="k">in</span> range(len(profile) - <span class="n">1</span>):
-            bm.faces.new((rings[i][k], rings[j][k], rings[j][k + <span class="n">1</span>], rings[i][k + <span class="n">1</span>]))
+        <span class="k">for</span> k <span class="k">in</span> range(m <span class="k">if</span> closed <span class="k">else</span> m - <span class="n">1</span>):
+            kk = (k + <span class="n">1</span>) % m
+            bm.faces.new((rings[i][k], rings[j][k], rings[j][kk], rings[i][kk]))
         <span class="k">if</span> bot <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
             bm.faces.new((rings[j][<span class="n">0</span>], rings[i][<span class="n">0</span>], bot))
         <span class="k">if</span> top <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
             bm.faces.new((rings[i][-<span class="n">1</span>], rings[j][-<span class="n">1</span>], top))
-    <span class="k">return</span> finish_mesh(name, bm)
+    <span class="k">return</span> finish_mesh(name, bm, matrix)
 
 
-<span class="k">def</span> build_jerry_can():
-    <span class="s">&quot;&quot;&quot;All parts at world placement; returns {&quot;shell&quot;, &quot;rib&quot;, &quot;neck&quot;, &quot;parts&quot;}.&quot;&quot;&quot;</span>
-    shell = build_shell()
+<span class="k">def</span> extrude_profile(name, poly, thickness, bevel, matrix=<span class="k">None</span>, wear=<span class="n">0.6</span>):
+    <span class="s">&quot;&quot;&quot;A flat plate from an (x, z) outline, thickness along Y, every edge
+    chamfered — the cam lever.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    wl = bm.verts.layers.float.new(WEAR)
+    <span class="k">try</span>:
+        front = [bm.verts.new((x, -thickness / <span class="n">2</span>, z)) <span class="k">for</span> x, z <span class="k">in</span> poly]
+        back = [bm.verts.new((x, thickness / <span class="n">2</span>, z)) <span class="k">for</span> x, z <span class="k">in</span> poly]
+        n = len(poly)
+        <span class="k">for</span> i <span class="k">in</span> range(n):
+            j = (i + <span class="n">1</span>) % n
+            bm.faces.new((front[i], front[j], back[j], back[i]))
+        bm.faces.new(front)
+        bm.faces.new(back[::-<span class="n">1</span>])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">1</span>,
+                        affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+        <span class="k">for</span> v <span class="k">in</span> bm.verts:
+            v[wl] = wear
+    <span class="k">except</span> Exception:
+        bm.free()
+        <span class="k">raise</span>
+    <span class="k">return</span> finish_mesh(name, bm, matrix)
+
+
+<span class="k">def</span> arc(cx, cz, r, a0, a1, steps):
+    <span class="k">return</span> [(cx + r * math.cos(math.radians(a0 + (a1 - a0) * i / steps)),
+             cz + r * math.sin(math.radians(a0 + (a1 - a0) * i / steps)))
+            <span class="k">for</span> i <span class="k">in</span> range(steps + <span class="n">1</span>)]
+
+
+<span class="k">def</span> build_jerry_can(suffix=<span class="s">&quot;&quot;</span>):
+    <span class="s">&quot;&quot;&quot;All parts at world placement; returns {&quot;shell&quot;, &quot;handle&quot;, &quot;neck&quot;, &quot;parts&quot;}.&quot;&quot;&quot;</span>
+    <span class="k">def</span> nm(base):
+        <span class="k">return</span> base + suffix
+
+    shell = build_shell(nm(<span class="s">&quot;Shell&quot;</span>))
     parts = [shell]
 
-    ribs = []
-    inset = [(<span class="n">0.46</span>, <span class="n">0.22</span>), (<span class="n">0.46</span>, <span class="n">1.58</span>)]
-    specs = [((inset[<span class="n">0</span>], ( -inset[<span class="n">0</span>][<span class="n">0</span>], inset[<span class="n">1</span>][<span class="n">1</span>])), <span class="s">&quot;RibDiagA&quot;</span>),
-             (((-inset[<span class="n">0</span>][<span class="n">0</span>], inset[<span class="n">0</span>][<span class="n">1</span>]), inset[<span class="n">1</span>]), <span class="s">&quot;RibDiagB&quot;</span>),
-             (((<span class="n">0.0</span>, <span class="n">0.18</span>), (<span class="n">0.0</span>, <span class="n">1.62</span>)), <span class="s">&quot;RibVert&quot;</span>)]
-    <span class="k">for</span> fy, out, tag <span class="k">in</span> ((-SHELL_D / <span class="n">2</span>, -<span class="n">1.0</span>, <span class="s">&quot;F&quot;</span>), (SHELL_D / <span class="n">2</span>, <span class="n">1.0</span>, <span class="s">&quot;B&quot;</span>)):
-        <span class="k">for</span> (p0, p1), rn <span class="k">in</span> specs:
-            ribs.append(build_rib(<span class="s">f&quot;</span>{rn}{tag}<span class="s">&quot;</span>, p0, p1, fy, out))
-    parts.extend(ribs)
+    <span class="c"># weld seam: a chamfered bead swept round the side band at mid-depth</span>
+    bead = [(-<span class="n">0.012</span>, -<span class="n">0.028</span>), (<span class="n">0.010</span>, -<span class="n">0.028</span>), (<span class="n">0.021</span>, -<span class="n">0.012</span>),
+            (<span class="n">0.021</span>, <span class="n">0.012</span>), (<span class="n">0.010</span>, <span class="n">0.028</span>), (-<span class="n">0.012</span>, <span class="n">0.028</span>)]
+    seam_path = [(x, <span class="n">0.0</span>, z) <span class="k">for</span> x, z <span class="k">in</span> rrect(<span class="n">0.0</span>)]
+    parts.append(sweep(nm(<span class="s">&quot;WeldSeam&quot;</span>), seam_path, bead, (<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>),
+                       closed=<span class="k">True</span>, wear=<span class="n">0.7</span>))
 
-    neck = lathe(<span class="s">&quot;Neck&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.21</span>, <span class="n">0.0</span>), (<span class="n">0.21</span>, <span class="n">0.05</span>), (<span class="n">0.175</span>, <span class="n">0.07</span>),
-                          (<span class="n">0.165</span>, <span class="n">0.10</span>), (<span class="n">0.165</span>, <span class="n">0.16</span>), (<span class="n">0.185</span>, <span class="n">0.17</span>),
-                          (<span class="n">0.185</span>, <span class="n">0.20</span>), (<span class="n">0.165</span>, <span class="n">0.21</span>), (<span class="n">0.165</span>, <span class="n">0.24</span>), (<span class="n">0.0</span>, <span class="n">0.24</span>)], <span class="n">16</span>)
-    neck.location = (<span class="n">0.42</span>, -<span class="n">0.12</span>, <span class="n">1.75</span>)
-    neck.rotation_euler = (math.radians(-<span class="n">8.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    cap = lathe(<span class="s">&quot;Cap&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.205</span>, <span class="n">0.0</span>), (<span class="n">0.205</span>, <span class="n">0.04</span>), (<span class="n">0.19</span>, <span class="n">0.05</span>),
-                        (<span class="n">0.19</span>, <span class="n">0.11</span>), (<span class="n">0.14</span>, <span class="n">0.14</span>), (<span class="n">0.0</span>, <span class="n">0.145</span>)], <span class="n">16</span>)
-    cap.location = (<span class="n">0.42</span>, -<span class="n">0.0866</span>, <span class="n">1.9877</span>)
-    cap.rotation_euler = (math.radians(-<span class="n">8.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    parts.extend((neck, cap))
+    <span class="c"># triple carry handle: one bent tube over two legs, a centre post, and</span>
+    <span class="c"># three welded feet on the shell top</span>
+    x0, xm, x1 = HANDLE_X
+    rb, zb = <span class="n">0.09</span>, H - <span class="n">0.03</span>
+    hp = ([(x0, zb), (x0, HANDLE_TOP - rb)]
+          + arc(x0 + rb, HANDLE_TOP - rb, rb, <span class="n">180</span>, <span class="n">90</span>, <span class="n">4</span>)[<span class="n">1</span>:]
+          + arc(x1 - rb, HANDLE_TOP - rb, rb, <span class="n">90</span>, <span class="n">0</span>, <span class="n">4</span>) + [(x1, zb)])
+    handle = sweep(nm(<span class="s">&quot;Handle&quot;</span>), [(x, HANDLE_Y, z) <span class="k">for</span> x, z <span class="k">in</span> hp], circle(<span class="n">0.042</span>),
+                   (<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>), wear=<span class="n">0.45</span>)
+    parts.append(handle)
+    parts.append(sweep(nm(<span class="s">&quot;HandlePost&quot;</span>), [(xm, HANDLE_Y, zb), (xm, HANDLE_Y, HANDLE_TOP)],
+                       circle(<span class="n">0.036</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>), wear=<span class="n">0.3</span>))
+    foot = [(<span class="n">0.0</span>, -<span class="n">0.02</span>), (<span class="n">0.085</span>, -<span class="n">0.02</span>), (<span class="n">0.085</span>, <span class="n">0.006</span>), (<span class="n">0.066</span>, <span class="n">0.025</span>), (<span class="n">0.0</span>, <span class="n">0.025</span>)]
+    <span class="k">for</span> i, x <span class="k">in</span> enumerate(HANDLE_X):
+        parts.append(lathe(nm(<span class="s">f&quot;</span><span class="s">HandleFoot</span>{i}<span class="s">&quot;</span>), foot, <span class="n">16</span>, wear=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>, <span class="n">0.6</span>, <span class="n">0</span>),
+                           matrix=Matrix.Translation((x, HANDLE_Y, H))))
 
-    <span class="k">for</span> i, x <span class="k">in</span> enumerate((-<span class="n">0.28</span>, <span class="n">0.0</span>, <span class="n">0.28</span>)):
-        post = lathe(<span class="s">f&quot;</span><span class="s">Post</span>{i}<span class="s">&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.055</span>, <span class="n">0.0</span>), (<span class="n">0.055</span>, <span class="n">0.17</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>)], <span class="n">16</span>)
-        post.location = (x, <span class="n">0.08</span>, <span class="n">1.79</span>)
-        parts.append(post)
-    grip = lathe(<span class="s">&quot;Grip&quot;</span>, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.0</span>), (<span class="n">0.06</span>, <span class="n">0.68</span>), (<span class="n">0.0</span>, <span class="n">0.68</span>)], <span class="n">16</span>)
-    grip.rotation_euler = (<span class="n">0.0</span>, math.radians(<span class="n">90.0</span>), <span class="n">0.0</span>)
-    grip.location = (-<span class="n">0.34</span>, <span class="n">0.08</span>, <span class="n">1.96</span>)
-    parts.append(grip)
+    <span class="c"># spout assembly, built on a local +Z axis and tilted out over the corner</span>
+    sm = (Matrix.Translation((SPOUT_AT[<span class="n">0</span>], SPOUT_AT[<span class="n">1</span>], H))
+          @ Matrix.Rotation(math.radians(SPOUT_TILT), <span class="n">4</span>, <span class="s">&#x27;Y&#x27;</span>))
+    neck = lathe(nm(<span class="s">&quot;Neck&quot;</span>), [(<span class="n">0.0</span>, -<span class="n">0.06</span>), (<span class="n">0.19</span>, -<span class="n">0.06</span>), (<span class="n">0.19</span>, <span class="n">0.02</span>), (<span class="n">0.15</span>, <span class="n">0.06</span>),
+                              (<span class="n">0.15</span>, <span class="n">0.16</span>), (<span class="n">0.165</span>, <span class="n">0.175</span>), (<span class="n">0.165</span>, <span class="n">0.20</span>), (<span class="n">0.15</span>, <span class="n">0.215</span>),
+                              (<span class="n">0.15</span>, <span class="n">0.22</span>), (<span class="n">0.0</span>, <span class="n">0.22</span>)], <span class="n">16</span>,
+                 wear=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>, <span class="n">0.3</span>, <span class="n">0</span>, <span class="n">0.3</span>, <span class="n">1</span>, <span class="n">0.3</span>, <span class="n">0</span>, <span class="n">0</span>), matrix=sm)
+    parts.append(neck)
+    parts.append(lathe(nm(<span class="s">&quot;Seal&quot;</span>), [(<span class="n">0.13</span>, <span class="n">0.215</span>), (<span class="n">0.188</span>, <span class="n">0.215</span>), (<span class="n">0.198</span>, <span class="n">0.225</span>),
+                                    (<span class="n">0.198</span>, <span class="n">0.25</span>), (<span class="n">0.188</span>, <span class="n">0.26</span>), (<span class="n">0.13</span>, <span class="n">0.26</span>)],
+                       <span class="n">16</span>, closed=<span class="k">True</span>, matrix=sm))
+    <span class="c"># cap: vertical skirt, then a dome in 22-deg steps (smooth by angle)</span>
+    cap_prof = [(<span class="n">0.0</span>, <span class="n">0.26</span>), (<span class="n">0.205</span>, <span class="n">0.26</span>), (<span class="n">0.205</span>, <span class="n">0.30</span>), (<span class="n">0.190</span>, <span class="n">0.337</span>),
+                (<span class="n">0.155</span>, <span class="n">0.373</span>), (<span class="n">0.091</span>, <span class="n">0.402</span>), (<span class="n">0.0</span>, <span class="n">0.405</span>)]
+    parts.append(lathe(nm(<span class="s">&quot;Cap&quot;</span>), cap_prof, <span class="n">16</span>, wear=(<span class="n">0</span>, <span class="n">0.5</span>, <span class="n">0.9</span>, <span class="n">0.3</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
+                       matrix=sm))
+    lever = [(<span class="n">0.25</span>, <span class="n">0.27</span>), (<span class="n">0.27</span>, <span class="n">0.31</span>), (<span class="n">0.25</span>, <span class="n">0.36</span>), (<span class="n">0.18</span>, <span class="n">0.43</span>), (<span class="n">0.05</span>, <span class="n">0.445</span>),
+             (-<span class="n">0.24</span>, <span class="n">0.445</span>), (-<span class="n">0.30</span>, <span class="n">0.43</span>), (-<span class="n">0.30</span>, <span class="n">0.40</span>), (-<span class="n">0.22</span>, <span class="n">0.39</span>), (<span class="n">0.04</span>, <span class="n">0.41</span>),
+             (<span class="n">0.15</span>, <span class="n">0.395</span>), (<span class="n">0.20</span>, <span class="n">0.33</span>), (<span class="n">0.20</span>, <span class="n">0.29</span>)]
+    parts.append(extrude_profile(nm(<span class="s">&quot;CamLever&quot;</span>), lever, <span class="n">0.08</span>, <span class="n">0.008</span>, matrix=sm))
+    parts.append(lathe(nm(<span class="s">&quot;Hinge&quot;</span>), [(<span class="n">0.0</span>, -<span class="n">0.07</span>), (<span class="n">0.035</span>, -<span class="n">0.07</span>), (<span class="n">0.035</span>, <span class="n">0.07</span>), (<span class="n">0.0</span>, <span class="n">0.07</span>)],
+                       <span class="n">16</span>, matrix=sm @ Matrix.Translation((<span class="n">0.22</span>, <span class="n">0.0</span>, <span class="n">0.30</span>))
+                       @ Matrix.Rotation(math.radians(<span class="n">90</span>), <span class="n">4</span>, <span class="s">&#x27;X&#x27;</span>)))
+    parts.append(lathe(nm(<span class="s">&quot;LockPin&quot;</span>), [(<span class="n">0.0</span>, -<span class="n">0.075</span>), (<span class="n">0.024</span>, -<span class="n">0.075</span>), (<span class="n">0.024</span>, <span class="n">0.05</span>),
+                                       (<span class="n">0.04</span>, <span class="n">0.05</span>), (<span class="n">0.04</span>, <span class="n">0.075</span>), (<span class="n">0.0</span>, <span class="n">0.075</span>)],
+                       <span class="n">16</span>, wear=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>, <span class="n">1</span>, <span class="n">0</span>),
+                       matrix=sm @ Matrix.Translation((-<span class="n">0.26</span>, <span class="n">0.0</span>, <span class="n">0.42</span>))
+                       @ Matrix.Rotation(math.radians(-<span class="n">90</span>), <span class="n">4</span>, <span class="s">&#x27;X&#x27;</span>)))
 
-    <span class="k">return</span> {<span class="s">&quot;shell&quot;</span>: shell, <span class="s">&quot;rib&quot;</span>: ribs[<span class="n">0</span>], <span class="s">&quot;neck&quot;</span>: neck, <span class="s">&quot;parts&quot;</span>: parts}
+    <span class="k">return</span> {<span class="s">&quot;shell&quot;</span>: shell, <span class="s">&quot;handle&quot;</span>: handle, <span class="s">&quot;neck&quot;</span>: neck, <span class="s">&quot;parts&quot;</span>: parts}
 
 
 <span class="c"># ---------------------------------------------------------------------------</span>
@@ -655,13 +877,37 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
 
 <span class="k">def</span> check_custom_normals_roundtrip(obj):
     <span class="s">&quot;&quot;&quot;Per-loop custom normals survive depsgraph evaluation. Tolerance is the
-    int16 storage quantization, measured 7.5e-05 on both versions.&quot;&quot;&quot;</span>
+    int16 storage quantization, measured 7.5e-05 on both versions.
+
+    Each corner requests its face normal tilted CUSTOM_TILT toward the
+    corner bisector — a distinct normal per corner, as a weighted-normal or
+    bevel-softening pass writes. Blender&#x27;s encoder (the lnor-space
+    LNOR_SPACE_TRIGO_THRESHOLD, dot &gt; 1 - 1e-4, ~0.81 deg) is not storage
+    precision and must stay out of the measurement: requested normals in one
+    fan closer than that are MERGED to their average (a pattern stepping
+    ~7e-4 rad per loop over 4.5k loops measured 1.4e-02), and an in-plane
+    angle from the space&#x27;s reference edge under it is SNAPPED to zero (an
+    arbitrary-direction pattern put 13 of 4.5k corners there, 9.1e-03).
+    Aimed at the bisector, the in-plane angle is half the corner — never
+    near zero on this mesh — so the round-trip isolates quantization.&quot;&quot;&quot;</span>
     me = obj.data
     n = len(me.loops)
-    custom = []
-    <span class="k">for</span> i <span class="k">in</span> range(n):
-        a = <span class="n">2.0</span> * math.pi * i / n
-        custom.append(Vector((<span class="n">0.5</span> * math.cos(a), <span class="n">0.5</span> * math.sin(a), <span class="n">0.85</span>)).normalized())
+    custom = [<span class="k">None</span>] * n
+    co = [v.co <span class="k">for</span> v <span class="k">in</span> me.vertices]
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        fn = poly.normal
+        vs = poly.vertices
+        k = len(vs)
+        <span class="k">for</span> j <span class="k">in</span> range(k):
+            c = co[vs[j]]
+            e_prev = (co[vs[j - <span class="n">1</span>]] - c).normalized()
+            e_next = (co[vs[(j + <span class="n">1</span>) % k]] - c).normalized()
+            bis = e_prev + e_next
+            bis -= fn * bis.dot(fn)
+            <span class="k">if</span> bis.length &lt; <span class="n">1e-6</span>:           <span class="c"># straight corner: perpendicular in-plane</span>
+                bis = fn.cross(e_next)
+            custom[poly.loop_start + j] = (fn * math.cos(CUSTOM_TILT)
+                                           + bis.normalized() * math.sin(CUSTOM_TILT))
     me.normals_split_custom_set(custom)
     <span class="k">if</span> <span class="k">not</span> me.has_custom_normals:
         print(<span class="s">&quot;ERROR: has_custom_normals False after normals_split_custom_set — &quot;</span>
@@ -725,68 +971,168 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
 
 
 <span class="c"># ---------------------------------------------------------------------------</span>
-<span class="c"># Render: the same can three ways — flat (faceting), smooth-everywhere (the</span>
-<span class="c"># smeared AI bug), by-angle (the contract). Failure modes flank the truth.</span>
+<span class="c"># Render: three fresh builds of the same can, one per shading treatment —</span>
+<span class="c"># flat (every facet shows), smooth-everywhere (the shade_smooth-and-forget</span>
+<span class="c"># AI habit: flat faces smear into gradients, pressed panels go pillowy),</span>
+<span class="c"># and by-angle (the contract). Failure modes flank the truth.</span>
 <span class="c"># ---------------------------------------------------------------------------</span>
 
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> make_material(name, color, metallic, roughness):
+<span class="k">def</span> make_material(name, color, metallic, roughness, coat=<span class="n">0.0</span>):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
     bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
     bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
+    <span class="k">if</span> coat:
+        bsdf.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = coat
+        bsdf.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.12</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> variant_meshes(parts, mode):
-    <span class="s">&quot;&quot;&quot;Fresh mesh copies with one shading treatment applied.&quot;&quot;&quot;</span>
-    out = []
+<span class="k">def</span> make_painted_steel(name, paint, steel):
+    <span class="s">&quot;&quot;&quot;Semi-gloss paint over steel, chipped where the `wear` attribute says
+    an edge is exposed. Glossy enough (coat) that a highlight exposes every
+    normal discontinuity — matte paint would hide the very differences this
+    render exists to show.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nodes, links = nt.nodes, nt.links
+    out = nodes[<span class="s">&quot;Material Output&quot;</span>]
+    paint_bsdf = nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    paint_bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*paint, <span class="n">1.0</span>)
+    paint_bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
+    paint_bsdf.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">0.35</span>
+    paint_bsdf.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.18</span>
+    steel_bsdf = nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    steel_bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*steel, <span class="n">1.0</span>)
+    steel_bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    steel_bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
+
+    coord = nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    chips = nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    chips.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">18.0</span>
+    chips.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], chips.inputs[<span class="s">&quot;Vector&quot;</span>])
+    mottle = nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    mottle.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">4.0</span>
+    links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mottle.inputs[<span class="s">&quot;Vector&quot;</span>])
+    rough = nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.30</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.46</span>
+    links.new(mottle.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], paint_bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+
+    wear = nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    wear.attribute_name = WEAR
+    <span class="c"># chip = wear + (noise - 0.5) * 1.6, thresholded to a crisp paint edge</span>
+    jitter = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    jitter.operation = <span class="s">&#x27;MULTIPLY_ADD&#x27;</span>
+    jitter.inputs[<span class="n">1</span>].default_value = <span class="n">1.6</span>
+    jitter.inputs[<span class="n">2</span>].default_value = -<span class="n">0.8</span>
+    links.new(chips.outputs[<span class="s">&quot;Fac&quot;</span>], jitter.inputs[<span class="n">0</span>])
+    total = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    total.operation = <span class="s">&#x27;ADD&#x27;</span>
+    links.new(wear.outputs[<span class="s">&quot;Fac&quot;</span>], total.inputs[<span class="n">0</span>])
+    links.new(jitter.outputs[<span class="s">&quot;Value&quot;</span>], total.inputs[<span class="n">1</span>])
+    mask = nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    mask.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.86</span>
+    mask.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.92</span>
+    links.new(total.outputs[<span class="s">&quot;Value&quot;</span>], mask.inputs[<span class="s">&quot;Value&quot;</span>])
+
+    mix = nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    links.new(mask.outputs[<span class="s">&quot;Result&quot;</span>], mix.inputs[<span class="s">&quot;Fac&quot;</span>])
+    links.new(paint_bsdf.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">1</span>])
+    links.new(steel_bsdf.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">2</span>])
+    links.new(mix.outputs[<span class="s">&quot;Shader&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> mat
+
+
+PART_MATERIAL = {<span class="s">&quot;CamLever&quot;</span>: <span class="s">&quot;steel&quot;</span>, <span class="s">&quot;Hinge&quot;</span>: <span class="s">&quot;steel&quot;</span>, <span class="s">&quot;LockPin&quot;</span>: <span class="s">&quot;steel&quot;</span>, <span class="s">&quot;Seal&quot;</span>: <span class="s">&quot;seal&quot;</span>}
+
+
+<span class="k">def</span> shade(parts, mode):
+    <span class="s">&quot;&quot;&quot;The one variable across the three cans.&quot;&quot;&quot;</span>
     <span class="k">for</span> o <span class="k">in</span> parts:
-        me = o.data.copy()
-        me.name = <span class="s">f&quot;</span>{o.name}<span class="s">_</span>{mode}<span class="s">&quot;</span>
+        me = o.data
         <span class="k">for</span> p <span class="k">in</span> me.polygons:
             p.use_smooth = mode != <span class="s">&quot;flat&quot;</span>
         <span class="k">if</span> mode == <span class="s">&quot;byangle&quot;</span>:
             me.set_sharp_from_angle(angle=ANGLE)
-        dup = bpy.data.objects.new(<span class="s">f&quot;</span>{o.name}<span class="s">_</span>{mode}<span class="s">&quot;</span>, me)
-        dup.location = o.location
-        dup.rotation_euler = o.rotation_euler
-        bpy.context.collection.objects.link(dup)
-        out.append(dup)
-    <span class="k">return</span> out
+
+
+<span class="k">def</span> sharp_edge_overlay(parts, name, radius=<span class="n">0.0026</span>):
+    <span class="s">&quot;&quot;&quot;Thin tubes along every edge the `sharp_edge` attribute marks — the
+    contract&#x27;s own output drawn onto the by-angle can, read back from the
+    mesh rather than recomputed.&quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> o <span class="k">in</span> parts:
+            me = o.data
+            attr = me.attributes.get(<span class="s">&quot;sharp_edge&quot;</span>)
+            <span class="k">if</span> attr <span class="k">is</span> <span class="k">None</span>:
+                <span class="k">continue</span>
+            <span class="k">for</span> e, d <span class="k">in</span> zip(me.edges, attr.data):
+                <span class="k">if</span> <span class="k">not</span> d.value:
+                    <span class="k">continue</span>
+                a, b = (me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> e.vertices)
+                t = (b - a).normalized()
+                u = t.orthogonal().normalized()
+                w = t.cross(u)
+                ring = []
+                <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+                    ang = math.pi * <span class="n">0.5</span> * k
+                    off = (u * math.cos(ang) + w * math.sin(ang)) * radius
+                    ring.append((bm.verts.new(a + off), bm.verts.new(b + off)))
+                <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+                    (a0, b0), (a1, b1) = ring[k], ring[(k + <span class="n">1</span>) % <span class="n">4</span>]
+                    bm.faces.new((a0, a1, b1, b0))
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
 
 
 <span class="k">def</span> render_still(can, path, engine):
     scene = bpy.context.scene
-    <span class="c"># semi-gloss painted steel: rough enough to read as paint, glossy enough</span>
-    <span class="c"># that a highlight exposes every normal discontinuity — matte would hide</span>
-    <span class="c"># the very shading differences this render exists to show</span>
-    steel = make_material(<span class="s">&quot;OliveDrab&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.345</span>, <span class="n">0.13</span>), <span class="n">0.8</span>, <span class="n">0.26</span>)
-    accent = make_material(<span class="s">&quot;FuelMarker&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.06</span>, <span class="n">0.03</span>), <span class="n">0.3</span>, <span class="n">0.30</span>)
+    mats = {
+        <span class="s">&quot;paint&quot;</span>: make_painted_steel(<span class="s">&quot;OlivePaint&quot;</span>, (<span class="n">0.085</span>, <span class="n">0.115</span>, <span class="n">0.030</span>), (<span class="n">0.30</span>, <span class="n">0.30</span>, <span class="n">0.29</span>)),
+        <span class="s">&quot;steel&quot;</span>: make_material(<span class="s">&quot;BareSteel&quot;</span>, (<span class="n">0.42</span>, <span class="n">0.41</span>, <span class="n">0.39</span>), <span class="n">1.0</span>, <span class="n">0.34</span>),
+        <span class="s">&quot;seal&quot;</span>: make_material(<span class="s">&quot;SealRed&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.035</span>, <span class="n">0.02</span>), <span class="n">0.0</span>, <span class="n">0.42</span>),
+    }
 
-    <span class="c"># the checked base can IS the by-angle variant; the two failure modes are</span>
-    <span class="c"># mesh copies with their own shading, no materials yet</span>
-    variants = []
-    <span class="k">for</span> mode, x <span class="k">in</span> ((<span class="s">&quot;flat&quot;</span>, -<span class="n">1.5</span>), (<span class="s">&quot;smooth&quot;</span>, <span class="n">0.0</span>), (<span class="s">&quot;byangle&quot;</span>, <span class="n">1.5</span>)):
-        objs = variant_meshes(can[<span class="s">&quot;parts&quot;</span>], mode)
-        <span class="k">for</span> o <span class="k">in</span> objs:
-            o.location.x += x
-            o.rotation_euler.z += math.radians(-<span class="n">10.0</span>)  <span class="c"># uniform yaw, fronts to camera</span>
-            o.data.materials.append(steel)
-            <span class="k">if</span> o.name.startswith(<span class="s">&quot;Cap&quot;</span>):
-                o.data.materials.append(accent)
-                <span class="k">for</span> p <span class="k">in</span> o.data.polygons:  <span class="c"># cap rim ring in the marker red</span>
-                    <span class="k">if</span> p.center.z &lt; <span class="n">0.045</span>:
-                        p.material_index = <span class="n">1</span>
-        variants.append(objs)
-    <span class="c"># hide the checked originals: the byangle variant re-shows the same data</span>
+    <span class="c"># the checked can stays hidden; the gallery shows three fresh builds</span>
     <span class="k">for</span> o <span class="k">in</span> can[<span class="s">&quot;parts&quot;</span>]:
         o.hide_render = <span class="k">True</span>
+    variants = {}
+    <span class="k">for</span> mode, x <span class="k">in</span> ((<span class="s">&quot;flat&quot;</span>, -<span class="n">1.62</span>), (<span class="s">&quot;smooth&quot;</span>, <span class="n">0.0</span>), (<span class="s">&quot;byangle&quot;</span>, <span class="n">1.62</span>)):
+        built = build_jerry_can(<span class="s">&quot;_&quot;</span> + mode)[<span class="s">&quot;parts&quot;</span>]
+        shade(built, mode)
+        <span class="k">for</span> o <span class="k">in</span> built:
+            base = o.name[: -len(mode) - <span class="n">1</span>].rstrip(<span class="s">&quot;0123456789&quot;</span>)
+            o.data.materials.append(mats[PART_MATERIAL.get(base, <span class="s">&quot;paint&quot;</span>)])
+            o.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
+            o.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">30.0</span>))
+        variants[mode] = built
+    hero = [o <span class="k">for</span> objs <span class="k">in</span> variants.values() <span class="k">for</span> o <span class="k">in</span> objs]
+    edges = sharp_edge_overlay(variants[<span class="s">&quot;byangle&quot;</span>], <span class="s">&quot;SharpEdgeOverlay&quot;</span>)
+    glow = bpy.data.materials.new(<span class="s">&quot;SharpEdgeGlow&quot;</span>)
+    glow.use_nodes = <span class="k">True</span>
+    gb = glow.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    gb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">0.85</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    gb.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">0.85</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    gb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    edges.data.materials.append(glow)
+    edges.location = variants[<span class="s">&quot;byangle&quot;</span>][<span class="n">0</span>].location
+    edges.rotation_euler = variants[<span class="s">&quot;byangle&quot;</span>][<span class="n">0</span>].rotation_euler
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -795,12 +1141,11 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
-    floor_me.materials.append(fmat)
+    floor_me.materials.append(make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.0</span>, <span class="n">0.7</span>))
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -809,40 +1154,37 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, rot, size_y=<span class="k">None</span>):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
-        ld.energy = energy; ld.size = size; ld.color = col
+        ld.energy = energy
+        ld.color = col
+        ld.size = size
+        <span class="k">if</span> size_y <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            ld.shape = <span class="s">&#x27;RECTANGLE&#x27;</span>
+            ld.size_y = size_y
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
+        <span class="k">return</span> ob
 
     <span class="c"># key/fill/rim/wedge per docs/VISUAL-STYLE.md</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">150.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">340.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">58</span>, <span class="n">0</span>, <span class="n">170</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-    <span class="c"># the shading audit light: a tall strip whose reflection runs down each</span>
-    <span class="c"># can face — it stair-steps on flat shading, warps at the rim on</span>
-    <span class="c"># smooth-everything, and stays straight with crisp edges on by-angle</span>
-    ld = bpy.data.lights.new(<span class="s">&quot;Strip&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
-    ld.energy = <span class="n">400.0</span>
-    ld.shape = <span class="s">&#x27;RECTANGLE&#x27;</span>
-    ld.size = <span class="n">1.35</span>
-    ld.size_y = <span class="n">8.0</span>
-    ld.color = (<span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)
-    strip = bpy.data.objects.new(<span class="s">&quot;Strip&quot;</span>, ld)
-    strip.location = (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">3.2</span>)
-    strip.rotation_euler = (math.radians(<span class="n">60</span>), <span class="n">0.0</span>, math.radians(-<span class="n">30</span>))
-    scene.collection.objects.link(strip)
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">560.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">320.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">58</span>, <span class="n">0</span>, <span class="n">170</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.2</span>, <span class="n">6.2</span>, <span class="n">3.0</span>), <span class="n">500.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">12</span>))
+    <span class="c"># the shading audit light: a tall narrow strip low on the camera&#x27;s left.</span>
+    <span class="c"># The pressed faces mirror it: a straight band broken cleanly at every</span>
+    <span class="c"># crease on by-angle, stepped on flat, bent into a smear on smooth.</span>
+    light(<span class="s">&quot;Strip&quot;</span>, (-<span class="n">5.2</span>, -<span class="n">5.6</span>, <span class="n">1.4</span>), <span class="n">320.0</span>, <span class="n">0.6</span>, (<span class="n">0.92</span>, <span class="n">0.96</span>, <span class="n">1.0</span>), (<span class="n">90</span>, <span class="n">0</span>, -<span class="n">42</span>), size_y=<span class="n">6.0</span>)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.9</span>, -<span class="n">7.2</span>, <span class="n">2.6</span>)
+    cam.location = (<span class="n">0.77</span>, -<span class="n">8.0</span>, <span class="n">2.8</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.05</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.08</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -862,8 +1204,21 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
     scene.render.filepath = path
     <span class="c"># AgX would flatten the olive drab toward mud (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+
+    fcode = gallery_framing.check_framing(scene, cam, hero=hero, elements=hero + [edges],
+                                          stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(scene, cam, hero=variants[<span class="s">&quot;byangle&quot;</span>],
+                                                       stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -881,7 +1236,7 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
 
     <span class="k">for</span> step <span class="k">in</span> (<span class="k">lambda</span>: check_api_surface(can[<span class="s">&quot;shell&quot;</span>].data),
                  <span class="k">lambda</span>: check_by_angle(
-                     [can[<span class="s">&quot;shell&quot;</span>], can[<span class="s">&quot;rib&quot;</span>], can[<span class="s">&quot;neck&quot;</span>]],
+                     [can[<span class="s">&quot;shell&quot;</span>], can[<span class="s">&quot;handle&quot;</span>], can[<span class="s">&quot;neck&quot;</span>]],
                      mismatch_angle=args.mismatch_angle),
                  <span class="k">lambda</span>: check_normal_welds(can[<span class="s">&quot;shell&quot;</span>]),
                  <span class="k">lambda</span>: check_custom_normals_roundtrip(can[<span class="s">&quot;shell&quot;</span>]),
@@ -891,9 +1246,9 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
             <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(can, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+        code = render_still(can, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;custom-normals-shade OK&quot;</span>)
@@ -910,7 +1265,7 @@ SHELL_W, SHELL_H, SHELL_D, SHELL_R = <span class="n">1.4</span>, <span class="n"
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with embossed X ribs, shaded flat, smooth and smooth-by-angle." />
+    <img src="../assets/custom-normals-shade-hero.webp" alt="Three olive jerry cans with X-pressed panels, triple handles and red-sealed spouts: faceted flat, glossy-smeared smooth-everywhere, and crisp by-angle with its sharp edges traced in thin cyan lines." />
   </dialog>
   <footer>
     <div class="statusbar">
