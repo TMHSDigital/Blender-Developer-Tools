@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
+  <meta property="og:image:alt" content="A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="curve-bevel-arc — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/curve-bevel-arc-hero.webp" />
-  <meta name="twitter:image:alt" content="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
+  <meta name="twitter:image:alt" content="A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A beveled Bezier semicircle authored on bpy.types.Curve — splines.new(&#x27;BEZIER&#x27;), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera.">
-      <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them.">
+      <img src="../assets/curve-bevel-arc-hero.webp" alt="A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.</div>
@@ -280,7 +280,7 @@
     <section class="detail-section md">
 <p>A runnable example that builds a beveled Bezier semicircle entirely through the curve data API — <code>splines.new(&#x27;BEZIER&#x27;)</code>, per-point <code>bezier_points</code>, <code>bevel_depth</code>, and <code>use_fill_caps</code> — so the curve renders as a solid tube without a prior mesh conversion.</p>
 <p><strong>What it witnesses:</strong> renderable curve tubes are curve datablocks, not meshes. The check asserts eight Bezier points, <code>bevel_depth == 0.15</code>, <code>use_fill_caps</code>, and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts, 1028 faces for these resolution settings) with a Z span that rests on the floor (<code>[0, 2 × bevel]</code>) and an X span of <code>2 × radius + 2 × bevel</code>.</p>
-<p>Staging: both ends of the semicircle face −Y, so the still looks from −Y and shows both filled caps (<code>use_fill_caps</code>, the witness) face-on, with the arc sweeping behind them. The old angle showed one cap and the other end edge-on. The cap&#x27;s 12-sided outline is the pinned tessellation (<code>bevel_resolution</code> 4, locked by the 1044-vertex gate), not a presentation choice.</p>
+<p>Staging: the checked curve is presented as what a capped, beveled Bezier semicircle is in the world — a round-bar horseshoe magnet lying on the floor, open end to the camera. The two filled caps (<code>use_fill_caps</code>, the witness) are its ground-steel pole faces, turned face-on; an uncapped build would show two hollow pipe ends exactly there. The red enamel / bare-steel split is one material keyed on object-space Y, so the magnet stays a single curve datablock. The paper clips are beveled Bezier curves too (explicit <code>FREE</code> handles: straight legs plus quarter-circle bends), each lying along the field line that leaves its pole; the iron filings trace those lines — for two opposite line poles they are exact circular arcs through both pole faces. The cap&#x27;s 12-sided outline is the pinned tessellation (<code>bevel_resolution</code> 4, locked by the 1044-vertex gate), not a presentation choice. The render path rotates the object only; the check reads object-space evaluated geometry and runs before any staging.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python curve_bevel_arc.py --
@@ -293,7 +293,7 @@ blender --background --python curve_bevel_arc.py -- --output arc.png
 blender --background --python curve_bevel_arc.py -- --output arc.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is also the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Spline type is not BEZIER</td></tr><tr><td>4</td><td>Bezier point count ≠ 8</td></tr><tr><td>5</td><td><code>bevel_depth</code> ≠ 0.15</td></tr><tr><td>6</td><td><code>use_fill_caps</code> is False (<code>--no-caps</code> lands here)</td></tr><tr><td>7</td><td>Evaluated vert/face count off measured tessellation</td></tr><tr><td>8</td><td>Tube does not rest on the floor</td></tr><tr><td>9</td><td>Tube height ≠ 2 × bevel</td></tr><tr><td>10</td><td>X span off closed form; also gallery framing violation</td></tr><tr><td>11</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Spline type is not BEZIER</td></tr><tr><td>4</td><td>Bezier point count ≠ 8</td></tr><tr><td>5</td><td><code>bevel_depth</code> ≠ 0.15</td></tr><tr><td>6</td><td><code>use_fill_caps</code> is False (<code>--no-caps</code> lands here)</td></tr><tr><td>7</td><td>Evaluated vert/face count off measured tessellation</td></tr><tr><td>8</td><td>Tube does not rest on the floor</td></tr><tr><td>9</td><td>Tube height ≠ 2 × bevel</td></tr><tr><td>10</td><td>X span off closed form; also gallery framing violation</td></tr><tr><td>11</td><td><code>--output</code> produced no file; also asset-quality floor violation (<code>gallery_asset_quality</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-caps</code>.</p>
     </section>
     <section class="detail-section src">
@@ -316,6 +316,12 @@ EXPECT_VERTS below for how to re-measure if a future Blender retessellates).
 ``--no-caps`` leaves ``use_fill_caps`` False and still asserts the ends are
 capped. That is the falsifier (``--same-axis`` in export-preset-axis).
 
+The still stages the checked curve as a round-bar horseshoe magnet: its two
+filled caps are the ground-steel pole faces, turned to the camera, with
+Bezier-wire paper clips (also beveled curves) and iron filings on the field
+lines between the poles. The object transform changes only for the render;
+the check reads object-space evaluated geometry and runs first.
+
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
 
@@ -325,10 +331,12 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
-<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+<span class="c"># Shared Layer 1 framing and asset-quality measurement (render path only) —</span>
+<span class="c"># see gallery_framing.py and gallery_asset_quality.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 N_POINTS = <span class="n">8</span>
 RADIUS = <span class="n">1.5</span>
@@ -345,7 +353,7 @@ EXPECT_FACES = <span class="n">1028</span>
 
 <span class="k">def</span> build(no_caps=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    curve = bpy.data.curves.new(<span class="s">&quot;Arc&quot;</span>, <span class="s">&#x27;CURVE&#x27;</span>)
+    curve = bpy.data.curves.new(<span class="s">&quot;Magnet&quot;</span>, <span class="s">&#x27;CURVE&#x27;</span>)
     curve.dimensions = <span class="s">&#x27;3D&#x27;</span>
     curve.bevel_depth = BEVEL
     curve.bevel_resolution = BEVEL_RES
@@ -362,7 +370,7 @@ EXPECT_FACES = <span class="n">1028</span>
         bp.handle_left_type = <span class="s">&#x27;AUTO&#x27;</span>
         bp.handle_right_type = <span class="s">&#x27;AUTO&#x27;</span>
 
-    obj = bpy.data.objects.new(<span class="s">&quot;Arc&quot;</span>, curve)
+    obj = bpy.data.objects.new(<span class="s">&quot;Magnet&quot;</span>, curve)
     bpy.context.collection.objects.link(obj)
     <span class="k">return</span> obj
 
@@ -427,17 +435,282 @@ EXPECT_FACES = <span class="n">1028</span>
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
+<span class="c"># --- render-path presentation: a horseshoe magnet ------------------------</span>
+<span class="c"># The checked curve is staged as what a capped, beveled Bezier semicircle</span>
+<span class="c"># actually is in the world: a round-bar horseshoe magnet. The two filled</span>
+<span class="c"># caps (use_fill_caps, the witness) are the magnet&#x27;s ground pole faces, so</span>
+<span class="c"># they face the camera; an uncapped build would show two hollow pipe ends</span>
+<span class="c"># exactly where the steel faces are. The paper clips are beveled Bezier</span>
+<span class="c"># curves too (explicit FREE handles, straight legs + quarter-circle bends),</span>
+<span class="c"># so every tube in frame is authored on bpy.types.Curve, never meshed.</span>
+
+POLE_Y = <span class="n">0.42</span>          <span class="c"># object-space y below which the bar is bare pole steel</span>
+KAPPA = <span class="n">4.0</span> / <span class="n">3.0</span> * math.tan(math.pi / <span class="n">8.0</span>)  <span class="c"># quarter-circle Bezier handle factor</span>
+
+<span class="c"># Gem paper clip centerline, unit length along +X, tip (outer bend) at x=0.</span>
+<span class="c"># (&#x27;L&#x27;, end) is a straight leg; (&#x27;A&#x27;, center, radius, ccw) a 180-degree bend</span>
+<span class="c"># split into two quarter arcs (ccw=True turns left).</span>
+GEM_START = (<span class="n">0.60</span>, <span class="n">0.15</span>)
+GEM_PATH = (
+    (<span class="s">&#x27;L&#x27;</span>, (<span class="n">0.15</span>, <span class="n">0.15</span>)),
+    (<span class="s">&#x27;A&#x27;</span>, (<span class="n">0.15</span>, <span class="n">0.00</span>), <span class="n">0.15</span>, <span class="k">True</span>),
+    (<span class="s">&#x27;L&#x27;</span>, (<span class="n">0.85</span>, -<span class="n">0.15</span>)),
+    (<span class="s">&#x27;A&#x27;</span>, (<span class="n">0.85</span>, -<span class="n">0.04</span>), <span class="n">0.11</span>, <span class="k">True</span>),
+    (<span class="s">&#x27;L&#x27;</span>, (<span class="n">0.30</span>, <span class="n">0.07</span>)),
+    (<span class="s">&#x27;A&#x27;</span>, (<span class="n">0.30</span>, <span class="n">0.00</span>), <span class="n">0.07</span>, <span class="k">True</span>),
+    (<span class="s">&#x27;L&#x27;</span>, (<span class="n">0.72</span>, -<span class="n">0.07</span>)),
+)
+
+
+<span class="k">def</span> bezier_path_nodes(start, path, scale):
+    <span class="s">&quot;&quot;&quot;[(co, handle_left, handle_right)] for a line/arc path in the XY plane.
+
+    Lines get handles at thirds (exactly straight); each 180-degree bend is two
+    quarter arcs with the KAPPA handle length (circle to within 0.03 %).&quot;&quot;&quot;</span>
+    <span class="k">from</span> mathutils <span class="k">import</span> Vector
+    nodes = [[Vector((start[<span class="n">0</span>], start[<span class="n">1</span>], <span class="n">0.0</span>)) * scale, <span class="k">None</span>, <span class="k">None</span>]]
+    <span class="k">for</span> seg <span class="k">in</span> path:
+        p = nodes[-<span class="n">1</span>][<span class="n">0</span>]
+        <span class="k">if</span> seg[<span class="n">0</span>] == <span class="s">&#x27;L&#x27;</span>:
+            q = Vector((seg[<span class="n">1</span>][<span class="n">0</span>], seg[<span class="n">1</span>][<span class="n">1</span>], <span class="n">0.0</span>)) * scale
+            nodes[-<span class="n">1</span>][<span class="n">2</span>] = p + (q - p) / <span class="n">3.0</span>
+            nodes.append([q, q - (q - p) / <span class="n">3.0</span>, <span class="k">None</span>])
+            <span class="k">continue</span>
+        _, c, r, ccw = seg
+        c = Vector((c[<span class="n">0</span>], c[<span class="n">1</span>], <span class="n">0.0</span>)) * scale
+        r *= scale
+        a0 = math.atan2(p.y - c.y, p.x - c.x)
+        sgn = <span class="n">1.0</span> <span class="k">if</span> ccw <span class="k">else</span> -<span class="n">1.0</span>
+        <span class="k">for</span> k <span class="k">in</span> (<span class="n">1</span>, <span class="n">2</span>):
+            a_prev = a0 + sgn * (k - <span class="n">1</span>) * math.pi / <span class="n">2.0</span>
+            a_next = a0 + sgn * k * math.pi / <span class="n">2.0</span>
+            t_prev = Vector((-math.sin(a_prev), math.cos(a_prev), <span class="n">0.0</span>)) * sgn
+            t_next = Vector((-math.sin(a_next), math.cos(a_next), <span class="n">0.0</span>)) * sgn
+            q = c + Vector((math.cos(a_next), math.sin(a_next), <span class="n">0.0</span>)) * r
+            nodes[-<span class="n">1</span>][<span class="n">2</span>] = nodes[-<span class="n">1</span>][<span class="n">0</span>] + t_prev * KAPPA * r
+            nodes.append([q, q - t_next * KAPPA * r, <span class="k">None</span>])
+    <span class="c"># free end handles continue the end segments</span>
+    first, last = nodes[<span class="n">0</span>], nodes[-<span class="n">1</span>]
+    first[<span class="n">1</span>] = first[<span class="n">0</span>] - (first[<span class="n">2</span>] - first[<span class="n">0</span>])
+    last[<span class="n">2</span>] = last[<span class="n">0</span>] + (last[<span class="n">0</span>] - last[<span class="n">1</span>])
+    <span class="k">return</span> nodes
+
+
+<span class="k">def</span> make_wire(name, nodes, bevel, mat, parent, loc, rot_z):
+    cu = bpy.data.curves.new(name, <span class="s">&#x27;CURVE&#x27;</span>)
+    cu.dimensions = <span class="s">&#x27;3D&#x27;</span>
+    cu.bevel_depth = bevel
+    cu.bevel_resolution = <span class="n">3</span>
+    cu.resolution_u = <span class="n">10</span>
+    cu.use_fill_caps = <span class="k">True</span>
+    sp = cu.splines.new(<span class="s">&#x27;BEZIER&#x27;</span>)
+    sp.bezier_points.add(len(nodes) - <span class="n">1</span>)
+    <span class="k">for</span> bp, (co, hl, hr) <span class="k">in</span> zip(sp.bezier_points, nodes):
+        bp.handle_left_type = <span class="s">&#x27;FREE&#x27;</span>
+        bp.handle_right_type = <span class="s">&#x27;FREE&#x27;</span>
+        bp.co = co
+        bp.handle_left = hl
+        bp.handle_right = hr
+    cu.materials.append(mat)
+    ob = bpy.data.objects.new(name, cu)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = parent
+    ob.location = (loc[<span class="n">0</span>], loc[<span class="n">1</span>], bevel)  <span class="c"># wire rests on the floor</span>
+    ob.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(rot_z))
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> principled(name, color, rough, metal=<span class="n">0.0</span>, spec=<span class="k">None</span>):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = <span class="k">True</span>
+    b = m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        key = <span class="s">&quot;Specular IOR Level&quot;</span> <span class="k">if</span> <span class="s">&quot;Specular IOR Level&quot;</span> <span class="k">in</span> b.inputs <span class="k">else</span> <span class="s">&quot;Specular&quot;</span>
+        b.inputs[key].default_value = spec
+    <span class="k">return</span> m
+
+
+<span class="k">def</span> magnet_material():
+    <span class="s">&quot;&quot;&quot;Red enamel bar with ground-steel pole ends, split in object space.
+
+    The bar ends sit at object y=0 with the tube running along +y there, so
+    a y threshold cuts a clean band square to the bar near each pole.&quot;&quot;&quot;</span>
+    m = bpy.data.materials.new(<span class="s">&quot;MagnetEnamelAndPoles&quot;</span>)
+    m.use_nodes = <span class="k">True</span>
+    nt = m.node_tree
+    nodes, links = nt.nodes, nt.links
+    paint = nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    paint.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.72</span>, <span class="n">0.035</span>, <span class="n">0.03</span>, <span class="n">1.0</span>)
+    paint.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    out = nodes[<span class="s">&quot;Material Output&quot;</span>]
+    steel = nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    steel.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.82</span>, <span class="n">0.82</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)
+    steel.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.7</span>
+    steel.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
+    groove = nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    groove.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.022</span>, <span class="n">1.0</span>)
+    groove.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    tc = nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    sep = nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], sep.inputs[<span class="n">0</span>])
+    is_pole = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    is_pole.operation = <span class="s">&#x27;LESS_THAN&#x27;</span>
+    is_pole.inputs[<span class="n">1</span>].default_value = POLE_Y
+    links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], is_pole.inputs[<span class="n">0</span>])
+    in_groove = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    in_groove.operation = <span class="s">&#x27;COMPARE&#x27;</span>
+    in_groove.inputs[<span class="n">1</span>].default_value = POLE_Y + <span class="n">0.012</span>
+    in_groove.inputs[<span class="n">2</span>].default_value = <span class="n">0.012</span>
+    links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], in_groove.inputs[<span class="n">0</span>])
+    mix1 = nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    links.new(is_pole.outputs[<span class="n">0</span>], mix1.inputs[<span class="n">0</span>])
+    links.new(paint.outputs[<span class="n">0</span>], mix1.inputs[<span class="n">1</span>])
+    links.new(steel.outputs[<span class="n">0</span>], mix1.inputs[<span class="n">2</span>])
+    mix2 = nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    links.new(in_groove.outputs[<span class="n">0</span>], mix2.inputs[<span class="n">0</span>])
+    links.new(mix1.outputs[<span class="n">0</span>], mix2.inputs[<span class="n">1</span>])
+    links.new(groove.outputs[<span class="n">0</span>], mix2.inputs[<span class="n">2</span>])
+    links.new(mix2.outputs[<span class="n">0</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> m
+
+
+<span class="k">def</span> make_bearings(parent, mat):
+    <span class="s">&quot;&quot;&quot;Steel balls pulled onto the right pole face (object-space placement).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;PoleBearings&quot;</span>)
+    r = <span class="n">0.075</span>
+    centers = [
+        (<span class="n">1.66</span>, -r, r),                           <span class="c"># on the face&#x27;s outer rim</span>
+        (<span class="n">1.70</span>, -r - <span class="n">0.148</span>, r),                   <span class="c"># chained off the first</span>
+        (<span class="n">1.60</span>, -r - <span class="n">0.22</span>, r * <span class="n">0.8</span>),              <span class="c"># a smaller one pulled in</span>
+    ]
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> c <span class="k">in</span> centers:
+            geom = bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">24</span>, v_segments=<span class="n">12</span>, radius=r)
+            bmesh.ops.translate(bm, verts=geom[<span class="s">&quot;verts&quot;</span>], vec=c)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;PoleBearings&quot;</span>, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = parent
+    <span class="k">return</span> ob
+
+
+<span class="c"># Field-line circle centres (object y). The field of two opposite parallel</span>
+<span class="c"># line poles is exact circles through both poles, centre on the bisector,</span>
+<span class="c"># so each filing line is a circular arc from pole face to pole face.</span>
+FIELD_CENTRES = (<span class="n">5.0</span>, <span class="n">3.2</span>, <span class="n">2.2</span>, <span class="n">1.55</span>, <span class="n">1.1</span>, <span class="n">0.75</span>, <span class="n">0.45</span>, <span class="n">0.2</span>)
+
+
+<span class="k">def</span> field_lines(half=<span class="n">1.5</span>):
+    <span class="s">&quot;&quot;&quot;Arcs (object XY, y &lt; 0) from the left pole face to the right one.&quot;&quot;&quot;</span>
+    <span class="k">from</span> mathutils <span class="k">import</span> Vector
+    lines = []
+    <span class="k">for</span> c <span class="k">in</span> FIELD_CENTRES:
+        r = math.hypot(half, c)
+        a0 = math.atan2(-c, -half)            <span class="c"># angle of the left pole seen from the centre</span>
+        a1 = math.atan2(-c, half)              <span class="c"># right pole ...</span>
+        <span class="k">if</span> a1 &lt; a0:                            <span class="c"># ... reached the low way round</span>
+            a1 += <span class="n">2</span> * math.pi
+        n = max(<span class="n">8</span>, int(abs(a1 - a0) * r / <span class="n">0.02</span>))
+        pts = []
+        <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>):
+            a = a0 + (a1 - a0) * k / n
+            p = Vector((r * math.cos(a), c + r * math.sin(a)))
+            <span class="k">if</span> p.y &lt; -<span class="n">0.02</span>:
+                pts.append(p)
+        lines.append(pts)
+    <span class="k">return</span> lines
+
+
+<span class="k">def</span> _seg_dist(p, a, b):
+    ab = b - a
+    t = max(<span class="n">0.0</span>, min(<span class="n">1.0</span>, (p - a).dot(ab) / max(ab.length_squared, <span class="n">1e-12</span>)))
+    <span class="k">return</span> (a + ab * t - p).length
+
+
+<span class="k">def</span> make_filings(parent, mat, avoid=(), seed=<span class="n">7</span>):
+    <span class="s">&quot;&quot;&quot;Iron filings strewn along the field lines: small tilted steel slivers
+    in one mesh, jittered off each arc and skipped under the clips. Scene
+    dressing, not the asset: its boxes would read as the asset&#x27;s right-angle
+    edges in gallery_asset_quality.&quot;&quot;&quot;</span>
+    <span class="k">import</span> random
+    <span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+    rnd = random.Random(seed)
+    me = bpy.data.meshes.new(<span class="s">&quot;IronFilings&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> pts <span class="k">in</span> field_lines():
+            acc = <span class="n">0.0</span>
+            <span class="k">for</span> a, b <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
+                acc += (b - a).length
+                <span class="k">if</span> acc &lt; <span class="n">0.045</span>:
+                    <span class="k">continue</span>
+                acc = <span class="n">0.0</span>
+                d = (b - a).normalized()
+                nrm = Vector((-d.y, d.x))
+                c = a + nrm * rnd.uniform(-<span class="n">0.03</span>, <span class="n">0.03</span>) + d * rnd.uniform(-<span class="n">0.02</span>, <span class="n">0.02</span>)
+                <span class="k">if</span> any(_seg_dist(c, s0, s1) &lt; <span class="n">0.07</span> <span class="k">for</span> s0, s1 <span class="k">in</span> avoid):
+                    <span class="k">continue</span>
+                ln = rnd.uniform(<span class="n">0.045</span>, <span class="n">0.08</span>)
+                geom = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+                vs = geom[<span class="s">&quot;verts&quot;</span>]
+                bmesh.ops.scale(bm, verts=vs, vec=(ln, <span class="n">0.014</span>, <span class="n">0.009</span>))
+                yaw = math.atan2(d.y, d.x) + rnd.uniform(-<span class="n">0.22</span>, <span class="n">0.22</span>)
+                rot = Matrix.Rotation(yaw, <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>) @ Matrix.Rotation(rnd.uniform(-<span class="n">0.6</span>, <span class="n">0.6</span>), <span class="n">4</span>, <span class="s">&#x27;X&#x27;</span>)
+                bmesh.ops.transform(bm, verts=vs, matrix=rot)
+                bmesh.ops.translate(bm, verts=vs, vec=(c.x, c.y, <span class="n">0.006</span>))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(<span class="s">&quot;IronFilings&quot;</span>, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = parent
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> clip_segments(nodes, loc, rot_z):
+    <span class="s">&quot;&quot;&quot;The clip&#x27;s node polyline in the magnet&#x27;s object XY (for filings).&quot;&quot;&quot;</span>
+    <span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+    m = Matrix.Rotation(math.radians(rot_z), <span class="n">2</span>)
+    pts = [m @ Vector((co.x, co.y)) + Vector(loc) <span class="k">for</span> co, _, _ <span class="k">in</span> nodes]
+    <span class="k">return</span> list(zip(pts, pts[<span class="n">1</span>:]))
+
+
 <span class="k">def</span> render_still(obj, path, engine):
     scene = bpy.context.scene
-    mat = bpy.data.materials.new(<span class="s">&quot;Rose&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.95</span>, <span class="n">0.10</span>, <span class="n">0.38</span>, <span class="n">1.0</span>)  <span class="c"># rose</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.24</span>
-    obj.data.materials.append(mat)
-    <span class="c"># both capped ends face -Y with the arc unrotated, so the camera on -Y</span>
-    <span class="c"># sees the two caps (the witness) face-on and the arc sweeping behind</span>
+    obj.data.materials.append(magnet_material())
+    <span class="c"># the open end (both capped pole faces) points at the camera on -Y</span>
     obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">8</span>))
+    bpy.context.view_layer.update()
+
+    teal = principled(<span class="s">&quot;ClipVinylTeal&quot;</span>, (<span class="n">0.0</span>, <span class="n">0.34</span>, <span class="n">0.40</span>), <span class="n">0.35</span>)
+    amber = principled(<span class="s">&quot;ClipVinylAmber&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.52</span>, <span class="n">0.02</span>), <span class="n">0.35</span>)
+    chrome = principled(<span class="s">&quot;BearingChrome&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.9</span>, <span class="n">0.92</span>), <span class="n">0.18</span>, metal=<span class="n">0.85</span>)
+
+    clip_len = <span class="n">0.85</span>
+    gem = bezier_path_nodes(GEM_START, GEM_PATH, clip_len)
+    bevel_w = <span class="n">0.02</span>
+    <span class="c"># each clip&#x27;s tip touches a pole face (object y=0) at the floor and the</span>
+    <span class="c"># clip lies along the field line leaving that pole, as a real one would</span>
+    placements = ((<span class="s">&quot;ClipTeal&quot;</span>, teal, (-<span class="n">1.5</span>, -bevel_w), -<span class="n">46.0</span>),
+                  (<span class="s">&quot;ClipAmber&quot;</span>, amber, (<span class="n">1.5</span>, -bevel_w), -<span class="n">134.0</span>))
+    clips, avoid = [], []
+    <span class="k">for</span> name, mat, loc, ang <span class="k">in</span> placements:
+        clips.append(make_wire(name, gem, bevel_w, mat, obj, loc, ang))
+        avoid += clip_segments(gem, loc, ang)
+    bearings = make_bearings(obj, chrome)
+    make_filings(obj, principled(<span class="s">&quot;FilingSteel&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.56</span>, <span class="n">0.6</span>), <span class="n">0.3</span>, metal=<span class="n">0.9</span>),
+                 avoid=avoid)
+    parts = [obj, *clips, bearings]
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -446,16 +719,12 @@ EXPECT_FACES = <span class="n">1028</span>
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
-    fmat.use_nodes = <span class="k">True</span>
-    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    fmat = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.7</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -465,7 +734,7 @@ EXPECT_FACES = <span class="n">1028</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.55</span>, BEVEL)
+    aim.location = (<span class="n">0.0</span>, -<span class="n">0.3</span>, <span class="n">0.1</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -481,23 +750,32 @@ EXPECT_FACES = <span class="n">1028</span>
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    <span class="c"># warm shaped key, faint cool fill, warm wedge on the back wall</span>
+    <span class="c"># warm shaped key, faint cool fill, cool rim, warm wedge on the back wall</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">550.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">3.0</span>, <span class="n">6.5</span>), <span class="n">330.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">70.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.2</span>, <span class="n">4.5</span>), <span class="n">160.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
+    <span class="c"># the wedge sits between the magnet and the wall and aims at the wall,</span>
+    <span class="c"># so its pool lands on the backdrop, not across the floor</span>
+    wall_spot = bpy.data.objects.new(<span class="s">&quot;WedgeTarget&quot;</span>, <span class="k">None</span>)
+    wall_spot.location = (<span class="n">1.2</span>, <span class="n">7.0</span>, <span class="n">1.4</span>)
+    scene.collection.objects.link(wall_spot)
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
-    wedge.energy = <span class="n">380.0</span>
-    wedge.size = <span class="n">6.0</span>
+    wedge.energy = <span class="n">300.0</span>
+    wedge.size = <span class="n">5.0</span>
     wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
     wob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
-    wob.location = (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>)
-    wob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
+    wob.location = (-<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">3.4</span>)
     scene.collection.objects.link(wob)
+    wc = wob.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    wc.target = wall_spot
+    wc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
+    wc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.1</span>, -<span class="n">4.3</span>, <span class="n">2.55</span>)
+    cam.location = (<span class="n">0.55</span>, -<span class="n">4.9</span>, <span class="n">3.3</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -517,18 +795,23 @@ EXPECT_FACES = <span class="n">1028</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the rose tube toward salmon (docs/VISUAL-STYLE.md)</span>
+    <span class="c"># AgX would wash the red enamel toward salmon (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
-    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
-    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    <span class="c"># Layer 1 gates, before the beauty render so a defective composition</span>
+    <span class="c"># ships no artifact: framing (silhouette matte, exit 10) on the magnet,</span>
+    <span class="c"># margins on everything that matters; asset quality (exit 11).</span>
     fcode = gallery_framing.check_framing(
         scene, cam,
         hero=[obj],
-        elements=[obj],
+        elements=parts,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    qcode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hero=parts, stage=[floor, wall])
+    <span class="k">if</span> qcode:
+        <span class="k">return</span> qcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -572,7 +855,7 @@ EXPECT_FACES = <span class="n">1028</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/curve-bevel-arc-hero.webp" alt="A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera." />
+    <img src="../assets/curve-bevel-arc-hero.webp" alt="A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them." />
   </dialog>
   <footer>
     <div class="statusbar">

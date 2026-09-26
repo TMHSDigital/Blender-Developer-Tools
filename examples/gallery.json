@@ -165,7 +165,7 @@
       "name": "curve-bevel-arc",
       "dir": "examples/curve-bevel-arc",
       "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
-      "alt": "A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera.",
+      "alt": "A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them.",
       "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.",
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
@@ -473,9 +473,9 @@
     {
       "name": "gp-lineart-contour",
       "dir": "examples/gp-lineart-contour",
-      "teaches": "Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.",
-      "alt": "A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes.",
-      "witnessesFix": "AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., 'LINEART'). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.",
+      "teaches": "Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.",
+      "alt": "A red-and-white lighthouse on a rocky islet with a keeper's cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink.",
+      "witnessesFix": "AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., 'LINEART'). Clearing source_object or leaving every edge type off silently yields an empty drawing — the check proves both failure modes and recovery.",
       "hero": "docs/gallery/assets/gp-lineart-contour-hero.webp",
       "preview": "examples/gp-lineart-contour/preview.webp",
       "tags": [
