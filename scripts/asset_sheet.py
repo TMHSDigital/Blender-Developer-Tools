@@ -80,6 +80,7 @@ SELECT = {
     "gn-instance-grid": (r"^Macropad\.", None),
     "curve-bevel-arc": (r"^(Magnet|Clip\w+|PoleBearings)$", None),
     "shape-key-blend": (r"^Vase$", None),
+    "depsgraph-export": (r"^Gamepad\.", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
