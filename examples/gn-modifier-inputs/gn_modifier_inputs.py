@@ -1,23 +1,28 @@
 """Geometry Nodes per-modifier input write — a runnable example.
 
 Witnesses the 5.1→5.2 removal of dict assignment on a NODES modifier.
-A shared GeometryNodeTree exposes a Float "Scale" socket. Three carrier
-cubes each get their own modifier instance of that tree. The check writes
-1.0 / 2.0 / 3.0 through the version-appropriate path, reads the value
-back, and asserts the evaluated Z-extent equals the written scale
-(closed form: a 1 m cube scaled by S and lifted by S/2 spans [0, S]).
+A shared GeometryNodeTree builds a spiral staircase from one exposed Float
+"Height" socket: the tree derives the step count from the height, instances
+the carrier mesh (one oak tread with its brass baluster) up a helix, and
+adds a newel post and a helical handrail. Three carriers each get their own
+modifier instance of that one tree. The check writes 1.0 / 2.0 / 3.0
+through the version-appropriate path, reads the value back, and asserts
+the evaluated Z-extent equals the written height (closed form: the newel
+post runs from the floor at z=0 to exactly z=Height, and every other part
+stays inside that span).
 
 4.5 LTS and 5.1 write ``mod[identifier] = value``. 5.2+ removed ID
 properties on NodesModifier — that assignment raises TypeError — and
 the replacement is ``mod.properties.inputs.<identifier>.value``.
 ``--api dict`` / ``--api rna`` force one side of the 5.1/5.2 split — they
-fail on the *other* series, not on every binary. ``--same-scale`` writes
-1.0 to every modifier and still asserts 1 / 2 / 3, so the second cube's
-readback fails on all three. That is the portable falsifier
-(``--same-axis`` in export-preset-axis).
+fail on the *other* series, not on every binary. ``--same-height`` writes
+1.0 to every modifier and still asserts 1 / 2 / 3, so the second
+staircase's readback fails on all three. That is the portable falsifier
+(``--same-axis`` in export-preset-axis). ``--same-scale`` is kept as an
+alias for the pre-staircase flag name.
 
     blender --background --python gn_modifier_inputs.py --
-    blender --background --python gn_modifier_inputs.py -- --same-scale
+    blender --background --python gn_modifier_inputs.py -- --same-height
     blender --background --python gn_modifier_inputs.py -- --api dict
     blender --background --python gn_modifier_inputs.py -- --output s.png
 """
@@ -28,26 +33,43 @@ import sys
 
 import bmesh
 import bpy
+from mathutils import Matrix
 
 sys.path.insert(
     0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 )
 import gallery_framing  # noqa: E402
 
-CUBE_SIZE = 1.0
-SCALES = (1.0, 2.0, 3.0)
-# Half-widths 0.5 / 1.0 / 1.5, with 0.5 m between neighbours. The old
-# (-2.2, 0.15, 2.45) overlapped the 2 m and 3 m cubes by 0.2 m. The check
-# reads only Z extents, so the layout is free.
-XS = (-2.6, -0.6, 2.4)
-COLORS = (
-    (0.05, 0.62, 0.58, 1.0),  # teal
-    (0.82, 0.38, 0.08, 1.0),  # copper
-    (0.86, 0.18, 0.22, 1.0),  # coral
-)
+HEIGHTS = (1.0, 2.0, 3.0)
+# Stair footprint is ~1.3 m across (tread radius 0.62 + rail). 1.62 m
+# centres leave ~0.3 m between neighbours. The check reads only Z extents,
+# so the layout is free.
+XS = (-1.62, 0.0, 1.62)
 READBACK_EPS = 1e-6
 EXTENT_EPS = 1e-4
-INPUT_NAME = "Scale"
+INPUT_NAME = "Height"
+
+# Staircase design constants (metres). The tree derives the step count
+# from Height: n = round((Height - RAIL_H) / RISER), so 1 / 2 / 3 m give
+# 7 / 17 / 27 treads at 22.5 degrees each (0.4 / 1.1 / 1.7 turns).
+STEP_ANGLE = 2.0 * math.pi / 16.0
+RISER = 0.1
+RAIL_H = 0.3          # handrail centreline above each tread top, + RAIL_R
+RAIL_R = 0.018        # handrail tube radius
+TREAD_R = 0.62        # tread outer radius
+TREAD_T = 0.045       # tread thickness
+BALUSTER_R = TREAD_R - 0.07
+POST_R = 0.065
+
+# Render staging (render path only; the check never reads these).
+CAM_LOC = (1.2, -8.6, 3.6)
+CAM_AIM = (0.1, 0.0, 1.35)
+KEY_LOC = (-6.5, -3.0, 5.0)
+KEY_W = 560.0
+KEY_SPREAD = 36.0
+FILL_W = 45.0
+RIM_W = 220.0
+WEDGE_W = 520.0
 
 
 def _api_choice(explicit):
@@ -56,7 +78,7 @@ def _api_choice(explicit):
     return "rna" if bpy.app.version >= (5, 2, 0) else "dict"
 
 
-def scale_identifier(tree):
+def height_identifier(tree):
     for item in tree.interface.items_tree:
         if getattr(item, "item_type", "SOCKET") not in ("SOCKET",):
             continue
@@ -80,91 +102,259 @@ def get_mod_input(mod, ident, api):
     return float(sock.value)
 
 
-def make_material(name, color):
-    mat = bpy.data.materials.new(name)
+# --------------------------------------------------------------------------
+# Materials
+# --------------------------------------------------------------------------
+
+def _bsdf(mat):
     mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = color
-    bsdf.inputs["Roughness"].default_value = 0.45
-    bsdf.inputs["Metallic"].default_value = 0.1
+    return mat.node_tree.nodes["Principled BSDF"]
+
+
+def make_oak():
+    """Warm oak with a stretched-noise grain, so the treads are not flat fills."""
+    mat = bpy.data.materials.new("Stair.Oak")
+    bsdf = _bsdf(mat)
+    nt = mat.node_tree
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    mapping = nt.nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (2.0, 2.0, 40.0)
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 6.0
+    noise.inputs["Detail"].default_value = 6.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.3
+    ramp.color_ramp.elements[0].color = (0.30, 0.11, 0.035, 1.0)
+    ramp.color_ramp.elements[1].position = 0.7
+    ramp.color_ramp.elements[1].color = (0.58, 0.24, 0.06, 1.0)
+    nt.links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    nt.links.new(mapping.outputs["Vector"], noise.inputs["Vector"])
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.55
     return mat
 
 
-def make_cube_mesh(name):
+def make_brass():
+    mat = bpy.data.materials.new("Stair.Brass")
+    bsdf = _bsdf(mat)
+    bsdf.inputs["Base Color"].default_value = (0.86, 0.58, 0.22, 1.0)
+    bsdf.inputs["Metallic"].default_value = 1.0
+    bsdf.inputs["Roughness"].default_value = 0.3
+    return mat
+
+
+def make_enamel():
+    mat = bpy.data.materials.new("Stair.TealEnamel")
+    bsdf = _bsdf(mat)
+    bsdf.inputs["Base Color"].default_value = (0.02, 0.24, 0.26, 1.0)
+    bsdf.inputs["Metallic"].default_value = 0.25
+    bsdf.inputs["Roughness"].default_value = 0.35
+    return mat
+
+
+# --------------------------------------------------------------------------
+# Carrier mesh: one tread + its baluster, in the tread's local frame
+# (tread top at z=0, centred on +X). The tree instances it up the helix.
+# --------------------------------------------------------------------------
+
+def make_tread_mesh(name, oak, brass):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        bmesh.ops.create_cube(bm, size=CUBE_SIZE)
+        span = STEP_ANGLE * 0.94
+        arc = 8
+        verts = [bm.verts.new((0.03, 0.0, 0.0))]
+        for k in range(arc + 1):
+            a = -span / 2 + span * k / arc
+            verts.append(bm.verts.new((TREAD_R * math.cos(a),
+                                       TREAD_R * math.sin(a), 0.0)))
+        top = bm.faces.new(verts)
+        ext = bmesh.ops.extrude_face_region(bm, geom=[top])
+        down = [v for v in ext["geom"] if isinstance(v, bmesh.types.BMVert)]
+        bmesh.ops.translate(bm, verts=down, vec=(0.0, 0.0, -TREAD_T))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        # Round the walking edges: a chamfered tread, not a slab.
+        outer = [e for e in bm.edges
+                 if all(v.co.xy.length > 0.2 for v in e.verts)]
+        bmesh.ops.bevel(bm, geom=outer, offset=0.008, segments=2,
+                        profile=0.5, affect="EDGES", clamp_overlap=True)
+        for f in bm.faces:
+            f.material_index = 0
+
+        bal_len = RAIL_H - RAIL_R
+        before = set(bm.faces)
+        bmesh.ops.create_cone(
+            bm, cap_ends=True, cap_tris=False, segments=12,
+            radius1=0.012, radius2=0.012, depth=bal_len,
+            matrix=Matrix.Translation((BALUSTER_R, 0.0, bal_len / 2)),
+        )
+        for f in bm.faces:
+            if f not in before:
+                f.material_index = 1
+                f.smooth = True
         bm.to_mesh(me)
     finally:
         bm.free()
+    me.materials.append(oak)
+    me.materials.append(brass)
     return me
 
 
-def build_scale_tree(material=None):
-    tree = bpy.data.node_groups.new("ModifierScale", "GeometryNodeTree")
+# --------------------------------------------------------------------------
+# The shared tree: Height -> step count -> spiral staircase
+# --------------------------------------------------------------------------
+
+def _math(tree, op, a=None, b=None):
+    n = tree.nodes.new("ShaderNodeMath")
+    n.operation = op
+    for i, v in enumerate((a, b)):
+        if v is None:
+            continue
+        if isinstance(v, (int, float)):
+            n.inputs[i].default_value = v
+        else:
+            tree.links.new(v, n.inputs[i])
+    return n.outputs[0]
+
+
+def _vec(tree, x=0.0, y=0.0, z=None):
+    n = tree.nodes.new("ShaderNodeCombineXYZ")
+    n.inputs["X"].default_value = x
+    n.inputs["Y"].default_value = y
+    if z is not None and not isinstance(z, (int, float)):
+        tree.links.new(z, n.inputs["Z"])
+    elif z is not None:
+        n.inputs["Z"].default_value = z
+    return n.outputs["Vector"]
+
+
+def _translate(tree, geo, vec):
+    xf = tree.nodes.new("GeometryNodeTransform")
+    tree.links.new(geo, xf.inputs["Geometry"])
+    tree.links.new(vec, xf.inputs["Translation"])
+    return xf.outputs["Geometry"]
+
+
+def _set_mat(tree, geo, mat, smooth=False):
+    sm = tree.nodes.new("GeometryNodeSetMaterial")
+    sm.inputs["Material"].default_value = mat
+    tree.links.new(geo, sm.inputs["Geometry"])
+    out = sm.outputs["Geometry"]
+    if smooth:
+        ss = tree.nodes.new("GeometryNodeSetShadeSmooth")
+        tree.links.new(out, ss.inputs["Geometry"])
+        out = ss.outputs["Geometry"]
+    return out
+
+
+def _cylinder(tree, radius, depth, verts=32):
+    cyl = tree.nodes.new("GeometryNodeMeshCylinder")
+    cyl.inputs["Vertices"].default_value = verts
+    cyl.inputs["Radius"].default_value = radius
+    if isinstance(depth, (int, float)):
+        cyl.inputs["Depth"].default_value = depth
+    else:
+        tree.links.new(depth, cyl.inputs["Depth"])
+    return cyl.outputs["Mesh"]
+
+
+def build_stair_tree(enamel, brass):
+    tree = bpy.data.node_groups.new("SpiralStair", "GeometryNodeTree")
     tree.interface.new_socket(
         name="Geometry", in_out="INPUT", socket_type="NodeSocketGeometry"
     )
-    scale_sock = tree.interface.new_socket(
+    h_sock = tree.interface.new_socket(
         name=INPUT_NAME, in_out="INPUT", socket_type="NodeSocketFloat"
     )
-    scale_sock.default_value = 1.0
+    h_sock.default_value = 1.0
     tree.interface.new_socket(
         name="Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry"
     )
     gi = tree.nodes.new("NodeGroupInput")
     go = tree.nodes.new("NodeGroupOutput")
-    combine = tree.nodes.new("ShaderNodeCombineXYZ")
-    xform = tree.nodes.new("GeometryNodeTransform")
-    shade = tree.nodes.new("GeometryNodeSetShadeSmooth")
-    shade.inputs["Shade Smooth"].default_value = False
+    height = gi.outputs[INPUT_NAME]
 
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs["X"])
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs["Y"])
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs["Z"])
-    tree.links.new(gi.outputs["Geometry"], xform.inputs["Geometry"])
-    tree.links.new(combine.outputs["Vector"], xform.inputs["Scale"])
-    # Lift by S/2 so a cube of extent S sits on z=0.
-    # Translation is a vector; drive Z from the same Scale socket via Combine.
-    lift = tree.nodes.new("ShaderNodeCombineXYZ")
-    scale_half = tree.nodes.new("ShaderNodeMath")
-    scale_half.operation = "MULTIPLY"
-    scale_half.inputs[1].default_value = 0.5
-    tree.links.new(gi.outputs[INPUT_NAME], scale_half.inputs[0])
-    tree.links.new(scale_half.outputs[0], lift.inputs["Z"])
-    tree.links.new(lift.outputs["Vector"], xform.inputs["Translation"])
+    # Step count and the exact riser that lands the top tread on
+    # Height - RAIL_H, so the handrail tops out at Height.
+    climb = _math(tree, "SUBTRACT", height, RAIL_H)
+    steps = _math(tree, "MAXIMUM",
+                  _math(tree, "ROUND", _math(tree, "DIVIDE", climb, RISER)),
+                  1.0)
+    riser = _math(tree, "DIVIDE", climb, steps)
 
-    tree.links.new(xform.outputs["Geometry"], shade.inputs["Geometry"])
-    out_socket = shade.outputs["Geometry"]
-    if material is not None:
-        set_mat = tree.nodes.new("GeometryNodeSetMaterial")
-        set_mat.inputs["Material"].default_value = material
-        tree.links.new(out_socket, set_mat.inputs["Geometry"])
-        out_socket = set_mat.outputs["Geometry"]
-    tree.links.new(out_socket, go.inputs["Geometry"])
+    # Treads: one point per step up the axis, each instance turned by
+    # index * STEP_ANGLE.
+    line = tree.nodes.new("GeometryNodeMeshLine")
+    tree.links.new(steps, line.inputs["Count"])
+    tree.links.new(_vec(tree, z=riser), line.inputs["Start Location"])
+    tree.links.new(_vec(tree, z=riser), line.inputs["Offset"])
+    index = tree.nodes.new("GeometryNodeInputIndex")
+    turn = _math(tree, "MULTIPLY", index.outputs["Index"], STEP_ANGLE)
+    iop = tree.nodes.new("GeometryNodeInstanceOnPoints")
+    tree.links.new(line.outputs["Mesh"], iop.inputs["Points"])
+    tree.links.new(gi.outputs["Geometry"], iop.inputs["Instance"])
+    tree.links.new(_vec(tree, z=turn), iop.inputs["Rotation"])
+    realize = tree.nodes.new("GeometryNodeRealizeInstances")
+    tree.links.new(iop.outputs["Instances"], realize.inputs["Geometry"])
+    treads = realize.outputs["Geometry"]
+
+    # Newel post, floor to exactly Height, with a base plate and top collar.
+    post = _translate(tree, _cylinder(tree, POST_R, height),
+                      _vec(tree, z=_math(tree, "MULTIPLY", height, 0.5)))
+    plate = _translate(tree, _cylinder(tree, 0.2, 0.03), _vec(tree, z=0.015))
+    collar = _translate(tree, _cylinder(tree, POST_R + 0.02, 0.05),
+                        _vec(tree, z=_math(tree, "SUBTRACT", height, 0.025)))
+    post_join = tree.nodes.new("GeometryNodeJoinGeometry")
+    for g in (collar, plate, post):
+        tree.links.new(g, post_join.inputs["Geometry"])
+    post_geo = _set_mat(tree, post_join.outputs["Geometry"], enamel, smooth=True)
+
+    # Handrail: a helix through the baluster tops, one turn per 16 steps.
+    spiral = tree.nodes.new("GeometryNodeCurveSpiral")
+    spiral.inputs["Resolution"].default_value = 96
+    spiral.inputs["Start Radius"].default_value = BALUSTER_R
+    spiral.inputs["End Radius"].default_value = BALUSTER_R
+    # The Spiral node winds clockwise by default; the treads climb
+    # counter-clockwise (positive Z rotation), so reverse it.
+    spiral.inputs["Reverse"].default_value = True
+    last = _math(tree, "SUBTRACT", steps, 1.0)
+    tree.links.new(_math(tree, "MULTIPLY", last, STEP_ANGLE / (2 * math.pi)),
+                   spiral.inputs["Rotations"])
+    tree.links.new(_math(tree, "MULTIPLY", last, riser),
+                   spiral.inputs["Height"])
+    profile = tree.nodes.new("GeometryNodeCurvePrimitiveCircle")
+    profile.inputs["Resolution"].default_value = 12
+    profile.inputs["Radius"].default_value = RAIL_R
+    c2m = tree.nodes.new("GeometryNodeCurveToMesh")
+    tree.links.new(spiral.outputs["Curve"], c2m.inputs["Curve"])
+    tree.links.new(profile.outputs["Curve"], c2m.inputs["Profile Curve"])
+    if "Fill Caps" in c2m.inputs:
+        c2m.inputs["Fill Caps"].default_value = True
+    rail_lift = _math(tree, "ADD", riser, RAIL_H - RAIL_R)
+    rail = _set_mat(tree, _translate(tree, c2m.outputs["Mesh"],
+                                     _vec(tree, z=rail_lift)),
+                    brass, smooth=True)
+
+    join = tree.nodes.new("GeometryNodeJoinGeometry")
+    for g in (rail, post_geo, treads):
+        tree.links.new(g, join.inputs["Geometry"])
+    tree.links.new(join.outputs["Geometry"], go.inputs["Geometry"])
     return tree
 
 
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    mats = [
-        make_material("TealScale", COLORS[0]),
-        make_material("CopperScale", COLORS[1]),
-        make_material("CoralScale", COLORS[2]),
-    ]
-    # One shared tree; Set Material is applied per-object via the mesh slot
-    # rather than inside the group so the group stays parameter-only.
-    tree = build_scale_tree(material=None)
+    oak, brass, enamel = make_oak(), make_brass(), make_enamel()
+    tree = build_stair_tree(enamel, brass)
     objs = []
     mods = []
-    for i, (x, mat) in enumerate(zip(XS, mats)):
-        me = make_cube_mesh(f"Carrier{i}")
-        me.materials.append(mat)
-        obj = bpy.data.objects.new(f"Scale{int(SCALES[i])}", me)
+    for i, (x, h) in enumerate(zip(XS, HEIGHTS)):
+        me = make_tread_mesh(f"Stair.Tread{i}", oak, brass)
+        obj = bpy.data.objects.new(f"SpiralStair.H{int(h)}", me)
         obj.location = (x, 0.0, 0.0)
         bpy.context.collection.objects.link(obj)
-        mod = obj.modifiers.new("scale_input", "NODES")
+        mod = obj.modifiers.new("stair_height", "NODES")
         mod.node_group = tree
         objs.append(obj)
         mods.append(mod)
@@ -184,10 +374,10 @@ def evaluated_z_extent(obj):
         ev.to_mesh_clear()
 
 
-def check(tree, objs, mods, api, same_scale=False):
-    ident = scale_identifier(tree)
+def check(tree, objs, mods, api, same_height=False):
+    ident = height_identifier(tree)
     if not ident:
-        print("ERROR: Scale input identifier missing on the tree interface",
+        print("ERROR: Height input identifier missing on the tree interface",
               file=sys.stderr)
         return 3
     print(f"api={api} blender={bpy.app.version} identifier={ident}")
@@ -196,13 +386,13 @@ def check(tree, objs, mods, api, same_scale=False):
         print("ERROR: modifiers do not share one node_group", file=sys.stderr)
         return 4
 
-    for obj, mod, scale in zip(objs, mods, SCALES):
-        written = SCALES[0] if same_scale else scale
+    for obj, mod, height in zip(objs, mods, HEIGHTS):
+        written = HEIGHTS[0] if same_height else height
         try:
             set_mod_input(mod, ident, written, api)
         except Exception as e:
             print(
-                f"ERROR: {api} write of {scale} on {obj.name} raised "
+                f"ERROR: {api} write of {height} on {obj.name} raised "
                 f"{type(e).__name__}: {e}",
                 file=sys.stderr,
             )
@@ -218,18 +408,18 @@ def check(tree, objs, mods, api, same_scale=False):
                 file=sys.stderr,
             )
             return 6
-        if abs(got - scale) > READBACK_EPS:
+        if abs(got - height) > READBACK_EPS:
             print(
-                f"ERROR: readback {got} != written {scale} on {obj.name}",
+                f"ERROR: readback {got} != written {height} on {obj.name}",
                 file=sys.stderr,
             )
             return 7
 
         zmin, zmax, nverts = evaluated_z_extent(obj)
         extent = zmax - zmin
-        if abs(extent - scale) > EXTENT_EPS:
+        if abs(extent - height) > EXTENT_EPS:
             print(
-                f"ERROR: evaluated Z-extent {extent:.6f} != scale {scale} "
+                f"ERROR: evaluated Z-extent {extent:.6f} != height {height} "
                 f"on {obj.name} (z=[{zmin:.4f},{zmax:.4f}] verts={nverts})",
                 file=sys.stderr,
             )
@@ -242,7 +432,7 @@ def check(tree, objs, mods, api, same_scale=False):
             )
             return 9
         print(
-            f"{obj.name} scale={scale} readback={got:.6f} "
+            f"{obj.name} height={height} readback={got:.6f} "
             f"z_extent={extent:.6f} zmin={zmin:.6f} verts={nverts}"
         )
 
@@ -283,7 +473,7 @@ def render_still(objs, path, engine):
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 9.0, 0.0)
+    wall.location = (0.0, 8.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
@@ -295,14 +485,18 @@ def render_still(objs, path, engine):
     scene.world = world
 
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.25, 0.0, 1.1)
+    aim.location = CAM_AIM
     scene.collection.objects.link(aim)
 
-    def light(name, loc, energy, size, col):
+    def light(name, loc, energy, size, col, spread=None):
         ld = bpy.data.lights.new(name, "AREA")
         ld.energy = energy
         ld.size = size
         ld.color = col
+        if spread is not None:
+            # A shaped key: the spread keeps the pool on the stairs and
+            # lets the floor fall off to the near-black stage.
+            ld.spread = math.radians(spread)
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         scene.collection.objects.link(ob)
@@ -311,22 +505,22 @@ def render_still(objs, path, engine):
         lc.track_axis = "TRACK_NEGATIVE_Z"
         lc.up_axis = "UP_Y"
 
-    light("Key", (-5.5, -6.0, 5.2), 380.0, 6.0, (1.0, 0.96, 0.9))
-    light("Fill", (5.4, -3.2, 2.4), 110.0, 8.0, (0.75, 0.85, 1.0))
-    light("Rim", (0.4, 6.4, 3.8), 280.0, 3.5, (0.6, 0.78, 1.0))
+    light("Key", KEY_LOC, KEY_W, 2.5, (1.0, 0.96, 0.9), KEY_SPREAD)
+    light("Fill", (5.5, -4.0, 2.2), FILL_W, 9.0, (0.75, 0.85, 1.0))
+    light("Rim", (0.5, 6.0, 6.5), RIM_W, 3.0, (0.6, 0.78, 1.0), 30.0)
     wedge = bpy.data.lights.new("Wedge", "AREA")
-    wedge.energy = 420.0
+    wedge.energy = WEDGE_W
     wedge.size = 6.0
     wedge.color = (1.0, 0.76, 0.5)
     wob = bpy.data.objects.new("Wedge", wedge)
-    wob.location = (2.4, 5.6, 4.2)
-    wob.rotation_euler = (math.radians(-68), 0.0, math.radians(190))
+    wob.location = (1.8, 4.6, 4.6)
+    wob.rotation_euler = (math.radians(-62), 0.0, math.radians(195))
     scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (1.6, -12.4, 6.6)
+    cam.location = CAM_LOC
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new("TRACK_TO")
@@ -336,7 +530,7 @@ def render_still(objs, path, engine):
 
     scene.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
-        scene.cycles.samples = 32
+        scene.cycles.samples = 64
     else:
         try:
             scene.eevee.taa_render_samples = 64
@@ -346,6 +540,7 @@ def render_still(objs, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "PNG"
     scene.render.filepath = path
+    # Standard, not AgX: AgX pastels the oak and brass and greys the stage.
     scene.view_settings.view_transform = "Standard"
 
     fcode = gallery_framing.check_framing(
@@ -376,14 +571,14 @@ def main():
         help="force the 5.1 dict path, the 5.2 RNA path, or pick from bpy.app.version",
     )
     p.add_argument(
-        "--same-scale", action="store_true",
+        "--same-height", "--same-scale", dest="same_height", action="store_true",
         help="write 1.0 to every modifier (must fail)",
     )
     args = p.parse_args(argv)
 
     tree, objs, mods = build()
     api = _api_choice(args.api)
-    code = check(tree, objs, mods, api, same_scale=args.same_scale)
+    code = check(tree, objs, mods, api, same_height=args.same_height)
     if code:
         return code
 

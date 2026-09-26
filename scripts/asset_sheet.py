@@ -73,6 +73,7 @@ SELECT = {
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
     "degenerate-bevel-weld": (r"^CaseSafe\.", None),
     "mesh-hygiene-audit": (r"^Valve\.", None),
+    "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
