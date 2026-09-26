@@ -325,7 +325,7 @@ byte images stay straight 8-bit. Also witnesses `EXR color_mode='RGB'` dropping 
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: pale glazed jar diptych on a dark floor — left panel low sun at 8 degrees, the jar dim twilight blue under a deep blue zenith, right panel high sun at 55 degrees, the jar bright under a pale daylight sky" /></a>
+<a href="examples/sky-texture-sun-elevation/"><img src="examples/sky-texture-sun-elevation/preview.webp" alt="Sky texture sun elevation: diptych of a red-granite obelisk on a paved plaza lit only by the sky — left panel sun at 8 degrees, navy dusk with an orange horizon glow and the obelisk face raked orange, right panel sun at 55 degrees, bright blue midday sky, sunlit paving and a short shadow" /></a>
 </td>
 <td valign="middle">
 
@@ -336,7 +336,7 @@ code misses across 4.5 → 5.1. `sky_type` is `NISHITA` on 4.5 LTS and
 `MULTIPLE_SCATTERING` on 5.1 (`NISHITA` gone); `dust_density` exists only on 4.5
 (`aerosol_density` on 5.1). Two tiny Cycles EXR zenith probes assert
 `sun_elevation` 8° → 55° brightens zenith (rise **2.25x** / **1.50x**, gate ≥ 1.25).
-Gallery still is a dual-elevation diptych so the contract reads at thumbnail scale.
+Gallery still is a sky-lit obelisk diptych (8° dusk | 55° midday) so the contract reads at thumbnail scale.
 
 </td>
 </tr>
