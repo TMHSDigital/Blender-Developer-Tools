@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bmesh-gear-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
+  <meta property="og:image:alt" content="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="bmesh-gear — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bmesh-gear-hero.webp" />
-  <meta name="twitter:image:alt" content="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
+  <meta name="twitter:image:alt" content="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A 14-tooth gear built entirely with bmesh — profile ring, face, extrude — with bm.free() in a try/finally, exactly as the ownership contract demands.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves.">
-      <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre.">
+      <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Parametric bmesh topology is exactly predictable: verts, edges, and faces match their closed forms, and every edge borders exactly two faces (watertight).</div>
@@ -281,6 +281,7 @@
 <p>A runnable example that builds a 14-tooth gear entirely with bmesh — profile ring, face, <code>extrude_face_region</code>, translate — following the ownership contract from <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/always-free-bmesh.mdc"><code>always-free-bmesh</code></a> rule: every <code>bmesh.new()</code> is paired with <code>bm.free()</code> in a <code>try</code>/<code>finally</code>.</p>
 <p><strong>What it witnesses:</strong> parametric bmesh construction has exactly predictable topology. The check asserts the closed-form counts — verts = 2 × (4 × teeth), faces = sides + 2 caps, edges = 3 × profile — and that the result is watertight (every edge borders exactly two faces). If an op leaks geometry or a face fails to close, the math catches it.</p>
 <p>The still leans the gear back on a matte inclined display wedge. Both contacts are derived from the posed mesh: the lowest back-cap vertex sits 3 mm into the floor, and the wedge&#x27;s slope lies in the back-cap plane, so the lean is carried rather than held in the air.</p>
+<p>The finish follows how a gear blank is actually cut, and the render path changes only the material and lights — the mesh the check counts is untouched. The caps are lathe-faced: turning marks run concentric about the gear&#x27;s own axis (object coordinates, so they centre on that axis rather than on a bounding-box corner), far finer than a pixel, so they read only as a narrow satin roughness band and a whisper of bump — the soft highlight that fans from the centre. The tooth flanks are hobbed, a rougher finish that spreads the light across every facet. The key highlight on the face is a softbox placed on the camera ray&#x27;s reflection about the front cap, and a low bounce card gives the downward flanks something to mirror. There is no bore: the closed-form topology check counts exactly two rings and two caps, so the gear stays a solid blank rather than faking a hole in the shader.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python bmesh_gear.py --
@@ -293,7 +294,7 @@ blender --background --python bmesh_gear.py -- --output gear.png
 blender --background --python bmesh_gear.py -- --output gear.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Topology ≠ closed form (<code>--no-extrude</code> lands here)</td></tr><tr><td>4</td><td>Non-manifold edges</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Topology ≠ closed form (<code>--no-extrude</code> lands here)</td></tr><tr><td>4</td><td>Non-manifold edges</td></tr><tr><td>6</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td><code>--output</code> framing violation (Layer 1 fill / margin gate, <code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-extrude</code>.</p>
     </section>
     <section class="detail-section src">
@@ -325,6 +326,11 @@ check. Pass --output to also render a still:
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Vector
 
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
 TEETH = <span class="n">14</span>
 R_ROOT = <span class="n">1.0</span>
 R_TIP = <span class="n">1.25</span>
@@ -336,6 +342,15 @@ TOOTH_DUTY = <span class="n">0.45</span>
 STAGE_BITE = <span class="n">0.003</span>    <span class="c"># contact depth into the floor and into the gear&#x27;s back</span>
 WEDGE_SLOPE = <span class="n">1.55</span>    <span class="c"># display wedge slope length, up the gear&#x27;s back face</span>
 WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge width across the gear</span>
+CAP_RING_SCALE = <span class="n">150.0</span>  <span class="c"># lathe turning marks: finer than a pixel at gallery scale</span>
+CAP_ROUGH = (<span class="n">0.17</span>, <span class="n">0.21</span>)  <span class="c"># faced caps: a narrow satin band, not a stripe pattern</span>
+CAP_BUMP = <span class="n">0.05</span>       <span class="c"># whisper of bump from the turning marks</span>
+FLANK_ROUGH = <span class="n">0.55</span>    <span class="c"># hobbed tooth flanks: rougher, so every facet catches light</span>
+BOUNCE_W = <span class="n">120.0</span>      <span class="c"># low front card for the downward tooth flanks</span>
+CARD_W = <span class="n">45.0</span>        <span class="c"># softbox whose reflection is the face&#x27;s key highlight</span>
+CARD_SIZE = <span class="n">2.5</span>
+CARD_DIST = <span class="n">5.0</span>
+CARD_OFFSET = Vector((-<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">0.25</span>))  <span class="c"># push the reflection off-centre</span>
 
 
 <span class="k">def</span> gear_profile():
@@ -405,33 +420,83 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
+<span class="k">def</span> machined_brass():
+    <span class="s">&quot;&quot;&quot;Brass finished the way a gear blank is actually cut.
+
+    The two caps are faced on a lathe: turning marks run concentric about the
+    gear axis, far finer than a pixel at gallery scale, so they read only as
+    a slight satin sheen and a whisper of bump, never as stripes. The tooth
+    flanks are hobbed, a rougher milled finish that spreads the key and fill
+    across each facet so every flank reads against the stage. Caps and flanks
+    are told apart by the object-space face normal, so the finish follows
+    the geometry wherever the gear is posed.
+    &quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;MachinedBrass&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nodes, links = nt.nodes, nt.links
+    bsdf = nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.80</span>, <span class="n">0.47</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+
+    <span class="c"># turning marks: rings about the object Z axis (the gear axis), centred</span>
+    <span class="c"># on the gear&#x27;s own origin — Generated coordinates would centre them on</span>
+    <span class="c"># the bounding-box corner and turn the face into off-axis arcs</span>
+    coords = nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    rings = nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
+    rings.wave_type = <span class="s">&#x27;RINGS&#x27;</span>
+    rings.rings_direction = <span class="s">&#x27;Z&#x27;</span>
+    rings.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = CAP_RING_SCALE
+    rings.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">0.0</span>
+    links.new(coords.outputs[<span class="s">&quot;Object&quot;</span>], rings.inputs[<span class="s">&quot;Vector&quot;</span>])
+
+    <span class="c"># cap mask: 1 on the faced caps, 0 on the hobbed flanks</span>
+    geo = nodes.new(<span class="s">&quot;ShaderNodeNewGeometry&quot;</span>)
+    to_obj = nodes.new(<span class="s">&quot;ShaderNodeVectorTransform&quot;</span>)
+    to_obj.vector_type = <span class="s">&#x27;NORMAL&#x27;</span>
+    to_obj.convert_from = <span class="s">&#x27;WORLD&#x27;</span>
+    to_obj.convert_to = <span class="s">&#x27;OBJECT&#x27;</span>
+    links.new(geo.outputs[<span class="s">&quot;Normal&quot;</span>], to_obj.inputs[<span class="s">&quot;Vector&quot;</span>])
+    sep = nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+    links.new(to_obj.outputs[<span class="s">&quot;Vector&quot;</span>], sep.inputs[<span class="s">&quot;Vector&quot;</span>])
+    absz = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    absz.operation = <span class="s">&#x27;ABSOLUTE&#x27;</span>
+    links.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], absz.inputs[<span class="n">0</span>])
+    cap = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    cap.operation = <span class="s">&#x27;GREATER_THAN&#x27;</span>
+    cap.inputs[<span class="n">1</span>].default_value = <span class="n">0.5</span>
+    links.new(absz.outputs[<span class="s">&quot;Value&quot;</span>], cap.inputs[<span class="n">0</span>])
+
+    <span class="c"># narrow roughness band on the caps: a satin sheen, not a stripe pattern</span>
+    cap_rough = nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    cap_rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = CAP_ROUGH[<span class="n">0</span>]
+    cap_rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = CAP_ROUGH[<span class="n">1</span>]
+    links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], cap_rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    rough = nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)  <span class="c"># cap mask 0..1 -&gt; flank..cap</span>
+    rough.clamp = <span class="k">True</span>
+    links.new(cap.outputs[<span class="s">&quot;Value&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = FLANK_ROUGH
+    links.new(cap_rough.outputs[<span class="s">&quot;Result&quot;</span>], rough.inputs[<span class="s">&quot;To Max&quot;</span>])
+    links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+
+    <span class="c"># a gentle bump from the same marks, caps only</span>
+    height = nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    height.operation = <span class="s">&#x27;MULTIPLY&#x27;</span>
+    links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], height.inputs[<span class="n">0</span>])
+    links.new(cap.outputs[<span class="s">&quot;Value&quot;</span>], height.inputs[<span class="n">1</span>])
+    bump = nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = CAP_BUMP
+    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.002</span>
+    links.new(height.outputs[<span class="s">&quot;Value&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+    links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
 <span class="k">def</span> render_still(obj, path, engine):
     scene = bpy.context.scene
     <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
         poly.use_smooth = <span class="k">False</span>  <span class="c"># crisp machined facets</span>
-    <span class="c"># machined brass: a flat metal face lit by area lights renders as one</span>
-    <span class="c"># featureless gradient, so the finish carries the design — concentric</span>
-    <span class="c"># turning marks (a RINGS wave driving roughness) break the face into</span>
-    <span class="c"># rings that each catch the key at a different angle</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;MachinedBrass&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    nt = mat.node_tree
-    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.72</span>, <span class="n">0.44</span>, <span class="n">0.16</span>, <span class="n">1.0</span>)
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
-    rings = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
-    rings.wave_type = <span class="s">&#x27;RINGS&#x27;</span>
-    rings.rings_direction = <span class="s">&#x27;SPHERICAL&#x27;</span>  <span class="c"># concentric from center, not X-axis bands</span>
-    rings.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">16.0</span>
-    rings.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">0.5</span>
-    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
-    rough.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.0</span>
-    rough.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">1.0</span>
-    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.14</span>
-    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.36</span>
-    nt.links.new(rings.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
-    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
-    obj.data.materials.append(mat)
+    obj.data.materials.append(machined_brass())
     <span class="c"># the gear leans back on an inclined display wedge. Both contacts are</span>
     <span class="c"># derived from the posed mesh: the lowest back-cap vertex bites into</span>
     <span class="c"># the floor, and the wedge&#x27;s slope lies in the back-cap plane, sunk into</span>
@@ -478,7 +543,8 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
     spec = wb.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>) <span class="k">or</span> wb.inputs.get(<span class="s">&quot;Specular&quot;</span>)
     spec.default_value = <span class="n">0.1</span>
     wedge_me.materials.append(wmat)
-    scene.collection.objects.link(bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge_me))
+    wedge = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge_me)
+    scene.collection.objects.link(wedge)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -506,12 +572,15 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.022</span>, <span class="n">0.028</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, rot=<span class="k">None</span>, aim=<span class="k">None</span>):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy; ld.size = size; ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        <span class="k">if</span> aim <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:  <span class="c"># area lights emit along local -Z</span>
+            ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        <span class="k">else</span>:
+            ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
     <span class="c"># metals live on reflections: soft warm key, restrained cool fill, and the</span>
@@ -519,15 +588,27 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
     light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">550.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">130.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-    <span class="c"># a small hot glint: brass needs one crisp specular streak to read machined</span>
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.8</span>, -<span class="n">5.2</span>, <span class="n">6.2</span>), <span class="n">900.0</span>, <span class="n">0.9</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.7</span>), (<span class="n">40</span>, <span class="n">0</span>, <span class="n">18</span>))
+    <span class="c"># the camera rides with the gear&#x27;s derived seat height (it was posed for</span>
+    <span class="c"># a gear hung at z=0.85), so the composition is unchanged</span>
+    cam_loc = Vector((<span class="n">0.0</span>, -<span class="n">7.6</span>, <span class="n">4.2</span> + obj.location.z - <span class="n">0.85</span>))
+    <span class="c"># a polished face shows the key only where it mirrors it. The softbox is</span>
+    <span class="c"># placed on the camera ray&#x27;s reflection about the front cap, offset</span>
+    <span class="c"># toward the upper left, so its soft reflection sweeps across the face</span>
+    <span class="c"># as one legible highlight instead of missing the face altogether</span>
+    face_c = mw @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, DEPTH))
+    view = (face_c - cam_loc).normalized()
+    mirror = view - <span class="n">2.0</span> * view.dot(into) * into
+    card = face_c + (mirror + CARD_OFFSET).normalized() * CARD_DIST
+    light(<span class="s">&quot;Card&quot;</span>, tuple(card), CARD_W, CARD_SIZE, (<span class="n">1.0</span>, <span class="n">0.93</span>, <span class="n">0.82</span>), aim=face_c)
+    <span class="c"># metal flanks mirror whatever faces them, and here that is the black</span>
+    <span class="c"># stage: a low bounce card in front gives the downward flanks something</span>
+    <span class="c"># to reflect (it aims up at the gear, so the floor in front stays dark)</span>
+    light(<span class="s">&quot;Bounce&quot;</span>, (<span class="n">0.6</span>, -<span class="n">2.6</span>, <span class="n">0.35</span>), BOUNCE_W, <span class="n">2.0</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.78</span>), aim=centre)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># the camera rides with the gear&#x27;s derived seat height (it was posed for</span>
-    <span class="c"># a gear hung at z=0.85), so the composition is unchanged</span>
-    cam.location = (<span class="n">0.0</span>, -<span class="n">7.6</span>, <span class="n">4.2</span> + obj.location.z - <span class="n">0.85</span>)
+    cam.location = cam_loc
     cam.rotation_euler = (math.radians(<span class="n">66</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -546,8 +627,22 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
     scene.render.filepath = path
     <span class="c"># AgX would flatten the steel toward chalk (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact. The</span>
+    <span class="c"># display wedge is staging, hidden from the matte like the floor and wall.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam,
+        hero=[obj],
+        elements=[obj],
+        stage=[floor, wall, wedge],
+    )
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -566,9 +661,9 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;bmesh-gear OK&quot;</span>)
@@ -585,7 +680,7 @@ WEDGE_WIDTH = <span class="n">1.8</span>     <span class="c"># display wedge wid
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/bmesh-gear-hero.webp" alt="A gold fourteen-tooth gear leaning back on a dark display wedge, its face covered in concentric grooves." />
+    <img src="../assets/bmesh-gear-hero.webp" alt="A brass fourteen-tooth gear leaning back on a dark display wedge, its lathe-turned face catching a soft highlight that fans from the centre." />
   </dialog>
   <footer>
     <div class="statusbar">
