@@ -31,11 +31,13 @@ check. Pass --output to also render a still:
     blender --background --python degenerate_bevel_weld.py -- --output b.png  # + render
 """
 import bpy, bmesh, sys, os, math, argparse, json, struct, tempfile
+from mathutils import Matrix, Vector
 
 # Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 DIMS = (1.6, 0.4, 1.0)          # min dim 0.4 -> half = 0.2, the threshold
 SAFE_OFFSET = 0.10
@@ -236,60 +238,235 @@ def make_material(name, rgb, rough=0.45, metallic=0.35, emit=None, estr=0.0):
     return mat
 
 
-def _degen_face_centers(me, eps=AREA_EPS):
-    return [p.center.copy() for p in me.polygons if p.area <= eps]
+SEAM_AREA = 1e-6   # render overlay: faces this thin are drawn as the weld seam
+CASE_YAW = 52.0    # render: cases present an end panel to the camera
+
+
+def _mesh_from_bm(name, build):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        build(bm)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
+def _part(sc, name, me, mat, parent, loc=(0.0, 0.0, 0.0)):
+    me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = loc
+    sc.collection.objects.link(ob)
+    if parent is not None:
+        ob.parent = parent
+    return ob
+
+
+def _block(name, dims, bevel=0.012, segs=2):
+    """Small hardware block with worn (beveled) edges."""
+    def build(bm):
+        bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts:
+            v.co.x *= dims[0]
+            v.co.y *= dims[1]
+            v.co.z *= dims[2]
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=segs,
+                        profile=0.5, affect="EDGES", clamp_overlap=True)
+    return _mesh_from_bm(name, build)
+
+
+def _tube_path(bm, pts, radius, sides=12, cap=True):
+    """Sweep a circular section along a polyline (rotation-minimising)."""
+    pts = [Vector(p) for p in pts]
+    rings = []
+    ref = Vector((0.0, 0.0, 1.0))
+    for i, p in enumerate(pts):
+        a = pts[max(i - 1, 0)]
+        b = pts[min(i + 1, len(pts) - 1)]
+        t = (b - a).normalized()
+        if abs(t.dot(ref)) > 0.95:
+            ref = Vector((1.0, 0.0, 0.0))
+        u = t.cross(ref).normalized()
+        w = u.cross(t).normalized()
+        ref = w
+        ring = []
+        for k in range(sides):
+            ang = 2.0 * math.pi * k / sides
+            ring.append(bm.verts.new(p + radius * (math.cos(ang) * u + math.sin(ang) * w)))
+        rings.append(ring)
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(sides):
+            bm.faces.new((r0[k], r0[(k + 1) % sides], r1[(k + 1) % sides], r1[k]))
+    if cap:
+        bm.faces.new(list(reversed(rings[0])))
+        bm.faces.new(rings[-1])
+
+
+def build_case(sc, prefix, offset, mats, loc, rot_z):
+    """A rugged hard-shell equipment case whose shell IS the checked mesh:
+    beveled_box(DIMS, offset) — the same data the check asserts on. All
+    fittings sit inside the flat front/top area that survives both
+    offsets, so the only difference between the two cases is the bevel."""
+    shell_me = beveled_box(DIMS, offset)
+    shell_me.name = f"{prefix}.Shell"
+    shell = _part(sc, f"{prefix}.Shell", shell_me, mats["shell"], None, loc)
+    shell.rotation_euler = (0.0, 0.0, math.radians(rot_z))
+    hx, hy, hz = (d / 2 for d in DIMS)
+    parts = [shell]
+
+    # carry handle: two pivot blocks + a swept D-grip on the top ridge
+    for sx in (-1, 1):
+        parts.append(_part(sc, f"{prefix}.HandlePivot{'LR'[sx > 0]}",
+                           _block(f"{prefix}.HandlePivot", (0.10, 0.12, 0.07), 0.015),
+                           mats["steel"], shell, (sx * 0.30, 0.0, hz + 0.02)))
+
+    def grip(bm):
+        pts = []
+        for i in range(25):
+            t = math.pi * i / 24
+            pts.append((-0.30 * math.cos(t), 0.0,
+                        hz + 0.04 + 0.13 * math.sin(t) ** 0.55))
+        _tube_path(bm, pts, 0.028, sides=14)
+    parts.append(_part(sc, f"{prefix}.HandleGrip", _mesh_from_bm(f"{prefix}.Grip", grip),
+                       mats["rubber"], shell))
+
+    # front fittings — lid seam strip, twin draw latches across it, a
+    # molded rib pair and an ID plate (asymmetric, inside the flat land)
+    fy = -hy
+    parts.append(_part(sc, f"{prefix}.LidSeam",
+                       _block(f"{prefix}.LidSeam", (1.16, 0.02, 0.035), 0.008),
+                       mats["shell_dark"], shell, (0.0, fy - 0.004, 0.17)))
+    for sx in (-1, 1):
+        parts.append(_part(sc, f"{prefix}.LatchBase{'LR'[sx > 0]}",
+                           _block(f"{prefix}.LatchBase", (0.16, 0.04, 0.22), 0.012),
+                           mats["steel"], shell, (sx * 0.40, fy - 0.01, 0.17)))
+        parts.append(_part(sc, f"{prefix}.LatchLever{'LR'[sx > 0]}",
+                           _block(f"{prefix}.LatchLever", (0.11, 0.035, 0.13), 0.014),
+                           mats["accent"], shell, (sx * 0.40, fy - 0.045, 0.15)))
+    # molded reinforcement frame around the front land
+    for nm, dims, pos in (("FrameTop", (1.17, 0.03, 0.035), (0.0, 0.28)),
+                          ("FrameBottom", (1.17, 0.03, 0.035), (0.0, -0.28)),
+                          ("FrameL", (0.035, 0.03, 0.595), (-0.57, 0.0)),
+                          ("FrameR", (0.035, 0.03, 0.595), (0.57, 0.0))):
+        parts.append(_part(sc, f"{prefix}.{nm}",
+                           _block(f"{prefix}.{nm}", dims, 0.01),
+                           mats["shell"], shell, (pos[0], fy - 0.008, pos[1])))
+    for z in (-0.10, -0.20):
+        parts.append(_part(sc, f"{prefix}.Rib{int(abs(z) * 100)}",
+                           _block(f"{prefix}.Rib", (0.50, 0.03, 0.04), 0.012),
+                           mats["shell_dark"], shell, (-0.29, fy - 0.005, z)))
+    for sx in (-1, 1):
+        parts.append(_part(sc, f"{prefix}.Hasp{'LR'[sx > 0]}",
+                           _block(f"{prefix}.Hasp", (0.05, 0.03, 0.09), 0.01),
+                           mats["steel"], shell, (sx * 0.27, fy - 0.01, 0.17)))
+    for nm, rad, depth, yoff, mat in (("PurgeValve", 0.06, 0.03, 0.010, "steel"),
+                                      ("PurgeCap", 0.042, 0.05, 0.022, "rubber")):
+        def valve(bm, rad=rad, depth=depth):
+            bmesh.ops.create_cone(bm, cap_ends=True, segments=24, radius1=rad,
+                                  radius2=rad, depth=depth,
+                                  matrix=Matrix.Rotation(math.radians(90), 4, "X"))
+            bmesh.ops.bevel(bm, geom=[e for e in bm.edges
+                                      if len(e.link_faces) == 2 and
+                                      e.calc_face_angle(0.0) > 1.0],
+                            offset=0.006, segments=2, profile=0.5,
+                            affect="EDGES", clamp_overlap=True)
+        parts.append(_part(sc, f"{prefix}.{nm}", _mesh_from_bm(f"{prefix}.{nm}", valve),
+                           mats[mat], shell, (0.10, fy - yoff, -0.15)))
+    parts.append(_part(sc, f"{prefix}.IdPlate",
+                       _block(f"{prefix}.IdPlate", (0.22, 0.02, 0.13), 0.008),
+                       mats["plate"], shell, (0.40, fy - 0.004, -0.15)))
+
+    # rubber feet on the bottom ridge line
+    for sx in (-1, 1):
+        parts.append(_part(sc, f"{prefix}.Foot{'LR'[sx > 0]}",
+                           _block(f"{prefix}.Foot", (0.20, 0.16, 0.06), 0.02),
+                           mats["rubber"], shell, (sx * 0.52, 0.0, -hz - 0.01)))
+    return shell, parts
+
+
+def build_weld_overlay(sc, shell, mat_seam, mat_hot):
+    """Hot overlay drawn from live mesh data on the degenerate shell:
+    the seam tube runs along every edge of every face thinner than
+    SEAM_AREA (the collapsed top/end lands and corner bands meeting at
+    mid-depth), and a glow bead sits on each zero-area face the check
+    counts. Change the offset and the overlay moves or disappears."""
+    me = shell.data
+    thin = [p for p in me.polygons if p.area <= SEAM_AREA]
+    counted = [p for p in me.polygons if p.area <= AREA_EPS]
+    edges = set()
+    for p in thin:
+        for ek in p.edge_keys:
+            edges.add(tuple(sorted(ek)))
+    segs = []
+    for a, b in edges:
+        va, vb = me.vertices[a].co, me.vertices[b].co
+        if (vb - va).length > 1e-4:
+            segs.append((va.copy(), vb.copy()))
+    print(f"render_defects thin_faces={len(thin)} zero_area_faces={len(counted)} "
+          f"seam_segments={len(segs)}")
+
+    def seam(bm):
+        for va, vb in segs:
+            _tube_path(bm, [va, vb], 0.018, sides=10)
+        joints = {tuple(round(c, 5) for c in v) for s in segs for v in s}
+        for j in joints:
+            bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=6, radius=0.020,
+                                      matrix=Matrix.Translation(j))
+    seam_ob = _part(sc, "WeldSeam", _mesh_from_bm("WeldSeam", seam), mat_seam, shell)
+
+    def beads(bm):
+        for p in counted:
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.038,
+                                      matrix=Matrix.Translation(p.center))
+    bead_ob = _part(sc, "PinchBeads", _mesh_from_bm("PinchBeads", beads), mat_hot, shell)
+    return [seam_ob, bead_ob]
 
 
 def render_still(path, engine):
-    """Dual tray: clean bevel vs collapsed band, with the zero-area faces
-    marked from live mesh data — the seam markers ARE the check's numbers."""
+    """Two rugged cases whose shells are the check's two meshes. Left:
+    offset 0.10 — flat top land, crisp chamfer bands. Right: offset 0.20
+    == min/2 — the lands vanish, the band rolls into a knife ridge at
+    mid-depth, and that collapsed seam glows hot from live mesh data."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    tray_mat = make_material("Tray", (0.10, 0.34, 0.34), rough=0.38, metallic=0.75)
-    seam_mat = make_material("SeamMark", (0.95, 0.25, 0.1), rough=0.4,
-                             metallic=0.1, emit=(1.0, 0.3, 0.1), estr=1.2)
+    def mats(tag):
+        return {
+            "shell": make_material(f"{tag}.Polymer", (0.02, 0.16, 0.42), rough=0.42,
+                                   metallic=0.0),
+            "shell_dark": make_material(f"{tag}.PolymerRib", (0.012, 0.075, 0.20),
+                                        rough=0.55, metallic=0.0),
+            "steel": make_material(f"{tag}.Steel", (0.62, 0.63, 0.66), rough=0.32,
+                                   metallic=1.0),
+            "accent": make_material(f"{tag}.LatchAnodized", (0.95, 0.52, 0.06),
+                                    rough=0.35, metallic=0.6),
+            "rubber": make_material(f"{tag}.Rubber", (0.025, 0.025, 0.028), rough=0.8,
+                                    metallic=0.0),
+            "plate": make_material(f"{tag}.IdPlate", (0.80, 0.78, 0.70), rough=0.3,
+                                   metallic=0.9),
+        }
 
-    safe_me = beveled_box(DIMS, SAFE_OFFSET)
-    safe_me.materials.append(tray_mat)
-    safe_ob = bpy.data.objects.new("SafeTray", safe_me)
-    safe_ob.location = (-1.15, 0.0, 0.55)
-    sc.collection.objects.link(safe_ob)
-
-    degen_me = beveled_box(DIMS, DEGEN_OFFSET)
-    degen_me.materials.append(tray_mat)
-    degen_ob = bpy.data.objects.new("DegenTray", degen_me)
-    degen_ob.location = (1.15, 0.0, 0.55)
-    sc.collection.objects.link(degen_ob)
-
-    # seam markers at every zero-area face centroid — overlay from live data
-    centers = _degen_face_centers(degen_me)
-    print(f"render_defects zero_area_faces={len(centers)}")
-    for i, co in enumerate(centers):
-        sme = bpy.data.meshes.new(f"Seam{i}")
-        sbm = bmesh.new()
-        try:
-            bmesh.ops.create_uvsphere(sbm, u_segments=8, v_segments=6, radius=0.022)
-            sbm.to_mesh(sme)
-        finally:
-            sbm.free()
-        sme.materials.append(seam_mat)
-        sob = bpy.data.objects.new(f"Seam{i}", sme)
-        sob.location = degen_ob.location + co
-        sc.collection.objects.link(sob)
-
-    p_safe = placard(sc, "BEVEL 0.10", (-1.15, -1.1, 0.02), size=0.13)
-    p_degen = placard(sc, "BEVEL 0.20 = min/2", (1.15, -1.1, 0.02), size=0.11)
+    hz = DIMS[2] / 2 + 0.04    # feet lift the shell
+    safe, safe_parts = build_case(sc, "CaseSafe", SAFE_OFFSET, mats("Safe"),
+                                  (-0.95, 0.2, hz), CASE_YAW)
+    degen, degen_parts = build_case(sc, "CaseDegen", DEGEN_OFFSET, mats("Degen"),
+                                    (0.95, -0.2, hz), CASE_YAW)
+    seam_mat = make_material("WeldSeam", (1.0, 0.06, 0.02), rough=0.4, metallic=0.0,
+                             emit=(1.0, 0.05, 0.02), estr=2.2)
+    hot_mat = make_material("PinchHot", (1.0, 0.2, 0.05), rough=0.4, metallic=0.0,
+                            emit=(1.0, 0.16, 0.04), estr=3.0)
+    overlay = build_weld_overlay(sc, degen, seam_mat, hot_mat)
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -6.6, 2.9)
+    cam.location = (-0.6, -4.9, 3.1)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.6)
+    aim.location = (0.0, 0.1, 0.55)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -313,35 +490,35 @@ def render_still(path, engine):
     sc.render.filepath = path
     # Standard, always — AgX would lift the stage toward grey (VISUAL-STYLE)
     sc.view_settings.view_transform = "Standard"
+    # Turn the stage, not the props: every root object swings by -CASE_YAW,
+    # which leaves the image unchanged but the cases axis-aligned in world
+    # space (as shipped assets are, and as the asset-sheet panel expects).
+    turn = Matrix.Rotation(math.radians(-CASE_YAW), 4, "Z")
+    bpy.context.view_layer.update()
+    for ob in list(sc.objects):
+        if ob.parent is None:
+            ob.matrix_world = turn @ ob.matrix_world
+    bpy.context.view_layer.update()
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation.
-    hero = [safe_ob, degen_ob]
-    seams = [o for o in sc.objects if o.name.startswith("Seam")]
+    hero = safe_parts + degen_parts
     fcode = gallery_framing.check_framing(
         sc, cam,
         hero=hero,
-        elements=hero + [p_safe, p_degen] + seams,
+        elements=hero + overlay,
         stage=[floor, wall],
     )
     if fcode:
         return fcode
+    # Asset-quality floors on the designed prop (the clean case) — exit 11.
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=safe_parts, stage=[floor, wall])
+    if aqcode:
+        return aqcode
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
         return 9
     return 0
-
-
-def placard(sc, text, loc, size=0.18):
-    cu = bpy.data.curves.new(text, "FONT")
-    cu.body = text
-    cu.size = size
-    cu.align_x = "CENTER"
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
-    sc.collection.objects.link(ob)
-    ob.data.materials.append(make_material("Label", (0.9, 0.9, 0.92),
-                                           rough=0.6, metallic=0.0))
-    return ob
 
 
 def build_studio(sc):
@@ -380,8 +557,8 @@ def build_studio(sc):
 
     light("Key", (-3.5, -4.5, 5.5), 480.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
     light("Fill", (5.0, -3.5, 2.5), 120.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
-    light("Rim", (1.5, 4.5, 3.5), 280.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
-    light("Wedge", (2.5, 5.5, 4.0), 400.0, 6.0, (1.0, 0.72, 0.42), (-68, 0, 190))
+    light("Rim", (1.5, 4.5, 3.5), 200.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
+    light("Wedge", (2.0, 6.0, 3.6), 450.0, 6.0, (1.0, 0.70, 0.40), (-62, 0, 190))
     return floor, wall
 
 
