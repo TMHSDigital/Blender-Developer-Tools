@@ -465,6 +465,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "book-trolley",
+      "dir": "showcase/book-trolley",
+      "teaches": "A procedural library book truck — arched end panels standing in skids on four swivel casters, a flat deck, and on each side two sloped troughs, a tilted shelf and a backrest square to it, filled with forty-seven rounded-spine hardbacks spines out and two loose stacks — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A double-sided wooden library book trolley on four casters, its two sloped troughs of cloth and leather hardbacks leaning back spines out, with loose books stacked on the bottom deck.",
+      "witnessesFix": "Recomputed: 17704 tris, seven materials with 568 wood, 2788 cloth, 1476 leather, 312 paper, 2704 gilt, 932 iron and 656 rubber faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.768×0.530×1.000 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, four wheels on the floor, ten cross members 8 mm into both end panels, four caster plates 1.0 mm into their skids, carcass and casters mirror-exact in X and Y, 52 books each with one page block 0.6 mm into its boards and two gilt bands 0.3 mm into the spine and 0.8 mm proud, every book seated 1.0–3.2 mm, four troughs each with one backrest and all 47 trough books 0.8 mm into it, thickness and height spread 2.75 and 1.64, zero unplanned book overlaps, zero right-angle wood edges, convex collider 308 tris. --off-back and --deep-back exit 21 on the backrest contact while every seat, the envelope and the overlap budget still pass; --crowd-books exits 22; --skew-caster 19; --drop-plates 18.",
+      "hero": "docs/gallery/assets/book-trolley-hero.webp",
+      "preview": "showcase/book-trolley/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

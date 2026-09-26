@@ -62,6 +62,7 @@ SELECT = {
     "wooden-yoke": (r"^YokeLow$", None),
     "apothecary-shelf": (r"^ShelfLow$", None),
     "bookshelf": (r"^BookshelfLow$", None),
+    "book-trolley": (r"^TrolleyLow$", None),
     "brazier": (r"^BrazierLow$", None),
     "grain-sacks": (r"^SacksLow$", None),
     "rope-bridge": (r"^BridgeLow$", None),
