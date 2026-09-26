@@ -99,9 +99,9 @@
     {
       "name": "shader-node-group",
       "dir": "examples/shader-node-group",
-      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.",
-      "alt": "Two glossy spheres, one teal and one magenta, sharing one shader group.",
-      "witnessesFix": "Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.",
+      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors.",
+      "alt": "Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group.",
+      "witnessesFix": "Grouping contract: interface sockets appear on every instance, all five materials share one group datablock (users == 5), and per-material parameters live on the group node, not inside the tree.",
       "hero": "docs/gallery/assets/shader-node-group-hero.webp",
       "preview": "examples/shader-node-group/preview.webp",
       "tags": [
@@ -139,8 +139,8 @@
       "name": "gn-modifier-inputs",
       "dir": "examples/gn-modifier-inputs",
       "teaches": "Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.",
-      "alt": "Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block.",
-      "witnessesFix": "The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.",
+      "alt": "Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven.",
+      "witnessesFix": "The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written heights 1/2/3, which the shared tree turns into 7/17/27 treads.",
       "hero": "docs/gallery/assets/gn-modifier-inputs-hero.webp",
       "preview": "examples/gn-modifier-inputs/preview.webp",
       "tags": [
@@ -151,9 +151,9 @@
     {
       "name": "shape-key-blend",
       "dir": "examples/shape-key-blend",
-      "teaches": "A relative Tall shape key that lifts and flares the top face — authored via shape_key_add / key_blocks / .value — read back from the depsgraph-evaluated mesh.",
-      "alt": "Three purple boxes flaring wider at the top by increasing amounts; the rightmost sits inside a pale wire cage of its full shape key, halfway to it.",
-      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the flared top half-extent.",
+      "teaches": "A relative Tall shape key that turns a squat ceramic jar into a trumpet vase — lifting and flaring the rim — authored via shape_key_add / key_blocks / .value and read back from the depsgraph-evaluated mesh.",
+      "alt": "One cobalt vase with an ochre band at shape-key values 0, 0.5 and 1: squat jar, amphora, tall trumpet vase, with pale rings of the jar's belly around the tallest.",
+      "witnessesFix": "Shape keys do not rewrite mesh.vertices: every evaluated vert matches basis + value × (key − basis), including the lifted, flared rim ring.",
       "hero": "docs/gallery/assets/shape-key-blend-hero.webp",
       "preview": "examples/shape-key-blend/preview.webp",
       "tags": [

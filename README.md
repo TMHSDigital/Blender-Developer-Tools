@@ -246,15 +246,16 @@ mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: a teal sphere and a magenta sphere sharing one TintedGloss node group with different Tint parameters" /></a>
+<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt sharing one DippedGlaze node group with different Tint parameters" /></a>
 </td>
 <td valign="middle">
 
 ### [shader-node-group](examples/shader-node-group/)
 
-One reusable `TintedGloss` group declared via `tree.interface.new_socket`, instanced in two
+One reusable `DippedGlaze` group declared via `tree.interface.new_socket`, instanced in five
 materials with different Tint values. Witnesses the grouping contract: shared datablock
-(`users == 2`), parameters on the group **node** — two spheres, one group, two colors.
+(`users == 5`), parameters on the group **node** — five mugs share one foot band, dip line
+and speckle, and differ only in colour.
 
 </td>
 </tr>
@@ -393,14 +394,14 @@ the Z span matches the amplitude, and a probe vertex matches the closed-form wav
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: three violet blocks on a dark studio floor showing a relative Tall shape key at values 0, 0.25, and 0.5 - plain cube to lifted, flared truncated pyramid, left to right" /></a>
+<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: three cobalt-glazed ceramic vases with an ochre band on a dark studio floor - the same vase at Tall shape-key values 0, 0.5 and 1, squat jar to amphora to flared trumpet vase, left to right, with thin pale rings of the jar's belly around the tallest" /></a>
 </td>
 <td valign="middle">
 
 ### [shape-key-blend](examples/shape-key-blend/)
 
-A relative Tall shape key that lifts and flares the top face — authored through
-`shape_key_add` / `key_blocks` / `.value`. Witnesses that shape keys do not rewrite
+A relative Tall shape key that turns a squat ceramic jar into a trumpet vase,
+lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` / `.value`. Witnesses that shape keys do not rewrite
 `mesh.vertices`: every evaluated vert matches `basis + value × (key − basis)`.
 
 </td>
@@ -581,15 +582,16 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three separate cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
+<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three spiral staircases from one shared Geometry Nodes tree, 1, 2 and 3 meters tall with 7, 17 and 27 oak treads, proving per-modifier Height writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
 </td>
 <td valign="middle">
 
 ### [gn-modifier-inputs](examples/gn-modifier-inputs/)
 
-One Geometry Nodes tree, three modifier copies. Writes a Float Scale input through
-`mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1. Asserts readback and
-evaluated Z-extent equal 1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
+One Geometry Nodes spiral-staircase tree, three modifier copies. Writes a Float Height
+input through `mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1; the tree
+turns 1 / 2 / 3 m into 7 / 17 / 27 treads. Asserts readback and evaluated Z-extent equal
+1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
 
 </td>
 </tr>
