@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-modifier-inputs-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
+  <meta property="og:image:alt" content="Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-modifier-inputs — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-modifier-inputs-hero.webp" />
-  <meta name="twitter:image:alt" content="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
+  <meta name="twitter:image:alt" content="Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,26 +268,28 @@
     <p>Per-modifier Geometry Nodes Float inputs on a shared tree — 4.5/5.1 write mod[identifier], 5.2 writes mod.properties.inputs.Socket_1.value.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block.">
-      <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven.">
+      <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written scales 1/2/3.</div>
+    <div class="callout"><span class="tag">witnesses</span> The 5.1 dict form raises TypeError on 5.2 rather than silently no-opping; RNA properties are AttributeError on 4.5. Readback and evaluated Z-extent match written heights 1/2/3, which the shared tree turns into 7/17/27 treads.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gn-modifier-inputs/gn_modifier_inputs.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that attaches one Geometry Nodes tree to three cubes and writes a per-modifier Float <strong>Scale</strong> input through the version-appropriate API. The tree scales a 1 m cube by that value and lifts it onto the floor. Evaluated Z-extent must match the written scale (1 / 2 / 3). That is the closed form: if the write did not land, the three cubes collapse to the socket default and the extents are no longer distinct.</p>
-<p><strong>What it witnesses:</strong> Blender 5.2 removed ID-property assignment on <code>NodesModifier</code>. <code>mod[&quot;Socket_1&quot;] = 2.0</code> raises <code>TypeError</code> rather than silently no-opping. 4.5 LTS and 5.1 still require that dict form; <code>mod.properties</code> does not exist there (<code>AttributeError</code>). 5.2+ writes <code>mod.properties.inputs.Socket_1.value</code>. After the write, the depsgraph must be updated or <code>evaluated_get</code> still sees the previous scale.</p>
+<p>A runnable example that attaches one Geometry Nodes tree to three carrier objects and writes a per-modifier Float <strong>Height</strong> input through the version-appropriate API. The tree is a parametric spiral staircase: from Height it derives the step count (<code>round((Height - 0.3) / 0.1)</code>), instances the carrier mesh — one bevelled oak tread with its brass baluster — up a helix at 22.5° per step, and adds a teal newel post and a brass helical handrail. Written heights 1 / 2 / 3 m give 7 / 17 / 27 treads, so the three staircases read left to right as one design at three settings of one input.</p>
+<p>The closed form: the newel post runs from the floor at z=0 to exactly z=Height and every other part stays inside that span, so the evaluated Z-extent must equal the written height. If a write did not land, that staircase falls back to the socket default (1 m, 7 treads) and the extents are no longer distinct — in the render, the tall staircases collapse to copies of the short one.</p>
+<p><strong>What it witnesses:</strong> Blender 5.2 removed ID-property assignment on <code>NodesModifier</code>. <code>mod[&quot;Socket_1&quot;] = 2.0</code> raises <code>TypeError</code> rather than silently no-opping. 4.5 LTS and 5.1 still require that dict form; <code>mod.properties</code> does not exist there (<code>AttributeError</code>). 5.2+ writes <code>mod.properties.inputs.Socket_1.value</code>. After the write, the depsgraph must be updated or <code>evaluated_get</code> still sees the previous height.</p>
 <p>Follows <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a>.</p>
-<p>Staging: the carriers now stand 0.5 m apart (<code>XS</code>). The old spacing overlapped the 2 m and 3 m cubes by 0.2 m. The check reads only each cube&#x27;s evaluated Z extent and zmin, never X, so this is layout only. The camera looks from the front, so small to large reads left to right, and a duller finish keeps the tops from blowing out.</p>
+<p>Staging: the default dark studio. The three staircases stand on 1.62 m centres (<code>XS</code>); the check reads only each object&#x27;s evaluated Z extent and zmin, never X, so the layout is free. All three share one tree and one set of materials — the only thing that differs between them is the modifier input. The key carries a 36° spread so its pool stays on the stairs, and the rim sits high behind them so it does not wash the foreground floor.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_modifier_inputs.py --
 
 # Portable falsifier: write 1.0 to every modifier. Must exit non-zero.
-blender --background --python gn_modifier_inputs.py -- --same-scale
+# (--same-scale is kept as an alias for the pre-staircase flag name.)
+blender --background --python gn_modifier_inputs.py -- --same-height
 
 # Force one side of the split (must fail on the other series, not all three):
 blender --background --python gn_modifier_inputs.py -- --api dict
@@ -298,10 +300,10 @@ blender --background --python gn_modifier_inputs.py -- --output stairs.png
 blender --background --python gn_modifier_inputs.py -- --output stairs.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Scale input identifier missing on the tree interface</td></tr><tr><td>4</td><td>Modifiers do not share one node_group</td></tr><tr><td>5</td><td>Version-path write raised (<code>--api dict</code> on 5.2, <code>--api rna</code> on 4.5)</td></tr><tr><td>6</td><td>Version-path read raised</td></tr><tr><td>7</td><td>Readback ≠ intended scale (<code>--same-scale</code> lands here)</td></tr><tr><td>8</td><td>Evaluated Z-extent ≠ intended scale</td></tr><tr><td>9</td><td>Evaluated mesh not sitting on z=0</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Evaluated extents not distinct</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--same-scale</code>, or <code>--api dict</code>/<code>rna</code>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Height input identifier missing on the tree interface</td></tr><tr><td>4</td><td>Modifiers do not share one node_group</td></tr><tr><td>5</td><td>Version-path write raised (<code>--api dict</code> on 5.2, <code>--api rna</code> on 4.5)</td></tr><tr><td>6</td><td>Version-path read raised</td></tr><tr><td>7</td><td>Readback ≠ intended height (<code>--same-height</code> lands here)</td></tr><tr><td>8</td><td>Evaluated Z-extent ≠ intended height</td></tr><tr><td>9</td><td>Evaluated mesh not sitting on z=0</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Evaluated extents not distinct</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code>, <code>--same-height</code>, or <code>--api dict</code>/<code>rna</code>.</p>
 <h2>Falsification</h2>
-<div class="table-wrap"><table><thead><tr><th scope="col">Probe</th><th scope="col">Binary</th><th scope="col">Result</th></tr></thead><tbody><tr><td><code>--api dict</code></td><td>5.2.1 LTS</td><td>exit 5, <code>TypeError: id properties not supported for this type</code></td></tr><tr><td><code>--api rna</code></td><td>4.5.11 LTS</td><td>exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code></td></tr><tr><td><code>--api auto</code></td><td>5.2.1, 5.1.2, 4.5.11</td><td>exit 0, extents 1.000 / 2.000 / 3.000</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Probe</th><th scope="col">Binary</th><th scope="col">Result</th></tr></thead><tbody><tr><td><code>--api dict</code></td><td>5.2.1 LTS</td><td>exit 5, <code>TypeError: id properties not supported for this type</code></td></tr><tr><td><code>--api rna</code></td><td>4.5.11 LTS</td><td>exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code></td></tr><tr><td><code>--api dict</code></td><td>5.1.2</td><td>exit 0 (5.1 still takes the dict form)</td></tr><tr><td><code>--api rna</code></td><td>5.1.2</td><td>exit 5, <code>AttributeError: &#x27;NodesModifier&#x27; object has no attribute &#x27;properties&#x27;</code></td></tr><tr><td><code>--same-height</code></td><td>5.2.1, 5.1.2, 4.5.11</td><td>exit 7, <code>readback 1.0 != written 2.0 on SpiralStair.H2</code></td></tr><tr><td><code>RAIL_H = -0.5</code> (treads climb past the post)</td><td>5.2.1, 4.5.11</td><td>exit 8, <code>evaluated Z-extent 1.934334 != height 1.0</code></td></tr><tr><td><code>--api auto</code></td><td>5.2.1, 5.1.2, 4.5.11</td><td>exit 0, extents 1.000 / 2.000 / 3.000</td></tr></tbody></table></div>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -312,23 +314,28 @@ blender --background --python gn_modifier_inputs.py -- --output stairs.png --eng
       <pre><span class="s">&quot;&quot;&quot;Geometry Nodes per-modifier input write — a runnable example.
 
 Witnesses the 5.1→5.2 removal of dict assignment on a NODES modifier.
-A shared GeometryNodeTree exposes a Float &quot;Scale&quot; socket. Three carrier
-cubes each get their own modifier instance of that tree. The check writes
-1.0 / 2.0 / 3.0 through the version-appropriate path, reads the value
-back, and asserts the evaluated Z-extent equals the written scale
-(closed form: a 1 m cube scaled by S and lifted by S/2 spans [0, S]).
+A shared GeometryNodeTree builds a spiral staircase from one exposed Float
+&quot;Height&quot; socket: the tree derives the step count from the height, instances
+the carrier mesh (one oak tread with its brass baluster) up a helix, and
+adds a newel post and a helical handrail. Three carriers each get their own
+modifier instance of that one tree. The check writes 1.0 / 2.0 / 3.0
+through the version-appropriate path, reads the value back, and asserts
+the evaluated Z-extent equals the written height (closed form: the newel
+post runs from the floor at z=0 to exactly z=Height, and every other part
+stays inside that span).
 
 4.5 LTS and 5.1 write ``mod[identifier] = value``. 5.2+ removed ID
 properties on NodesModifier — that assignment raises TypeError — and
 the replacement is ``mod.properties.inputs.&lt;identifier&gt;.value``.
 ``--api dict`` / ``--api rna`` force one side of the 5.1/5.2 split — they
-fail on the *other* series, not on every binary. ``--same-scale`` writes
-1.0 to every modifier and still asserts 1 / 2 / 3, so the second cube&#x27;s
-readback fails on all three. That is the portable falsifier
-(``--same-axis`` in export-preset-axis).
+fail on the *other* series, not on every binary. ``--same-height`` writes
+1.0 to every modifier and still asserts 1 / 2 / 3, so the second
+staircase&#x27;s readback fails on all three. That is the portable falsifier
+(``--same-axis`` in export-preset-axis). ``--same-scale`` is kept as an
+alias for the pre-staircase flag name.
 
     blender --background --python gn_modifier_inputs.py --
-    blender --background --python gn_modifier_inputs.py -- --same-scale
+    blender --background --python gn_modifier_inputs.py -- --same-height
     blender --background --python gn_modifier_inputs.py -- --api dict
     blender --background --python gn_modifier_inputs.py -- --output s.png
 &quot;&quot;&quot;</span>
@@ -339,26 +346,43 @@ readback fails on all three. That is the portable falsifier
 
 <span class="k">import</span> bmesh
 <span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix
 
 sys.path.insert(
     <span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 )
 <span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
 
-CUBE_SIZE = <span class="n">1.0</span>
-SCALES = (<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">3.0</span>)
-<span class="c"># Half-widths 0.5 / 1.0 / 1.5, with 0.5 m between neighbours. The old</span>
-<span class="c"># (-2.2, 0.15, 2.45) overlapped the 2 m and 3 m cubes by 0.2 m. The check</span>
-<span class="c"># reads only Z extents, so the layout is free.</span>
-XS = (-<span class="n">2.6</span>, -<span class="n">0.6</span>, <span class="n">2.4</span>)
-COLORS = (
-    (<span class="n">0.05</span>, <span class="n">0.62</span>, <span class="n">0.58</span>, <span class="n">1.0</span>),  <span class="c"># teal</span>
-    (<span class="n">0.82</span>, <span class="n">0.38</span>, <span class="n">0.08</span>, <span class="n">1.0</span>),  <span class="c"># copper</span>
-    (<span class="n">0.86</span>, <span class="n">0.18</span>, <span class="n">0.22</span>, <span class="n">1.0</span>),  <span class="c"># coral</span>
-)
+HEIGHTS = (<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="n">3.0</span>)
+<span class="c"># Stair footprint is ~1.3 m across (tread radius 0.62 + rail). 1.62 m</span>
+<span class="c"># centres leave ~0.3 m between neighbours. The check reads only Z extents,</span>
+<span class="c"># so the layout is free.</span>
+XS = (-<span class="n">1.62</span>, <span class="n">0.0</span>, <span class="n">1.62</span>)
 READBACK_EPS = <span class="n">1e-6</span>
 EXTENT_EPS = <span class="n">1e-4</span>
-INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
+INPUT_NAME = <span class="s">&quot;Height&quot;</span>
+
+<span class="c"># Staircase design constants (metres). The tree derives the step count</span>
+<span class="c"># from Height: n = round((Height - RAIL_H) / RISER), so 1 / 2 / 3 m give</span>
+<span class="c"># 7 / 17 / 27 treads at 22.5 degrees each (0.4 / 1.1 / 1.7 turns).</span>
+STEP_ANGLE = <span class="n">2.0</span> * math.pi / <span class="n">16.0</span>
+RISER = <span class="n">0.1</span>
+RAIL_H = <span class="n">0.3</span>          <span class="c"># handrail centreline above each tread top, + RAIL_R</span>
+RAIL_R = <span class="n">0.018</span>        <span class="c"># handrail tube radius</span>
+TREAD_R = <span class="n">0.62</span>        <span class="c"># tread outer radius</span>
+TREAD_T = <span class="n">0.045</span>       <span class="c"># tread thickness</span>
+BALUSTER_R = TREAD_R - <span class="n">0.07</span>
+POST_R = <span class="n">0.065</span>
+
+<span class="c"># Render staging (render path only; the check never reads these).</span>
+CAM_LOC = (<span class="n">1.2</span>, -<span class="n">8.6</span>, <span class="n">3.6</span>)
+CAM_AIM = (<span class="n">0.1</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+KEY_LOC = (-<span class="n">6.5</span>, -<span class="n">3.0</span>, <span class="n">5.0</span>)
+KEY_W = <span class="n">560.0</span>
+KEY_SPREAD = <span class="n">36.0</span>
+FILL_W = <span class="n">45.0</span>
+RIM_W = <span class="n">220.0</span>
+WEDGE_W = <span class="n">520.0</span>
 
 
 <span class="k">def</span> _api_choice(explicit):
@@ -367,7 +391,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     <span class="k">return</span> <span class="s">&quot;rna&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">2</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;dict&quot;</span>
 
 
-<span class="k">def</span> scale_identifier(tree):
+<span class="k">def</span> height_identifier(tree):
     <span class="k">for</span> item <span class="k">in</span> tree.interface.items_tree:
         <span class="k">if</span> getattr(item, <span class="s">&quot;item_type&quot;</span>, <span class="s">&quot;SOCKET&quot;</span>) <span class="k">not</span> <span class="k">in</span> (<span class="s">&quot;SOCKET&quot;</span>,):
             <span class="k">continue</span>
@@ -391,91 +415,259 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     <span class="k">return</span> float(sock.value)
 
 
-<span class="k">def</span> make_material(name, color):
-    mat = bpy.data.materials.new(name)
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># Materials</span>
+<span class="c"># --------------------------------------------------------------------------</span>
+
+<span class="k">def</span> _bsdf(mat):
     mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = color
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.1</span>
+    <span class="k">return</span> mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+
+
+<span class="k">def</span> make_oak():
+    <span class="s">&quot;&quot;&quot;Warm oak with a stretched-noise grain, so the treads are not flat fills.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(<span class="s">&quot;Stair.Oak&quot;</span>)
+    bsdf = _bsdf(mat)
+    nt = mat.node_tree
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    mapping = nt.nodes.new(<span class="s">&quot;ShaderNodeMapping&quot;</span>)
+    mapping.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = (<span class="n">2.0</span>, <span class="n">2.0</span>, <span class="n">40.0</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.3</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.30</span>, <span class="n">0.11</span>, <span class="n">0.035</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.7</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.58</span>, <span class="n">0.24</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], mapping.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(mapping.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
     <span class="k">return</span> mat
 
 
-<span class="k">def</span> make_cube_mesh(name):
+<span class="k">def</span> make_brass():
+    mat = bpy.data.materials.new(<span class="s">&quot;Stair.Brass&quot;</span>)
+    bsdf = _bsdf(mat)
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.86</span>, <span class="n">0.58</span>, <span class="n">0.22</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> make_enamel():
+    mat = bpy.data.materials.new(<span class="s">&quot;Stair.TealEnamel&quot;</span>)
+    bsdf = _bsdf(mat)
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.24</span>, <span class="n">0.26</span>, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.25</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.35</span>
+    <span class="k">return</span> mat
+
+
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># Carrier mesh: one tread + its baluster, in the tread&#x27;s local frame</span>
+<span class="c"># (tread top at z=0, centred on +X). The tree instances it up the helix.</span>
+<span class="c"># --------------------------------------------------------------------------</span>
+
+<span class="k">def</span> make_tread_mesh(name, oak, brass):
     me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=CUBE_SIZE)
+        span = STEP_ANGLE * <span class="n">0.94</span>
+        arc = <span class="n">8</span>
+        verts = [bm.verts.new((<span class="n">0.03</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))]
+        <span class="k">for</span> k <span class="k">in</span> range(arc + <span class="n">1</span>):
+            a = -span / <span class="n">2</span> + span * k / arc
+            verts.append(bm.verts.new((TREAD_R * math.cos(a),
+                                       TREAD_R * math.sin(a), <span class="n">0.0</span>)))
+        top = bm.faces.new(verts)
+        ext = bmesh.ops.extrude_face_region(bm, geom=[top])
+        down = [v <span class="k">for</span> v <span class="k">in</span> ext[<span class="s">&quot;geom&quot;</span>] <span class="k">if</span> isinstance(v, bmesh.types.BMVert)]
+        bmesh.ops.translate(bm, verts=down, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, -TREAD_T))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+        <span class="c"># Round the walking edges: a chamfered tread, not a slab.</span>
+        outer = [e <span class="k">for</span> e <span class="k">in</span> bm.edges
+                 <span class="k">if</span> all(v.co.xy.length &gt; <span class="n">0.2</span> <span class="k">for</span> v <span class="k">in</span> e.verts)]
+        bmesh.ops.bevel(bm, geom=outer, offset=<span class="n">0.008</span>, segments=<span class="n">2</span>,
+                        profile=<span class="n">0.5</span>, affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.material_index = <span class="n">0</span>
+
+        bal_len = RAIL_H - RAIL_R
+        before = set(bm.faces)
+        bmesh.ops.create_cone(
+            bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=<span class="n">12</span>,
+            radius1=<span class="n">0.012</span>, radius2=<span class="n">0.012</span>, depth=bal_len,
+            matrix=Matrix.Translation((BALUSTER_R, <span class="n">0.0</span>, bal_len / <span class="n">2</span>)),
+        )
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            <span class="k">if</span> f <span class="k">not</span> <span class="k">in</span> before:
+                f.material_index = <span class="n">1</span>
+                f.smooth = <span class="k">True</span>
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
+    me.materials.append(oak)
+    me.materials.append(brass)
     <span class="k">return</span> me
 
 
-<span class="k">def</span> build_scale_tree(material=<span class="k">None</span>):
-    tree = bpy.data.node_groups.new(<span class="s">&quot;ModifierScale&quot;</span>, <span class="s">&quot;GeometryNodeTree&quot;</span>)
+<span class="c"># --------------------------------------------------------------------------</span>
+<span class="c"># The shared tree: Height -&gt; step count -&gt; spiral staircase</span>
+<span class="c"># --------------------------------------------------------------------------</span>
+
+<span class="k">def</span> _math(tree, op, a=<span class="k">None</span>, b=<span class="k">None</span>):
+    n = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    n.operation = op
+    <span class="k">for</span> i, v <span class="k">in</span> enumerate((a, b)):
+        <span class="k">if</span> v <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">continue</span>
+        <span class="k">if</span> isinstance(v, (int, float)):
+            n.inputs[i].default_value = v
+        <span class="k">else</span>:
+            tree.links.new(v, n.inputs[i])
+    <span class="k">return</span> n.outputs[<span class="n">0</span>]
+
+
+<span class="k">def</span> _vec(tree, x=<span class="n">0.0</span>, y=<span class="n">0.0</span>, z=<span class="k">None</span>):
+    n = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    n.inputs[<span class="s">&quot;X&quot;</span>].default_value = x
+    n.inputs[<span class="s">&quot;Y&quot;</span>].default_value = y
+    <span class="k">if</span> z <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> <span class="k">not</span> isinstance(z, (int, float)):
+        tree.links.new(z, n.inputs[<span class="s">&quot;Z&quot;</span>])
+    <span class="k">elif</span> z <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        n.inputs[<span class="s">&quot;Z&quot;</span>].default_value = z
+    <span class="k">return</span> n.outputs[<span class="s">&quot;Vector&quot;</span>]
+
+
+<span class="k">def</span> _translate(tree, geo, vec):
+    xf = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
+    tree.links.new(geo, xf.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(vec, xf.inputs[<span class="s">&quot;Translation&quot;</span>])
+    <span class="k">return</span> xf.outputs[<span class="s">&quot;Geometry&quot;</span>]
+
+
+<span class="k">def</span> _set_mat(tree, geo, mat, smooth=<span class="k">False</span>):
+    sm = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
+    sm.inputs[<span class="s">&quot;Material&quot;</span>].default_value = mat
+    tree.links.new(geo, sm.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    out = sm.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    <span class="k">if</span> smooth:
+        ss = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
+        tree.links.new(out, ss.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        out = ss.outputs[<span class="s">&quot;Geometry&quot;</span>]
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> _cylinder(tree, radius, depth, verts=<span class="n">32</span>):
+    cyl = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshCylinder&quot;</span>)
+    cyl.inputs[<span class="s">&quot;Vertices&quot;</span>].default_value = verts
+    cyl.inputs[<span class="s">&quot;Radius&quot;</span>].default_value = radius
+    <span class="k">if</span> isinstance(depth, (int, float)):
+        cyl.inputs[<span class="s">&quot;Depth&quot;</span>].default_value = depth
+    <span class="k">else</span>:
+        tree.links.new(depth, cyl.inputs[<span class="s">&quot;Depth&quot;</span>])
+    <span class="k">return</span> cyl.outputs[<span class="s">&quot;Mesh&quot;</span>]
+
+
+<span class="k">def</span> build_stair_tree(enamel, brass):
+    tree = bpy.data.node_groups.new(<span class="s">&quot;SpiralStair&quot;</span>, <span class="s">&quot;GeometryNodeTree&quot;</span>)
     tree.interface.new_socket(
         name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&quot;INPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketGeometry&quot;</span>
     )
-    scale_sock = tree.interface.new_socket(
+    h_sock = tree.interface.new_socket(
         name=INPUT_NAME, in_out=<span class="s">&quot;INPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketFloat&quot;</span>
     )
-    scale_sock.default_value = <span class="n">1.0</span>
+    h_sock.default_value = <span class="n">1.0</span>
     tree.interface.new_socket(
         name=<span class="s">&quot;Geometry&quot;</span>, in_out=<span class="s">&quot;OUTPUT&quot;</span>, socket_type=<span class="s">&quot;NodeSocketGeometry&quot;</span>
     )
     gi = tree.nodes.new(<span class="s">&quot;NodeGroupInput&quot;</span>)
     go = tree.nodes.new(<span class="s">&quot;NodeGroupOutput&quot;</span>)
-    combine = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
-    xform = tree.nodes.new(<span class="s">&quot;GeometryNodeTransform&quot;</span>)
-    shade = tree.nodes.new(<span class="s">&quot;GeometryNodeSetShadeSmooth&quot;</span>)
-    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+    height = gi.outputs[INPUT_NAME]
 
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs[<span class="s">&quot;X&quot;</span>])
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs[<span class="s">&quot;Y&quot;</span>])
-    tree.links.new(gi.outputs[INPUT_NAME], combine.inputs[<span class="s">&quot;Z&quot;</span>])
-    tree.links.new(gi.outputs[<span class="s">&quot;Geometry&quot;</span>], xform.inputs[<span class="s">&quot;Geometry&quot;</span>])
-    tree.links.new(combine.outputs[<span class="s">&quot;Vector&quot;</span>], xform.inputs[<span class="s">&quot;Scale&quot;</span>])
-    <span class="c"># Lift by S/2 so a cube of extent S sits on z=0.</span>
-    <span class="c"># Translation is a vector; drive Z from the same Scale socket via Combine.</span>
-    lift = tree.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
-    scale_half = tree.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
-    scale_half.operation = <span class="s">&quot;MULTIPLY&quot;</span>
-    scale_half.inputs[<span class="n">1</span>].default_value = <span class="n">0.5</span>
-    tree.links.new(gi.outputs[INPUT_NAME], scale_half.inputs[<span class="n">0</span>])
-    tree.links.new(scale_half.outputs[<span class="n">0</span>], lift.inputs[<span class="s">&quot;Z&quot;</span>])
-    tree.links.new(lift.outputs[<span class="s">&quot;Vector&quot;</span>], xform.inputs[<span class="s">&quot;Translation&quot;</span>])
+    <span class="c"># Step count and the exact riser that lands the top tread on</span>
+    <span class="c"># Height - RAIL_H, so the handrail tops out at Height.</span>
+    climb = _math(tree, <span class="s">&quot;SUBTRACT&quot;</span>, height, RAIL_H)
+    steps = _math(tree, <span class="s">&quot;MAXIMUM&quot;</span>,
+                  _math(tree, <span class="s">&quot;ROUND&quot;</span>, _math(tree, <span class="s">&quot;DIVIDE&quot;</span>, climb, RISER)),
+                  <span class="n">1.0</span>)
+    riser = _math(tree, <span class="s">&quot;DIVIDE&quot;</span>, climb, steps)
 
-    tree.links.new(xform.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
-    out_socket = shade.outputs[<span class="s">&quot;Geometry&quot;</span>]
-    <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        set_mat = tree.nodes.new(<span class="s">&quot;GeometryNodeSetMaterial&quot;</span>)
-        set_mat.inputs[<span class="s">&quot;Material&quot;</span>].default_value = material
-        tree.links.new(out_socket, set_mat.inputs[<span class="s">&quot;Geometry&quot;</span>])
-        out_socket = set_mat.outputs[<span class="s">&quot;Geometry&quot;</span>]
-    tree.links.new(out_socket, go.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    <span class="c"># Treads: one point per step up the axis, each instance turned by</span>
+    <span class="c"># index * STEP_ANGLE.</span>
+    line = tree.nodes.new(<span class="s">&quot;GeometryNodeMeshLine&quot;</span>)
+    tree.links.new(steps, line.inputs[<span class="s">&quot;Count&quot;</span>])
+    tree.links.new(_vec(tree, z=riser), line.inputs[<span class="s">&quot;Start Location&quot;</span>])
+    tree.links.new(_vec(tree, z=riser), line.inputs[<span class="s">&quot;Offset&quot;</span>])
+    index = tree.nodes.new(<span class="s">&quot;GeometryNodeInputIndex&quot;</span>)
+    turn = _math(tree, <span class="s">&quot;MULTIPLY&quot;</span>, index.outputs[<span class="s">&quot;Index&quot;</span>], STEP_ANGLE)
+    iop = tree.nodes.new(<span class="s">&quot;GeometryNodeInstanceOnPoints&quot;</span>)
+    tree.links.new(line.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Points&quot;</span>])
+    tree.links.new(gi.outputs[<span class="s">&quot;Geometry&quot;</span>], iop.inputs[<span class="s">&quot;Instance&quot;</span>])
+    tree.links.new(_vec(tree, z=turn), iop.inputs[<span class="s">&quot;Rotation&quot;</span>])
+    realize = tree.nodes.new(<span class="s">&quot;GeometryNodeRealizeInstances&quot;</span>)
+    tree.links.new(iop.outputs[<span class="s">&quot;Instances&quot;</span>], realize.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    treads = realize.outputs[<span class="s">&quot;Geometry&quot;</span>]
+
+    <span class="c"># Newel post, floor to exactly Height, with a base plate and top collar.</span>
+    post = _translate(tree, _cylinder(tree, POST_R, height),
+                      _vec(tree, z=_math(tree, <span class="s">&quot;MULTIPLY&quot;</span>, height, <span class="n">0.5</span>)))
+    plate = _translate(tree, _cylinder(tree, <span class="n">0.2</span>, <span class="n">0.03</span>), _vec(tree, z=<span class="n">0.015</span>))
+    collar = _translate(tree, _cylinder(tree, POST_R + <span class="n">0.02</span>, <span class="n">0.05</span>),
+                        _vec(tree, z=_math(tree, <span class="s">&quot;SUBTRACT&quot;</span>, height, <span class="n">0.025</span>)))
+    post_join = tree.nodes.new(<span class="s">&quot;GeometryNodeJoinGeometry&quot;</span>)
+    <span class="k">for</span> g <span class="k">in</span> (collar, plate, post):
+        tree.links.new(g, post_join.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    post_geo = _set_mat(tree, post_join.outputs[<span class="s">&quot;Geometry&quot;</span>], enamel, smooth=<span class="k">True</span>)
+
+    <span class="c"># Handrail: a helix through the baluster tops, one turn per 16 steps.</span>
+    spiral = tree.nodes.new(<span class="s">&quot;GeometryNodeCurveSpiral&quot;</span>)
+    spiral.inputs[<span class="s">&quot;Resolution&quot;</span>].default_value = <span class="n">96</span>
+    spiral.inputs[<span class="s">&quot;Start Radius&quot;</span>].default_value = BALUSTER_R
+    spiral.inputs[<span class="s">&quot;End Radius&quot;</span>].default_value = BALUSTER_R
+    <span class="c"># The Spiral node winds clockwise by default; the treads climb</span>
+    <span class="c"># counter-clockwise (positive Z rotation), so reverse it.</span>
+    spiral.inputs[<span class="s">&quot;Reverse&quot;</span>].default_value = <span class="k">True</span>
+    last = _math(tree, <span class="s">&quot;SUBTRACT&quot;</span>, steps, <span class="n">1.0</span>)
+    tree.links.new(_math(tree, <span class="s">&quot;MULTIPLY&quot;</span>, last, STEP_ANGLE / (<span class="n">2</span> * math.pi)),
+                   spiral.inputs[<span class="s">&quot;Rotations&quot;</span>])
+    tree.links.new(_math(tree, <span class="s">&quot;MULTIPLY&quot;</span>, last, riser),
+                   spiral.inputs[<span class="s">&quot;Height&quot;</span>])
+    profile = tree.nodes.new(<span class="s">&quot;GeometryNodeCurvePrimitiveCircle&quot;</span>)
+    profile.inputs[<span class="s">&quot;Resolution&quot;</span>].default_value = <span class="n">12</span>
+    profile.inputs[<span class="s">&quot;Radius&quot;</span>].default_value = RAIL_R
+    c2m = tree.nodes.new(<span class="s">&quot;GeometryNodeCurveToMesh&quot;</span>)
+    tree.links.new(spiral.outputs[<span class="s">&quot;Curve&quot;</span>], c2m.inputs[<span class="s">&quot;Curve&quot;</span>])
+    tree.links.new(profile.outputs[<span class="s">&quot;Curve&quot;</span>], c2m.inputs[<span class="s">&quot;Profile Curve&quot;</span>])
+    <span class="k">if</span> <span class="s">&quot;Fill Caps&quot;</span> <span class="k">in</span> c2m.inputs:
+        c2m.inputs[<span class="s">&quot;Fill Caps&quot;</span>].default_value = <span class="k">True</span>
+    rail_lift = _math(tree, <span class="s">&quot;ADD&quot;</span>, riser, RAIL_H - RAIL_R)
+    rail = _set_mat(tree, _translate(tree, c2m.outputs[<span class="s">&quot;Mesh&quot;</span>],
+                                     _vec(tree, z=rail_lift)),
+                    brass, smooth=<span class="k">True</span>)
+
+    join = tree.nodes.new(<span class="s">&quot;GeometryNodeJoinGeometry&quot;</span>)
+    <span class="k">for</span> g <span class="k">in</span> (rail, post_geo, treads):
+        tree.links.new(g, join.inputs[<span class="s">&quot;Geometry&quot;</span>])
+    tree.links.new(join.outputs[<span class="s">&quot;Geometry&quot;</span>], go.inputs[<span class="s">&quot;Geometry&quot;</span>])
     <span class="k">return</span> tree
 
 
 <span class="k">def</span> build():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    mats = [
-        make_material(<span class="s">&quot;TealScale&quot;</span>, COLORS[<span class="n">0</span>]),
-        make_material(<span class="s">&quot;CopperScale&quot;</span>, COLORS[<span class="n">1</span>]),
-        make_material(<span class="s">&quot;CoralScale&quot;</span>, COLORS[<span class="n">2</span>]),
-    ]
-    <span class="c"># One shared tree; Set Material is applied per-object via the mesh slot</span>
-    <span class="c"># rather than inside the group so the group stays parameter-only.</span>
-    tree = build_scale_tree(material=<span class="k">None</span>)
+    oak, brass, enamel = make_oak(), make_brass(), make_enamel()
+    tree = build_stair_tree(enamel, brass)
     objs = []
     mods = []
-    <span class="k">for</span> i, (x, mat) <span class="k">in</span> enumerate(zip(XS, mats)):
-        me = make_cube_mesh(<span class="s">f&quot;</span><span class="s">Carrier</span>{i}<span class="s">&quot;</span>)
-        me.materials.append(mat)
-        obj = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Scale</span>{int(SCALES[i])}<span class="s">&quot;</span>, me)
+    <span class="k">for</span> i, (x, h) <span class="k">in</span> enumerate(zip(XS, HEIGHTS)):
+        me = make_tread_mesh(<span class="s">f&quot;</span><span class="s">Stair.Tread</span>{i}<span class="s">&quot;</span>, oak, brass)
+        obj = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">SpiralStair.H</span>{int(h)}<span class="s">&quot;</span>, me)
         obj.location = (x, <span class="n">0.0</span>, <span class="n">0.0</span>)
         bpy.context.collection.objects.link(obj)
-        mod = obj.modifiers.new(<span class="s">&quot;scale_input&quot;</span>, <span class="s">&quot;NODES&quot;</span>)
+        mod = obj.modifiers.new(<span class="s">&quot;stair_height&quot;</span>, <span class="s">&quot;NODES&quot;</span>)
         mod.node_group = tree
         objs.append(obj)
         mods.append(mod)
@@ -495,10 +687,10 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         ev.to_mesh_clear()
 
 
-<span class="k">def</span> check(tree, objs, mods, api, same_scale=<span class="k">False</span>):
-    ident = scale_identifier(tree)
+<span class="k">def</span> check(tree, objs, mods, api, same_height=<span class="k">False</span>):
+    ident = height_identifier(tree)
     <span class="k">if</span> <span class="k">not</span> ident:
-        print(<span class="s">&quot;ERROR: Scale input identifier missing on the tree interface&quot;</span>,
+        print(<span class="s">&quot;ERROR: Height input identifier missing on the tree interface&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
     print(<span class="s">f&quot;</span><span class="s">api=</span>{api}<span class="s"> blender=</span>{bpy.app.version}<span class="s"> identifier=</span>{ident}<span class="s">&quot;</span>)
@@ -507,13 +699,13 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         print(<span class="s">&quot;ERROR: modifiers do not share one node_group&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
 
-    <span class="k">for</span> obj, mod, scale <span class="k">in</span> zip(objs, mods, SCALES):
-        written = SCALES[<span class="n">0</span>] <span class="k">if</span> same_scale <span class="k">else</span> scale
+    <span class="k">for</span> obj, mod, height <span class="k">in</span> zip(objs, mods, HEIGHTS):
+        written = HEIGHTS[<span class="n">0</span>] <span class="k">if</span> same_height <span class="k">else</span> height
         <span class="k">try</span>:
             set_mod_input(mod, ident, written, api)
         <span class="k">except</span> Exception <span class="k">as</span> e:
             print(
-                <span class="s">f&quot;</span><span class="s">ERROR: </span>{api}<span class="s"> write of </span>{scale}<span class="s"> on </span>{obj.name}<span class="s"> raised </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">ERROR: </span>{api}<span class="s"> write of </span>{height}<span class="s"> on </span>{obj.name}<span class="s"> raised </span><span class="s">&quot;</span>
                 <span class="s">f&quot;</span>{type(e).__name__}<span class="s">: </span>{e}<span class="s">&quot;</span>,
                 file=sys.stderr,
             )
@@ -529,18 +721,18 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
                 file=sys.stderr,
             )
             <span class="k">return</span> <span class="n">6</span>
-        <span class="k">if</span> abs(got - scale) &gt; READBACK_EPS:
+        <span class="k">if</span> abs(got - height) &gt; READBACK_EPS:
             print(
-                <span class="s">f&quot;</span><span class="s">ERROR: readback </span>{got}<span class="s"> != written </span>{scale}<span class="s"> on </span>{obj.name}<span class="s">&quot;</span>,
+                <span class="s">f&quot;</span><span class="s">ERROR: readback </span>{got}<span class="s"> != written </span>{height}<span class="s"> on </span>{obj.name}<span class="s">&quot;</span>,
                 file=sys.stderr,
             )
             <span class="k">return</span> <span class="n">7</span>
 
         zmin, zmax, nverts = evaluated_z_extent(obj)
         extent = zmax - zmin
-        <span class="k">if</span> abs(extent - scale) &gt; EXTENT_EPS:
+        <span class="k">if</span> abs(extent - height) &gt; EXTENT_EPS:
             print(
-                <span class="s">f&quot;</span><span class="s">ERROR: evaluated Z-extent </span>{extent:<span class="s">.6f</span>}<span class="s"> != scale </span>{scale}<span class="s"> </span><span class="s">&quot;</span>
+                <span class="s">f&quot;</span><span class="s">ERROR: evaluated Z-extent </span>{extent:<span class="s">.6f</span>}<span class="s"> != height </span>{height}<span class="s"> </span><span class="s">&quot;</span>
                 <span class="s">f&quot;</span><span class="s">on </span>{obj.name}<span class="s"> (z=[</span>{zmin:<span class="s">.4f</span>}<span class="s">,</span>{zmax:<span class="s">.4f</span>}<span class="s">] verts=</span>{nverts}<span class="s">)</span><span class="s">&quot;</span>,
                 file=sys.stderr,
             )
@@ -553,7 +745,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
             )
             <span class="k">return</span> <span class="n">9</span>
         print(
-            <span class="s">f&quot;</span>{obj.name}<span class="s"> scale=</span>{scale}<span class="s"> readback=</span>{got:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
+            <span class="s">f&quot;</span>{obj.name}<span class="s"> height=</span>{height}<span class="s"> readback=</span>{got:<span class="s">.6f</span>}<span class="s"> </span><span class="s">&quot;</span>
             <span class="s">f&quot;</span><span class="s">z_extent=</span>{extent:<span class="s">.6f</span>}<span class="s"> zmin=</span>{zmin:<span class="s">.6f</span>}<span class="s"> verts=</span>{nverts}<span class="s">&quot;</span>
         )
 
@@ -594,7 +786,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -606,14 +798,18 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     scene.world = world
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.25</span>, <span class="n">0.0</span>, <span class="n">1.1</span>)
+    aim.location = CAM_AIM
     scene.collection.objects.link(aim)
 
-    <span class="k">def</span> light(name, loc, energy, size, col):
+    <span class="k">def</span> light(name, loc, energy, size, col, spread=<span class="k">None</span>):
         ld = bpy.data.lights.new(name, <span class="s">&quot;AREA&quot;</span>)
         ld.energy = energy
         ld.size = size
         ld.color = col
+        <span class="k">if</span> spread <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            <span class="c"># A shaped key: the spread keeps the pool on the stairs and</span>
+            <span class="c"># lets the floor fall off to the near-black stage.</span>
+            ld.spread = math.radians(spread)
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         scene.collection.objects.link(ob)
@@ -622,22 +818,22 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         lc.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
         lc.up_axis = <span class="s">&quot;UP_Y&quot;</span>
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">5.5</span>, -<span class="n">6.0</span>, <span class="n">5.2</span>), <span class="n">380.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.4</span>, -<span class="n">3.2</span>, <span class="n">2.4</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.4</span>, <span class="n">6.4</span>, <span class="n">3.8</span>), <span class="n">280.0</span>, <span class="n">3.5</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Key&quot;</span>, KEY_LOC, KEY_W, <span class="n">2.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), KEY_SPREAD)
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">2.2</span>), FILL_W, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">6.0</span>, <span class="n">6.5</span>), RIM_W, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), <span class="n">30.0</span>)
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;AREA&quot;</span>)
-    wedge.energy = <span class="n">420.0</span>
+    wedge.energy = WEDGE_W
     wedge.size = <span class="n">6.0</span>
     wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
     wob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
-    wob.location = (<span class="n">2.4</span>, <span class="n">5.6</span>, <span class="n">4.2</span>)
-    wob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
+    wob.location = (<span class="n">1.8</span>, <span class="n">4.6</span>, <span class="n">4.6</span>)
+    wob.rotation_euler = (math.radians(-<span class="n">62</span>), <span class="n">0.0</span>, math.radians(<span class="n">195</span>))
     scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.6</span>, -<span class="n">12.4</span>, <span class="n">6.6</span>)
+    cam.location = CAM_LOC
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
@@ -647,7 +843,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
 
     scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -657,6 +853,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     scene.render.filepath = path
+    <span class="c"># Standard, not AgX: AgX pastels the oak and brass and greys the stage.</span>
     scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
 
     fcode = gallery_framing.check_framing(
@@ -687,14 +884,14 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
         help=<span class="s">&quot;force the 5.1 dict path, the 5.2 RNA path, or pick from bpy.app.version&quot;</span>,
     )
     p.add_argument(
-        <span class="s">&quot;--same-scale&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
+        <span class="s">&quot;--same-height&quot;</span>, <span class="s">&quot;--same-scale&quot;</span>, dest=<span class="s">&quot;same_height&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
         help=<span class="s">&quot;write 1.0 to every modifier (must fail)&quot;</span>,
     )
     args = p.parse_args(argv)
 
     tree, objs, mods = build()
     api = _api_choice(args.api)
-    code = check(tree, objs, mods, api, same_scale=args.same_scale)
+    code = check(tree, objs, mods, api, same_height=args.same_height)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
@@ -721,7 +918,7 @@ INPUT_NAME = <span class="s">&quot;Scale&quot;</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three separate cubes stepping up in size from left to right: a small teal cube, an orange block and a large red block." />
+    <img src="../assets/gn-modifier-inputs-hero.webp" alt="Three spiral staircases of one design, with oak treads, teal posts and brass rails, rising left to right from seven steps to seventeen to twenty-seven." />
   </dialog>
   <footer>
     <div class="statusbar">

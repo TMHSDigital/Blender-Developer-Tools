@@ -580,15 +580,16 @@ verts = 72, faces = 54, and `Set Material` carries the lime accent.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three separate cubes in teal, copper, and coral scaled to 1, 2, and 3 meters by a shared Geometry Nodes tree, proving per-modifier Scale writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
+<a href="examples/gn-modifier-inputs/"><img src="examples/gn-modifier-inputs/preview.webp" alt="GN modifier inputs: three spiral staircases from one shared Geometry Nodes tree, 1, 2 and 3 meters tall with 7, 17 and 27 oak treads, proving per-modifier Height writes land on 5.2 RNA and on 4.5 dict assignment" /></a>
 </td>
 <td valign="middle">
 
 ### [gn-modifier-inputs](examples/gn-modifier-inputs/)
 
-One Geometry Nodes tree, three modifier copies. Writes a Float Scale input through
-`mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1. Asserts readback and
-evaluated Z-extent equal 1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
+One Geometry Nodes spiral-staircase tree, three modifier copies. Writes a Float Height
+input through `mod.properties.inputs` on 5.2 and `mod[identifier]` on 4.5/5.1; the tree
+turns 1 / 2 / 3 m into 7 / 17 / 27 treads. Asserts readback and evaluated Z-extent equal
+1 / 2 / 3. The 5.1 dict form raises TypeError on 5.2.
 
 </td>
 </tr>
