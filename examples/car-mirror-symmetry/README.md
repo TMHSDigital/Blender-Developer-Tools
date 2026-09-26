@@ -1,35 +1,43 @@
 # Car Mirror Symmetry
 
-A runnable example that builds a generic hatchback as **one half** — a loft of
-14 stations, each a 9-point half-ring from the bottom centerline out to the
-roof centerline — and completes it with a **Mirror modifier**, evaluated
+A runnable example that builds a stylized hatchback as **one half** — a loft
+of 52 stations, each a 13-point half-ring from the bottom centerline out to
+the roof centerline — and completes it with a **Mirror modifier**, evaluated
 through the depsgraph, following
 [`depsgraph-and-evaluated-data`](../../skills/depsgraph-and-evaluated-data/SKILL.md).
-Wheels and lamps are separate objects mirrored the idiomatic way: the object
-origin sits **on** the symmetry plane and the mesh data is offset — mirror
-mirrors about the object's own origin, so you offset the data, never the
-object.
+Wheels, headlamps, taillamps, grille, door mirrors and door handles are
+separate objects mirrored the idiomatic way: the object origin sits **on**
+the symmetry plane and the mesh data is offset — mirror mirrors about the
+object's own origin, so you offset the data, never the object. The grille is
+the one part authored *across* the plane: a half profile whose end points lie
+exactly on `x = 0`, welded into one grille by the merge.
 
 **What it witnesses:** the original datablock keeps only the authored half
 while the depsgraph carries the mirrored whole, and both directions are
 closed forms:
 
-- **Original holds the half.** Body datablock is exactly 126 verts / 231
-  edges / 106 faces (14 × 9, loft closed forms), with exactly 28 centerline
-  verts (probe: modifier applied into data → exit 3, datablock reads
-  `(224, 434, 212)`).
-- **Evaluated is the welded whole.** Exactly `2n − c = 224` verts (probe:
-  `use_mirror_merge = False` → exit 5, **252** verts — the doubled seam;
-  probe: one centerline vert pulled off the plane → exit 4, **27 ≠ 28**
-  welded; probe: mirror axis off → exit 5, **126** — the half-car). The
+- **Original holds the half.** Body datablock is exactly 676 verts / 1289
+  edges / 614 faces (52 × 13, loft closed forms), with exactly 104
+  centerline verts (probe: modifier applied into data → exit 3, datablock
+  reads `(1248, 2474, 1228)`).
+- **Evaluated is the welded whole.** Exactly `2n − c = 1248` verts (probe:
+  `use_mirror_merge = False` → exit 5, **1352** verts — the doubled seam;
+  probe: one centerline vert pulled off the plane → exit 4, **103 ≠ 104**
+  welded; probe: mirror axis off → exit 5, **676** — the half-car). The
   evaluated shell is watertight (every edge borders 2 faces) with Euler
   characteristic **2** — the two halves weld into a topological sphere.
 - **Exact ±X partners.** Every evaluated vertex has a partner at negated X:
   measured deviation **0.000e+00** (mirror copies exactly; tol 2e-5 guards
   float32), evaluated bbox symmetric (`min.x == −max.x`).
-- **Mirrored parts.** Wheels (96/81 half → 192/162 evaluated) and lamps
-  (8/6 → 16/12) each double across the plane with partner deviation 0.0 —
-  and each object origin reads `x == 0`.
+- **Mirrored parts.** Offset parts double exactly: wheels 390/361 →
+  780/722, headlamp 64/50 → 128/100, taillamp and each handle 48/34 →
+  96/68, door mirror 80/66 → 160/132, partner deviation 0.0, every origin
+  `x == 0` (probe: headlamp origin at `x = 0.01` → exit 12; probe: front
+  wheel's mirror axis off → exit 14, `(390, 361)`). The split grille
+  authors 36 verts with 8 on the plane and must evaluate to `2n − 8 = 64`
+  with exactly 8 on-plane verts (probe: grille merge off → exit 14, **72**
+  verts / 16 on the plane — two grilles; probe: one grille end point moved
+  to `x = 0.004`, beyond the merge threshold → exit 13, 7 ≠ 8 on the plane).
 
 **Why the checks target the modifier, not the base:** mutating a non-plane
 base vertex cannot break the ±X pairing — the evaluated set is always
@@ -37,24 +45,40 @@ base vertex cannot break the ±X pairing — the evaluated set is always
 the modifier (merge off, axis off, modifier applied into data, origin off
 the plane), which is what the probes break.
 
-**Version witness:** check output is byte-identical on Blender 4.5.11 LTS and
-5.1.2. Mirror, `evaluated_get` / `to_mesh` / `to_mesh_clear` (no argument —
-passing the mesh raises TypeError on both), and `TRACK_TO` constraint
-behavior are stable across the pair; only the EEVEE engine id is
-version-gated.
+**Version witness:** check output is byte-identical on Blender 4.5.11 LTS,
+5.1.2 and 5.2.1 LTS. Mirror, `evaluated_get` / `to_mesh` / `to_mesh_clear`
+(no argument — passing the mesh raises TypeError on both), `BVHTree`, and
+`TRACK_TO` constraint behavior are stable across them; only the EEVEE
+engine id is version-gated.
 
 The render is the proof: hide the mirror and the still is literally half a
-car — halved windshield and hood at the centerline, one headlamp. Render
-notes: the loft is faceted by design (flat shading, no bevel modifier — the
-modifier stack is Mirror only, so counts stay closed-form); the window band
-is glass by construction class (steepest roof-rise slope is the windshield,
-steepest drop the rear window, ring segment 5 the side windows), and the
-glass is dielectric — metallic glass mirrors the key light and renders the
-windshield as a hot salmon slab. The camera stands on the key light's side
-of the car: from the other side it saw only the flank the key cannot reach,
-and the whole visible side rendered near-black. The car is mirror-symmetric,
-so the composition is the same either way. The bright streak along the cowl
-below the windshield is the key's highlight in a crease that faces it.
+car — one headlamp, one door mirror, half a grille, a hood cut open at the
+centerline. The camera stands on the key light's side, high enough to look
+down the hood centerline so both halves read at once. The weld itself is
+not a pixel witness — the hood and roof are nearly flat across the plane,
+so an unwelded seam renders within 12/255 of the welded one; the `2n − c`
+count is what catches it.
+
+Render notes: the loft is smooth-shaded with sharp edges set on the
+authored half by dihedral angle (35°) and material border — no bevel or
+weighted-normal modifier, so the stack stays Mirror only and every count
+stays closed-form. Boundary edges on the plane take the angle to their own
+mirror image, `acos(1 − 2nₓ²)`, so the centerline shades smooth. The
+previous faceted loft had a thin pink-white streak on the hood by the
+windshield: not a seam (it sat at `|x|` 0.11–0.38, on the mirrored half, and
+all weld checks passed) but a sliver facet — the loft's greenhouse points
+collapsing onto the hood — flat-shaded and facing the key almost head on
+(`n · −key = 0.967`). The redesigned ring lerps a hood layout into a cabin
+layout, so no such sliver exists. Panel classes are by construction
+position: underbody, rocker and arch cladding are trim; side glass is the
+sill-to-glass-top segment under the roof, broken by a trim B-pillar; the
+drip rail becomes the A-pillar; windshield and hatch glass are the roof
+bands where the cabin factor ramps. The glass is a dark dielectric whose
+base colour ramps toward steel blue at grazing angles (Layer Weight →
+Color Ramp) — on a near-black stage there is little to reflect, and flat
+dark glass read as dull paint. Lamps, grille, mirrors and handles are
+closed superellipse pods seated on the skin by a `BVHTree` ray cast, with a
+chrome bezel and an inset lens rather than flat boxes.
 
 ## Run
 
@@ -90,10 +114,12 @@ against it.
 | 10 | Mirror partner deviation above tolerance |
 | 11 | Evaluated bbox not symmetric about X |
 | 12 | Mirrored-part origin off the plane |
-| 13 | Mirrored-part datablock is not the authored half |
-| 14 | Mirrored-part evaluated counts did not double |
+| 13 | Mirrored-part datablock is not the authored half (verts, faces, on-plane verts) |
+| 14 | Mirrored-part evaluated counts ≠ `2n − weld` / `2f`, or on-plane verts ≠ weld |
 | 15 | Mirrored-part partner check failed |
 | 16 | Mirrored-part evaluated mesh stayed on one side |
+| 17 | Gallery framing violation (`--output` path only; `gallery_framing` returns 10, remapped) |
+| 18 | Asset-quality floor violation (`--output` path only; `gallery_asset_quality` returns 11, remapped) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>vertex-weight-limit — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <meta name="description" content="A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-weight-limit/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="vertex-weight-limit — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <meta property="og:description" content="A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/vertex-weight-limit/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-weight-limit-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints." />
+  <meta property="og:image:alt" content="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="vertex-weight-limit — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
+  <meta name="twitter:description" content="A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vertex-weight-limit-hero.webp" />
-  <meta name="twitter:image:alt" content="A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints." />
+  <meta name="twitter:image:alt" content="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>vertex-weight-limit</h1>
-    <p>A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.</p>
+    <p>A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints.">
-      <img src="../assets/vertex-weight-limit-hero.webp" alt="A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint.">
+      <img src="../assets/vertex-weight-limit-hero.webp" alt="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh&#x27;s own deform layer, not the authoring function.</div>
@@ -278,12 +278,15 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that rigs a mech arm — flanged bolted pedestal and shoulder fairing, a panel-seamed upper arm ending in clevis cheeks, the elbow hinge pin and knuckle barrel capped with hex bolts through a ribbed flex cuff, a long seam-grooved forearm, wrist cuff and collar, and a three-finger gripper — with deliberately rich five-bone weight bumps in the cuffs, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
+<p>A runnable example that rigs a six-axis-style industrial robot arm — bolted floor plinth and turret drum with a finned rear drive pack, clevis cheeks and servo drums at the shoulder and elbow, a tapered box-section upper arm and forearm, a gas-spring balancer across the shoulder, a wrist fork and a two-jaw gripper — as <strong>one skinned mesh</strong>, then enforces the game-engine <strong>maximum of four bone influences per vertex</strong> through the data API, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a> and building on the linear-blend-skinning precedent of <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/armature-bend"><code>armature-bend</code></a>.</p>
+<p>Every rigid part (armor, motors, cheeks, piston, gripper) is weighted 1.0 to one bone. The two cable runs along the arm&#x27;s back are the flex parts: they hand over smoothly from bone to bone across each joint and carry the tail an auto-weighting pass leaves behind — a small, distance-ranked spill onto all five bones. That tail is the five-influence authoring the limit prunes.</p>
 <p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting here, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>.</p>
 <p><strong>What it witnesses:</strong> the skinning constraint every game engine enforces and AI-generated rigging code most often violates silently.</p>
-<ul><li><strong>The limit is a data-API operation, not a context operator.</strong> Instead of <code>bpy.ops.object.vertex_group_limit_total</code>, the example reads each vertex&#x27;s groups, keeps the top four by weight, <code>VertexGroup.remove</code>s the rest, and renormalizes the survivors. Dropping without renormalizing leaves sums at 0.984 — a mesh that shrinks toward the origin under load (the check&#x27;s measured failure, 1.616e-02 off unit sum).</li><li><strong>The armature modifier is still exactly linear blend skinning</strong> after the limit: every depsgraph-evaluated vertex equals <code>Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest</code>, with the weights <strong>read back from the mesh&#x27;s own deform layer</strong> (<code>v.groups</code>) — the weights on the mesh are the contract, not the weights you meant to write. Measured <code>lbs_err = 2.7e-07</code>.</li><li><strong>Pruning must not damage the pose.</strong> Evaluated positions before and after the limit are held within 0.05 (measured 2.8e-03), the pedestal mount stays exactly pinned (Root is unposed), and the pre-limit authoring really carries five influences in the cuffs — otherwise the witness would be vacuous.</li></ul>
-<p>The vertex-group API (<code>v.groups</code>, <code>VertexGroup.add</code>/<code>remove</code>) is stable between Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself the version witness (measured values match to the digit).</p>
-<p>The render shows the pruned arm mid-pose: the flex cuffs carry the teal accent — the five-influence zones the limit prunes glow at the elbow hinge and wrist, sealed by the bright hoop on the elbow cuff — proof that the limited weights still deform as authored.</p>
+<ul><li><strong>The limit is a data-API operation, not a context operator.</strong> Instead of <code>bpy.ops.object.vertex_group_limit_total</code>, the example reads each vertex&#x27;s groups, keeps the top four by weight, <code>VertexGroup.remove</code>s the rest, and renormalizes the survivors. Dropping without renormalizing leaves sums short of one — a mesh that shrinks toward the origin under load (the check&#x27;s measured failure, 2.647e-03 off unit sum).</li><li><strong>The armature modifier is still exactly linear blend skinning</strong> after the limit: every depsgraph-evaluated vertex equals <code>Σ wᵢ · (pose.matrix @ bone.matrix_local.inverted()) @ rest</code>, with the weights <strong>read back from the mesh&#x27;s own deform layer</strong> (<code>v.groups</code>) — the weights on the mesh are the contract, not the weights you meant to write. Measured <code>lbs_err = 1.2e-06</code>.</li><li><strong>Pruning must not damage the pose.</strong> Evaluated positions before and after the limit are held within 0.05 (measured 4.2e-03 over 3108 limited vertices), the plinth stays exactly pinned (Root is unposed), and the pre-limit authoring really carries five influences on the cables — otherwise the witness would be vacuous.</li></ul>
+<p>The vertex-group API (<code>v.groups</code>, <code>VertexGroup.add</code>/<code>remove</code>) is stable between Blender 4.5 LTS and 5.2 — the example runs identically on 4.5, 5.1 and 5.2, which is itself the version witness (measured values match to the digit).</p>
+<h2>What the render shows</h2>
+<p>The render path paints the <strong>post-limit weights</strong> onto the arm as a <code>BoneBlend</code> colour attribute — <code>Σ wᵢ · colourᵢ</code> per vertex, read back from <code>v.groups</code> after the prune — and the cables, side hatches and trim bands display it through a matte Attribute-node material. Each rigid segment therefore shows its bone&#x27;s flat colour (blue turret, teal upper arm, violet forearm, magenta wrist, lime gripper), and the cables grade from colour to colour exactly where the skin weights blend across each joint, while the posed arm shows those weights deforming it.</p>
+<p><strong>Numeric-only contract</strong> (docs/VISUAL-STYLE.md § The render is the proof): the four-influence cap itself has no visual signature. The pruned fifth weight is the small spill (at most 0.0027 on any vertex), so a five-influence arm deforms and paints indistinguishably — the prune preserves the pose by design, and that is what check 3 asserts. The render depicts the subject and where its weights blend; the cap is witnessed by the numbers above and by the <code>--skip-limit</code> falsifier.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python vertex_weight_limit.py --
@@ -295,8 +298,8 @@ blender --background --python vertex_weight_limit.py -- --skip-limit
 blender --background --python vertex_weight_limit.py -- --output arm.png
 blender --background --python vertex_weight_limit.py -- --output arm.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper; it is also the missing-render code.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Pre-limit max influences ≠ 5</td></tr><tr><td>4</td><td>Vertex over the 4-influence cap (<code>--skip-limit</code> lands here)</td></tr><tr><td>5</td><td>Limit changed nothing</td></tr><tr><td>6</td><td>Weight sums off 1.0 after renormalize</td></tr><tr><td>7</td><td>Pose damaged by pruning, or evaluated vert count changed</td></tr><tr><td>8</td><td>Evaluated mesh off LBS over limited weights</td></tr><tr><td>9</td><td>Root-weighted mount moved</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper; it is also the missing-render code. <code>11</code> is the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Pre-limit max influences ≠ 5</td></tr><tr><td>4</td><td>Vertex over the 4-influence cap (<code>--skip-limit</code> lands here)</td></tr><tr><td>5</td><td>Limit changed nothing</td></tr><tr><td>6</td><td>Weight sums off 1.0 after renormalize</td></tr><tr><td>7</td><td>Pose damaged by pruning, or evaluated vert count changed</td></tr><tr><td>8</td><td>Evaluated mesh off LBS over limited weights</td></tr><tr><td>9</td><td>Root-weighted mount moved</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr><tr><td>11</td><td>Asset-quality floor violation (<code>--output</code> only)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--skip-limit</code>.</p>
     </section>
     <section class="detail-section src">
@@ -305,7 +308,7 @@ blender --background --python vertex_weight_limit.py -- --output arm.png --engin
         <code>examples/vertex-weight-limit/vertex_weight_limit.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit/vertex_weight_limit.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;A rigged mech arm pruned to the 4-influence game-engine limit — a runnable example.
+      <pre><span class="s">&quot;&quot;&quot;A rigged industrial robot arm pruned to the 4-influence game-engine limit — a runnable example.
 
 Witnesses the skinning constraint every game engine enforces and AI-generated
 rigging code most often violates silently: **no more than four bone influences
@@ -324,10 +327,16 @@ per vertex, weights summing to one**.
    weights on the mesh are the contract, not the weights you meant to write.
 3. Pruning must not damage the pose: evaluated positions before and after the
    limit are compared and held within tolerance. The root stays pinned — the
-   pedestal mount never moves.
+   floor plinth never moves.
+
+The arm is one skinned mesh, as a game character&#x27;s would be. Armor, motors,
+clevis cheeks, the balancer piston and the gripper are rigid (one bone at
+weight 1); the two cable runs along its back are the flex parts: they blend
+across every joint and carry an auto-weight-style spill onto all five bones —
+the five-influence tail the limit prunes.
 
 The vertex-group API (``v.groups``, ``VertexGroup.add``/``remove``) is stable
-between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
+between Blender 4.5 LTS and 5.2 — the example runs identically on both, which
 is itself the version witness.
 
 ``--skip-limit`` leaves the five-influence flex weights in place and still
@@ -335,7 +344,8 @@ asserts the engine cap. That is the falsifier (``--same-axis`` in
 export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
-check. Pass --output to also render a still:
+check. Pass --output to also render a still, which paints the post-limit
+weights onto the mesh as a colour attribute (see ``paint_weight_map``):
 
     blender --background --python vertex_weight_limit.py --                 # check only
     blender --background --python vertex_weight_limit.py -- --skip-limit    # must fail
@@ -343,199 +353,404 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">import</span> mathutils
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
 
-<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+<span class="c"># Shared Layer 1 framing + asset-quality measurement (render path only) — see</span>
+<span class="c"># gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
-SIDES = <span class="n">32</span>
+SIDES = <span class="n">40</span>
 MAX_INFLUENCES = <span class="n">4</span>              <span class="c"># the engine constraint being witnessed</span>
-BUMP_R = <span class="n">1.8</span>                    <span class="c"># flex-cuff blend support; guarantees 5 pre-limit</span>
+SPILL = <span class="n">0.02</span>                    <span class="c"># auto-weight tail on every bone; guarantees 5 pre-limit</span>
 LBS_TOL = <span class="n">5e-4</span>                  <span class="c"># float32 mesh coords vs double pose matrices</span>
 SUM_TOL = <span class="n">1e-5</span>                  <span class="c"># per-vertex weight sum after renormalize</span>
 POSE_TOL = <span class="n">0.05</span>                 <span class="c"># pruning must not move the pose beyond this</span>
 BONES = (<span class="s">&quot;Root&quot;</span>, <span class="s">&quot;Shoulder&quot;</span>, <span class="s">&quot;Elbow&quot;</span>, <span class="s">&quot;Wrist&quot;</span>, <span class="s">&quot;Claw&quot;</span>)
-BONE_SPANS = {<span class="s">&quot;Root&quot;</span>: (-<span class="n">0.35</span>, <span class="n">0.10</span>), <span class="s">&quot;Shoulder&quot;</span>: (<span class="n">0.10</span>, <span class="n">1.35</span>),
-              <span class="s">&quot;Elbow&quot;</span>: (<span class="n">1.35</span>, <span class="n">2.55</span>), <span class="s">&quot;Wrist&quot;</span>: (<span class="n">2.55</span>, <span class="n">2.90</span>), <span class="s">&quot;Claw&quot;</span>: (<span class="n">2.90</span>, <span class="n">3.35</span>)}
+BONE_SPANS = {<span class="s">&quot;Root&quot;</span>: (<span class="n">0.0</span>, <span class="n">0.85</span>), <span class="s">&quot;Shoulder&quot;</span>: (<span class="n">0.85</span>, <span class="n">2.35</span>),
+              <span class="s">&quot;Elbow&quot;</span>: (<span class="n">2.35</span>, <span class="n">3.85</span>), <span class="s">&quot;Wrist&quot;</span>: (<span class="n">3.85</span>, <span class="n">4.20</span>), <span class="s">&quot;Claw&quot;</span>: (<span class="n">4.20</span>, <span class="n">4.62</span>)}
 BONE_CENTERS = {b: (s[<span class="n">0</span>] + s[<span class="n">1</span>]) / <span class="n">2</span> <span class="k">for</span> b, s <span class="k">in</span> BONE_SPANS.items()}
-POSE_DEG = {<span class="s">&quot;Shoulder&quot;</span>: -<span class="n">8.0</span>, <span class="s">&quot;Elbow&quot;</span>: -<span class="n">35.0</span>, <span class="s">&quot;Wrist&quot;</span>: -<span class="n">14.0</span>, <span class="s">&quot;Claw&quot;</span>: <span class="n">6.0</span>}
+<span class="c"># rest-z ramps where the flex cables hand over from one bone to the next</span>
+JOINT_RAMPS = ((<span class="n">0.92</span>, <span class="n">1.30</span>), (<span class="n">2.12</span>, <span class="n">2.58</span>), (<span class="n">3.66</span>, <span class="n">3.96</span>), (<span class="n">4.22</span>, <span class="n">4.34</span>))
+POSE_DEG = {<span class="s">&quot;Shoulder&quot;</span>: -<span class="n">45.0</span>, <span class="s">&quot;Elbow&quot;</span>: -<span class="n">60.0</span>, <span class="s">&quot;Wrist&quot;</span>: -<span class="n">55.0</span>}
+FLEX = <span class="s">&quot;FLEX&quot;</span>
+FLEX_ID = len(BONES)
 
-<span class="c"># armor palette slots</span>
-GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
+<span class="c"># material slots</span>
+PAINT, GUNMETAL, STEEL, RUBBER, WEIGHTMAP = range(<span class="n">5</span>)
+
+<span class="c"># one display colour per bone; the render paints sum_i w_i * colour_i from</span>
+<span class="c"># the mesh&#x27;s own post-limit deform layer</span>
+BONE_RGB = {<span class="s">&quot;Root&quot;</span>: (<span class="n">0.03</span>, <span class="n">0.16</span>, <span class="n">1.00</span>), <span class="s">&quot;Shoulder&quot;</span>: (<span class="n">0.00</span>, <span class="n">0.78</span>, <span class="n">0.55</span>),
+            <span class="s">&quot;Elbow&quot;</span>: (<span class="n">0.38</span>, <span class="n">0.06</span>, <span class="n">1.00</span>), <span class="s">&quot;Wrist&quot;</span>: (<span class="n">1.00</span>, <span class="n">0.03</span>, <span class="n">0.30</span>),
+            <span class="s">&quot;Claw&quot;</span>: (<span class="n">0.45</span>, <span class="n">1.00</span>, <span class="n">0.00</span>)}
+
+T = Matrix.Translation
+TO_X = Matrix.Rotation(math.radians(<span class="n">90.0</span>), <span class="n">4</span>, <span class="s">&#x27;Y&#x27;</span>)     <span class="c"># local Z -&gt; world X</span>
+<span class="c"># local (X, Y, Z) -&gt; world (Y, Z, X): side plates drawn in the bend plane</span>
+YZX = Matrix(((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>),
+              (<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)))
 
 
-<span class="k">def</span> bump(z, center, radius=BUMP_R):
-    <span class="s">&quot;&quot;&quot;Smooth, compactly-supported influence: (1 - (d/r)^2)^2 inside r, else 0.&quot;&quot;&quot;</span>
-    d = abs(z - center) / radius
-    <span class="k">return</span> (<span class="n">1.0</span> - d * d) ** <span class="n">2</span> <span class="k">if</span> d &lt; <span class="n">1.0</span> <span class="k">else</span> <span class="n">0.0</span>
+<span class="k">def</span> smooth(t):
+    t = min(<span class="n">1.0</span>, max(<span class="n">0.0</span>, t))
+    <span class="k">return</span> t * t * (<span class="n">3.0</span> - <span class="n">2.0</span> * t)
 
 
 <span class="k">def</span> flex_weights(z):
-    <span class="s">&quot;&quot;&quot;Rich pre-limit weights over all five bones — cuffs blend broadly.&quot;&quot;&quot;</span>
-    w = [bump(z, BONE_CENTERS[b]) <span class="k">for</span> b <span class="k">in</span> BONES]
+    <span class="s">&quot;&quot;&quot;Pre-limit weights for a flex vertex at rest height z.
+
+    A smoothstep hand-over between neighbouring bones across each joint (a
+    partition of unity), plus the tail every auto-weighting pass leaves: a
+    small, distance-ranked spill onto all five bones. The tail is what puts
+    five influences on every cable vertex.&quot;&quot;&quot;</span>
+    t = [smooth((z - a) / (b - a)) <span class="k">for</span> a, b <span class="k">in</span> JOINT_RAMPS]
+    w = []
+    <span class="k">for</span> k <span class="k">in</span> range(len(BONES)):
+        lo = <span class="n">1.0</span> <span class="k">if</span> k == <span class="n">0</span> <span class="k">else</span> t[k - <span class="n">1</span>]
+        hi = <span class="n">0.0</span> <span class="k">if</span> k == len(BONES) - <span class="n">1</span> <span class="k">else</span> t[k]
+        w.append(lo - hi)
+    w = [a + SPILL * math.exp(-abs(z - BONE_CENTERS[b])) <span class="k">for</span> a, b <span class="k">in</span> zip(w, BONES)]
     total = sum(w)
     <span class="k">return</span> [x / total <span class="k">for</span> x <span class="k">in</span> w]
 
 
-<span class="k">def</span> lathe_part(bm, rings, mat):
-    <span class="s">&quot;&quot;&quot;Revolve (z, r) rings around Z; returns the ring vertex lists.&quot;&quot;&quot;</span>
-    out = []
-    <span class="k">for</span> z, r <span class="k">in</span> rings:
-        out.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
-                                  r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
-                    <span class="k">for</span> s <span class="k">in</span> range(SIDES)])
-    <span class="k">for</span> k <span class="k">in</span> range(len(out) - <span class="n">1</span>):
-        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
-            f = bm.faces.new((out[k][s], out[k][(s + <span class="n">1</span>) % SIDES],
-                              out[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], out[k + <span class="n">1</span>][s]))
-            f.material_index = mat
-    <span class="k">return</span> out
+<span class="c"># ---------------------------------------------------------------- primitives</span>
+
+<span class="k">def</span> _bridge(bm, rings):
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        n = len(a)
+        <span class="k">for</span> s <span class="k">in</span> range(n):
+            bm.faces.new((a[s], a[(s + <span class="n">1</span>) % n], b[(s + <span class="n">1</span>) % n], b[s]))
 
 
-<span class="k">def</span> box_part(bm, size, loc, rot, mat, part_of, bone):
-    <span class="s">&quot;&quot;&quot;One box shell (rot in degrees XYZ); tags `bone` for its verts.&quot;&quot;&quot;</span>
-    n0f, n0v = len(bm.faces), len(bm.verts)
-    m = (mathutils.Matrix.Translation(loc)
-         @ mathutils.Euler(tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)).to_matrix().to_4x4()
-         @ mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
-    bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
-    <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
-        f.material_index = mat
-    part_of.extend([bone] * (len(bm.verts) - n0v))
+<span class="k">def</span> _close(bm, rings, cap0, cap1):
+    _bridge(bm, rings)
+    <span class="k">if</span> cap0:
+        bm.faces.new(list(reversed(rings[<span class="n">0</span>])))
+    <span class="k">if</span> cap1:
+        bm.faces.new(rings[-<span class="n">1</span>])
 
 
-<span class="k">def</span> cone_part(bm, r1, r2, depth, loc, rot, mat, part_of, bone, segments=<span class="n">24</span>):
-    <span class="s">&quot;&quot;&quot;One cylinder/cone shell along a rotated axis; tags `bone` for its verts.&quot;&quot;&quot;</span>
-    n0f, n0v = len(bm.faces), len(bm.verts)
-    m = (mathutils.Matrix.Translation(loc)
-         @ mathutils.Euler(tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)).to_matrix().to_4x4())
-    bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=segments,
-                          radius1=r1, radius2=r2, depth=depth, matrix=m)
-    <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
-        f.material_index = mat
-    part_of.extend([bone] * (len(bm.verts) - n0v))
+<span class="k">def</span> lathe(bm, profile, m=Matrix(), sides=SIDES, cap0=<span class="k">True</span>, cap1=<span class="k">True</span>, phase=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Revolve (z, r) stations around local Z, outward-facing, capped.&quot;&quot;&quot;</span>
+    angs = [phase + <span class="n">2</span> * math.pi * s / sides <span class="k">for</span> s <span class="k">in</span> range(sides)]
+    rings = [[bm.verts.new(m @ Vector((r * math.cos(a), r * math.sin(a), z)))
+              <span class="k">for</span> a <span class="k">in</span> angs] <span class="k">for</span> z, r <span class="k">in</span> profile]
+    _close(bm, rings, cap0, cap1)
 
 
-<span class="k">def</span> build_arm():
-    <span class="s">&quot;&quot;&quot;The mech arm, built as a machine: bolted pedestal and shoulder fairing
-    (Root), a shoulder hub and upper arm ending in clevis cheeks (Shoulder),
-    the elbow hinge pin inside a ribbed flex bellows (the &gt;4-influence zone),
-    a long plated forearm (Elbow), wrist bellows and collar (Wrist), and a
-    palm with three two-segment fingers (Claw). Every part is closed form;
-    the flex bellows keep the z ranges the five-bone bumps are tuned for.&quot;&quot;&quot;</span>
+<span class="k">def</span> cyl(bm, r, h, m, sides=SIDES, ch=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Chamfered cylinder centred on m, along local Z.&quot;&quot;&quot;</span>
+    c = min(r, h) * <span class="n">0.18</span> <span class="k">if</span> ch <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> ch
+    lathe(bm, [(-h / <span class="n">2</span>, r - c), (-h / <span class="n">2</span> + c, r), (h / <span class="n">2</span> - c, r), (h / <span class="n">2</span>, r - c)],
+          m, sides)
+
+
+<span class="k">def</span> hexbolt(bm, r, h, m):
+    lathe(bm, [(<span class="n">0.0</span>, r), (h * <span class="n">0.7</span>, r), (h, r * <span class="n">0.72</span>)], m, sides=<span class="n">6</span>,
+          phase=math.pi / <span class="n">6</span>)
+
+
+<span class="k">def</span> _rrect(hw, hd, k, n=<span class="n">4</span>):
+    pts = []
+    <span class="k">for</span> cx, cy, a0 <span class="k">in</span> ((hw - k, hd - k, <span class="n">0</span>), (-(hw - k), hd - k, <span class="n">90</span>),
+                       (-(hw - k), -(hd - k), <span class="n">180</span>), (hw - k, -(hd - k), <span class="n">270</span>)):
+        <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>):
+            a = math.radians(a0 + <span class="n">90.0</span> * i / n)
+            pts.append((cx + k * math.cos(a), cy + k * math.sin(a)))
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> loft(bm, stations, m=Matrix()):
+    <span class="s">&quot;&quot;&quot;Rounded-rectangle sections (z, half_w, half_d, corner) lofted along Z.&quot;&quot;&quot;</span>
+    rings = [[bm.verts.new(m @ Vector((x, y, z))) <span class="k">for</span> x, y <span class="k">in</span> _rrect(hw, hd, k)]
+             <span class="k">for</span> z, hw, hd, k <span class="k">in</span> stations]
+    _close(bm, rings, <span class="k">True</span>, <span class="k">True</span>)
+
+
+<span class="k">def</span> rbox(bm, half, m=Matrix(), bevel=<span class="n">0.02</span>):
+    res = bmesh.ops.create_cube(bm, size=<span class="n">2.0</span>, matrix=m @ Matrix.Diagonal((*half, <span class="n">1.0</span>)))
+    edges = list({e <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> e <span class="k">in</span> v.link_edges})
+    <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+        bmesh.ops.bevel(bm, geom=edges, offset=bevel, segments=<span class="n">2</span>, profile=<span class="n">0.5</span>,
+                        affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+
+
+<span class="k">def</span> plate(bm, poly, t, m, bevel=<span class="n">0.018</span>):
+    <span class="s">&quot;&quot;&quot;A CCW (x, y) outline extruded along local Z by t, rim edges rounded.&quot;&quot;&quot;</span>
+    lo = [bm.verts.new(m @ Vector((x, y, -t / <span class="n">2</span>))) <span class="k">for</span> x, y <span class="k">in</span> poly]
+    hi = [bm.verts.new(m @ Vector((x, y, t / <span class="n">2</span>))) <span class="k">for</span> x, y <span class="k">in</span> poly]
+    _close(bm, [lo, hi], <span class="k">True</span>, <span class="k">True</span>)
+    rim = [e <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> (e.verts[<span class="n">0</span>] <span class="k">in</span> lo <span class="k">and</span> e.verts[<span class="n">1</span>] <span class="k">in</span> lo)
+           <span class="k">or</span> (e.verts[<span class="n">0</span>] <span class="k">in</span> hi <span class="k">and</span> e.verts[<span class="n">1</span>] <span class="k">in</span> hi)]
+    bmesh.ops.bevel(bm, geom=rim, offset=bevel, segments=<span class="n">2</span>, profile=<span class="n">0.5</span>,
+                    affect=<span class="s">&#x27;EDGES&#x27;</span>, clamp_overlap=<span class="k">True</span>)
+
+
+<span class="k">def</span> clevis_outline(radius, drop, n=<span class="n">16</span>):
+    <span class="s">&quot;&quot;&quot;Cheek-plate outline around a joint at the origin: square foot, round head.&quot;&quot;&quot;</span>
+    pts = [(-radius, -drop), (radius, -drop)]
+    pts += [(radius * math.cos(math.pi * i / n), radius * math.sin(math.pi * i / n))
+            <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>)]
+    <span class="k">return</span> pts
+
+
+<span class="k">def</span> tube(bm, path, r, sides=<span class="n">14</span>):
+    <span class="s">&quot;&quot;&quot;Capped tube along a polyline with parallel-transported frames.&quot;&quot;&quot;</span>
+    rings, nrm = [], <span class="k">None</span>
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(path):
+        a, b = path[max(i - <span class="n">1</span>, <span class="n">0</span>)], path[min(i + <span class="n">1</span>, len(path) - <span class="n">1</span>)]
+        t = (b - a).normalized()
+        nrm = t.orthogonal() <span class="k">if</span> nrm <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> nrm - t * nrm.dot(t)
+        nrm.normalize()
+        bi = t.cross(nrm)
+        rings.append([bm.verts.new(p + r * (math.cos(<span class="n">2</span> * math.pi * s / sides) * nrm
+                                            + math.sin(<span class="n">2</span> * math.pi * s / sides) * bi))
+                      <span class="k">for</span> s <span class="k">in</span> range(sides)])
+    _close(bm, rings, <span class="k">True</span>, <span class="k">True</span>)
+
+
+<span class="k">def</span> cable_path(x, ctrl, step=<span class="n">0.03</span>, smooth_passes=<span class="n">3</span>):
+    <span class="s">&quot;&quot;&quot;Densely resampled, Laplacian-smoothed (y, z) control polyline at fixed x.&quot;&quot;&quot;</span>
+    pts = []
+    <span class="k">for</span> (y0, z0), (y1, z1) <span class="k">in</span> zip(ctrl, ctrl[<span class="n">1</span>:]):
+        n = max(<span class="n">1</span>, int(math.hypot(y1 - y0, z1 - z0) / step))
+        pts += [Vector((x, y0 + (y1 - y0) * i / n, z0 + (z1 - z0) * i / n))
+                <span class="k">for</span> i <span class="k">in</span> range(n)]
+    pts.append(Vector((x, *ctrl[-<span class="n">1</span>])))
+    <span class="k">for</span> _ <span class="k">in</span> range(smooth_passes):
+        pts = [pts[<span class="n">0</span>]] + [(pts[i - <span class="n">1</span>] + <span class="n">2</span> * pts[i] + pts[i + <span class="n">1</span>]) / <span class="n">4</span>
+                          <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(pts) - <span class="n">1</span>)] + [pts[-<span class="n">1</span>]]
+    <span class="k">return</span> pts
+
+
+<span class="c"># ---------------------------------------------------------------- the model</span>
+
+<span class="k">class</span> _Kit:
+    <span class="s">&quot;&quot;&quot;Tags every part&#x27;s vertices with its bone and its faces with a material.
+
+    Parts authored in the *posed* frame (the balancer rod, which must stay
+    coaxial with its barrel in the pose) are pulled back to rest through the
+    bone&#x27;s deform matrix, so skinning puts them exactly where they were drawn.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self, bm, deform):
+        self.bm, self.deform = bm, deform
+        self.layer = bm.verts.layers.int.new(<span class="s">&quot;bone_id&quot;</span>)
+
+    <span class="k">def</span> add(self, bone, mat, build, posed=<span class="k">False</span>):
+        bm = self.bm
+        old_v, old_f = set(bm.verts), set(bm.faces)
+        build(bm)
+        new_v = [v <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> v <span class="k">not</span> <span class="k">in</span> old_v]
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            <span class="k">if</span> f <span class="k">not</span> <span class="k">in</span> old_f:
+                f.material_index = mat
+        <span class="k">if</span> posed:
+            bmesh.ops.transform(bm, matrix=self.deform[bone].inverted(), verts=new_v)
+        bid = FLEX_ID <span class="k">if</span> bone == FLEX <span class="k">else</span> BONES.index(bone)
+        <span class="k">for</span> v <span class="k">in</span> new_v:
+            v[self.layer] = bid
+
+
+<span class="k">def</span> _aim_z(direction):
+    <span class="k">return</span> direction.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_matrix().to_4x4()
+
+
+<span class="k">def</span> _joint_motor(k, bone, z, x0, r, h, cap_r, bolt_r):
+    <span class="s">&quot;&quot;&quot;Servo drum on the +X face of a joint axis: housing, cap, bolt circle.&quot;&quot;&quot;</span>
+    k.add(bone, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, r, h, T((x0 + h / <span class="n">2</span>, <span class="n">0</span>, z)) @ TO_X))
+    k.add(bone, STEEL, <span class="k">lambda</span> bm: cyl(bm, cap_r, <span class="n">0.05</span>,
+                                      T((x0 + h + <span class="n">0.02</span>, <span class="n">0</span>, z)) @ TO_X))
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">6</span>):
+        a = <span class="n">2</span> * math.pi * i / <span class="n">6</span>
+        k.add(bone, STEEL, <span class="k">lambda</span> bm, a=a: hexbolt(
+            bm, <span class="n">0.022</span>, <span class="n">0.03</span>, T((x0 + h - <span class="n">0.005</span>, bolt_r * math.cos(a),
+                                z + bolt_r * math.sin(a))) @ TO_X))
+
+
+<span class="k">def</span> _side_panel(k, bone, x, z, half_y, half_z):
+    <span class="s">&quot;&quot;&quot;Framed side hatch (+X and -X); the inset carries the bone&#x27;s weight colour.&quot;&quot;&quot;</span>
+    <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+        k.add(bone, GUNMETAL, <span class="k">lambda</span> bm, sx=sx: rbox(
+            bm, (<span class="n">0.012</span>, half_y, half_z), T((sx * x, <span class="n">0</span>, z)), bevel=<span class="n">0.008</span>))
+        k.add(bone, WEIGHTMAP, <span class="k">lambda</span> bm, sx=sx: rbox(
+            bm, (<span class="n">0.006</span>, half_y - <span class="n">0.03</span>, half_z - <span class="n">0.03</span>),
+            T((sx * (x + <span class="n">0.012</span>), <span class="n">0</span>, z)), bevel=<span class="n">0.004</span>))
+
+
+<span class="k">def</span> build_arm(deform):
+    <span class="s">&quot;&quot;&quot;A six-axis-style industrial arm, drawn upright in rest pose.
+
+    Root: bolted floor plinth, turret drum, clevis cheeks, shoulder servo and
+    a finned rear drive pack. Shoulder: knuckle, tapered box-section upper
+    arm, elbow clevis and servo. Elbow: knuckle and forearm ending in a wrist
+    fork. Wrist: knuckle, housing, cable manifold, tool flange. Claw: a
+    parallel gripper with padded jaws. A gas-spring balancer spans the
+    shoulder; two cables run the arm&#x27;s back from the drive pack to the wrist.&quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(<span class="s">&quot;MechArm&quot;</span>)
-    part_of = []   <span class="c"># creation-order bone name (or &#x27;FLEX&#x27;) per mesh vertex</span>
     bm = bmesh.new()
     <span class="k">try</span>:
-        <span class="k">def</span> tag(rings_verts, bone):
-            <span class="k">for</span> ring <span class="k">in</span> rings_verts:
-                <span class="k">for</span> v <span class="k">in</span> ring:
-                    part_of.append(bone)
+        k = _Kit(bm, deform)
+        J1, J2, J3, J4 = (BONE_SPANS[b][<span class="n">1</span>] <span class="k">for</span> b <span class="k">in</span> BONES[:<span class="n">4</span>])
 
-        <span class="c"># bolted pedestal + shoulder fairing on a wide flange (rigid on Root)</span>
-        tag(lathe_part(bm, [(-<span class="n">0.35</span>, <span class="n">0.38</span>), (-<span class="n">0.05</span>, <span class="n">0.38</span>), (<span class="n">0.0</span>, <span class="n">0.44</span>),
-                            (<span class="n">0.06</span>, <span class="n">0.46</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">0.02</span>, <span class="n">0.44</span>), (<span class="n">0.10</span>, <span class="n">0.48</span>), (<span class="n">0.22</span>, <span class="n">0.37</span>),
-                            (<span class="n">0.30</span>, <span class="n">0.19</span>), (<span class="n">0.34</span>, <span class="n">0.08</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
-        tag(lathe_part(bm, [(-<span class="n">0.02</span>, <span class="n">0.50</span>), (<span class="n">0.05</span>, <span class="n">0.50</span>)], GUNMETAL), <span class="s">&quot;Root&quot;</span>)
-        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>):  <span class="c"># hex bolts around the flange rim</span>
-            a = <span class="n">2</span> * math.pi * k / <span class="n">8</span>
-            cone_part(bm, <span class="n">0.055</span>, <span class="n">0.055</span>, <span class="n">0.07</span>,
-                      (<span class="n">0.43</span> * math.cos(a), <span class="n">0.43</span> * math.sin(a), <span class="n">0.06</span>),
-                      (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Root&quot;</span>, segments=<span class="n">6</span>)
-        <span class="c"># upper arm shell rooted deep inside the fairing — no gap at the</span>
-        <span class="c"># shoulder when the joint articulates (rigid on Shoulder)</span>
-        tag(lathe_part(bm, [(<span class="n">0.10</span>, <span class="n">0.16</span>), (<span class="n">0.30</span>, <span class="n">0.22</span>), (<span class="n">0.45</span>, <span class="n">0.22</span>),
-                            (<span class="n">0.60</span>, <span class="n">0.26</span>), (<span class="n">0.80</span>, <span class="n">0.26</span>), (<span class="n">1.00</span>, <span class="n">0.25</span>),
-                            (<span class="n">1.20</span>, <span class="n">0.24</span>)], ORANGE), <span class="s">&quot;Shoulder&quot;</span>)
-        <span class="c"># panel-seam groove on the upper arm (plate separation line)</span>
-        tag(lathe_part(bm, [(<span class="n">0.90</span>, <span class="n">0.262</span>), (<span class="n">0.94</span>, <span class="n">0.262</span>)], GUNMETAL), <span class="s">&quot;Shoulder&quot;</span>)
-        <span class="c"># clevis cheek plates flanking the joint (rigid on Shoulder)</span>
-        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            box_part(bm, (<span class="n">0.12</span>, <span class="n">0.07</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, sy * <span class="n">0.19</span>, <span class="n">1.30</span>),
-                     (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), ORANGE, part_of, <span class="s">&quot;Shoulder&quot;</span>)
-        <span class="c"># elbow flex cuff behind the hinge: the five-influence zone the</span>
-        <span class="c"># limit prunes (every ring inside the five-bump z window)</span>
-        tag(lathe_part(bm, [(<span class="n">1.33</span>, <span class="n">0.19</span>), (<span class="n">1.38</span>, <span class="n">0.21</span>), (<span class="n">1.43</span>, <span class="n">0.19</span>),
-                            (<span class="n">1.49</span>, <span class="n">0.21</span>), (<span class="n">1.55</span>, <span class="n">0.20</span>)], RUBBER), <span class="s">&quot;FLEX&quot;</span>)
-        <span class="c"># the hinge pin stays with the clevis (Shoulder): the forearm&#x27;s</span>
-        <span class="c"># knuckle barrel (Elbow) rotates around it — pin caps must not tilt</span>
-        cone_part(bm, <span class="n">0.15</span>, <span class="n">0.15</span>, <span class="n">0.50</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
-                  GUNMETAL, part_of, <span class="s">&quot;Shoulder&quot;</span>)
-        cone_part(bm, <span class="n">0.185</span>, <span class="n">0.185</span>, <span class="n">0.28</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>), (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>),
-                  GUNMETAL, part_of, <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># hex bolt heads flush on the cheeks — fasteners, not buttons</span>
-        <span class="k">for</span> sy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            cone_part(bm, <span class="n">0.15</span>, <span class="n">0.15</span>, <span class="n">0.06</span>, (<span class="n">0.0</span>, sy * <span class="n">0.255</span>, <span class="n">1.35</span>),
-                      (<span class="n">90</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Shoulder&quot;</span>, segments=<span class="n">6</span>)
-        <span class="c"># bright seal hoop on the cuff — the accent marking the primary</span>
-        <span class="c"># pruned-weight zone</span>
-        tag(lathe_part(bm, [(<span class="n">1.42</span>, <span class="n">0.22</span>), (<span class="n">1.46</span>, <span class="n">0.22</span>)], ACCENT), <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># long plated forearm with panel-seam grooves (rigid on Elbow)</span>
-        tag(lathe_part(bm, [(<span class="n">1.55</span>, <span class="n">0.22</span>), (<span class="n">1.75</span>, <span class="n">0.24</span>), (<span class="n">1.86</span>, <span class="n">0.25</span>),
-                            (<span class="n">2.05</span>, <span class="n">0.23</span>), (<span class="n">2.24</span>, <span class="n">0.23</span>), (<span class="n">2.45</span>, <span class="n">0.21</span>)],
-                       ORANGE), <span class="s">&quot;Elbow&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">1.88</span>, <span class="n">0.262</span>), (<span class="n">1.92</span>, <span class="n">0.262</span>)], GUNMETAL), <span class="s">&quot;Elbow&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">2.26</span>, <span class="n">0.242</span>), (<span class="n">2.30</span>, <span class="n">0.242</span>)], GUNMETAL), <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># armor blade along the forearm&#x27;s back (rigid on Elbow)</span>
-        box_part(bm, (<span class="n">0.12</span>, <span class="n">0.06</span>, <span class="n">0.60</span>), (<span class="n">0.0</span>, <span class="n">0.26</span>, <span class="n">2.02</span>),
-                 (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), ORANGE, part_of, <span class="s">&quot;Elbow&quot;</span>)
-        <span class="c"># wrist flex bellows (second blend zone) + collar</span>
-        tag(lathe_part(bm, [(<span class="n">2.45</span>, <span class="n">0.20</span>), (<span class="n">2.51</span>, <span class="n">0.22</span>), (<span class="n">2.57</span>, <span class="n">0.18</span>),
-                            (<span class="n">2.64</span>, <span class="n">0.21</span>), (<span class="n">2.70</span>, <span class="n">0.18</span>), (<span class="n">2.75</span>, <span class="n">0.19</span>)],
-                       RUBBER), <span class="s">&quot;FLEX&quot;</span>)
-        tag(lathe_part(bm, [(<span class="n">2.75</span>, <span class="n">0.18</span>), (<span class="n">2.85</span>, <span class="n">0.195</span>), (<span class="n">2.90</span>, <span class="n">0.18</span>)],
-                       GUNMETAL), <span class="s">&quot;Wrist&quot;</span>)
-        <span class="c"># palm block (rigid on Wrist)</span>
-        box_part(bm, (<span class="n">0.34</span>, <span class="n">0.25</span>, <span class="n">0.26</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">2.98</span>),
-                 (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Wrist&quot;</span>)
-        <span class="c"># three two-segment fingers, splayed (rigid on Claw)</span>
-        <span class="k">for</span> a_deg <span class="k">in</span> (<span class="n">90.0</span>, <span class="n">210.0</span>, <span class="n">330.0</span>):
-            a = math.radians(a_deg)
-            <span class="k">for</span> pos, tilt, size <span class="k">in</span> (((<span class="n">0.09</span>, <span class="n">3.08</span>), <span class="n">12.0</span>, (<span class="n">0.095</span>, <span class="n">0.14</span>, <span class="n">0.22</span>)),
-                                    ((<span class="n">0.16</span>, <span class="n">3.26</span>), <span class="n">26.0</span>, (<span class="n">0.08</span>, <span class="n">0.12</span>, <span class="n">0.18</span>))):
-                off, z = pos
-                m = (mathutils.Matrix.Translation((<span class="n">0.0</span>, <span class="n">0.0</span>, z))
-                     @ mathutils.Matrix.Rotation(a, <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>)
-                     @ mathutils.Matrix.Translation((off, <span class="n">0.0</span>, <span class="n">0.0</span>))
-                     @ mathutils.Matrix.Rotation(math.radians(tilt), <span class="n">4</span>, <span class="s">&#x27;Y&#x27;</span>)
-                     @ mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
-                n0f, n0v = len(bm.faces), len(bm.verts)
-                bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
-                <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
-                    f.material_index = GUNMETAL
-                part_of.extend([<span class="s">&quot;Claw&quot;</span>] * (len(bm.verts) - n0v))
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        <span class="c"># ---- Root: plinth, turret, cheeks, shoulder servo, rear drive pack</span>
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: lathe(
+            bm, [(<span class="n">0.0</span>, <span class="n">0.84</span>), (<span class="n">0.07</span>, <span class="n">0.84</span>), (<span class="n">0.10</span>, <span class="n">0.81</span>), (<span class="n">0.13</span>, <span class="n">0.70</span>),
+                 (<span class="n">0.15</span>, <span class="n">0.62</span>)], sides=<span class="n">56</span>))
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">12</span>):
+            a = <span class="n">2</span> * math.pi * (i + <span class="n">0.5</span>) / <span class="n">12</span>
+            k.add(<span class="s">&quot;Root&quot;</span>, STEEL, <span class="k">lambda</span> bm, a=a: hexbolt(
+                bm, <span class="n">0.04</span>, <span class="n">0.05</span>, T((<span class="n">0.76</span> * math.cos(a), <span class="n">0.76</span> * math.sin(a), <span class="n">0.095</span>))))
+        k.add(<span class="s">&quot;Root&quot;</span>, PAINT, <span class="k">lambda</span> bm: lathe(
+            bm, [(<span class="n">0.13</span>, <span class="n">0.58</span>), (<span class="n">0.17</span>, <span class="n">0.62</span>), (<span class="n">0.40</span>, <span class="n">0.62</span>), (<span class="n">0.45</span>, <span class="n">0.57</span>),
+                 (<span class="n">0.52</span>, <span class="n">0.46</span>)], sides=<span class="n">56</span>))
+        k.add(<span class="s">&quot;Root&quot;</span>, WEIGHTMAP, <span class="k">lambda</span> bm: lathe(
+            bm, [(<span class="n">0.26</span>, <span class="n">0.615</span>), (<span class="n">0.27</span>, <span class="n">0.634</span>), (<span class="n">0.32</span>, <span class="n">0.634</span>), (<span class="n">0.33</span>, <span class="n">0.615</span>)],
+            sides=<span class="n">56</span>))
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: lathe(
+            bm, [(<span class="n">0.50</span>, <span class="n">0.47</span>), (<span class="n">0.56</span>, <span class="n">0.44</span>)], sides=<span class="n">56</span>))
+        <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+            k.add(<span class="s">&quot;Root&quot;</span>, PAINT, <span class="k">lambda</span> bm, sx=sx: plate(
+                bm, clevis_outline(<span class="n">0.34</span>, <span class="n">0.36</span>), <span class="n">0.12</span>, T((sx * <span class="n">0.38</span>, <span class="n">0</span>, J1)) @ YZX,
+                bevel=<span class="n">0.025</span>))
+        _joint_motor(k, <span class="s">&quot;Root&quot;</span>, J1, <span class="n">0.44</span>, <span class="n">0.27</span>, <span class="n">0.20</span>, <span class="n">0.19</span>, <span class="n">0.23</span>)
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.22</span>, <span class="n">0.06</span>, T((-<span class="n">0.47</span>, <span class="n">0</span>, J1)) @ TO_X))
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(
+            bm, (<span class="n">0.27</span>, <span class="n">0.21</span>, <span class="n">0.17</span>), T((<span class="n">0</span>, -<span class="n">0.60</span>, <span class="n">0.47</span>)), bevel=<span class="n">0.035</span>))
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+            k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm, i=i: rbox(
+                bm, (<span class="n">0.012</span>, <span class="n">0.05</span>, <span class="n">0.13</span>), T((-<span class="n">0.20</span> + <span class="n">0.10</span> * i, -<span class="n">0.83</span>, <span class="n">0.47</span>)),
+                bevel=<span class="n">0.006</span>))
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(      <span class="c"># cable gland on the pack</span>
+            bm, (<span class="n">0.23</span>, <span class="n">0.06</span>, <span class="n">0.035</span>), T((<span class="n">0</span>, -<span class="n">0.45</span>, <span class="n">0.665</span>)), bevel=<span class="n">0.015</span>))
+        a_pt = Vector((<span class="n">0.0</span>, -<span class="n">0.70</span>, <span class="n">0.72</span>))              <span class="c"># balancer anchor</span>
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(
+            bm, (<span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">0.06</span>), T(a_pt - Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.03</span>))), bevel=<span class="n">0.015</span>))
+        k.add(<span class="s">&quot;Root&quot;</span>, STEEL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.03</span>, <span class="n">0.16</span>, T(a_pt) @ TO_X))
+
+        <span class="c"># ---- Shoulder: knuckle, box-section upper arm, elbow clevis + servo</span>
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.28</span>, <span class="n">0.62</span>, T((<span class="n">0</span>, <span class="n">0</span>, J1)) @ TO_X))
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, PAINT, <span class="k">lambda</span> bm: loft(
+            bm, [(<span class="n">1.10</span>, <span class="n">0.24</span>, <span class="n">0.22</span>, <span class="n">0.07</span>), (<span class="n">1.35</span>, <span class="n">0.25</span>, <span class="n">0.26</span>, <span class="n">0.09</span>),
+                 (<span class="n">1.85</span>, <span class="n">0.215</span>, <span class="n">0.225</span>, <span class="n">0.08</span>), (<span class="n">2.12</span>, <span class="n">0.19</span>, <span class="n">0.20</span>, <span class="n">0.07</span>)]))
+        <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+            k.add(<span class="s">&quot;Shoulder&quot;</span>, PAINT, <span class="k">lambda</span> bm, sx=sx: plate(
+                bm, clevis_outline(<span class="n">0.24</span>, <span class="n">0.30</span>), <span class="n">0.10</span>, T((sx * <span class="n">0.25</span>, <span class="n">0</span>, J2)) @ YZX,
+                bevel=<span class="n">0.02</span>))
+        _joint_motor(k, <span class="s">&quot;Shoulder&quot;</span>, J2, <span class="n">0.30</span>, <span class="n">0.21</span>, <span class="n">0.16</span>, <span class="n">0.15</span>, <span class="n">0.18</span>)
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.18</span>, <span class="n">0.05</span>, T((-<span class="n">0.325</span>, <span class="n">0</span>, J2)) @ TO_X))
+        _side_panel(k, <span class="s">&quot;Shoulder&quot;</span>, <span class="n">0.247</span>, <span class="n">1.62</span>, <span class="n">0.15</span>, <span class="n">0.30</span>)
+        b_rest = Vector((<span class="n">0.0</span>, -<span class="n">0.36</span>, <span class="n">1.45</span>))            <span class="c"># balancer lug</span>
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(
+            bm, (<span class="n">0.06</span>, <span class="n">0.09</span>, <span class="n">0.07</span>), T(b_rest + Vector((<span class="n">0</span>, <span class="n">0.02</span>, <span class="n">0</span>))), bevel=<span class="n">0.015</span>))
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, STEEL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.03</span>, <span class="n">0.16</span>, T(b_rest) @ TO_X))
+
+        <span class="c"># ---- Elbow: knuckle, forearm, wrist fork</span>
+        k.add(<span class="s">&quot;Elbow&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.22</span>, <span class="n">0.39</span>, T((<span class="n">0</span>, <span class="n">0</span>, J2)) @ TO_X))
+        k.add(<span class="s">&quot;Elbow&quot;</span>, PAINT, <span class="k">lambda</span> bm: loft(
+            bm, [(<span class="n">2.55</span>, <span class="n">0.17</span>, <span class="n">0.20</span>, <span class="n">0.07</span>), (<span class="n">2.80</span>, <span class="n">0.185</span>, <span class="n">0.21</span>, <span class="n">0.075</span>),
+                 (<span class="n">3.35</span>, <span class="n">0.16</span>, <span class="n">0.175</span>, <span class="n">0.065</span>), (<span class="n">3.72</span>, <span class="n">0.135</span>, <span class="n">0.15</span>, <span class="n">0.055</span>)]))
+        <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+            k.add(<span class="s">&quot;Elbow&quot;</span>, PAINT, <span class="k">lambda</span> bm, sx=sx: plate(
+                bm, clevis_outline(<span class="n">0.15</span>, <span class="n">0.22</span>), <span class="n">0.06</span>, T((sx * <span class="n">0.16</span>, <span class="n">0</span>, J3)) @ YZX,
+                bevel=<span class="n">0.012</span>))
+        _side_panel(k, <span class="s">&quot;Elbow&quot;</span>, <span class="n">0.180</span>, <span class="n">3.08</span>, <span class="n">0.13</span>, <span class="n">0.28</span>)
+
+        <span class="c"># ---- Wrist: knuckle, housing, cable manifold, tool flange</span>
+        k.add(<span class="s">&quot;Wrist&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(bm, <span class="n">0.13</span>, <span class="n">0.25</span>, T((<span class="n">0</span>, <span class="n">0</span>, J3)) @ TO_X))
+        k.add(<span class="s">&quot;Wrist&quot;</span>, PAINT, <span class="k">lambda</span> bm: loft(
+            bm, [(<span class="n">3.96</span>, <span class="n">0.12</span>, <span class="n">0.125</span>, <span class="n">0.05</span>), (<span class="n">4.06</span>, <span class="n">0.125</span>, <span class="n">0.13</span>, <span class="n">0.05</span>),
+                 (<span class="n">4.16</span>, <span class="n">0.115</span>, <span class="n">0.12</span>, <span class="n">0.045</span>)]))
+        k.add(<span class="s">&quot;Wrist&quot;</span>, WEIGHTMAP, <span class="k">lambda</span> bm: loft(
+            bm, [(<span class="n">4.03</span>, <span class="n">0.132</span>, <span class="n">0.137</span>, <span class="n">0.05</span>), (<span class="n">4.09</span>, <span class="n">0.132</span>, <span class="n">0.137</span>, <span class="n">0.05</span>)]))
+        k.add(<span class="s">&quot;Wrist&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(
+            bm, (<span class="n">0.20</span>, <span class="n">0.05</span>, <span class="n">0.045</span>), T((<span class="n">0</span>, -<span class="n">0.17</span>, <span class="n">4.00</span>)), bevel=<span class="n">0.012</span>))
+        k.add(<span class="s">&quot;Wrist&quot;</span>, STEEL, <span class="k">lambda</span> bm: lathe(bm, [(<span class="n">4.15</span>, <span class="n">0.15</span>), (<span class="n">4.205</span>, <span class="n">0.15</span>)]))
+
+        <span class="c"># ---- Claw: tool flange and parallel gripper</span>
+        k.add(<span class="s">&quot;Claw&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: lathe(bm, [(<span class="n">4.20</span>, <span class="n">0.14</span>), (<span class="n">4.27</span>, <span class="n">0.14</span>)]))
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">6</span>):
+            a = <span class="n">2</span> * math.pi * i / <span class="n">6</span>
+            k.add(<span class="s">&quot;Claw&quot;</span>, STEEL, <span class="k">lambda</span> bm, a=a: hexbolt(
+                bm, <span class="n">0.015</span>, <span class="n">0.02</span>, T((<span class="n">0.11</span> * math.cos(a), <span class="n">0.11</span> * math.sin(a), <span class="n">4.265</span>))))
+        <span class="c"># jaws open in the bend plane so both read in profile</span>
+        k.add(<span class="s">&quot;Claw&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: rbox(bm, (<span class="n">0.10</span>, <span class="n">0.21</span>, <span class="n">0.07</span>),
+                                                 T((<span class="n">0</span>, <span class="n">0</span>, <span class="n">4.34</span>)), bevel=<span class="n">0.02</span>))
+        k.add(<span class="s">&quot;Claw&quot;</span>, WEIGHTMAP, <span class="k">lambda</span> bm: rbox(bm, (<span class="n">0.106</span>, <span class="n">0.216</span>, <span class="n">0.014</span>),
+                                                  T((<span class="n">0</span>, <span class="n">0</span>, <span class="n">4.34</span>)), bevel=<span class="n">0.005</span>))
+        <span class="k">for</span> sy <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+            k.add(<span class="s">&quot;Claw&quot;</span>, PAINT, <span class="k">lambda</span> bm, sy=sy: loft(
+                bm, [(<span class="n">4.38</span>, <span class="n">0.075</span>, <span class="n">0.04</span>, <span class="n">0.015</span>), (<span class="n">4.62</span>, <span class="n">0.065</span>, <span class="n">0.034</span>, <span class="n">0.012</span>),
+                     (<span class="n">4.76</span>, <span class="n">0.05</span>, <span class="n">0.026</span>, <span class="n">0.01</span>)], T((<span class="n">0</span>, sy * <span class="n">0.15</span>, <span class="n">0</span>))))
+            k.add(<span class="s">&quot;Claw&quot;</span>, PAINT, <span class="k">lambda</span> bm, sy=sy: rbox(
+                bm, (<span class="n">0.05</span>, <span class="n">0.035</span>, <span class="n">0.03</span>), T((<span class="n">0</span>, sy * <span class="n">0.125</span>, <span class="n">4.74</span>)), bevel=<span class="n">0.01</span>))
+            k.add(<span class="s">&quot;Claw&quot;</span>, RUBBER, <span class="k">lambda</span> bm, sy=sy: rbox(
+                bm, (<span class="n">0.05</span>, <span class="n">0.009</span>, <span class="n">0.07</span>), T((<span class="n">0</span>, sy * <span class="n">0.104</span>, <span class="n">4.60</span>)), bevel=<span class="n">0.004</span>))
+
+        <span class="c"># ---- balancer: barrel on Root, rod on Shoulder, coaxial in the pose</span>
+        b_posed = deform[<span class="s">&quot;Shoulder&quot;</span>] @ b_rest
+        d = b_posed - a_pt
+        length, d = d.length, d.normalized()
+        k.add(<span class="s">&quot;Root&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(
+            bm, <span class="n">0.065</span>, <span class="n">0.56</span>, T(a_pt + d * <span class="n">0.34</span>) @ _aim_z(d)))
+        k.add(<span class="s">&quot;Root&quot;</span>, STEEL, <span class="k">lambda</span> bm: cyl(
+            bm, <span class="n">0.072</span>, <span class="n">0.04</span>, T(a_pt + d * <span class="n">0.62</span>) @ _aim_z(d)))
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, STEEL, <span class="k">lambda</span> bm: cyl(
+            bm, <span class="n">0.03</span>, length * <span class="n">0.62</span>, T(b_posed - d * (<span class="n">0.05</span> + length * <span class="n">0.31</span>)) @ _aim_z(d)),
+            posed=<span class="k">True</span>)
+        k.add(<span class="s">&quot;Shoulder&quot;</span>, GUNMETAL, <span class="k">lambda</span> bm: cyl(
+            bm, <span class="n">0.045</span>, <span class="n">0.08</span>, T(b_posed - d * <span class="n">0.06</span>) @ _aim_z(d)), posed=<span class="k">True</span>)
+
+        <span class="c"># ---- the two flex cables and their clamps (the &gt;4-influence parts)</span>
+        ctrl = [(-<span class="n">0.45</span>, <span class="n">0.60</span>), (-<span class="n">0.45</span>, <span class="n">0.78</span>), (-<span class="n">0.43</span>, <span class="n">0.95</span>), (-<span class="n">0.39</span>, <span class="n">1.12</span>),
+                (-<span class="n">0.36</span>, <span class="n">1.30</span>), (-<span class="n">0.36</span>, <span class="n">2.35</span>), (-<span class="n">0.34</span>, <span class="n">2.60</span>), (-<span class="n">0.32</span>, <span class="n">2.85</span>),
+                (-<span class="n">0.28</span>, <span class="n">3.40</span>), (-<span class="n">0.24</span>, <span class="n">3.70</span>), (-<span class="n">0.21</span>, <span class="n">3.90</span>), (-<span class="n">0.20</span>, <span class="n">4.00</span>)]
+        <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+            path = cable_path(sx * <span class="n">0.15</span>, ctrl)
+            k.add(FLEX, WEIGHTMAP, <span class="k">lambda</span> bm, path=path: tube(bm, path, <span class="n">0.042</span>))
+        <span class="k">for</span> bone, z, y <span class="k">in</span> ((<span class="s">&quot;Shoulder&quot;</span>, <span class="n">1.70</span>, -<span class="n">0.36</span>), (<span class="s">&quot;Shoulder&quot;</span>, <span class="n">2.08</span>, -<span class="n">0.36</span>),
+                           (<span class="s">&quot;Elbow&quot;</span>, <span class="n">2.85</span>, -<span class="n">0.32</span>), (<span class="s">&quot;Elbow&quot;</span>, <span class="n">3.40</span>, -<span class="n">0.28</span>)):
+            k.add(bone, GUNMETAL, <span class="k">lambda</span> bm, z=z, y=y: rbox(
+                bm, (<span class="n">0.19</span>, (abs(y) - <span class="n">0.15</span>) / <span class="n">2</span>, <span class="n">0.018</span>),
+                T((<span class="n">0</span>, (y - <span class="n">0.15</span>) / <span class="n">2</span> - <span class="n">0.0</span>, z)), bevel=<span class="n">0.006</span>))
+            <span class="k">for</span> sx <span class="k">in</span> (<span class="n">1</span>, -<span class="n">1</span>):
+                k.add(bone, GUNMETAL, <span class="k">lambda</span> bm, z=z, y=y, sx=sx: cyl(
+                    bm, <span class="n">0.058</span>, <span class="n">0.05</span>, T((sx * <span class="n">0.15</span>, y, z)), sides=<span class="n">16</span>))
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()  <span class="c"># the ownership contract, as always</span>
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">False</span>
+    <span class="c"># smooth the round stock, keep machined edges crisp (no modifier: the</span>
+    <span class="c"># evaluated mesh must stay exactly the armature&#x27;s output)</span>
+    me.shade_smooth()
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">35.0</span>))
     obj = bpy.data.objects.new(<span class="s">&quot;MechArm&quot;</span>, me)
     bpy.context.collection.objects.link(obj)
-    <span class="k">return</span> obj, part_of
+    <span class="k">return</span> obj
 
 
-<span class="k">def</span> assign_weights(obj, part_of):
-    <span class="s">&quot;&quot;&quot;Author the rich pre-limit weights: hard single-bone on armor, broad
-    five-bone bumps in the flex cuffs.&quot;&quot;&quot;</span>
+<span class="k">def</span> assign_weights(obj):
+    <span class="s">&quot;&quot;&quot;Author the rich pre-limit weights from the per-vertex part tags: hard
+    single-bone on rigid parts, joint hand-over plus spill on the cables.&quot;&quot;&quot;</span>
+    me = obj.data
     groups = {b: obj.vertex_groups.new(name=b) <span class="k">for</span> b <span class="k">in</span> BONES}
-    <span class="k">if</span> len(part_of) != len(obj.data.vertices):
-        <span class="k">raise</span> RuntimeError(<span class="s">f&quot;</span><span class="s">part tag count </span>{len(part_of)}<span class="s"> != vert count </span><span class="s">&quot;</span>
-                           <span class="s">f&quot;</span>{len(obj.data.vertices)}<span class="s">&quot;</span>)
-    <span class="k">for</span> idx, v <span class="k">in</span> enumerate(obj.data.vertices):
-        bone = part_of[idx]
-        <span class="k">if</span> bone == <span class="s">&quot;FLEX&quot;</span>:
+    ids = [<span class="n">0</span>] * len(me.vertices)
+    me.attributes[<span class="s">&quot;bone_id&quot;</span>].data.foreach_get(<span class="s">&quot;value&quot;</span>, ids)
+    <span class="k">for</span> idx, v <span class="k">in</span> enumerate(me.vertices):
+        bid = ids[idx]
+        <span class="k">if</span> bid == FLEX_ID:
             <span class="k">for</span> b, w <span class="k">in</span> zip(BONES, flex_weights(v.co.z)):
                 <span class="k">if</span> w &gt; <span class="n">0.0</span>:
                     groups[b].add([idx], w, <span class="s">&#x27;REPLACE&#x27;</span>)
         <span class="k">else</span>:
-            groups[bone].add([idx], <span class="n">1.0</span>, <span class="s">&#x27;REPLACE&#x27;</span>)
+            groups[BONES[bid]].add([idx], <span class="n">1.0</span>, <span class="s">&#x27;REPLACE&#x27;</span>)
+    me.attributes.remove(me.attributes[<span class="s">&quot;bone_id&quot;</span>])
     <span class="k">return</span> groups
 
 
-<span class="k">def</span> build_rig(obj):
+<span class="k">def</span> build_rig():
     arm_data = bpy.data.armatures.new(<span class="s">&quot;ArmRig&quot;</span>)
     arm = bpy.data.objects.new(<span class="s">&quot;ArmRig&quot;</span>, arm_data)
     bpy.context.collection.objects.link(arm)
@@ -552,15 +767,24 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
             eb.use_connect = <span class="k">True</span>
         prev = eb
     bpy.ops.object.mode_set(mode=<span class="s">&#x27;OBJECT&#x27;</span>)
-    mod = obj.modifiers.new(<span class="s">&quot;Armature&quot;</span>, <span class="s">&#x27;ARMATURE&#x27;</span>)
-    mod.object = arm
-    mod.use_vertex_groups = <span class="k">True</span>
-    mod.use_bone_envelopes = <span class="k">False</span>
     <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
         pb = arm.pose.bones[name]
         pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
         pb.rotation_euler.x = math.radians(deg)
+    bpy.context.view_layer.update()
     <span class="k">return</span> arm
+
+
+<span class="k">def</span> deform_matrices(arm):
+    <span class="k">return</span> {n: arm.pose.bones[n].matrix @ arm.data.bones[n].matrix_local.inverted()
+            <span class="k">for</span> n <span class="k">in</span> BONES}
+
+
+<span class="k">def</span> bind(obj, arm):
+    mod = obj.modifiers.new(<span class="s">&quot;Armature&quot;</span>, <span class="s">&#x27;ARMATURE&#x27;</span>)
+    mod.object = arm
+    mod.use_vertex_groups = <span class="k">True</span>
+    mod.use_bone_envelopes = <span class="k">False</span>
 
 
 <span class="k">def</span> eval_positions(obj):
@@ -577,7 +801,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
 <span class="k">def</span> check(obj, arm, groups, pose_before, skip_limit=<span class="k">False</span>):
     me = obj.data
 
-    <span class="c"># pre-limit witness: the flex cuffs really carry five influences</span>
+    <span class="c"># pre-limit witness: the flex cables really carry five influences</span>
     pre_max = max(len(v.groups) <span class="k">for</span> v <span class="k">in</span> me.vertices)
     <span class="k">if</span> pre_max != <span class="n">5</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: pre-limit max influences </span>{pre_max}<span class="s"> != 5 — the rich </span><span class="s">&quot;</span>
@@ -639,8 +863,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
 
     <span class="c"># contract 4: the modifier is still exactly LBS, with the weights read</span>
     <span class="c"># back from the mesh&#x27;s own deform layer (armature-bend&#x27;s math, built on)</span>
-    mats = {n: arm.pose.bones[n].matrix @ arm.data.bones[n].matrix_local.inverted()
-            <span class="k">for</span> n <span class="k">in</span> BONES}
+    mats = deform_matrices(arm)
     lbs_err = <span class="n">0.0</span>
     <span class="k">for</span> v <span class="k">in</span> me.vertices:
         predicted = sum((g.weight * (mats[BONES[g.group]] @ v.co)
@@ -653,7 +876,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
               <span class="s">f&quot;</span><span class="s">limited weights (tol </span>{LBS_TOL}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">8</span>
 
-    <span class="c"># the pedestal mount is rigid on Root and must not move</span>
+    <span class="c"># the floor plinth is rigid on Root and must not move</span>
     root_move = max((mathutils.Vector(pose_after[i]) - v.co).length
                     <span class="k">for</span> i, v <span class="k">in</span> enumerate(me.vertices)
                     <span class="k">if</span> len(v.groups) == <span class="n">1</span> <span class="k">and</span> v.groups[<span class="n">0</span>].weight &gt; <span class="n">0.99</span>
@@ -671,26 +894,54 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     <span class="k">return</span> <span class="n">0</span>
 
 
+<span class="k">def</span> paint_weight_map(obj):
+    <span class="s">&quot;&quot;&quot;Render path only: paint sum_i w_i * colour_i per vertex, reading the
+    weights back from the mesh&#x27;s own post-limit deform layer. Rigid parts
+    come out in their bone&#x27;s flat colour; the cables grade across joints.&quot;&quot;&quot;</span>
+    me = obj.data
+    attr = me.color_attributes.new(<span class="s">&quot;BoneBlend&quot;</span>, <span class="s">&#x27;FLOAT_COLOR&#x27;</span>, <span class="s">&#x27;POINT&#x27;</span>)
+    cols = []
+    <span class="k">for</span> v <span class="k">in</span> me.vertices:
+        c = [<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>]
+        <span class="k">for</span> g <span class="k">in</span> v.groups:
+            rgb = BONE_RGB[BONES[g.group]]
+            <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>):
+                c[i] += g.weight * rgb[i]
+        cols.extend((*c, <span class="n">1.0</span>))
+    attr.data.foreach_set(<span class="s">&quot;color&quot;</span>, cols)
+
+
 <span class="k">def</span> make_materials():
-    <span class="k">def</span> pbr(name, base, metallic, roughness, emission=<span class="k">None</span>, strength=<span class="n">0.0</span>):
+    <span class="k">def</span> pbr(name, base, metallic, roughness):
         mat = bpy.data.materials.new(name)
         mat.use_nodes = <span class="k">True</span>
         b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
         b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*base, <span class="n">1.0</span>)
         b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
         b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = roughness
-        <span class="k">if</span> emission <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-            sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
-            sock.default_value = (*emission, <span class="n">1.0</span>)
-            b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
         <span class="k">return</span> mat
+
+    weight = bpy.data.materials.new(<span class="s">&quot;WeightMap&quot;</span>)
+    weight.use_nodes = <span class="k">True</span>
+    nt = weight.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    attr = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    attr.attribute_name = <span class="s">&quot;BoneBlend&quot;</span>
+    nt.links.new(attr.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    emit = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+    nt.links.new(attr.outputs[<span class="s">&quot;Color&quot;</span>], emit)
+    b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.55</span>
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.75</span>
+    <span class="c"># flat colour data goes fully matte (docs/VISUAL-STYLE.md)</span>
+    spec = b.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>)
+    <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        spec.default_value = <span class="n">0.0</span>
     <span class="k">return</span> [
-        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
-        pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.82</span>, <span class="n">0.30</span>, <span class="n">0.08</span>), <span class="n">0.10</span>, <span class="n">0.45</span>),
-        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.13</span>, <span class="n">0.17</span>), <span class="n">0.0</span>, <span class="n">0.80</span>,
-            emission=(<span class="n">0.06</span>, <span class="n">0.30</span>, <span class="n">0.34</span>), strength=<span class="n">0.38</span>),
-        pbr(<span class="s">&quot;TealAccent&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.22</span>, <span class="n">0.26</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
-            emission=(<span class="n">0.10</span>, <span class="n">0.65</span>, <span class="n">0.72</span>), strength=<span class="n">2.2</span>),
+        pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.25</span>, <span class="n">0.035</span>), <span class="n">0.05</span>, <span class="n">0.40</span>),
+        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">0.125</span>), <span class="n">0.80</span>, <span class="n">0.42</span>),
+        pbr(<span class="s">&quot;MachinedSteel&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.57</span>, <span class="n">0.60</span>), <span class="n">1.0</span>, <span class="n">0.24</span>),
+        pbr(<span class="s">&quot;GripRubber&quot;</span>, (<span class="n">0.015</span>, <span class="n">0.015</span>, <span class="n">0.018</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
+        weight,
     ]
 
 
@@ -698,8 +949,14 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(obj, path, engine):
+<span class="k">def</span> render_still(obj, arm, path, engine):
     scene = bpy.context.scene
+    paint_weight_map(obj)
+    <span class="c"># turn the whole rig so the reach runs left to right across the frame;</span>
+    <span class="c"># mesh and armature turn together, so the deformation is unchanged</span>
+    <span class="k">for</span> ob <span class="k">in</span> (obj, arm):
+        ob.rotation_euler.z = math.radians(-<span class="n">90.0</span>)
+    bpy.context.view_layer.update()
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -717,7 +974,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -736,21 +993,18 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">600.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">650.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">45</span>, <span class="n">0</span>, -<span class="n">32</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">6.0</span>, -<span class="n">4.0</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.0</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">180</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">4.0</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">52.0</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Reframed: the old (5.8,-6.9,2.2) aim 1.5 cropped the base at the bottom</span>
-    <span class="c"># edge and left the subject adrift right-of-center; slightly more frontal</span>
-    <span class="c"># and lower-aimed so the full base and the lean both sit in frame.</span>
-    cam.location = (<span class="n">4.6</span>, -<span class="n">8.2</span>, <span class="n">2.3</span>)
+    cam.location = (<span class="n">0.36</span>, -<span class="n">7.15</span>, <span class="n">2.75</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.35</span>, <span class="n">0.0</span>, <span class="n">1.25</span>)
+    target.location = (<span class="n">1.05</span>, <span class="n">0.0</span>, <span class="n">0.98</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -768,7 +1022,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the hazard orange and teal accent toward pastel</span>
+    <span class="c"># AgX would wash the hazard orange and the weight colours toward pastel</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
@@ -781,6 +1035,10 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hero=[obj], stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -799,11 +1057,12 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    obj, part_of = build_arm()
+    arm = build_rig()
+    obj = build_arm(deform_matrices(arm))
     <span class="k">for</span> m <span class="k">in</span> make_materials():
         obj.data.materials.append(m)
-    groups = assign_weights(obj, part_of)
-    arm = build_rig(obj)
+    groups = assign_weights(obj)
+    bind(obj, arm)
     bpy.context.view_layer.update()
     pose_before = eval_positions(obj)
     code = check(obj, arm, groups, pose_before, skip_limit=args.skip_limit)
@@ -811,7 +1070,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        rcode = render_still(obj, os.path.abspath(args.output), args.engine)
+        rcode = render_still(obj, arm, os.path.abspath(args.output), args.engine)
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
@@ -830,7 +1089,7 @@ GUNMETAL, ORANGE, RUBBER, ACCENT = <span class="n">0</span>, <span class="n">1</
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/vertex-weight-limit-hero.webp" alt="A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints." />
+    <img src="../assets/vertex-weight-limit-hero.webp" alt="An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint." />
   </dialog>
   <footer>
     <div class="statusbar">
