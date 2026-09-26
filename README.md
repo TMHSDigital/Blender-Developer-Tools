@@ -809,17 +809,18 @@ round-trips through the raw `POINT` buffer.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gp-lineart-contour/"><img src="examples/gp-lineart-contour/preview.webp" alt="GP Line Art contour: a faceted teal crystal on a dark studio floor outlined in neon cyan Grease Pencil Line Art strokes, proving modifiers.new LINEART with source_object silhouette evaluation" /></a>
+<a href="examples/gp-lineart-contour/"><img src="examples/gp-lineart-contour/preview.webp" alt="GP Line Art contour: a cel-shaded red-and-white lighthouse on a rocky islet with a keeper's cottage and rowboat, inked in bold black Grease Pencil Line Art strokes, proving modifiers.new LINEART with source_object evaluation" /></a>
 </td>
 <td valign="middle">
 
 ### [gp-lineart-contour](examples/gp-lineart-contour/)
 
-Grease Pencil `LINEART` modifier contours via the depsgraph — not Freestyle and
-not hand-drawn strokes. `source_object` is load-bearing (clear → 0 strokes);
-contour+crease off → 0; restore recovers **10** strokes / **34** points on both
-binaries. Stroke width: `thickness` exists on 4.5, `AttributeError` on 5.1 —
-portable path is `radius`.
+Grease Pencil `LINEART` modifier ink via the depsgraph on a cel-shaded
+lighthouse diorama — not Freestyle and not hand-drawn strokes. `source_object`
+is load-bearing (clear → 0 strokes); every edge type off → 0; the drawing is
+**255** strokes / **1393** points on all three binaries, gated so dropping any
+one edge type fails. Stroke width: `thickness` exists on 4.5, `AttributeError`
+on 5.1 — portable path is `radius`.
 
 </td>
 </tr>
