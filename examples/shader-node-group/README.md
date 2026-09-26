@@ -1,24 +1,33 @@
 # Shader Node Group
 
-A runnable example that declares a reusable `TintedGloss` shader group through
+A runnable example that declares a reusable `DippedGlaze` shader group through
 `tree.interface.new_socket` — the 4.x/5.x API that replaced `tree.inputs`/`tree.outputs` —
-and instances it in two materials with different parameters, following
+and instances it in five mug materials with different parameters, following
 [`procedural-materials-and-shaders`](../../skills/procedural-materials-and-shaders/SKILL.md)
 and the [`shader-node-group`](../../snippets/shader-node-group.py) snippet.
 
 **What it witnesses:** the grouping contract. Sockets declared on the interface appear on
-every group-node instance; both materials share ONE group datablock (`users == 2`); and the
-per-material Tint lives on the group **node**, not inside the group — set it inside the tree
-and every material changes at once. The render is the proof: two spheres, one group, two
-colors.
+every group-node instance; all five materials share ONE group datablock (`users == 5`); and
+the per-material Tint lives on the group **node**, not inside the group — set it inside the
+tree and every mug changes at once.
+
+**The render is the proof.** The group is a dipped stoneware glaze: bare buff clay at the
+foot, a wavy dip line, iron speckle through clay and glaze alike, and a glaze that breaks
+back toward clay over the rim. All of that lives inside the group, so the five mugs — a
+warm-to-cool lineup of oxblood, amber, celadon, teal and cobalt — carry the same foot band,
+the same dip line, the same speckle field and the same rim break. Only the instance-level
+Tint differs. If Tint were baked into the group, the lineup would be one colour; if each
+material built its own tree, the shared character would be a copy rather than one
+datablock (the check's `users` gate).
 
 ## Staging
 
-The still renders under the Standard view transform on the dark house
-stage; it had no view transform set, so AgX washed both tints toward
-pastel over a lighter floor. The key is larger and softer (the glossy
-spheres had mirrored it as a hard white square), and the camera aims
-at the sphere centres. Render path only.
+A staggered shop-display lineup on the dark house stage: the odd mugs stand on a low
+walnut riser behind the even ones, so five mugs fill the frame without shrinking to a
+thin strip. Handles all turn the same way so the only thing that changes along the row is
+colour. The still renders under the Standard view transform (AgX would wash the five
+tints toward pastel); the key's spread is narrowed so it lights the mugs, not the back
+wall, and a warm wedge sits between the riser and the wall. Render path only.
 
 ## Run
 
@@ -30,8 +39,8 @@ blender --background --python shader_node_group.py --
 blender --background --python shader_node_group.py -- --same-tint
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
-blender --background --python shader_node_group.py -- --output spheres.png
-blender --background --python shader_node_group.py -- --output spheres.png --engine cycles
+blender --background --python shader_node_group.py -- --output mugs.png
+blender --background --python shader_node_group.py -- --output mugs.png --engine cycles
 ```
 
 ## Exit codes
@@ -45,9 +54,9 @@ against it. `10` is the shared framing helper.
 | 1 | Uncaught exception (FATAL wrapper) |
 | 2 | argparse / usage |
 | 3 | Interface sockets missing Tint / Roughness / Shader |
-| 4 | Group datablock `users` ≠ 2 |
+| 4 | Group datablock `users` ≠ number of mug materials (5) |
 | 5 | Instance points at a different node tree |
-| 6 | Instance Tint values identical (`--same-tint` lands here) |
+| 6 | Instance Tint values not pairwise distinct (`--same-tint` lands here) |
 | 7 | `--output` produced no file |
 | 10 | Gallery framing violation |
 

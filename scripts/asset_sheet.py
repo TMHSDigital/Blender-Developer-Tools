@@ -73,10 +73,12 @@ SELECT = {
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
     "degenerate-bevel-weld": (r"^CaseSafe\.", None),
     "mesh-hygiene-audit": (r"^Valve\.", None),
+    "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
     "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
     # KeycapSource never renders; it is kept so the key field's Object Info
     # still resolves once the staging is stripped
     "gn-instance-grid": (r"^Macropad\.", None),
+    "shape-key-blend": (r"^Vase$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
