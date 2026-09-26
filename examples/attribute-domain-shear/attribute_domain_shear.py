@@ -35,6 +35,7 @@ import bpy, bmesh, sys, os, math, argparse, colorsys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 K = 8                 # pinwheel wedges; hub vertex is shared by all K
 HUB_Z = 0.55          # raised hub: folded-paper pinwheel, not a flat disc
@@ -87,30 +88,33 @@ def build_fan():
     return me
 
 
-def assign_corner(me, pal):
-    """Correct path: CORNER domain, one exact wedge color per loop."""
+def assign_corner(me, pal, faces_per_wedge=1):
+    """Correct path: CORNER domain, one exact wedge color per loop. Faces are
+    wedge-major (wedge w owns faces w*n .. w*n+n-1); the check's fan has n=1."""
     attr = me.color_attributes.new(ATTR_C, type='FLOAT_COLOR', domain='CORNER')
     colors = [0.0] * (len(me.loops) * 4)
     for poly in me.polygons:
         for li in poly.loop_indices:
-            colors[li * 4: li * 4 + 4] = pal[poly.index]
+            colors[li * 4: li * 4 + 4] = pal[poly.index // faces_per_wedge]
     attr.data.foreach_set("color", colors)
     me.color_attributes.active_color = attr
     return attr
 
 
-def assign_point_naive(me, pal, overwrite=True):
+def assign_point_naive(me, pal, overwrite=True, faces_per_wedge=1):
     """The AI mistake: author per-wedge colors into a POINT-domain attribute.
-    Every wedge rewrites the shared hub (and its leading ring vert), so the
-    last wedge wins — colors shear across every shared vertex."""
+    A per-wedge pass paints every vertex of the wedge's faces its color, so a
+    vertex shared by two wedges is rewritten by the later one: the shared hub
+    and every seam vert take the LAST write, and colors shear across them.
+    On the check's fan (n=1) wedge i writes hub, ring i, ring i+1 in order."""
     attr = me.color_attributes.new(ATTR_P, type='FLOAT_COLOR', domain='POINT')
-    hub_index = 0  # build_fan creates the hub first
     last = K if overwrite else 1
-    for i in range(last):
-        # naive per-wedge pass: set the hub and both ring verts to palette[i]
-        attr.data[hub_index].color = pal[i]
-        attr.data[1 + i].color = pal[i]
-        attr.data[1 + (i + 1) % K].color = pal[i]
+    for poly in me.polygons:
+        wedge = poly.index // faces_per_wedge
+        if wedge >= last:
+            break
+        for vi in poly.vertices:
+            attr.data[vi].color = pal[wedge]
     me.color_attributes.active_color = attr
     return attr
 
@@ -184,17 +188,17 @@ def check(overwrite=True):
     return 0
 
 
-def make_attr_material(name, attr_name, matte=True):
+def make_attr_material(name, attr_name):
+    """Canopy fabric: base color read straight from the color attribute.
+    Fully matte (flat color data carries no specular line, VISUAL-STYLE)."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes["Principled BSDF"]
-    if matte:
-        # flat color data: no specular line across the petals (VISUAL-STYLE)
-        spec = bsdf.inputs.get("Specular IOR Level")
-        if spec is not None:
-            spec.default_value = 0.0
-    bsdf.inputs["Roughness"].default_value = 0.6
+    spec = bsdf.inputs.get("Specular IOR Level")
+    if spec is not None:
+        spec.default_value = 0.0
+    bsdf.inputs["Roughness"].default_value = 0.8
     node = nt.nodes.new("ShaderNodeAttribute")
     node.attribute_type = "GEOMETRY"
     node.attribute_name = attr_name
@@ -202,79 +206,247 @@ def make_attr_material(name, attr_name, matte=True):
     return mat
 
 
-def make_material(name, rgb, rough=0.45, metallic=0.35, emit=None, estr=0.0):
+def make_material(name, rgb, rough=0.45, metallic=0.35):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     b = mat.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1.0)
     b.inputs["Roughness"].default_value = rough
     b.inputs["Metallic"].default_value = metallic
-    if emit is not None:
-        sock = b.inputs.get("Emission Color") or b.inputs["Emission"]
-        sock.default_value = (*emit, 1.0)
-        b.inputs["Emission Strength"].default_value = estr
     return mat
 
 
-STAND_TILT = math.radians(12)
-STEM_BURY = 0.02
+# --- Render-only prop: a striped patio parasol ------------------------------
+# The canopy is the check's fan grown into fabric: the same K wedges (gores)
+# around ONE shared apex vertex, each gore a strip of faces whose vertices all
+# sit on the two seam lines it shares with its neighbours. The same two
+# authoring functions the check asserts paint it, one wedge per gore. A
+# striped parasol is chosen because everyone knows its stripes must be crisp:
+# CORNER keeps them; naive POINT rewrites every seam and the apex with the
+# last gore's color, so the stripes smear pink and one red gore goes white.
+
+CANOPY_R = 1.18        # rim radius
+CANOPY_RISE = 0.52     # apex height above the rim
+CANOPY_RINGS = 7       # vertex rings along each seam, apex excluded
+VALANCE_DROP = 0.11    # hem hanging below the rim, flared slightly out
+RIM_Z = 0.62           # rim height above the tilt joint (canopy-local)
+JOINT_Z = 1.28         # tilt-joint height on the pole (world)
+TILT = math.radians(24)
+
+# Two-tone render palette, one entry per gore (K=8): crimson and sailcloth.
+# Render-only — the check keeps its eight distinct hues, which catch
+# ordering bugs a period-2 palette could not.
+CRIMSON = (0.60, 0.018, 0.028, 1.0)
+SAILCLOTH = (0.70, 0.64, 0.50, 1.0)
+PARASOL_PAL = [CRIMSON if i % 2 == 0 else SAILCLOTH for i in range(K)]
 
 
-def _pinwheel_obj(sc, name, me, loc, rot_z):
-    ob = bpy.data.objects.new(name, me)
-    ob.location = loc
-    ob.rotation_euler = (STAND_TILT, 0.0, rot_z)
-    sc.collection.objects.link(ob)
-    # stem + hub cap: a garden pinwheel on a stick, not a floating disc. The
-    # stick runs from just under the floor to the hub it carries, both ends
-    # derived from the stand's own tilt; it used to stop 0.6 below the hub,
-    # hidden under the canopy, holding nothing.
-    stem_lo = -(loc[2] / math.cos(STAND_TILT)) - STEM_BURY
-    stem_hi = HUB_Z
-    stem_me = bpy.data.meshes.new(name + "Stem")
+def _profile(t):
+    """Canopy seam profile, t in (0, 1]: radius and height (canopy-local)."""
+    return CANOPY_R * t, RIM_Z + CANOPY_RISE * (1.0 - t ** 1.8)
+
+
+def build_canopy(name):
+    """Gore-major fan: gore i owns CANOPY_RINGS + 1 faces (apex triangle,
+    quads down the canopy, one valance quad), every vertex on a seam.
+    Returns (mesh, faces_per_gore)."""
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        bmesh.ops.create_cone(bm, cap_ends=True, segments=10, radius1=0.045,
-                              radius2=0.035, depth=stem_hi - stem_lo)
-        bmesh.ops.translate(bm, vec=(0.0, 0.0, 0.5 * (stem_lo + stem_hi)),
-                            verts=bm.verts)
-        bm.to_mesh(stem_me)
+        apex = bm.verts.new((0.0, 0.0, RIM_Z + CANOPY_RISE))
+        seams = []
+        for i in range(K):
+            a = 2.0 * math.pi * i / K
+            c, s = math.cos(a), math.sin(a)
+            col = []
+            for r in range(1, CANOPY_RINGS + 1):
+                rad, z = _profile(r / CANOPY_RINGS)
+                col.append(bm.verts.new((rad * c, rad * s, z)))
+            col.append(bm.verts.new((1.03 * CANOPY_R * c, 1.03 * CANOPY_R * s,
+                                     RIM_Z - VALANCE_DROP)))
+            seams.append(col)
+        for i in range(K):
+            a, b = seams[i], seams[(i + 1) % K]
+            bm.faces.new((apex, a[0], b[0]))
+            for r in range(len(a) - 1):
+                bm.faces.new((a[r], a[r + 1], b[r + 1], b[r]))
+        bm.normal_update()
+        bm.to_mesh(me)
     finally:
         bm.free()
-    # a painted wooden dowel: near-black steel vanished into the dark stage
-    stem_me.materials.append(make_material("StemDowel", (0.46, 0.30, 0.16),
-                                           rough=0.55, metallic=0.0))
-    stem = bpy.data.objects.new(name + "Stem", stem_me)
-    stem.location = loc
-    stem.rotation_euler = (STAND_TILT, 0.0, rot_z)
-    sc.collection.objects.link(stem)
-    cap_me = bpy.data.meshes.new(name + "Cap")
+    me.shade_smooth()
+    # soft dome across the gores, crisp fold where the hem drops
+    if hasattr(me, "set_sharp_from_angle"):
+        me.set_sharp_from_angle(angle=math.radians(50))
+    return me, CANOPY_RINGS + 1
+
+
+def lathe(name, profile, segs=24, sharp_deg=40.0):
+    """Revolve (radius, z) profile points about Z; closed where radius is 0."""
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.075)
-        bmesh.ops.translate(bm, vec=(0.0, 0.0, HUB_Z + 0.02), verts=bm.verts)
-        bm.to_mesh(cap_me)
+        rings = []
+        for rad, z in profile:
+            if rad <= 1e-6:
+                rings.append([bm.verts.new((0.0, 0.0, z))])
+                continue
+            rings.append([bm.verts.new((rad * math.cos(2 * math.pi * j / segs),
+                                        rad * math.sin(2 * math.pi * j / segs), z))
+                          for j in range(segs)])
+        for lo, hi in zip(rings, rings[1:]):
+            if len(lo) == 1 and len(hi) == 1:
+                continue
+            for j in range(segs):
+                jn = (j + 1) % segs
+                if len(lo) == 1:
+                    bm.faces.new((lo[0], hi[j], hi[jn]))
+                elif len(hi) == 1:
+                    bm.faces.new((lo[j], lo[jn], hi[0]))
+                else:
+                    bm.faces.new((lo[j], lo[jn], hi[jn], hi[j]))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(me)
     finally:
         bm.free()
-    cap_me.materials.append(make_material("CapMetal", (0.09, 0.09, 0.095),
-                                          rough=0.35, metallic=0.85))
-    cap = bpy.data.objects.new(name + "Cap", cap_me)
-    cap.location = loc
-    cap.rotation_euler = (STAND_TILT, 0.0, rot_z)
-    sc.collection.objects.link(cap)
-    return ob
+    me.shade_smooth()
+    if hasattr(me, "set_sharp_from_angle"):
+        me.set_sharp_from_angle(angle=math.radians(sharp_deg))
+    return me
 
 
-def placard(sc, text, loc, size=0.18):
-    cu = bpy.data.curves.new(text, "FONT")
+def _tube(bm, pts, radius, segs=8):
+    """Sweep a round tube through pts (list of Vector), capped at both ends."""
+    from mathutils import Vector
+    rings = []
+    for k, p in enumerate(pts):
+        tan = (pts[min(k + 1, len(pts) - 1)] - pts[max(k - 1, 0)]).normalized()
+        ref = Vector((0.0, 0.0, 1.0)) if abs(tan.z) < 0.9 else Vector((1.0, 0.0, 0.0))
+        u = tan.cross(ref).normalized()
+        v = tan.cross(u).normalized()
+        rings.append([bm.verts.new(p + radius * (math.cos(2 * math.pi * j / segs) * u
+                                                 + math.sin(2 * math.pi * j / segs) * v))
+                      for j in range(segs)])
+    for lo, hi in zip(rings, rings[1:]):
+        for j in range(segs):
+            jn = (j + 1) % segs
+            bm.faces.new((lo[j], lo[jn], hi[jn], hi[j]))
+    bm.faces.new(list(reversed(rings[0])))
+    bm.faces.new(rings[-1])
+
+
+RUNNER_Z = 0.20        # sliding runner on the upper pole (canopy-local)
+
+
+def build_ribs(name):
+    """K ribs tucked under the seams, with the tip caps poking past the hem,
+    plus K stretchers from the runner up to mid-rib."""
+    from mathutils import Vector
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        for i in range(K):
+            a = 2.0 * math.pi * i / K
+            c, s = math.cos(a), math.sin(a)
+            pts = []
+            for k in range(2, 15):
+                t = k / 14.0
+                rad, z = _profile(t)
+                pts.append(Vector((rad * c, rad * s, z - 0.035)))
+            # tip: a short drop past the rim so the rib end reads at the hem
+            pts.append(Vector((CANOPY_R * 1.01 * c, CANOPY_R * 1.01 * s, RIM_Z - 0.06)))
+            _tube(bm, pts, 0.013, segs=8)
+            rad, z = _profile(0.55)
+            _tube(bm, [Vector((0.035 * c, 0.035 * s, RUNNER_Z + 0.03)),
+                       Vector((rad * c, rad * s, z - 0.05))], 0.009, segs=6)
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    me.shade_smooth()
+    return me
+
+
+def build_parasol(sc, tag, attr_fn, attr_name, loc, spin_z, mats):
+    """One patio parasol at loc. attr_fn authors the canopy color attribute
+    (the CORNER or naive POINT path under test). Returns the hero parts."""
+    parts = []
+    root = f"Parasol{tag}"
+
+    def link(ob_name, me, mat, location, rot):
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(ob_name, me)
+        ob.location = location
+        # spin about the pole first, then tilt about world X toward the camera
+        ob.rotation_mode = "ZYX"
+        ob.rotation_euler = rot
+        sc.collection.objects.link(ob)
+        parts.append(ob)
+        return ob
+
+    upright = (0.0, 0.0, spin_z)
+    x, y = loc
+    # weighted cast-iron base: skirt, stepped dome, socket neck
+    base = lathe(f"{root}.Base", [
+        (0.0, 0.0), (0.34, 0.0), (0.355, 0.012), (0.355, 0.04), (0.335, 0.055),
+        (0.25, 0.075), (0.235, 0.095), (0.14, 0.125), (0.075, 0.15),
+        (0.06, 0.2), (0.068, 0.215), (0.068, 0.25), (0.05, 0.262), (0.0, 0.262)],
+        segs=40, sharp_deg=35)
+    link(f"{root}.Base", base, mats["iron"], (x, y, 0.0), upright)
+    # lower pole, then the brass tilt knuckle it hinges at
+    pole_lo = lathe(f"{root}.PoleLower", [
+        (0.0, 0.22), (0.03, 0.22), (0.03, JOINT_Z - 0.05), (0.0, JOINT_Z - 0.05)],
+        segs=20)
+    link(f"{root}.PoleLower", pole_lo, mats["teak"], (x, y, 0.0), upright)
+    knuckle = lathe(f"{root}.TiltKnuckle", [
+        (0.0, -0.09), (0.036, -0.09), (0.042, -0.075), (0.042, -0.035),
+        (0.05, -0.02), (0.052, 0.0), (0.05, 0.02), (0.042, 0.035), (0.042, 0.075),
+        (0.036, 0.09), (0.0, 0.09)], segs=24, sharp_deg=30)
+    link(f"{root}.TiltKnuckle", knuckle, mats["brass"], (x, y, JOINT_Z), upright)
+
+    # everything above the knuckle tilts toward the camera about the joint
+    tilt = (TILT, 0.0, spin_z)
+    jloc = (x, y, JOINT_Z)
+    pole_up = lathe(f"{root}.PoleUpper", [
+        (0.0, 0.05), (0.027, 0.05), (0.027, RIM_Z + CANOPY_RISE), (0.0, RIM_Z + CANOPY_RISE)],
+        segs=20)
+    link(f"{root}.PoleUpper", pole_up, mats["teak"], jloc, tilt)
+    runner = lathe(f"{root}.Runner", [
+        (0.0, RUNNER_Z - 0.05), (0.04, RUNNER_Z - 0.05), (0.046, RUNNER_Z - 0.035),
+        (0.046, RUNNER_Z + 0.035), (0.04, RUNNER_Z + 0.05), (0.0, RUNNER_Z + 0.05)],
+        segs=24, sharp_deg=30)
+    link(f"{root}.Runner", runner, mats["brass"], jloc, tilt)
+    ribs = build_ribs(f"{root}.Ribs")
+    link(f"{root}.Ribs", ribs, mats["rib"], jloc, tilt)
+    top = RIM_Z + CANOPY_RISE
+    finial = lathe(f"{root}.Finial", [
+        (0.0, top - 0.01), (0.07, top - 0.01), (0.075, top + 0.005), (0.05, top + 0.02),
+        (0.026, top + 0.045), (0.024, top + 0.07), (0.04, top + 0.085),
+        (0.052, top + 0.11), (0.048, top + 0.135), (0.032, top + 0.155),
+        (0.012, top + 0.17), (0.0, top + 0.175)], segs=24, sharp_deg=30)
+    link(f"{root}.Finial", finial, mats["brass"], jloc, tilt)
+
+    canopy, per_gore = build_canopy(f"{root}.Canopy")
+    attr_fn(canopy, PARASOL_PAL, faces_per_wedge=per_gore)
+    link(f"{root}.Canopy", canopy, make_attr_material(f"{root}.Fabric", attr_name),
+         jloc, tilt)
+    return parts
+
+
+def floor_letters(sc, text, x, mat):
+    """One bold label per parasol: extruded block letters standing on the
+    floor in front of the base, readable at card size."""
+    cu = bpy.data.curves.new(f"Label{text.title()}", "FONT")
     cu.body = text
-    cu.size = size
+    cu.size = 0.29
+    cu.extrude = 0.03
+    cu.bevel_depth = 0.004
+    cu.offset = 0.012          # thicken the stroke: the stock font is thin
     cu.align_x = "CENTER"
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
+    ob = bpy.data.objects.new(f"Label{text.title()}", cu)
+    ob.location = (x, -1.0, 0.0)
+    ob.rotation_euler = (math.radians(90), 0.0, 0.0)
+    ob.data.materials.append(mat)
     sc.collection.objects.link(ob)
-    ob.data.materials.append(make_material("Label", (0.9, 0.9, 0.92),
-                                           rough=0.6, metallic=0.0))
     return ob
 
 
@@ -291,7 +463,7 @@ def build_studio(sc):
     floor = bpy.data.objects.new("Floor", floor_me)
     sc.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 9.0, 0.0)
+    wall.location = (0.0, 8.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     sc.collection.objects.link(wall)
 
@@ -312,48 +484,47 @@ def build_studio(sc):
         ob.rotation_euler = tuple(math.radians(a) for a in rot)
         sc.collection.objects.link(ob)
 
-    light("Key", (-3.5, -4.5, 5.5), 480.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 120.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
-    light("Rim", (1.5, 4.5, 3.5), 280.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
-    light("Wedge", (2.5, 5.5, 4.0), 400.0, 6.0, (1.0, 0.72, 0.42), (-68, 0, 190))
+    light("Key", (-4.0, -5.0, 6.0), 520.0, 5.0, (1.0, 0.96, 0.9), (45, 0, -38))
+    light("Fill", (5.0, -3.5, 2.5), 110.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
+    light("Rim", (1.5, 4.5, 4.0), 320.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
+    light("Wedge", (0.5, 5.0, 4.2), 420.0, 6.0, (1.0, 0.76, 0.5), (-68, 0, 180))
     return floor, wall
 
 
-PAIR_X = 1.36
+PAIR_X = 1.42
 
 
 def render_still(path, engine):
-    """Dual pinwheel: CORNER (crisp petals to the hub) vs naive POINT (last
-    write smears the shared hub + ring verts). Colors come from the same
-    closed-form palette the check asserts."""
+    """Two striped parasols from the same authoring functions the check
+    asserts, one wedge per gore: CORNER (left) keeps crisp crimson/sailcloth
+    stripes; naive POINT (right) smears every seam and the apex to the last
+    write, and gore 0 — crimson by intent — renders white."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
-    pal = palette()
-
-    me_c = build_fan()
-    assign_corner(me_c, pal)
-    me_c.materials.append(make_attr_material("MatCorner", ATTR_C))
-    # Spread so the two canopies read as two objects: at +/-1.15 their
-    # tips met at x=0 and the pair read as one shape.
-    left = _pinwheel_obj(sc, "Corner", me_c, (-PAIR_X, 0.0, 1.35), math.radians(-8))
-
-    me_p = build_fan()
-    assign_point_naive(me_p, pal)
-    me_p.materials.append(make_attr_material("MatPoint", ATTR_P))
-    right = _pinwheel_obj(sc, "Point", me_p, (PAIR_X, 0.0, 1.35), math.radians(8))
-
-    p_corner = placard(sc, "CORNER", (-PAIR_X, -1.05, 0.02), size=0.13)
-    p_point = placard(sc, "POINT — last write wins", (PAIR_X, -1.05, 0.02), size=0.10)
+    mats = {
+        "teak": make_material("Teak", (0.26, 0.105, 0.04), rough=0.42, metallic=0.0),
+        "brass": make_material("Brass", (0.78, 0.52, 0.2), rough=0.28, metallic=1.0),
+        "iron": make_material("CastIron", (0.1, 0.1, 0.11), rough=0.38, metallic=0.75),
+        "rib": make_material("RibAluminium", (0.62, 0.62, 0.64), rough=0.32, metallic=1.0),
+    }
+    # gore 0 spans angles 0..45 deg; spin so the red-by-intent gore faces
+    # the camera on both parasols (the one the POINT loop turns white)
+    spin = math.radians(-90 - 22.5)
+    left = build_parasol(sc, "Corner", assign_corner, ATTR_C, (-PAIR_X, 0.0), spin, mats)
+    right = build_parasol(sc, "Point", assign_point_naive, ATTR_P, (PAIR_X, 0.0), spin, mats)
+    label_mat = make_material("LabelEnamel", (0.36, 0.345, 0.32), rough=0.6, metallic=0.0)
+    labels = [floor_letters(sc, "CORNER", -PAIR_X, label_mat),
+              floor_letters(sc, "POINT", PAIR_X, label_mat)]
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 44.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -6.4, 4.6)
+    cam.location = (0.0, -9.2, 3.75)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.8)
+    aim.location = (0.0, 0.0, 1.25)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -375,19 +546,24 @@ def render_still(path, engine):
     sc.render.resolution_y = 720
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = path
-    # Standard, always: AgX would bend the closed-form palette the check asserts
+    # Standard, always: AgX would bend the palette the attributes carry
     sc.view_settings.view_transform = "Standard"
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation.
-    hero = [left, right]
-    elements = hero + [p_corner, p_point]
+    hero = left + right
     fcode = gallery_framing.check_framing(
         sc, cam,
         hero=hero,
-        elements=elements,
+        elements=hero + labels,
         stage=[floor, wall],
     )
     if fcode:
         return fcode
+    # asset-quality floors (naming, material variation, edge treatment),
+    # measured on one parasol — exit 11 on violation
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=left, stage=[floor, wall])
+    if aqcode:
+        return aqcode
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)

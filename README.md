@@ -1069,7 +1069,7 @@ evaluation). Break the mirror and the render is literally half a car.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two eight-petal pinwheels side by side — left CORNER-domain with crisp colored petals to the hub, right naive POINT-domain smeared into a swirl, proving last-write-wins shear at shared vertices" /></a>
+<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two striped patio parasols side by side — left CORNER-domain with crisp crimson and cream stripes, right naive POINT-domain with the stripes smeared pink along the seams and the front red panel gone white, proving last-write-wins shear at shared vertices" /></a>
 </td>
 <td valign="middle">
 
@@ -1083,8 +1083,10 @@ vertex once per neighbor and the **last write wins** — the hub reads
 palette[K−1], and the measured shear matches the palette closed form
 (0.751031) exactly. Companion to
 [`color-attribute-wheel`](examples/color-attribute-wheel/) (domain sizing,
-`active_color`, the shader Attribute node). The broken state is in-frame:
-the right pinwheel is the falsification variant.
+`active_color`, the shader Attribute node). The render paints two striped
+parasols with the same authoring functions. The broken state is in frame:
+the right parasol's stripes smear along the seams and one crimson panel
+turns cream.
 
 </td>
 </tr>
