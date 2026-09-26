@@ -75,6 +75,9 @@ SELECT = {
     "mesh-hygiene-audit": (r"^Valve\.", None),
     "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
     "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
+    # KeycapSource never renders; it is kept so the key field's Object Info
+    # still resolves once the staging is stripped
+    "gn-instance-grid": (r"^Macropad\.", None),
     "curve-bevel-arc": (r"^(Magnet|Clip\w+|PoleBearings)$", None),
     "shape-key-blend": (r"^Vase$", None),
 }

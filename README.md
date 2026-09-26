@@ -568,15 +568,16 @@ and that a `Set Material` node carries the material through the remesh.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: nine lime-green cubes in a 3x3 grid on a dark studio floor, instanced via Geometry Nodes Instance on Points" /></a>
+<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: a cobalt-blue 3x3 macropad whose nine cream keycaps are instanced onto a Geometry Nodes Mesh Grid, one orange accent key picked out by a position-field Set Material" /></a>
 </td>
 <td valign="middle">
 
 ### [gn-instance-grid](examples/gn-instance-grid/)
 
-A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
-attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
-verts = 72, faces = 54, and `Set Material` carries the lime accent.
+A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via
+`Object Info`) → Realize Instances — attached as a `NODES` modifier with no Group Input.
+Asserts evaluated topology is verts = faces = 1089 (9 keycaps × 121), and a position-field
+`Set Material` lands the orange accent on exactly one keycap.
 
 </td>
 </tr>

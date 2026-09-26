@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>gn-instance-grid — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
+  <meta name="description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-instance-grid/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="gn-instance-grid — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
+  <meta property="og:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gn-instance-grid/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
+  <meta property="og:image:alt" content="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gn-instance-grid — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry." />
+  <meta name="twitter:description" content="A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gn-instance-grid-hero.webp" />
-  <meta name="twitter:image:alt" content="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
+  <meta name="twitter:image:alt" content="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,26 +265,27 @@
   </div>
   <header class="hero">
     <h1>gn-instance-grid</h1>
-    <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Set Shade Smooth — attached as a NODES modifier with no Group Input geometry.</p>
+    <p>A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via Object Info) → Realize Instances → Set Shade Smooth → Set Material — attached as a NODES modifier with no Group Input geometry.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor.">
-      <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right.">
+      <img src="../assets/gn-instance-grid-hero.webp" alt="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology (72 verts, 54 faces), Set Material carries Lime, and the corner instance center sits at its closed-form grid coordinate.</div>
+    <div class="callout"><span class="tag">witnesses</span> Realized instances produce closed-form topology (9 keycaps × 121 = 1089 verts, 1089 faces), Set Material carries the keycap plastic, a position-field Set Material lands the accent on exactly one keycap, and the corner keycap sits at its closed-form grid coordinate.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gn-instance-grid/gn_instance_grid.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Transform → Set Shade Smooth — and attaches it as a <code>NODES</code> modifier, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill. The tree has no Group Input: the grid and cube primitives live inside the node group.</p>
-<p><strong>What it witnesses:</strong> instancing is not free geometry until you realize it. The check asserts the closed-form evaluated topology — verts = grid points × cube verts (3 × 3 × 8 = 72), faces = 9 × 6 — that a <code>Set Material</code> node carries the lime accent, and that the corner instance center sits at its closed-form grid coordinate. If Realize Instances is omitted, the evaluated mesh is empty and the counts fail.</p>
+<p>A runnable example that builds a generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances → Transform → Set Shade Smooth → Set Material — and attaches it as a <code>NODES</code> modifier, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/geometry-nodes-python/SKILL.md"><code>geometry-nodes-python</code></a> skill. The tree has no Group Input: the grid lives inside the node group, and the instance is a modeled DSA-profile keycap read in through an <code>Object Info</code> node (original transform space). The realized grid is the key field of a 3x3 macropad.</p>
+<p><strong>What it witnesses:</strong> instancing is not free geometry until you realize it. The check asserts the closed-form evaluated topology — verts = grid points × keycap verts (9 × 121 = 1089), faces = 9 × 121 = 1089 — where the keycap counts come from its construction parameters (six rounded-rectangle rings of 4 × (4 + 1) = 20 verts, plus the dish centre; five ring-to-ring quad bands, a 20-triangle dish fan and one bottom n-gon), not from measuring the mesh. It also asserts that the (+x, +y) corner cell holds exactly one keycap, centred on its closed-form grid point with its foot at the Transform lift, that <code>Set Material</code> carries <code>Keycap.PBT</code>, and that a second <code>Set Material</code>, selected by a per-face position field, puts <code>Keycap.Accent</code> on exactly one keycap at the front-right grid point. If Realize Instances is bypassed, the evaluated mesh is empty and the count gate fails.</p>
+<p><strong>What the render shows:</strong> nine identical keycaps, one per grid point, seated on switch housings in the recessed well of an anodized case, and the one orange &quot;enter&quot; key the position-field selection picked out. The count gate is numeric: an unrealized grid renders the same keycaps, because the renderer draws instances either way. What does show is the grid itself — <code>--one-cell</code> renders a single keycap in the centre of an empty well — and where the accent selection landed. The knob, OLED, case and switch housings are render-only staging built in bmesh; only the key field comes from the tree.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gn_instance_grid.py --
 
-# Falsifier: 1×1 grid. Must exit non-zero (corner instance missing).
+# Falsifier: 1×1 grid. Must exit non-zero (4: eight keycaps missing).
 blender --background --python gn_instance_grid.py -- --one-cell
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
@@ -292,7 +293,7 @@ blender --background --python gn_instance_grid.py -- --output grid.png
 blender --background --python gn_instance_grid.py -- --output grid.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Carrier vertex count ≠ 1</td></tr><tr><td>4</td><td>Corner instance vert count ≠ 8 (<code>--one-cell</code> lands here)</td></tr><tr><td>5</td><td>Evaluated topology ≠ 72 verts / 54 faces</td></tr><tr><td>6</td><td>Set Material did not carry Lime</td></tr><tr><td>7</td><td>Corner instance center off the closed-form grid point</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Carrier vertex count ≠ 1</td></tr><tr><td>4</td><td>Evaluated topology ≠ 1089 verts / 1089 faces (<code>--one-cell</code> lands here)</td></tr><tr><td>5</td><td>Corner grid cell does not hold exactly one keycap (121 verts)</td></tr><tr><td>6</td><td>Set Material did not carry <code>Keycap.PBT</code> and <code>Keycap.Accent</code></td></tr><tr><td>7</td><td>Corner keycap off its closed-form grid point or lift</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr><tr><td>9</td><td>Accent selection did not cover exactly one keycap at the front-right point</td></tr><tr><td>10</td><td>Render path: Layer 1 framing violation (<code>gallery_framing</code>)</td></tr><tr><td>11</td><td>Render path: asset-quality floor violation (<code>gallery_asset_quality</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--one-cell</code>.</p>
     </section>
     <section class="detail-section src">
@@ -305,15 +306,23 @@ blender --background --python gn_instance_grid.py -- --output grid.png --engine 
 
 Witnesses the geometry-nodes-python construction contract for instancing:
 a generative GeometryNodeTree (Mesh Grid → Instance on Points → Realize
-Instances → Transform) attached as a NODES modifier, with no Group Input
-geometry. The check asserts the closed-form evaluated topology —
-verts = grid_points × cube_verts — proving instances were realized, not
-left as empty instance geometry, and that a corner instance sits at its
-closed-form grid coordinate.
+Instances → Transform → Set Shade Smooth → Set Material) attached as a
+NODES modifier, with no Group Input geometry. The instance is a modeled
+DSA-profile keycap read in through an Object Info node, so the grid
+becomes the key field of a 3x3 macropad.
+
+The check asserts the closed-form evaluated topology — verts = grid points
+× keycap verts, faces = grid points × keycap faces, both derived from the
+keycap&#x27;s construction parameters, not measured off it — proving the
+instances were realized, not left as instance references the mesh never
+sees. It also asserts that the corner keycap sits at its closed-form grid
+coordinate and lift, that Set Material carried the keycap plastic, and that
+a second Set Material driven by a position field landed the accent plastic
+on exactly one keycap, the front-right &quot;enter&quot; key.
 
 ``--one-cell`` builds a 1x1 grid and still asserts 3x3 realized topology,
-so the corner instance is missing. That is the falsifier
-(``--same-axis`` in export-preset-axis).
+so eight keycaps are missing and the count gate (exit 4) fails. That is
+the falsifier (``--same-axis`` in export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
 check. Pass --output to also render a still:
@@ -324,22 +333,121 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 
+<span class="c"># Shared Layer 1 helpers (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+
 GRID_X = <span class="n">3</span>
 GRID_Y = <span class="n">3</span>
-GRID_SIZE = <span class="n">2.4</span>
-CUBE_SIZE = <span class="n">0.42</span>
-CUBE_VERTS = <span class="n">8</span>
-CUBE_FACES = <span class="n">6</span>
+PITCH = <span class="n">1.2</span>                     <span class="c"># key pitch, grid spacing between points</span>
+GRID_SIZE = PITCH * (GRID_X - <span class="n">1</span>)
 GRID_POINTS = GRID_X * GRID_Y
-EXPECT_VERTS = GRID_POINTS * CUBE_VERTS
-EXPECT_FACES = GRID_POINTS * CUBE_FACES
-<span class="c"># Mesh Grid spans [-GRID_SIZE/2, +GRID_SIZE/2]; corner point at (+half, +half)</span>
-GRID_HALF = GRID_SIZE / <span class="n">2</span>
-<span class="c"># after Transform lift, corner cube center is at (GRID_HALF, GRID_HALF, CUBE_SIZE/2)</span>
-CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
+GRID_HALF = GRID_SIZE / <span class="n">2</span>       <span class="c"># Mesh Grid spans [-GRID_HALF, +GRID_HALF]</span>
+SWITCH_LIFT = <span class="n">0.22</span>              <span class="c"># Transform: caps ride on the switch housings</span>
+
+<span class="c"># DSA-profile keycap: a loft of rounded-rectangle rings, bottom to top, then</span>
+<span class="c"># a fan down into the spherical-looking dish. (half-width, corner radius, z)</span>
+CAP_RINGS = (
+    (<span class="n">0.55</span>, <span class="n">0.10</span>, <span class="n">0.00</span>),   <span class="c"># skirt foot</span>
+    (<span class="n">0.55</span>, <span class="n">0.10</span>, <span class="n">0.07</span>),   <span class="c"># vertical skirt</span>
+    (<span class="n">0.435</span>, <span class="n">0.14</span>, <span class="n">0.54</span>),  <span class="c"># tapered wall</span>
+    (<span class="n">0.415</span>, <span class="n">0.13</span>, <span class="n">0.60</span>),  <span class="c"># edge roll</span>
+    (<span class="n">0.375</span>, <span class="n">0.11</span>, <span class="n">0.625</span>), <span class="c"># top rim</span>
+    (<span class="n">0.25</span>, <span class="n">0.08</span>, <span class="n">0.60</span>),   <span class="c"># dish slope</span>
+)
+CAP_DISH_Z = <span class="n">0.565</span>
+CAP_TOP = max(z <span class="k">for</span> _w, _r, z <span class="k">in</span> CAP_RINGS)
+CORNER_SEGS = <span class="n">4</span>
+RING_VERTS = <span class="n">4</span> * (CORNER_SEGS + <span class="n">1</span>)
+<span class="c"># closed form: every ring plus the dish centre; ring-to-ring quads, the dish</span>
+<span class="c"># fan and one bottom n-gon</span>
+CAP_VERTS = len(CAP_RINGS) * RING_VERTS + <span class="n">1</span>
+CAP_FACES = (len(CAP_RINGS) - <span class="n">1</span>) * RING_VERTS + RING_VERTS + <span class="n">1</span>
+EXPECT_VERTS = GRID_POINTS * CAP_VERTS
+EXPECT_FACES = GRID_POINTS * CAP_FACES
+<span class="c"># corner (+x, +y) keycap: centred on its grid point, foot at the switch lift</span>
+CORNER_CENTER = (GRID_HALF, GRID_HALF)
+CORNER_Z = (SWITCH_LIFT, SWITCH_LIFT + CAP_TOP)
+<span class="c"># accent (&quot;enter&quot;) keycap: the front-right grid point</span>
+ACCENT_CENTER = (GRID_HALF, -GRID_HALF)
+
+MAT_PLASTIC = <span class="s">&quot;Keycap.PBT&quot;</span>
+MAT_ACCENT = <span class="s">&quot;Keycap.Accent&quot;</span>
 
 
-<span class="k">def</span> build_instance_grid_tree(material=<span class="k">None</span>, grid_x=GRID_X, grid_y=GRID_Y):
+<span class="c"># ---------------------------------------------------------------- modeling</span>
+
+<span class="k">def</span> rounded_ring(bm, cx, cy, hw, hd, r, z, segs=CORNER_SEGS):
+    <span class="s">&quot;&quot;&quot;Rounded rectangle, 4 * (segs + 1) verts, counter-clockwise.&quot;&quot;&quot;</span>
+    verts = []
+    corners = ((hw - r, hd - r, <span class="n">0.0</span>), (-(hw - r), hd - r, <span class="n">90.0</span>),
+               (-(hw - r), -(hd - r), <span class="n">180.0</span>), (hw - r, -(hd - r), <span class="n">270.0</span>))
+    <span class="k">for</span> ox, oy, a0 <span class="k">in</span> corners:
+        <span class="k">for</span> i <span class="k">in</span> range(segs + <span class="n">1</span>):
+            a = math.radians(a0 + <span class="n">90.0</span> * i / segs)
+            verts.append(bm.verts.new((cx + ox + r * math.cos(a),
+                                       cy + oy + r * math.sin(a), z)))
+    <span class="k">return</span> verts
+
+
+<span class="k">def</span> circle_ring(bm, cx, cy, radii, z):
+    n = len(radii)
+    <span class="k">return</span> [bm.verts.new((cx + radii[i] * math.cos(<span class="n">2</span> * math.pi * i / n),
+                          cy + radii[i] * math.sin(<span class="n">2</span> * math.pi * i / n), z))
+            <span class="k">for</span> i <span class="k">in</span> range(n)]
+
+
+<span class="k">def</span> bridge(bm, a, b, mat=<span class="n">0</span>):
+    n = len(a)
+    faces = []
+    <span class="k">for</span> i <span class="k">in</span> range(n):
+        j = (i + <span class="n">1</span>) % n
+        f = bm.faces.new((a[i], a[j], b[j], b[i]))
+        f.material_index = mat
+        faces.append(f)
+    <span class="k">return</span> faces
+
+
+<span class="k">def</span> cap_ngon(bm, ring, mat=<span class="n">0</span>):
+    f = bm.faces.new(ring)
+    f.material_index = mat
+    <span class="k">return</span> f
+
+
+<span class="k">def</span> finish(bm, me, smooth=<span class="k">True</span>):
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    <span class="k">for</span> f <span class="k">in</span> bm.faces:
+        f.smooth = smooth
+    bm.to_mesh(me)
+    me.update()
+
+
+<span class="k">def</span> build_keycap_mesh():
+    <span class="s">&quot;&quot;&quot;The instance: one DSA keycap, topology fixed by CAP_RINGS/CORNER_SEGS.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;KeycapDSA&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rings = [rounded_ring(bm, <span class="n">0.0</span>, <span class="n">0.0</span>, w, w, r, z) <span class="k">for</span> w, r, z <span class="k">in</span> CAP_RINGS]
+        <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            bridge(bm, a, b)
+        centre = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, CAP_DISH_Z))
+        top = rings[-<span class="n">1</span>]
+        <span class="k">for</span> i <span class="k">in</span> range(RING_VERTS):
+            bm.faces.new((top[i], top[(i + <span class="n">1</span>) % RING_VERTS], centre))
+        cap_ngon(bm, list(reversed(rings[<span class="n">0</span>])))
+        finish(bm, me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="c"># the hidden underside must not bend the skirt&#x27;s smooth normals: the foot</span>
+    <span class="c"># ring (the first RING_VERTS verts created) is marked sharp</span>
+    <span class="k">for</span> e <span class="k">in</span> me.edges:
+        a, b = e.vertices
+        <span class="k">if</span> a &lt; RING_VERTS <span class="k">and</span> b &lt; RING_VERTS:
+            e.use_edge_sharp = <span class="k">True</span>
+    <span class="k">return</span> me
+
+
+<span class="k">def</span> build_instance_grid_tree(source, plastic=<span class="k">None</span>, accent=<span class="k">None</span>,
+                             grid_x=GRID_X, grid_y=GRID_Y):
     tree = bpy.data.node_groups.new(<span class="s">&quot;InstanceGrid&quot;</span>, <span class="s">&#x27;GeometryNodeTree&#x27;</span>)
     <span class="c"># generative: no Group Input — the tree owns the geometry</span>
     tree.interface.new_socket(
@@ -348,61 +456,109 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     go = tree.nodes.new(<span class="s">&#x27;NodeGroupOutput&#x27;</span>)
 
     grid = tree.nodes.new(<span class="s">&#x27;GeometryNodeMeshGrid&#x27;</span>)
-    grid.inputs[<span class="s">&quot;Size X&quot;</span>].default_value = GRID_SIZE
-    grid.inputs[<span class="s">&quot;Size Y&quot;</span>].default_value = GRID_SIZE
+    grid.inputs[<span class="s">&quot;Size X&quot;</span>].default_value = PITCH * (grid_x - <span class="n">1</span>)
+    grid.inputs[<span class="s">&quot;Size Y&quot;</span>].default_value = PITCH * (grid_y - <span class="n">1</span>)
     grid.inputs[<span class="s">&quot;Vertices X&quot;</span>].default_value = grid_x
     grid.inputs[<span class="s">&quot;Vertices Y&quot;</span>].default_value = grid_y
 
-    cube = tree.nodes.new(<span class="s">&#x27;GeometryNodeMeshCube&#x27;</span>)
-    cube.inputs[<span class="s">&quot;Size&quot;</span>].default_value = (CUBE_SIZE, CUBE_SIZE, CUBE_SIZE)
+    <span class="c"># the modeled keycap, in its own local space</span>
+    info = tree.nodes.new(<span class="s">&#x27;GeometryNodeObjectInfo&#x27;</span>)
+    info.transform_space = <span class="s">&#x27;ORIGINAL&#x27;</span>
+    info.inputs[<span class="s">&quot;Object&quot;</span>].default_value = source
 
     iop = tree.nodes.new(<span class="s">&#x27;GeometryNodeInstanceOnPoints&#x27;</span>)
     realize = tree.nodes.new(<span class="s">&#x27;GeometryNodeRealizeInstances&#x27;</span>)
     xform = tree.nodes.new(<span class="s">&#x27;GeometryNodeTransform&#x27;</span>)
-    <span class="c"># cubes are centered on grid points at z=0; lift so they rest on the floor</span>
-    xform.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, CUBE_SIZE / <span class="n">2</span>)
+    <span class="c"># caps are built foot-at-z=0; lift them onto the switch housings</span>
+    xform.inputs[<span class="s">&quot;Translation&quot;</span>].default_value = (<span class="n">0.0</span>, <span class="n">0.0</span>, SWITCH_LIFT)
 
-    <span class="c"># crisp facets — matches the other studio examples</span>
+    <span class="c"># the keycap&#x27;s loops are laid out for smooth shading; its foot ring</span>
+    <span class="c"># carries sharp edges from the source mesh, which realize preserves</span>
     shade = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetShadeSmooth&#x27;</span>)
-    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">False</span>
+    shade.inputs[<span class="s">&quot;Shade Smooth&quot;</span>].default_value = <span class="k">True</span>
 
     tree.links.new(grid.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Points&quot;</span>])
-    tree.links.new(cube.outputs[<span class="s">&quot;Mesh&quot;</span>], iop.inputs[<span class="s">&quot;Instance&quot;</span>])
+    tree.links.new(info.outputs[<span class="s">&quot;Geometry&quot;</span>], iop.inputs[<span class="s">&quot;Instance&quot;</span>])
     tree.links.new(iop.outputs[<span class="s">&quot;Instances&quot;</span>], realize.inputs[<span class="s">&quot;Geometry&quot;</span>])
     tree.links.new(realize.outputs[<span class="s">&quot;Geometry&quot;</span>], xform.inputs[<span class="s">&quot;Geometry&quot;</span>])
     tree.links.new(xform.outputs[<span class="s">&quot;Geometry&quot;</span>], shade.inputs[<span class="s">&quot;Geometry&quot;</span>])
     out_socket = shade.outputs[<span class="s">&quot;Geometry&quot;</span>]
 
-    <span class="k">if</span> material <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    <span class="k">if</span> plastic <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
         set_mat = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetMaterial&#x27;</span>)
-        set_mat.inputs[<span class="s">&quot;Material&quot;</span>].default_value = material
+        set_mat.inputs[<span class="s">&quot;Material&quot;</span>].default_value = plastic
         tree.links.new(out_socket, set_mat.inputs[<span class="s">&quot;Geometry&quot;</span>])
         out_socket = set_mat.outputs[<span class="s">&quot;Geometry&quot;</span>]
+
+    <span class="k">if</span> accent <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        <span class="c"># Selection field, evaluated per face: face centre in the front-right</span>
+        <span class="c"># cell (x &gt; +GRID_HALF - PITCH/2 and y &lt; -GRID_HALF + PITCH/2)</span>
+        pos = tree.nodes.new(<span class="s">&#x27;GeometryNodeInputPosition&#x27;</span>)
+        sep = tree.nodes.new(<span class="s">&#x27;ShaderNodeSeparateXYZ&#x27;</span>)
+        gx = tree.nodes.new(<span class="s">&#x27;ShaderNodeMath&#x27;</span>)
+        gx.operation = <span class="s">&#x27;GREATER_THAN&#x27;</span>
+        gx.inputs[<span class="n">1</span>].default_value = GRID_HALF - PITCH / <span class="n">2</span>
+        ly = tree.nodes.new(<span class="s">&#x27;ShaderNodeMath&#x27;</span>)
+        ly.operation = <span class="s">&#x27;LESS_THAN&#x27;</span>
+        ly.inputs[<span class="n">1</span>].default_value = -GRID_HALF + PITCH / <span class="n">2</span>
+        both = tree.nodes.new(<span class="s">&#x27;ShaderNodeMath&#x27;</span>)
+        both.operation = <span class="s">&#x27;MULTIPLY&#x27;</span>
+        tree.links.new(pos.outputs[<span class="s">&quot;Position&quot;</span>], sep.inputs[<span class="n">0</span>])
+        tree.links.new(sep.outputs[<span class="s">&quot;X&quot;</span>], gx.inputs[<span class="n">0</span>])
+        tree.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], ly.inputs[<span class="n">0</span>])
+        tree.links.new(gx.outputs[<span class="n">0</span>], both.inputs[<span class="n">0</span>])
+        tree.links.new(ly.outputs[<span class="n">0</span>], both.inputs[<span class="n">1</span>])
+        set_acc = tree.nodes.new(<span class="s">&#x27;GeometryNodeSetMaterial&#x27;</span>)
+        set_acc.inputs[<span class="s">&quot;Material&quot;</span>].default_value = accent
+        tree.links.new(out_socket, set_acc.inputs[<span class="s">&quot;Geometry&quot;</span>])
+        tree.links.new(both.outputs[<span class="n">0</span>], set_acc.inputs[<span class="s">&quot;Selection&quot;</span>])
+        out_socket = set_acc.outputs[<span class="s">&quot;Geometry&quot;</span>]
 
     tree.links.new(out_socket, go.inputs[<span class="s">&quot;Geometry&quot;</span>])
     <span class="k">return</span> tree
 
 
+<span class="k">def</span> pbr(name, color, rough, metal=<span class="n">0.0</span>, emit=<span class="k">None</span>, strength=<span class="n">0.0</span>, coat=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metal
+    <span class="k">if</span> coat:
+        b.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = coat
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+    <span class="k">return</span> mat
+
+
 <span class="k">def</span> build(one_cell=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    <span class="c"># the modeled instance; never rendered itself, only read by Object Info</span>
+    src = bpy.data.objects.new(<span class="s">&quot;Macropad.KeycapSource&quot;</span>, build_keycap_mesh())
+    src.hide_render = <span class="k">True</span>
+    bpy.context.collection.objects.link(src)
+
     <span class="c"># carrier mesh is unused by the generative tree; one vertex is enough</span>
-    me = bpy.data.meshes.new(<span class="s">&quot;Carrier&quot;</span>)
+    me = bpy.data.meshes.new(<span class="s">&quot;KeyfieldCarrier&quot;</span>)
     me.vertices.add(<span class="n">1</span>)
-    obj = bpy.data.objects.new(<span class="s">&quot;InstanceGrid&quot;</span>, me)
+    obj = bpy.data.objects.new(<span class="s">&quot;Macropad.Keycaps&quot;</span>, me)
     bpy.context.collection.objects.link(obj)
 
-    mat = bpy.data.materials.new(<span class="s">&quot;Lime&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.22</span>, <span class="n">0.95</span>, <span class="n">0.06</span>, <span class="n">1.0</span>)  <span class="c"># lime</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.22</span>
+    <span class="c"># warm cream PBT and a saturated orange accent (docs/VISUAL-STYLE.md)</span>
+    plastic = pbr(MAT_PLASTIC, (<span class="n">0.80</span>, <span class="n">0.70</span>, <span class="n">0.52</span>), <span class="n">0.55</span>)
+    accent = pbr(MAT_ACCENT, (<span class="n">1.0</span>, <span class="n">0.25</span>, <span class="n">0.03</span>), <span class="n">0.5</span>)
 
     gx = gy = <span class="n">1</span> <span class="k">if</span> one_cell <span class="k">else</span> GRID_X
-    tree = build_instance_grid_tree(material=mat, grid_x=gx, grid_y=gy)
+    tree = build_instance_grid_tree(src, plastic=plastic, accent=accent,
+                                    grid_x=gx, grid_y=gy)
     mod = obj.modifiers.new(<span class="s">&quot;instance_grid&quot;</span>, <span class="s">&#x27;NODES&#x27;</span>)
     mod.node_group = tree
-    <span class="k">return</span> obj, mat
+    <span class="k">return</span> obj, src
 
+
+<span class="c"># ---------------------------------------------------------------- check</span>
 
 <span class="k">def</span> check(obj):
     base = len(obj.data.vertices)
@@ -416,50 +572,238 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     <span class="k">try</span>:
         got_v = len(em.vertices)
         got_f = len(em.polygons)
-        mat_names = [m.name <span class="k">for</span> m <span class="k">in</span> em.materials <span class="k">if</span> m <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
-        <span class="c"># corner instance: the 8 verts nearest CORNER_CENTER should average to it</span>
-        corner = [v.co <span class="k">for</span> v <span class="k">in</span> em.vertices
-                  <span class="k">if</span> (v.co.x &gt; GRID_HALF - CUBE_SIZE <span class="k">and</span> v.co.y &gt; GRID_HALF - CUBE_SIZE)]
-        <span class="k">if</span> len(corner) != CUBE_VERTS:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: corner instance has </span>{len(corner)}<span class="s"> verts, expected </span>{CUBE_VERTS}<span class="s">&quot;</span>,
-                  file=sys.stderr)
-            <span class="k">return</span> <span class="n">4</span>
-        cx = sum(c.x <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
-        cy = sum(c.y <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
-        cz = sum(c.z <span class="k">for</span> c <span class="k">in</span> corner) / CUBE_VERTS
+        mat_names = [m.name <span class="k">if</span> m <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="k">None</span> <span class="k">for</span> m <span class="k">in</span> em.materials]
+        <span class="c"># corner keycap: every vert inside the (+x, +y) cell</span>
+        lim = GRID_HALF - PITCH / <span class="n">2</span>
+        corner = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> em.vertices <span class="k">if</span> v.co.x &gt; lim <span class="k">and</span> v.co.y &gt; lim]
+        acc_idx = mat_names.index(MAT_ACCENT) <span class="k">if</span> MAT_ACCENT <span class="k">in</span> mat_names <span class="k">else</span> -<span class="n">1</span>
+        acc_faces = [p <span class="k">for</span> p <span class="k">in</span> em.polygons <span class="k">if</span> p.material_index == acc_idx]
+        acc_verts = {vi <span class="k">for</span> p <span class="k">in</span> acc_faces <span class="k">for</span> vi <span class="k">in</span> p.vertices}
+        acc_xy = ((sum(em.vertices[i].co.x <span class="k">for</span> i <span class="k">in</span> acc_verts) / len(acc_verts),
+                   sum(em.vertices[i].co.y <span class="k">for</span> i <span class="k">in</span> acc_verts) / len(acc_verts))
+                  <span class="k">if</span> acc_verts <span class="k">else</span> (float(<span class="s">&quot;nan&quot;</span>), float(<span class="s">&quot;nan&quot;</span>)))
     <span class="k">finally</span>:
         ev.to_mesh_clear()
 
+    <span class="c"># the headline claim first: realized topology is grid points x keycap</span>
     <span class="k">if</span> got_v != EXPECT_VERTS <span class="k">or</span> got_f != EXPECT_FACES:
         print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated topology verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">expected verts=</span>{EXPECT_VERTS}<span class="s"> faces=</span>{EXPECT_FACES}<span class="s">&quot;</span>,
               file=sys.stderr)
+        <span class="k">return</span> <span class="n">4</span>
+
+    <span class="k">if</span> len(corner) != CAP_VERTS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: corner cell holds </span>{len(corner)}<span class="s"> verts, expected one keycap </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(</span>{CAP_VERTS}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
 
-    <span class="k">if</span> <span class="s">&quot;Lime&quot;</span> <span class="k">not</span> <span class="k">in</span> mat_names:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: Set Material did not carry Lime onto evaluated mesh </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">(materials=</span>{mat_names}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">if</span> MAT_PLASTIC <span class="k">not</span> <span class="k">in</span> mat_names <span class="k">or</span> MAT_ACCENT <span class="k">not</span> <span class="k">in</span> mat_names:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: Set Material did not carry </span>{MAT_PLASTIC}<span class="s"> and </span>{MAT_ACCENT}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">onto the evaluated mesh (materials=</span>{mat_names}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
-    <span class="k">for</span> got, exp, axis <span class="k">in</span> ((cx, CORNER_CENTER[<span class="n">0</span>], <span class="s">&#x27;x&#x27;</span>),
-                           (cy, CORNER_CENTER[<span class="n">1</span>], <span class="s">&#x27;y&#x27;</span>),
-                           (cz, CORNER_CENTER[<span class="n">2</span>], <span class="s">&#x27;z&#x27;</span>)):
+    <span class="c"># bbox of the corner keycap: centred on the grid point, foot at the lift</span>
+    cx = (min(c.x <span class="k">for</span> c <span class="k">in</span> corner) + max(c.x <span class="k">for</span> c <span class="k">in</span> corner)) / <span class="n">2</span>
+    cy = (min(c.y <span class="k">for</span> c <span class="k">in</span> corner) + max(c.y <span class="k">for</span> c <span class="k">in</span> corner)) / <span class="n">2</span>
+    z0 = min(c.z <span class="k">for</span> c <span class="k">in</span> corner)
+    z1 = max(c.z <span class="k">for</span> c <span class="k">in</span> corner)
+    <span class="k">for</span> got, exp, axis <span class="k">in</span> ((cx, CORNER_CENTER[<span class="n">0</span>], <span class="s">&#x27;x&#x27;</span>), (cy, CORNER_CENTER[<span class="n">1</span>], <span class="s">&#x27;y&#x27;</span>),
+                           (z0, CORNER_Z[<span class="n">0</span>], <span class="s">&#x27;z-min&#x27;</span>), (z1, CORNER_Z[<span class="n">1</span>], <span class="s">&#x27;z-max&#x27;</span>)):
         <span class="k">if</span> abs(got - exp) &gt; <span class="n">1e-3</span>:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: corner center </span>{axis}<span class="s">=</span>{got:<span class="s">.4f</span>}<span class="s"> != </span>{exp:<span class="s">.4f</span>}<span class="s">&quot;</span>,
+            print(<span class="s">f&quot;</span><span class="s">ERROR: corner keycap </span>{axis}<span class="s">=</span>{got:<span class="s">.4f</span>}<span class="s"> != </span>{exp:<span class="s">.4f</span>}<span class="s">&quot;</span>,
                   file=sys.stderr)
             <span class="k">return</span> <span class="n">7</span>
 
-    print(<span class="s">f&quot;</span><span class="s">grid=</span>{GRID_X}<span class="s">x</span>{GRID_Y}<span class="s"> points=</span>{GRID_POINTS}<span class="s"> </span><span class="s">&quot;</span>
+    <span class="c"># the position-field selection must pick exactly one whole keycap</span>
+    <span class="k">if</span> (len(acc_faces) != CAP_FACES
+            <span class="k">or</span> abs(acc_xy[<span class="n">0</span>] - ACCENT_CENTER[<span class="n">0</span>]) &gt; <span class="n">1e-3</span>
+            <span class="k">or</span> abs(acc_xy[<span class="n">1</span>] - ACCENT_CENTER[<span class="n">1</span>]) &gt; <span class="n">1e-3</span>):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: accent selection covered </span>{len(acc_faces)}<span class="s"> faces centred at </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(</span>{acc_xy[<span class="n">0</span>]:<span class="s">.3f</span>}<span class="s">,</span>{acc_xy[<span class="n">1</span>]:<span class="s">.3f</span>}<span class="s">); expected </span>{CAP_FACES}<span class="s"> faces at </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{ACCENT_CENTER}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+
+    print(<span class="s">f&quot;</span><span class="s">grid=</span>{GRID_X}<span class="s">x</span>{GRID_Y}<span class="s"> points=</span>{GRID_POINTS}<span class="s"> cap=</span>{CAP_VERTS}<span class="s">v/</span>{CAP_FACES}<span class="s">f </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">eval_verts=</span>{got_v}<span class="s"> eval_faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">corner=(</span>{cx:<span class="s">.2f</span>}<span class="s">,</span>{cy:<span class="s">.2f</span>}<span class="s">,</span>{cz:<span class="s">.2f</span>}<span class="s">) material=Lime</span><span class="s">&quot;</span>)
+          <span class="s">f&quot;</span><span class="s">corner=(</span>{cx:<span class="s">.2f</span>}<span class="s">,</span>{cy:<span class="s">.2f</span>}<span class="s">,z </span>{z0:<span class="s">.2f</span>}<span class="s">..</span>{z1:<span class="s">.2f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">accent=</span>{len(acc_faces)}<span class="s">f@(</span>{acc_xy[<span class="n">0</span>]:<span class="s">.2f</span>}<span class="s">,</span>{acc_xy[<span class="n">1</span>]:<span class="s">.2f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">materials=</span>{mat_names}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
+
+<span class="c"># ---------------------------------------------------------------- render</span>
 
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(obj, path, engine):
+CASE_H = <span class="n">0.68</span>          <span class="c"># case top surface</span>
+PLATE_Z = <span class="n">0.30</span>         <span class="c"># recessed plate the switches sit on</span>
+CASE_CY = <span class="n">0.62</span>         <span class="c"># case centre is pushed back to hold the knob strip</span>
+CASE_HW, CASE_HD = <span class="n">2.05</span>, <span class="n">2.72</span>
+STRIP_Y = <span class="n">2.62</span>         <span class="c"># knob / screen strip behind the key well</span>
+
+
+<span class="k">def</span> mesh_object(name, me, parent, mats):
+    <span class="k">for</span> m <span class="k">in</span> mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    ob.parent = parent
+    bpy.context.scene.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> build_case(mats, parent):
+    <span class="s">&quot;&quot;&quot;Anodized case with a recessed key well; plate is material slot 1.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(<span class="s">&quot;MacropadCase&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        r = rounded_ring
+        foot = r(bm, <span class="n">0</span>, CASE_CY, CASE_HW - <span class="n">0.04</span>, CASE_HD - <span class="n">0.04</span>, <span class="n">0.30</span>, <span class="n">0.0</span>)
+        wall0 = r(bm, <span class="n">0</span>, CASE_CY, CASE_HW, CASE_HD, <span class="n">0.34</span>, <span class="n">0.05</span>)
+        wall1 = r(bm, <span class="n">0</span>, CASE_CY, CASE_HW, CASE_HD, <span class="n">0.34</span>, CASE_H - <span class="n">0.07</span>)
+        chamf = r(bm, <span class="n">0</span>, CASE_CY, CASE_HW - <span class="n">0.06</span>, CASE_HD - <span class="n">0.06</span>, <span class="n">0.28</span>, CASE_H)
+        rim = r(bm, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1.86</span>, <span class="n">1.86</span>, <span class="n">0.14</span>, CASE_H)
+        lip = r(bm, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1.86</span>, <span class="n">1.86</span>, <span class="n">0.14</span>, CASE_H - <span class="n">0.03</span>)
+        well = r(bm, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1.86</span>, <span class="n">1.86</span>, <span class="n">0.14</span>, PLATE_Z)
+        bridge(bm, foot, wall0)
+        bridge(bm, wall0, wall1)
+        bridge(bm, wall1, chamf)
+        bridge(bm, chamf, rim)
+        bridge(bm, rim, lip)
+        bridge(bm, lip, well, mat=<span class="n">1</span>)
+        cap_ngon(bm, well, mat=<span class="n">1</span>)
+        cap_ngon(bm, list(reversed(foot)))
+        finish(bm, me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">40</span>))
+    <span class="k">return</span> mesh_object(<span class="s">&quot;Macropad.Case&quot;</span>, me, parent, mats)
+
+
+<span class="k">def</span> build_switches(mat, parent):
+    me = bpy.data.meshes.new(<span class="s">&quot;MacropadSwitches&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> i <span class="k">in</span> range(GRID_X):
+            <span class="k">for</span> j <span class="k">in</span> range(GRID_Y):
+                x = -GRID_HALF + i * PITCH
+                y = -GRID_HALF + j * PITCH
+                a = rounded_ring(bm, x, y, <span class="n">0.40</span>, <span class="n">0.40</span>, <span class="n">0.05</span>, PLATE_Z, <span class="n">1</span>)
+                b = rounded_ring(bm, x, y, <span class="n">0.37</span>, <span class="n">0.37</span>, <span class="n">0.05</span>, PLATE_Z + SWITCH_LIFT, <span class="n">1</span>)
+                bridge(bm, a, b)
+                cap_ngon(bm, b)
+                cap_ngon(bm, list(reversed(a)))
+        finish(bm, me, smooth=<span class="k">False</span>)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> mesh_object(<span class="s">&quot;Macropad.Switches&quot;</span>, me, parent, [mat])
+
+
+<span class="k">def</span> build_knob(brass, collar_mat, mark_mat, parent):
+    x, y = <span class="n">1.15</span>, STRIP_Y
+    <span class="c"># collar ring the knob turns in</span>
+    cme = bpy.data.meshes.new(<span class="s">&quot;MacropadKnobCollar&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        n = <span class="n">48</span>
+        a = circle_ring(bm, x, y, [<span class="n">0.50</span>] * n, CASE_H)
+        b = circle_ring(bm, x, y, [<span class="n">0.50</span>] * n, CASE_H + <span class="n">0.05</span>)
+        c = circle_ring(bm, x, y, [<span class="n">0.45</span>] * n, CASE_H + <span class="n">0.08</span>)
+        bridge(bm, a, b)
+        bridge(bm, b, c)
+        cap_ngon(bm, c)
+        cap_ngon(bm, list(reversed(a)))
+        finish(bm, cme)
+    <span class="k">finally</span>:
+        bm.free()
+    cme.set_sharp_from_angle(angle=math.radians(<span class="n">40</span>))
+    collar = mesh_object(<span class="s">&quot;Macropad.KnobCollar&quot;</span>, cme, parent, [collar_mat])
+
+    <span class="c"># knurled body: alternating radii around the barrel, chamfered crown</span>
+    kme = bpy.data.meshes.new(<span class="s">&quot;MacropadKnob&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        n = <span class="n">64</span>
+        knurl = [<span class="n">0.40</span> <span class="k">if</span> i % <span class="n">2</span> <span class="k">else</span> <span class="n">0.37</span> <span class="k">for</span> i <span class="k">in</span> range(n)]
+        z0 = CASE_H + <span class="n">0.08</span>
+        rings = [
+            circle_ring(bm, x, y, [<span class="n">0.34</span>] * n, z0),
+            circle_ring(bm, x, y, knurl, z0 + <span class="n">0.04</span>),
+            circle_ring(bm, x, y, knurl, z0 + <span class="n">0.52</span>),
+            circle_ring(bm, x, y, [<span class="n">0.37</span>] * n, z0 + <span class="n">0.58</span>),
+            circle_ring(bm, x, y, [<span class="n">0.33</span>] * n, z0 + <span class="n">0.62</span>),
+            circle_ring(bm, x, y, [<span class="n">0.30</span>] * n, z0 + <span class="n">0.60</span>),
+        ]
+        <span class="k">for</span> p, q <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            bridge(bm, p, q)
+        cap_ngon(bm, rings[-<span class="n">1</span>])
+        cap_ngon(bm, list(reversed(rings[<span class="n">0</span>])))
+        finish(bm, kme)
+    <span class="k">finally</span>:
+        bm.free()
+    kme.set_sharp_from_angle(angle=math.radians(<span class="n">30</span>))
+    knob = mesh_object(<span class="s">&quot;Macropad.Knob&quot;</span>, kme, parent, [brass])
+
+    <span class="c"># pointer line inlaid in the crown&#x27;s dished face</span>
+    mme = bpy.data.meshes.new(<span class="s">&quot;MacropadKnobMark&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        zt = z0 + <span class="n">0.605</span>
+        a = rounded_ring(bm, x - <span class="n">0.09</span>, y + <span class="n">0.12</span>, <span class="n">0.035</span>, <span class="n">0.13</span>, <span class="n">0.03</span>, zt, <span class="n">2</span>)
+        b = rounded_ring(bm, x - <span class="n">0.09</span>, y + <span class="n">0.12</span>, <span class="n">0.035</span>, <span class="n">0.13</span>, <span class="n">0.03</span>, zt + <span class="n">0.01</span>, <span class="n">2</span>)
+        bridge(bm, a, b)
+        cap_ngon(bm, b)
+        cap_ngon(bm, list(reversed(a)))
+        finish(bm, mme, smooth=<span class="k">False</span>)
+    <span class="k">finally</span>:
+        bm.free()
+    mark = mesh_object(<span class="s">&quot;Macropad.KnobMark&quot;</span>, mme, parent, [mark_mat])
+    <span class="k">return</span> [collar, knob, mark]
+
+
+<span class="k">def</span> build_screen(glass, bar_mat, parent):
+    x, y = -<span class="n">0.55</span>, STRIP_Y
+    sme = bpy.data.meshes.new(<span class="s">&quot;MacropadScreen&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        a = rounded_ring(bm, x, y, <span class="n">0.95</span>, <span class="n">0.36</span>, <span class="n">0.06</span>, CASE_H)
+        b = rounded_ring(bm, x, y, <span class="n">0.95</span>, <span class="n">0.36</span>, <span class="n">0.06</span>, CASE_H + <span class="n">0.025</span>)
+        c = rounded_ring(bm, x, y, <span class="n">0.92</span>, <span class="n">0.33</span>, <span class="n">0.04</span>, CASE_H + <span class="n">0.03</span>)
+        bridge(bm, a, b)
+        bridge(bm, b, c)
+        cap_ngon(bm, c)
+        cap_ngon(bm, list(reversed(a)))
+        finish(bm, sme, smooth=<span class="k">False</span>)
+    <span class="k">finally</span>:
+        bm.free()
+    screen = mesh_object(<span class="s">&quot;Macropad.Screen&quot;</span>, sme, parent, [glass])
+
+    <span class="c"># level meter on the OLED: eight bars, one per key column pair</span>
+    bme = bpy.data.meshes.new(<span class="s">&quot;MacropadScreenBars&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        heights = (<span class="n">0.20</span>, <span class="n">0.34</span>, <span class="n">0.46</span>, <span class="n">0.30</span>, <span class="n">0.52</span>, <span class="n">0.40</span>, <span class="n">0.24</span>, <span class="n">0.14</span>)
+        zt = CASE_H + <span class="n">0.031</span>
+        <span class="k">for</span> i, h <span class="k">in</span> enumerate(heights):
+            bx = x - <span class="n">0.70</span> + i * <span class="n">0.20</span>
+            by = y - <span class="n">0.24</span> + h / <span class="n">2</span>
+            a = rounded_ring(bm, bx, by, <span class="n">0.065</span>, h / <span class="n">2</span>, <span class="n">0.02</span>, zt, <span class="n">1</span>)
+            b = rounded_ring(bm, bx, by, <span class="n">0.065</span>, h / <span class="n">2</span>, <span class="n">0.02</span>, zt + <span class="n">0.004</span>, <span class="n">1</span>)
+            bridge(bm, a, b)
+            cap_ngon(bm, b)
+            cap_ngon(bm, list(reversed(a)))
+        finish(bm, bme, smooth=<span class="k">False</span>)
+    <span class="k">finally</span>:
+        bm.free()
+    bars = mesh_object(<span class="s">&quot;Macropad.ScreenBars&quot;</span>, bme, parent, [bar_mat])
+    <span class="k">return</span> [screen, bars]
+
+
+<span class="k">def</span> render_still(obj, src, path, engine):
+    <span class="k">import</span> gallery_framing
+    <span class="k">import</span> gallery_asset_quality
+
     scene = bpy.context.scene
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -487,36 +831,37 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="c"># tip the grid so depth reads; cubes already rest on the floor via the tree</span>
-    obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">24</span>))
+    <span class="c"># the whole macropad hangs off one empty, turned so the key field reads</span>
+    <span class="c"># as a grid in depth</span>
+    pad = bpy.data.objects.new(<span class="s">&quot;Macropad&quot;</span>, <span class="k">None</span>)
+    pad.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(<span class="n">22</span>))
+    pad.location = (<span class="n">0.0</span>, -<span class="n">0.35</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(pad)
+    <span class="k">for</span> ob <span class="k">in</span> (obj, src):
+        ob.parent = pad
+    <span class="c"># the key field sits on the recessed plate; the hidden source rides inside</span>
+    obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, PLATE_Z)
+    src.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, PLATE_Z)
 
-    <span class="c"># The source Mesh Grid drawn as a faint lattice on the floor, turned with</span>
-    <span class="c"># the instances, so the still shows grid points in and one cube per</span>
-    <span class="c"># point out. Render-only: the same GRID_SIZE / GRID_X / GRID_Y the tree</span>
-    <span class="c"># uses, as a wireframe 1 mm above the floor.</span>
-    lat_me = bpy.data.meshes.new(<span class="s">&quot;Lattice&quot;</span>)
-    lbm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_grid(lbm, x_segments=GRID_X - <span class="n">1</span>, y_segments=GRID_Y - <span class="n">1</span>,
-                              size=GRID_HALF)
-        lbm.to_mesh(lat_me)
-    <span class="k">finally</span>:
-        lbm.free()
-    lat_mat = bpy.data.materials.new(<span class="s">&quot;Lattice&quot;</span>)
-    lat_mat.use_nodes = <span class="k">True</span>
-    lb = lat_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    lb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.30</span>, <span class="n">0.42</span>, <span class="n">0.26</span>, <span class="n">1.0</span>)
-    lb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
-    lat_me.materials.append(lat_mat)
-    lattice = bpy.data.objects.new(<span class="s">&quot;Lattice&quot;</span>, lat_me)
-    lattice.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.001</span>)
-    lattice.rotation_euler = obj.rotation_euler
-    wire = lattice.modifiers.new(<span class="s">&quot;lattice&quot;</span>, <span class="s">&quot;WIREFRAME&quot;</span>)
-    wire.thickness = <span class="n">0.018</span>
-    scene.collection.objects.link(lattice)
+    anod = pbr(<span class="s">&quot;Macropad.Anodized&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.11</span>, <span class="n">0.48</span>), <span class="n">0.38</span>, metal=<span class="n">0.35</span>, coat=<span class="n">0.3</span>)
+    plate = pbr(<span class="s">&quot;Macropad.Plate&quot;</span>, (<span class="n">0.018</span>, <span class="n">0.019</span>, <span class="n">0.024</span>), <span class="n">0.45</span>, metal=<span class="n">0.5</span>)
+    housing = pbr(<span class="s">&quot;Macropad.Housing&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.045</span>, <span class="n">0.05</span>), <span class="n">0.55</span>)
+    brass = pbr(<span class="s">&quot;Macropad.Brass&quot;</span>, (<span class="n">0.92</span>, <span class="n">0.60</span>, <span class="n">0.26</span>), <span class="n">0.28</span>, metal=<span class="n">1.0</span>)
+    collar = pbr(<span class="s">&quot;Macropad.Collar&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.03</span>, <span class="n">0.035</span>), <span class="n">0.4</span>, metal=<span class="n">0.8</span>)
+    mark = pbr(<span class="s">&quot;Macropad.Mark&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.02</span>), <span class="n">0.5</span>,
+               emit=(<span class="n">1.0</span>, <span class="n">0.35</span>, <span class="n">0.06</span>), strength=<span class="n">4.0</span>)
+    glass = pbr(<span class="s">&quot;Macropad.Glass&quot;</span>, (<span class="n">0.006</span>, <span class="n">0.007</span>, <span class="n">0.009</span>), <span class="n">0.12</span>)
+    bars = pbr(<span class="s">&quot;Macropad.Oled&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.02</span>), <span class="n">0.5</span>,
+               emit=(<span class="n">0.15</span>, <span class="n">0.95</span>, <span class="n">0.85</span>), strength=<span class="n">3.0</span>)
+
+    case = build_case([anod, plate], pad)
+    switches = build_switches(housing, pad)
+    knob_parts = build_knob(brass, collar, mark, pad)
+    screen_parts = build_screen(glass, bars, pad)
+    parts = [case, switches, obj, *knob_parts, *screen_parts]
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (-<span class="n">0.12</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
+    aim.location = (-<span class="n">0.3</span>, -<span class="n">0.2</span>, <span class="n">0.45</span>)
     scene.collection.objects.link(aim)
 
     <span class="k">def</span> light(name, loc, energy, size, col):
@@ -524,6 +869,10 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
         ld.energy = energy
         ld.size = size
         ld.color = col
+        <span class="c"># EEVEE: jittered soft shadows, otherwise the filtered shadow map</span>
+        <span class="c"># mottles the smooth keycap tops (no-op attribute on Cycles)</span>
+        <span class="k">if</span> hasattr(ld, <span class="s">&quot;use_shadow_jitter&quot;</span>):
+            ld.use_shadow_jitter = <span class="k">True</span>
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         scene.collection.objects.link(ob)
@@ -532,25 +881,24 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
         lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
         lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
-    <span class="c"># warm shaped key, faint cool fill, warm wedge on the back wall</span>
-    <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">8.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    <span class="c"># warm shaped key, faint cool fill, cool rim, warm wedge on the back</span>
+    <span class="c"># wall (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.5</span>, -<span class="n">5.0</span>, <span class="n">7.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">6.5</span>, -<span class="n">4.0</span>, <span class="n">2.5</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">2.0</span>, <span class="n">6.5</span>, <span class="n">4.5</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>))
     wedge = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>)
-    wedge.energy = <span class="n">400.0</span>
+    wedge.energy = <span class="n">450.0</span>
     wedge.size = <span class="n">6.0</span>
     wedge.color = (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>)
     wob = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, wedge)
-    wob.location = (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>)
+    wob.location = (<span class="n">2.5</span>, <span class="n">6.0</span>, <span class="n">4.5</span>)
     wob.rotation_euler = (math.radians(-<span class="n">68</span>), <span class="n">0.0</span>, math.radians(<span class="n">190</span>))
     scene.collection.objects.link(wob)
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Higher, so the 3 x 3 layout reads as a grid: from 2.7 m the perspective</span>
-    <span class="c"># scrambled the rows and the right column crowded the frame edge.</span>
-    cam.location = (<span class="n">3.4</span>, -<span class="n">4.6</span>, <span class="n">4.3</span>)
+    cam.location = (<span class="n">4.9</span>, -<span class="n">8.7</span>, <span class="n">6.7</span>)
     scene.collection.objects.link(cam)
     scene.camera = cam
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
@@ -560,7 +908,7 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -570,10 +918,25 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the Lime instances toward sage (docs/VISUAL-STYLE.md)</span>
+    <span class="c"># Standard, not AgX: AgX washes the cobalt case and the orange accent</span>
+    <span class="c"># toward pastel (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+
+    <span class="c"># Layer 1 framing gate (exit 10) and asset-quality floors (exit 11) run</span>
+    <span class="c"># before the beauty render so a defective composition ships no artifact.</span>
+    fcode = gallery_framing.check_framing(
+        scene, cam, hero=parts, elements=parts, stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hero=parts + [src], stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -586,15 +949,15 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
                    help=<span class="s">&quot;instance a 1x1 grid (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    obj, _mat = build(one_cell=args.one_cell)
+    obj, src = build(one_cell=args.one_cell)
     code = check(obj)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(obj, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+        code = render_still(obj, src, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;gn-instance-grid OK&quot;</span>)
@@ -611,7 +974,7 @@ CORNER_CENTER = (GRID_HALF, GRID_HALF, CUBE_SIZE / <span class="n">2</span>)
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gn-instance-grid-hero.webp" alt="A three-by-three grid of green instanced cubes, each sitting on a node of a faint source-grid lattice on a dark floor." />
+    <img src="../assets/gn-instance-grid-hero.webp" alt="A cobalt-blue macropad with a brass knob and a glowing OLED meter, its three-by-three key field of cream keycaps instanced by Geometry Nodes, with one orange accent key at the front right." />
   </dialog>
   <footer>
     <div class="statusbar">
