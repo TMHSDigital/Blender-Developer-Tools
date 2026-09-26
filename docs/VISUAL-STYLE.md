@@ -132,14 +132,23 @@ violation; never imported by a check-only path):
   (`bmesh-gear` measures 0.667); raw boxes (1.0) fail.
 
 Calibrated empirically against the gallery's own assets, exactly as the
-0.02 margin floor was:
+0.02 margin floor was. The four new reference rows were measured on the
+isolated asset by `scripts/asset_sheet_panel.py` (the sheet renderer prints
+the floors per panel); compactness was not re-measured for them. The three
+former references passed every floor and were still demoted by eye in the
+2026-09 gallery review — the floors cannot tell a primitive-built rocket
+from a designed wheelbarrow, which is the Status section below in practice:
 
 | asset | parts | materials | edge90 | compactness (info only) |
 | --- | --- | --- | --- | --- |
 | collision-hull-proxy (reference) | 16 | 6 | 0.044 | 65.9 |
-| custom-normals-shade (reference) | 39 | 2 | 0.288 | 31.0 |
-| vertex-weight-limit (reference) | 1 | 4 | 0.150 | 34.8 |
-| lod-decimate-chain (reference) | 3 | 4 | 0.019 | 79.1 |
+| socket-attach-points (reference) | 21 | 32 | 0.027 | — |
+| vertex-color-ao (reference) | 11 | 11 | 0.171 | — |
+| wheelbarrow (reference, showcase) | 1 | 2 | 0.216 | — |
+| apothecary-shelf (reference, showcase) | 1 | 6 | 0.055 | — |
+| custom-normals-shade (former reference) | 39 | 2 | 0.288 | 31.0 |
+| vertex-weight-limit (former reference) | 1 | 4 | 0.150 | 34.8 |
+| lod-decimate-chain (former reference) | 3 | 4 | 0.019 | 79.1 |
 | depsgraph-export (weak) | 2 | 1 | 1.000 | 23.9 |
 | text-version-stamp (weak) | 1 | 1 | 1.000 | 405.3 |
 | bmesh-gear (simple, honest) | 1 | 1 | 0.667 | 18.3 |
