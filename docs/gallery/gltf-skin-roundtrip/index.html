@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-skin-roundtrip-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two blocky orange scorpion robots with curled tails and glowing cyan stingers, authored and re-imported." />
+  <meta property="og:image:alt" content="Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gltf-skin-roundtrip — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gltf-skin-roundtrip-hero.webp" />
-  <meta name="twitter:image:alt" content="Two blocky orange scorpion robots with curled tails and glowing cyan stingers, authored and re-imported." />
+  <meta name="twitter:image:alt" content="Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,23 +268,25 @@
     <p>A rigged mech scorpion exported to glTF with skins and re-imported, verifying the skinning contract the geometry round-trip left uncovered. Skeleton, weights, and deformation must all survive the format.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two blocky orange scorpion robots with curled tails and glowing cyan stingers, authored and re-imported.">
-      <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="Two blocky orange scorpion robots with curled tails and glowing cyan stingers, authored and re-imported." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised.">
+      <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> skins[0].joints names every bone; JOINTS_0/WEIGHTS_0 per primitive with unit sums; weights bit-exact on re-import; deformation matches within 4.8e-07. The mesh must be parented to the armature or the exporter binds by name.</div>
+    <div class="callout"><span class="tag">witnesses</span> skins[0].joints names all 21 bones; JOINTS_0/WEIGHTS_0 per primitive with unit sums; every split copy&#x27;s weights bit-exact on re-import; deformation matches within 6.0e-07. The mesh must be parented to the armature or the exporter binds by name.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gltf-skin-roundtrip/gltf_skin_roundtrip.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that rigs a mech scorpion — seven-bone chain from pedestal root to stinger, blend rings at every joint seam — exports it with <code>bpy.ops.export_scene.gltf</code> (<code>export_skins=True</code>), parses the file, re-imports it, and verifies the whole skinning contract against the authored rig, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
+<p>A runnable example that rigs a mech scorpion — 21 bones: a body, a five-segment tail and stinger, two three-bone claws (arm, hand, movable finger), eight legs; two-bone blends in the rubber boots at every flexing joint — exports it with <code>bpy.ops.export_scene.gltf</code> (<code>export_skins=True</code>), parses the file, re-imports it, and verifies the whole skinning contract against the authored rig, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>.</p>
 <p><strong>Pipeline arc:</strong> modeling/LOD in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — this is the skinning counterpart to the crate&#x27;s geometry round-trip. Tangent frames for the normal maps are in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents"><code>triangulate-tangents</code></a>.</p>
 <p><strong>What it witnesses:</strong> the skinned-mesh export contract the geometry round-trip left uncovered.</p>
-<ul><li><strong>The skeleton survives.</strong> <code>skins[0].joints</code> names every bone; the re-imported armature carries the same 7 bones, the same parent chain, and rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes exactly as it does to meshes (their translations convert, no rotation is written).</li><li><strong>The weights survive.</strong> Every primitive carries JOINTS_0/WEIGHTS_0; per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex groups match the authored groups <strong>bit-exactly</strong> (w_err 0.0), compared as straddle-safe position keys, the same protocol as the crate example.</li><li><strong>The deformation survives.</strong> Posed identically, the re-imported rig&#x27;s evaluated mesh matches the original&#x27;s within 4.8e-07 — linear blend skinning through the file format. The comparison is by rest-position key, never sorted multisets: the exporter welds duplicate loops (32 here), so cardinalities differ and a naive sorted zip mispairs vertices (a phantom 2.29 &quot;deviation&quot; measured and fixed during authoring).</li><li><strong>The mesh must be parented to the armature.</strong> The exporter warns &quot;Armature must be the parent of skinned mesh&quot; and picks an armature by name otherwise — with two rigs in the file it can bind the wrong one.</li></ul>
-<p><strong>What each check catches on failure:</strong> exporting with <code>export_skins=False</code> (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex groups), and posing the re-imported rig differently (exit 19 — deformation deviates 0.90).</p>
-<p><strong>Version witness:</strong> the skins pipeline is stable between Blender 4.5 LTS and 5.1 — the exporter/importer RNA is byte-identical (probed with <code>gltf-export-roundtrip</code>), and every measured value matches to the digit on 4.5.11 and 5.1.2.</p>
-<p>The render stages the authored scorpion beside the actual re-imported one — same curl, same glowing stinger — proof the skin rode the format through. Both rigs are turned three-quarters to the camera. The tail curls in the rig&#x27;s own Y-Z plane, so a head-on view saw the curl end-on: the tail stood straight up behind the body like a chimney. The yaw is composed into each armature&#x27;s world matrix, because the glTF importer leaves its armature in quaternion mode, where <code>rotation_euler</code> does nothing.</p>
+<ul><li><strong>The skeleton survives.</strong> <code>skins[0].joints</code> names every bone; the re-imported armature carries the same 21 bones, the same parent chain, and rest matrices within 2.3e-06 — the +Y-up conversion applies to bone nodes exactly as it does to meshes, whichever way a bone points (tail +Y, claws -Y, legs +/-X).</li><li><strong>The weights survive.</strong> Every primitive carries JOINTS_0/WEIGHTS_0; per-vertex weights on disk sum to 1 (err 3.0e-08; 840 disk vertices carry two influences); the re-imported vertex groups match the authored groups <strong>bit-exactly</strong> (w_err 0.0), compared as straddle-safe position keys, the same protocol as the crate example. Every split copy at a position is compared, not just one: the exporter splits vertices per normal, and each copy carries its own JOINTS_0/WEIGHTS_0, so one corrupted copy must not hide behind a good twin.</li><li><strong>The deformation survives.</strong> Posed identically, the re-imported rig&#x27;s evaluated mesh matches the original&#x27;s within 6.0e-07 — linear blend skinning through the file format. The comparison is by rest-position key, never sorted multisets: the exporter welds duplicate loops (9960 here), so cardinalities differ and a naive sorted zip mispairs vertices (a phantom 2.29 &quot;deviation&quot; measured and fixed during authoring).</li><li><strong>The mesh must be parented to the armature.</strong> The exporter warns &quot;Armature must be the parent of skinned mesh&quot; and picks an armature by name otherwise — with two rigs in the file it can bind the wrong one.</li></ul>
+<p><strong>What each check catches on failure:</strong> exporting with <code>export_skins=False</code> (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex groups), nudging one re-imported weight (exit 18 — 0.99), moving one re-imported bone&#x27;s rest tail 1 mm (exit 14 — 3.9e-03), and posing the re-imported rig differently (exit 19 — deformation deviates 0.13).</p>
+<p><strong>Straddle-safe keys, for real.</strong> A float32 round-trip can land a coordinate on the far side of a 1e-4 rounding boundary, so lookups also try the 26 neighbouring keys. Those neighbours must themselves be rounded: <code>0.3601 + 1e-4</code> in binary floating point is not the key <code>0.3602</code>. The first version of this example added the offset without rounding, so only the exact key ever matched. It passed by luck until the redesign lowered the body to z = 0.36, and then it reported a phantom weight loss (exit 18, 1.0).</p>
+<p><strong>Version witness:</strong> the skins pipeline is stable across Blender 4.5 LTS, 5.1 and 5.2 LTS — every measured value matches to the digit on 4.5.11, 5.1.2 and 5.2.1.</p>
+<p>The render is a standoff. On the left, the authored scorpion holds the guard pose the check compares: tail coiled tight over its back, claws tucked, pincers shut. On the right is the actual re-imported mesh, driven through its <strong>imported</strong> armature into a different pose: the tail rears high to strike, the claws are raised and the pincers gape. A file that lost the skin, the joints, or the weights could not follow that pose. The rubber boots at the joints bend smoothly and the plates stay rigid, which is the linear blend skinning surviving the format. The two poses differ on purpose, so the eye has something to compare. Two identical copies would render the same whether or not the round-trip worked.</p>
+<p>Both rigs are posed by rest-space axes in quaternions, and the yaw is composed into each armature&#x27;s world matrix, because the glTF importer leaves its armature in quaternion mode, where <code>rotation_euler</code> does nothing. Framing is measured by <code>gallery_framing</code> (fill 0.856 x, minimum margin 0.072). The asset floors are measured by <code>gallery_asset_quality</code> (5 materials: hazard paint, gunmetal, chrome, rubber, venom glow; edge90 0.001).</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python gltf_skin_roundtrip.py --
@@ -298,6 +300,7 @@ blender --background --python gltf_skin_roundtrip.py -- --output scorp.png --eng
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Exporter RNA missing expected kwargs</td></tr><tr><td>4</td><td>Vertex group count ≠ bone count</td></tr><tr><td>5</td><td>Disk skins ≠ 1 (<code>--no-skins</code> lands here)</td></tr><tr><td>6</td><td>Skin joints ≠ bone names</td></tr><tr><td>7</td><td>Missing JOINTS_0/WEIGHTS_0, or accessor length mismatch</td></tr><tr><td>8</td><td>Disk weight sums off 1.0</td></tr><tr><td>9</td><td>Disk verts exceed evaluated loops</td></tr><tr><td>10</td><td>Armature count after import ≠ 1</td></tr><tr><td>11</td><td>Bone count drifted</td></tr><tr><td>12</td><td>Named bone lost</td></tr><tr><td>13</td><td>Bone parent drifted</td></tr><tr><td>14</td><td>Rest matrices drifted</td></tr><tr><td>15</td><td>Skinned mesh count after import ≠ 1</td></tr><tr><td>16</td><td>Re-import vert count ≠ disk</td></tr><tr><td>17</td><td>Vertex group names drifted</td></tr><tr><td>18</td><td>Weight round-trip drifted</td></tr><tr><td>19</td><td>Deformation round-trip drifted</td></tr><tr><td>20</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>On the <code>--output</code> path only, which runs after every check has passed, 10 also means a <code>gallery_framing</code> violation and 11 a <code>gallery_asset_quality</code> floor violation. The shared helpers own those codes, and the log line says which one fired.</p>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-skins</code>.</p>
     </section>
     <section class="detail-section src">
@@ -314,10 +317,11 @@ format. (Pipeline arc: modeling/LOD in lod-decimate-chain, weighting in
 vertex-weight-limit, export in gltf-export-roundtrip; the tangent frames
 those maps need are in triangulate-tangents.)
 
-1. The skeleton round-trips. ``skins[0].joints`` names every bone in order,
-   and the re-imported armature carries the same bones, parent chain, and
-   rest matrices within tolerance — the +Y-up conversion applies to bone
-   nodes the same way it applies to meshes.
+1. The skeleton round-trips. ``skins[0].joints`` names every bone, and the
+   re-imported armature carries the same bones, parent chain, and rest
+   matrices within tolerance — the +Y-up conversion applies to bone nodes
+   the same way it applies to meshes, whichever way a bone points (the tail
+   runs +Y, the claws -Y, the legs +/-X).
 2. The weights round-trip. JOINTS_0/WEIGHTS_0 exist per primitive, per-vertex
    weights on disk sum to 1, and the re-imported vertex groups match the
    authored groups weight-for-weight within float tolerances (compared as
@@ -329,14 +333,17 @@ those maps need are in triangulate-tangents.)
    must be the parent of skinned mesh&quot; and picks an armature by name
    otherwise — with more than one rig in the file it can bind the wrong one.
 
-The skins pipeline is stable between Blender 4.5 LTS and 5.1 (exporter RNA
-is byte-identical, verified on both) — the example runs identically on both.
+The skins pipeline is stable across Blender 4.5 LTS, 5.1 and 5.2 LTS — the
+example runs identically on all three.
 
 ``--no-skins`` exports with ``export_skins=False`` and still asserts one
 skin on disk. That is the falsifier (``--same-axis`` in export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
-check. Pass --output to also render a still:
+check. Pass --output to also render a still: the authored scorpion in the
+guard pose the check compares, facing the re-imported one driven into a
+different strike pose through the IMPORTED armature — the skin still deforms
+after the round-trip:
 
     blender --background --python gltf_skin_roundtrip.py --                 # check only
     blender --background --python gltf_skin_roundtrip.py -- --no-skins      # must fail
@@ -344,26 +351,117 @@ check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, json, struct, shutil, tempfile, argparse
 <span class="k">import</span> mathutils
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
-GUNMETAL, ORANGE, RUBBER, GLOW = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
-BONES = (<span class="s">&quot;Root&quot;</span>, <span class="s">&quot;Thorax&quot;</span>, <span class="s">&quot;Abdomen&quot;</span>, <span class="s">&quot;Tail_1&quot;</span>, <span class="s">&quot;Tail_2&quot;</span>, <span class="s">&quot;Tail_3&quot;</span>, <span class="s">&quot;Stinger&quot;</span>)
-SPANS = {<span class="s">&quot;Root&quot;</span>: (<span class="n">0.0</span>, <span class="n">0.35</span>), <span class="s">&quot;Thorax&quot;</span>: (<span class="n">0.35</span>, <span class="n">0.85</span>), <span class="s">&quot;Abdomen&quot;</span>: (<span class="n">0.85</span>, <span class="n">1.25</span>),
-         <span class="s">&quot;Tail_1&quot;</span>: (<span class="n">1.25</span>, <span class="n">1.60</span>), <span class="s">&quot;Tail_2&quot;</span>: (<span class="n">1.60</span>, <span class="n">1.90</span>), <span class="s">&quot;Tail_3&quot;</span>: (<span class="n">1.90</span>, <span class="n">2.15</span>),
-         <span class="s">&quot;Stinger&quot;</span>: (<span class="n">2.15</span>, <span class="n">2.30</span>)}
-<span class="c"># tail curl: progressive pitch per joint; the pose is the deformation witness</span>
-POSE_DEG = {<span class="s">&quot;Tail_1&quot;</span>: -<span class="n">28.0</span>, <span class="s">&quot;Tail_2&quot;</span>: -<span class="n">34.0</span>, <span class="s">&quot;Tail_3&quot;</span>: -<span class="n">40.0</span>, <span class="s">&quot;Stinger&quot;</span>: <span class="n">25.0</span>}
-BLEND = <span class="n">0.06</span>                    <span class="c"># joint blend half-width (two bones per seam)</span>
+<span class="c"># shared render-path helpers (the repository&#x27;s only cross-example import;</span>
+<span class="c"># see gallery_framing&#x27;s docstring). Never used by the check-only path.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+
+PAINT, GUNMETAL, CHROME, RUBBER, GLOW = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>
+
+<span class="c"># ---------------------------------------------------------------- the rig --</span>
+<span class="c"># Rest pose: the body lies level on eight planted legs, the tail runs</span>
+<span class="c"># straight back along +Y, the claws reach forward along -Y. Every part of</span>
+<span class="c"># the mesh is built around the bone that carries it.</span>
+BODY_Z = <span class="n">0.36</span>
+TAIL_LEN = (<span class="n">0.25</span>, <span class="n">0.24</span>, <span class="n">0.23</span>, <span class="n">0.22</span>, <span class="n">0.21</span>)
+STING_LEN = <span class="n">0.26</span>
+TAIL_R = (<span class="n">0.125</span>, <span class="n">0.112</span>, <span class="n">0.100</span>, <span class="n">0.089</span>, <span class="n">0.079</span>, <span class="n">0.070</span>)   <span class="c"># radius at each joint</span>
+LEG_Y = (-<span class="n">0.26</span>, -<span class="n">0.08</span>, <span class="n">0.10</span>, <span class="n">0.28</span>)                     <span class="c"># hip stations</span>
+LEG_SPLAY = (-<span class="n">0.30</span>, -<span class="n">0.12</span>, <span class="n">0.10</span>, <span class="n">0.30</span>)                 <span class="c"># foot y offset from hip</span>
+
+
+<span class="k">def</span> _tail_joints():
+    ys = [<span class="n">0.50</span>]
+    <span class="k">for</span> L <span class="k">in</span> TAIL_LEN:
+        ys.append(ys[-<span class="n">1</span>] + L)
+    <span class="k">return</span> ys                                          <span class="c"># 6 joint stations</span>
+
+
+TAIL_Y = _tail_joints()
+
+
+<span class="k">def</span> claw_points(sx):
+    <span class="s">&quot;&quot;&quot;Shoulder, elbow, wrist, palm end, finger pivot, finger tip.&quot;&quot;&quot;</span>
+    S = Vector((sx * <span class="n">0.20</span>, -<span class="n">0.44</span>, BODY_Z - <span class="n">0.02</span>))
+    E = Vector((sx * <span class="n">0.50</span>, -<span class="n">0.66</span>, BODY_Z + <span class="n">0.10</span>))
+    W = Vector((sx * <span class="n">0.47</span>, -<span class="n">0.94</span>, BODY_Z + <span class="n">0.04</span>))
+    P = Vector((sx * <span class="n">0.44</span>, -<span class="n">1.20</span>, BODY_Z + <span class="n">0.03</span>))
+    F = P + Vector((sx * <span class="n">0.065</span>, -<span class="n">0.01</span>, <span class="n">0.0</span>))
+    T = F + Vector((sx * <span class="n">0.02</span>, -<span class="n">0.31</span>, <span class="n">0.0</span>))
+    <span class="k">return</span> S, E, W, P, F, T
+
+
+<span class="k">def</span> leg_points(sx, i):
+    <span class="s">&quot;&quot;&quot;Hip, coxa end, knee, ankle, foot (on the floor).&quot;&quot;&quot;</span>
+    hy = LEG_Y[i]
+    fy = hy + LEG_SPLAY[i]
+    H = Vector((sx * <span class="n">0.25</span>, hy, BODY_Z - <span class="n">0.04</span>))
+    C = Vector((sx * <span class="n">0.36</span>, hy + <span class="n">0.1</span> * (fy - hy), BODY_Z - <span class="n">0.01</span>))
+    K = Vector((sx * <span class="n">0.62</span>, hy + <span class="n">0.55</span> * (fy - hy), BODY_Z + <span class="n">0.15</span>))
+    A = Vector((sx * <span class="n">0.92</span>, fy, <span class="n">0.08</span>))
+    Ft = Vector((sx * <span class="n">0.94</span>, fy, <span class="n">0.0</span>))
+    <span class="k">return</span> H, C, K, A, Ft
+
+
+<span class="k">def</span> bone_table():
+    <span class="s">&quot;&quot;&quot;(name, head, tail, parent, connected) — the whole skeleton.&quot;&quot;&quot;</span>
+    t = [(<span class="s">&quot;Body&quot;</span>, (<span class="n">0.0</span>, -<span class="n">0.40</span>, BODY_Z), (<span class="n">0.0</span>, TAIL_Y[<span class="n">0</span>], BODY_Z), <span class="k">None</span>, <span class="k">False</span>)]
+    prev = <span class="s">&quot;Body&quot;</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+        n = <span class="s">f&quot;</span><span class="s">Tail_</span>{i + <span class="n">1</span>}<span class="s">&quot;</span>
+        t.append((n, (<span class="n">0.0</span>, TAIL_Y[i], BODY_Z), (<span class="n">0.0</span>, TAIL_Y[i + <span class="n">1</span>], BODY_Z),
+                  prev, <span class="k">True</span>))
+        prev = n
+    t.append((<span class="s">&quot;Stinger&quot;</span>, (<span class="n">0.0</span>, TAIL_Y[<span class="n">5</span>], BODY_Z),
+              (<span class="n">0.0</span>, TAIL_Y[<span class="n">5</span>] + STING_LEN, BODY_Z), prev, <span class="k">True</span>))
+    <span class="k">for</span> side, sx <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, -<span class="n">1</span>), (<span class="s">&quot;R&quot;</span>, <span class="n">1</span>)):
+        S, E, W, P, F, T = claw_points(sx)
+        t.append((<span class="s">f&quot;</span><span class="s">Arm_</span>{side}<span class="s">&quot;</span>, tuple(S), tuple(W), <span class="s">&quot;Body&quot;</span>, <span class="k">False</span>))
+        t.append((<span class="s">f&quot;</span><span class="s">Hand_</span>{side}<span class="s">&quot;</span>, tuple(W), tuple(P), <span class="s">f&quot;</span><span class="s">Arm_</span>{side}<span class="s">&quot;</span>, <span class="k">True</span>))
+        t.append((<span class="s">f&quot;</span><span class="s">Finger_</span>{side}<span class="s">&quot;</span>, tuple(F), tuple(T), <span class="s">f&quot;</span><span class="s">Hand_</span>{side}<span class="s">&quot;</span>, <span class="k">False</span>))
+    <span class="k">for</span> side, sx <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, -<span class="n">1</span>), (<span class="s">&quot;R&quot;</span>, <span class="n">1</span>)):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+            H, C, K, A, Ft = leg_points(sx, i)
+            t.append((<span class="s">f&quot;</span><span class="s">Leg_</span>{side}{i + <span class="n">1</span>}<span class="s">&quot;</span>, tuple(H), tuple(K), <span class="s">&quot;Body&quot;</span>, <span class="k">False</span>))
+    <span class="k">return</span> t
+
+
+BONE_TABLE = bone_table()
+BONES = tuple(b[<span class="n">0</span>] <span class="k">for</span> b <span class="k">in</span> BONE_TABLE)
+
+<span class="c"># The pose the check compares (authored vs re-imported): tail coiled tight</span>
+<span class="c"># over the back, claws tucked in, pincers shut. Each entry is a</span>
+<span class="c"># list of (rest-space axis, degrees), applied in the bone&#x27;s own rest frame.</span>
+X, Z = (<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+POSE_GUARD = {
+    <span class="s">&quot;Tail_1&quot;</span>: [(X, <span class="n">38.0</span>)], <span class="s">&quot;Tail_2&quot;</span>: [(X, <span class="n">44.0</span>)], <span class="s">&quot;Tail_3&quot;</span>: [(X, <span class="n">44.0</span>)],
+    <span class="s">&quot;Tail_4&quot;</span>: [(X, <span class="n">42.0</span>)], <span class="s">&quot;Tail_5&quot;</span>: [(X, <span class="n">36.0</span>)], <span class="s">&quot;Stinger&quot;</span>: [(X, <span class="n">28.0</span>)],
+    <span class="s">&quot;Arm_L&quot;</span>: [(Z, <span class="n">16.0</span>)], <span class="s">&quot;Arm_R&quot;</span>: [(Z, -<span class="n">16.0</span>)],
+    <span class="s">&quot;Hand_L&quot;</span>: [(Z, <span class="n">14.0</span>)], <span class="s">&quot;Hand_R&quot;</span>: [(Z, -<span class="n">14.0</span>)],
+    <span class="s">&quot;Finger_L&quot;</span>: [(Z, <span class="n">2.0</span>)], <span class="s">&quot;Finger_R&quot;</span>: [(Z, -<span class="n">2.0</span>)],
+}
+<span class="c"># Render staging only (never part of the check): the pose the RE-IMPORTED</span>
+<span class="c"># armature is driven into for the still — tail rearing high to strike,</span>
+<span class="c"># claws flung wide and raised, pincers gaping. A skin that did not survive</span>
+<span class="c"># the file could not follow it.</span>
+POSE_STRIKE = {
+    <span class="s">&quot;Tail_1&quot;</span>: [(X, <span class="n">78.0</span>)], <span class="s">&quot;Tail_2&quot;</span>: [(X, <span class="n">6.0</span>)], <span class="s">&quot;Tail_3&quot;</span>: [(X, <span class="n">6.0</span>)],
+    <span class="s">&quot;Tail_4&quot;</span>: [(X, <span class="n">14.0</span>)], <span class="s">&quot;Tail_5&quot;</span>: [(X, <span class="n">30.0</span>)], <span class="s">&quot;Stinger&quot;</span>: [(X, <span class="n">72.0</span>)],
+    <span class="s">&quot;Arm_L&quot;</span>: [(Z, -<span class="n">30.0</span>), (X, -<span class="n">34.0</span>)], <span class="s">&quot;Arm_R&quot;</span>: [(Z, <span class="n">30.0</span>), (X, -<span class="n">34.0</span>)],
+    <span class="s">&quot;Hand_L&quot;</span>: [(Z, <span class="n">6.0</span>), (X, <span class="n">10.0</span>)], <span class="s">&quot;Hand_R&quot;</span>: [(Z, -<span class="n">6.0</span>), (X, <span class="n">10.0</span>)],
+    <span class="s">&quot;Finger_L&quot;</span>: [(Z, -<span class="n">45.0</span>)], <span class="s">&quot;Finger_R&quot;</span>: [(Z, <span class="n">45.0</span>)],
+}
+
 POS_TOL = <span class="n">2e-5</span>                  <span class="c"># float32 on disk vs float32 in Blender</span>
-NRM_TOL = <span class="n">2e-4</span>
 W_TOL = <span class="n">3e-4</span>                    <span class="c"># weight round-trip tolerance</span>
 SUM_TOL = <span class="n">3e-4</span>                  <span class="c"># disk weight-sum tolerance</span>
 REST_TOL = <span class="n">1e-5</span>                 <span class="c"># rest-matrix round-trip tolerance</span>
-LBS_TOL = <span class="n">5e-4</span>
 KEY_DIGITS = <span class="n">4</span>
-<span class="c"># render staging only (not part of the check): each rig&#x27;s X offset and its</span>
-<span class="c"># yaw, so the tail&#x27;s curl (in the rig&#x27;s Y-Z plane) is seen in profile</span>
-STILL_X = <span class="n">1.0</span>
-STILL_YAW = -<span class="n">50.0</span>
+<span class="c"># render staging only: each rig&#x27;s X offset, and its yaw (head turned toward</span>
+<span class="c"># the rival, a little toward the camera so the claws read in depth)</span>
+STILL_X = <span class="n">1.28</span>
+STILL_YAW = <span class="n">64.0</span>
 
 EXPORT_KWARGS = dict(
     export_format=<span class="s">&#x27;GLTF_SEPARATE&#x27;</span>,
@@ -374,122 +472,337 @@ EXPORT_KWARGS = dict(
 )
 
 
-<span class="k">def</span> box_part(bm, size, loc, rot, mat, part_of, bone):
-    <span class="s">&quot;&quot;&quot;One box shell (rot in degrees XYZ); tags `bone` for its verts.&quot;&quot;&quot;</span>
-    n0f, n0v = len(bm.faces), len(bm.verts)
-    m = (mathutils.Matrix.Translation(loc)
-         @ mathutils.Euler(tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)).to_matrix().to_4x4()
-         @ mathutils.Matrix.Diagonal((*size, <span class="n">1.0</span>)))
-    bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
-    <span class="k">for</span> f <span class="k">in</span> bm.faces[n0f:]:
-        f.material_index = mat
-    part_of.extend([bone] * (len(bm.verts) - n0v))
+<span class="c"># ------------------------------------------------------------ geometry kit --</span>
+<span class="k">def</span> frame_of(d, up=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)):
+    <span class="s">&quot;&quot;&quot;Side and up axes perpendicular to direction d.&quot;&quot;&quot;</span>
+    d = Vector(d).normalized()
+    u = Vector(up)
+    <span class="k">if</span> abs(d.dot(u)) &gt; <span class="n">0.95</span>:
+        u = Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))
+    side = d.cross(u).normalized()
+    upv = side.cross(d).normalized()
+    <span class="k">return</span> side, upv
 
 
-<span class="k">def</span> lathe_part(bm, rings, mat, part_of, bone, sides=<span class="n">16</span>):
-    <span class="s">&quot;&quot;&quot;Revolve (z, r) rings; tags `bone` for its verts.&quot;&quot;&quot;</span>
-    n0f, n0v = len(bm.faces), len(bm.verts)
-    out = []
-    <span class="k">for</span> z, r <span class="k">in</span> rings:
-        out.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / sides),
-                                  r * math.sin(<span class="n">2</span> * math.pi * s / sides), z))
-                    <span class="k">for</span> s <span class="k">in</span> range(sides)])
-    <span class="k">for</span> k <span class="k">in</span> range(len(out) - <span class="n">1</span>):
-        <span class="k">for</span> s <span class="k">in</span> range(sides):
-            f = bm.faces.new((out[k][s], out[k][(s + <span class="n">1</span>) % sides],
-                              out[k + <span class="n">1</span>][(s + <span class="n">1</span>) % sides], out[k + <span class="n">1</span>][s]))
-            f.material_index = mat
-    part_of.extend([bone] * (len(bm.verts) - n0v))
+<span class="k">def</span> rrect(w, h, r, seg=<span class="n">2</span>):
+    <span class="s">&quot;&quot;&quot;Rounded rectangle half-extents (w, h), corner radius r, CCW.&quot;&quot;&quot;</span>
+    r = min(r, w * <span class="n">0.98</span>, h * <span class="n">0.98</span>)
+    pts = []
+    <span class="k">for</span> cx, cy, a0 <span class="k">in</span> ((w - r, h - r, <span class="n">0</span>), (-(w - r), h - r, <span class="n">90</span>),
+                       (-(w - r), -(h - r), <span class="n">180</span>), (w - r, -(h - r), <span class="n">270</span>)):
+        <span class="k">for</span> k <span class="k">in</span> range(seg + <span class="n">1</span>):
+            a = math.radians(a0 + <span class="n">90.0</span> * k / seg)
+            pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    <span class="k">return</span> pts
 
 
-<span class="k">def</span> build_scorpion():
-    <span class="s">&quot;&quot;&quot;The mech scorpion: base plate, six rigid legs, thorax with claws,
-    abdomen, three tail segments, and a stinger — every part closed form,
-    every vertex tagged to its bone (or a two-bone blend ring at a seam).&quot;&quot;&quot;</span>
-    me = bpy.data.meshes.new(<span class="s">&quot;Scorpion&quot;</span>)
-    part_of = []
-    bm = bmesh.new()
+<span class="k">def</span> ngon(r, n=<span class="n">8</span>, phase=<span class="k">None</span>):
+    ph = math.pi / n <span class="k">if</span> phase <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> phase
+    <span class="k">return</span> [(r * math.cos(ph + <span class="n">2</span> * math.pi * k / n),
+             r * math.sin(ph + <span class="n">2</span> * math.pi * k / n)) <span class="k">for</span> k <span class="k">in</span> range(n)]
+
+
+<span class="k">def</span> arch(w, rise, thick, n=<span class="n">10</span>, lip=<span class="n">0.35</span>):
+    <span class="s">&quot;&quot;&quot;Armour plate cross-section: a crowned shell with chamfered lips.&quot;&quot;&quot;</span>
+    outer = [(w * (-<span class="n">1</span> + <span class="n">2</span> * k / n), rise * (<span class="n">1</span> - (-<span class="n">1</span> + <span class="n">2</span> * k / n) ** <span class="n">2</span>))
+             <span class="k">for</span> k <span class="k">in</span> range(n + <span class="n">1</span>)]
+    inner = [(x * <span class="n">0.94</span>, y - thick) <span class="k">for</span> x, y <span class="k">in</span> reversed(outer)]
+    <span class="c"># chamfer the two lips so no edge meets at a right angle</span>
+    outer[<span class="n">0</span>] = (outer[<span class="n">0</span>][<span class="n">0</span>] * <span class="n">0.97</span>, outer[<span class="n">0</span>][<span class="n">1</span>] - thick * lip)
+    outer[-<span class="n">1</span>] = (outer[-<span class="n">1</span>][<span class="n">0</span>] * <span class="n">0.97</span>, outer[-<span class="n">1</span>][<span class="n">1</span>] - thick * lip)
+    <span class="k">return</span> list(reversed(outer)) + list(reversed(inner))
+
+
+<span class="k">class</span> Kit:
+    <span class="s">&quot;&quot;&quot;bmesh accumulator: every vertex carries its bone weights.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> __init__(self):
+        self.bm = bmesh.new()
+        self.vw = []
+
+    <span class="k">def</span> sweep(self, centers, profiles, mat, weight, dirs=<span class="k">None</span>, up=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>),
+              caps=(<span class="k">True</span>, <span class="k">True</span>)):
+        <span class="s">&quot;&quot;&quot;Loft profile i at center i, perpendicular to the path.&quot;&quot;&quot;</span>
+        n = len(centers)
+        rows = []
+        <span class="k">for</span> i, c <span class="k">in</span> enumerate(centers):
+            c = Vector(c)
+            <span class="k">if</span> dirs <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                d = Vector(dirs[i])
+            <span class="k">elif</span> i == <span class="n">0</span>:
+                d = Vector(centers[<span class="n">1</span>]) - c
+            <span class="k">elif</span> i == n - <span class="n">1</span>:
+                d = c - Vector(centers[i - <span class="n">1</span>])
+            <span class="k">else</span>:
+                d = Vector(centers[i + <span class="n">1</span>]) - Vector(centers[i - <span class="n">1</span>])
+            side, upv = frame_of(d, up)
+            row = []
+            <span class="k">for</span> a, b <span class="k">in</span> profiles[i]:
+                p = c + side * a + upv * b
+                row.append(self.bm.verts.new(p))
+                self.vw.append(weight(i, p) <span class="k">if</span> callable(weight) <span class="k">else</span> weight)
+            rows.append(row)
+        m = len(rows[<span class="n">0</span>])
+        <span class="k">for</span> i <span class="k">in</span> range(n - <span class="n">1</span>):
+            <span class="k">for</span> s <span class="k">in</span> range(m):
+                f = self.bm.faces.new((rows[i][s], rows[i][(s + <span class="n">1</span>) % m],
+                                       rows[i + <span class="n">1</span>][(s + <span class="n">1</span>) % m], rows[i + <span class="n">1</span>][s]))
+                f.material_index = mat
+        <span class="k">for</span> flag, row <span class="k">in</span> zip(caps, (rows[<span class="n">0</span>], rows[-<span class="n">1</span>])):
+            <span class="k">if</span> flag:
+                self.bm.faces.new(row).material_index = mat
+        <span class="k">return</span> rows
+
+    <span class="k">def</span> strut(self, p0, p1, r0, r1, mat, weight, n=<span class="n">8</span>, ch=<span class="n">0.25</span>, up=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)):
+        <span class="s">&quot;&quot;&quot;Tapered prism with chamfered ends.&quot;&quot;&quot;</span>
+        p0, p1 = Vector(p0), Vector(p1)
+        d = (p1 - p0)
+        L = d.length
+        dn = d / L
+        c = min(ch * min(r0, r1), L * <span class="n">0.2</span>)
+        cs = [p0, p0 + dn * c, p1 - dn * c, p1]
+        pr = [ngon(r0 * <span class="n">0.72</span>, n), ngon(r0, n), ngon(r1, n), ngon(r1 * <span class="n">0.72</span>, n)]
+        <span class="k">return</span> self.sweep(cs, pr, mat, weight, dirs=[d] * <span class="n">4</span>, up=up)
+
+    <span class="k">def</span> disc(self, c, axis, r, t, mat, weight, n=<span class="n">14</span>):
+        <span class="s">&quot;&quot;&quot;Short chamfered cylinder (joint cap, eye lens, foot pad).&quot;&quot;&quot;</span>
+        c, a = Vector(c), Vector(axis).normalized()
+        cs = [c - a * t, c - a * t * <span class="n">0.6</span>, c + a * t * <span class="n">0.6</span>, c + a * t]
+        pr = [ngon(r * <span class="n">0.82</span>, n), ngon(r, n), ngon(r, n), ngon(r * <span class="n">0.82</span>, n)]
+        <span class="k">return</span> self.sweep(cs, pr, mat, weight, dirs=[a] * <span class="n">4</span>)
+
+    <span class="k">def</span> finish(self, me):
+        bmesh.ops.recalc_face_normals(self.bm, faces=self.bm.faces)
+        self.bm.to_mesh(me)
+
+
+<span class="k">def</span> W1(bone):
+    <span class="k">return</span> {bone: <span class="n">1.0</span>}
+
+
+<span class="k">def</span> blend(a, b, p0, p1):
+    <span class="s">&quot;&quot;&quot;Weights sliding a -&gt; b along the segment p0 -&gt; p1 (a rubber boot).&quot;&quot;&quot;</span>
+    p0, p1 = Vector(p0), Vector(p1)
+    d = p1 - p0
+    L2 = d.length_squared
+
+    <span class="k">def</span> w(_i, p):
+        t = max(<span class="n">0.0</span>, min(<span class="n">1.0</span>, (Vector(p) - p0).dot(d) / L2))
+        t = t * t * (<span class="n">3</span> - <span class="n">2</span> * t)                       <span class="c"># smoothstep</span>
+        <span class="k">if</span> t &lt;= <span class="n">1e-6</span>:
+            <span class="k">return</span> {a: <span class="n">1.0</span>}
+        <span class="k">if</span> t &gt;= <span class="n">1</span> - <span class="n">1e-6</span>:
+            <span class="k">return</span> {b: <span class="n">1.0</span>}
+        <span class="k">return</span> {a: <span class="n">1.0</span> - t, b: t}
+    <span class="k">return</span> w
+
+
+<span class="c"># -------------------------------------------------------------- the model --</span>
+<span class="k">def</span> build_body(k):
+    z = BODY_Z
+    <span class="c"># chassis hull: gunmetal, rounded section swelling mid-body</span>
+    stations = [(-<span class="n">0.50</span>, <span class="n">0.12</span>, <span class="n">0.07</span>), (-<span class="n">0.44</span>, <span class="n">0.19</span>, <span class="n">0.11</span>), (-<span class="n">0.30</span>, <span class="n">0.25</span>, <span class="n">0.13</span>),
+                (-<span class="n">0.06</span>, <span class="n">0.28</span>, <span class="n">0.14</span>), (<span class="n">0.20</span>, <span class="n">0.26</span>, <span class="n">0.13</span>), (<span class="n">0.42</span>, <span class="n">0.19</span>, <span class="n">0.11</span>),
+                (<span class="n">0.52</span>, <span class="n">0.13</span>, <span class="n">0.08</span>)]
+    k.sweep([(<span class="n">0</span>, y, z) <span class="k">for</span> y, _, _ <span class="k">in</span> stations],
+            [rrect(w, h, h * <span class="n">0.7</span>, <span class="n">3</span>) <span class="k">for</span> _, w, h <span class="k">in</span> stations],
+            GUNMETAL, W1(<span class="s">&quot;Body&quot;</span>), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * len(stations))
+    <span class="c"># carapace shield over the head: crowned, lipped, tapering to the brow</span>
+    hs = [(-<span class="n">0.56</span>, <span class="n">0.15</span>, <span class="n">0.05</span>), (-<span class="n">0.50</span>, <span class="n">0.22</span>, <span class="n">0.07</span>), (-<span class="n">0.36</span>, <span class="n">0.27</span>, <span class="n">0.09</span>),
+          (-<span class="n">0.20</span>, <span class="n">0.29</span>, <span class="n">0.10</span>), (-<span class="n">0.14</span>, <span class="n">0.28</span>, <span class="n">0.095</span>)]
+    k.sweep([(<span class="n">0</span>, y, z + <span class="n">0.10</span>) <span class="k">for</span> y, _, _ <span class="k">in</span> hs],
+            [arch(w, r, <span class="n">0.035</span>) <span class="k">for</span> _, w, r <span class="k">in</span> hs], PAINT, W1(<span class="s">&quot;Body&quot;</span>),
+            dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * len(hs))
+    <span class="c"># five shingled tergite plates down the back, each riding over the last</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+        y0 = -<span class="n">0.16</span> + i * <span class="n">0.135</span>
+        y1 = y0 + <span class="n">0.17</span>
+        w = <span class="n">0.30</span> - <span class="n">0.018</span> * i
+        zz = z + <span class="n">0.105</span> + <span class="n">0.006</span> * i
+        ys = [y0, y0 + <span class="n">0.025</span>, y1 - <span class="n">0.025</span>, y1]
+        k.sweep([(<span class="n">0</span>, y, zz) <span class="k">for</span> y <span class="k">in</span> ys],
+                [arch(w * s, <span class="n">0.075</span> * s, <span class="n">0.03</span>) <span class="k">for</span> s <span class="k">in</span> (<span class="n">0.93</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.95</span>)],
+                PAINT, W1(<span class="s">&quot;Body&quot;</span>), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">4</span>)
+        <span class="c"># a gunmetal spine stud on each plate</span>
+        k.strut((<span class="n">0</span>, y0 + <span class="n">0.05</span>, zz + <span class="n">0.07</span>), (<span class="n">0</span>, y1 - <span class="n">0.04</span>, zz + <span class="n">0.075</span>),
+                <span class="n">0.022</span>, <span class="n">0.018</span>, GUNMETAL, W1(<span class="s">&quot;Body&quot;</span>), n=<span class="n">6</span>)
+    <span class="c"># sensor brow: two glowing lenses under the shield&#x27;s front lip</span>
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        k.disc((sx * <span class="n">0.075</span>, -<span class="n">0.535</span>, z + <span class="n">0.07</span>), (<span class="n">0.15</span> * sx, -<span class="n">1</span>, <span class="n">0.25</span>), <span class="n">0.032</span>,
+               <span class="n">0.014</span>, GLOW, W1(<span class="s">&quot;Body&quot;</span>), n=<span class="n">12</span>)
+        k.disc((sx * <span class="n">0.075</span>, -<span class="n">0.522</span>, z + <span class="n">0.07</span>), (<span class="n">0.15</span> * sx, -<span class="n">1</span>, <span class="n">0.25</span>), <span class="n">0.042</span>,
+               <span class="n">0.012</span>, GUNMETAL, W1(<span class="s">&quot;Body&quot;</span>), n=<span class="n">12</span>)
+    <span class="c"># chelicerae: two short mandible struts under the brow</span>
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
+        k.strut((sx * <span class="n">0.06</span>, -<span class="n">0.46</span>, z - <span class="n">0.04</span>), (sx * <span class="n">0.045</span>, -<span class="n">0.60</span>, z - <span class="n">0.07</span>),
+                <span class="n">0.03</span>, <span class="n">0.018</span>, CHROME, W1(<span class="s">&quot;Body&quot;</span>), n=<span class="n">6</span>)
+    <span class="c"># belly keel plate</span>
+    k.sweep([(<span class="n">0</span>, y, z - <span class="n">0.14</span>) <span class="k">for</span> y <span class="k">in</span> (-<span class="n">0.36</span>, -<span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">0.40</span>)],
+            [rrect(w, <span class="n">0.02</span>, <span class="n">0.012</span>, <span class="n">1</span>) <span class="k">for</span> w <span class="k">in</span> (<span class="n">0.14</span>, <span class="n">0.18</span>, <span class="n">0.18</span>, <span class="n">0.12</span>)],
+            RUBBER, W1(<span class="s">&quot;Body&quot;</span>), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">4</span>)
+
+
+<span class="k">def</span> build_legs(k):
+    <span class="k">for</span> side, sx <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, -<span class="n">1</span>), (<span class="s">&quot;R&quot;</span>, <span class="n">1</span>)):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>):
+            b = <span class="s">f&quot;</span><span class="s">Leg_</span>{side}{i + <span class="n">1</span>}<span class="s">&quot;</span>
+            H, C, K, A, Ft = leg_points(sx, i)
+            <span class="c"># hip ball socket and coxa</span>
+            k.disc(H, (sx, <span class="n">0</span>, <span class="n">0</span>), <span class="n">0.055</span>, <span class="n">0.03</span>, GUNMETAL, W1(b), n=<span class="n">12</span>)
+            k.strut(H, C, <span class="n">0.045</span>, <span class="n">0.04</span>, GUNMETAL, W1(b), n=<span class="n">8</span>)
+            <span class="c"># femur: gunmetal beam under a painted armour cover</span>
+            k.strut(C, K, <span class="n">0.056</span>, <span class="n">0.048</span>, GUNMETAL, W1(b), n=<span class="n">8</span>)
+            fd = (K - C)
+            side_ax, up_ax = frame_of(fd)
+            cov0, cov1 = C + fd * <span class="n">0.12</span>, C + fd * <span class="n">0.86</span>
+            k.sweep([cov0, cov0 + fd * <span class="n">0.06</span>, cov1 - fd * <span class="n">0.06</span>, cov1],
+                    [arch(s * <span class="n">0.088</span>, s * <span class="n">0.045</span>, <span class="n">0.024</span>, <span class="n">6</span>)
+                     <span class="k">for</span> s <span class="k">in</span> (<span class="n">0.85</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.8</span>)],
+                    PAINT, W1(b), dirs=[fd] * <span class="n">4</span>)
+            <span class="c"># hydraulic ram under the femur, chrome rod into gunmetal barrel</span>
+            r0 = C + fd * <span class="n">0.10</span> - up_ax * <span class="n">0.07</span>
+            r1 = C + fd * <span class="n">0.72</span> - up_ax * <span class="n">0.055</span>
+            k.strut(r0, r0.lerp(r1, <span class="n">0.55</span>), <span class="n">0.020</span>, <span class="n">0.020</span>, GUNMETAL, W1(b), n=<span class="n">6</span>)
+            k.strut(r0.lerp(r1, <span class="n">0.5</span>), r1, <span class="n">0.011</span>, <span class="n">0.011</span>, CHROME, W1(b), n=<span class="n">6</span>)
+            <span class="c"># knee: a pinned joint drum across the leg plane</span>
+            kn = fd.cross(A - K).normalized()
+            k.disc(K, kn, <span class="n">0.058</span>, <span class="n">0.04</span>, GUNMETAL, W1(b), n=<span class="n">12</span>)
+            k.disc(K + kn * <span class="n">0.044</span>, kn, <span class="n">0.026</span>, <span class="n">0.008</span>, CHROME, W1(b), n=<span class="n">10</span>)
+            <span class="c"># tibia down to the ankle, tapering</span>
+            k.strut(K, A, <span class="n">0.048</span>, <span class="n">0.03</span>, GUNMETAL, W1(b), n=<span class="n">8</span>)
+            <span class="c"># foot: rubber pad planted on the floor</span>
+            k.strut(A, Ft + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.03</span>)), <span class="n">0.022</span>, <span class="n">0.03</span>, GUNMETAL, W1(b), n=<span class="n">8</span>)
+            k.sweep([Ft + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.002</span>)), Ft + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.012</span>)),
+                     Ft + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.030</span>)), Ft + Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.040</span>))],
+                    [ngon(<span class="n">0.036</span>, <span class="n">10</span>), ngon(<span class="n">0.045</span>, <span class="n">10</span>), ngon(<span class="n">0.045</span>, <span class="n">10</span>),
+                     ngon(<span class="n">0.03</span>, <span class="n">10</span>)], RUBBER, W1(b), dirs=[(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)] * <span class="n">4</span>)
+
+
+<span class="k">def</span> build_claws(k):
+    <span class="k">for</span> side, sx <span class="k">in</span> ((<span class="s">&quot;L&quot;</span>, -<span class="n">1</span>), (<span class="s">&quot;R&quot;</span>, <span class="n">1</span>)):
+        arm, hand, fin = <span class="s">f&quot;</span><span class="s">Arm_</span>{side}<span class="s">&quot;</span>, <span class="s">f&quot;</span><span class="s">Hand_</span>{side}<span class="s">&quot;</span>, <span class="s">f&quot;</span><span class="s">Finger_</span>{side}<span class="s">&quot;</span>
+        S, E, W, P, F, T = claw_points(sx)
+        <span class="c"># shoulder boot: rubber, blending Body -&gt; Arm</span>
+        k.sweep([S + (E - S).normalized() * t <span class="k">for</span> t <span class="k">in</span> (-<span class="n">0.05</span>, -<span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">0.05</span>, <span class="n">0.08</span>)],
+                [ngon(r, <span class="n">10</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.045</span>, <span class="n">0.058</span>, <span class="n">0.052</span>, <span class="n">0.058</span>, <span class="n">0.048</span>)],
+                RUBBER, blend(<span class="s">&quot;Body&quot;</span>, arm, S - (E - S).normalized() * <span class="n">0.05</span>,
+                              S + (E - S).normalized() * <span class="n">0.08</span>))
+        <span class="c"># humerus (painted sleeve over a gunmetal beam) and forearm</span>
+        k.strut(S + (E - S) * <span class="n">0.12</span>, E, <span class="n">0.05</span>, <span class="n">0.045</span>, GUNMETAL, W1(arm), n=<span class="n">8</span>)
+        ed = E - S
+        k.sweep([S + ed * t <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.22</span>, <span class="n">0.28</span>, <span class="n">0.80</span>, <span class="n">0.88</span>)],
+                [arch(s * <span class="n">0.07</span>, s * <span class="n">0.035</span>, <span class="n">0.02</span>, <span class="n">6</span>) <span class="k">for</span> s <span class="k">in</span> (<span class="n">0.85</span>, <span class="n">1</span>, <span class="n">1</span>, <span class="n">0.85</span>)],
+                PAINT, W1(arm), dirs=[ed] * <span class="n">4</span>)
+        k.disc(E, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>), <span class="n">0.06</span>, <span class="n">0.05</span>, GUNMETAL, W1(arm), n=<span class="n">12</span>)
+        k.strut(E, W - (W - E).normalized() * <span class="n">0.05</span>, <span class="n">0.045</span>, <span class="n">0.04</span>, GUNMETAL,
+                W1(arm), n=<span class="n">8</span>)
+        <span class="c"># wrist boot: rubber, blending Arm -&gt; Hand</span>
+        wd = (P - W).normalized()
+        k.sweep([W + wd * t <span class="k">for</span> t <span class="k">in</span> (-<span class="n">0.07</span>, -<span class="n">0.04</span>, <span class="n">0.0</span>, <span class="n">0.04</span>, <span class="n">0.07</span>)],
+                [ngon(r, <span class="n">10</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.040</span>, <span class="n">0.050</span>, <span class="n">0.044</span>, <span class="n">0.050</span>, <span class="n">0.042</span>)],
+                RUBBER, blend(arm, hand, W - wd * <span class="n">0.07</span>, W + wd * <span class="n">0.07</span>))
+
+        <span class="c"># chela: a swollen painted hand</span>
+        hd = P - W
+        ts = (<span class="n">0.10</span>, <span class="n">0.16</span>, <span class="n">0.35</span>, <span class="n">0.62</span>, <span class="n">0.86</span>, <span class="n">1.0</span>)
+        ws = (<span class="n">0.055</span>, <span class="n">0.092</span>, <span class="n">0.135</span>, <span class="n">0.140</span>, <span class="n">0.115</span>, <span class="n">0.090</span>)
+        hs = (<span class="n">0.045</span>, <span class="n">0.072</span>, <span class="n">0.098</span>, <span class="n">0.100</span>, <span class="n">0.084</span>, <span class="n">0.064</span>)
+        k.sweep([W + hd * t <span class="k">for</span> t <span class="k">in</span> ts],
+                [rrect(w, h, h * <span class="n">0.75</span>, <span class="n">3</span>) <span class="k">for</span> w, h <span class="k">in</span> zip(ws, hs)],
+                PAINT, W1(hand), dirs=[hd] * len(ts))
+        <span class="c"># fixed finger (inner) — curved, gunmetal, chrome tip</span>
+        inner = Vector((-sx, <span class="n">0</span>, <span class="n">0</span>))
+        base = P + inner * <span class="n">0.045</span>
+        pts = [base + Vector((<span class="n">0</span>, -<span class="n">0.30</span> * t, <span class="n">0</span>)) + inner * (<span class="n">0.04</span> * t * t)
+               <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.3</span>, <span class="n">0.6</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)]
+        k.sweep(pts, [ngon(r, <span class="n">8</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.046</span>, <span class="n">0.040</span>, <span class="n">0.031</span>, <span class="n">0.019</span>, <span class="n">0.007</span>)],
+                GUNMETAL, W1(hand))
+        <span class="c"># finger pivot pin (hand) and the movable finger (its own bone)</span>
+        k.disc(F, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>), <span class="n">0.036</span>, <span class="n">0.062</span>, CHROME, W1(hand), n=<span class="n">10</span>)
+        fd = T - F
+        pts = [F + fd * t - Vector((sx, <span class="n">0</span>, <span class="n">0</span>)) * (<span class="n">0.05</span> * t * t)
+               <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.3</span>, <span class="n">0.6</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)]
+        k.sweep(pts, [ngon(r, <span class="n">8</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.044</span>, <span class="n">0.038</span>, <span class="n">0.030</span>, <span class="n">0.018</span>, <span class="n">0.007</span>)],
+                GUNMETAL, W1(fin))
+
+
+<span class="k">def</span> build_tail(k):
+    y, z = TAIL_Y, BODY_Z
+    bones = [<span class="s">f&quot;</span><span class="s">Tail_</span>{i + <span class="n">1</span>}<span class="s">&quot;</span> <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>)] + [<span class="s">&quot;Stinger&quot;</span>]
+    parents = [<span class="s">&quot;Body&quot;</span>] + bones[:-<span class="n">1</span>]
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+        b = bones[i]
+        r0, r1 = TAIL_R[i], TAIL_R[i + <span class="n">1</span>]
+        L = y[i + <span class="n">1</span>] - y[i]
+        <span class="c"># rubber bellows over the joint at the segment&#x27;s head (parent -&gt; b)</span>
+        by = [y[i] - <span class="n">0.05</span> + <span class="n">0.1</span> * t / <span class="n">6</span> <span class="k">for</span> t <span class="k">in</span> range(<span class="n">7</span>)]
+        k.sweep([(<span class="n">0</span>, yy, z) <span class="k">for</span> yy <span class="k">in</span> by],
+                [ngon(r0 * (<span class="n">0.80</span> <span class="k">if</span> t % <span class="n">2</span> <span class="k">else</span> <span class="n">0.90</span>), <span class="n">12</span>) <span class="k">for</span> t <span class="k">in</span> range(<span class="n">7</span>)],
+                RUBBER, blend(parents[i], b, (<span class="n">0</span>, y[i] - <span class="n">0.05</span>, z), (<span class="n">0</span>, y[i] + <span class="n">0.05</span>, z)),
+                dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">7</span>)
+        <span class="c"># armour collar: painted, hexagonal, chamfered, tapering</span>
+        ys = [y[i] + <span class="n">0.035</span>, y[i] + <span class="n">0.06</span>, y[i] + L * <span class="n">0.78</span>, y[i] + L * <span class="n">0.86</span>]
+        rs = [r0 * <span class="n">0.96</span>, r0 * <span class="n">1.12</span>, r1 * <span class="n">1.10</span>, r1 * <span class="n">0.94</span>]
+        k.sweep([(<span class="n">0</span>, yy, z) <span class="k">for</span> yy <span class="k">in</span> ys],
+                [[(a, bb * <span class="n">0.92</span>) <span class="k">for</span> a, bb <span class="k">in</span> ngon(r, <span class="n">8</span>)] <span class="k">for</span> r <span class="k">in</span> rs],
+                PAINT, W1(b), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">4</span>)
+        <span class="c"># dorsal keel: a gunmetal fin riding each collar</span>
+        k.sweep([(<span class="n">0</span>, yy, z + r0 * <span class="n">1.02</span>) <span class="k">for</span> yy <span class="k">in</span> (y[i] + <span class="n">0.07</span>, y[i] + <span class="n">0.09</span>,
+                                                    y[i] + L * <span class="n">0.66</span>, y[i] + L * <span class="n">0.76</span>)],
+                [[(-<span class="n">0.012</span>, -<span class="n">0.02</span>), (<span class="n">0.012</span>, -<span class="n">0.02</span>), (<span class="n">0.008</span>, h), (-<span class="n">0.008</span>, h)]
+                 <span class="k">for</span> h <span class="k">in</span> (<span class="n">0.012</span>, <span class="n">0.035</span>, <span class="n">0.03</span>, <span class="n">0.01</span>)],
+                GUNMETAL, W1(b), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">4</span>)
+    <span class="c"># stinger: bellows, a gunmetal telson bulb with a glowing venom band, and</span>
+    <span class="c"># a chrome needle hooking toward the rest-pose +Z (downward once coiled)</span>
+    b = <span class="s">&quot;Stinger&quot;</span>
+    y5 = y[<span class="n">5</span>]
+    by = [y5 - <span class="n">0.045</span> + <span class="n">0.09</span> * t / <span class="n">6</span> <span class="k">for</span> t <span class="k">in</span> range(<span class="n">7</span>)]
+    k.sweep([(<span class="n">0</span>, yy, z) <span class="k">for</span> yy <span class="k">in</span> by],
+            [ngon(TAIL_R[<span class="n">5</span>] * (<span class="n">0.80</span> <span class="k">if</span> t % <span class="n">2</span> <span class="k">else</span> <span class="n">0.90</span>), <span class="n">12</span>) <span class="k">for</span> t <span class="k">in</span> range(<span class="n">7</span>)],
+            RUBBER, blend(<span class="s">&quot;Tail_5&quot;</span>, b, (<span class="n">0</span>, y5 - <span class="n">0.045</span>, z), (<span class="n">0</span>, y5 + <span class="n">0.045</span>, z)),
+            dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">7</span>)
+    ts = (<span class="n">0.03</span>, <span class="n">0.06</span>, <span class="n">0.12</span>, <span class="n">0.20</span>, <span class="n">0.27</span>, <span class="n">0.33</span>)
+    rs = (<span class="n">0.060</span>, <span class="n">0.080</span>, <span class="n">0.100</span>, <span class="n">0.098</span>, <span class="n">0.075</span>, <span class="n">0.040</span>)
+    k.sweep([(<span class="n">0</span>, y5 + t, z + <span class="n">0.02</span>) <span class="k">for</span> t <span class="k">in</span> ts], [ngon(r, <span class="n">12</span>) <span class="k">for</span> r <span class="k">in</span> rs],
+            GUNMETAL, W1(b), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * len(ts))
+    k.sweep([(<span class="n">0</span>, y5 + t, z + <span class="n">0.02</span>) <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.145</span>, <span class="n">0.155</span>, <span class="n">0.185</span>, <span class="n">0.195</span>)],
+            [ngon(r, <span class="n">12</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.100</span>, <span class="n">0.104</span>, <span class="n">0.104</span>, <span class="n">0.100</span>)],
+            GLOW, W1(b), dirs=[(<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)] * <span class="n">4</span>)
+    pts = []
+    <span class="k">for</span> s <span class="k">in</span> (<span class="n">0.0</span>, <span class="n">0.25</span>, <span class="n">0.5</span>, <span class="n">0.75</span>, <span class="n">1.0</span>):
+        a = math.radians(<span class="n">95</span> * s)
+        pts.append((<span class="n">0</span>, y5 + <span class="n">0.32</span> + <span class="n">0.14</span> * math.sin(a), z + <span class="n">0.02</span> + <span class="n">0.14</span> * (<span class="n">1</span> - math.cos(a))))
+    k.sweep(pts, [ngon(r, <span class="n">8</span>) <span class="k">for</span> r <span class="k">in</span> (<span class="n">0.035</span>, <span class="n">0.028</span>, <span class="n">0.02</span>, <span class="n">0.012</span>, <span class="n">0.004</span>)],
+            CHROME, W1(b), up=(<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>))
+
+
+<span class="k">def</span> build_scorpion(name=<span class="s">&quot;Scorpion&quot;</span>):
+    <span class="s">&quot;&quot;&quot;The mech scorpion: painted plates on a gunmetal chassis, eight legs
+    planted on rubber pads, articulated claws, a bellows-jointed tail and a
+    chrome stinger — every vertex carrying the weights of the bone it rides
+    (two-bone blends only in the rubber boots at the flexing joints).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    k = Kit()
     <span class="k">try</span>:
-        <span class="c"># base plate (Root)</span>
-        box_part(bm, (<span class="n">0.9</span>, <span class="n">0.7</span>, <span class="n">0.10</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.05</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
-                 GUNMETAL, part_of, <span class="s">&quot;Root&quot;</span>)
-        <span class="c"># thorax shell + head with eyes (Thorax)</span>
-        box_part(bm, (<span class="n">0.70</span>, <span class="n">0.55</span>, <span class="n">0.42</span>), (<span class="n">0.0</span>, -<span class="n">0.05</span>, <span class="n">0.60</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
-                 ORANGE, part_of, <span class="s">&quot;Thorax&quot;</span>)
-        box_part(bm, (<span class="n">0.40</span>, <span class="n">0.30</span>, <span class="n">0.22</span>), (<span class="n">0.0</span>, -<span class="n">0.38</span>, <span class="n">0.66</span>), (<span class="n">8</span>, <span class="n">0</span>, <span class="n">0</span>),
-                 ORANGE, part_of, <span class="s">&quot;Thorax&quot;</span>)
-        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):  <span class="c"># glowing eyes</span>
-            box_part(bm, (<span class="n">0.06</span>, <span class="n">0.03</span>, <span class="n">0.06</span>), (sx * <span class="n">0.10</span>, -<span class="n">0.545</span>, <span class="n">0.70</span>),
-                     (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), GLOW, part_of, <span class="s">&quot;Thorax&quot;</span>)
-        <span class="c"># six legs in two rows, angled down (rigid to Thorax)</span>
-        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            <span class="k">for</span> k, z <span class="k">in</span> ((<span class="n">0</span>, <span class="n">0.72</span>), (<span class="n">1</span>, <span class="n">0.60</span>), (<span class="n">2</span>, <span class="n">0.48</span>)):
-                box_part(bm, (<span class="n">0.34</span>, <span class="n">0.09</span>, <span class="n">0.07</span>), (sx * <span class="n">0.50</span>, -<span class="n">0.02</span> + k * <span class="n">0.16</span>, z),
-                         (<span class="n">0</span>, <span class="n">0</span>, sx * <span class="n">18</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
-                box_part(bm, (<span class="n">0.30</span>, <span class="n">0.06</span>, <span class="n">0.05</span>), (sx * <span class="n">0.76</span>, -<span class="n">0.02</span> + k * <span class="n">0.16</span>, z - <span class="n">0.13</span>),
-                         (<span class="n">0</span>, <span class="n">0</span>, sx * <span class="n">40</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
-        <span class="c"># claws: shoulder + forearm + pincer pair (rigid to Thorax)</span>
-        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-            box_part(bm, (<span class="n">0.18</span>, <span class="n">0.40</span>, <span class="n">0.18</span>), (sx * <span class="n">0.26</span>, -<span class="n">0.58</span>, <span class="n">0.60</span>),
-                     (-<span class="n">15</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
-            box_part(bm, (<span class="n">0.16</span>, <span class="n">0.34</span>, <span class="n">0.16</span>), (sx * <span class="n">0.26</span>, -<span class="n">0.85</span>, <span class="n">0.52</span>),
-                     (<span class="n">20</span>, <span class="n">0</span>, <span class="n">0</span>), GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
-            <span class="k">for</span> dy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>):
-                box_part(bm, (<span class="n">0.07</span>, <span class="n">0.22</span>, <span class="n">0.12</span>),
-                         (sx * <span class="n">0.26</span>, -<span class="n">1.02</span>, <span class="n">0.52</span> + dy * <span class="n">0.08</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>),
-                         GUNMETAL, part_of, <span class="s">&quot;Thorax&quot;</span>)
-        <span class="c"># abdomen: two tapering plates (Abdomen)</span>
-        box_part(bm, (<span class="n">0.56</span>, <span class="n">0.46</span>, <span class="n">0.30</span>), (<span class="n">0.0</span>, <span class="n">0.12</span>, <span class="n">1.00</span>), (<span class="n">4</span>, <span class="n">0</span>, <span class="n">0</span>),
-                 ORANGE, part_of, <span class="s">&quot;Abdomen&quot;</span>)
-        box_part(bm, (<span class="n">0.44</span>, <span class="n">0.36</span>, <span class="n">0.26</span>), (<span class="n">0.0</span>, <span class="n">0.16</span>, <span class="n">1.24</span>), (<span class="n">6</span>, <span class="n">0</span>, <span class="n">0</span>),
-                 ORANGE, part_of, <span class="s">&quot;Abdomen&quot;</span>)
-        <span class="c"># tail segments, lathed and tapering (their own bones)</span>
-        lathe_part(bm, [(<span class="n">1.25</span>, <span class="n">0.16</span>), (<span class="n">1.42</span>, <span class="n">0.15</span>), (<span class="n">1.60</span>, <span class="n">0.13</span>)],
-                   GUNMETAL, part_of, <span class="s">&quot;Tail_1&quot;</span>)
-        lathe_part(bm, [(<span class="n">1.60</span>, <span class="n">0.13</span>), (<span class="n">1.75</span>, <span class="n">0.115</span>), (<span class="n">1.90</span>, <span class="n">0.10</span>)],
-                   GUNMETAL, part_of, <span class="s">&quot;Tail_2&quot;</span>)
-        lathe_part(bm, [(<span class="n">1.90</span>, <span class="n">0.10</span>), (<span class="n">2.02</span>, <span class="n">0.085</span>), (<span class="n">2.15</span>, <span class="n">0.07</span>)],
-                   GUNMETAL, part_of, <span class="s">&quot;Tail_3&quot;</span>)
-        <span class="c"># stinger: cone + barb with the glow tip (Stinger)</span>
-        lathe_part(bm, [(<span class="n">2.15</span>, <span class="n">0.07</span>), (<span class="n">2.26</span>, <span class="n">0.045</span>), (<span class="n">2.34</span>, <span class="n">0.012</span>)],
-                   GUNMETAL, part_of, <span class="s">&quot;Stinger&quot;</span>)
-        lathe_part(bm, [(<span class="n">2.30</span>, <span class="n">0.030</span>), (<span class="n">2.36</span>, <span class="n">0.030</span>)], GLOW, part_of, <span class="s">&quot;Stinger&quot;</span>)
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bm.to_mesh(me)
+        build_body(k)
+        build_legs(k)
+        build_claws(k)
+        build_tail(k)
+        k.finish(me)
     <span class="k">finally</span>:
-        bm.free()  <span class="c"># the ownership contract, as always</span>
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">False</span>  <span class="c"># flat facets: one disk vertex per loop</span>
-    obj = bpy.data.objects.new(<span class="s">&quot;Scorpion&quot;</span>, me)
+        k.bm.free()  <span class="c"># the ownership contract, as always</span>
+    me.shade_smooth()
+    me.set_sharp_from_angle(angle=math.radians(<span class="n">40.0</span>))
+    obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
-    <span class="k">return</span> obj, part_of
+    <span class="k">return</span> obj, k.vw
 
 
-<span class="k">def</span> bone_of(z, bone):
-    <span class="s">&quot;&quot;&quot;Two-bone smooth blend across each joint seam; hard weight elsewhere.&quot;&quot;&quot;</span>
-    order = list(SPANS)
-    i = order.index(bone)
-    <span class="k">if</span> i == <span class="n">0</span>:
-        <span class="k">return</span> <span class="k">None</span>
-    prev = order[i - <span class="n">1</span>]
-    seam = SPANS[bone][<span class="n">0</span>]
-    <span class="k">if</span> abs(z - seam) &lt;= BLEND:
-        <span class="k">return</span> prev
-    <span class="k">return</span> <span class="k">None</span>
-
-
-<span class="k">def</span> assign_weights(obj, part_of):
-    <span class="s">&quot;&quot;&quot;Hard weights per part plus 50/50 blend rings at each bone seam.&quot;&quot;&quot;</span>
+<span class="k">def</span> assign_weights(obj, vw):
     groups = {b: obj.vertex_groups.new(name=b) <span class="k">for</span> b <span class="k">in</span> BONES}
-    <span class="k">for</span> idx, v <span class="k">in</span> enumerate(obj.data.vertices):
-        bone = part_of[idx]
-        prev = bone_of(v.co.z, bone)
-        <span class="k">if</span> prev <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-            t = (v.co.z - (SPANS[bone][<span class="n">0</span>] - BLEND)) / (<span class="n">2</span> * BLEND)
-            groups[prev].add([idx], <span class="n">1.0</span> - t, <span class="s">&#x27;REPLACE&#x27;</span>)
-            groups[bone].add([idx], t, <span class="s">&#x27;REPLACE&#x27;</span>)
-        <span class="k">else</span>:
-            groups[bone].add([idx], <span class="n">1.0</span>, <span class="s">&#x27;REPLACE&#x27;</span>)
+    <span class="k">for</span> idx, w <span class="k">in</span> enumerate(vw):
+        <span class="k">for</span> bone, x <span class="k">in</span> w.items():
+            groups[bone].add([idx], x, <span class="s">&#x27;REPLACE&#x27;</span>)
     <span class="k">return</span> groups
 
 
@@ -499,16 +812,14 @@ EXPORT_KWARGS = dict(
     bpy.context.collection.objects.link(arm)
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode=<span class="s">&#x27;EDIT&#x27;</span>)
-    prev = <span class="k">None</span>
-    <span class="k">for</span> name <span class="k">in</span> BONES:
+    ebs = {}
+    <span class="k">for</span> name, head, tail, parent, conn <span class="k">in</span> BONE_TABLE:
         eb = arm_data.edit_bones.new(name)
-        z0, z1 = SPANS[name]
-        eb.head = (<span class="n">0.0</span>, <span class="n">0.0</span>, z0)
-        eb.tail = (<span class="n">0.0</span>, <span class="n">0.0</span>, z1)
-        <span class="k">if</span> prev <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-            eb.parent = prev
-            eb.use_connect = <span class="k">True</span>
-        prev = eb
+        eb.head, eb.tail, eb.roll = head, tail, <span class="n">0.0</span>
+        <span class="k">if</span> parent <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            eb.parent = ebs[parent]
+            eb.use_connect = conn
+        ebs[name] = eb
     bpy.ops.object.mode_set(mode=<span class="s">&#x27;OBJECT&#x27;</span>)
     <span class="c"># the exporter warns and picks by name otherwise — with two rigs in the</span>
     <span class="c"># file it can bind the WRONG one; parent explicitly</span>
@@ -517,11 +828,21 @@ EXPORT_KWARGS = dict(
     mod.object = arm
     mod.use_vertex_groups = <span class="k">True</span>
     mod.use_bone_envelopes = <span class="k">False</span>
-    <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
-        pb = arm.pose.bones[name]
-        pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
-        pb.rotation_euler.x = math.radians(deg)
+    apply_pose(arm, POSE_GUARD)
     <span class="k">return</span> arm
+
+
+<span class="k">def</span> apply_pose(arm, pose):
+    <span class="s">&quot;&quot;&quot;Pose by rest-space axes, in quaternions: the glTF importer leaves its
+    armature&#x27;s bones in quaternion mode, so the same call drives both rigs.&quot;&quot;&quot;</span>
+    <span class="k">for</span> pb <span class="k">in</span> arm.pose.bones:
+        pb.rotation_mode = <span class="s">&#x27;QUATERNION&#x27;</span>
+        q = mathutils.Quaternion()
+        rest = pb.bone.matrix_local.to_3x3()
+        <span class="k">for</span> axis, deg <span class="k">in</span> pose.get(pb.name, ()):
+            local = (rest.inverted() @ Vector(axis)).normalized()
+            q = mathutils.Quaternion(local, math.radians(deg)) @ q
+        pb.rotation_quaternion = q
 
 
 <span class="k">def</span> eval_positions(obj):
@@ -538,10 +859,25 @@ EXPORT_KWARGS = dict(
     <span class="k">return</span> tuple(round(c, KEY_DIGITS) <span class="k">for</span> c <span class="k">in</span> p)
 
 
+_STEPS = sorted(((dx, dy, dz) <span class="k">for</span> dx <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> dy <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>)
+                 <span class="k">for</span> dz <span class="k">in</span> (-<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>)), key=<span class="k">lambda</span> s: abs(s[<span class="n">0</span>]) + abs(s[<span class="n">1</span>]) + abs(s[<span class="n">2</span>]))
+
+
+<span class="k">def</span> keys_near(k):
+    <span class="s">&quot;&quot;&quot;The key itself first, then its 26 neighbours ONE rounding step away,
+    each re-rounded: a float32 round-trip can land a coordinate on the far
+    side of a rounding boundary (straddle-safe). The neighbours must be
+    rounded — k + 1e-4 in binary floating point is not a key.&quot;&quot;&quot;</span>
+    step = <span class="n">10</span> ** -KEY_DIGITS
+    <span class="k">for</span> dx, dy, dz <span class="k">in</span> _STEPS:
+        <span class="k">yield</span> key_of((k[<span class="n">0</span>] + dx * step, k[<span class="n">1</span>] + dy * step, k[<span class="n">2</span>] + dz * step))
+
+
 <span class="k">def</span> read_gltf(path):
-    g = json.load(open(path))
-    blob = open(os.path.join(os.path.dirname(path),
-                             g[<span class="s">&quot;buffers&quot;</span>][<span class="n">0</span>][<span class="s">&quot;uri&quot;</span>]), <span class="s">&quot;rb&quot;</span>).read()
+    <span class="k">with</span> open(path, encoding=<span class="s">&quot;utf-8&quot;</span>) <span class="k">as</span> fh:
+        g = json.load(fh)
+    <span class="k">with</span> open(os.path.join(os.path.dirname(path), g[<span class="s">&quot;buffers&quot;</span>][<span class="n">0</span>][<span class="s">&quot;uri&quot;</span>]), <span class="s">&quot;rb&quot;</span>) <span class="k">as</span> fh:
+        blob = fh.read()
 
     <span class="k">def</span> accessor_floats(idx, ncomp):
         acc = g[<span class="s">&quot;accessors&quot;</span>][idx]
@@ -563,7 +899,7 @@ EXPORT_KWARGS = dict(
     <span class="k">return</span> g, accessor_floats, accessor_uints
 
 
-<span class="k">def</span> check(obj, arm, part_of, no_skins=<span class="k">False</span>):
+<span class="k">def</span> check(obj, arm, no_skins=<span class="k">False</span>):
     me = obj.data
     exp_props = {p.identifier <span class="k">for</span> p <span class="k">in</span> bpy.ops.export_scene.gltf.get_rna_type().properties}
     missing = [k <span class="k">for</span> k <span class="k">in</span> EXPORT_KWARGS <span class="k">if</span> k <span class="k">not</span> <span class="k">in</span> exp_props]
@@ -631,6 +967,7 @@ EXPORT_KWARGS = dict(
         <span class="c"># contract 2a (on disk): per-vertex weights sum to 1</span>
         disk_verts = <span class="n">0</span>
         sum_err = <span class="n">0.0</span>
+        blended = <span class="n">0</span>
         <span class="k">for</span> p <span class="k">in</span> prim:
             a = p[<span class="s">&quot;attributes&quot;</span>]
             w = acc_f(a[<span class="s">&quot;WEIGHTS_0&quot;</span>], <span class="n">4</span>)
@@ -645,6 +982,7 @@ EXPORT_KWARGS = dict(
             <span class="k">for</span> ws, js <span class="k">in</span> zip(w, j):
                 total = sum(x <span class="k">for</span> x, ji <span class="k">in</span> zip(ws, js) <span class="k">if</span> ji &lt; len(BONES))
                 sum_err = max(sum_err, abs(total - <span class="n">1.0</span>) <span class="k">if</span> total &gt; <span class="n">1e-9</span> <span class="k">else</span> <span class="n">0.0</span>)
+                blended += sum(<span class="n">1</span> <span class="k">for</span> x <span class="k">in</span> ws <span class="k">if</span> x &gt; <span class="n">1e-6</span>) &gt; <span class="n">1</span>
         <span class="k">if</span> sum_err &gt; SUM_TOL:
             print(<span class="s">f&quot;</span><span class="s">ERROR: disk weight sums deviate </span>{sum_err:<span class="s">.3e</span>}<span class="s"> from 1.0</span><span class="s">&quot;</span>,
                   file=sys.stderr)
@@ -709,25 +1047,24 @@ EXPORT_KWARGS = dict(
         <span class="k">return</span> <span class="n">17</span>
 
     <span class="c"># per-vertex weight vectors, compared at sorted positions</span>
+    <span class="c"># EVERY re-imported vertex at a position is kept, not the last one: the</span>
+    <span class="c"># exporter splits a vertex per normal/UV, and each split copy carries its</span>
+    <span class="c"># own JOINTS_0/WEIGHTS_0 — one bad copy must not hide behind a good twin</span>
     names_ri = [g.name <span class="k">for</span> g <span class="k">in</span> ri.vertex_groups]
-    got_w = {key_of(v.co): tuple(sorted(
-        (names_ri[g.group], round(g.weight, <span class="n">5</span>)) <span class="k">for</span> g <span class="k">in</span> v.groups))
-        <span class="k">for</span> v <span class="k">in</span> rme.vertices}
+    got_w = {}
+    <span class="k">for</span> v <span class="k">in</span> rme.vertices:
+        got_w.setdefault(key_of(v.co), set()).add(tuple(sorted(
+            (names_ri[g.group], round(g.weight, <span class="n">5</span>)) <span class="k">for</span> g <span class="k">in</span> v.groups)))
     w_err = <span class="n">0.0</span>
-    step = <span class="n">10</span> ** -KEY_DIGITS
     <span class="k">for</span> p, want <span class="k">in</span> want_w.items():
-        got = <span class="k">None</span>
-        <span class="k">for</span> dx <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-            <span class="k">for</span> dy <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-                <span class="k">for</span> dz <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-                    k = (p[<span class="n">0</span>] + dx, p[<span class="n">1</span>] + dy, p[<span class="n">2</span>] + dz)
-                    <span class="k">if</span> k <span class="k">in</span> got_w:
-                        got = got_w[k]
-                        <span class="k">break</span>
-        <span class="k">if</span> got != want:
-            w_err = max(w_err, <span class="n">1.0</span> <span class="k">if</span> got <span class="k">is</span> <span class="k">None</span> <span class="k">else</span>
-                        max(abs(dict(want).get(n, <span class="n">0.0</span>) - dict(got).get(n, <span class="n">0.0</span>))
-                            <span class="k">for</span> n <span class="k">in</span> set(dict(want)) | set(dict(got))))
+        gots = next((got_w[k] <span class="k">for</span> k <span class="k">in</span> keys_near(p) <span class="k">if</span> k <span class="k">in</span> got_w), <span class="k">None</span>)
+        <span class="k">if</span> gots <span class="k">is</span> <span class="k">None</span>:
+            w_err = <span class="n">1.0</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> got <span class="k">in</span> gots:
+            <span class="k">if</span> got != want:
+                w_err = max(w_err, max(abs(dict(want).get(n, <span class="n">0.0</span>) - dict(got).get(n, <span class="n">0.0</span>))
+                                       <span class="k">for</span> n <span class="k">in</span> set(dict(want)) | set(dict(got))))
     <span class="k">if</span> w_err &gt; W_TOL:
         print(<span class="s">f&quot;</span><span class="s">ERROR: weight round-trip deviates </span>{w_err:<span class="s">.3e</span>}<span class="s"> (tol </span>{W_TOL}<span class="s">)</span><span class="s">&quot;</span>,
               file=sys.stderr)
@@ -736,24 +1073,17 @@ EXPORT_KWARGS = dict(
     <span class="c"># contract 3: the deformation round-trips (pose the re-imported rig the</span>
     <span class="c"># same way, compare posed positions BY REST-KEY — sorted multisets</span>
     <span class="c"># misalign because the exporter welds duplicate loops)</span>
-    <span class="k">for</span> name, deg <span class="k">in</span> POSE_DEG.items():
-        pb = ri_arm.pose.bones[name]
-        pb.rotation_mode = <span class="s">&#x27;XYZ&#x27;</span>
-        pb.rotation_euler.x = math.radians(deg)
+    apply_pose(ri_arm, POSE_GUARD)
     bpy.context.view_layer.update()
     pose_ri = eval_positions(ri)
     orig_map = {}
     <span class="k">for</span> r, p <span class="k">in</span> zip(rest_orig, pose_orig):
         orig_map.setdefault(key_of(r), []).append(p)
-    step = <span class="n">10</span> ** -KEY_DIGITS
     pos_err = <span class="n">0.0</span>
     <span class="k">for</span> j, rv <span class="k">in</span> enumerate(rme.vertices):
-        k0 = key_of(rv.co)
         cands = []
-        <span class="k">for</span> dx <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-            <span class="k">for</span> dy <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-                <span class="k">for</span> dz <span class="k">in</span> (-step, <span class="n">0.0</span>, step):
-                    cands += orig_map.get((k0[<span class="n">0</span>] + dx, k0[<span class="n">1</span>] + dy, k0[<span class="n">2</span>] + dz), [])
+        <span class="k">for</span> k <span class="k">in</span> keys_near(key_of(rv.co)):
+            cands += orig_map.get(k, [])
         best = min((max(abs(pose_ri[j][c] - p[c]) <span class="k">for</span> c <span class="k">in</span> range(<span class="n">3</span>))
                     <span class="k">for</span> p <span class="k">in</span> cands), default=<span class="n">1e30</span>)
         pos_err = max(pos_err, best)
@@ -764,12 +1094,13 @@ EXPORT_KWARGS = dict(
 
     print(<span class="s">f&quot;</span><span class="s">bones=</span>{len(BONES)}<span class="s"> verts=</span>{base_verts}<span class="s"> eval_loops=</span>{eval_loops}<span class="s"> </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">disk_verts=</span>{disk_verts}<span class="s"> (welded </span>{eval_loops - disk_verts}<span class="s">) </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">sum_err=</span>{sum_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+          <span class="s">f&quot;</span><span class="s">blended_disk_verts=</span>{blended}<span class="s"> sum_err=</span>{sum_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
     print(<span class="s">f&quot;</span><span class="s">rest_err=</span>{rest_err:<span class="s">.2e</span>}<span class="s"> w_err=</span>{w_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{W_TOL}<span class="s">) </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">pos_err=</span>{pos_err:<span class="s">.2e</span>}<span class="s"> (tol </span>{POS_TOL}<span class="s">)</span><span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
+<span class="c"># ------------------------------------------------------------- the still --</span>
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
@@ -788,16 +1119,18 @@ EXPORT_KWARGS = dict(
             b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
         <span class="k">return</span> mat
     <span class="k">return</span> [
-        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
-        pbr(<span class="s">&quot;HazardOrange&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.07</span>), <span class="n">0.10</span>, <span class="n">0.45</span>),
-        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.06</span>), <span class="n">0.0</span>, <span class="n">0.85</span>),
-        pbr(<span class="s">&quot;TealGlow&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.22</span>, <span class="n">0.26</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
-            emission=(<span class="n">0.10</span>, <span class="n">0.70</span>, <span class="n">0.78</span>), strength=<span class="n">2.5</span>),
+        pbr(<span class="s">&quot;HazardPaint&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.26</span>, <span class="n">0.05</span>), <span class="n">0.15</span>, <span class="n">0.42</span>),
+        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">0.125</span>), <span class="n">0.85</span>, <span class="n">0.36</span>),
+        pbr(<span class="s">&quot;Chrome&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.66</span>), <span class="n">1.0</span>, <span class="n">0.18</span>),
+        pbr(<span class="s">&quot;FlexRubber&quot;</span>, (<span class="n">0.035</span>, <span class="n">0.035</span>, <span class="n">0.04</span>), <span class="n">0.0</span>, <span class="n">0.82</span>),
+        pbr(<span class="s">&quot;VenomGlow&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.20</span>, <span class="n">0.22</span>), <span class="n">0.0</span>, <span class="n">0.35</span>,
+            emission=(<span class="n">0.10</span>, <span class="n">0.85</span>, <span class="n">0.80</span>), strength=<span class="n">4.0</span>),
     ]
 
 
-<span class="k">def</span> render_still(obj, path, engine):
-    scene = bpy.context.scene
+<span class="k">def</span> render_still(sc, heroes, path, engine):
+    <span class="k">import</span> gallery_framing
+    <span class="k">import</span> gallery_asset_quality
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -813,60 +1146,86 @@ EXPORT_KWARGS = dict(
     fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
-    scene.collection.objects.link(floor)
+    sc.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.5</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    scene.collection.objects.link(wall)
+    sc.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
-    scene.world = world
+    sc.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, aim):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
-        ld.energy = energy; ld.size = size; ld.color = col
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
-        scene.collection.objects.link(ob)
+        ob.rotation_euler = (Vector(aim) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
+        sc.collection.objects.link(ob)
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">560.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">340.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">460.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">400.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.5</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">4.5</span>, -<span class="n">4.0</span>, <span class="n">2.2</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.5</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.0</span>, <span class="n">4.5</span>), <span class="n">380.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0.6</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.6</span>, <span class="n">5.2</span>, <span class="n">0.9</span>), <span class="n">320.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">0.3</span>, <span class="n">7.5</span>, <span class="n">2.4</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">52.0</span>
+    cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">1.5</span>, -<span class="n">6.6</span>, <span class="n">2.7</span>)
-    scene.collection.objects.link(cam)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">7.6</span>, <span class="n">2.25</span>)
+    sc.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.8</span>)
-    scene.collection.objects.link(target)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.58</span>)
+    sc.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
-    scene.camera = cam
+    sc.camera = cam
 
-    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+    sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        sc.cycles.samples = <span class="n">48</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
-            scene.eevee.taa_render_samples = <span class="n">64</span>
+            sc.eevee.taa_render_samples = <span class="n">64</span>
         <span class="k">except</span> AttributeError:
             <span class="k">pass</span>
-    scene.render.resolution_x = <span class="n">1280</span>
-    scene.render.resolution_y = <span class="n">720</span>
-    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
-    scene.render.filepath = path
-    <span class="c"># AgX would wash the hazard orange and teal glow (docs/VISUAL-STYLE.md)</span>
-    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    sc.render.resolution_x = <span class="n">1280</span>
+    sc.render.resolution_y = <span class="n">720</span>
+    sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    sc.render.filepath = path
+    <span class="c"># AgX would wash the hazard paint and venom glow (docs/VISUAL-STYLE.md)</span>
+    sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+
+    code = gallery_framing.check_framing(sc, cam, hero=heroes, elements=heroes,
+                                         stage=[floor, wall])
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    code = gallery_asset_quality.check_asset_quality(sc, cam, hero=heroes[<span class="n">0</span>],
+                                                     stage=[floor, wall])
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">20</span>
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> stage_rig(arm, x, yaw_deg):
+    <span class="s">&quot;&quot;&quot;Place and turn a rig about its own origin, composed into the world
+    matrix: the glTF importer leaves its armature in quaternion mode, where
+    rotation_euler does nothing.&quot;&quot;&quot;</span>
+    arm.location.x = x
+    bpy.context.view_layer.update()
+    at = mathutils.Matrix.Translation(arm.matrix_world.translation)
+    arm.matrix_world = (at @ mathutils.Matrix.Rotation(math.radians(yaw_deg), <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>)
+                        @ at.inverted() @ arm.matrix_world)
 
 
 <span class="k">def</span> main():
@@ -880,44 +1239,39 @@ EXPORT_KWARGS = dict(
     args = p.parse_args(argv)
 
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    obj, part_of = build_scorpion()
+    obj, vw = build_scorpion()
     <span class="k">for</span> m <span class="k">in</span> make_materials():
         obj.data.materials.append(m)
-    assign_weights(obj, part_of)
+    assign_weights(obj, vw)
     arm = build_rig(obj)
     bpy.context.view_layer.update()
-    code = check(obj, arm, part_of, no_skins=args.no_skins)
+    code = check(obj, arm, no_skins=args.no_skins)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="c"># the re-imported rig is still in the file after the check; rebuild</span>
-        <span class="c"># the authored pair beside it for the still</span>
+        <span class="c"># the re-imported rig is still in the file after the check. Drive it</span>
+        <span class="c"># into the strike pose through its OWN imported bones; rebuild the</span>
+        <span class="c"># authored rig (guard pose, the pose the check compared) to face it.</span>
         roundtrip_mesh = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects
                           <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span> <span class="k">and</span> o.vertex_groups][<span class="n">0</span>]
         roundtrip_arm = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;ARMATURE&#x27;</span>][<span class="n">0</span>]
-        authored, part_of2 = build_scorpion()
+        roundtrip_mesh.name = <span class="s">&quot;ScorpionReimported&quot;</span>
+        apply_pose(roundtrip_arm, POSE_STRIKE)
+        authored, vw2 = build_scorpion(<span class="s">&quot;ScorpionAuthored&quot;</span>)
         <span class="k">for</span> m <span class="k">in</span> make_materials():
             authored.data.materials.append(m)
-        assign_weights(authored, part_of2)
+        assign_weights(authored, vw2)
         authored_arm = build_rig(authored)
-        <span class="c"># move the ARMATURES; the skinned meshes follow as children. Each is</span>
-        <span class="c"># turned three-quarters to the camera: seen head-on, the tail stood</span>
-        <span class="c"># straight up behind the body like a chimney and the scorpion read</span>
-        <span class="c"># as a boxy robot; side-on, the arch of the tail over the back and</span>
-        <span class="c"># the legs down its flanks carry the read.</span>
-        <span class="c"># The yaw is composed into the world matrix about the rig&#x27;s own</span>
-        <span class="c"># origin: the glTF importer leaves its armature in quaternion mode,</span>
-        <span class="c"># where rotation_euler does nothing.</span>
-        <span class="k">for</span> arm, x <span class="k">in</span> ((authored_arm, -STILL_X), (roundtrip_arm, STILL_X)):
-            arm.location.x = x
-            bpy.context.view_layer.update()
-            at = mathutils.Matrix.Translation(arm.matrix_world.translation)
-            arm.matrix_world = (at @ mathutils.Matrix.Rotation(
-                math.radians(STILL_YAW), <span class="n">4</span>, <span class="s">&#x27;Z&#x27;</span>) @ at.inverted() @ arm.matrix_world)
-        <span class="k">if</span> <span class="k">not</span> render_still(authored, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">20</span>
+        <span class="c"># the heads (-Y at rest) turn toward each other and a little toward</span>
+        <span class="c"># the camera, so both tails are seen in profile</span>
+        stage_rig(authored_arm, -STILL_X, STILL_YAW)
+        stage_rig(roundtrip_arm, STILL_X, -STILL_YAW)
+        bpy.context.view_layer.update()
+        code = render_still(bpy.context.scene, [authored, roundtrip_mesh],
+                            os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;gltf-skin-roundtrip OK&quot;</span>)
@@ -934,7 +1288,7 @@ EXPORT_KWARGS = dict(
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="Two blocky orange scorpion robots with curled tails and glowing cyan stingers, authored and re-imported." />
+    <img src="../assets/gltf-skin-roundtrip-hero.webp" alt="Two orange-plated mech scorpions face off: the authored one coils its tail with claws tucked; the re-imported one, driven by its imported bones, rears its tail to strike with claws raised." />
   </dialog>
   <footer>
     <div class="statusbar">
