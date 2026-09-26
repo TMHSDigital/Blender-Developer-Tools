@@ -440,15 +440,16 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a teal base cube beside the smooth teal sphere of its subdivision-surface evaluated form - one shared material, two silhouettes - on a dark studio floor with a warm light pool behind" /></a>
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: the sparse control cage of a game controller drawn as orange wire and vertex beads over faint blue facets, beside the smooth subdivided cobalt controller with sticks, d-pad and colored face buttons that the OBJ export contains, on a dark studio floor with a warm light pool behind" /></a>
 </td>
 <td valign="middle">
 
 ### [depsgraph-export](examples/depsgraph-export/)
 
-A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
-`evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
-modifier-applied geometry (exported vertex count == evaluated > base).
+A depsgraph-evaluated export — builds a game controller whose shell is a 90-vertex quad cage
+under `SUBSURF`, measures every mesh via `evaluated_get().to_mesh()` / `to_mesh_clear()`,
+asserts the evaluated shell matches the Catmull-Clark closed form (1,410 vertices), and asserts
+`wm.obj_export` ships the modifier-applied geometry (exported vertex count == evaluated > base).
 
 </td>
 </tr>

@@ -76,6 +76,7 @@ SELECT = {
     "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
     "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
     "shape-key-blend": (r"^Vase$", None),
+    "depsgraph-export": (r"^Gamepad\.", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
