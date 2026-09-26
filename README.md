@@ -850,13 +850,13 @@ byte-identical on 4.5.11 and 5.1.2 and guarded against future renames.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/export-preset-axis/"><img src="examples/export-preset-axis/preview.webp" alt="Export preset axis: a radio beacon exported under Unity and Godot glTF presets and re-imported side by side on a dark studio floor - Unity standing with a glowing cap, Godot lying on its base - proving the two files have different vertex orientation" /></a>
+<a href="examples/export-preset-axis/"><img src="examples/export-preset-axis/preview.webp" alt="Export preset axis: a red-and-white radio mast exported under Unity and Godot glTF presets and re-imported side by side on a dark studio floor, each beside a red-green-blue axis gizmo - Unity standing with blue Z up, Godot lying with green Y up and blue Z along the mast - proving the two files have different vertex orientation" /></a>
 </td>
 <td valign="middle">
 
 ### [export-preset-axis](examples/export-preset-axis/)
 
-The same beacon mesh under the Unity (`export_yup=True`) and Godot
+The same radio-mast mesh under the Unity (`export_yup=True`) and Godot
 (`export_yup=False`) glTF presets. Re-importing each file proves the axis
 conversion: Unity stands, Godot lies along `-Y`. `--same-axis` exports both
 Y-up and the differ check exits 9. Neighbor of
