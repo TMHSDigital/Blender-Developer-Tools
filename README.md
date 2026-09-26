@@ -971,7 +971,7 @@ concave grooves are free.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry can props with pressed X ribs and red spout rings on a dark studio floor - one faceted flat, one smeared by smooth-everything, one crisp with correct hard edges - proving the post-4.1 shading contract" /></a>
+<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry cans with X-pressed panels, triple handles and red-sealed spouts on a dark studio floor - one faceted flat, one smeared glossy by smooth-everything, one crisp by-angle with its sharp edges traced in thin cyan lines - proving the post-4.1 shading contract" /></a>
 </td>
 <td valign="middle">
 
@@ -984,7 +984,7 @@ on **both** 4.5 LTS and 5.1. `set_sharp_from_angle` marks sharp exactly the
 edges an independent dihedral recompute predicts; evaluated loop normals
 weld across smooth edges and split by the dihedral across sharp ones;
 custom split normals survive depsgraph evaluation within their int16
-quantization (1.407e-04, not float-exact). Documents the legacy
+quantization (3.904e-05, not float-exact). Documents the legacy
 `shade_auto_smooth` operator trap: CANCELLED headless on 4.5, FINISHED
 with the Smooth-by-Angle modifier on 5.1.
 
