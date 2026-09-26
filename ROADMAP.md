@@ -224,7 +224,7 @@ any example remodel.
 
 - naming (default datablock names): gltf-skin-roundtrip (3 parts), gn-sdf-remesh (`Torus`), turntable (`Suzanne`)
 - materials (multi-part, single material): armature-bend (3 parts/1 mat — vertex-color weight bands are the honest display), degenerate-bevel-weld (2/1), driver-wave (16/1, also edge90 1.0)
-- edge90 (raw right angles, 1.0): depsgraph-export (also naming + materials), image-pixels-testcard, png-exr-alpha, temp-override-join, text-version-stamp, vse-cut-list; vse-gamma-cross at 0.92
+- edge90 (raw right angles, 1.0): depsgraph-export (also naming + materials), image-pixels-testcard, png-exr-alpha, text-version-stamp, vse-cut-list; vse-gamma-cross at 0.92
 - reference: gallery best-modeled measure collision-hull-proxy 0.044, custom-normals-shade 0.288, vertex-weight-limit 0.150, lod-decimate-chain 0.019; calibration details in `docs/VISUAL-STYLE.md` § Asset quality
 
 ## Future (uncommitted)

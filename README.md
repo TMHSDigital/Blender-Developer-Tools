@@ -749,15 +749,15 @@ and every orbit lands on its closed form.
 <table>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: an amber three-step staircase of joined unit cubes on a dark studio floor" /></a>
+<a href="examples/temp-override-join/"><img src="examples/temp-override-join/preview.webp" alt="Temp-override join: a red enamel hurricane lantern with a glowing amber globe, wire guard, brass knob and wooden bail grip, joined from seven parts into one object" /></a>
 </td>
 <td valign="middle">
 
 ### [temp-override-join](examples/temp-override-join/)
 
-Three unit cubes joined into a staircase under `bpy.context.temp_override` — the supported
-replacement for the removed `context.copy()` dict-pass form. Asserts one mesh remains,
-sources are gone, and local Z spans all three steps.
+A hurricane lantern joined from seven part objects under `bpy.context.temp_override` — the
+supported replacement for the removed `context.copy()` dict-pass form. Asserts one mesh
+remains, sources are gone, and the five part materials merge with every face kept on its own.
 
 </td>
 </tr>
