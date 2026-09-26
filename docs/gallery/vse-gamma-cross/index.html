@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-gamma-cross-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." />
+  <meta property="og:image:alt" content="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="vse-gamma-cross — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/vse-gamma-cross-hero.webp" />
-  <meta name="twitter:image:alt" content="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." />
+  <meta name="twitter:image:alt" content="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,22 +268,23 @@
     <p>The GAMMA_CROSS fade is not the naive linear mix: it blends in a gamma-0.5 space, so the mid-cross dips below the sRGB lerp. Tiny per-frame renders are asserted against the closed form per frame.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange.">
-      <img src="../assets/vse-gamma-cross-hero.webp" alt="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet.">
+      <img src="../assets/vse-gamma-cross-hero.webp" alt="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.115; AgX-default sampling poisons the fit (Standard is mandatory).</div>
+    <div class="callout"><span class="tag">witnesses</span> out = ((1-t)*sqrt(A) + t*sqrt(B))^2 with t = (frame - start) / duration, never 1 inside the effect. The mid lerp deviation is 0.250; AgX-default sampling poisons the fit (Standard is mandatory).</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/vse-gamma-cross/vse_gamma_cross.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable follow-up to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list"><code>vse-cut-list</code></a>: the check renders tiny frames across a GAMMA_CROSS between crimson and teal strips and asserts every sample against the fade&#x27;s actual math — because AI-generated sequencer code assumes the cross is the naive linear mix, and it is not.</p>
+<p>A runnable follow-up to <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vse-cut-list"><code>vse-cut-list</code></a>: the check renders tiny frames across a GAMMA_CROSS between signal-orange and azure strips and asserts every sample against the fade&#x27;s actual math — because AI-generated sequencer code assumes the cross is the naive linear mix, and it is not.</p>
 <p><strong>What it witnesses:</strong> the fade math and the frame convention behind it.</p>
-<ul><li><strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. From crimson <code>(0.85, 0.10, 0.22)</code> and teal <code>(0.06, 0.75, 0.80)</code> the midpoint is <code>(0.341, 0.349, 0.463)</code>: <strong>0.115 darker</strong> on red than the lerp <code>(0.455, 0.425, 0.510)</code>. The check renders and asserts nine samples (t = 0, 1/8, …, 7/8, 31/32) within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.93e-3) and that the mid lerp deviation is material (≥0.05).</li><li><strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. That final frame (frame 32, t = 31/32) is one of the nine asserted samples, so the convention is pixel-backed end to end. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125).</li><li><strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</li></ul>
-<p><strong>What each check catches on failure:</strong> asserting the naive lerp as the expectation (exit 6, deviation 0.1138 at mid), the endpoint-inclusive t convention (exit 5), and swapped cross inputs (exit 4, <code>input1=T2</code>).</p>
-<p><strong>Version witness:</strong> the blend math is identical on Blender 4.5 LTS and 5.1 — every sample matches to the quantization step. The creation contract from <code>vse-cut-list</code> still gates the timeline: <code>strips</code> (never <code>.sequences</code>), and <code>new_effect</code> ending in <code>length=</code> on 5.x vs <code>frame_end=</code> on 4.5.</p>
-<p>The render is a calibration lightbox: the authentic fade as four backlit chips (t = 0, 1/4, 1/2, 3/4) set into bezels on a bolted steel swatch board — cap rails, panel seam, corner bolts, rear struts down to a plinth — shot at a 3/4 angle so it reads as a staged object. Below the fade row sits the contrast pair: the true mid chip directly beside the naive lerp mid, the impostor framed in hazard orange. The gamma dip reads as an adjacency contrast even at card scale: a naive-lerp cross would make the pair identical, so the still visibly breaks with the contract.</p>
+<ul><li><strong>The cross blends in a gamma-0.5 space.</strong> Not <code>(1-t)·A + t·B</code> but <code>((1-t)·√A + t·√B)²</code> — the mid-cross dips below the sRGB lerp. The endpoints are chosen to make that dip as large as a cross can: orange <code>(1.0, 0.36, 0.0)</code> and azure <code>(0.0, 0.16, 1.0)</code> have per-channel square roots summing to 1, so the gamma midpoint is the neutral <code>(0.25, 0.25, 0.25)</code> while the lerp midpoint is the violet <code>(0.5, 0.26, 0.5)</code>: <strong>0.25 darker</strong> on red and blue, the per-channel maximum. The check renders and asserts nine samples (t = 0, 1/8, …, 7/8, 31/32) within 5e-3 (2× the 8-bit quantization step + fit residual; measured 2.71e-3) and that the mid lerp deviation is material (≥0.05; measured 0.250).</li><li><strong><code>t = (frame − start) / duration</code>, and it never reaches 1 inside the effect.</strong> The last frame of the span blends at <code>(duration−1)/duration</code>; B arrives only when the effect ends. That final frame (frame 32, t = 31/32) is one of the nine asserted samples, so the convention is pixel-backed end to end. An endpoint-inclusive convention is off by a full frame-step (probe: exit 5 at t 0.129 vs 0.125).</li><li><strong>The pixel witness demands <code>view_transform = &#x27;Standard&#x27;</code></strong> — the factory default AgX tone-maps the samples and poisons the fit (measured 0.146 on the red channel during authoring), the same class of silent failure the gallery&#x27;s render standard exists to prevent. Also caught: deleting a consumed input strip orphans-and-deletes the effect (<code>Strip &#x27;GC&#x27; not in scene</code>) — remove effects before their inputs.</li></ul>
+<p><strong>What each check catches on failure:</strong> asserting the naive lerp as the expectation (exit 6, deviation 0.2490 at mid), the endpoint-inclusive t convention (exit 5), and swapped cross inputs (exit 4, <code>input1=T2</code>).</p>
+<p><strong>Version witness:</strong> the blend math is identical on Blender 4.5 LTS, 5.1 and 5.2 LTS — every sample matches to the quantization step. The creation contract from <code>vse-cut-list</code> still gates the timeline: <code>strips</code> (never <code>.sequences</code>), and <code>new_effect</code> ending in <code>length=</code> on 5.x vs <code>frame_end=</code> on 4.5.</p>
+<p>The render is the evidence itself, mounted. All 32 frames of the cross are rendered by the sequencer and laid side by side as a filmstrip: the GAMMA_CROSS strip on top, and directly beneath it the same two strips crossed by the sequencer&#x27;s linear <code>CROSS</code> effect, frame for frame. Both filmstrips are authentic sequencer pixels shown unaltered (closest-texel sampling, emission only, Standard view) on a hooded grading monitor beside a three-ball control surface. The gamma strip sinks into a dark neutral valley at mid-cross where the linear strip passes through violet; three small warm ticks mark the t = 1/2 column. A GAMMA_CROSS that was really a lerp would make the two strips identical, so the still visibly breaks with the contract.</p>
+<p>Before shooting, the render path guards its own comparison (exit 9): every frame must fill its tile edge to edge — a 5.2 COLOR strip bakes the scene size into its width/height at creation, so strips built before the tile resolution is set letterbox into black bars (probe: in-frame spread 1.0) — and each strip&#x27;s mid frame must match its closed form, so the lower strip really is the lerp (probe: wiring GAMMA_CROSS in its place fails at 0.249).</p>
 <h2>Run</h2>
 <pre><code># Correctness check (tiny per-frame sample renders) — the CI check:
 blender --background --python vse_gamma_cross.py --
@@ -291,12 +292,12 @@ blender --background --python vse_gamma_cross.py --
 # Falsifier: GC T2 -&gt; T1. Must exit non-zero (inputs).
 blender --background --python vse_gamma_cross.py -- --swap-inputs
 
-# Also render the calibration lightbox still (EEVEE on a GPU host; cycles on GPU-less):
+# Also render the grading-monitor still (EEVEE on a GPU host; cycles on GPU-less):
 blender --background --python vse_gamma_cross.py -- --output bench.png
 blender --background --python vse_gamma_cross.py -- --output bench.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>GC span off closed form</td></tr><tr><td>4</td><td>GC inputs are not T1 → T2 (<code>--swap-inputs</code> lands here)</td></tr><tr><td>5</td><td>Sample <code>t</code> convention drifted</td></tr><tr><td>6</td><td>Cross sample off the gamma-0.5 closed form</td></tr><tr><td>7</td><td>Mid-cross lerp deviation missing (naive mix)</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>GC span off closed form</td></tr><tr><td>4</td><td>GC inputs are not T1 → T2 (<code>--swap-inputs</code> lands here)</td></tr><tr><td>5</td><td>Sample <code>t</code> convention drifted</td></tr><tr><td>6</td><td>Cross sample off the gamma-0.5 closed form</td></tr><tr><td>7</td><td>Mid-cross lerp deviation missing (naive mix)</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr><tr><td>9</td><td><code>--output</code> filmstrip guard: a frame not uniform, or a strip&#x27;s mid frame off its closed form</td></tr><tr><td>10</td><td><code>--output</code> framing violation (<code>gallery_framing</code>)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--swap-inputs</code>.</p>
     </section>
     <section class="detail-section src">
@@ -313,11 +314,14 @@ wrong: a GAMMA_CROSS between two strips is NOT the naive linear mix
 
     out = ((1-t)*sqrt(A) + t*sqrt(B))^2,   t = (frame - start) / duration
 
-so the mid-cross dips below the sRGB lerp — from crimson (0.85, 0.10, 0.22)
-and teal (0.06, 0.75, 0.80) the midpoint is (0.341, 0.349, 0.463), a full
-0.115 darker on the red channel than the lerp (0.455, 0.425, 0.510). The
-check renders tiny frames across the cross and asserts every sample against
-the closed form, plus that the lerp deviation at mid is material.
+so the mid-cross dips below the sRGB lerp. The endpoints are chosen so the
+dip is as large as a cross can make it: signal orange (1.0, 0.36, 0.0) and
+azure (0.0, 0.16, 1.0) have per-channel square roots that sum to 1, so the
+gamma midpoint is a neutral (0.25, 0.25, 0.25) — a dark valley — while the
+lerp midpoint is a muted violet (0.5, 0.26, 0.5): 0.25 brighter on red and
+blue, the per-channel maximum (a channel crossing 1 -&gt; 0). The check renders
+tiny frames across the cross and asserts every sample against the closed
+form, plus that the lerp deviation at mid is material.
 
 Also witnessed: ``t`` never reaches 1 inside the effect — the last frame of
 the span blends at (duration-1)/duration; B arrives only when the effect
@@ -332,7 +336,10 @@ to the quantization step).
 the falsifier (``--same-axis`` in export-preset-axis).
 
 By default it runs only the correctness check (no gallery render) — the CI
-smoke check. Pass --output to also render a still:
+smoke check. Pass --output to also render a still: every frame of the cross
+rendered by the sequencer and laid side by side as a filmstrip, the
+GAMMA_CROSS strip above an authentic sequencer CROSS (the linear mix) strip,
+mounted unaltered on a grading monitor:
 
     blender --background --python vse_gamma_cross.py --                   # check only
     blender --background --python vse_gamma_cross.py -- --swap-inputs     # must fail
@@ -340,13 +347,20 @@ smoke check. Pass --output to also render a still:
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, sys, os, math, argparse, tempfile, shutil
 
+<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+<span class="k">import</span> gallery_framing
+
 IS_5X = bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>)
 
-A_RGB = (<span class="n">0.85</span>, <span class="n">0.10</span>, <span class="n">0.22</span>)    <span class="c"># crimson</span>
-B_RGB = (<span class="n">0.06</span>, <span class="n">0.75</span>, <span class="n">0.80</span>)    <span class="c"># teal</span>
+<span class="c"># sqrt(A) + sqrt(B) == 1 on every channel: the gamma midpoint is the neutral</span>
+<span class="c"># 0.25 and the dip below the lerp is the per-channel maximum 0.25</span>
+A_RGB = (<span class="n">1.0</span>, <span class="n">0.36</span>, <span class="n">0.0</span>)      <span class="c"># signal orange</span>
+B_RGB = (<span class="n">0.0</span>, <span class="n">0.16</span>, <span class="n">1.0</span>)      <span class="c"># azure</span>
 SPAN = (<span class="n">1</span>, <span class="n">33</span>)                <span class="c"># 32 frames of cross</span>
 PXW, PXH = <span class="n">64</span>, <span class="n">36</span>             <span class="c"># tiny per-sample renders, CI-safe like vse-cut-list</span>
-Q_TOL = <span class="n">5e-3</span>                  <span class="c"># 2x the 8-bit quantization step + gamma-fit residual (measured 2.93e-3)</span>
+Q_TOL = <span class="n">5e-3</span>                  <span class="c"># 2x the 8-bit quantization step + gamma-fit residual (measured 2.71e-3)</span>
 LERP_MID_MIN = <span class="n">0.05</span>           <span class="c"># the gamma dip must be material at t=0.5</span>
 
 <span class="c"># sample frames 1,5,9,...,29 -&gt; t = 0, 1/8, ..., 7/8 exactly, plus the final</span>
@@ -380,9 +394,11 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     <span class="k">return</span> s.frame_final_start, s.frame_final_end, s.frame_final_duration
 
 
-<span class="k">def</span> build_cross(sc, swap_inputs=<span class="k">False</span>):
+<span class="k">def</span> build_cross(sc, swap_inputs=<span class="k">False</span>, effect=<span class="s">&quot;GAMMA_CROSS&quot;</span>):
     <span class="s">&quot;&quot;&quot;The two-strip cross: T1/T2 consumed by the GAMMA_CROSS above them
-    (effect strips consume inputs only from below — vse-cut-list&#x27;s wiring).&quot;&quot;&quot;</span>
+    (effect strips consume inputs only from below — vse-cut-list&#x27;s wiring).
+    The render path rebuilds it once with effect=&quot;CROSS&quot; for the linear
+    reference strip.&quot;&quot;&quot;</span>
     sc.frame_start = SPAN[<span class="n">0</span>]
     sc.frame_end = SPAN[<span class="n">1</span>]
     se = sc.sequence_editor <span class="k">or</span> sc.sequence_editor_create()
@@ -392,7 +408,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     t2 = new_effect(coll, <span class="s">&quot;T2&quot;</span>, <span class="s">&quot;COLOR&quot;</span>, <span class="n">2</span>, SPAN)
     t2.color = B_RGB
     src1, src2 = (t2, t1) <span class="k">if</span> swap_inputs <span class="k">else</span> (t1, t2)
-    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, <span class="s">&quot;GAMMA_CROSS&quot;</span>, <span class="n">3</span>, SPAN, input1=src1, input2=src2)
+    gc = new_effect(coll, <span class="s">&quot;GC&quot;</span>, effect, <span class="n">3</span>, SPAN, input1=src1, input2=src2)
     <span class="k">return</span> gc
 
 
@@ -492,157 +508,290 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
 
 <span class="c"># ------------------------------------------------------------- gallery ---</span>
 
+<span class="c"># Filmstrip geometry: every frame of the span (t = 0 .. 31/32) rendered by</span>
+<span class="c"># the sequencer at TILE_W x TILE_H and laid side by side, unaltered.</span>
+TILE_W, TILE_H = <span class="n">24</span>, <span class="n">150</span>
+STRIP_MX, STRIP_MY, STRIP_GAP = <span class="n">24</span>, <span class="n">26</span>, <span class="n">34</span>
+FRAMES = list(range(SPAN[<span class="n">0</span>], SPAN[<span class="n">1</span>]))              <span class="c"># 32 frames, t = k/32</span>
+MID_FRAME = SPAN[<span class="n">0</span>] + (SPAN[<span class="n">1</span>] - SPAN[<span class="n">0</span>]) // <span class="n">2</span>      <span class="c"># frame 17, t = 1/2</span>
+MARK_RGB = (<span class="n">0.95</span>, <span class="n">0.80</span>, <span class="n">0.55</span>)                       <span class="c"># warm t=1/2 index ticks</span>
+
+
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> build_bench(sc, got):
-    <span class="s">&quot;&quot;&quot;The calibration lightbox: a swatch-booth fixture — glowing chips
-    seated in bezels on a bolted steel board, held by rear struts over a
-    plinth — shot at a 3/4 angle so it reads as a staged object, not a
-    flat test chart. The authentic fade runs as four backlit chips across
-    the top (t = 0, 1/4, 1/2, 3/4); the contrast pair is the centerpiece
-    below: the true mid directly beside the naive lerp mid in its
-    hazard-orange bezel, so the gamma dip reads as an adjacency contrast
-    even at card scale. A naive-lerp cross would make the pair identical:
-    the render visibly breaks with the contract.&quot;&quot;&quot;</span>
+<span class="k">def</span> clear_strips(sc):
+    <span class="s">&quot;&quot;&quot;Effects first: deleting a consumed input orphans-and-deletes the
+    effect (&quot;Strip &#x27;GC&#x27; not in scene&quot; otherwise).&quot;&quot;&quot;</span>
+    coll = strips_coll(sc.sequence_editor)
+    <span class="k">for</span> s <span class="k">in</span> reversed(list(coll)):
+        coll.remove(s)
+
+
+<span class="k">def</span> render_filmstrip(sc, effect, tmp):
+    <span class="s">&quot;&quot;&quot;Render every frame of the cross with `effect` wired T1 -&gt; T2 and
+    return the frames as (TILE_H, TILE_W, 4) float arrays, read straight
+    from the sequencer&#x27;s PNGs.&quot;&quot;&quot;</span>
+    <span class="k">import</span> numpy <span class="k">as</span> np
+    clear_strips(sc)
+    <span class="c"># resolution BEFORE the strips: on 5.2 a COLOR strip bakes the scene</span>
+    <span class="c"># size into its own width/height at creation, so strips built at the</span>
+    <span class="c"># check&#x27;s 64x36 would letterbox into a thin band inside a 24x150 frame</span>
+    setup_render(sc, TILE_W, TILE_H)
+    build_cross(sc, effect=effect)
+    tiles = []
+    <span class="k">for</span> f <span class="k">in</span> FRAMES:
+        path = os.path.join(tmp, <span class="s">f&quot;</span>{effect}<span class="s">_</span>{f:<span class="s">03d</span>}<span class="s">.png</span><span class="s">&quot;</span>)
+        sc.render.filepath = path
+        sc.frame_set(f)
+        bpy.ops.render.render(write_still=<span class="k">True</span>)
+        img = bpy.data.images.load(path)
+        buf = np.empty(TILE_W * TILE_H * <span class="n">4</span>, dtype=np.float32)
+        img.pixels.foreach_get(buf)
+        bpy.data.images.remove(img)
+        tiles.append(buf.reshape(TILE_H, TILE_W, <span class="n">4</span>))
+    <span class="k">return</span> tiles
+
+
+<span class="k">def</span> compose_screen(gamma_tiles, linear_tiles, path):
+    <span class="s">&quot;&quot;&quot;Lay the two filmstrips on a black screen raster: GAMMA_CROSS on top,
+    the linear CROSS directly beneath, frame for frame. The frame pixels are
+    copied verbatim; the only authored pixels are the black surround and
+    three small warm ticks marking the t = 1/2 column.&quot;&quot;&quot;</span>
+    <span class="k">import</span> numpy <span class="k">as</span> np
+    n = len(FRAMES)
+    w = <span class="n">2</span> * STRIP_MX + n * TILE_W
+    h = <span class="n">2</span> * STRIP_MY + <span class="n">2</span> * TILE_H + STRIP_GAP
+    raster = np.zeros((h, w, <span class="n">4</span>), dtype=np.float32)
+    raster[..., <span class="n">3</span>] = <span class="n">1.0</span>
+    <span class="c"># image rows run bottom-up: the linear strip sits low, gamma above it</span>
+    y_lin = STRIP_MY
+    y_gam = STRIP_MY + TILE_H + STRIP_GAP
+    <span class="k">for</span> i, (g, l) <span class="k">in</span> enumerate(zip(gamma_tiles, linear_tiles)):
+        x = STRIP_MX + i * TILE_W
+        raster[y_gam:y_gam + TILE_H, x:x + TILE_W] = g
+        raster[y_lin:y_lin + TILE_H, x:x + TILE_W] = l
+    mx = STRIP_MX + (MID_FRAME - SPAN[<span class="n">0</span>]) * TILE_W + TILE_W // <span class="n">2</span>
+    tick = (*MARK_RGB, <span class="n">1.0</span>)
+    <span class="k">for</span> y0, y1 <span class="k">in</span> ((y_gam + TILE_H + <span class="n">6</span>, h - <span class="n">6</span>),            <span class="c"># above gamma</span>
+                   (y_lin + TILE_H + <span class="n">8</span>, y_gam - <span class="n">8</span>),         <span class="c"># in the gap</span>
+                   (<span class="n">6</span>, y_lin - <span class="n">6</span>)):                         <span class="c"># below linear</span>
+        raster[y0:y1, mx - <span class="n">3</span>:mx + <span class="n">3</span>] = tick
+    img = bpy.data.images.new(<span class="s">&quot;CrossMonitor&quot;</span>, w, h, alpha=<span class="k">False</span>)
+    img.pixels.foreach_set(raster.ravel())
+    img.filepath_raw = path
+    img.file_format = <span class="s">&#x27;PNG&#x27;</span>
+    img.save()
+    <span class="k">return</span> img, w / h
+
+
+<span class="k">def</span> build_console(sc, screen_img, aspect):
+    <span class="s">&quot;&quot;&quot;A grading monitor on a machined yoke, hooded, standing on a walnut
+    riser beside a three-ball control surface. The screen is one unlit quad
+    showing the composed filmstrips with closest-texel sampling: the
+    sequencer&#x27;s pixels reach the camera exactly as it wrote them.&quot;&quot;&quot;</span>
     <span class="k">import</span> bmesh
     <span class="k">import</span> mathutils
-    <span class="k">import</span> math <span class="k">as</span> m
+    m = math
 
-    <span class="k">def</span> mat_principled(name, color, metallic, rough):
+    <span class="k">def</span> pbr(name, color, metallic, rough, spec=<span class="k">None</span>):
         mat = bpy.data.materials.new(name)
         mat.use_nodes = <span class="k">True</span>
-        bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-        bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
-        bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
-        bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+        b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*color, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+        b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+        <span class="k">if</span> spec <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            s = b.inputs.get(<span class="s">&quot;Specular IOR Level&quot;</span>) <span class="k">or</span> b.inputs.get(<span class="s">&quot;Specular&quot;</span>)
+            s.default_value = spec
         <span class="k">return</span> mat
 
-    <span class="c"># designed non-data surfaces: painted steel board, darker rail/frame</span>
-    <span class="c"># steel, dark polymer bezels, machined bolt heads — no Principled</span>
-    <span class="c"># defaults</span>
-    fixture = mat_principled(<span class="s">&quot;FixtureSteel&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.25</span>, <span class="n">0.55</span>)
-    rail_mat = mat_principled(<span class="s">&quot;RailSteel&quot;</span>, (<span class="n">0.075</span>, <span class="n">0.08</span>, <span class="n">0.09</span>), <span class="n">0.6</span>, <span class="n">0.45</span>)
-    bezel_mat = mat_principled(<span class="s">&quot;BezelPolymer&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.048</span>, <span class="n">0.055</span>), <span class="n">0.0</span>, <span class="n">0.5</span>)
-    hot_mat = mat_principled(<span class="s">&quot;HotFrame&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.28</span>, <span class="n">0.06</span>), <span class="n">0.1</span>, <span class="n">0.5</span>)
-    bolt_mat = mat_principled(<span class="s">&quot;BoltSteel&quot;</span>, (<span class="n">0.22</span>, <span class="n">0.23</span>, <span class="n">0.26</span>), <span class="n">0.9</span>, <span class="n">0.5</span>)
-    plinth_mat = mat_principled(<span class="s">&quot;PlinthSteel&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.11</span>, <span class="n">0.12</span>), <span class="n">0.6</span>, <span class="n">0.5</span>)
-
-    <span class="k">def</span> box(name, dims, loc, mat, rot_x=<span class="n">0.0</span>):
-        me = bpy.data.meshes.new(name)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
-                                  matrix=mathutils.Matrix.Diagonal((*dims, <span class="n">1.0</span>)))
-            bm.to_mesh(me)
-        <span class="k">finally</span>:
-            bm.free()
-        me.materials.append(mat)
-        ob = bpy.data.objects.new(name, me)
-        ob.location = loc
-        ob.rotation_euler = (rot_x, <span class="n">0.0</span>, <span class="n">0.0</span>)
-        sc.collection.objects.link(ob)
-
-    <span class="k">def</span> bolt(x, z):
-        me = bpy.data.meshes.new(<span class="s">&quot;Bolt&quot;</span>)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>,
-                                  segments=<span class="n">6</span>, radius1=<span class="n">0.085</span>, radius2=<span class="n">0.085</span>,
-                                  depth=<span class="n">0.07</span>)
-            bm.to_mesh(me)
-        <span class="k">finally</span>:
-            bm.free()
-        me.materials.append(bolt_mat)
-        ob = bpy.data.objects.new(<span class="s">&quot;Bolt&quot;</span>, me)
-        ob.location = (x, -<span class="n">0.035</span>, z)
-        ob.rotation_euler = (m.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-        sc.collection.objects.link(ob)
-
-    <span class="k">def</span> swatch(name, rgb):
-        <span class="c"># the data faces stay pure emission: exact values, no specular,</span>
-        <span class="c"># no texture — the image is a data display</span>
-        mat = bpy.data.materials.new(<span class="s">f&quot;</span><span class="s">Swatch</span>{name}<span class="s">&quot;</span>)
+    <span class="k">def</span> glow(name, rgb, strength):
+        mat = bpy.data.materials.new(name)
         mat.use_nodes = <span class="k">True</span>
         nt = mat.node_tree
         nt.nodes.clear()
         out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
         em = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
         em.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
-        em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+        em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = strength
         nt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
         <span class="k">return</span> mat
 
-    <span class="k">def</span> chip(name, rgb, x, z, size, hot=<span class="k">False</span>):
-        <span class="c"># glowing chip seated proud of its bezel; the naive impostor keeps</span>
-        <span class="c"># the hazard-orange frame — a broken (naive) cross would make the</span>
-        <span class="c"># framed chip match its neighbor</span>
-        box(<span class="s">f&quot;</span><span class="s">Bezel</span>{name}<span class="s">&quot;</span>, (size + <span class="n">0.20</span>, <span class="n">0.16</span>, size + <span class="n">0.20</span>),
-            (x, -<span class="n">0.08</span>, z), hot_mat <span class="k">if</span> hot <span class="k">else</span> bezel_mat)
-        box(<span class="s">f&quot;</span><span class="s">Chip</span>{name}<span class="s">&quot;</span>, (size, <span class="n">0.12</span>, size), (x, -<span class="n">0.13</span>, z),
-            swatch(name, rgb))
+    shell = pbr(<span class="s">&quot;MonitorShell&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.075</span>, <span class="n">0.085</span>), <span class="n">0.55</span>, <span class="n">0.38</span>)
+    rear = pbr(<span class="s">&quot;MonitorRear&quot;</span>, (<span class="n">0.045</span>, <span class="n">0.047</span>, <span class="n">0.052</span>), <span class="n">0.3</span>, <span class="n">0.55</span>)
+    hood = pbr(<span class="s">&quot;HoodFabric&quot;</span>, (<span class="n">0.018</span>, <span class="n">0.018</span>, <span class="n">0.02</span>), <span class="n">0.0</span>, <span class="n">0.92</span>, spec=<span class="n">0.1</span>)
+    alu = pbr(<span class="s">&quot;YokeAluminium&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.51</span>, <span class="n">0.54</span>), <span class="n">0.6</span>, <span class="n">0.35</span>)
+    walnut = pbr(<span class="s">&quot;RiserWalnut&quot;</span>, (<span class="n">0.19</span>, <span class="n">0.075</span>, <span class="n">0.028</span>), <span class="n">0.0</span>, <span class="n">0.55</span>, spec=<span class="n">0.25</span>)
+    panel = pbr(<span class="s">&quot;PanelAnodized&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.12</span>), <span class="n">0.7</span>, <span class="n">0.42</span>)
+    ball = pbr(<span class="s">&quot;TrackballResin&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.025</span>, <span class="n">0.03</span>), <span class="n">0.0</span>, <span class="n">0.12</span>)
+    key = pbr(<span class="s">&quot;KeyCap&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.03</span>, <span class="n">0.034</span>), <span class="n">0.0</span>, <span class="n">0.6</span>)
+    tally = glow(<span class="s">&quot;TallyLamp&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.25</span>, <span class="n">0.08</span>), <span class="n">6.0</span>)
+    keylit = glow(<span class="s">&quot;KeyBacklight&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), <span class="n">2.0</span>)
 
-    <span class="c"># the booth: bolted board with cap rails, rear struts down to the plinth</span>
-    box(<span class="s">&quot;Board&quot;</span>, (<span class="n">7.20</span>, <span class="n">0.34</span>, <span class="n">5.00</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">3.50</span>), fixture)
-    box(<span class="s">&quot;RailTop&quot;</span>, (<span class="n">7.34</span>, <span class="n">0.42</span>, <span class="n">0.16</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">6.06</span>), rail_mat)
-    box(<span class="s">&quot;RailBottom&quot;</span>, (<span class="n">7.34</span>, <span class="n">0.42</span>, <span class="n">0.20</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, <span class="n">0.94</span>), rail_mat)
-    <span class="c"># panel seam between the fade row and the contrast pair</span>
-    box(<span class="s">&quot;Seam&quot;</span>, (<span class="n">7.00</span>, <span class="n">0.02</span>, <span class="n">0.035</span>), (<span class="n">0.0</span>, -<span class="n">0.005</span>, <span class="n">3.70</span>), rail_mat)
-    <span class="k">for</span> bx <span class="k">in</span> (-<span class="n">3.36</span>, <span class="n">3.36</span>):
-        <span class="k">for</span> bz <span class="k">in</span> (<span class="n">1.30</span>, <span class="n">5.70</span>):
-            bolt(bx, bz)
-    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">2.30</span>, <span class="n">2.30</span>):
-        box(<span class="s">&quot;Strut&quot;</span>, (<span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">2.32</span>), (sx, <span class="n">0.70</span>, <span class="n">1.60</span>), rail_mat,
-            rot_x=m.radians(<span class="n">18</span>))
-        box(<span class="s">&quot;Foot&quot;</span>, (<span class="n">0.50</span>, <span class="n">0.64</span>, <span class="n">0.10</span>), (sx, <span class="n">1.02</span>, <span class="n">0.55</span>), rail_mat)
-    box(<span class="s">&quot;Plinth&quot;</span>, (<span class="n">6.60</span>, <span class="n">2.00</span>, <span class="n">0.50</span>), (<span class="n">0.0</span>, <span class="n">0.35</span>, <span class="n">0.25</span>), plinth_mat)
-
-    by_t = {t: f <span class="k">for</span> f, t <span class="k">in</span> SAMPLES}
-    <span class="c"># the authentic fade across the top, left to right</span>
-    top = [(<span class="n">0.0</span>, <span class="s">&quot;t=0&quot;</span>), (<span class="n">0.25</span>, <span class="s">&quot;t=1/4&quot;</span>), (<span class="n">0.5</span>, <span class="s">&quot;t=1/2&quot;</span>), (<span class="n">0.75</span>, <span class="s">&quot;t=3/4&quot;</span>)]
-    top_xs = [-<span class="n">2.625</span> + <span class="n">1.75</span> * i <span class="k">for</span> i <span class="k">in</span> range(<span class="n">4</span>)]
-    <span class="k">for</span> (t, _label), x <span class="k">in</span> zip(top, top_xs):
-        chip(<span class="s">f&quot;</span><span class="s">t</span>{t}<span class="s">&quot;</span>, got[by_t[t]], x, z=<span class="n">4.72</span>, size=<span class="n">1.32</span>)
-    <span class="c"># the contrast pair at center: true mid beside the naive mid</span>
-    chip(<span class="s">&quot;true_mid&quot;</span>, got[by_t[<span class="n">0.5</span>]], -<span class="n">1.05</span>, z=<span class="n">2.55</span>, size=<span class="n">1.55</span>)
-    chip(<span class="s">&quot;naive_mid&quot;</span>, tuple(naive(<span class="n">0.5</span>, k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)),
-         <span class="n">1.05</span>, z=<span class="n">2.55</span>, size=<span class="n">1.55</span>, hot=<span class="k">True</span>)
-
-    <span class="c"># captions: t-labels crown the fade chips; the pair is named beneath it</span>
-    cu_mat = bpy.data.materials.new(<span class="s">&quot;CaptionGrey&quot;</span>)
-    cu_mat.use_nodes = <span class="k">True</span>
-    cb = cu_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    cb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
-    cb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
-    cb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
-    sock = cb.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> cb.inputs[<span class="s">&quot;Emission&quot;</span>]
-    sock.default_value = (<span class="n">0.38</span>, <span class="n">0.40</span>, <span class="n">0.45</span>, <span class="n">1.0</span>)
-    cb.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.5</span>
-
-    <span class="k">def</span> caption(text, x, z, size, y=-<span class="n">0.03</span>):
-        cu = bpy.data.curves.new(<span class="s">&quot;Caption&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
-        cu.body = text
-        cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
-        cu.size = size
-        cu.extrude = <span class="n">0.004</span>
-        ob = bpy.data.objects.new(<span class="s">&quot;Caption&quot;</span>, cu)
-        ob.location = (x, y, z)
-        ob.rotation_euler = (m.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-        ob.data.materials.append(cu_mat)
+    <span class="k">def</span> link(name, me, loc, rot=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)):
+        ob = bpy.data.objects.new(name, me)
+        ob.location = loc
+        ob.rotation_euler = rot
         sc.collection.objects.link(ob)
+        <span class="k">return</span> ob
 
-    <span class="k">for</span> (_t, label), x <span class="k">in</span> zip(top, top_xs):
-        caption(label, x, <span class="n">5.62</span>, <span class="n">0.20</span>)
-    caption(<span class="s">&quot;GAMMA_CROSS t=1/2&quot;</span>, -<span class="n">1.05</span>, <span class="n">1.42</span>, <span class="n">0.20</span>)
-    caption(<span class="s">&quot;NAIVE LERP t=1/2&quot;</span>, <span class="n">1.05</span>, <span class="n">1.42</span>, <span class="n">0.20</span>)
+    <span class="k">def</span> rbox(name, dims, loc, mat, bevel=<span class="n">0.02</span>, rot=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), seg=<span class="n">3</span>):
+        <span class="s">&quot;&quot;&quot;A box with machined, rounded edges.&quot;&quot;&quot;</span>
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
+                                  matrix=mathutils.Matrix.Diagonal((*dims, <span class="n">1.0</span>)))
+            <span class="k">if</span> bevel &gt; <span class="n">0.0</span>:
+                bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel,
+                                segments=seg, profile=<span class="n">0.5</span>, affect=<span class="s">&#x27;EDGES&#x27;</span>,
+                                clamp_overlap=<span class="k">True</span>)
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        <span class="k">return</span> link(name, me, loc, rot)
+
+    <span class="k">def</span> cyl(name, r, depth, loc, mat, seg=<span class="n">48</span>, rot=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), r2=<span class="k">None</span>):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, cap_tris=<span class="k">False</span>, segments=seg,
+                                  radius1=r, radius2=r <span class="k">if</span> r2 <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> r2,
+                                  depth=depth)
+            <span class="k">for</span> fc <span class="k">in</span> bm.faces:
+                fc.smooth = abs(fc.normal.z) &lt; <span class="n">0.5</span>
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        <span class="k">return</span> link(name, me, loc, rot)
+
+    <span class="k">def</span> sphere(name, r, loc, mat):
+        me = bpy.data.meshes.new(name)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=r)
+            <span class="k">for</span> fc <span class="k">in</span> bm.faces:
+                fc.smooth = <span class="k">True</span>
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        me.materials.append(mat)
+        <span class="k">return</span> link(name, me, loc)
+
+    <span class="c"># ---- riser: a walnut slab on a recessed aluminium plinth band</span>
+    riser_top = <span class="n">0.16</span>
+    rbox(<span class="s">&quot;Riser&quot;</span>, (<span class="n">2.90</span>, <span class="n">1.50</span>, <span class="n">0.10</span>), (<span class="n">0.0</span>, -<span class="n">0.18</span>, riser_top - <span class="n">0.05</span>), walnut, bevel=<span class="n">0.025</span>)
+    rbox(<span class="s">&quot;RiserBand&quot;</span>, (<span class="n">2.76</span>, <span class="n">1.36</span>, <span class="n">0.07</span>), (<span class="n">0.0</span>, -<span class="n">0.18</span>, <span class="n">0.035</span>), alu, bevel=<span class="n">0.01</span>)
+
+    <span class="c"># ---- monitor: screen quad sized from the composed raster&#x27;s aspect</span>
+    scr_w = <span class="n">2.30</span>
+    scr_h = scr_w / aspect
+    border, chin = <span class="n">0.06</span>, <span class="n">0.13</span>
+    body_w = scr_w + <span class="n">2</span> * border
+    body_h = scr_h + border + chin
+    body_d = <span class="n">0.12</span>
+    yoke_h = <span class="n">0.34</span>
+    body_z0 = riser_top + <span class="n">0.05</span> + yoke_h
+    body_zc = body_z0 + body_h / <span class="n">2</span>
+    scr_zc = body_z0 + chin + scr_h / <span class="n">2</span>
+    rbox(<span class="s">&quot;MonitorBody&quot;</span>, (body_w, body_d, body_h), (<span class="n">0.0</span>, <span class="n">0.0</span>, body_zc), shell, bevel=<span class="n">0.03</span>)
+    rbox(<span class="s">&quot;MonitorRear&quot;</span>, (body_w * <span class="n">0.72</span>, <span class="n">0.16</span>, body_h * <span class="n">0.72</span>),
+         (<span class="n">0.0</span>, body_d / <span class="n">2</span> + <span class="n">0.06</span>, body_zc + <span class="n">0.02</span>), rear, bevel=<span class="n">0.06</span>)
+
+    sme = bpy.data.meshes.new(<span class="s">&quot;ScreenPanel&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        y = -body_d / <span class="n">2</span> - <span class="n">0.002</span>
+        q = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> ((-scr_w / <span class="n">2</span>, y, scr_zc - scr_h / <span class="n">2</span>),
+                                       (scr_w / <span class="n">2</span>, y, scr_zc - scr_h / <span class="n">2</span>),
+                                       (scr_w / <span class="n">2</span>, y, scr_zc + scr_h / <span class="n">2</span>),
+                                       (-scr_w / <span class="n">2</span>, y, scr_zc + scr_h / <span class="n">2</span>))]
+        uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+        fc = bm.faces.new(q)
+        <span class="k">for</span> li, lp <span class="k">in</span> enumerate(fc.loops):
+            lp[uv].uv = ((<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">1.0</span>))[li]
+        bm.to_mesh(sme)
+    <span class="k">finally</span>:
+        bm.free()
+    smat = bpy.data.materials.new(<span class="s">&quot;ScreenPixels&quot;</span>)
+    smat.use_nodes = <span class="k">True</span>
+    nt = smat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+    em = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+    tex = nt.nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = screen_img
+    tex.interpolation = <span class="s">&#x27;Closest&#x27;</span>   <span class="c"># no texel blending across frame seams</span>
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    nt.links.new(tc.outputs[<span class="s">&quot;UV&quot;</span>], tex.inputs[<span class="s">&quot;Vector&quot;</span>])
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], em.inputs[<span class="s">&quot;Color&quot;</span>])
+    em.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    nt.links.new(em.outputs[<span class="s">&quot;Emission&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    sme.materials.append(smat)
+    link(<span class="s">&quot;ScreenPanel&quot;</span>, sme, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+
+    <span class="c"># chin: tally lamp and a row of backlit function keys</span>
+    chin_z = body_z0 + chin / <span class="n">2</span>
+    front = -body_d / <span class="n">2</span>
+    rbox(<span class="s">&quot;TallyLamp&quot;</span>, (<span class="n">0.06</span>, <span class="n">0.02</span>, <span class="n">0.022</span>), (-body_w / <span class="n">2</span> + <span class="n">0.16</span>, front - <span class="n">0.004</span>, chin_z),
+         tally, bevel=<span class="n">0.004</span>)
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+        rbox(<span class="s">f&quot;</span><span class="s">ChinKey</span>{i}<span class="s">&quot;</span>, (<span class="n">0.085</span>, <span class="n">0.02</span>, <span class="n">0.03</span>),
+             (body_w / <span class="n">2</span> - <span class="n">0.20</span> - i * <span class="n">0.12</span>, front - <span class="n">0.004</span>, chin_z), key, bevel=<span class="n">0.006</span>)
+    rbox(<span class="s">&quot;ChinKeyLit&quot;</span>, (<span class="n">0.085</span>, <span class="n">0.022</span>, <span class="n">0.03</span>),
+         (body_w / <span class="n">2</span> - <span class="n">0.20</span>, front - <span class="n">0.006</span>, chin_z), keylit, bevel=<span class="n">0.006</span>)
+
+    <span class="c"># hood: top and flared side flaps shading the panel</span>
+    hood_d = <span class="n">0.30</span>
+    top_z = body_z0 + body_h
+    rbox(<span class="s">&quot;HoodTop&quot;</span>, (body_w + <span class="n">0.04</span>, hood_d, <span class="n">0.018</span>),
+         (<span class="n">0.0</span>, front - hood_d / <span class="n">2</span> + <span class="n">0.02</span>, top_z + <span class="n">0.004</span>), hood, bevel=<span class="n">0.006</span>,
+         rot=(m.radians(-<span class="n">6.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        rbox(<span class="s">f&quot;</span><span class="s">HoodSide</span>{<span class="s">&#x27;L&#x27;</span> <span class="k">if</span> sx &lt; <span class="n">0</span> <span class="k">else</span> <span class="s">&#x27;R&#x27;</span>}<span class="s">&quot;</span>, (<span class="n">0.018</span>, hood_d, body_h - <span class="n">0.02</span>),
+             (sx * (body_w / <span class="n">2</span> + <span class="n">0.01</span>) + sx * hood_d * <span class="n">0.07</span>, front - hood_d / <span class="n">2</span> + <span class="n">0.03</span>,
+              body_zc), hood, bevel=<span class="n">0.006</span>, rot=(<span class="n">0.0</span>, <span class="n">0.0</span>, m.radians(-<span class="n">8.0</span> * sx)))
+
+    <span class="c"># yoke: foot plate, twin uprights, cross bar into the rear housing</span>
+    rbox(<span class="s">&quot;YokeFoot&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.52</span>, <span class="n">0.05</span>), (<span class="n">0.0</span>, <span class="n">0.12</span>, riser_top + <span class="n">0.025</span>), alu, bevel=<span class="n">0.018</span>)
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">0.26</span>, <span class="n">0.26</span>):
+        rbox(<span class="s">&quot;YokeArm&quot;</span>, (<span class="n">0.07</span>, <span class="n">0.07</span>, yoke_h + <span class="n">0.22</span>),
+             (sx, <span class="n">0.17</span>, riser_top + <span class="n">0.05</span> + (yoke_h + <span class="n">0.22</span>) / <span class="n">2</span> - <span class="n">0.01</span>), alu, bevel=<span class="n">0.015</span>)
+    rbox(<span class="s">&quot;YokeBar&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.07</span>, <span class="n">0.08</span>), (<span class="n">0.0</span>, <span class="n">0.17</span>, body_z0 + <span class="n">0.20</span>), alu, bevel=<span class="n">0.015</span>)
+    <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">0.26</span>, <span class="n">0.26</span>):
+        cyl(<span class="s">&quot;YokeKnob&quot;</span>, <span class="n">0.055</span>, <span class="n">0.04</span>, (sx + (<span class="n">0.055</span> <span class="k">if</span> sx &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">0.055</span>), <span class="n">0.17</span>,
+                                      body_z0 + <span class="n">0.20</span>), rear,
+            rot=(<span class="n">0.0</span>, m.radians(<span class="n">90.0</span>), <span class="n">0.0</span>))
+
+    <span class="c"># control surface: a raked anodized deck with three trackballs</span>
+    deck_rot = (m.radians(<span class="n">9.0</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    deck_c = mathutils.Vector((<span class="n">0.0</span>, -<span class="n">0.66</span>, riser_top + <span class="n">0.055</span>))
+    rbox(<span class="s">&quot;ControlDeck&quot;</span>, (<span class="n">1.55</span>, <span class="n">0.52</span>, <span class="n">0.09</span>), tuple(deck_c), panel, bevel=<span class="n">0.02</span>,
+         rot=deck_rot)
+    tilt = mathutils.Euler(deck_rot).to_matrix()
+    deck_up = tilt @ mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    <span class="k">for</span> i, bx <span class="k">in</span> enumerate((-<span class="n">0.46</span>, <span class="n">0.0</span>, <span class="n">0.46</span>)):
+        base = deck_c + tilt @ mathutils.Vector((bx, <span class="n">0.04</span>, <span class="n">0.045</span>))
+        cyl(<span class="s">f&quot;</span><span class="s">TrackRing</span>{i}<span class="s">&quot;</span>, <span class="n">0.15</span>, <span class="n">0.03</span>, tuple(base + deck_up * <span class="n">0.012</span>), alu,
+            rot=deck_rot)
+        sphere(<span class="s">f&quot;</span><span class="s">Trackball</span>{i}<span class="s">&quot;</span>, <span class="n">0.115</span>, tuple(base + deck_up * <span class="n">0.045</span>), ball)
+        cyl(<span class="s">f&quot;</span><span class="s">TrackCollar</span>{i}<span class="s">&quot;</span>, <span class="n">0.125</span>, <span class="n">0.02</span>, tuple(base + deck_up * <span class="n">0.03</span>), key,
+            rot=deck_rot)
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">7</span>):
+        kx = -<span class="n">0.60</span> + i * <span class="n">0.2</span>
+        rbox(<span class="s">f&quot;</span><span class="s">DeckKey</span>{i}<span class="s">&quot;</span>, (<span class="n">0.12</span>, <span class="n">0.06</span>, <span class="n">0.03</span>),
+             tuple(deck_c + tilt @ mathutils.Vector((kx, -<span class="n">0.20</span>, <span class="n">0.05</span>))),
+             keylit <span class="k">if</span> i == <span class="n">3</span> <span class="k">else</span> key, bevel=<span class="n">0.008</span>, rot=deck_rot)
 
 
-<span class="k">def</span> render_still(sc, got, path, engine):
-    scene = sc
-    build_bench(scene, got)
-
-    <span class="k">import</span> mathutils, bmesh
+<span class="k">def</span> build_stage(sc):
+    <span class="s">&quot;&quot;&quot;The house dark studio: floor, wall, world, four area lights.&quot;&quot;&quot;</span>
+    <span class="k">import</span> bmesh
+    <span class="k">import</span> mathutils
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
@@ -657,64 +806,122 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
     fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
-    scene.collection.objects.link(floor)
+    sc.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
-    scene.collection.objects.link(wall)
+    sc.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
-    world.use_nodes = <span class="k">True</span>
+    <span class="k">if</span> world.node_tree <span class="k">is</span> <span class="k">None</span>:  <span class="c"># 5.x worlds ship with nodes; 4.x needs this</span>
+        world.use_nodes = <span class="k">True</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
-    scene.world = world
+    sc.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, target):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
-        ld.energy = energy; ld.size = size; ld.color = col
+        ld.energy = energy
+        ld.size = size
+        ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         d = mathutils.Vector(target) - ob.location
         ob.rotation_euler = d.to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
-        scene.collection.objects.link(ob)
+        sc.collection.objects.link(ob)
 
-    <span class="c"># shaped warm key, faint cool fill, cool rim, and the signature warm</span>
-    <span class="c"># wedge between booth and wall raking a pool onto the backdrop — the</span>
-    <span class="c"># wall itself stays near-black outside the pool (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">4.5</span>, <span class="n">7.0</span>), <span class="n">460.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">3.0</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">6.0</span>, -<span class="n">3.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.5</span>, <span class="n">0.0</span>, <span class="n">2.8</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">7.0</span>), <span class="n">320.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.3</span>, <span class="n">4.2</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.5</span>, <span class="n">5.5</span>, <span class="n">6.0</span>), <span class="n">420.0</span>, <span class="n">5.5</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">0.5</span>, <span class="n">9.0</span>, <span class="n">4.2</span>))
+    <span class="c"># warm shaped key upper left, faint cool fill, cool rim, and the warm</span>
+    <span class="c"># wedge between console and wall raking a pool onto the backdrop</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">0.0</span>, -<span class="n">0.3</span>, <span class="n">0.8</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">2.5</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.0</span>, <span class="n">5.0</span>), <span class="n">300.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">1.4</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.0</span>, <span class="n">3.2</span>, <span class="n">4.4</span>), <span class="n">460.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">1.5</span>, <span class="n">8.0</span>, <span class="n">1.8</span>))
 
-    <span class="c"># 3/4 angle from the right: the booth shows face, side, and cast shadow</span>
-    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">50.0</span>
-    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">9.7</span>, -<span class="n">17.5</span>, <span class="n">5.7</span>)
-    scene.collection.objects.link(cam)
-    target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.2</span>, <span class="n">3.2</span>)
-    scene.collection.objects.link(target)
-    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
-    con.target = target
-    scene.camera = cam
 
-    scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
-    <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
-    <span class="k">else</span>:
-        <span class="k">try</span>:
-            scene.eevee.taa_render_samples = <span class="n">64</span>
-        <span class="k">except</span> AttributeError:
-            <span class="k">pass</span>
-    scene.render.resolution_x = <span class="n">1280</span>
-    scene.render.resolution_y = <span class="n">720</span>
-    scene.render.resolution_percentage = <span class="n">100</span>
-    scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
-    scene.render.filepath = path
-    <span class="c"># Standard keeps the swatch colors true (docs/VISUAL-STYLE.md)</span>
-    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
-    bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+<span class="k">def</span> render_still(sc, path, engine):
+    <span class="s">&quot;&quot;&quot;Render both filmstrips from the sequencer, guard the linear reference,
+    then shoot the console with those exact pixels on its screen.&quot;&quot;&quot;</span>
+    tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_gamma_still_&quot;</span>)
+    <span class="k">try</span>:
+        gamma_tiles = render_filmstrip(sc, <span class="s">&quot;GAMMA_CROSS&quot;</span>, tmp)
+        linear_tiles = render_filmstrip(sc, <span class="s">&quot;CROSS&quot;</span>, tmp)
+        clear_strips(sc)
+        <span class="c"># the lower strip is only a fair comparison if it IS the lerp: guard</span>
+        <span class="c"># the sequencer CROSS at t = 1/2 against (1-t)*A + t*B</span>
+        k_mid = MID_FRAME - SPAN[<span class="n">0</span>]
+        cy, cx = TILE_H // <span class="n">2</span>, TILE_W // <span class="n">2</span>
+        lin_mid = linear_tiles[k_mid][cy, cx, :<span class="n">3</span>]
+        gam_mid = gamma_tiles[k_mid][cy, cx, :<span class="n">3</span>]
+        lin_err = max(abs(float(lin_mid[k]) - naive(<span class="n">0.5</span>, k)) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+        gam_err = max(abs(float(gam_mid[k]) - closed_form(<span class="n">0.5</span>, k)) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
+        print(<span class="s">f&quot;</span><span class="s">filmstrip mid: gamma </span>{tuple(round(float(v), <span class="n">3</span>) <span class="k">for</span> v <span class="k">in</span> gam_mid)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(err </span>{gam_err:<span class="s">.2e</span>}<span class="s">), linear </span>{tuple(round(float(v), <span class="n">3</span>) <span class="k">for</span> v <span class="k">in</span> lin_mid)}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(err </span>{lin_err:<span class="s">.2e</span>}<span class="s">)</span><span class="s">&quot;</span>)
+        <span class="c"># every frame must fill its tile edge to edge (a letterboxed COLOR</span>
+        <span class="c"># strip would paint black bars into the strip and fake a dip)</span>
+        spread = max(float((t[..., :<span class="n">3</span>].max(axis=(<span class="n">0</span>, <span class="n">1</span>)) - t[..., :<span class="n">3</span>].min(axis=(<span class="n">0</span>, <span class="n">1</span>))).max())
+                     <span class="k">for</span> t <span class="k">in</span> gamma_tiles + linear_tiles)
+        print(<span class="s">f&quot;</span><span class="s">filmstrip frames uniform: max in-frame spread </span>{spread:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+        <span class="k">if</span> spread &gt; Q_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: a filmstrip frame is not uniform (spread </span>{spread:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+        <span class="k">if</span> lin_err &gt; Q_TOL <span class="k">or</span> gam_err &gt; Q_TOL:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: filmstrip mid off its closed form (linear </span>{lin_err:<span class="s">.4f</span>}<span class="s">, </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span><span class="s">gamma </span>{gam_err:<span class="s">.4f</span>}<span class="s">, tol </span>{Q_TOL}<span class="s">) — the comparison would lie</span><span class="s">&quot;</span>,
+                  file=sys.stderr)
+            <span class="k">return</span> <span class="n">9</span>
+
+        screen_img, aspect = compose_screen(
+            gamma_tiles, linear_tiles, os.path.join(tmp, <span class="s">&quot;monitor.png&quot;</span>))
+        screen_img.pack()   <span class="c"># the raster outlives the temp dir</span>
+
+        build_stage(sc)
+        build_console(sc, screen_img, aspect)
+
+        cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+        cam_data.lens = <span class="n">50.0</span>
+        cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+        cam.location = (<span class="n">1.55</span>, -<span class="n">6.2</span>, <span class="n">1.55</span>)
+        sc.collection.objects.link(cam)
+        aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+        aim.location = (<span class="n">0.05</span>, -<span class="n">0.2</span>, <span class="n">0.86</span>)
+        sc.collection.objects.link(aim)
+        con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+        con.target = aim
+        sc.camera = cam
+
+        sc.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
+        <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
+            sc.cycles.samples = <span class="n">64</span>
+            sc.cycles.use_denoising = <span class="k">True</span>
+        <span class="k">else</span>:
+            <span class="k">try</span>:
+                sc.eevee.taa_render_samples = <span class="n">64</span>
+            <span class="k">except</span> AttributeError:
+                <span class="k">pass</span>
+        sc.render.resolution_x = <span class="n">1280</span>
+        sc.render.resolution_y = <span class="n">720</span>
+        sc.render.resolution_percentage = <span class="n">100</span>
+        sc.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
+        sc.render.filepath = path
+        <span class="c"># Standard keeps the mounted sequencer pixels exact (docs/VISUAL-STYLE.md)</span>
+        sc.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+
+        <span class="c"># Layer 1 framing gate on the console — exit 10 before the beauty pass</span>
+        stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name <span class="k">in</span> (<span class="s">&quot;Floor&quot;</span>, <span class="s">&quot;Wall&quot;</span>)]
+        hero = [o <span class="k">for</span> o <span class="k">in</span> sc.objects
+                <span class="k">if</span> o.type <span class="k">in</span> gallery_framing._RENDER_TYPES <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage]
+        fcode = gallery_framing.check_framing(sc, cam, hero=hero, elements=hero,
+                                              stage=stage)
+        <span class="k">if</span> fcode:
+            <span class="k">return</span> fcode
+        bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">finally</span>:
+        shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -735,23 +942,9 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="c"># re-sample the authentic cross colors for the bench panels</span>
-        setup_render(sc, PXW, PXH)
-        tmp = tempfile.mkdtemp(prefix=<span class="s">&quot;vse_gamma_still_&quot;</span>)
-        <span class="k">try</span>:
-            got = sample_colors(sc, [f <span class="k">for</span> f, _t <span class="k">in</span> SAMPLES], tmp)
-        <span class="k">finally</span>:
-            shutil.rmtree(tmp, ignore_errors=<span class="k">True</span>)
-        <span class="c"># the bench is a 3D scene: clear the timeline or the sequencer</span>
-        <span class="c"># composites the last cross frame over everything (a full-teal</span>
-        <span class="c"># still). Effects first: deleting inputs orphans-and-deletes the</span>
-        <span class="c"># effect (&quot;Strip &#x27;GC&#x27; not in scene&quot; otherwise)</span>
-        coll = strips_coll(sc.sequence_editor)
-        <span class="k">for</span> s <span class="k">in</span> reversed(list(coll)):
-            coll.remove(s)
-        <span class="k">if</span> <span class="k">not</span> render_still(sc, got, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+        code = render_still(sc, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;vse-gamma-cross OK&quot;</span>)
@@ -768,7 +961,7 @@ SAMPLES = [(<span class="n">1</span> + <span class="n">4</span> * k, k / <span c
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/vse-gamma-cross-hero.webp" alt="A steel swatch board with a row of four fade chips from pink to cyan, and below it two mid-grey chips compared, one framed in orange." />
+    <img src="../assets/vse-gamma-cross-hero.webp" alt="A hooded grading monitor showing two orange-to-blue filmstrips: the gamma cross on top sinks to dark grey in the middle, while the linear cross beneath it passes through violet." />
   </dialog>
   <footer>
     <div class="statusbar">
