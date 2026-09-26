@@ -866,7 +866,7 @@ Y-up and the differ check exits 9. Neighbor of
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/lod-decimate-chain/"><img src="examples/lod-decimate-chain/preview.webp" alt="LOD decimate chain: three retro rockets side by side on a dark studio floor - cream body, red nose and fins, teal porthole - showing smooth LOD0, halved LOD1, and visibly crunched LOD2 with a hexagonal porthole" /></a>
+<a href="examples/lod-decimate-chain/"><img src="examples/lod-decimate-chain/preview.webp" alt="LOD decimate chain: three identical cream-and-red retro rockets with brass trim and a porthole on a dark studio floor, each under a dark triangle wireframe that coarsens left to right, labelled 4784, 2392 and 860 tris" /></a>
 </td>
 <td valign="middle">
 
@@ -875,9 +875,10 @@ Y-up and the differ check exits 9. Neighbor of
 One recognizable asset at three LODs via `DECIMATE` modifiers evaluated through
 the depsgraph. Asserts the reduction is non-destructive (the original datablock
 keeps its closed-form counts), each LOD's evaluated triangle count lands within
-5% of `ratio x base` (measured 0.0–0.44%), and the silhouette-critical bbox
-survives within 1e-3 — with the aggressive-ratio nose-tip collapse documented
-as the caught failure mode.
+5% of `ratio x base` (measured 0.00–0.13%), and the silhouette-critical bbox
+survives within 1e-3 — with a stacked Decimate and an oblique fin's shaved
+plate corner as the caught failure modes. A wireframe of each evaluated mesh
+makes the density drop visible.
 
 </td>
 </tr>
