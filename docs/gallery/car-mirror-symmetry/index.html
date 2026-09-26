@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>car-mirror-symmetry — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A generic hatchback lofted as one half (14 stations, 9-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels and lamps mirror about object origins parked on the symmetry plane." />
+  <meta name="description" content="A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/car-mirror-symmetry/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="car-mirror-symmetry — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A generic hatchback lofted as one half (14 stations, 9-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels and lamps mirror about object origins parked on the symmetry plane." />
+  <meta property="og:description" content="A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/car-mirror-symmetry/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/car-mirror-symmetry-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A red low-poly hatchback with white headlights, modelled as one mirrored half." />
+  <meta property="og:image:alt" content="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="car-mirror-symmetry — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A generic hatchback lofted as one half (14 stations, 9-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels and lamps mirror about object origins parked on the symmetry plane." />
+  <meta name="twitter:description" content="A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/car-mirror-symmetry-hero.webp" />
-  <meta name="twitter:image:alt" content="A red low-poly hatchback with white headlights, modelled as one mirrored half." />
+  <meta name="twitter:image:alt" content="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,11 +265,11 @@
   </div>
   <header class="hero">
     <h1>car-mirror-symmetry</h1>
-    <p>A generic hatchback lofted as one half (14 stations, 9-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels and lamps mirror about object origins parked on the symmetry plane.</p>
+    <p>A stylized hatchback lofted as one half (52 stations, 13-point rings) and completed by the Mirror modifier, evaluated through the depsgraph. Wheels, lamps, grille, door mirrors and handles mirror about object origins parked on the symmetry plane; the grille is authored as a half and welded on it.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red low-poly hatchback with white headlights, modelled as one mirrored half.">
-      <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red low-poly hatchback with white headlights, modelled as one mirrored half." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille.">
+      <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> Mirror is a modifier, not applied data: the original keeps the authored half while the evaluated mesh is the welded, watertight, exactly symmetric whole.</div>
@@ -278,12 +278,13 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a generic hatchback as <strong>one half</strong> — a loft of 14 stations, each a 9-point half-ring from the bottom centerline out to the roof centerline — and completes it with a <strong>Mirror modifier</strong>, evaluated through the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>. Wheels and lamps are separate objects mirrored the idiomatic way: the object origin sits <strong>on</strong> the symmetry plane and the mesh data is offset — mirror mirrors about the object&#x27;s own origin, so you offset the data, never the object.</p>
+<p>A runnable example that builds a stylized hatchback as <strong>one half</strong> — a loft of 52 stations, each a 13-point half-ring from the bottom centerline out to the roof centerline — and completes it with a <strong>Mirror modifier</strong>, evaluated through the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a>. Wheels, headlamps, taillamps, grille, door mirrors and door handles are separate objects mirrored the idiomatic way: the object origin sits <strong>on</strong> the symmetry plane and the mesh data is offset — mirror mirrors about the object&#x27;s own origin, so you offset the data, never the object. The grille is the one part authored <em>across</em> the plane: a half profile whose end points lie exactly on <code>x = 0</code>, welded into one grille by the merge.</p>
 <p><strong>What it witnesses:</strong> the original datablock keeps only the authored half while the depsgraph carries the mirrored whole, and both directions are closed forms:</p>
-<ul><li><strong>Original holds the half.</strong> Body datablock is exactly 126 verts / 231 edges / 106 faces (14 × 9, loft closed forms), with exactly 28 centerline verts (probe: modifier applied into data → exit 3, datablock reads <code>(224, 434, 212)</code>).</li><li><strong>Evaluated is the welded whole.</strong> Exactly <code>2n − c = 224</code> verts (probe: <code>use_mirror_merge = False</code> → exit 5, <strong>252</strong> verts — the doubled seam; probe: one centerline vert pulled off the plane → exit 4, <strong>27 ≠ 28</strong> welded; probe: mirror axis off → exit 5, <strong>126</strong> — the half-car). The evaluated shell is watertight (every edge borders 2 faces) with Euler characteristic <strong>2</strong> — the two halves weld into a topological sphere.</li><li><strong>Exact ±X partners.</strong> Every evaluated vertex has a partner at negated X: measured deviation <strong>0.000e+00</strong> (mirror copies exactly; tol 2e-5 guards float32), evaluated bbox symmetric (<code>min.x == −max.x</code>).</li><li><strong>Mirrored parts.</strong> Wheels (96/81 half → 192/162 evaluated) and lamps (8/6 → 16/12) each double across the plane with partner deviation 0.0 — and each object origin reads <code>x == 0</code>.</li></ul>
+<ul><li><strong>Original holds the half.</strong> Body datablock is exactly 676 verts / 1289 edges / 614 faces (52 × 13, loft closed forms), with exactly 104 centerline verts (probe: modifier applied into data → exit 3, datablock reads <code>(1248, 2474, 1228)</code>).</li><li><strong>Evaluated is the welded whole.</strong> Exactly <code>2n − c = 1248</code> verts (probe: <code>use_mirror_merge = False</code> → exit 5, <strong>1352</strong> verts — the doubled seam; probe: one centerline vert pulled off the plane → exit 4, <strong>103 ≠ 104</strong> welded; probe: mirror axis off → exit 5, <strong>676</strong> — the half-car). The evaluated shell is watertight (every edge borders 2 faces) with Euler characteristic <strong>2</strong> — the two halves weld into a topological sphere.</li><li><strong>Exact ±X partners.</strong> Every evaluated vertex has a partner at negated X: measured deviation <strong>0.000e+00</strong> (mirror copies exactly; tol 2e-5 guards float32), evaluated bbox symmetric (<code>min.x == −max.x</code>).</li><li><strong>Mirrored parts.</strong> Offset parts double exactly: wheels 390/361 → 780/722, headlamp 64/50 → 128/100, taillamp and each handle 48/34 → 96/68, door mirror 80/66 → 160/132, partner deviation 0.0, every origin <code>x == 0</code> (probe: headlamp origin at <code>x = 0.01</code> → exit 12; probe: front wheel&#x27;s mirror axis off → exit 14, <code>(390, 361)</code>). The split grille authors 36 verts with 8 on the plane and must evaluate to <code>2n − 8 = 64</code> with exactly 8 on-plane verts (probe: grille merge off → exit 14, <strong>72</strong> verts / 16 on the plane — two grilles; probe: one grille end point moved to <code>x = 0.004</code>, beyond the merge threshold → exit 13, 7 ≠ 8 on the plane).</li></ul>
 <p><strong>Why the checks target the modifier, not the base:</strong> mutating a non-plane base vertex cannot break the ±X pairing — the evaluated set is always <code>half ∪ mirror(half)</code>, symmetric by construction. Realistic failures live in the modifier (merge off, axis off, modifier applied into data, origin off the plane), which is what the probes break.</p>
-<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS and 5.1.2. Mirror, <code>evaluated_get</code> / <code>to_mesh</code> / <code>to_mesh_clear</code> (no argument — passing the mesh raises TypeError on both), and <code>TRACK_TO</code> constraint behavior are stable across the pair; only the EEVEE engine id is version-gated.</p>
-<p>The render is the proof: hide the mirror and the still is literally half a car — halved windshield and hood at the centerline, one headlamp. Render notes: the loft is faceted by design (flat shading, no bevel modifier — the modifier stack is Mirror only, so counts stay closed-form); the window band is glass by construction class (steepest roof-rise slope is the windshield, steepest drop the rear window, ring segment 5 the side windows), and the glass is dielectric — metallic glass mirrors the key light and renders the windshield as a hot salmon slab. The camera stands on the key light&#x27;s side of the car: from the other side it saw only the flank the key cannot reach, and the whole visible side rendered near-black. The car is mirror-symmetric, so the composition is the same either way. The bright streak along the cowl below the windshield is the key&#x27;s highlight in a crease that faces it.</p>
+<p><strong>Version witness:</strong> check output is byte-identical on Blender 4.5.11 LTS, 5.1.2 and 5.2.1 LTS. Mirror, <code>evaluated_get</code> / <code>to_mesh</code> / <code>to_mesh_clear</code> (no argument — passing the mesh raises TypeError on both), <code>BVHTree</code>, and <code>TRACK_TO</code> constraint behavior are stable across them; only the EEVEE engine id is version-gated.</p>
+<p>The render is the proof: hide the mirror and the still is literally half a car — one headlamp, one door mirror, half a grille, a hood cut open at the centerline. The camera stands on the key light&#x27;s side, high enough to look down the hood centerline so both halves read at once. The weld itself is not a pixel witness — the hood and roof are nearly flat across the plane, so an unwelded seam renders within 12/255 of the welded one; the <code>2n − c</code> count is what catches it.</p>
+<p>Render notes: the loft is smooth-shaded with sharp edges set on the authored half by dihedral angle (35°) and material border — no bevel or weighted-normal modifier, so the stack stays Mirror only and every count stays closed-form. Boundary edges on the plane take the angle to their own mirror image, <code>acos(1 − 2nₓ²)</code>, so the centerline shades smooth. The previous faceted loft had a thin pink-white streak on the hood by the windshield: not a seam (it sat at <code>|x|</code> 0.11–0.38, on the mirrored half, and all weld checks passed) but a sliver facet — the loft&#x27;s greenhouse points collapsing onto the hood — flat-shaded and facing the key almost head on (<code>n · −key = 0.967</code>). The redesigned ring lerps a hood layout into a cabin layout, so no such sliver exists. Panel classes are by construction position: underbody, rocker and arch cladding are trim; side glass is the sill-to-glass-top segment under the roof, broken by a trim B-pillar; the drip rail becomes the A-pillar; windshield and hatch glass are the roof bands where the cabin factor ramps. The glass is a dark dielectric whose base colour ramps toward steel blue at grazing angles (Layer Weight → Color Ramp) — on a near-black stage there is little to reflect, and flat dark glass read as dull paint. Lamps, grille, mirrors and handles are closed superellipse pods seated on the skin by a <code>BVHTree</code> ray cast, with a chrome bezel and an inset lens rather than flat boxes.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python car_mirror_symmetry.py --
@@ -296,7 +297,7 @@ blender --background --python car_mirror_symmetry.py -- --output car.png
 blender --background --python car_mirror_symmetry.py -- --output car.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Body datablock is not the authored half</td></tr><tr><td>4</td><td>Authored centerline vert count ≠ 28</td></tr><tr><td>5</td><td>Evaluated verts ≠ <code>2n − c</code> (<code>--no-mirror</code> lands here)</td></tr><tr><td>6</td><td>Evaluated on-plane verts ≠ centerline; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Evaluated Euler characteristic ≠ 2</td></tr><tr><td>8</td><td>Non-manifold edges in the evaluated shell</td></tr><tr><td>9</td><td>Evaluated verts lack a mirrored partner</td></tr><tr><td>10</td><td>Mirror partner deviation above tolerance</td></tr><tr><td>11</td><td>Evaluated bbox not symmetric about X</td></tr><tr><td>12</td><td>Mirrored-part origin off the plane</td></tr><tr><td>13</td><td>Mirrored-part datablock is not the authored half</td></tr><tr><td>14</td><td>Mirrored-part evaluated counts did not double</td></tr><tr><td>15</td><td>Mirrored-part partner check failed</td></tr><tr><td>16</td><td>Mirrored-part evaluated mesh stayed on one side</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Body datablock is not the authored half</td></tr><tr><td>4</td><td>Authored centerline vert count ≠ 28</td></tr><tr><td>5</td><td>Evaluated verts ≠ <code>2n − c</code> (<code>--no-mirror</code> lands here)</td></tr><tr><td>6</td><td>Evaluated on-plane verts ≠ centerline; also <code>--output</code> produced no file</td></tr><tr><td>7</td><td>Evaluated Euler characteristic ≠ 2</td></tr><tr><td>8</td><td>Non-manifold edges in the evaluated shell</td></tr><tr><td>9</td><td>Evaluated verts lack a mirrored partner</td></tr><tr><td>10</td><td>Mirror partner deviation above tolerance</td></tr><tr><td>11</td><td>Evaluated bbox not symmetric about X</td></tr><tr><td>12</td><td>Mirrored-part origin off the plane</td></tr><tr><td>13</td><td>Mirrored-part datablock is not the authored half (verts, faces, on-plane verts)</td></tr><tr><td>14</td><td>Mirrored-part evaluated counts ≠ <code>2n − weld</code> / <code>2f</code>, or on-plane verts ≠ weld</td></tr><tr><td>15</td><td>Mirrored-part partner check failed</td></tr><tr><td>16</td><td>Mirrored-part evaluated mesh stayed on one side</td></tr><tr><td>17</td><td>Gallery framing violation (<code>--output</code> path only; <code>gallery_framing</code> returns 10, remapped)</td></tr><tr><td>18</td><td>Asset-quality floor violation (<code>--output</code> path only; <code>gallery_asset_quality</code> returns 11, remapped)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-mirror</code>.</p>
     </section>
     <section class="detail-section src">
@@ -305,7 +306,7 @@ blender --background --python car_mirror_symmetry.py -- --output car.png --engin
         <code>examples/car-mirror-symmetry/car_mirror_symmetry.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/car-mirror-symmetry/car_mirror_symmetry.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;A generic hatchback built as one half and completed by the Mirror modifier
+      <pre><span class="s">&quot;&quot;&quot;A stylized hatchback built as one half and completed by the Mirror modifier
 — a runnable example.
 
 Witnesses the Mirror + depsgraph contract from depsgraph-and-evaluated-data:
@@ -314,8 +315,9 @@ carries the mirrored whole. Closed forms: evaluated vertex count is exactly
 2n - c (c = welded centerline verts), every evaluated vertex has an exact
 partner at negated X, the merge threshold actually welds (no doubled
 centerline), the evaluated shell is watertight with Euler characteristic 2,
-and the wheels mirror about their object origins sitting ON the symmetry
-plane. Failure is dramatically visible: a car with one side missing.
+and every separate part (wheels, lamps, grille, mirrors, handles) mirrors about
+an object origin sitting ON the symmetry plane. Failure is dramatically
+visible: a car with one side missing.
 
 ``--no-mirror`` turns off the Mirror X axis on every mirrored object and
 still runs the evaluated-count check, so the half-car fails ``2n − c``.
@@ -329,64 +331,142 @@ check. Pass --output to also render a still:
     blender --background --python car_mirror_symmetry.py -- --output c.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
 
 <span class="c"># --- closed-form construction parameters -----------------------------------</span>
-<span class="c"># 14 loft stations along Y (front at -Y), each a 9-point half-ring from the</span>
-<span class="c"># bottom centerline out and up to the roof centerline. Fields:</span>
-<span class="c"># (y, w_side, z_floor, z_sill, z_side, w_glass, z_glass_base, w_roof, z_roof)</span>
-STATIONS = [
-    (-<span class="n">1.95</span>, <span class="n">0.74</span>, <span class="n">0.34</span>, <span class="n">0.36</span>, <span class="n">0.52</span>, <span class="n">0.05</span>, <span class="n">0.62</span>, <span class="n">0.04</span>, <span class="n">0.64</span>),  <span class="c"># nose tip</span>
-    (-<span class="n">1.80</span>, <span class="n">0.83</span>, <span class="n">0.30</span>, <span class="n">0.32</span>, <span class="n">0.55</span>, <span class="n">0.08</span>, <span class="n">0.70</span>, <span class="n">0.07</span>, <span class="n">0.73</span>),  <span class="c"># front bumper</span>
-    (-<span class="n">1.65</span>, <span class="n">0.86</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.54</span>, <span class="n">0.10</span>, <span class="n">0.72</span>, <span class="n">0.09</span>, <span class="n">0.74</span>),
-    (-<span class="n">1.30</span>, <span class="n">0.87</span>, <span class="n">0.28</span>, <span class="n">0.62</span>, <span class="n">0.66</span>, <span class="n">0.11</span>, <span class="n">0.74</span>, <span class="n">0.10</span>, <span class="n">0.76</span>),  <span class="c"># front arch peak</span>
-    (-<span class="n">0.95</span>, <span class="n">0.86</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.54</span>, <span class="n">0.12</span>, <span class="n">0.78</span>, <span class="n">0.11</span>, <span class="n">0.80</span>),
-    (-<span class="n">0.60</span>, <span class="n">0.85</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.90</span>, <span class="n">0.34</span>, <span class="n">0.95</span>),  <span class="c"># hood -&gt; cowl</span>
-    (-<span class="n">0.30</span>, <span class="n">0.84</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.56</span>, <span class="n">0.54</span>, <span class="n">1.02</span>, <span class="n">0.50</span>, <span class="n">1.30</span>),  <span class="c"># windshield</span>
-    ( <span class="n">0.20</span>, <span class="n">0.83</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.57</span>, <span class="n">0.60</span>, <span class="n">1.05</span>, <span class="n">0.56</span>, <span class="n">1.45</span>),  <span class="c"># roof front</span>
-    ( <span class="n">0.70</span>, <span class="n">0.83</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.57</span>, <span class="n">0.60</span>, <span class="n">1.05</span>, <span class="n">0.55</span>, <span class="n">1.44</span>),  <span class="c"># roof rear</span>
-    ( <span class="n">0.95</span>, <span class="n">0.84</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.56</span>, <span class="n">0.58</span>, <span class="n">1.04</span>, <span class="n">0.52</span>, <span class="n">1.38</span>),
-    ( <span class="n">1.30</span>, <span class="n">0.85</span>, <span class="n">0.28</span>, <span class="n">0.62</span>, <span class="n">0.68</span>, <span class="n">0.50</span>, <span class="n">1.00</span>, <span class="n">0.44</span>, <span class="n">1.24</span>),  <span class="c"># rear arch peak</span>
-    ( <span class="n">1.65</span>, <span class="n">0.84</span>, <span class="n">0.28</span>, <span class="n">0.28</span>, <span class="n">0.55</span>, <span class="n">0.34</span>, <span class="n">0.95</span>, <span class="n">0.28</span>, <span class="n">1.10</span>),  <span class="c"># hatch</span>
-    ( <span class="n">1.90</span>, <span class="n">0.80</span>, <span class="n">0.30</span>, <span class="n">0.32</span>, <span class="n">0.53</span>, <span class="n">0.12</span>, <span class="n">0.86</span>, <span class="n">0.11</span>, <span class="n">0.92</span>),  <span class="c"># tail</span>
-    ( <span class="n">2.00</span>, <span class="n">0.72</span>, <span class="n">0.34</span>, <span class="n">0.36</span>, <span class="n">0.50</span>, <span class="n">0.05</span>, <span class="n">0.78</span>, <span class="n">0.04</span>, <span class="n">0.78</span>),  <span class="c"># rear bumper</span>
-]
-RING = <span class="n">9</span>                       <span class="c"># points per half-ring, p0 and p8 on the centerline</span>
-WHEEL_SEG = <span class="n">16</span>
-WHEEL_RINGS = [                <span class="c"># (x, radius) profile: bead, tread, sidewall, rim, cap</span>
-    (<span class="n">0.63</span>, <span class="n">0.30</span>), (<span class="n">0.67</span>, <span class="n">0.33</span>), (<span class="n">0.83</span>, <span class="n">0.33</span>), (<span class="n">0.87</span>, <span class="n">0.30</span>), (<span class="n">0.89</span>, <span class="n">0.19</span>), (<span class="n">0.90</span>, <span class="n">0.15</span>),
-]
-WHEEL_Y = (-<span class="n">1.3</span>, <span class="n">1.3</span>)          <span class="c"># front / rear axle positions</span>
-WHEEL_Z = <span class="n">0.33</span>                 <span class="c"># axle height == tire radius: wheels rest on z=0</span>
+<span class="c"># The half body is a loft: one 13-point half-ring per station along Y (front</span>
+<span class="c"># at -Y), from the bottom centerline (p0) out and up to the roof centerline</span>
+<span class="c"># (p12). Station Ys are placed, not sampled: every panel edge the design</span>
+<span class="c"># needs (arch openings, cowl, B-pillar, roof end, hatch base) is a station.</span>
+RING = <span class="n">13</span>
+AXLES = (-<span class="n">1.22</span>, <span class="n">1.22</span>)          <span class="c"># front / rear axle Y</span>
+TIRE_R = <span class="n">0.33</span>                  <span class="c"># axle height == tire radius: wheels rest on z=0</span>
+ARCH_R = <span class="n">0.40</span>                  <span class="c"># wheel-arch opening radius about the axle</span>
+Y_NOSE, Y_TAIL = -<span class="n">1.95</span>, <span class="n">1.90</span>
+Y_COWL, Y_ROOF0 = -<span class="n">0.60</span>, <span class="n">0.02</span>  <span class="c"># windshield base / top</span>
+Y_ROOF1, Y_HATCH = <span class="n">1.30</span>, <span class="n">1.78</span>  <span class="c"># roof end / hatch-glass base</span>
+Y_BPILLAR = (<span class="n">0.18</span>, <span class="n">0.30</span>)
+Y_CPILLAR = <span class="n">1.05</span>
 
-N_BODY = len(STATIONS) * RING                    <span class="c"># 126</span>
-F_BODY = (len(STATIONS) - <span class="n">1</span>) * (RING - <span class="n">1</span>) + <span class="n">2</span>    <span class="c"># 104 quads + 2 caps</span>
-E_BODY = (len(STATIONS) * (RING - <span class="n">1</span>)             <span class="c"># ring edges</span>
-          + (len(STATIONS) - <span class="n">1</span>) * RING           <span class="c"># longitudinal edges</span>
+
+<span class="k">def</span> _stations():
+    ys = {Y_NOSE, -<span class="n">1.93</span>, -<span class="n">1.89</span>, -<span class="n">1.83</span>, -<span class="n">1.71</span>,               <span class="c"># rounded nose</span>
+          -<span class="n">0.70</span>, Y_COWL, -<span class="n">0.44</span>, -<span class="n">0.28</span>, -<span class="n">0.13</span>, Y_ROOF0,       <span class="c"># windshield</span>
+          Y_BPILLAR[<span class="n">0</span>], Y_BPILLAR[<span class="n">1</span>], <span class="n">0.50</span>, <span class="n">0.70</span>, Y_CPILLAR,
+          Y_ROOF1, <span class="n">1.74</span>, Y_HATCH, <span class="n">1.83</span>, <span class="n">1.87</span>, Y_TAIL}        <span class="c"># hatch + tail</span>
+    <span class="k">for</span> a <span class="k">in</span> AXLES:                                          <span class="c"># arch openings</span>
+        ys.add(round(a - ARCH_R - <span class="n">0.03</span>, <span class="n">4</span>))
+        ys.add(round(a + ARCH_R + <span class="n">0.03</span>, <span class="n">4</span>))
+        <span class="k">for</span> s <span class="k">in</span> range(<span class="n">13</span>):
+            ys.add(round(a - ARCH_R * math.cos(math.pi * s / <span class="n">12</span>), <span class="n">4</span>))
+    <span class="k">return</span> sorted(ys)
+
+
+STATION_Y = _stations()
+N_ST = len(STATION_Y)                            <span class="c"># 52</span>
+N_BODY = N_ST * RING                             <span class="c"># 676</span>
+F_BODY = (N_ST - <span class="n">1</span>) * (RING - <span class="n">1</span>) + <span class="n">2</span>             <span class="c"># 612 quads + 2 caps</span>
+E_BODY = (N_ST * (RING - <span class="n">1</span>)                      <span class="c"># ring edges</span>
+          + (N_ST - <span class="n">1</span>) * RING                    <span class="c"># longitudinal edges</span>
           + <span class="n">2</span>)                                   <span class="c"># cap closing edges</span>
-CENTERLINE = len(STATIONS) * <span class="n">2</span>                   <span class="c"># p0 + p8 per station: 28</span>
-N_WHEEL = len(WHEEL_RINGS) * WHEEL_SEG           <span class="c"># 96</span>
+CENTERLINE = N_ST * <span class="n">2</span>                            <span class="c"># p0 + p12 per station: 104</span>
+
+WHEEL_SEG = <span class="n">30</span>                 <span class="c"># 5 spokes x 6 segments</span>
+WHEEL_RINGS = [                <span class="c"># (x, radius): tire bead -&gt; tread -&gt; rim -&gt; hub cap</span>
+    (<span class="n">0.600</span>, <span class="n">0.200</span>), (<span class="n">0.605</span>, <span class="n">0.285</span>), (<span class="n">0.625</span>, <span class="n">0.322</span>), (<span class="n">0.660</span>, <span class="n">0.330</span>),
+    (<span class="n">0.840</span>, <span class="n">0.330</span>), (<span class="n">0.865</span>, <span class="n">0.322</span>), (<span class="n">0.882</span>, <span class="n">0.290</span>), (<span class="n">0.886</span>, <span class="n">0.238</span>),
+    (<span class="n">0.880</span>, <span class="n">0.224</span>), (<span class="n">0.868</span>, <span class="n">0.206</span>), (<span class="n">0.868</span>, <span class="n">0.086</span>), (<span class="n">0.874</span>, <span class="n">0.064</span>),
+    (<span class="n">0.882</span>, <span class="n">0.040</span>),
+]
+DISH_RINGS = (<span class="n">9</span>, <span class="n">10</span>)           <span class="c"># rings whose gap verts recess to form spokes</span>
+DISH_GAP_X = <span class="n">0.820</span>
+N_WHEEL = len(WHEEL_RINGS) * WHEEL_SEG           <span class="c"># 390</span>
 F_WHEEL = (len(WHEEL_RINGS) - <span class="n">1</span>) * WHEEL_SEG + <span class="n">1</span> <span class="c"># strips + hubcap ngon</span>
+
+POD_P = <span class="n">16</span>                     <span class="c"># profile points per pod ring (lamps, grille, mirror)</span>
 
 MERGE_THRESHOLD = <span class="n">1.0e-3</span>
 TOL_SYMM = <span class="n">2.0e-5</span>    <span class="c"># evaluated partner deviation (float32 storage; mirror copies exact)</span>
 TOL_BBOX = <span class="n">1.0e-5</span>    <span class="c"># |min.x + max.x| on the evaluated body</span>
 TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small counts as on the symmetry plane</span>
 
+MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>, <span class="s">&quot;Chrome&quot;</span>, <span class="s">&quot;Tire&quot;</span>, <span class="s">&quot;Rim&quot;</span>,
+             <span class="s">&quot;Headlamp&quot;</span>, <span class="s">&quot;Taillamp&quot;</span>)
 
-<span class="k">def</span> half_ring(st):
-    <span class="s">&quot;&quot;&quot;One 9-point half cross-section, bottom centerline -&gt; roof centerline.&quot;&quot;&quot;</span>
-    y, w, zf, zsill, zside, wg, zgb, wr, zroof = st
-    <span class="k">return</span> [
-        (<span class="n">0.0</span>, y, zf),                 <span class="c"># p0 bottom centerline</span>
-        (<span class="n">0.55</span> * w, y, zf - <span class="n">0.02</span>),     <span class="c"># p1 underbody</span>
-        (<span class="n">0.95</span> * w, y, zsill),         <span class="c"># p2 sill (rises over wheel arches)</span>
-        (w, y, zside),                <span class="c"># p3 lower door (widest)</span>
-        (<span class="n">0.99</span> * w, y, zside + <span class="n">0.10</span>),  <span class="c"># p4 shoulder</span>
-        (wg, y, zgb),                 <span class="c"># p5 greenhouse base</span>
-        (wr, y, zroof),               <span class="c"># p6 roof edge</span>
-        (<span class="n">0.55</span> * wr, y, zroof + <span class="n">0.015</span>),<span class="c"># p7 roof crown</span>
-        (<span class="n">0.0</span>, y, zroof),              <span class="c"># p8 top centerline</span>
-    ]
+
+<span class="c"># --- profile functions (all closed-form in y) ------------------------------</span>
+<span class="k">def</span> _clamp(t):
+    <span class="k">return</span> <span class="n">0.0</span> <span class="k">if</span> t &lt; <span class="n">0.0</span> <span class="k">else</span> <span class="n">1.0</span> <span class="k">if</span> t &gt; <span class="n">1.0</span> <span class="k">else</span> t
+
+
+<span class="k">def</span> _ramp(y, y0, y1):
+    <span class="k">return</span> _clamp((y - y0) / (y1 - y0))
+
+
+<span class="k">def</span> _interp(y, pts):
+    <span class="k">if</span> y &lt;= pts[<span class="n">0</span>][<span class="n">0</span>]:
+        <span class="k">return</span> pts[<span class="n">0</span>][<span class="n">1</span>]
+    <span class="k">for</span> (y0, v0), (y1, v1) <span class="k">in</span> zip(pts, pts[<span class="n">1</span>:]):
+        <span class="k">if</span> y &lt;= y1:
+            t = (y - y0) / (y1 - y0)
+            t = t * t * (<span class="n">3.0</span> - <span class="n">2.0</span> * t)          <span class="c"># smoothstep between keys</span>
+            <span class="k">return</span> v0 + (v1 - v0) * t
+    <span class="k">return</span> pts[-<span class="n">1</span>][<span class="n">1</span>]
+
+
+<span class="k">def</span> _round(t):
+    <span class="s">&quot;&quot;&quot;Quarter-circle rounding: 0 at the very end, 1 once the body is full.&quot;&quot;&quot;</span>
+    t = _clamp(t)
+    <span class="k">return</span> math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - (<span class="n">1.0</span> - t) ** <span class="n">2</span>))
+
+
+<span class="k">def</span> cabin(y):
+    <span class="s">&quot;&quot;&quot;0 on hood / rear deck, 1 under the roof, linear through the glass.&quot;&quot;&quot;</span>
+    <span class="k">return</span> min(_ramp(y, Y_COWL, Y_ROOF0), <span class="n">1.0</span> - _ramp(y, Y_ROOF1, Y_HATCH))
+
+
+<span class="k">def</span> half_ring(y):
+    <span class="s">&quot;&quot;&quot;One 13-point half cross-section at y, bottom centerline -&gt; roof centerline.&quot;&quot;&quot;</span>
+    rn = min(_round((y - Y_NOSE) / <span class="n">0.24</span>), _round((Y_TAIL - y) / <span class="n">0.16</span>))
+    f = <span class="n">0.70</span> + <span class="n">0.30</span> * rn                     <span class="c"># plan-view corner rounding</span>
+    br = <span class="n">0.06</span> * (<span class="n">1.0</span> - rn)                   <span class="c"># bottom tucks up at the ends</span>
+    td = <span class="n">0.035</span> * (<span class="n">1.0</span> - rn)                  <span class="c"># top rolls down at the ends</span>
+    flare = max(math.exp(-((y - a) / <span class="n">0.42</span>) ** <span class="n">2</span>) <span class="k">for</span> a <span class="k">in</span> AXLES)
+    w = (<span class="n">0.84</span> + <span class="n">0.04</span> * flare) * f            <span class="c"># half width, flared over wheels</span>
+    zbelt = _interp(y, [(-<span class="n">1.95</span>, <span class="n">0.74</span>), (-<span class="n">1.60</span>, <span class="n">0.80</span>), (-<span class="n">1.22</span>, <span class="n">0.84</span>),
+                        (-<span class="n">0.60</span>, <span class="n">0.915</span>), (<span class="n">0.50</span>, <span class="n">0.945</span>), (<span class="n">1.30</span>, <span class="n">0.955</span>),
+                        (<span class="n">1.90</span>, <span class="n">0.935</span>)]) - td
+    ztop = (_interp(y, [(-<span class="n">1.95</span>, <span class="n">0.80</span>), (-<span class="n">1.60</span>, <span class="n">0.86</span>), (-<span class="n">1.00</span>, <span class="n">0.91</span>),
+                        (-<span class="n">0.60</span>, <span class="n">0.965</span>)]) <span class="k">if</span> y &lt; <span class="n">0.5</span> <span class="k">else</span>
+            _interp(y, [(<span class="n">1.30</span>, <span class="n">1.02</span>), (<span class="n">1.78</span>, <span class="n">1.01</span>), (<span class="n">1.90</span>, <span class="n">0.975</span>)])) - td
+    zroof = _interp(y, [(-<span class="n">0.60</span>, <span class="n">1.32</span>), (<span class="n">0.02</span>, <span class="n">1.34</span>), (<span class="n">0.60</span>, <span class="n">1.36</span>),
+                        (<span class="n">1.30</span>, <span class="n">1.33</span>)])
+    crease = zbelt - <span class="n">0.15</span>
+    zfloor = <span class="n">0.20</span> + br
+
+    d = min((abs(y - a) <span class="k">for</span> a <span class="k">in</span> AXLES))
+    <span class="k">if</span> d &lt;= ARCH_R + <span class="n">1e-9</span>:                   <span class="c"># inside a wheel-arch opening</span>
+        za = TIRE_R + math.sqrt(max(<span class="n">0.0</span>, ARCH_R ** <span class="n">2</span> - d * d))
+        lower = [(<span class="n">0.50</span>, za), (<span class="n">0.93</span> * w, za), (<span class="n">0.99</span> * w, za), (w, za + <span class="n">0.06</span>),
+                 (<span class="n">1.01</span> * w, max(crease, za + <span class="n">0.10</span>))]   <span class="c"># cladding flares out</span>
+    <span class="k">else</span>:
+        lower = [(<span class="n">0.50</span>, zfloor), (<span class="n">0.95</span> * w, <span class="n">0.24</span> + br), (<span class="n">0.975</span> * w, <span class="n">0.28</span> + br),
+                 (<span class="n">0.975</span> * w, <span class="n">0.36</span> + <span class="n">0.5</span> * br), (<span class="n">1.01</span> * w, crease)]  <span class="c"># p5: character line</span>
+
+    c = cabin(y)
+    wr = <span class="n">0.70</span> * w
+    cab = [(<span class="n">0.93</span> * w, zbelt + <span class="n">0.03</span>), (wr + <span class="n">0.05</span>, zroof - <span class="n">0.09</span>),
+           (wr, zroof - <span class="n">0.035</span>), (<span class="n">0.80</span> * wr, zroof), (<span class="n">0.42</span> * wr, zroof + <span class="n">0.018</span>),
+           (<span class="n">0.0</span>, zroof + <span class="n">0.022</span>)]
+    hood = []
+    <span class="k">for</span> fx <span class="k">in</span> (<span class="n">0.91</span>, <span class="n">0.80</span>, <span class="n">0.66</span>, <span class="n">0.50</span>, <span class="n">0.27</span>, <span class="n">0.0</span>):
+        hood.append((fx * w, ztop - (ztop - zbelt) * (fx / <span class="n">0.965</span>) ** <span class="n">2</span>))
+    upper = [(h[<span class="n">0</span>] + (k[<span class="n">0</span>] - h[<span class="n">0</span>]) * c, h[<span class="n">1</span>] + (k[<span class="n">1</span>] - h[<span class="n">1</span>]) * c)
+             <span class="k">for</span> h, k <span class="k">in</span> zip(hood, cab)]
+
+    pts = [(<span class="n">0.0</span>, zfloor)] + lower + [(<span class="n">0.965</span> * w, zbelt)] + upper
+    <span class="k">return</span> [(x, y, z) <span class="k">for</span> x, z <span class="k">in</span> pts]
 
 
 <span class="k">def</span> _newell(pts):
@@ -400,24 +480,105 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
     <span class="k">return</span> (nx / n, ny / n, nz / n)
 
 
+<span class="k">def</span> _link_mirrored(name, me):
+    <span class="s">&quot;&quot;&quot;Object at the world origin (ON the plane) + Mirror X with merge.&quot;&quot;&quot;</span>
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    m = ob.modifiers.new(<span class="s">&quot;MirrorHalf&quot;</span>, <span class="s">&#x27;MIRROR&#x27;</span>)
+    m.use_axis[<span class="n">0</span>] = <span class="k">True</span>
+    m.use_mirror_merge = <span class="k">True</span>
+    m.merge_threshold = MERGE_THRESHOLD
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> pod(name, center, normal, half_w, half_h, rings, band_mats, cap_mat,
+        up=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>), expo=<span class="n">4.0</span>, split=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Superellipse pod: len(rings) rings, capped at both ends.
+    rings = [(scale, depth along normal)], back to front.
+
+    Offset pod (split=False): POD_P points per closed ring, entirely off the
+    plane. Closed form n = R * POD_P, f = (R - 1) * POD_P + 2, welds 0.
+    Split pod (split=True, center ON the plane, normal in the plane): only
+    the +X half profile, POD_P/2 + 1 points from bottom to top with both
+    ends exactly at x = 0 — the Mirror weld completes it into one part.
+    Closed form n = R * (POD_P/2 + 1), f = (R - 1) * POD_P/2 + 2, welds 2R.
+    Either way the object origin stays on the plane.
+    Returns (object, n_half, f_half, welded).&quot;&quot;&quot;</span>
+    n = Vector(normal).normalized()
+    u = Vector(up).cross(n).normalized()
+    v = n.cross(u).normalized()
+    ctr = Vector(center)
+    npts = POD_P // <span class="n">2</span> + <span class="n">1</span> <span class="k">if</span> split <span class="k">else</span> POD_P
+    nfac = POD_P // <span class="n">2</span> <span class="k">if</span> split <span class="k">else</span> POD_P
+    me = bpy.data.meshes.new(name + <span class="s">&quot;Half&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        rv = []
+        <span class="k">for</span> scale, depth <span class="k">in</span> rings:
+            ring = []
+            <span class="k">for</span> s <span class="k">in</span> range(npts):
+                a = (math.pi * (s / (npts - <span class="n">1</span>) - <span class="n">0.5</span>) <span class="k">if</span> split
+                     <span class="k">else</span> <span class="n">2.0</span> * math.pi * s / POD_P)
+                ca, sa = math.cos(a), math.sin(a)
+                <span class="k">if</span> split <span class="k">and</span> s <span class="k">in</span> (<span class="n">0</span>, npts - <span class="n">1</span>):
+                    ca = <span class="n">0.0</span>                     <span class="c"># exactly on the plane</span>
+                px = math.copysign(abs(ca) ** (<span class="n">2.0</span> / expo), ca) * half_w * scale
+                py = math.copysign(abs(sa) ** (<span class="n">2.0</span> / expo), sa) * half_h * scale
+                ring.append(bm.verts.new(ctr + u * px + v * py + n * depth))
+            rv.append(ring)
+        bands = []
+        <span class="k">for</span> b <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+            <span class="k">for</span> s <span class="k">in</span> range(nfac):
+                f = bm.faces.new((rv[b][s], rv[b][(s + <span class="n">1</span>) % npts],
+                                  rv[b + <span class="n">1</span>][(s + <span class="n">1</span>) % npts], rv[b + <span class="n">1</span>][s]))
+                f.material_index = band_mats[b]
+                bands.append(f)
+        back = bm.faces.new(rv[<span class="n">0</span>])
+        back.material_index = band_mats[<span class="n">0</span>]
+        front = bm.faces.new(rv[-<span class="n">1</span>])
+        front.material_index = cap_mat
+        <span class="k">if</span> <span class="k">not</span> split:
+            bmesh.ops.recalc_face_normals(bm, faces=bm.faces)  <span class="c"># closed: outward</span>
+        <span class="k">else</span>:  <span class="c"># open along the plane: orient explicitly</span>
+            side = bands[nfac // <span class="n">2</span>]          <span class="c"># outboard wall of the first band</span>
+            <span class="k">if</span> side.normal.dot(u) &lt; <span class="n">0</span>:
+                <span class="k">for</span> f <span class="k">in</span> bands:
+                    f.normal_flip()
+            <span class="k">if</span> front.normal.dot(n) &lt; <span class="n">0</span>:
+                front.normal_flip()
+            <span class="k">if</span> back.normal.dot(n) &gt; <span class="n">0</span>:
+                back.normal_flip()
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> m <span class="k">in</span> MATERIALS:
+        me.materials.append(bpy.data.materials[m])
+    ob = _link_mirrored(name, me)
+    R = len(rings)
+    <span class="k">return</span> ob, R * npts, (R - <span class="n">1</span>) * nfac + <span class="n">2</span>, (<span class="n">2</span> * R <span class="k">if</span> split <span class="k">else</span> <span class="n">0</span>)
+
+
 <span class="k">def</span> build_car():
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    <span class="k">for</span> m <span class="k">in</span> MATERIALS:  <span class="c"># exist in both modes (slot layout is part of the scene)</span>
+        bpy.data.materials.new(m)
 
     <span class="c"># -- half body loft ------------------------------------------------------</span>
-    rings = [half_ring(st) <span class="k">for</span> st <span class="k">in</span> STATIONS]
+    rings = [half_ring(y) <span class="k">for</span> y <span class="k">in</span> STATION_Y]
     me = bpy.data.meshes.new(<span class="s">&quot;CarBodyHalf&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
         bv = [[bm.verts.new(co) <span class="k">for</span> co <span class="k">in</span> ring] <span class="k">for</span> ring <span class="k">in</span> rings]
         faces = []
-        <span class="k">for</span> i <span class="k">in</span> range(len(STATIONS) - <span class="n">1</span>):
+        <span class="k">for</span> i <span class="k">in</span> range(N_ST - <span class="n">1</span>):
             <span class="k">for</span> k <span class="k">in</span> range(RING - <span class="n">1</span>):
                 faces.append(bm.faces.new(
                     (bv[i][k], bv[i][k + <span class="n">1</span>], bv[i + <span class="n">1</span>][k + <span class="n">1</span>], bv[i + <span class="n">1</span>][k])))
         caps = [bm.faces.new(bv[<span class="n">0</span>]), bm.faces.new(bv[-<span class="n">1</span>])]
-        <span class="c"># winding: the probe side quad must face +X; flip everything if the</span>
-        <span class="c"># loft convention came out inward (mirror does not fix winding)</span>
-        probe = [v.co <span class="k">for</span> v <span class="k">in</span> (bv[<span class="n">8</span>][<span class="n">3</span>], bv[<span class="n">8</span>][<span class="n">4</span>], bv[<span class="n">9</span>][<span class="n">4</span>], bv[<span class="n">9</span>][<span class="n">3</span>])]
+        <span class="c"># winding: a door quad must face +X; flip everything if the loft</span>
+        <span class="c"># convention came out inward (mirror does not fix winding)</span>
+        mid = N_ST // <span class="n">2</span>
+        probe = [v.co <span class="k">for</span> v <span class="k">in</span> (bv[mid][<span class="n">4</span>], bv[mid][<span class="n">5</span>], bv[mid + <span class="n">1</span>][<span class="n">5</span>], bv[mid + <span class="n">1</span>][<span class="n">4</span>])]
         <span class="k">if</span> _newell(probe)[<span class="n">0</span>] &lt; <span class="n">0</span>:
             <span class="k">for</span> f <span class="k">in</span> faces + caps:
                 f.normal_flip()
@@ -427,6 +588,8 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
         <span class="k">if</span> _newell([v.co <span class="k">for</span> v <span class="k">in</span> bv[-<span class="n">1</span>]])[<span class="n">1</span>] &lt; <span class="n">0</span>:
             caps[<span class="n">1</span>].normal_flip()
         bm.to_mesh(me)
+        bm.faces.ensure_lookup_table()
+        bvh = BVHTree.FromBMesh(bm)  <span class="c"># seats the separate parts on the skin</span>
     <span class="k">finally</span>:
         bm.free()  <span class="c"># the ownership contract from always-free-bmesh</span>
 
@@ -437,108 +600,129 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
     mirror.use_clip = <span class="k">True</span>            <span class="c"># centerline verts cannot leave x=0</span>
     mirror.use_mirror_merge = <span class="k">True</span>    <span class="c"># weld the two halves shut</span>
     mirror.merge_threshold = MERGE_THRESHOLD
+    <span class="k">for</span> m <span class="k">in</span> MATERIALS:
+        me.materials.append(bpy.data.materials[m])
+    _assign_body_materials(body)
+
+    <span class="k">def</span> skin_y(x, z, front=<span class="k">True</span>):
+        <span class="s">&quot;&quot;&quot;Y of the body surface at (x, z), probed along the long axis.&quot;&quot;&quot;</span>
+        o = Vector((x, -<span class="n">5.0</span> <span class="k">if</span> front <span class="k">else</span> <span class="n">5.0</span>, z))
+        hit = bvh.ray_cast(o, Vector((<span class="n">0.0</span>, <span class="n">1.0</span> <span class="k">if</span> front <span class="k">else</span> -<span class="n">1.0</span>, <span class="n">0.0</span>)))
+        <span class="k">return</span> hit[<span class="n">0</span>].y
+
+    <span class="k">def</span> skin_x(y, z):
+        <span class="s">&quot;&quot;&quot;X of the +X flank at (y, z), probed inward from outside.&quot;&quot;&quot;</span>
+        <span class="k">return</span> bvh.ray_cast(Vector((<span class="n">5.0</span>, y, z)), Vector((-<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)))[<span class="n">0</span>].x
 
     <span class="c"># -- wheels: own Mirror each, object origins ON the symmetry plane -------</span>
-    wheels = []
-    <span class="k">for</span> y <span class="k">in</span> WHEEL_Y:
+    mirrored = []
+    <span class="k">for</span> y <span class="k">in</span> AXLES:
         wme = bpy.data.meshes.new(<span class="s">&quot;WheelHalf&quot;</span>)
         bm = bmesh.new()
         <span class="k">try</span>:
             wr = []
-            <span class="k">for</span> x, r <span class="k">in</span> WHEEL_RINGS:
-                wr.append([bm.verts.new(
-                    (x, r * math.cos(<span class="n">2.0</span> * math.pi * s / WHEEL_SEG),
-                     r * math.sin(<span class="n">2.0</span> * math.pi * s / WHEEL_SEG)))
-                    <span class="k">for</span> s <span class="k">in</span> range(WHEEL_SEG)])
+            <span class="k">for</span> j, (x, r) <span class="k">in</span> enumerate(WHEEL_RINGS):
+                ring = []
+                <span class="k">for</span> s <span class="k">in</span> range(WHEEL_SEG):
+                    gap = j <span class="k">in</span> DISH_RINGS <span class="k">and</span> s % <span class="n">6</span> <span class="k">in</span> (<span class="n">3</span>, <span class="n">4</span>, <span class="n">5</span>)
+                    a = <span class="n">2.0</span> * math.pi * s / WHEEL_SEG
+                    ring.append(bm.verts.new((DISH_GAP_X <span class="k">if</span> gap <span class="k">else</span> x,
+                                              r * math.cos(a), r * math.sin(a))))
+                wr.append(ring)
+            strips = []
             <span class="k">for</span> j <span class="k">in</span> range(len(WHEEL_RINGS) - <span class="n">1</span>):
                 <span class="k">for</span> s <span class="k">in</span> range(WHEEL_SEG):
-                    bm.faces.new((wr[j][s], wr[j][(s + <span class="n">1</span>) % WHEEL_SEG],
-                                  wr[j + <span class="n">1</span>][(s + <span class="n">1</span>) % WHEEL_SEG], wr[j + <span class="n">1</span>][s]))
-            bm.faces.new(wr[-<span class="n">1</span>])  <span class="c"># hubcap ngon</span>
+                    f = bm.faces.new((wr[j][s], wr[j][(s + <span class="n">1</span>) % WHEEL_SEG],
+                                      wr[j + <span class="n">1</span>][(s + <span class="n">1</span>) % WHEEL_SEG], wr[j + <span class="n">1</span>][s]))
+                    strips.append(f)
+                    <span class="k">if</span> j &lt;= <span class="n">6</span>:
+                        f.material_index = MATERIALS.index(<span class="s">&quot;Tire&quot;</span>)
+                    <span class="k">elif</span> <span class="n">8</span> &lt;= j &lt;= <span class="n">10</span> <span class="k">and</span> s % <span class="n">6</span> <span class="k">in</span> (<span class="n">3</span>, <span class="n">4</span>):
+                        f.material_index = MATERIALS.index(<span class="s">&quot;Trim&quot;</span>)   <span class="c"># spoke gaps</span>
+                    <span class="k">else</span>:
+                        f.material_index = MATERIALS.index(<span class="s">&quot;Rim&quot;</span>)
+            hub = bm.faces.new(wr[-<span class="n">1</span>])
+            hub.material_index = MATERIALS.index(<span class="s">&quot;Rim&quot;</span>)
+            <span class="c"># tread faces point away from the axle; hub cap faces +X</span>
+            t = strips[<span class="n">3</span> * WHEEL_SEG]
+            c = t.calc_center_median()
+            <span class="k">if</span> t.normal.dot(Vector((<span class="n">0.0</span>, c.y, c.z))) &lt; <span class="n">0</span>:
+                <span class="k">for</span> f <span class="k">in</span> strips:
+                    f.normal_flip()
+            <span class="k">if</span> hub.normal.x &lt; <span class="n">0</span>:
+                hub.normal_flip()
             bm.to_mesh(wme)
         <span class="k">finally</span>:
             bm.free()
-        wheel = bpy.data.objects.new(<span class="s">&quot;WheelFront&quot;</span> <span class="k">if</span> y &lt; <span class="n">0</span> <span class="k">else</span> <span class="s">&quot;WheelRear&quot;</span>, wme)
-        wheel.location = (<span class="n">0.0</span>, y, WHEEL_Z)  <span class="c"># origin on the plane: mirror mirrors DATA</span>
-        bpy.context.collection.objects.link(wheel)
-        wm = wheel.modifiers.new(<span class="s">&quot;MirrorHalf&quot;</span>, <span class="s">&#x27;MIRROR&#x27;</span>)
-        wm.use_axis[<span class="n">0</span>] = <span class="k">True</span>
-        wm.use_mirror_merge = <span class="k">True</span>
-        wm.merge_threshold = MERGE_THRESHOLD
-        wheels.append(wheel)
+        <span class="k">for</span> m <span class="k">in</span> MATERIALS:
+            wme.materials.append(bpy.data.materials[m])
+        wheel = _link_mirrored(<span class="s">&quot;WheelFront&quot;</span> <span class="k">if</span> y &lt; <span class="n">0</span> <span class="k">else</span> <span class="s">&quot;WheelRear&quot;</span>, wme)
+        wheel.location = (<span class="n">0.0</span>, y, TIRE_R)  <span class="c"># origin on the plane: mirror mirrors DATA</span>
+        mirrored.append((wheel, N_WHEEL, F_WHEEL, <span class="n">0</span>))
 
-    <span class="c"># materials exist in both modes (slot layout is part of the scene contract)</span>
-    <span class="k">for</span> name <span class="k">in</span> (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>, <span class="s">&quot;Tire&quot;</span>, <span class="s">&quot;Hubcap&quot;</span>, <span class="s">&quot;Headlamp&quot;</span>, <span class="s">&quot;Taillamp&quot;</span>):
-        bpy.data.materials.new(name)
-    <span class="k">for</span> mat_name <span class="k">in</span> (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>):
-        body.data.materials.append(bpy.data.materials[mat_name])
-    <span class="k">for</span> w <span class="k">in</span> wheels:
-        <span class="k">for</span> mat_name <span class="k">in</span> (<span class="s">&quot;Tire&quot;</span>, <span class="s">&quot;Hubcap&quot;</span>):
-            w.data.materials.append(bpy.data.materials[mat_name])
+    M = MATERIALS.index
+    <span class="c"># -- lamps, grille, door mirror: pods seated on the skin, origins on plane</span>
+    hx, hz = <span class="n">0.42</span>, <span class="n">0.645</span>
+    mirrored.append(pod(
+        <span class="s">&quot;Headlamp&quot;</span>, (hx, skin_y(hx, hz), hz), (<span class="n">0.28</span>, -<span class="n">1.0</span>, <span class="n">0.06</span>), <span class="n">0.165</span>, <span class="n">0.054</span>,
+        [(<span class="n">1.0</span>, -<span class="n">0.06</span>), (<span class="n">1.0</span>, <span class="n">0.016</span>), (<span class="n">0.86</span>, <span class="n">0.022</span>), (<span class="n">0.50</span>, <span class="n">0.030</span>)],
+        [M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Chrome&quot;</span>), M(<span class="s">&quot;Chrome&quot;</span>)], M(<span class="s">&quot;Headlamp&quot;</span>), expo=<span class="n">3.2</span>))
+    gz = <span class="n">0.44</span>
+    mirrored.append(pod(   <span class="c"># split pod: authored half, welded whole on the plane</span>
+        <span class="s">&quot;Grille&quot;</span>, (<span class="n">0.0</span>, skin_y(<span class="n">0.15</span>, gz), gz), (<span class="n">0.0</span>, -<span class="n">1.0</span>, <span class="n">0.0</span>), <span class="n">0.31</span>, <span class="n">0.085</span>,
+        [(<span class="n">1.0</span>, -<span class="n">0.05</span>), (<span class="n">1.0</span>, <span class="n">0.022</span>), (<span class="n">0.90</span>, <span class="n">0.022</span>), (<span class="n">0.90</span>, <span class="n">0.006</span>)],
+        [M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Chrome&quot;</span>), M(<span class="s">&quot;Trim&quot;</span>)], M(<span class="s">&quot;Trim&quot;</span>), expo=<span class="n">5.0</span>, split=<span class="k">True</span>))
+    tx, tz = <span class="n">0.50</span>, <span class="n">0.84</span>
+    mirrored.append(pod(
+        <span class="s">&quot;Taillamp&quot;</span>, (tx, skin_y(tx, tz, front=<span class="k">False</span>), tz), (<span class="n">0.30</span>, <span class="n">1.0</span>, <span class="n">0.0</span>),
+        <span class="n">0.15</span>, <span class="n">0.055</span>,
+        [(<span class="n">1.0</span>, -<span class="n">0.05</span>), (<span class="n">1.0</span>, <span class="n">0.012</span>), (<span class="n">0.90</span>, <span class="n">0.018</span>)],
+        [M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Chrome&quot;</span>)], M(<span class="s">&quot;Taillamp&quot;</span>)))
+    my = -<span class="n">0.46</span>
+    mz = half_ring(my)[<span class="n">6</span>][<span class="n">2</span>] + <span class="n">0.075</span>
+    mirrored.append(pod(
+        <span class="s">&quot;DoorMirror&quot;</span>, (<span class="n">0.76</span>, my, mz), (<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.040</span>, <span class="n">0.026</span>,
+        [(<span class="n">1.0</span>, <span class="n">0.0</span>), (<span class="n">1.0</span>, <span class="n">0.09</span>), (<span class="n">1.9</span>, <span class="n">0.11</span>), (<span class="n">2.1</span>, <span class="n">0.20</span>), (<span class="n">1.6</span>, <span class="n">0.235</span>)],
+        [M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Paint&quot;</span>), M(<span class="s">&quot;Paint&quot;</span>)], M(<span class="s">&quot;Paint&quot;</span>),
+        expo=<span class="n">2.6</span>))
+    <span class="k">for</span> name, hy <span class="k">in</span> ((<span class="s">&quot;DoorHandleFront&quot;</span>, <span class="n">0.02</span>), (<span class="s">&quot;DoorHandleRear&quot;</span>, <span class="n">0.66</span>)):
+        hz = half_ring(hy)[<span class="n">5</span>][<span class="n">2</span>] + <span class="n">0.035</span>    <span class="c"># just under the character line</span>
+        mirrored.append(pod(
+            name, (skin_x(hy, hz), hy, hz), (<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), <span class="n">0.075</span>, <span class="n">0.016</span>,
+            [(<span class="n">1.0</span>, -<span class="n">0.02</span>), (<span class="n">1.0</span>, <span class="n">0.010</span>), (<span class="n">0.8</span>, <span class="n">0.016</span>)],
+            [M(<span class="s">&quot;Trim&quot;</span>), M(<span class="s">&quot;Chrome&quot;</span>)], M(<span class="s">&quot;Chrome&quot;</span>), up=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)))
 
-    <span class="c"># -- lamps: small mirrored boxes, same origin-on-plane idiom as wheels ---</span>
-    <span class="k">def</span> lamp(name, x0, x1, y0, y1, z0, z1):
-        lme = bpy.data.meshes.new(name + <span class="s">&quot;Half&quot;</span>)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
-            bmesh.ops.scale(bm, vec=(x1 - x0, y1 - y0, z1 - z0), verts=bm.verts)
-            bmesh.ops.translate(bm, vec=((x0 + x1) / <span class="n">2</span>, (y0 + y1) / <span class="n">2</span>, (z0 + z1) / <span class="n">2</span>),
-                                verts=bm.verts)
-            bm.to_mesh(lme)
-        <span class="k">finally</span>:
-            bm.free()
-        ob = bpy.data.objects.new(name, lme)
-        bpy.context.collection.objects.link(ob)  <span class="c"># origin at world origin: on the plane</span>
-        lm = ob.modifiers.new(<span class="s">&quot;MirrorHalf&quot;</span>, <span class="s">&#x27;MIRROR&#x27;</span>)
-        lm.use_axis[<span class="n">0</span>] = <span class="k">True</span>
-        lm.use_mirror_merge = <span class="k">True</span>
-        lm.merge_threshold = MERGE_THRESHOLD
-        ob.data.materials.append(bpy.data.materials[name])
-        <span class="k">return</span> ob
-
-    headlamp = lamp(<span class="s">&quot;Headlamp&quot;</span>, <span class="n">0.38</span>, <span class="n">0.78</span>, -<span class="n">1.97</span>, -<span class="n">1.88</span>, <span class="n">0.40</span>, <span class="n">0.50</span>)
-    taillamp = lamp(<span class="s">&quot;Taillamp&quot;</span>, <span class="n">0.30</span>, <span class="n">0.70</span>, <span class="n">1.97</span>, <span class="n">2.01</span>, <span class="n">0.50</span>, <span class="n">0.62</span>)
-
-    _assign_body_materials(body)
-    _assign_wheel_materials(wheels)
-    <span class="k">return</span> {<span class="s">&quot;body&quot;</span>: body,
-            <span class="s">&quot;mirrored&quot;</span>: [(w, N_WHEEL, F_WHEEL) <span class="k">for</span> w <span class="k">in</span> wheels]
-                        + [(headlamp, <span class="n">8</span>, <span class="n">6</span>), (taillamp, <span class="n">8</span>, <span class="n">6</span>)]}
+    <span class="k">return</span> {<span class="s">&quot;body&quot;</span>: body, <span class="s">&quot;mirrored&quot;</span>: mirrored}
 
 
 <span class="k">def</span> _assign_body_materials(body):
     <span class="s">&quot;&quot;&quot;Deterministic panel classes by construction position (not hand-picked):
-    side windows are ring segment 5 at cabin stations; the windshield and
-    rear window are the full slopes (segments 5..7) at the steepest roof-rise
-    and roof-drop station pairs; pillars/roof sides stay paint, underbody/
-    sill/caps/bumpers are trim, everything else paint.&quot;&quot;&quot;</span>
-    PAINT, GLASS, TRIM = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>
-    n_st = len(STATIONS)
-    dz = [STATIONS[i + <span class="n">1</span>][<span class="n">8</span>] - STATIONS[i][<span class="n">8</span>] <span class="k">for</span> i <span class="k">in</span> range(n_st - <span class="n">1</span>)]
-    shield_pair = max(range(n_st - <span class="n">1</span>), key=<span class="k">lambda</span> i: dz[i])      <span class="c"># windshield slope</span>
-    cabin = [i <span class="k">for</span> i <span class="k">in</span> range(n_st - <span class="n">1</span>)
-             <span class="k">if</span> STATIONS[i][<span class="n">5</span>] &gt;= <span class="n">0.30</span> <span class="k">and</span> STATIONS[i + <span class="n">1</span>][<span class="n">5</span>] &gt;= <span class="n">0.30</span>]
-    rear_pair = min(cabin, key=<span class="k">lambda</span> i: dz[i])                  <span class="c"># rear-window slope</span>
+    underbody, rocker and wheel-arch cladding are trim; the ring segment
+    between sill and glass top is the side glass under the roof (a trim
+    B-pillar interrupts it, paint C-pillar ends it); the drip rail above it
+    is trim and becomes the A-pillar through the windshield; the roof bands
+    are glass exactly where the cabin factor ramps (windshield, hatch).&quot;&quot;&quot;</span>
+    PAINT, GLASS, TRIM = (MATERIALS.index(m) <span class="k">for</span> m <span class="k">in</span> (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Trim&quot;</span>))
     <span class="k">for</span> poly <span class="k">in</span> body.data.polygons:
         i, k = divmod(poly.index, RING - <span class="n">1</span>)
-        <span class="k">if</span> i &gt;= n_st - <span class="n">1</span>:            <span class="c"># cap ngons (front/rear)</span>
-            poly.material_index = TRIM
+        <span class="k">if</span> i &gt;= N_ST - <span class="n">1</span>:            <span class="c"># cap ngons (front/rear fascia)</span>
+            poly.material_index = PAINT
             <span class="k">continue</span>
-        both_cabin = STATIONS[i][<span class="n">5</span>] &gt;= <span class="n">0.30</span> <span class="k">and</span> STATIONS[i + <span class="n">1</span>][<span class="n">5</span>] &gt;= <span class="n">0.30</span>
-        <span class="k">if</span> both_cabin <span class="k">and</span> (k == <span class="n">5</span> <span class="k">or</span> (i <span class="k">in</span> (shield_pair, rear_pair) <span class="k">and</span> <span class="n">5</span> &lt;= k &lt;= <span class="n">7</span>)):
-            poly.material_index = GLASS
-        <span class="k">elif</span> k &lt;= <span class="n">1</span> <span class="k">or</span> (i <span class="k">in</span> (<span class="n">0</span>, n_st - <span class="n">2</span>) <span class="k">and</span> k &lt;= <span class="n">2</span>):
-            poly.material_index = TRIM       <span class="c"># underbody/sill + bumper bands</span>
+        y0, y1 = STATION_Y[i], STATION_Y[i + <span class="n">1</span>]
+        ym = <span class="n">0.5</span> * (y0 + y1)
+        cab = cabin(ym) &gt; <span class="n">1e-6</span>
+        <span class="k">if</span> k &lt;= <span class="n">3</span>:
+            poly.material_index = TRIM       <span class="c"># underbody, rocker, arch cladding</span>
+        <span class="k">elif</span> k == <span class="n">7</span> <span class="k">and</span> cab <span class="k">and</span> ym &lt; Y_CPILLAR:
+            in_b = Y_BPILLAR[<span class="n">0</span>] &lt;= ym &lt;= Y_BPILLAR[<span class="n">1</span>]
+            poly.material_index = TRIM <span class="k">if</span> in_b <span class="k">else</span> GLASS
+        <span class="k">elif</span> k == <span class="n">8</span> <span class="k">and</span> cab <span class="k">and</span> ym &lt; Y_CPILLAR:
+            poly.material_index = TRIM       <span class="c"># drip rail / A-pillar</span>
+        <span class="k">elif</span> k &gt;= <span class="n">9</span> <span class="k">and</span> (Y_COWL &lt;= y0 <span class="k">and</span> y1 &lt;= Y_ROOF0
+                         <span class="k">or</span> Y_ROOF1 &lt;= y0 <span class="k">and</span> y1 &lt;= Y_HATCH):
+            poly.material_index = GLASS      <span class="c"># windshield / hatch glass</span>
         <span class="k">else</span>:
             poly.material_index = PAINT
-
-
-<span class="k">def</span> _assign_wheel_materials(wheels):
-    <span class="k">for</span> w <span class="k">in</span> wheels:
-        <span class="k">for</span> poly <span class="k">in</span> w.data.polygons:
-            j = poly.index // WHEEL_SEG
-            poly.material_index = <span class="n">1</span> <span class="k">if</span> j &gt;= len(WHEEL_RINGS) - <span class="n">2</span> <span class="k">else</span> <span class="n">0</span>
 
 
 <span class="k">def</span> _eval_mesh(obj, dg):
@@ -658,24 +842,31 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
               <span class="s">f&quot;</span><span class="s">(tol </span>{TOL_BBOX:<span class="s">.1e</span>}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">11</span>
 
-    <span class="c"># 4. mirrored parts (wheels, lamps): each mirrored about an object origin</span>
-    <span class="c"># that sits ON the plane — the data is offset, the object is not</span>
+    <span class="c"># 4. mirrored parts (wheels, lamps, grille, mirrors, handles): each mirrored</span>
+    <span class="c"># about an object origin that sits ON the plane — the data is offset,</span>
+    <span class="c"># the object is not. Offset parts double exactly (2n); the split grille</span>
+    <span class="c"># is authored as a half with `weld` verts on the plane and must weld</span>
+    <span class="c"># like the body (2n - weld), or it renders as two grilles.</span>
     part_lines = []
-    <span class="k">for</span> w, n_half, f_half <span class="k">in</span> objs[<span class="s">&quot;mirrored&quot;</span>]:
+    <span class="k">for</span> w, n_half, f_half, weld <span class="k">in</span> objs[<span class="s">&quot;mirrored&quot;</span>]:
         <span class="k">if</span> abs(w.location.x) &gt; TOL_PLANE:
             print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> origin x=</span>{w.location.x}<span class="s"> — mirror mirrors </span><span class="s">&quot;</span>
                   <span class="s">f&quot;</span><span class="s">about the object origin; it must sit on the plane</span><span class="s">&quot;</span>,
                   file=sys.stderr)
             <span class="k">return</span> <span class="n">12</span>
-        <span class="k">if</span> len(w.data.vertices) != n_half <span class="k">or</span> len(w.data.polygons) != f_half:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> datablock </span><span class="s">&quot;</span>
-                  <span class="s">f&quot;</span>{(len(w.data.vertices), len(w.data.polygons))}<span class="s"> != </span><span class="s">&quot;</span>
-                  <span class="s">f&quot;</span>{(n_half, f_half)}<span class="s">&quot;</span>, file=sys.stderr)
+        w_plane = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> w.data.vertices
+                      <span class="k">if</span> abs((w.matrix_world @ v.co).x) &lt;= TOL_PLANE)
+        <span class="k">if</span> (len(w.data.vertices), len(w.data.polygons), w_plane) != (n_half, f_half, weld):
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> datablock verts/faces/on-plane </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{(len(w.data.vertices), len(w.data.polygons), w_plane)}<span class="s"> != </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{(n_half, f_half, weld)}<span class="s">&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">13</span>
         wv, _, wf = _eval_mesh(w, dg)
-        <span class="k">if</span> len(wv) != <span class="n">2</span> * n_half <span class="k">or</span> wf != <span class="n">2</span> * f_half:
-            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> evaluated </span>{(len(wv), wf)}<span class="s"> != </span><span class="s">&quot;</span>
-                  <span class="s">f&quot;</span>{(<span class="n">2</span> * n_half, <span class="n">2</span> * f_half)}<span class="s">&quot;</span>, file=sys.stderr)
+        wv_plane = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> wv <span class="k">if</span> abs(v.x) &lt;= TOL_PLANE)
+        <span class="k">if</span> len(wv) != <span class="n">2</span> * n_half - weld <span class="k">or</span> wf != <span class="n">2</span> * f_half <span class="k">or</span> wv_plane != weld:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> evaluated verts/faces/on-plane </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{(len(wv), wf, wv_plane)}<span class="s"> != </span><span class="s">&quot;</span>
+                  <span class="s">f&quot;</span>{(<span class="n">2</span> * n_half - weld, <span class="n">2</span> * f_half, weld)}<span class="s">&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">14</span>
         wdev, wlone = _symmetry_dev(wv, TOL_PLANE)
         <span class="k">if</span> wlone <span class="k">or</span> wdev &gt; TOL_SYMM:
@@ -686,7 +877,9 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
             print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{w.name}<span class="s"> evaluated mesh stayed on one side — </span><span class="s">&quot;</span>
                   <span class="s">f&quot;</span><span class="s">mirror produced no mirrored half</span><span class="s">&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">16</span>
-        part_lines.append(<span class="s">f&quot;</span>{w.name}<span class="s"> sym_dev=</span>{wdev:<span class="s">.3e</span>}<span class="s">&quot;</span>)
+        part_lines.append(<span class="s">f&quot;</span>{w.name}<span class="s"> </span>{n_half}<span class="s">/</span>{f_half}<span class="s">-&gt;</span>{len(wv)}<span class="s">/</span>{wf}<span class="s">&quot;</span>
+                          + (<span class="s">f&quot;</span><span class="s"> welded=</span>{weld}<span class="s">&quot;</span> <span class="k">if</span> weld <span class="k">else</span> <span class="s">&quot;&quot;</span>)
+                          + <span class="s">f&quot;</span><span class="s"> sym_dev=</span>{wdev:<span class="s">.3e</span>}<span class="s">&quot;</span>)
 
     print(<span class="s">f&quot;</span><span class="s">body half=</span>{got[<span class="n">0</span>]}<span class="s">/</span>{got[<span class="n">1</span>]}<span class="s">/</span>{got[<span class="n">2</span>]}<span class="s"> centerline=</span>{c}<span class="s"> | </span><span class="s">&quot;</span>
           <span class="s">f&quot;</span><span class="s">eval=</span>{len(verts)}<span class="s">/</span>{e_eval}<span class="s">/</span>{f_eval}<span class="s"> euler=2 manifold=True | </span><span class="s">&quot;</span>
@@ -706,41 +899,100 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
         m.use_nodes = <span class="k">True</span>
         <span class="k">return</span> m.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
     p = principled(<span class="s">&quot;Paint&quot;</span>)
-    p.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.48</span>, <span class="n">0.015</span>, <span class="n">0.022</span>, <span class="n">1.0</span>)
-    p.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.5</span>
-    p.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.32</span>
+    p.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.50</span>, <span class="n">0.016</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    p.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
+    p.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.38</span>
+    p.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">1.0</span>   <span class="c"># clear coat: crisp light streaks</span>
+    p.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.06</span>
     g = principled(<span class="s">&quot;Glass&quot;</span>)
-    <span class="c"># dielectric, not metal: metallic glass mirrors the key light across the</span>
-    <span class="c"># whole windshield and it renders as a hot salmon slab</span>
-    g.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.026</span>, <span class="n">0.036</span>, <span class="n">1.0</span>)
+    <span class="c"># opaque dark dielectric, glossy (metallic glass mirrors the key across</span>
+    <span class="c"># the whole windshield as a hot slab). On a near-black stage there is</span>
+    <span class="c"># little to reflect, so a facing-ratio ramp lifts the glass toward steel</span>
+    <span class="c"># blue at grazing angles: tinted glass that reads as glass, not as paint.</span>
+    nt = bpy.data.materials[<span class="s">&quot;Glass&quot;</span>].node_tree
+    lw = nt.nodes.new(<span class="s">&quot;ShaderNodeLayerWeight&quot;</span>)
+    lw.inputs[<span class="s">&quot;Blend&quot;</span>].default_value = <span class="n">0.35</span>
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.010</span>, <span class="n">0.014</span>, <span class="n">0.020</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.9</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.11</span>, <span class="n">0.15</span>, <span class="n">0.21</span>, <span class="n">1.0</span>)
+    nt.links.new(lw.outputs[<span class="s">&quot;Facing&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], g.inputs[<span class="s">&quot;Base Color&quot;</span>])
     g.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.0</span>
-    g.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
+    g.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.05</span>
+    g.inputs[<span class="s">&quot;Coat Weight&quot;</span>].default_value = <span class="n">1.0</span>
+    g.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.02</span>
     t = principled(<span class="s">&quot;Trim&quot;</span>)
-    t.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.026</span>, <span class="n">1.0</span>)
-    t.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    t.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.022</span>, <span class="n">0.023</span>, <span class="n">0.027</span>, <span class="n">1.0</span>)
+    t.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
+    ch = principled(<span class="s">&quot;Chrome&quot;</span>)
+    ch.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.78</span>, <span class="n">0.79</span>, <span class="n">0.82</span>, <span class="n">1.0</span>)
+    ch.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    ch.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.2</span>
     tire = principled(<span class="s">&quot;Tire&quot;</span>)
-    tire.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.012</span>, <span class="n">0.013</span>, <span class="n">0.016</span>, <span class="n">1.0</span>)
-    tire.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.85</span>
-    hub = principled(<span class="s">&quot;Hubcap&quot;</span>)
-    hub.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.68</span>, <span class="n">1.0</span>)
-    hub.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
-    hub.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.28</span>
+    tire.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.016</span>, <span class="n">0.016</span>, <span class="n">0.018</span>, <span class="n">1.0</span>)
+    tire.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.82</span>
+    rim = principled(<span class="s">&quot;Rim&quot;</span>)
+    rim.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">0.68</span>, <span class="n">1.0</span>)
+    rim.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
+    rim.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.3</span>
     head = principled(<span class="s">&quot;Headlamp&quot;</span>)
-    head.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.85</span>, <span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>)
-    head.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.9</span>, <span class="n">0.95</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
-    head.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.2</span>
+    head.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.8</span>, <span class="n">0.84</span>, <span class="n">0.9</span>, <span class="n">1.0</span>)
+    head.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.1</span>
+    head.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.95</span>, <span class="n">0.97</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    head.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.6</span>
     tail = principled(<span class="s">&quot;Taillamp&quot;</span>)
-    tail.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.3</span>, <span class="n">0.008</span>, <span class="n">0.01</span>, <span class="n">1.0</span>)
-    tail.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">0.8</span>, <span class="n">0.02</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
-    tail.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.9</span>
+    tail.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.35</span>, <span class="n">0.01</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    tail.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.12</span>
+    tail.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">0.04</span>, <span class="n">0.03</span>, <span class="n">1.0</span>)
+    tail.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">1.2</span>
+
+
+<span class="k">def</span> _shade_smooth(ob, angle_deg=<span class="n">35.0</span>):
+    <span class="s">&quot;&quot;&quot;Smooth shading with sharp edges by dihedral angle and material border.
+
+    Set on the authored half; the Mirror modifier carries the flags across.
+    Boundary edges ON the plane have no partner face in the half, so their
+    angle is the one to the mirror image of their face: acos(1 - 2 nx^2).
+    (The weld itself is not a pixel witness: the hood and roof are nearly
+    flat across the plane, so an unwelded seam renders within 12/255 of the
+    welded one. The 2n - c count is what catches it.)&quot;&quot;&quot;</span>
+    thr = math.radians(angle_deg)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(ob.data)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            lf = e.link_faces
+            <span class="k">if</span> len(lf) == <span class="n">2</span>:
+                sharp = (e.calc_face_angle(<span class="n">0.0</span>) &gt; thr
+                         <span class="k">or</span> lf[<span class="n">0</span>].material_index != lf[<span class="n">1</span>].material_index)
+            <span class="k">elif</span> len(lf) == <span class="n">1</span> <span class="k">and</span> all(abs(v.co.x) &lt;= TOL_PLANE <span class="k">for</span> v <span class="k">in</span> e.verts):
+                nx = lf[<span class="n">0</span>].normal.x
+                sharp = math.acos(max(-<span class="n">1.0</span>, min(<span class="n">1.0</span>, <span class="n">1.0</span> - <span class="n">2.0</span> * nx * nx))) &gt; thr
+            <span class="k">else</span>:
+                sharp = <span class="k">True</span>
+            e.smooth = <span class="k">not</span> sharp
+        bm.to_mesh(ob.data)
+    <span class="k">finally</span>:
+        bm.free()
 
 
 <span class="k">def</span> render_still(objs, path, engine):
+    <span class="c"># Shared Layer 1 gates (render path only) — see gallery_framing.py</span>
+    sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+    sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
+    <span class="k">import</span> gallery_framing
+    <span class="k">import</span> gallery_asset_quality
+
     scene = bpy.context.scene
     _finish_materials()
     body = objs[<span class="s">&quot;body&quot;</span>]
-    <span class="k">for</span> poly <span class="k">in</span> body.data.polygons:
-        poly.use_smooth = <span class="k">False</span>  <span class="c"># crisp loft panels</span>
+    parts = [body] + [w <span class="k">for</span> w, *_ <span class="k">in</span> objs[<span class="s">&quot;mirrored&quot;</span>]]
+    _shade_smooth(body)
+    <span class="k">for</span> ob <span class="k">in</span> parts[<span class="n">1</span>:]:
+        _shade_smooth(ob, <span class="n">40.0</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -764,8 +1016,7 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    <span class="c"># metallic paint needs a faint ambient or the flanks die to black</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.024</span>, <span class="n">0.026</span>, <span class="n">0.032</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
@@ -777,21 +1028,20 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
         scene.collection.objects.link(ob)
 
     <span class="c"># default-stage rig per docs/VISUAL-STYLE.md</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">550.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">3.0</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">320.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">155</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">400.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
 
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
+    aim.location = (<span class="n">0.0</span>, -<span class="n">0.3</span>, <span class="n">0.62</span>)
     scene.collection.objects.link(aim)
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
-    cam_data.lens = <span class="n">52.0</span>
+    cam_data.lens = <span class="n">54.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># On the key&#x27;s side (-X): the car is mirror-symmetric, so this is the</span>
-    <span class="c"># same composition, but at +X the camera saw the flank the key cannot</span>
-    <span class="c"># reach and the whole visible side rendered near-black.</span>
-    cam.location = (-<span class="n">4.4</span>, -<span class="n">5.3</span>, <span class="n">2.1</span>)
+    <span class="c"># On the key&#x27;s side (-X), high enough to look down the hood centerline so</span>
+    <span class="c"># both halves — both headlamps, both A-pillars, both wheels — read.</span>
+    cam.location = (-<span class="n">4.3</span>, -<span class="n">5.6</span>, <span class="n">2.7</span>)
     scene.collection.objects.link(cam)
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)  <span class="c"># data API, not bpy.ops (damped-track-aim)</span>
     track.target = aim
@@ -801,7 +1051,7 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -813,8 +1063,19 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
     scene.render.filepath = path
     <span class="c"># AgX would flatten the candy paint toward chalk (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+
+    <span class="k">if</span> gallery_framing.check_framing(scene, cam, hero=parts, elements=parts,
+                                     stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">17</span>   <span class="c"># the helper&#x27;s 10, remapped: 10 is the partner-deviation check</span>
+    <span class="k">if</span> gallery_asset_quality.check_asset_quality(scene, cam, hero=parts,
+                                                 stage=[floor, wall]):
+        <span class="k">return</span> <span class="n">18</span>   <span class="c"># the helper&#x27;s 11, remapped: 11 is the bbox check</span>
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">6</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -833,9 +1094,9 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(objs, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+        code = render_still(objs, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;car-mirror-symmetry OK&quot;</span>)
@@ -852,7 +1113,7 @@ TOL_PLANE = <span class="n">1.0e-6</span>   <span class="c"># |x| this small cou
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red low-poly hatchback with white headlights, modelled as one mirrored half." />
+    <img src="../assets/car-mirror-symmetry-hero.webp" alt="A red stylized hatchback in front three-quarter view with tinted glass, black pillars, spoked wheels, and matched headlamps and door mirrors either side of one centered grille." />
   </dialog>
   <footer>
     <div class="statusbar">
