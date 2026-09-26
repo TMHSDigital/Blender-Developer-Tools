@@ -12,7 +12,7 @@ assets — the calibration table lives in docs/VISUAL-STYLE.md):
 - **materials** — distinct materials across the hero's parts. A single
   flat Principled slot across an entire prop is the gallery's most
   reliable placeholder predictor.
-- **parts** — named mesh parts the hero is assembled from, excluding
+- **parts** — named mesh or curve parts the hero is assembled from, excluding
   default datablock names (Cube, Sphere, Plane, ...). Designed assets are
   assembled, not dumped.
 - **edge90** — fraction of manifold mesh edges whose dihedral angle is
@@ -80,17 +80,46 @@ def _as_list(objs):
 
 
 def _hero_meshes(hero):
+    """(name, data, object) per hero part. A part is a mesh object or a
+    curve object (a beveled Bezier tube is a renderable part authored on
+    bpy.types.Curve — curve-bevel-arc). Both datablocks carry `.materials`;
+    geometry is read through _part_mesh."""
     meshes = []
     for ob in hero:
-        if ob.type == "MESH" and ob.data is not None:
-            meshes.append((ob.name, ob.data))
+        if ob.type in ("MESH", "CURVE") and ob.data is not None:
+            meshes.append((ob.name, ob.data, ob))
     return meshes
+
+
+def _edge90_counts(me):
+    total = right = degenerate = 0
+    bm = bmesh.new()
+    try:
+        bm.from_mesh(me)
+        for e in bm.edges:
+            if len(e.link_faces) != 2:
+                continue
+            n1 = e.link_faces[0].normal
+            n2 = e.link_faces[1].normal
+            # A zero-area face has a zero-length normal, and Vector.angle
+            # RAISES on one. Reporting beats throwing: a degenerate face is
+            # a real defect the caller should hear about, not a crash that
+            # hides every other measurement on the asset.
+            if n1.length_squared <= 0.0 or n2.length_squared <= 0.0:
+                degenerate += 1
+                continue
+            total += 1
+            if abs(math.degrees(n1.angle(n2)) - 90.0) <= EDGE90_DEG:
+                right += 1
+    finally:
+        bm.free()
+    return total, right, degenerate
 
 
 def measure_parts(hero):
     """(part count, offending default-ish names)."""
     meshes = _hero_meshes(hero)
-    bad = [name for name, _ in meshes
+    bad = [name for name, _, _ in meshes
            if name.lower().split(".")[0] in DEFAULT_NAMES]
     return len(meshes), bad
 
@@ -103,7 +132,7 @@ def measure_materials(hero):
     from collections import Counter
     distinct = set()
     primary = Counter()
-    for _, me in _hero_meshes(hero):
+    for _, me, _ in _hero_meshes(hero):
         slots = [m for m in me.materials if m is not None]
         for slot in slots:
             distinct.add(slot.name)
@@ -118,31 +147,28 @@ def measure_edge90(hero):
 
     Boundary edges (open kit ends, sheet rims) are excluded — they have no
     dihedral to treat. Angles are face-normal angles on manifold edges.
+    A curve part is measured on its depsgraph-evaluated tessellation (the
+    tube the renderer draws), freed with to_mesh_clear().
     """
     total = 0
     right = 0
     degenerate = 0
-    for _, me in _hero_meshes(hero):
-        bm = bmesh.new()
-        try:
-            bm.from_mesh(me)
-            for e in bm.edges:
-                if len(e.link_faces) != 2:
-                    continue
-                n1 = e.link_faces[0].normal
-                n2 = e.link_faces[1].normal
-                # A zero-area face has a zero-length normal, and Vector.angle
-                # RAISES on one. Reporting beats throwing: a degenerate face is
-                # a real defect the caller should hear about, not a crash that
-                # hides every other measurement on the asset.
-                if n1.length_squared <= 0.0 or n2.length_squared <= 0.0:
-                    degenerate += 1
-                    continue
-                total += 1
-                if abs(math.degrees(n1.angle(n2)) - 90.0) <= EDGE90_DEG:
-                    right += 1
-        finally:
-            bm.free()
+    depsgraph = None
+    for _, data, ob in _hero_meshes(hero):
+        if ob.type == "MESH":
+            t, r, d = _edge90_counts(data)
+        else:
+            if depsgraph is None:
+                depsgraph = bpy.context.evaluated_depsgraph_get()
+            ev = ob.evaluated_get(depsgraph)
+            me = ev.to_mesh()
+            try:
+                t, r, d = _edge90_counts(me)
+            finally:
+                ev.to_mesh_clear()
+        total += t
+        right += r
+        degenerate += d
     return (right / total) if total else 0.0, right, total, degenerate
 
 

@@ -13,7 +13,7 @@ candidate top-left, then the references in CLAUDE.md order.
 
 For each name the Blender side (``scripts/asset_sheet_panel.py``) stages the
 entry through the README's documented ``--output`` command, keeps only the
-mesh objects matched by ``SELECT`` below, and re-renders them on a grey
+mesh (or curve) objects matched by ``SELECT`` below, and re-renders them on a grey
 sweep. Before this file the panel renderer lived in uncommitted scratch
 scripts, so a sheet could not be reproduced (the same gap #200 closed for
 heroes).
@@ -75,6 +75,7 @@ SELECT = {
     "mesh-hygiene-audit": (r"^Valve\.", None),
     "gn-modifier-inputs": (r"^SpiralStair\.H3$", None),
     "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
+    "curve-bevel-arc": (r"^(Magnet|Clip\w+|PoleBearings)$", None),
     "shape-key-blend": (r"^Vase$", None),
 }
 

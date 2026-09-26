@@ -11,11 +11,20 @@ and that the depsgraph-evaluated mesh has the deterministic topology (1044 verts
 1028 faces for these resolution settings) with a Z span that rests on the floor
 (`[0, 2 × bevel]`) and an X span of `2 × radius + 2 × bevel`.
 
-Staging: both ends of the semicircle face −Y, so the still looks from −Y and
-shows both filled caps (`use_fill_caps`, the witness) face-on, with the arc
-sweeping behind them. The old angle showed one cap and the other end edge-on.
-The cap's 12-sided outline is the pinned tessellation (`bevel_resolution` 4,
-locked by the 1044-vertex gate), not a presentation choice.
+Staging: the checked curve is presented as what a capped, beveled Bezier
+semicircle is in the world — a round-bar horseshoe magnet lying on the floor,
+open end to the camera. The two filled caps (`use_fill_caps`, the witness) are
+its ground-steel pole faces, turned face-on; an uncapped build would show two
+hollow pipe ends exactly there. The red enamel / bare-steel split is one
+material keyed on object-space Y, so the magnet stays a single curve
+datablock. The paper clips are beveled Bezier curves too (explicit `FREE`
+handles: straight legs plus quarter-circle bends), each lying along the field
+line that leaves its pole; the iron filings trace those lines — for two
+opposite line poles they are exact circular arcs through both pole faces. The
+cap's 12-sided outline is the pinned tessellation (`bevel_resolution` 4,
+locked by the 1044-vertex gate), not a presentation choice. The render path
+rotates the object only; the check reads object-space evaluated geometry and
+runs before any staging.
 
 ## Run
 
@@ -49,7 +58,7 @@ against it. `10` is also the shared framing helper.
 | 8 | Tube does not rest on the floor |
 | 9 | Tube height ≠ 2 × bevel |
 | 10 | X span off closed form; also gallery framing violation |
-| 11 | `--output` produced no file |
+| 11 | `--output` produced no file; also asset-quality floor violation (`gallery_asset_quality`) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

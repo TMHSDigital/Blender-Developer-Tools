@@ -408,7 +408,7 @@ lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` 
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor, both filled end caps facing the camera" /></a>
+<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a red horseshoe magnet built from one beveled Bezier curve, its filled end caps turned to the camera as steel pole faces, iron filings arcing between the poles and Bezier-wire paper clips clinging to them" /></a>
 </td>
 <td valign="middle">
 
@@ -416,8 +416,9 @@ lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` 
 
 A beveled Bezier semicircle authored on `bpy.types.Curve` — `splines.new('BEZIER')`,
 `bezier_points`, `bevel_depth`, `use_fill_caps` — so the curve renders as a solid tube
-without a prior mesh conversion. Asserts eight points, `bevel_depth == 0.15`, and
-evaluated topology 1044 verts / 1028 faces.
+without a prior mesh conversion — staged as a horseshoe magnet whose capped ends
+are the pole faces. Asserts eight points, `bevel_depth == 0.15`, and evaluated
+topology 1044 verts / 1028 faces.
 
 </td>
 </tr>
