@@ -366,8 +366,8 @@
     {
       "name": "vertex-weight-limit",
       "dir": "examples/vertex-weight-limit",
-      "teaches": "A rigged mech arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.",
-      "alt": "A segmented orange robotic arm on a round base, bent at the elbow, with teal bands at the joints.",
+      "teaches": "A rigged industrial robot arm pruned to the game-engine cap of four bone influences per vertex, through the data API. The check proves no vertex exceeds the cap, weights still sum to one, the pose survives pruning, and the modifier is still exact linear blend skinning.",
+      "alt": "An orange industrial robot arm reaching down with a two-jaw gripper, each segment glowing in its bone colour and the cables on its back grading from colour to colour across each joint.",
       "witnessesFix": "Limit-total and normalize without bpy.ops: keep the top four groups, VertexGroup.remove the rest, renormalize. LBS is verified against the weights read back from the mesh's own deform layer, not the authoring function.",
       "hero": "docs/gallery/assets/vertex-weight-limit-hero.webp",
       "preview": "examples/vertex-weight-limit/preview.webp",

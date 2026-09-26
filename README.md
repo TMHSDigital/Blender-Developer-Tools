@@ -899,7 +899,7 @@ Neighbor of [`lod-decimate-chain`](examples/lod-decimate-chain/).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/vertex-weight-limit/"><img src="examples/vertex-weight-limit/preview.webp" alt="Vertex weight limit: a posed mech arm on a dark studio floor - orange armor shells, a glowing teal flex cuff around the hex-bolted elbow hinge, long plated forearm, three-finger gripper - deformed by weights pruned to the four-influence engine cap" /></a>
+<a href="examples/vertex-weight-limit/"><img src="examples/vertex-weight-limit/preview.webp" alt="Vertex weight limit: an orange industrial robot arm reaching down with a two-jaw gripper, painted with its own post-limit skin weights - each rigid segment glows in its bone colour and the back cables grade blue to teal to violet to magenta across the joints" /></a>
 </td>
 <td valign="middle">
 
@@ -908,9 +908,10 @@ Neighbor of [`lod-decimate-chain`](examples/lod-decimate-chain/).
 The game-engine max-four-bone-influences constraint, enforced through the data
 API (`v.groups` + `VertexGroup.remove` + renormalize) rather than the
 `bpy.ops.object.vertex_group_limit_total` context path. Asserts the pre-limit
-boots really carry five influences, no vertex ends over the cap, weights still
+cables really carry five influences, no vertex ends over the cap, weights still
 sum to one, the pose survives pruning, and the modifier is still exact linear
-blend skinning read back from the mesh's own deform layer.
+blend skinning read back from the mesh's own deform layer. The render paints
+those post-limit weights onto the arm as a colour attribute.
 
 </td>
 </tr>
