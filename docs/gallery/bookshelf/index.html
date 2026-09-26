@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>bookshelf — Showcase — Blender Developer Tools</title>
+  <meta name="description" content="A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/bookshelf/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#1a1b1e" />
+  <meta name="color-scheme" content="dark" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="bookshelf — Showcase — Blender Developer Tools" />
+  <meta property="og:description" content="A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/bookshelf/" />
+  <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bookshelf-hero.webp" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours." />
+  <meta property="og:site_name" content="Blender Developer Tools" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="bookshelf — Showcase — Blender Developer Tools" />
+  <meta name="twitter:description" content="A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract." />
+  <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/bookshelf-hero.webp" />
+  <meta name="twitter:image:alt" content="A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours." />
+  <style>
+    /* fonts are deployed by the landing build (docs/fonts/) */
+    @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
+      src: url('../../fonts/barlow-condensed-600.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/inter-regular.woff2') format('woff2'); }
+    @font-face { font-family: 'Inter'; font-weight: 500; font-display: swap;
+      src: url('../../fonts/inter-medium.woff2') format('woff2'); }
+    @font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
+      src: url('../../fonts/jetbrains-mono-regular.woff2') format('woff2'); }
+
+    /* Blender-viewport system, shared with the landing page. Dark only. */
+    :root {
+      color-scheme: dark;
+      --bg: #1a1b1e; --surface: #222327; --surface-2: #2a2b30; --bg2: #131417;
+      --border: #3a3b40; --text: #e8e9eb; --text-dim: #9698a0;
+      --select: #ff8c19; --ok: #6dc96d;
+      --radius: 4px; --radius-lg: 6px; --maxw: 1080px;
+      --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --code-k: #ff7b72; --code-s: #a5d6ff; --code-c: #9698a0; --code-n: #79c0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    a { color: var(--select); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; border-radius: 3px; }
+    ::selection { background: color-mix(in srgb, var(--select) 40%, transparent); }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--select); color: #1a1b1e;
+      padding: 0.5rem 1rem; border-radius: var(--radius); z-index: 10; font-weight: 500; }
+    .skip:focus { left: 0.5rem; top: 0.5rem; }
+    .hud { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      color: var(--text-dim); text-transform: uppercase; }
+
+    .topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; padding: 0 1.25rem; height: 46px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .topbar .back { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar .back:hover { color: var(--select); text-decoration: none; }
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+    .topbar-right .ghlink { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+    .topbar-right .ghlink:hover { color: var(--select); text-decoration: none; }
+
+    header.hero { max-width: var(--maxw); margin: 0 auto; padding: 2.75rem 1.25rem 1.25rem; }
+    header.hero h1 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: clamp(2.2rem, 5vw, 3.4rem); letter-spacing: 0.005em; line-height: 0.98; }
+    header.hero p { color: var(--text-dim); max-width: 62ch; margin-top: 0.7rem; font-size: 1rem; }
+
+    /* ---- index: sticky controls (search, density toggle, tag chips) ---- */
+    .controls { position: sticky; top: 46px; z-index: 4;
+      background: color-mix(in srgb, var(--bg) 94%, transparent);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .controls-inner { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.5rem; }
+    .controls-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .searchwrap { position: relative; flex: 1 1 240px; min-width: 150px; }
+    .searchwrap input { width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius); padding: 0.34rem 1.9rem 0.34rem 0.7rem;
+      font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.4; }
+    .searchwrap input:focus { border-color: var(--select); outline: none; }
+    .searchwrap input::placeholder { color: var(--text-dim); }
+    .searchwrap input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+    .q-clear { position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1;
+      cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 3px; }
+    .q-clear:hover { color: var(--select); }
+    .count { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+    .density { display: flex; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; }
+    .density-btn { background: var(--surface-2); border: none; color: var(--text-dim); cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      text-transform: uppercase; padding: 0.36rem 0.7rem; transition: color 0.15s, background 0.15s; }
+    .density-btn + .density-btn { border-left: 1px solid var(--border); }
+    .density-btn:hover { color: var(--select); }
+    .density-btn.active { background: var(--select); color: #1a1b1e; }
+    .tags-toggle { display: none; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 3px; padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tags-toggle:hover, .tags-toggle.has-active { color: var(--select); border-color: var(--select); }
+
+    /* Tag chips wrap by default (no-JS safe). With JS the row becomes a scroll
+       strip on wide viewports and collapses behind the Tags toggle on narrow
+       ones, so the sticky bar never eats the mobile viewport. */
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    html.js .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    html.js .chips::-webkit-scrollbar { height: 5px; }
+    html.js .chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: 3px; padding: 0.22rem 0.7rem; font-size: 0.72rem; font-weight: 400;
+      font-family: var(--font-mono); cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+      transition: color 0.15s, border-color 0.15s; }
+    .chip:hover { color: var(--select); border-color: var(--select); }
+    .chip.active { color: #1a1b1e; background: var(--select); border-color: var(--select); }
+    @media (max-width: 719px) {
+      html.js .tags-toggle { display: inline-block; }
+      html.js .chips { display: none; }
+      html.js .chips.open { display: flex; flex-wrap: wrap; overflow-y: auto; max-height: 40vh; }
+    }
+
+    /* Compact density: hero + name + one-line teaser. The description and
+       WITNESSES text stay in the DOM (searchable, screen-reader reachable,
+       present with JS disabled when the class is never applied) but are
+       visually collapsed. Applied only by JS via the density-compact class. */
+    html.density-compact .grid { gap: 1rem; }
+    html.density-compact .card-body { padding: 0.65rem 0.9rem 0.7rem; }
+    html.density-compact .card-body h2 { font-size: 0.88rem; margin-bottom: 0.15rem; }
+    html.density-compact .teaches { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html.density-compact .witnesses { position: absolute; width: 1px; height: 1px; margin: -1px;
+      padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+    html.density-compact .card-link { display: none; }
+    .noresults { color: var(--text-dim); text-align: center; padding: 3rem 1rem; font-size: 0.95rem; }
+    .noresults .chip { margin-left: 0.6rem; }
+    .to-top { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 6; cursor: pointer;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+      border-radius: var(--radius); padding: 0.45rem 0.75rem;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
+      text-transform: uppercase; opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s, color 0.15s, border-color 0.15s; }
+    .to-top.show { opacity: 1; visibility: visible; }
+    .to-top:hover { color: var(--select); border-color: var(--select); }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column;
+      outline: 2px solid transparent; outline-offset: -1px;
+      transition: outline-color 0.12s ease, border-color 0.12s ease; }
+    .card:hover { border-color: var(--select); outline-color: var(--select); }
+    .card.hidden { display: none; }
+    .card-media { display: block; background: var(--bg2); line-height: 0; }
+    .card-media img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .card-body { padding: 1.15rem 1.4rem 1.45rem; display: flex; flex-direction: column; flex: 1 1 auto; }
+    .card-body h2 { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .card-body h2 a { color: var(--text); }
+    .card-body h2 a:hover { color: var(--select); text-decoration: none; }
+    .teaches { color: var(--text); margin-bottom: 0.7rem; font-size: 0.92rem; }
+    .witnesses { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1rem; }
+    .tag { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--select); border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+      border-radius: 3px; padding: 0.08rem 0.5rem; margin-right: 0.4rem; vertical-align: 1px; }
+    .card-link { font-weight: 600; font-size: 0.95rem; margin-top: auto; }
+
+    /* ---- detail page ---- */
+    .detail-hero { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+      background: var(--bg2); padding: 0; display: block; width: 100%; cursor: zoom-in; line-height: 0; }
+    .detail-hero img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+    .zoom-hint { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.4rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; }
+    .callout { border: 1px solid color-mix(in srgb, var(--select) 45%, var(--border));
+      border-left: 3px solid var(--select); border-radius: var(--radius);
+      background: color-mix(in srgb, var(--select) 7%, var(--surface));
+      padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.95rem; }
+    .runline { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0; }
+    .runline pre { flex: 1 1 auto; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.7rem 0.9rem; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.5; }
+    .copy-btn { flex: 0 0 auto; background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: var(--radius); padding: 0 0.85rem; cursor: pointer;
+      font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: var(--select); border-color: var(--select); }
+    .detail-section { margin-top: 2.25rem; }
+    .detail-section > h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase;
+      font-size: 1.45rem; letter-spacing: 0.005em; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+
+    .md h1, .md h2, .md h3 { letter-spacing: -0.01em; margin: 1.4rem 0 0.6rem; line-height: 1.25; }
+    .md h1 { font-size: 1.35rem; } .md h2 { font-size: 1.15rem; } .md h3 { font-size: 1rem; }
+    .md p { margin: 0.7rem 0; }
+    .md ul, .md ol { margin: 0.7rem 0 0.7rem 1.4rem; }
+    .md li { margin: 0.3rem 0; }
+    .md .table-wrap { overflow-x: auto; margin: 0.9rem 0; }
+    .md table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+    .md th, .md td { text-align: left; vertical-align: top; padding: 0.4rem 0.75rem 0.4rem 0;
+      border-bottom: 1px solid var(--border); }
+    .md th { color: var(--text-dim); font-weight: 600; white-space: nowrap; }
+    .md code { background: var(--surface-2); border: 1px solid var(--border); padding: 0.08rem 0.35rem;
+      border-radius: 4px; font-family: var(--font-mono); font-size: 0.84em; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0.9rem 0; }
+    .md pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.55; }
+
+    .src pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.55; }
+    .src .k { color: var(--code-k); } .src .s { color: var(--code-s); }
+    .src .c { color: var(--code-c); font-style: italic; } .src .n { color: var(--code-n); }
+    .src-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+      flex-wrap: wrap; margin-bottom: 0.6rem; color: var(--text-dim); font-size: 0.85rem; }
+    .src-meta code { font-family: var(--font-mono); font-size: 0.82rem; }
+
+    .lightbox { border: 0; margin: 0; padding: 2rem; width: 100%; height: 100%; max-width: none;
+      max-height: none; background: rgba(0,0,0,0.85); cursor: zoom-out; }
+    .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+    .lightbox::backdrop { background: transparent; }
+    .lightbox img { max-width: 100%; max-height: 100%; border-radius: var(--radius); }
+    .lightbox-close { position: absolute; top: 0.9rem; right: 0.9rem; background: var(--surface-2);
+      color: var(--text); border: 1px solid var(--border); border-radius: var(--radius);
+      font: 500 0.8rem var(--font-sans); padding: 0.4rem 0.75rem; cursor: pointer; }
+    .lightbox-close:hover { border-color: var(--select); color: var(--select); }
+
+    footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 2rem; }
+    footer .statusbar { max-width: var(--maxw); margin: 0 auto; padding: 0.55rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-dim); }
+    footer .statusbar code { font-family: inherit; text-transform: none; }
+
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+    @media (min-width: 560px) { html.density-compact .grid { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+    @media (min-width: 900px) { html.density-compact .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1560px) {
+      html.density-compact .controls-inner,
+      html.density-compact main { max-width: 1400px; }
+      html.density-compact .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .card { transition: none; }
+      .card:hover { transform: none; }
+      .to-top { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="topbar">
+    <a class="back" href="../"><span aria-hidden="true">&larr;</span> Examples and Showcase</a>
+    <div class="topbar-right">
+      <a class="ghlink" href="https://github.com/TMHSDigital/Blender-Developer-Tools">GitHub</a>
+    </div>
+  </div>
+  <header class="hero">
+    <h1>bookshelf</h1>
+    <p>A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.</p>
+  </header>
+  <main id="main">
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours.">
+      <img src="../assets/bookshelf-hero.webp" alt="A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours." width="1280" height="720" />
+    </button>
+    <p class="zoom-hint">Rendered headless by the showcase piece itself — click to zoom.</p>
+    <div class="callout"><span class="tag">witnesses</span> Recomputed: 10908 tris, five materials with 338 wood, 2050 cloth, 1066 leather, 228 paper and 1976 gilt faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.972×0.332×1.176 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides on the floor, four cross members 8 mm into both sides, 38 books each with one page block 0.6 mm into its boards and two gilt bands 0.3 mm into the spine and 0.8 mm proud, every book seated 1.0–3.2 mm, 44 mm headroom, thickness and height spread 2.90 and 1.65, both leaning books 0.8 mm onto their neighbour&#x27;s head edge, zero unplanned book overlaps, zero right-angle wood edges, convex collider 68 tris. --air-lean and --deep-lean exit 22 on the lean contact while every seat, the envelope and the overlap budget still pass; --crowd-books exits 23; --uniform-books 21; --tall-book 20.</div>
+    <div class="runline">
+      <pre id="runCmd">blender --background --python showcase/bookshelf/bookshelf.py --</pre>
+      <button class="copy-btn" id="copyRun" type="button">Copy</button>
+    </div>
+    <section class="detail-section md">
+<p>A bookcase: a stained carcass with two shelves housed in its sides, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight hardbacks. Twenty-nine stand upright, seven lie in three stacks, and two lean on a neighbour. Every book is a rounded-spine cover in cloth or leather, a page block glued into it, and two gilt bands tooled round the spine. <strong>A showcase piece, not an example</strong> — it witnesses no API contract. It asserts that generated geometry meets declared asset budgets, recomputed from the finished mesh.</p>
+<h2>What it composes</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Shipped content</th><th scope="col">Used for</th></tr></thead><tbody><tr><td><code>skills/mesh-editing-and-bmesh</code></td><td>chamfered boards, U-section covers with rounded spines, page blocks and bands built on the spine&#x27;s own chain, all in <code>bmesh</code></td></tr><tr><td><code>skills/custom-properties</code></td><td>face attributes (<code>PlankTone</code>, <code>GrainDir</code>, <code>Tint</code>) read by the shaders</td></tr><tr><td><code>skills/procedural-materials-and-shaders</code></td><td>grained stain, cloth, leather, ruled page edges, gilt</td></tr><tr><td><code>skills/bake-high-to-low</code></td><td>Cycles tangent-space normal bake, high onto low</td></tr><tr><td><code>skills/engine-export-presets</code></td><td>Unity glTF (<code>export_yup=True</code>)</td></tr><tr><td><code>skills/depsgraph-and-evaluated-data</code></td><td>evaluated triangle counts for the LOD ratios</td></tr><tr><td><code>snippets/decimate_to_budget.py</code></td><td>LOD1 / LOD2 COLLAPSE chain</td></tr><tr><td><code>snippets/convex_hull_collider.py</code></td><td>one hull over the carcass</td></tr><tr><td><code>snippets/lod_chain.py</code></td><td>LOD naming and ratio pattern</td></tr><tr><td><code>examples/mesh-hygiene-audit</code></td><td>hygiene combinatorics (copied, not imported)</td></tr></tbody></table></div>
+<h2>The budget that matters</h2>
+<p>A leaning book has to rest on its neighbour&#x27;s head edge and on the shelf, not in either. Tip it a few degrees too far and its board cuts through the neighbour&#x27;s corner; not far enough and it stands in the air against nothing. Neither is visible to any other budget:</p>
+<ul><li>the leaning book still stands on its shelf, so the seat budget passes;</li><li>it stays inside the carcass, so the bounding box does not move;</li><li>the triangle count is the same, because only a position changed;</li><li>the book-overlap budget has to exempt this very contact, so it cannot see how deep the contact goes.</li></ul>
+<p>The piece finds the leaning books on the finished mesh (a book whose largest face, a board, is tilted between 3° and 80°) and the upright neighbour on the side its top leans toward, on the same shelf. It takes the plane of the leaning board&#x27;s outer face off the mesh and measures how far the neighbour&#x27;s deepest vertex sits behind it, as a band of 0.3–2.0 mm. Both lean at 0.80 mm.</p>
+<p>A plane, not the cover solid: the board is 2.8 mm thick, and a head edge driven right through it lies in the hollow of the book, outside the cover again, so a solid test reads a deep cut as no contact at all. That is how the first <code>--deep-lean</code> passed.</p>
+<p><code>--air-lean</code> and <code>--deep-lean</code> are the falsifiers built for exactly this. One stops each leaning book 3 mm short of its neighbour, the other drives it 4.5 mm in. Both exit 22 while every seat, the envelope and the book overlap budget still pass.</p>
+<h2>Budgets</h2>
+<p>Declared in the script as named constants, recomputed from the generated mesh. Measured values are from Blender 5.2.1; see the cross-version table below.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Budget</th><th scope="col">Band</th><th scope="col">Measured</th></tr></thead><tbody><tr><td>Base triangles</td><td>10400–11400</td><td>10908</td></tr><tr><td>LOD1 ratio</td><td>0.32–0.62</td><td>0.5000</td></tr><tr><td>LOD2 ratio</td><td>0.10–0.35</td><td>0.2189 (0.2198 on 4.5 and 5.1)</td></tr><tr><td>Material slots</td><td>exactly 5, distinct</td><td>5</td></tr><tr><td>Wood / cloth / leather faces</td><td>≥ 300 / 1850 / 960</td><td>338 / 2050 / 1066</td></tr><tr><td>Paper / gilt faces</td><td>≥ 200 / 1780</td><td>228 / 1976</td></tr><tr><td>UV bounds</td><td>inside 0..1</td><td>(0.0004, 0.0004)–(0.9996, 0.9996)</td></tr><tr><td>UV AABB overlap</td><td>≤ 1e-5</td><td>0.000000</td></tr><tr><td>Outer AABB</td><td>0.972 × 0.332 × 1.176 m ± 0.020</td><td>0.9720 × 0.3320 × 1.1760</td></tr><tr><td>Collider triangles</td><td>≤ 200</td><td>68</td></tr><tr><td>Normal bake</td><td><code>{&#x27;FINISHED&#x27;}</code> with image data</td><td><code>{&#x27;FINISHED&#x27;}</code>, <code>has_data=True</code></td></tr><tr><td>glTF export</td><td>file written, non-empty</td><td>~786 kB</td></tr><tr><td>Hygiene</td><td>all zero</td><td>loose 0/0, non-manifold 0, zero-area 0, doubles 0, n-gons 0, coplanar cross-shell pairs 0</td></tr><tr><td>Grounded AABB</td><td>\</td><td>zmin\</td><td>≤ 1e-4</td><td>0.00000</td></tr><tr><td>Named sides</td><td>2 sides, each zmin ≤ 1e-4</td><td>2 at 0.00000</td></tr><tr><td>Dado</td><td>4 cross members, each ≥ 5 mm into both sides and ≥ 6 mm clear of the far face</td><td>8.00 mm in, 14.00 mm clear</td></tr><tr><td>Page block</td><td>38 books, one block and two bands each; every block corner 0.3–1.2 mm inside its boards</td><td>0.60 mm</td></tr><tr><td>Book seat</td><td>38 books, each 0.5–3.6 mm into the shelf or the book it stands on</td><td>1.00–3.16 mm</td></tr><tr><td>Band seat</td><td>inner face 0.1–0.8 mm inside the spine, outer face ≥ 0.4 mm proud</td><td>0.29 mm in, 0.80 mm proud</td></tr><tr><td>Headroom</td><td>every book ≥ 20 mm under the member above</td><td>44.36 mm</td></tr><tr><td>Size spread</td><td>thickest / thinnest ≥ 2.5; tallest / shortest ≥ 1.5</td><td>2.900 / 1.645</td></tr><tr><td>Lean contact</td><td>2 leaning and 7 lying books; each neighbour&#x27;s head edge 0.3–2.0 mm behind the leaning board</td><td>0.80 mm</td></tr><tr><td>Book overlaps</td><td>0, book against book and against the carcass, designed contacts exempt</td><td>0</td></tr><tr><td>Edge treatment</td><td>right-angle wood edges</td><td>0</td></tr></tbody></table></div>
+<p>Real-world size: 0.97 m wide over the cornice, 1.18 m tall and 0.33 m deep. Each compartment is 318–348 mm clear, and the books run from a 186 mm octavo to a 305 mm folio.</p>
+<h2>Construction</h2>
+<ul><li><strong>Carcass.</strong> Two full-height sides carry everything and are the only named supports. The plinth, the base and the two shelves are each housed <code>DADO</code> (8 mm) into both sides and stop 14 mm short of the outer faces. The plinth stands 18 mm back from the base&#x27;s front and 4 mm off the floor, so only the sides ground. The top is seated over the sides and the back boards; the cornice steps 10 mm out past it and is seated <code>CORN_BITE</code> into it, its back held 4 mm short of the top&#x27;s back so the two do not share a plane. Every board is chamfered at 2.5 mm with <code>material=</code> pinned to wood, edges sorted by index.</li><li><strong>Back boards.</strong> Five vertical boards, lapped 2 mm into one another and every other one stepped forward 1.5 mm, as on <code>apothecary-shelf</code>.</li><li><strong>Covers.</strong> One shell per book: a U of front board, half-round spine and back board, extruded up the height (<code>SPINE_ARC</code> = 6 segments). The boards are tangent to the spine, so it reads round and the boards flat. Every edge over 40° is chamfered 0.8 mm; the spine facets (30°) are not, and shade smooth.</li><li><strong>Page blocks.</strong> A block inside the U, <code>SQUARE</code> (4 mm) short of the cover at head, tail and fore-edge, biting <code>PAGE_BITE</code> (0.6 mm) into both boards. Its back stops 1.5 mm short of the line where boards meet spine, which is where the band ends lie.</li><li><strong>Gilt bands.</strong> Two per book, built on the cover&#x27;s own outer chain round the spine: every band vertex sits on a cover vertex&#x27;s normal, inner face 0.3 mm inside the spine and outer face 0.8 mm proud.</li><li><strong>Standing books.</strong> Set along each shelf with a 2.5–4.5 mm gap, spines a stepped 6–14 mm back from the shelf front, each seated a stepped 1.0–3.3 mm into the shelf. Each stands a degree or two off square, in a four-step cycle (−2.4°, −0.8°, 0.8°, 2.4°).</li><li><strong>Stacks.</strong> Books laid on a board, spine out, yawed ±3° alternately and shifted a few millimetres. The bottom one seats into the shelf; each one above takes a 1.0–1.4 mm seat into the board below it.</li><li><strong>Leaning books.</strong> Turned about Y by 18° (bottom shelf, onto the book on its left) and 22° (middle shelf, onto the book on its right), seated on the shelf by the lowest vertex of the chamfered cover. Then the leaning book (or, leaning right, its neighbour) is slid along the shelf until the neighbour&#x27;s deepest vertex is <code>LEAN_BITE</code> (0.8 mm) behind the leaning board&#x27;s outer face. Each leaning book is taller than its neighbour&#x27;s head divided by the cosine of its lean, so the head edge meets the board and not its top corner.</li></ul>
+<h2>Findings the budgets forced</h2>
+<ul><li><strong>Coplanar page blocks and shelves.</strong> The first page blocks sat 3 mm short of the cover&#x27;s tail, and one book seated 2.98 mm into its shelf put its page block&#x27;s underside 0.02 mm off the shelf top: a coplanar pair. The square is now 4 mm, clear of every seat.</li><li><strong>Every spine has the same facet angles.</strong> A half-round spine of six facets has the same six facet normals on every book. Square to the shelf, two neighbours share a facet plane whenever their offsets happen to line up, and the uniform and crowded falsifiers did so (five and twelve coplanar pairs). Each upright now stands a degree or two off square in a four-step cycle. A half-degree cycle was not enough: on a 45° chamfer the normals differ by half the yaw, inside the 1e-4 parallel tolerance.</li><li><strong>Planes facing the front.</strong> Spine lines, band ends and fore-edges face the shelf front, and two neighbours landed band ends on one plane. Each book is stepped back 0.9 mm at a time until none of its front-facing planes is within 0.4 mm of a neighbour&#x27;s.</li><li><strong>A stacked book on a page block&#x27;s plane.</strong> A book stacked on another with the running seat (up to 3.3 mm) could land its underside on the plane of the lower book&#x27;s page block, 2.2 mm inside its board. A stacked book now takes its own 1.0–1.4 mm seat.</li><li><strong>Matching parts to books.</strong> Page blocks were first matched to the cover nearest their centroid. In a stack, the centroid of a thick book&#x27;s page block is nearer the board of the book above than its own. Parts are now matched on the mean distance of all their vertices.</li><li><strong>Deep lean through the board.</strong> Measured against the cover solid, a head edge driven 4.5 mm into a 2.8 mm board came out in the hollow of the leaning book and read as no contact, so <code>--deep-lean</code> exited 0. The contact is now measured against the plane of the board&#x27;s outer face.</li><li><strong>Black gilt.</strong> Fully metallic bands facing the camera mirrored the dark stage and read black except at their edges. The gilt is half metallic.</li></ul>
+<h2>Conventions walked</h2>
+<p>Every convention in <code>showcase/README.md</code>, and whether it applies here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Convention</th><th scope="col">Applies</th><th scope="col">How</th></tr></thead><tbody><tr><td>Deterministic, budgets declared, assertions recompute</td><td>yes</td><td>no RNG; every value above is read off the mesh</td></tr><tr><td>Falsifier fails the budget it targets</td><td>yes</td><td>table below, proven on all three binaries</td></tr><tr><td>Hygiene incl. cross-shell coplanar</td><td>yes</td><td>exit 15; square, yaw cycle, front-plane step and stack seat chosen to keep it at 0</td></tr><tr><td>Named supports</td><td>yes</td><td>the two sides (<code>--float-side</code>); the plinth stops 4 mm off the floor</td></tr><tr><td>Joint-fit budgets</td><td>yes</td><td>dado bite and far-face clearance per cross member (<code>--short-shelves</code>)</td></tr><tr><td>A member is tenoned into its seat</td><td>yes</td><td>top over sides and back boards, cornice into the top, back boards into the base</td></tr><tr><td>A platform bears on something</td><td>yes</td><td>every shelf housed in both sides and biting the back boards</td></tr><tr><td>Carried parts bite their bearers</td><td>yes</td><td>books into shelves and into the book below (<code>--float-books</code>)</td></tr><tr><td>A joint bites; touching is not joining</td><td>yes</td><td>page blocks into their boards (<code>--loose-pages</code>); the lean contact as a band</td></tr><tr><td>Bands on a curved host are built on the host&#x27;s arc</td><td>yes</td><td>gilt bands on the spine&#x27;s own chain (<code>--float-bands</code>)</td></tr><tr><td>A leaning prop rests on something</td><td>yes</td><td>the lean contact, exit 22 (<code>--air-lean</code>, <code>--deep-lean</code>)</td></tr><tr><td>Scattered parts do not interpenetrate</td><td>yes</td><td>exit 23 (<code>--crowd-books</code>), designed contacts exempt and counted</td></tr><tr><td>Scatter varies in size</td><td>yes</td><td>thickness and height spread, exit 21 (<code>--uniform-books</code>)</td></tr><tr><td>The subject hangs where it can be seen / headroom</td><td>yes</td><td>every book under the member above, exit 20 (<code>--tall-book</code>)</td></tr><tr><td>Edge treatment: no right angles</td><td>yes</td><td>exit 24 (<code>--sharp-shelf</code>), wood only; covers chamfered 0.8 mm by construction</td></tr><tr><td>Aim an edge falsifier at one member</td><td>yes</td><td>one shelf left square: 12 edges</td></tr><tr><td>Sort bmesh operator inputs</td><td>yes</td><td>bevel edges sorted by index, carcass and covers</td></tr><tr><td>A plank wall is boards</td><td>yes</td><td>five lapped back boards</td></tr><tr><td>Identical boards read as CG</td><td>yes</td><td>per-board <code>PlankTone</code> and <code>GrainDir</code>; per-book <code>Tint</code></td></tr><tr><td>Variation goes into surface, never into function</td><td>yes</td><td>sizes, tints, gaps and yaw vary; shelf pitch and seats are budgets</td></tr><tr><td>Shading is part of the model</td><td>yes</td><td>spines smooth (round); every edge over 35° hard, so boards and chamfers read crisp</td></tr><tr><td>One substance, one slot</td><td>yes</td><td>wood, cloth, leather, paper, gilt</td></tr><tr><td>Iron is not chrome</td><td>n/a</td><td>no iron; gilt is half metallic, roughness 0.45</td></tr><tr><td>Bake texels per UV cell</td><td>measured, not a budget</td><td>1024 px over a 76-cell grid, about 13 px per cell</td></tr><tr><td>The bake cage is narrower than the nearest neighbour</td><td>yes</td><td><code>CAGE_EXTRUSION</code> 0.01 m</td></tr><tr><td>Level on the stage; stage 60 m</td><td>yes</td><td>turned about Z only; 60 m floor and wall</td></tr><tr><td>Keep a falsifier&#x27;s envelope still</td><td>yes</td><td>every falsifier leaves the AABB unchanged</td></tr><tr><td>Mirror symmetry, plumb, rope, masonry, roofs, rings, terrain, vessels</td><td>no</td><td>the piece has none of these</td></tr></tbody></table></div>
+<h2>Falsifiers</h2>
+<p>Each breaks one pipeline stage so a <strong>named</strong> budget fails. All fifteen were run on 4.5.11, 5.1.2 and 5.2.1 and exited the same declared code on all three.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Flag</th><th scope="col">Target budget</th><th scope="col">Breaks</th><th scope="col">Exit</th></tr></thead><tbody><tr><td><code>--skip-decimate</code></td><td>LOD1 ratio</td><td>drops the DECIMATE modifiers, LOD1 ratio goes to 1.0000</td><td>9</td></tr><tr><td><code>--stray-vert</code></td><td>mesh hygiene</td><td>adds one loose vertex inside the carcass</td><td>15</td></tr><tr><td><code>--lift-z</code></td><td>grounded zmin</td><td>lifts the whole mesh 50 mm</td><td>16</td></tr><tr><td><code>--float-side</code></td><td>named sides</td><td>lifts the left side 5 mm; the right side still grounds the AABB</td><td>16</td></tr><tr><td><code>--short-shelves</code></td><td>dado bite</td><td>stops the two shelves 4 mm short of the sides; −4.0 mm</td><td>17</td></tr><tr><td><code>--loose-pages</code></td><td>page-block bite</td><td>builds every page block 0.9 mm clear of its boards; −0.9 mm</td><td>17</td></tr><tr><td><code>--float-books</code></td><td>book seat</td><td>lifts every book 6 mm; −5.0 mm</td><td>18</td></tr><tr><td><code>--float-bands</code></td><td>band seat</td><td>builds every band 1.1 mm off its spine; −1.1 mm</td><td>18</td></tr><tr><td><code>--tall-book</code></td><td>headroom</td><td>stretches one middle-shelf folio 1.20 into the shelf above; −3.9 mm</td><td>20</td></tr><tr><td><code>--uniform-books</code></td><td>size spread</td><td>one height and depth, thickness within ±1.5 %; 1.030 / 1.000</td><td>21</td></tr><tr><td><code>--air-lean</code></td><td>lean contact</td><td>stops each leaning book 3 mm short of its neighbour; −3.0 mm</td><td>22</td></tr><tr><td><code>--deep-lean</code></td><td>lean contact</td><td>drives each leaning book 4.5 mm into its neighbour; 4.5 mm</td><td>22</td></tr><tr><td><code>--crowd-books</code></td><td>book overlaps</td><td>closes the top shelf&#x27;s gaps to −4.1 mm; 11 overlaps</td><td>23</td></tr><tr><td><code>--sharp-shelf</code></td><td>edge treatment</td><td>leaves the top shelf unchamfered; 12 right-angle edges</td><td>24</td></tr></tbody></table></div>
+<h2>Exit codes</h2>
+<p>File-local and sequential. <code>9</code> is a valid check code. <code>1</code> is the FATAL wrapper — a crash, never a named check. <code>19</code> (plumb and real-world size) is reserved across pieces and unused here.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh did not build, or has no UV layer</td></tr><tr><td>4</td><td>Base triangle count outside band</td></tr><tr><td>5</td><td>Material slots, or a material&#x27;s face floor</td></tr><tr><td>6</td><td>UVs outside 0..1</td></tr><tr><td>7</td><td>UV AABB overlap above tolerance</td></tr><tr><td>8</td><td>Outer AABB off declared size</td></tr><tr><td>9</td><td>LOD1 or LOD2 ratio outside band (<code>--skip-decimate</code>)</td></tr><tr><td>10</td><td>Framing gate (<code>examples/gallery_framing.py</code>, render path only)</td></tr><tr><td>11</td><td>Collider triangles above ceiling</td></tr><tr><td>12</td><td>Normal bake failed or produced no image data</td></tr><tr><td>13</td><td>glTF export missing or empty</td></tr><tr><td>14</td><td><code>--output</code> produced no file</td></tr><tr><td>15</td><td>Mesh hygiene (<code>--stray-vert</code>)</td></tr><tr><td>16</td><td>Grounded zmin, or a side floating (<code>--lift-z</code>, <code>--float-side</code>)</td></tr><tr><td>17</td><td>Dado or page-block bite, or a book without one block and two bands (<code>--short-shelves</code>, <code>--loose-pages</code>)</td></tr><tr><td>18</td><td>Book or band seat (<code>--float-books</code>, <code>--float-bands</code>)</td></tr><tr><td>20</td><td>Headroom under the member above (<code>--tall-book</code>)</td></tr><tr><td>21</td><td>Size spread below floor (<code>--uniform-books</code>)</td></tr><tr><td>22</td><td>Lean contact, or leaning / lying count (<code>--air-lean</code>, <code>--deep-lean</code>)</td></tr><tr><td>23</td><td>Books overlap each other or the carcass (<code>--crowd-books</code>)</td></tr><tr><td>24</td><td>Right-angle wood edges (<code>--sharp-shelf</code>)</td></tr></tbody></table></div>
+<h2>Run it</h2>
+<pre><code># Budget check, no render.
+blender --background --python bookshelf.py --
+
+# Falsifier: each leaning book stops short of its neighbour. Must exit 22.
+blender --background --python bookshelf.py -- --air-lean
+
+# Falsifier: each leaning book cuts into its neighbour. Must exit 22.
+blender --background --python bookshelf.py -- --deep-lean
+
+# Render the gallery still (EEVEE; --engine cycles on a GPU-less host).
+blender --background --python bookshelf.py -- --output bookshelf.webp</code></pre>
+<p>Smoke runs the check-only path. It does not pass <code>--output</code> or any falsifier.</p>
+<h2>Cross-version measurements</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Value</th><th scope="col">4.5.11</th><th scope="col">5.1.2</th><th scope="col">5.2.1</th></tr></thead><tbody><tr><td>Base triangles</td><td>10908</td><td>10908</td><td>10908</td></tr><tr><td>LOD1 / LOD2 tris</td><td>5454 / 2398</td><td>5454 / 2398</td><td>5454 / 2388</td></tr><tr><td>Face counts (wood / cloth / leather / paper / gilt)</td><td>338 / 2050 / 1066 / 228 / 1976</td><td>same</td><td>same</td></tr><tr><td>Outer AABB</td><td>0.9720 × 0.3320 × 1.1760</td><td>same</td><td>same</td></tr><tr><td>Collider tris</td><td>68</td><td>68</td><td>68</td></tr><tr><td>Headroom / spread / lean</td><td>44.36 mm / 2.900, 1.645 / 0.80 mm</td><td>same</td><td>same</td></tr><tr><td>glTF bytes</td><td>785836</td><td>785836</td><td>785828</td></tr></tbody></table></div>
+<p>LOD2 differs by ten triangles on 5.2 (DECIMATE COLLAPSE, the known divergence; the gate is a ratio band) and the glTF size by 8 bytes (exporter metadata, not a budget). Every other value is identical.</p>
+    </section>
+    <section class="detail-section src">
+      <h2>Source</h2>
+      <div class="src-meta">
+        <code>showcase/bookshelf/bookshelf.py</code>
+        <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/showcase/bookshelf/bookshelf.py">View on GitHub &rarr;</a>
+      </div>
+      <pre><span class="s">&quot;&quot;&quot;Game-ready bookshelf with leaning books — a showcase piece, not an example.
+
+Asserts budget conformance of a procedural bookcase: a stained carcass
+with two housed shelves, a base on a recessed plinth, lapped back boards
+and a stepped cornice, filled with thirty-eight hardback books. Most
+stand upright; seven lie in three stacks; two lean on a neighbour. Every
+book is a rounded-spine cover in cloth or leather, a page block glued
+into it, and two gilt bands tooled round the spine. Carried through UVs,
+five materials (wood, cloth, leather, paper, gilt), a high-to-low normal
+bake, an LOD chain, a convex collider, and a Unity glTF export.
+
+The budget that matters is the one a leaning book fails invisibly: it has
+to rest on its neighbour&#x27;s head edge and on the shelf, not in either. Tip
+it a few degrees too far and its board cuts through the neighbour&#x27;s
+corner; not far enough and it stands in the air against nothing. Every
+seat, the bounding box, the triangle count and the book-overlap budget
+(which must exempt the designed contact) still pass either way. The piece
+finds each leaning book and its neighbour on the finished mesh and asserts
+how deep the neighbour&#x27;s head edge sits in the leaning board, as a band.
+
+Budgets are declared below and recomputed from the generated result.
+They are not API-contract witnesses. Each falsifier violates one named
+budget: ``--skip-decimate`` the LOD-ratio band, ``--stray-vert`` mesh
+hygiene, ``--lift-z`` grounded zmin, ``--float-side`` the named sides,
+``--short-shelves`` the dado bite, ``--loose-pages`` the page-block bite,
+``--float-books`` the book seat, ``--float-bands`` the band seat,
+``--tall-book`` the headroom, ``--uniform-books`` the size spread,
+``--air-lean`` and ``--deep-lean`` the lean contact, ``--crowd-books``
+book interpenetration, ``--sharp-shelf`` edge treatment.
+
+No randomness: every book&#x27;s size, tint, gap, setback and seat is a table
+entry or a closed-form term of its index. DECIMATE COLLAPSE triangle
+counts are not byte-identical across Blender versions — the LOD gate is a
+ratio band.
+
+    blender --background --python bookshelf.py --
+    blender --background --python bookshelf.py -- --air-lean
+    blender --background --python bookshelf.py -- --output bookshelf.png
+&quot;&quot;&quot;</span>
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">import</span> tempfile
+<span class="k">import</span> traceback
+
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
+<span class="k">from</span> mathutils.bvhtree <span class="k">import</span> BVHTree
+<span class="k">from</span> mathutils.kdtree <span class="k">import</span> KDTree
+
+_REPO = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+)
+sys.path.insert(<span class="n">0</span>, os.path.join(_REPO, <span class="s">&quot;examples&quot;</span>))
+sys.dont_write_bytecode = <span class="k">True</span>
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+
+<span class="c"># The carcass. X across, Y front (-) to back (+), Z up. Two full-height</span>
+<span class="c"># sides carry everything; every cross member is housed into both of them.</span>
+W_OUT = <span class="n">0.920</span>
+SIDE_T = <span class="n">0.022</span>
+DEPTH = <span class="n">0.300</span>
+SIDE_H = <span class="n">1.140</span>
+DADO = <span class="n">0.008</span>
+TOP_T = <span class="n">0.026</span>
+TOP_SEAT = <span class="n">0.006</span>
+TOP_OVER = <span class="n">0.016</span>
+TOP_BACK_OVER = <span class="n">0.006</span>
+CORN_T = <span class="n">0.020</span>
+CORN_OVER = <span class="n">0.010</span>
+CORN_BITE = <span class="n">0.004</span>
+CORN_BACK_IN = <span class="n">0.004</span>
+BACK_T = <span class="n">0.012</span>
+BACK_INSET = <span class="n">0.010</span>
+BACK_BITE = <span class="n">0.005</span>
+N_BACK = <span class="n">5</span>
+BACK_LAP = <span class="n">0.002</span>
+BACK_STEP = <span class="n">0.0015</span>
+SHELF_T = <span class="n">0.022</span>
+SHELF_SETBACK = <span class="n">0.004</span>
+SHELF_TOPS = (<span class="n">0.460</span>, <span class="n">0.800</span>)
+BASE_Z = <span class="n">0.070</span>
+BASE_T = <span class="n">0.020</span>
+BASE_SETBACK = <span class="n">0.004</span>
+PLINTH_Z0 = <span class="n">0.004</span>
+PLINTH_SET = <span class="n">0.018</span>
+PLINTH_T = <span class="n">0.018</span>
+PLINTH_BITE = <span class="n">0.004</span>
+CHAMFER = <span class="n">0.0025</span>
+
+<span class="c"># Books. Local frame: X across the thickness, Y from the spine (-) to the</span>
+<span class="c"># fore-edge (+), Z up the height, bottom of the cover at 0. The cover is</span>
+<span class="c"># one shell: a U of board, rounded spine and board, extruded up the</span>
+<span class="c"># height. The page block sits inside it, SQUARE short of the cover at the</span>
+<span class="c"># head, tail and fore-edge, and bites PAGE_BITE into both boards.</span>
+COVER_B = <span class="n">0.0028</span>
+SQUARE = <span class="n">0.004</span>
+PAGE_BACK = <span class="n">0.0015</span>
+PAGE_BITE = <span class="n">0.0006</span>
+LOOSE_PAGES = <span class="n">0.0009</span>
+SPINE_ARC = <span class="n">6</span>
+COVER_CHAMFER = <span class="n">0.0008</span>
+BAND_OFF = <span class="n">0.018</span>
+BAND_H = <span class="n">0.006</span>
+BAND_BITE = <span class="n">0.0003</span>
+BAND_PROUD = <span class="n">0.0008</span>
+FLOAT_BAND = <span class="n">0.0011</span>
+SEAT_BASE = <span class="n">0.0010</span>
+SEAT_STEP = <span class="n">0.00018</span>
+FLOAT_BOOKS = <span class="n">0.006</span>
+FLOAT_SIDE = <span class="n">0.005</span>
+START_GAP = <span class="n">0.006</span>
+GAP_BASE = <span class="n">0.0025</span>
+GAP_SPAN = <span class="n">0.0020</span>
+CROWD_GAP = -<span class="n">0.0041</span>
+SET_BASE = <span class="n">0.006</span>
+SET_STEP = <span class="n">0.0013</span>
+SET_CLEAR = <span class="n">0.0004</span>
+SET_NUDGE = <span class="n">0.0009</span>
+STACK_YAW = math.radians(<span class="n">3.0</span>)
+STACK_SHIFT = <span class="n">0.006</span>
+LEAN_BITE = <span class="n">0.0008</span>
+AIR_LEAN = -<span class="n">0.003</span>
+DEEP_LEAN = <span class="n">0.0045</span>
+TALL_BOOK = <span class="n">1.20</span>
+UNIFORM_BOOK = (<span class="n">0.034</span>, <span class="n">0.230</span>, <span class="n">0.170</span>)
+UNIFORM_JIT = <span class="n">0.03</span>
+UPRIGHT_YAW = (-<span class="n">2.4</span>, -<span class="n">0.8</span>, <span class="n">0.8</span>, <span class="n">2.4</span>)
+
+<span class="c"># Per shelf, left to right. (&quot;up&quot;, T, H, D, kind), (&quot;lean&quot;, T, H, D, kind,</span>
+<span class="c"># direction, degrees), (&quot;stack&quot;, [(T, H, D, kind), ...] bottom first),</span>
+<span class="c"># (&quot;gap&quot;, width). kind: &quot;c&quot; cloth, &quot;l&quot; leather. A leaning book leans onto</span>
+<span class="c"># the upright beside it: -1 onto the book on its left, +1 onto the right.</span>
+LAYOUT = (
+    (
+        (<span class="s">&quot;stack&quot;</span>, [(<span class="n">0.046</span>, <span class="n">0.300</span>, <span class="n">0.228</span>, <span class="s">&quot;l&quot;</span>), (<span class="n">0.036</span>, <span class="n">0.285</span>, <span class="n">0.214</span>, <span class="s">&quot;c&quot;</span>)]),
+        (<span class="s">&quot;gap&quot;</span>, <span class="n">0.014</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.052</span>, <span class="n">0.305</span>, <span class="n">0.226</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.034</span>, <span class="n">0.282</span>, <span class="n">0.205</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.041</span>, <span class="n">0.291</span>, <span class="n">0.214</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.058</span>, <span class="n">0.268</span>, <span class="n">0.198</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.030</span>, <span class="n">0.296</span>, <span class="n">0.221</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.044</span>, <span class="n">0.262</span>, <span class="n">0.192</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.037</span>, <span class="n">0.276</span>, <span class="n">0.207</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.049</span>, <span class="n">0.255</span>, <span class="n">0.188</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;lean&quot;</span>, <span class="n">0.036</span>, <span class="n">0.300</span>, <span class="n">0.218</span>, <span class="s">&quot;c&quot;</span>, -<span class="n">1</span>, <span class="n">18.0</span>),
+    ),
+    (
+        (<span class="s">&quot;lean&quot;</span>, <span class="n">0.032</span>, <span class="n">0.268</span>, <span class="n">0.196</span>, <span class="s">&quot;l&quot;</span>, <span class="n">1</span>, <span class="n">22.0</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.040</span>, <span class="n">0.228</span>, <span class="n">0.170</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.026</span>, <span class="n">0.251</span>, <span class="n">0.183</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.047</span>, <span class="n">0.262</span>, <span class="n">0.194</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.022</span>, <span class="n">0.214</span>, <span class="n">0.158</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.035</span>, <span class="n">0.240</span>, <span class="n">0.176</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.055</span>, <span class="n">0.270</span>, <span class="n">0.201</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.029</span>, <span class="n">0.233</span>, <span class="n">0.172</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.038</span>, <span class="n">0.246</span>, <span class="n">0.180</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.024</span>, <span class="n">0.221</span>, <span class="n">0.163</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;gap&quot;</span>, <span class="n">0.050</span>),
+        (<span class="s">&quot;stack&quot;</span>, [(<span class="n">0.034</span>, <span class="n">0.232</span>, <span class="n">0.170</span>, <span class="s">&quot;c&quot;</span>), (<span class="n">0.028</span>, <span class="n">0.214</span>, <span class="n">0.160</span>, <span class="s">&quot;l&quot;</span>),
+                   (<span class="n">0.022</span>, <span class="n">0.196</span>, <span class="n">0.148</span>, <span class="s">&quot;c&quot;</span>)]),
+    ),
+    (
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.031</span>, <span class="n">0.236</span>, <span class="n">0.172</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.024</span>, <span class="n">0.212</span>, <span class="n">0.156</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.043</span>, <span class="n">0.254</span>, <span class="n">0.187</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.020</span>, <span class="n">0.198</span>, <span class="n">0.146</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.036</span>, <span class="n">0.226</span>, <span class="n">0.166</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.028</span>, <span class="n">0.243</span>, <span class="n">0.178</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.045</span>, <span class="n">0.265</span>, <span class="n">0.195</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.022</span>, <span class="n">0.205</span>, <span class="n">0.151</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.033</span>, <span class="n">0.219</span>, <span class="n">0.161</span>, <span class="s">&quot;l&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.039</span>, <span class="n">0.248</span>, <span class="n">0.182</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.026</span>, <span class="n">0.186</span>, <span class="n">0.140</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;up&quot;</span>, <span class="n">0.030</span>, <span class="n">0.231</span>, <span class="n">0.170</span>, <span class="s">&quot;c&quot;</span>),
+        (<span class="s">&quot;gap&quot;</span>, <span class="n">0.080</span>),
+        (<span class="s">&quot;stack&quot;</span>, [(<span class="n">0.030</span>, <span class="n">0.226</span>, <span class="n">0.166</span>, <span class="s">&quot;l&quot;</span>), (<span class="n">0.024</span>, <span class="n">0.200</span>, <span class="n">0.150</span>, <span class="s">&quot;c&quot;</span>)]),
+    ),
+)
+TALL_TARGET = (<span class="n">1</span>, <span class="n">6</span>)  <span class="c"># the 0.270 m leather volume on the middle shelf</span>
+CLOTH_TINTS = ((<span class="n">0.22</span>, <span class="n">0.035</span>, <span class="n">0.030</span>), (<span class="n">0.045</span>, <span class="n">0.095</span>, <span class="n">0.055</span>), (<span class="n">0.035</span>, <span class="n">0.050</span>, <span class="n">0.115</span>),
+               (<span class="n">0.33</span>, <span class="n">0.21</span>, <span class="n">0.075</span>), (<span class="n">0.10</span>, <span class="n">0.105</span>, <span class="n">0.11</span>), (<span class="n">0.12</span>, <span class="n">0.045</span>, <span class="n">0.085</span>),
+               (<span class="n">0.30</span>, <span class="n">0.21</span>, <span class="n">0.13</span>), (<span class="n">0.045</span>, <span class="n">0.095</span>, <span class="n">0.095</span>))
+LEATHER_TINTS = ((<span class="n">0.17</span>, <span class="n">0.070</span>, <span class="n">0.030</span>), (<span class="n">0.26</span>, <span class="n">0.12</span>, <span class="n">0.050</span>), (<span class="n">0.085</span>, <span class="n">0.040</span>, <span class="n">0.020</span>),
+                 (<span class="n">0.21</span>, <span class="n">0.055</span>, <span class="n">0.030</span>))
+
+BBOX_TOL = <span class="n">0.020</span>
+OUTER_SIZE = (<span class="n">0.972</span>, <span class="n">0.332</span>, <span class="n">1.176</span>)
+
+BASE_TRIS_MIN = <span class="n">10400</span>
+BASE_TRIS_MAX = <span class="n">11400</span>
+LOD1_RATIO_MIN = <span class="n">0.32</span>
+LOD1_RATIO_MAX = <span class="n">0.62</span>
+LOD2_RATIO_MIN = <span class="n">0.10</span>
+LOD2_RATIO_MAX = <span class="n">0.35</span>
+LOD1_TARGET = <span class="n">0.50</span>
+LOD2_TARGET = <span class="n">0.22</span>
+MATERIAL_COUNT = <span class="n">5</span>
+FACE_FLOORS = {<span class="n">0</span>: <span class="n">300</span>, <span class="n">1</span>: <span class="n">1850</span>, <span class="n">2</span>: <span class="n">960</span>, <span class="n">3</span>: <span class="n">200</span>, <span class="n">4</span>: <span class="n">1780</span>}
+UV_EPS = <span class="n">1e-4</span>
+UV_OVERLAP_MAX = <span class="n">1e-5</span>
+COLLIDER_TRIS_MAX = <span class="n">200</span>
+BAKE_RES = <span class="n">1024</span>
+CAGE_EXTRUSION = <span class="n">0.01</span>
+ZMIN_EPS = <span class="n">1e-4</span>
+DOUBLES_EPS = <span class="n">1e-5</span>
+AREA_EPS = <span class="n">1e-10</span>
+COPLANAR_NORMAL_EPS = <span class="n">1e-4</span>
+COPLANAR_PLANE_EPS = <span class="n">1e-4</span>
+COPLANAR_CENTRE_MAX = <span class="n">0.05</span>
+LIFT_Z = <span class="n">0.05</span>
+SIDE_Z_MAX = <span class="n">1e-4</span>
+DADO_MIN = <span class="n">0.005</span>
+DADO_FAR_MIN = <span class="n">0.006</span>
+PAGE_BITE_MIN = <span class="n">0.0003</span>
+PAGE_BITE_MAX = <span class="n">0.0012</span>
+SEAT_MIN = <span class="n">0.0005</span>
+SEAT_MAX = <span class="n">0.0036</span>
+BAND_BITE_MIN = <span class="n">0.0001</span>
+BAND_BITE_MAX = <span class="n">0.0008</span>
+BAND_PROUD_MIN = <span class="n">0.0004</span>
+HEADROOM_MIN = <span class="n">0.020</span>
+THICK_SPREAD_MIN = <span class="n">2.5</span>
+HEIGHT_SPREAD_MIN = <span class="n">1.5</span>
+UPRIGHT_TILT_MAX = math.radians(<span class="n">3.0</span>)
+LYING_TILT_MIN = math.radians(<span class="n">80.0</span>)
+LEAN_BITE_MIN = <span class="n">0.0003</span>
+LEAN_BITE_MAX = <span class="n">0.0020</span>
+LEAN_SEARCH = <span class="n">0.03</span>
+RIGHT_ANGLE_TOL = math.radians(<span class="n">5.0</span>)
+
+WOOD_IDX = <span class="n">0</span>
+CLOTH_IDX = <span class="n">1</span>
+LEATHER_IDX = <span class="n">2</span>
+PAPER_IDX = <span class="n">3</span>
+GILT_IDX = <span class="n">4</span>
+N_CROSS = len(SHELF_TOPS) + <span class="n">2</span>
+N_BOOKS = sum(len(it[<span class="n">1</span>]) <span class="k">if</span> it[<span class="n">0</span>] == <span class="s">&quot;stack&quot;</span> <span class="k">else</span> (<span class="n">0</span> <span class="k">if</span> it[<span class="n">0</span>] == <span class="s">&quot;gap&quot;</span> <span class="k">else</span> <span class="n">1</span>)
+              <span class="k">for</span> row <span class="k">in</span> LAYOUT <span class="k">for</span> it <span class="k">in</span> row)
+N_LEAN = sum(<span class="n">1</span> <span class="k">for</span> row <span class="k">in</span> LAYOUT <span class="k">for</span> it <span class="k">in</span> row <span class="k">if</span> it[<span class="n">0</span>] == <span class="s">&quot;lean&quot;</span>)
+N_LYING = sum(len(it[<span class="n">1</span>]) <span class="k">for</span> row <span class="k">in</span> LAYOUT <span class="k">for</span> it <span class="k">in</span> row <span class="k">if</span> it[<span class="n">0</span>] == <span class="s">&quot;stack&quot;</span>)
+
+
+<span class="k">def</span> eevee_engine_id():
+    <span class="s">&quot;&quot;&quot;EEVEE id: &#x27;BLENDER_EEVEE&#x27; on 5.0+, &#x27;BLENDER_EEVEE_NEXT&#x27; on 4.2-4.5.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
+
+
+<span class="k">def</span> fail(msg, code):
+    print(<span class="s">f&quot;</span><span class="s">FAIL[</span>{code}<span class="s">]: </span>{msg}<span class="s">&quot;</span>, file=sys.stderr)
+    <span class="k">return</span> code
+
+
+<span class="k">def</span> triangle_count(mesh):
+    mesh.calc_loop_triangles()
+    <span class="k">return</span> len(mesh.loop_triangles)
+
+
+<span class="k">def</span> evaluated_triangle_count(obj):
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = obj.evaluated_get(deps)
+    mesh = ev.to_mesh()
+    <span class="k">try</span>:
+        mesh.calc_loop_triangles()
+        <span class="k">return</span> len(mesh.loop_triangles)
+    <span class="k">finally</span>:
+        ev.to_mesh_clear()
+
+
+<span class="k">def</span> frac(x):
+    <span class="k">return</span> x - math.floor(x)
+
+
+<span class="c"># --- one book, in its own frame ---------------------------------------------</span>
+
+
+<span class="k">def</span> spine_chain(t, d):
+    <span class="s">&quot;&quot;&quot;Centre line of the cover&#x27;s U and its outward normal at each point.
+
+    Front board from the fore-edge to the spine, a half-round spine of
+    SPINE_ARC segments, back board to the fore-edge. The boards are tangent
+    to the spine, so the spine reads round and the boards flat.
+    &quot;&quot;&quot;</span>
+    rc = t / <span class="n">2.0</span> - COVER_B / <span class="n">2.0</span>
+    yc = -d / <span class="n">2.0</span> + t / <span class="n">2.0</span>
+    pts = [(Vector((-rc, d / <span class="n">2.0</span>)), Vector((-<span class="n">1.0</span>, <span class="n">0.0</span>)))]
+    <span class="k">for</span> k <span class="k">in</span> range(SPINE_ARC + <span class="n">1</span>):
+        phi = math.pi + math.pi * k / SPINE_ARC
+        n = Vector((math.cos(phi), math.sin(phi)))
+        pts.append((Vector((<span class="n">0.0</span>, yc)) + n * rc, n))
+    pts.append((Vector((rc, d / <span class="n">2.0</span>)), Vector((<span class="n">1.0</span>, <span class="n">0.0</span>))))
+    <span class="k">return</span> pts, yc
+
+
+<span class="k">def</span> book_local(t, h, d, loose_pages=<span class="k">False</span>, float_bands=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;A hardback in its own frame: cover, page block and two gilt bands.
+
+    Returns (verts, faces) with each face as (vertex indices, kind), kind
+    0 cover, 1 pages, 2 band. The cover is chamfered here, in its own
+    bmesh, so the placement code sees the finished corners it will rest on.
+    &quot;&quot;&quot;</span>
+    chain, yc = spine_chain(t, d)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        kind = bm.faces.layers.int.new(<span class="s">&quot;kind&quot;</span>)
+        outer = [p + n * (COVER_B / <span class="n">2.0</span>) <span class="k">for</span> p, n <span class="k">in</span> chain]
+        inner = [p - n * (COVER_B / <span class="n">2.0</span>) <span class="k">for</span> p, n <span class="k">in</span> chain]
+
+        <span class="k">def</span> ring(pts2, z):
+            <span class="k">return</span> [bm.verts.new((p.x, p.y, z)) <span class="k">for</span> p <span class="k">in</span> pts2]
+
+        ob, ot = ring(outer, <span class="n">0.0</span>), ring(outer, h)
+        ib, it = ring(inner, <span class="n">0.0</span>), ring(inner, h)
+        m = len(chain)
+        <span class="k">for</span> i <span class="k">in</span> range(m - <span class="n">1</span>):
+            j = i + <span class="n">1</span>
+            bm.faces.new((ob[i], ob[j], ot[j], ot[i]))
+            bm.faces.new((ib[j], ib[i], it[i], it[j]))
+            bm.faces.new((ot[i], ot[j], it[j], it[i]))
+            bm.faces.new((ob[j], ob[i], ib[i], ib[j]))
+        bm.faces.new((ob[<span class="n">0</span>], ot[<span class="n">0</span>], it[<span class="n">0</span>], ib[<span class="n">0</span>]))
+        e = m - <span class="n">1</span>
+        bm.faces.new((ib[e], it[e], ot[e], ob[e]))
+        <span class="c"># The bevel picks edges by face angle, which needs consistent normals.</span>
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        bm.edges.index_update()
+        edges = sorted((ed <span class="k">for</span> ed <span class="k">in</span> bm.edges <span class="k">if</span> ed.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">40.0</span>)),
+                       key=<span class="k">lambda</span> ed: ed.index)
+        bmesh.ops.bevel(bm, geom=edges, offset=COVER_CHAMFER, segments=<span class="n">1</span>, profile=<span class="n">0.5</span>,
+                        affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>)
+        bmesh.ops.triangulate(bm, faces=[f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>])
+
+        <span class="c"># Page block: inside the U, biting both boards, square short of the</span>
+        <span class="c"># cover at head, tail and fore-edge. Its back stops PAGE_BACK short of</span>
+        <span class="c"># the line where the boards meet the spine, where the band ends lie.</span>
+        px = t / <span class="n">2.0</span> - COVER_B + (-LOOSE_PAGES <span class="k">if</span> loose_pages <span class="k">else</span> PAGE_BITE)
+        lo = Vector((-px, yc + PAGE_BACK, SQUARE))
+        hi = Vector((px, d / <span class="n">2.0</span> - SQUARE, h - SQUARE))
+        corner = {}
+        <span class="k">for</span> a <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+            <span class="k">for</span> b <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+                <span class="k">for</span> c <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>):
+                    corner[(a, b, c)] = bm.verts.new((hi.x <span class="k">if</span> a <span class="k">else</span> lo.x, hi.y <span class="k">if</span> b <span class="k">else</span> lo.y,
+                                                      hi.z <span class="k">if</span> c <span class="k">else</span> lo.z))
+        box = (((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>)),
+               ((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">1</span>)),
+               ((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)),
+               ((<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">0</span>)),
+               ((<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">1</span>), (<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)),
+               ((<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">0</span>), (<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">0</span>, <span class="n">1</span>)))
+        <span class="k">for</span> quad <span class="k">in</span> box:
+            f = bm.faces.new([corner[q] <span class="k">for</span> q <span class="k">in</span> quad])
+            f[kind] = <span class="n">1</span>
+
+        <span class="c"># Gilt bands round the spine, built on the cover&#x27;s own outer chain:</span>
+        <span class="c"># every band vertex sits on a cover vertex&#x27;s normal, so the band</span>
+        <span class="c"># follows the round of the spine exactly.</span>
+        span = range(<span class="n">1</span>, SPINE_ARC + <span class="n">2</span>)
+        inner_off = FLOAT_BAND <span class="k">if</span> float_bands <span class="k">else</span> -BAND_BITE
+        outer_off = inner_off + BAND_BITE + BAND_PROUD
+        <span class="k">for</span> z0 <span class="k">in</span> (BAND_OFF, h - BAND_OFF - BAND_H):
+            g = {}
+            <span class="k">for</span> j <span class="k">in</span> span:
+                p, n = chain[j]
+                <span class="k">for</span> side, off <span class="k">in</span> ((<span class="s">&quot;in&quot;</span>, inner_off), (<span class="s">&quot;out&quot;</span>, outer_off)):
+                    q = p + n * (COVER_B / <span class="n">2.0</span> + off)
+                    <span class="k">for</span> zz, z <span class="k">in</span> ((<span class="s">&quot;b&quot;</span>, z0), (<span class="s">&quot;t&quot;</span>, z0 + BAND_H)):
+                        g[(j, side, zz)] = bm.verts.new((q.x, q.y, z))
+            quads = []
+            <span class="k">for</span> j <span class="k">in</span> list(span)[:-<span class="n">1</span>]:
+                k = j + <span class="n">1</span>
+                quads.append((g[(j, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(k, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(k, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)],
+                              g[(j, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)]))
+                quads.append((g[(k, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(j, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(j, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)],
+                              g[(k, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)]))
+                quads.append((g[(j, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)], g[(k, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)], g[(k, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)],
+                              g[(j, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)]))
+                quads.append((g[(k, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(j, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(j, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)],
+                              g[(k, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)]))
+            a, z = span[<span class="n">0</span>], span[-<span class="n">1</span>]
+            quads.append((g[(a, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(a, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(a, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)],
+                          g[(a, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)]))
+            quads.append((g[(z, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(z, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;b&quot;</span>)], g[(z, <span class="s">&quot;in&quot;</span>, <span class="s">&quot;t&quot;</span>)],
+                          g[(z, <span class="s">&quot;out&quot;</span>, <span class="s">&quot;t&quot;</span>)]))
+            <span class="k">for</span> vs <span class="k">in</span> quads:
+                f = bm.faces.new(vs)
+                f[kind] = <span class="n">2</span>
+        bm.verts.index_update()
+        verts = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> bm.verts]
+        faces = [(tuple(v.index <span class="k">for</span> v <span class="k">in</span> f.verts), f[kind]) <span class="k">for</span> f <span class="k">in</span> bm.faces]
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> verts, faces
+
+
+<span class="c"># --- the layout -------------------------------------------------------------</span>
+
+
+<span class="k">def</span> cover_points(book):
+    <span class="k">return</span> [book[<span class="s">&quot;world&quot;</span>][i] <span class="k">for</span> i <span class="k">in</span> book[<span class="s">&quot;cover_ix&quot;</span>]]
+
+
+<span class="k">def</span> bounds(pts):
+    <span class="k">return</span> (Vector((min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts))),
+            Vector((max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts))))
+
+
+<span class="k">def</span> move(book, delta):
+    book[<span class="s">&quot;M&quot;</span>] = Matrix.Translation(delta) @ book[<span class="s">&quot;M&quot;</span>]
+    book[<span class="s">&quot;world&quot;</span>] = [p + delta <span class="k">for</span> p <span class="k">in</span> book[<span class="s">&quot;world&quot;</span>]]
+
+
+<span class="k">def</span> make_book(dims, rot, loose_pages, float_bands):
+    t, h, d, kind = dims
+    verts, faces = book_local(t, h, d, loose_pages=loose_pages, float_bands=float_bands)
+    cover_ix = sorted({i <span class="k">for</span> vs, k <span class="k">in</span> faces <span class="k">if</span> k == <span class="n">0</span> <span class="k">for</span> i <span class="k">in</span> vs})
+    <span class="k">return</span> {<span class="s">&quot;t&quot;</span>: t, <span class="s">&quot;h&quot;</span>: h, <span class="s">&quot;d&quot;</span>: d, <span class="s">&quot;kind&quot;</span>: kind, <span class="s">&quot;verts&quot;</span>: verts, <span class="s">&quot;faces&quot;</span>: faces,
+            <span class="s">&quot;cover_ix&quot;</span>: cover_ix, <span class="s">&quot;M&quot;</span>: rot.copy(), <span class="s">&quot;world&quot;</span>: [rot @ v <span class="k">for</span> v <span class="k">in</span> verts]}
+
+
+<span class="k">def</span> lean_face(book, side):
+    <span class="s">&quot;&quot;&quot;Point and outward normal of a leaning book&#x27;s board face on ``side``.&quot;&quot;&quot;</span>
+    rot = book[<span class="s">&quot;M&quot;</span>].to_3x3()
+    n = (rot @ Vector((float(side), <span class="n">0.0</span>, <span class="n">0.0</span>))).normalized()
+    <span class="k">return</span> book[<span class="s">&quot;M&quot;</span>] @ Vector((side * book[<span class="s">&quot;t&quot;</span>] / <span class="n">2.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)), n
+
+
+<span class="k">def</span> penetration(pts, p0, n):
+    <span class="s">&quot;&quot;&quot;How far the deepest of ``pts`` sits behind the plane (p0, n).&quot;&quot;&quot;</span>
+    <span class="k">return</span> max(-(p - p0).dot(n) <span class="k">for</span> p <span class="k">in</span> pts)
+
+
+<span class="k">def</span> plan_books(loose_pages=<span class="k">False</span>, float_books=<span class="k">False</span>, float_bands=<span class="k">False</span>, tall_book=<span class="k">False</span>,
+               uniform_books=<span class="k">False</span>, crowd_books=<span class="k">False</span>, air_lean=<span class="k">False</span>, deep_lean=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Place every book. Closed-form: sizes from LAYOUT, the rest from the index.
+
+    Each book is built, turned, then set down: its lowest cover vertex a
+    stepped seat into whatever it stands on, its spine a stepped setback
+    from the shelf front, and along the shelf at the running cursor. A
+    leaning book is then slid (or its neighbour is) until the neighbour&#x27;s
+    head edge sits the lean bite into the leaning board.
+    &quot;&quot;&quot;</span>
+    x_in = W_OUT / <span class="n">2.0</span> - SIDE_T
+    y_front = -DEPTH / <span class="n">2.0</span> + SHELF_SETBACK
+    tops = (BASE_Z + BASE_T,) + SHELF_TOPS
+    bite = LEAN_BITE + (AIR_LEAN - LEAN_BITE <span class="k">if</span> air_lean <span class="k">else</span> <span class="n">0.0</span>) + (
+        DEEP_LEAN - LEAN_BITE <span class="k">if</span> deep_lean <span class="k">else</span> <span class="n">0.0</span>)
+    lift = FLOAT_BOOKS <span class="k">if</span> float_books <span class="k">else</span> <span class="n">0.0</span>
+    books = []
+    <span class="k">for</span> s, row <span class="k">in</span> enumerate(LAYOUT):
+        cursor = -x_in + START_GAP
+        k = <span class="n">0</span>
+        placed = []
+        pending = <span class="k">None</span>
+
+        <span class="k">def</span> sized(dims, s=s, ii=<span class="k">None</span>, j=<span class="n">0</span>):
+            t, h, d, kind = dims
+            <span class="k">if</span> uniform_books:
+                <span class="c"># One height and depth; thickness within +-1.5 %, so no two</span>
+                <span class="c"># spines are the same solid set a hair apart.</span>
+                n = s * <span class="n">100</span> + (ii <span class="k">or</span> <span class="n">0</span>) * <span class="n">5</span> + j
+                ft = <span class="n">1.0</span> + UNIFORM_JIT * (frac(n * <span class="n">0.6180339887</span> + <span class="n">0.1</span>) - <span class="n">0.5</span>)
+                t, h, d = UNIFORM_BOOK[<span class="n">0</span>] * ft, UNIFORM_BOOK[<span class="n">1</span>], UNIFORM_BOOK[<span class="n">2</span>]
+            <span class="k">if</span> tall_book <span class="k">and</span> (s, ii) == TALL_TARGET:
+                h *= TALL_BOOK
+            <span class="k">return</span> (t, h, d, kind)
+
+        <span class="k">def</span> gap_of(k, s=s):
+            <span class="k">if</span> crowd_books <span class="k">and</span> s == <span class="n">2</span>:
+                <span class="k">return</span> CROWD_GAP
+            <span class="k">return</span> GAP_BASE + GAP_SPAN * frac(k * <span class="n">0.6180339887</span> + <span class="n">0.3</span> + s * <span class="n">0.17</span>)
+
+        <span class="k">def</span> y_keys(book):
+            lo, hi = bounds(cover_points(book))
+            yc = lo.y + book[<span class="s">&quot;t&quot;</span>] / <span class="n">2.0</span>
+            <span class="k">return</span> (lo.x + hi.x) / <span class="n">2.0</span>, (lo.y, yc, yc + PAGE_BACK, hi.y - SQUARE, hi.y)
+
+        <span class="k">def</span> set_down(book, k, x_left, support_top, seat_k=<span class="k">None</span>):
+            lo, hi = bounds(cover_points(book))
+            seat = SEAT_BASE + SEAT_STEP * (k <span class="k">if</span> seat_k <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> seat_k)
+            move(book, Vector((x_left - lo.x,
+                               y_front + SET_BASE + SET_STEP * (k % <span class="n">7</span>) - lo.y,
+                               support_top - seat - lo.z)))
+            <span class="c"># Spine fronts, spine lines and fore-edges are planes facing Y.</span>
+            <span class="c"># Two neighbours landing one on the same plane z-fight, so step</span>
+            <span class="c"># this book back until none of its planes meets a neighbour&#x27;s.</span>
+            <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">8</span>):
+                cx, keys = y_keys(book)
+                near = [y_keys(o)[<span class="n">1</span>] <span class="k">for</span> o <span class="k">in</span> placed <span class="k">if</span> abs(y_keys(o)[<span class="n">0</span>] - cx) &lt; <span class="n">0.12</span>]
+                <span class="k">if</span> <span class="k">not</span> any(abs(a - b) &lt; SET_CLEAR <span class="k">for</span> ks <span class="k">in</span> near <span class="k">for</span> a <span class="k">in</span> keys <span class="k">for</span> b <span class="k">in</span> ks):
+                    <span class="k">break</span>
+                move(book, Vector((<span class="n">0.0</span>, SET_NUDGE, <span class="n">0.0</span>)))
+
+        <span class="k">for</span> ii, item <span class="k">in</span> enumerate(row):
+            tag = item[<span class="n">0</span>]
+            <span class="k">if</span> tag == <span class="s">&quot;gap&quot;</span>:
+                cursor += item[<span class="n">1</span>]
+                <span class="k">continue</span>
+            <span class="k">if</span> tag == <span class="s">&quot;up&quot;</span>:
+                <span class="c"># Upright books stand a degree or so off square, in a</span>
+                <span class="c"># four-step cycle. Every spine has the same facet angles, so</span>
+                <span class="c"># square neighbours share planes by accident whenever their</span>
+                <span class="c"># offsets line up; a degree apart, no two faces are parallel.</span>
+                yaw = math.radians(UPRIGHT_YAW[k % len(UPRIGHT_YAW)])
+                b = make_book(sized(item[<span class="n">1</span>:<span class="n">5</span>], ii=ii), Matrix.Rotation(yaw, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>),
+                              loose_pages, float_bands)
+                set_down(b, k, cursor + gap_of(k), tops[s] + lift)
+                <span class="k">if</span> pending <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                    p0, n = lean_face(pending, <span class="n">1</span>)
+                    pen = penetration(cover_points(b), p0, n)
+                    move(b, Vector(((pen - bite) / n.x, <span class="n">0.0</span>, <span class="n">0.0</span>)))
+                    b[<span class="s">&quot;lean_on&quot;</span>] = pending
+                    pending = <span class="k">None</span>
+            <span class="k">elif</span> tag == <span class="s">&quot;lean&quot;</span>:
+                side, deg = item[<span class="n">5</span>], item[<span class="n">6</span>]
+                rot = Matrix.Rotation(side * math.radians(deg), <span class="n">4</span>, <span class="s">&quot;Y&quot;</span>)
+                b = make_book(sized(item[<span class="n">1</span>:<span class="n">5</span>], ii=ii), rot, loose_pages, float_bands)
+                set_down(b, k, cursor + gap_of(k), tops[s] + lift)
+                <span class="k">if</span> side &lt; <span class="n">0</span>:
+                    nb = placed[-<span class="n">1</span>]
+                    p0, n = lean_face(b, -<span class="n">1</span>)
+                    pen = penetration(cover_points(nb), p0, n)
+                    move(b, Vector(((bite - pen) / n.x, <span class="n">0.0</span>, <span class="n">0.0</span>)))
+                    b[<span class="s">&quot;lean_on&quot;</span>] = nb
+                <span class="k">else</span>:
+                    pending = b
+            <span class="k">else</span>:
+                stack_top = tops[s] + lift
+                centre = <span class="k">None</span>
+                stack = []
+                <span class="k">for</span> j, dims <span class="k">in</span> enumerate(item[<span class="n">1</span>]):
+                    yaw = STACK_YAW * (<span class="n">1.0</span> <span class="k">if</span> j % <span class="n">2</span> <span class="k">else</span> -<span class="n">1.0</span>)
+                    rot = Matrix.Rotation(yaw, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>) @ Matrix.Rotation(-math.pi / <span class="n">2.0</span>, <span class="n">4</span>, <span class="s">&quot;Y&quot;</span>)
+                    b = make_book(sized(dims, ii=ii, j=j), rot, loose_pages, float_bands)
+                    lo, hi = bounds(cover_points(b))
+                    <span class="k">if</span> centre <span class="k">is</span> <span class="k">None</span>:
+                        centre = cursor + gap_of(k) + (hi.x - lo.x) / <span class="n">2.0</span>
+                    shift = STACK_SHIFT * (<span class="n">0.5</span> - frac(j * <span class="n">0.7548776662</span> + <span class="n">0.2</span>)) * <span class="n">2.0</span>
+                    <span class="c"># A book stacked on a book takes a small seat of its own</span>
+                    <span class="c"># (1.0-1.4 mm), so its underside never lands on the plane</span>
+                    <span class="c"># of the page block 2.2 mm inside the board below it.</span>
+                    set_down(b, k, centre + shift - (hi.x - lo.x) / <span class="n">2.0</span>, stack_top,
+                             seat_k=(j <span class="k">if</span> j <span class="k">else</span> <span class="k">None</span>))
+                    stack_top = bounds(cover_points(b))[<span class="n">1</span>].z
+                    b.update({<span class="s">&quot;shelf&quot;</span>: s, <span class="s">&quot;i&quot;</span>: len(books)})
+                    books.append(b)
+                    stack.append(b)
+                    placed.append(b)
+                    k += <span class="n">1</span>
+                cursor = max(bounds(cover_points(x))[<span class="n">1</span>].x <span class="k">for</span> x <span class="k">in</span> stack)
+                <span class="k">continue</span>
+            b.update({<span class="s">&quot;shelf&quot;</span>: s, <span class="s">&quot;i&quot;</span>: len(books)})
+            books.append(b)
+            placed.append(b)
+            cursor = bounds(cover_points(b))[<span class="n">1</span>].x
+            k += <span class="n">1</span>
+    <span class="k">return</span> books
+
+
+<span class="c"># --- construction -----------------------------------------------------------</span>
+
+
+<span class="k">def</span> add_board(bm, lo, hi, boards, sharp=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Axis-aligned board from corner ``lo`` to ``hi``; its verts go in ``boards``.&quot;&quot;&quot;</span>
+    geo = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+    c = [(lo[k] + hi[k]) * <span class="n">0.5</span> <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)]
+    s = [hi[k] - lo[k] <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>)]
+    <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>]:
+        v.co = Vector((c[<span class="n">0</span>] + v.co.x * s[<span class="n">0</span>], c[<span class="n">1</span>] + v.co.y * s[<span class="n">1</span>], c[<span class="n">2</span>] + v.co.z * s[<span class="n">2</span>]))
+    <span class="k">for</span> f <span class="k">in</span> {f <span class="k">for</span> v <span class="k">in</span> geo[<span class="s">&quot;verts&quot;</span>] <span class="k">for</span> f <span class="k">in</span> v.link_faces}:
+        f.material_index = WOOD_IDX
+    <span class="k">if</span> <span class="k">not</span> sharp:
+        boards.extend(geo[<span class="s">&quot;verts&quot;</span>])
+    <span class="k">return</span> geo[<span class="s">&quot;verts&quot;</span>]
+
+
+<span class="k">def</span> build_bookshelf_mesh(
+    name,
+    stray_vert=<span class="k">False</span>,
+    float_side=<span class="k">False</span>,
+    short_shelves=<span class="k">False</span>,
+    sharp_shelf=<span class="k">False</span>,
+    **book_flags,
+):
+    x_out = W_OUT / <span class="n">2.0</span>
+    x_in = x_out - SIDE_T
+    y0, y1 = -DEPTH / <span class="n">2.0</span>, DEPTH / <span class="n">2.0</span>
+    top_z0 = SIDE_H - TOP_SEAT
+    top_z1 = top_z0 + TOP_T
+    back_y1 = y1 - BACK_INSET
+    back_y0 = back_y1 - BACK_T
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        uv = bm.loops.layers.uv.new(<span class="s">&quot;UVMap&quot;</span>)
+        piece = bm.faces.layers.int.new(<span class="s">&quot;Piece&quot;</span>)
+        boards = []
+        <span class="c"># Sides: the two named supports.</span>
+        <span class="k">for</span> sx <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+            lift = FLOAT_SIDE <span class="k">if</span> (float_side <span class="k">and</span> sx &lt; <span class="n">0</span>) <span class="k">else</span> <span class="n">0.0</span>
+            add_board(bm, (min(sx * x_out, sx * x_in), y0, lift),
+                      (max(sx * x_out, sx * x_in), y1, SIDE_H + lift), boards)
+        add_board(bm, (-x_out - TOP_OVER, y0 - TOP_OVER, top_z0),
+                  (x_out + TOP_OVER, y1 + TOP_BACK_OVER, top_z1), boards)
+        <span class="c"># Cornice: a wider board seated on the top, stepping out past it.</span>
+        <span class="c"># Its back stops short of the top&#x27;s back, or the two share a plane.</span>
+        add_board(bm, (-x_out - TOP_OVER - CORN_OVER, y0 - TOP_OVER - CORN_OVER,
+                       top_z1 - CORN_BITE),
+                  (x_out + TOP_OVER + CORN_OVER, y1 + TOP_BACK_OVER - CORN_BACK_IN,
+                   top_z1 - CORN_BITE + CORN_T), boards)
+        <span class="c"># Back boards, housed into the sides and the top, standing in the</span>
+        <span class="c"># base; lapped, every other one stepped forward so no lap is a plane.</span>
+        span0, span1 = -x_in - BACK_BITE, x_in + BACK_BITE
+        bw = (span1 - span0 + BACK_LAP * (N_BACK - <span class="n">1</span>)) / N_BACK
+        <span class="k">for</span> k <span class="k">in</span> range(N_BACK):
+            bx = span0 + k * (bw - BACK_LAP)
+            step = BACK_STEP <span class="k">if</span> k % <span class="n">2</span> <span class="k">else</span> <span class="n">0.0</span>
+            add_board(bm, (bx, back_y0 - step, BASE_Z + BASE_T - BACK_BITE),
+                      (bx + bw, back_y1 - step, top_z0 + BACK_BITE), boards)
+        <span class="c"># Cross members: plinth, base and shelves, each in a dado in both sides.</span>
+        add_board(bm, (-(x_in + DADO), y0 + PLINTH_SET, PLINTH_Z0),
+                  (x_in + DADO, y0 + PLINTH_SET + PLINTH_T, BASE_Z + PLINTH_BITE), boards)
+        add_board(bm, (-(x_in + DADO), y0 + BASE_SETBACK, BASE_Z),
+                  (x_in + DADO, back_y0 + BACK_BITE, BASE_Z + BASE_T), boards)
+        reach = x_in - <span class="n">0.004</span> <span class="k">if</span> short_shelves <span class="k">else</span> x_in + DADO
+        <span class="k">for</span> s, zt <span class="k">in</span> enumerate(SHELF_TOPS):
+            add_board(bm, (-reach, y0 + SHELF_SETBACK, zt - SHELF_T),
+                      (reach, back_y0 + BACK_BITE, zt), boards,
+                      sharp=(sharp_shelf <span class="k">and</span> s == len(SHELF_TOPS) - <span class="n">1</span>))
+        <span class="c"># A set of BMEdges iterates in address order: sort by index so the</span>
+        <span class="c"># bevel emits its faces in the same order on every run.</span>
+        bm.edges.index_update()
+        edges = sorted({e <span class="k">for</span> v <span class="k">in</span> boards <span class="k">for</span> e <span class="k">in</span> v.link_edges
+                        <span class="k">if</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">20.0</span>)}, key=<span class="k">lambda</span> e: e.index)
+        bmesh.ops.bevel(bm, geom=edges, offset=CHAMFER, segments=<span class="n">1</span>, profile=<span class="n">0.5</span>,
+                        affect=<span class="s">&quot;EDGES&quot;</span>, clamp_overlap=<span class="k">True</span>, material=WOOD_IDX)
+        bmesh.ops.triangulate(bm, faces=[f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) &gt; <span class="n">4</span>])
+
+        books = plan_books(**book_flags)
+        <span class="k">for</span> b <span class="k">in</span> books:
+            vs = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> b[<span class="s">&quot;world&quot;</span>]]
+            cover = LEATHER_IDX <span class="k">if</span> b[<span class="s">&quot;kind&quot;</span>] == <span class="s">&quot;l&quot;</span> <span class="k">else</span> CLOTH_IDX
+            <span class="k">for</span> idx, kind <span class="k">in</span> b[<span class="s">&quot;faces&quot;</span>]:
+                f = bm.faces.new([vs[i] <span class="k">for</span> i <span class="k">in</span> idx])
+                f.material_index = (cover, PAPER_IDX, GILT_IDX)[kind]
+                f[piece] = b[<span class="s">&quot;i&quot;</span>] + <span class="n">1</span>
+        <span class="k">if</span> stray_vert:
+            bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.62</span>))
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">35.0</span>):
+                e.smooth = <span class="k">False</span>
+        pack_uvs(bm, uv)
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+    paint_pieces(me, books)
+    obj = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(obj)
+    <span class="k">return</span> obj
+
+
+<span class="k">def</span> pack_uvs(bm, uv, margin=<span class="n">0.06</span>):
+    <span class="s">&quot;&quot;&quot;One grid cell per face, projected on its dominant axis.&quot;&quot;&quot;</span>
+    faces = list(bm.faces)
+    cols = max(<span class="n">1</span>, math.ceil(math.sqrt(len(faces))))
+    rows = max(<span class="n">1</span>, math.ceil(len(faces) / cols))
+    cw, ch = <span class="n">1.0</span> / cols, <span class="n">1.0</span> / rows
+    pu, pv = margin * cw * <span class="n">0.5</span>, margin * ch * <span class="n">0.5</span>
+    <span class="k">for</span> idx, face <span class="k">in</span> enumerate(faces):
+        nrm = face.normal
+        ax, ay, az = abs(nrm.x), abs(nrm.y), abs(nrm.z)
+        pts = []
+        <span class="k">for</span> loop <span class="k">in</span> face.loops:
+            co = loop.vert.co
+            <span class="k">if</span> az &gt;= ax <span class="k">and</span> az &gt;= ay:
+                pts.append((co.x, co.y))
+            <span class="k">elif</span> ax &gt;= ay:
+                pts.append((co.y, co.z))
+            <span class="k">else</span>:
+                pts.append((co.x, co.z))
+        minx, maxx = min(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> pts), max(c[<span class="n">0</span>] <span class="k">for</span> c <span class="k">in</span> pts)
+        miny, maxy = min(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> pts), max(c[<span class="n">1</span>] <span class="k">for</span> c <span class="k">in</span> pts)
+        dx, dy = max(maxx - minx, <span class="n">1e-8</span>), max(maxy - miny, <span class="n">1e-8</span>)
+        ou, ov = (idx % cols) * cw + pu, (idx // cols) * ch + pv
+        <span class="k">for</span> loop, (x, y) <span class="k">in</span> zip(face.loops, pts):
+            loop[uv].uv = (ou + (x - minx) / dx * (cw - <span class="n">2</span> * pu),
+                           ov + (y - miny) / dy * (ch - <span class="n">2</span> * pv))
+
+
+<span class="k">def</span> paint_pieces(me, books):
+    <span class="s">&quot;&quot;&quot;Face attributes the shaders read: per-board tone and grain, per-book tint.
+
+    Every carcass board gets a closed-form tone and its long axis as grain.
+    Every book gets a cloth or leather tint from its index, and its page
+    block the book&#x27;s own thickness axis, so the page lines run parallel to
+    the boards however the book is turned. The ``Piece`` tag is then dropped.
+    &quot;&quot;&quot;</span>
+    npoly = len(me.polygons)
+    piece = [<span class="n">0</span>] * npoly
+    me.attributes[<span class="s">&quot;Piece&quot;</span>].data.foreach_get(<span class="s">&quot;value&quot;</span>, piece)
+    mats = [<span class="n">0</span>] * npoly
+    me.polygons.foreach_get(<span class="s">&quot;material_index&quot;</span>, mats)
+    tone = [<span class="n">0.5</span>] * npoly
+    grain = [(<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)] * npoly
+    tint = [(<span class="n">0.5</span>, <span class="n">0.5</span>, <span class="n">0.5</span>, <span class="n">1.0</span>)] * npoly
+    vf = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            vf[i].append(p.index)
+    <span class="k">for</span> k, g <span class="k">in</span> enumerate(shells(me)):
+        faces = {fi <span class="k">for</span> i <span class="k">in</span> g <span class="k">for</span> fi <span class="k">in</span> vf[i]}
+        <span class="k">if</span> <span class="k">not</span> faces <span class="k">or</span> mats[next(iter(faces))] != WOOD_IDX:
+            <span class="k">continue</span>
+        pts = [me.vertices[i].co <span class="k">for</span> i <span class="k">in</span> g]
+        ext = [max(p[a] <span class="k">for</span> p <span class="k">in</span> pts) - min(p[a] <span class="k">for</span> p <span class="k">in</span> pts) <span class="k">for</span> a <span class="k">in</span> range(<span class="n">3</span>)]
+        axis = ext.index(max(ext))
+        d = tuple(<span class="n">1.0</span> <span class="k">if</span> a == axis <span class="k">else</span> <span class="n">0.0</span> <span class="k">for</span> a <span class="k">in</span> range(<span class="n">3</span>))
+        t = <span class="n">0.5</span> + <span class="n">0.30</span> * (frac(k * <span class="n">0.6180339887</span> + <span class="n">0.3</span>) - <span class="n">0.5</span>)
+        <span class="k">for</span> fi <span class="k">in</span> faces:
+            tone[fi] = t
+            grain[fi] = d
+    <span class="k">for</span> fi <span class="k">in</span> range(npoly):
+        v = piece[fi] - <span class="n">1</span>
+        <span class="k">if</span> v &lt; <span class="n">0</span>:
+            <span class="k">continue</span>
+        b = books[v]
+        <span class="k">if</span> mats[fi] == LEATHER_IDX:
+            c = LEATHER_TINTS[int(frac(v * <span class="n">0.6180339887</span> + <span class="n">0.1</span>) * len(LEATHER_TINTS))]
+        <span class="k">else</span>:
+            c = CLOTH_TINTS[int(frac(v * <span class="n">0.6180339887</span> + <span class="n">0.4</span>) * len(CLOTH_TINTS))]
+        tint[fi] = (c[<span class="n">0</span>], c[<span class="n">1</span>], c[<span class="n">2</span>], <span class="n">1.0</span>)
+        tone[fi] = <span class="n">0.5</span> + <span class="n">0.3</span> * (frac(v * <span class="n">0.4142135624</span>) - <span class="n">0.5</span>)
+        ax = b[<span class="s">&quot;M&quot;</span>].to_3x3() @ Vector((<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+        grain[fi] = tuple(ax.normalized())
+    me.attributes.remove(me.attributes[<span class="s">&quot;Piece&quot;</span>])
+    a = me.attributes.new(<span class="s">&quot;PlankTone&quot;</span>, <span class="s">&quot;FLOAT&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    a.data.foreach_set(<span class="s">&quot;value&quot;</span>, tone)
+    b = me.attributes.new(<span class="s">&quot;GrainDir&quot;</span>, <span class="s">&quot;FLOAT_VECTOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    b.data.foreach_set(<span class="s">&quot;vector&quot;</span>, [c <span class="k">for</span> v <span class="k">in</span> grain <span class="k">for</span> c <span class="k">in</span> v])
+    c = me.attributes.new(<span class="s">&quot;Tint&quot;</span>, <span class="s">&quot;FLOAT_COLOR&quot;</span>, <span class="s">&quot;FACE&quot;</span>)
+    c.data.foreach_set(<span class="s">&quot;color&quot;</span>, [x <span class="k">for</span> v <span class="k">in</span> tint <span class="k">for</span> x <span class="k">in</span> v])
+
+
+<span class="c"># --- surface ----------------------------------------------------------------</span>
+
+
+<span class="k">def</span> _sock(sockets, identifier):
+    <span class="k">return</span> next(sk <span class="k">for</span> sk <span class="k">in</span> sockets <span class="k">if</span> sk.identifier == identifier)
+
+
+<span class="k">def</span> wood_material(name):
+    <span class="s">&quot;&quot;&quot;Stained timber: grain along each board, tone per board (copied from crate-stack).&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    coord = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    tone = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    tone.attribute_name = <span class="s">&quot;PlankTone&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    squash = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    squash.operation = <span class="s">&quot;MULTIPLY&quot;</span>
+    squash.inputs[<span class="n">1</span>].default_value = <span class="n">0.94</span>
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], squash.inputs[<span class="n">0</span>])
+    along = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    along.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], along.inputs[<span class="n">0</span>])
+    nt.links.new(squash.outputs[<span class="s">&quot;Value&quot;</span>], along.inputs[<span class="s">&quot;Scale&quot;</span>])
+    grain_co = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    grain_co.operation = <span class="s">&quot;SUBTRACT&quot;</span>
+    nt.links.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], grain_co.inputs[<span class="n">0</span>])
+    nt.links.new(along.outputs[<span class="s">&quot;Vector&quot;</span>], grain_co.inputs[<span class="n">1</span>])
+    shift = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    shift.operation = <span class="s">&quot;ADD&quot;</span>
+    nt.links.new(grain_co.outputs[<span class="s">&quot;Vector&quot;</span>], shift.inputs[<span class="n">0</span>])
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], shift.inputs[<span class="n">1</span>])
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">34.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+    noise.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.62</span>
+    nt.links.new(shift.outputs[<span class="s">&quot;Vector&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.070</span>, <span class="n">0.031</span>, <span class="n">0.013</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.72</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.21</span>, <span class="n">0.10</span>, <span class="n">0.042</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    gain = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+    gain.operation = <span class="s">&quot;MULTIPLY_ADD&quot;</span>
+    gain.inputs[<span class="n">1</span>].default_value = <span class="n">1.2</span>
+    gain.inputs[<span class="n">2</span>].default_value = <span class="n">0.40</span>
+    nt.links.new(tone.outputs[<span class="s">&quot;Fac&quot;</span>], gain.inputs[<span class="n">0</span>])
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mix.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mix.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    _sock(mix.inputs, <span class="s">&quot;Factor_Float&quot;</span>).default_value = <span class="n">1.0</span>
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], _sock(mix.inputs, <span class="s">&quot;A_Color&quot;</span>))
+    nt.links.new(gain.outputs[<span class="s">&quot;Value&quot;</span>], _sock(mix.inputs, <span class="s">&quot;B_Color&quot;</span>))
+    nt.links.new(_sock(mix.outputs, <span class="s">&quot;Result_Color&quot;</span>), bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = <span class="n">0.66</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.48</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> cover_material(name, scale, low, roughness):
+    <span class="s">&quot;&quot;&quot;A book cover: the per-book ``Tint``, broken up by a fine noise.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    attr = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    attr.attribute_name = <span class="s">&quot;Tint&quot;</span>
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">8.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    shade = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    shade.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = low
+    shade.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">1.1</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], shade.inputs[<span class="s">&quot;Value&quot;</span>])
+    mul = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    mul.operation = <span class="s">&quot;SCALE&quot;</span>
+    nt.links.new(attr.outputs[<span class="s">&quot;Color&quot;</span>], mul.inputs[<span class="n">0</span>])
+    nt.links.new(shade.outputs[<span class="s">&quot;Result&quot;</span>], mul.inputs[<span class="s">&quot;Scale&quot;</span>])
+    nt.links.new(mul.outputs[<span class="s">&quot;Vector&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    rough = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+    rough.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = roughness + <span class="n">0.08</span>
+    rough.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = roughness - <span class="n">0.08</span>
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rough.inputs[<span class="s">&quot;Value&quot;</span>])
+    nt.links.new(rough.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> paper_material(name):
+    <span class="s">&quot;&quot;&quot;Page edges: warm off-white with fine lines parallel to the boards.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    gdir = nt.nodes.new(<span class="s">&quot;ShaderNodeAttribute&quot;</span>)
+    gdir.attribute_name = <span class="s">&quot;GrainDir&quot;</span>
+    dot = nt.nodes.new(<span class="s">&quot;ShaderNodeVectorMath&quot;</span>)
+    dot.operation = <span class="s">&quot;DOT_PRODUCT&quot;</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], dot.inputs[<span class="n">0</span>])
+    nt.links.new(gdir.outputs[<span class="s">&quot;Vector&quot;</span>], dot.inputs[<span class="n">1</span>])
+    across = nt.nodes.new(<span class="s">&quot;ShaderNodeCombineXYZ&quot;</span>)
+    nt.links.new(dot.outputs[<span class="s">&quot;Value&quot;</span>], across.inputs[<span class="s">&quot;X&quot;</span>])
+    lines = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    lines.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">900.0</span>
+    lines.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">2.0</span>
+    nt.links.new(across.outputs[<span class="s">&quot;Vector&quot;</span>], lines.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.30</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.40</span>, <span class="n">0.34</span>, <span class="n">0.24</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.68</span>, <span class="n">0.61</span>, <span class="n">0.47</span>, <span class="n">1.0</span>)
+    nt.links.new(lines.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.88</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> gilt_material(name):
+    <span class="s">&quot;&quot;&quot;Gold leaf tooling: warm, metallic, a little worn by the noise.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    tc = nt.nodes.new(<span class="s">&quot;ShaderNodeTexCoord&quot;</span>)
+    noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+    noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">300.0</span>
+    noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">4.0</span>
+    nt.links.new(tc.outputs[<span class="s">&quot;Object&quot;</span>], noise.inputs[<span class="s">&quot;Vector&quot;</span>])
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+    ramp.color_ramp.elements[<span class="n">0</span>].color = (<span class="n">0.36</span>, <span class="n">0.23</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
+    ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.65</span>
+    ramp.color_ramp.elements[<span class="n">1</span>].color = (<span class="n">0.80</span>, <span class="n">0.56</span>, <span class="n">0.20</span>, <span class="n">1.0</span>)
+    nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    <span class="c"># Half metallic and fairly rough: a fully metallic band on a spine facing</span>
+    <span class="c"># the camera mirrors the dark stage and reads black.</span>
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.55</span>
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> bookshelf_materials():
+    <span class="k">return</span> (
+        wood_material(<span class="s">&quot;BookshelfWood&quot;</span>),
+        cover_material(<span class="s">&quot;BookCloth&quot;</span>, <span class="n">420.0</span>, <span class="n">0.78</span>, <span class="n">0.86</span>),
+        cover_material(<span class="s">&quot;BookLeather&quot;</span>, <span class="n">70.0</span>, <span class="n">0.62</span>, <span class="n">0.48</span>),
+        paper_material(<span class="s">&quot;BookPages&quot;</span>),
+        gilt_material(<span class="s">&quot;BookGilt&quot;</span>),
+    )
+
+
+<span class="k">def</span> assign_slots(obj, mats):
+    slots = obj.data.materials
+    <span class="k">for</span> i, mat <span class="k">in</span> enumerate(mats):
+        <span class="k">if</span> i &lt; len(slots):
+            slots[i] = mat
+        <span class="k">else</span>:
+            slots.append(mat)
+
+
+<span class="c"># --- measurement ------------------------------------------------------------</span>
+
+
+<span class="k">def</span> world_bbox(obj):
+    corners = [obj.matrix_world @ Vector(c) <span class="k">for</span> c <span class="k">in</span> obj.bound_box]
+    xs, ys, zs = [c.x <span class="k">for</span> c <span class="k">in</span> corners], [c.y <span class="k">for</span> c <span class="k">in</span> corners], [c.z <span class="k">for</span> c <span class="k">in</span> corners]
+    <span class="k">return</span> (min(xs), min(ys), min(zs), max(xs), max(ys), max(zs))
+
+
+<span class="k">def</span> uv_stats(mesh):
+    uv = mesh.uv_layers.active
+    <span class="k">if</span> uv <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0</span>
+    data = uv.data
+    us = [loop.uv[<span class="n">0</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    vs = [loop.uv[<span class="n">1</span>] <span class="k">for</span> loop <span class="k">in</span> data]
+    aabbs = []
+    <span class="k">for</span> poly <span class="k">in</span> mesh.polygons:
+        pu = [data[i].uv[<span class="n">0</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        pv = [data[i].uv[<span class="n">1</span>] <span class="k">for</span> i <span class="k">in</span> poly.loop_indices]
+        aabbs.append((min(pu), min(pv), max(pu), max(pv)))
+    span = max(<span class="n">1e-6</span>, max(a[<span class="n">2</span>] - a[<span class="n">0</span>] <span class="k">for</span> a <span class="k">in</span> aabbs), max(a[<span class="n">3</span>] - a[<span class="n">1</span>] <span class="k">for</span> a <span class="k">in</span> aabbs))
+    buckets = {}
+    <span class="k">for</span> i, a <span class="k">in</span> enumerate(aabbs):
+        <span class="k">for</span> c <span class="k">in</span> range(int(a[<span class="n">0</span>] // span), int(a[<span class="n">2</span>] // span) + <span class="n">1</span>):
+            <span class="k">for</span> r <span class="k">in</span> range(int(a[<span class="n">1</span>] // span), int(a[<span class="n">3</span>] // span) + <span class="n">1</span>):
+                buckets.setdefault((c, r), []).append(i)
+    overlap = <span class="n">0.0</span>
+    seen = set()
+    <span class="k">for</span> members <span class="k">in</span> buckets.values():
+        <span class="k">for</span> ii <span class="k">in</span> range(len(members)):
+            <span class="k">for</span> jj <span class="k">in</span> range(ii + <span class="n">1</span>, len(members)):
+                i, j = members[ii], members[jj]
+                key = (i, j) <span class="k">if</span> i &lt; j <span class="k">else</span> (j, i)
+                <span class="k">if</span> key <span class="k">in</span> seen:
+                    <span class="k">continue</span>
+                seen.add(key)
+                a, b = aabbs[i], aabbs[j]
+                overlap += max(<span class="n">0.0</span>, min(a[<span class="n">2</span>], b[<span class="n">2</span>]) - max(a[<span class="n">0</span>], b[<span class="n">0</span>])) * max(
+                    <span class="n">0.0</span>, min(a[<span class="n">3</span>], b[<span class="n">3</span>]) - max(a[<span class="n">1</span>], b[<span class="n">1</span>]))
+    <span class="k">return</span> min(us), min(vs), max(us), max(vs), overlap, len(aabbs)
+
+
+<span class="k">def</span> face_area(me, poly):
+    idxs = poly.vertices
+    v0 = me.vertices[idxs[<span class="n">0</span>]].co
+    area = <span class="n">0.0</span>
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, len(idxs) - <span class="n">1</span>):
+        area += (me.vertices[idxs[i]].co - v0).cross(me.vertices[idxs[i + <span class="n">1</span>]].co - v0).length * <span class="n">0.5</span>
+    <span class="k">return</span> area
+
+
+<span class="k">def</span> hygiene_audit(me):
+    ngons = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>)
+    zero_area = sum(<span class="n">1</span> <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> face_area(me, p) &lt;= AREA_EPS)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        loose_v = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
+        loose_e = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">0</span>)
+        nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> <span class="k">not</span> e.is_manifold)
+        ret = bmesh.ops.find_doubles(bm, verts=list(bm.verts), dist=DOUBLES_EPS)
+        doubles = len(ret.get(<span class="s">&quot;targetmap&quot;</span>) <span class="k">or</span> {})
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> {<span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose_v&quot;</span>: loose_v, <span class="s">&quot;loose_e&quot;</span>: loose_e,
+            <span class="s">&quot;nonman&quot;</span>: nonman, <span class="s">&quot;zero_area&quot;</span>: zero_area, <span class="s">&quot;doubles&quot;</span>: doubles}
+
+
+<span class="k">def</span> shells(me):
+    neighbors = [[] <span class="k">for</span> _ <span class="k">in</span> range(len(me.vertices))]
+    <span class="k">for</span> edge <span class="k">in</span> me.edges:
+        a, b = edge.vertices
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    seen = [<span class="k">False</span>] * len(me.vertices)
+    groups = []
+    <span class="k">for</span> start <span class="k">in</span> range(len(me.vertices)):
+        <span class="k">if</span> seen[start]:
+            <span class="k">continue</span>
+        seen[start] = <span class="k">True</span>
+        stack = [start]
+        group = []
+        <span class="k">while</span> stack:
+            cur = stack.pop()
+            group.append(cur)
+            <span class="k">for</span> nxt <span class="k">in</span> neighbors[cur]:
+                <span class="k">if</span> <span class="k">not</span> seen[nxt]:
+                    seen[nxt] = <span class="k">True</span>
+                    stack.append(nxt)
+        groups.append(group)
+    <span class="k">return</span> groups
+
+
+<span class="k">def</span> zfight_pairs(me):
+    <span class="s">&quot;&quot;&quot;Coplanar face pairs from *different shells* (copied from showcase/grindstone).&quot;&quot;&quot;</span>
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(shells(me)):
+        <span class="k">for</span> vi <span class="k">in</span> g:
+            owner[vi] = si
+    faces = [(p.normal.copy(), p.center.copy(), owner.get(p.vertices[<span class="n">0</span>], -<span class="n">1</span>))
+             <span class="k">for</span> p <span class="k">in</span> me.polygons]
+    kd = KDTree(len(faces))
+    <span class="k">for</span> i, (_n, c, _s) <span class="k">in</span> enumerate(faces):
+        kd.insert(c, i)
+    kd.balance()
+    hits = <span class="n">0</span>
+    <span class="k">for</span> i, (ni, ci, si) <span class="k">in</span> enumerate(faces):
+        <span class="k">for</span> _co, j, _d <span class="k">in</span> kd.find_range(ci, COPLANAR_CENTRE_MAX):
+            <span class="k">if</span> j &lt;= i:
+                <span class="k">continue</span>
+            nj, cj, sj = faces[j]
+            <span class="k">if</span> si == sj:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(abs(ni.dot(nj)) - <span class="n">1.0</span>) &gt; COPLANAR_NORMAL_EPS:
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(ni.dot(cj - ci)) &gt; COPLANAR_PLANE_EPS:
+                <span class="k">continue</span>
+            hits += <span class="n">1</span>
+    <span class="k">return</span> hits
+
+
+<span class="k">def</span> right_angle_edges(me):
+    <span class="s">&quot;&quot;&quot;Manifold edges between two wood faces that meet within 5 degrees of 90.&quot;&quot;&quot;</span>
+    count = <span class="n">0</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> any(f.material_index != WOOD_IDX <span class="k">for</span> f <span class="k">in</span> e.link_faces):
+                <span class="k">continue</span>
+            <span class="k">if</span> abs(e.calc_face_angle(<span class="n">0.0</span>) - math.pi / <span class="n">2.0</span>) &lt;= RIGHT_ANGLE_TOL:
+                count += <span class="n">1</span>
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">return</span> count
+
+
+<span class="k">def</span> shell_tree(me, groups):
+    member = set(i <span class="k">for</span> g <span class="k">in</span> groups <span class="k">for</span> i <span class="k">in</span> g)
+    order = sorted(member)
+    remap = {v: k <span class="k">for</span> k, v <span class="k">in</span> enumerate(order)}
+    polys = [[remap[i] <span class="k">for</span> i <span class="k">in</span> p.vertices] <span class="k">for</span> p <span class="k">in</span> me.polygons <span class="k">if</span> p.vertices[<span class="n">0</span>] <span class="k">in</span> member]
+    <span class="k">return</span> BVHTree.FromPolygons([me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> order], polys)
+
+
+<span class="k">def</span> depth_in(tree, p, reach=<span class="n">1.0</span>):
+    <span class="s">&quot;&quot;&quot;Signed depth of ``p`` inside the shell ``tree``: positive inside, negative outside.&quot;&quot;&quot;</span>
+    hit = tree.find_nearest(p, reach)
+    <span class="k">if</span> hit[<span class="n">0</span>] <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> -reach
+    loc, nrm, _i, dist = hit
+    <span class="k">return</span> dist <span class="k">if</span> (p - loc).dot(nrm) &lt; <span class="n">0.0</span> <span class="k">else</span> -dist
+
+
+<span class="k">def</span> classify(me):
+    <span class="s">&quot;&quot;&quot;Split the finished mesh into named parts by material and shape.&quot;&quot;&quot;</span>
+    mats = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            mats.setdefault(i, p.material_index)
+    groups = shells(me)
+    owner = {}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(groups):
+        <span class="k">for</span> i <span class="k">in</span> g:
+            owner[i] = si
+    big, polys = {}, {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        si = owner[p.vertices[<span class="n">0</span>]]
+        polys.setdefault(si, []).append(p)
+        <span class="k">if</span> si <span class="k">not</span> <span class="k">in</span> big <span class="k">or</span> p.area &gt; big[si].area:
+            big[si] = p
+    out = {k: [] <span class="k">for</span> k <span class="k">in</span> (<span class="s">&quot;side&quot;</span>, <span class="s">&quot;top&quot;</span>, <span class="s">&quot;cornice&quot;</span>, <span class="s">&quot;back&quot;</span>, <span class="s">&quot;cross&quot;</span>, <span class="s">&quot;cover&quot;</span>, <span class="s">&quot;pages&quot;</span>,
+                           <span class="s">&quot;band&quot;</span>, <span class="s">&quot;other&quot;</span>)}
+    <span class="k">for</span> si, g <span class="k">in</span> enumerate(groups):
+        pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> g]
+        lo = Vector((min(p.x <span class="k">for</span> p <span class="k">in</span> pts), min(p.y <span class="k">for</span> p <span class="k">in</span> pts), min(p.z <span class="k">for</span> p <span class="k">in</span> pts)))
+        hi = Vector((max(p.x <span class="k">for</span> p <span class="k">in</span> pts), max(p.y <span class="k">for</span> p <span class="k">in</span> pts), max(p.z <span class="k">for</span> p <span class="k">in</span> pts)))
+        ext = hi - lo
+        rec = {<span class="s">&quot;g&quot;</span>: g, <span class="s">&quot;pts&quot;</span>: pts, <span class="s">&quot;lo&quot;</span>: lo, <span class="s">&quot;hi&quot;</span>: hi, <span class="s">&quot;ext&quot;</span>: ext,
+               <span class="s">&quot;c&quot;</span>: sum(pts, Vector()) / len(pts)}
+        m = mats.get(g[<span class="n">0</span>], -<span class="n">1</span>)
+        <span class="k">if</span> m == WOOD_IDX:
+            <span class="k">if</span> ext.x &lt; <span class="n">0.05</span> <span class="k">and</span> ext.z &gt; <span class="n">0.9</span>:
+                out[<span class="s">&quot;side&quot;</span>].append(rec)
+            <span class="k">elif</span> ext.y &lt; <span class="n">0.03</span> <span class="k">and</span> ext.z &gt; <span class="n">0.9</span>:
+                out[<span class="s">&quot;back&quot;</span>].append(rec)
+            <span class="k">elif</span> lo.z &gt; SIDE_H:
+                out[<span class="s">&quot;cornice&quot;</span>].append(rec)
+            <span class="k">elif</span> hi.z &gt; SIDE_H:
+                out[<span class="s">&quot;top&quot;</span>].append(rec)
+            <span class="k">elif</span> ext.x &gt; <span class="n">0.7</span>:
+                out[<span class="s">&quot;cross&quot;</span>].append(rec)
+            <span class="k">else</span>:
+                out[<span class="s">&quot;other&quot;</span>].append(rec)
+        <span class="k">elif</span> m <span class="k">in</span> (CLOTH_IDX, LEATHER_IDX):
+            face = big[si]
+            rec[<span class="s">&quot;n&quot;</span>] = face.normal.copy()
+            <span class="c"># The two boards&#x27; outer faces: the largest faces, one per side.</span>
+            ranked = sorted(polys[si], key=<span class="k">lambda</span> p: -p.area)[:<span class="n">4</span>]
+            rec[<span class="s">&quot;boards&quot;</span>] = [(p.center.copy(), p.normal.copy()) <span class="k">for</span> p <span class="k">in</span> ranked
+                             <span class="k">if</span> abs(abs(p.normal.dot(face.normal)) - <span class="n">1.0</span>) &lt; <span class="n">1e-3</span>]
+            rec[<span class="s">&quot;face_len&quot;</span>] = max((me.vertices[face.vertices[k]].co
+                                   - me.vertices[face.vertices[k - <span class="n">1</span>]].co).length
+                                  <span class="k">for</span> k <span class="k">in</span> range(len(face.vertices)))
+            out[<span class="s">&quot;cover&quot;</span>].append(rec)
+        <span class="k">elif</span> m == PAPER_IDX:
+            out[<span class="s">&quot;pages&quot;</span>].append(rec)
+        <span class="k">elif</span> m == GILT_IDX:
+            out[<span class="s">&quot;band&quot;</span>].append(rec)
+        <span class="k">else</span>:
+            out[<span class="s">&quot;other&quot;</span>].append(rec)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> overlaps_xy(a, b, pad=<span class="n">0.0</span>):
+    <span class="k">return</span> (a[<span class="s">&quot;lo&quot;</span>].x - pad &lt; b[<span class="s">&quot;hi&quot;</span>].x <span class="k">and</span> b[<span class="s">&quot;lo&quot;</span>].x - pad &lt; a[<span class="s">&quot;hi&quot;</span>].x
+            <span class="k">and</span> a[<span class="s">&quot;lo&quot;</span>].y - pad &lt; b[<span class="s">&quot;hi&quot;</span>].y <span class="k">and</span> b[<span class="s">&quot;lo&quot;</span>].y - pad &lt; a[<span class="s">&quot;hi&quot;</span>].y)
+
+
+<span class="k">def</span> bookshelf_audit(me):
+    parts = classify(me)
+    out = {k: len(v) <span class="k">for</span> k, v <span class="k">in</span> parts.items()}
+    sides = sorted(parts[<span class="s">&quot;side&quot;</span>], key=<span class="k">lambda</span> r: r[<span class="s">&quot;c&quot;</span>].x)
+    out[<span class="s">&quot;side_z&quot;</span>] = max((r[<span class="s">&quot;lo&quot;</span>].z <span class="k">for</span> r <span class="k">in</span> sides), default=<span class="n">99.0</span>)
+
+    <span class="c"># Every cross member is housed in both sides: bite past the inner face,</span>
+    <span class="c"># and clear of the far face.</span>
+    bite, far = <span class="n">99.0</span>, <span class="n">99.0</span>
+    <span class="k">if</span> len(sides) == <span class="n">2</span>:
+        left_in, left_out = sides[<span class="n">0</span>][<span class="s">&quot;hi&quot;</span>].x, sides[<span class="n">0</span>][<span class="s">&quot;lo&quot;</span>].x
+        right_in, right_out = sides[<span class="n">1</span>][<span class="s">&quot;lo&quot;</span>].x, sides[<span class="n">1</span>][<span class="s">&quot;hi&quot;</span>].x
+        <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;cross&quot;</span>]:
+            bite = min(bite, left_in - r[<span class="s">&quot;lo&quot;</span>].x, r[<span class="s">&quot;hi&quot;</span>].x - right_in)
+            far = min(far, r[<span class="s">&quot;lo&quot;</span>].x - left_out, right_out - r[<span class="s">&quot;hi&quot;</span>].x)
+    out[<span class="s">&quot;dado&quot;</span>], out[<span class="s">&quot;dado_far&quot;</span>] = bite, far
+
+    <span class="c"># Books: each cover with the page block and bands nearest it.</span>
+    covers = parts[<span class="s">&quot;cover&quot;</span>]
+    trees = [shell_tree(me, [c[<span class="s">&quot;g&quot;</span>]]) <span class="k">for</span> c <span class="k">in</span> covers]
+    units = [{<span class="s">&quot;cover&quot;</span>: c, <span class="s">&quot;tree&quot;</span>: t, <span class="s">&quot;pages&quot;</span>: [], <span class="s">&quot;band&quot;</span>: []} <span class="k">for</span> c, t <span class="k">in</span> zip(covers, trees)]
+    <span class="k">for</span> kind <span class="k">in</span> (<span class="s">&quot;pages&quot;</span>, <span class="s">&quot;band&quot;</span>):
+        <span class="k">for</span> r <span class="k">in</span> parts[kind]:
+            <span class="c"># The cover every vertex of the part sits closest to, on average:</span>
+            <span class="c"># a page block&#x27;s corners are in its own boards, a band on its own</span>
+            <span class="c"># spine. A centroid alone is nearer a neighbour&#x27;s board in a stack.</span>
+            <span class="k">if</span> units:
+                u = min(units, key=<span class="k">lambda</span> u: sum(u[<span class="s">&quot;tree&quot;</span>].find_nearest(p)[<span class="n">3</span>]
+                                                 <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]) / len(r[<span class="s">&quot;pts&quot;</span>]))
+                u[kind].append(r)
+    out[<span class="s">&quot;units&quot;</span>] = len(units)
+    out[<span class="s">&quot;unmatched&quot;</span>] = sum(<span class="n">1</span> <span class="k">for</span> u <span class="k">in</span> units <span class="k">if</span> len(u[<span class="s">&quot;pages&quot;</span>]) != <span class="n">1</span> <span class="k">or</span> len(u[<span class="s">&quot;band&quot;</span>]) != <span class="n">2</span>)
+
+    <span class="c"># Pages glued in: every page-block corner inside the cover&#x27;s boards.</span>
+    page_d = [depth_in(u[<span class="s">&quot;tree&quot;</span>], p) <span class="k">for</span> u <span class="k">in</span> units <span class="k">for</span> r <span class="k">in</span> u[<span class="s">&quot;pages&quot;</span>] <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>]]
+    out[<span class="s">&quot;page_bite&quot;</span>] = (min(page_d, default=-<span class="n">99.0</span>), max(page_d, default=<span class="n">99.0</span>))
+
+    <span class="c"># Bands on the spine: inner face inside the cover, outer face proud.</span>
+    b_in, b_out = [], []
+    <span class="k">for</span> u <span class="k">in</span> units:
+        <span class="k">for</span> r <span class="k">in</span> u[<span class="s">&quot;band&quot;</span>]:
+            ds = sorted(depth_in(u[<span class="s">&quot;tree&quot;</span>], p) <span class="k">for</span> p <span class="k">in</span> r[<span class="s">&quot;pts&quot;</span>])
+            half = len(ds) // <span class="n">2</span>
+            b_in.extend(ds[half:])
+            b_out.append(-max(ds[:half]))
+    out[<span class="s">&quot;band_bite&quot;</span>] = (min(b_in, default=-<span class="n">99.0</span>), max(b_in, default=<span class="n">99.0</span>))
+    out[<span class="s">&quot;band_proud&quot;</span>] = min(b_out, default=-<span class="n">99.0</span>)
+
+    <span class="c"># Pose of each book from its largest face, a board: upright, lying or leaning.</span>
+    <span class="k">for</span> u <span class="k">in</span> units:
+        c = u[<span class="s">&quot;cover&quot;</span>]
+        n = c[<span class="s">&quot;n&quot;</span>]
+        tilt = math.asin(min(<span class="n">1.0</span>, abs(n.z)))
+        c[<span class="s">&quot;pose&quot;</span>] = (<span class="s">&quot;up&quot;</span> <span class="k">if</span> tilt &lt;= UPRIGHT_TILT_MAX <span class="k">else</span>
+                     <span class="s">&quot;lying&quot;</span> <span class="k">if</span> tilt &gt;= LYING_TILT_MIN <span class="k">else</span> <span class="s">&quot;lean&quot;</span>)
+        c[<span class="s">&quot;tilt&quot;</span>] = tilt
+        ds = [p.dot(n) <span class="k">for</span> p <span class="k">in</span> c[<span class="s">&quot;pts&quot;</span>]]
+        c[<span class="s">&quot;thick&quot;</span>] = max(ds) - min(ds)
+    out[<span class="s">&quot;n_lean&quot;</span>] = sum(<span class="n">1</span> <span class="k">for</span> u <span class="k">in</span> units <span class="k">if</span> u[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;pose&quot;</span>] == <span class="s">&quot;lean&quot;</span>)
+    out[<span class="s">&quot;n_lying&quot;</span>] = sum(<span class="n">1</span> <span class="k">for</span> u <span class="k">in</span> units <span class="k">if</span> u[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;pose&quot;</span>] == <span class="s">&quot;lying&quot;</span>)
+
+    <span class="c"># Seat: what each book stands on is the highest shelf or cover under its</span>
+    <span class="c"># footprint whose top is within reach of its lowest point.</span>
+    shelves = [r <span class="k">for</span> r <span class="k">in</span> parts[<span class="s">&quot;cross&quot;</span>] <span class="k">if</span> r[<span class="s">&quot;ext&quot;</span>].y &gt; <span class="n">0.15</span>]
+    horizontals = shelves + parts[<span class="s">&quot;top&quot;</span>]
+    seats = []
+    <span class="k">for</span> u <span class="k">in</span> units:
+        c = u[<span class="s">&quot;cover&quot;</span>]
+        cands = [r <span class="k">for</span> r <span class="k">in</span> shelves + covers <span class="k">if</span> r <span class="k">is</span> <span class="k">not</span> c <span class="k">and</span> overlaps_xy(r, c)
+                 <span class="k">and</span> c[<span class="s">&quot;lo&quot;</span>].z - <span class="n">0.02</span> &lt;= r[<span class="s">&quot;hi&quot;</span>].z &lt;= c[<span class="s">&quot;lo&quot;</span>].z + <span class="n">0.01</span>]
+        <span class="k">if</span> cands:
+            u[<span class="s">&quot;support&quot;</span>] = max(cands, key=<span class="k">lambda</span> r: r[<span class="s">&quot;hi&quot;</span>].z)
+            seats.append(u[<span class="s">&quot;support&quot;</span>][<span class="s">&quot;hi&quot;</span>].z - c[<span class="s">&quot;lo&quot;</span>].z)
+    out[<span class="s">&quot;seat&quot;</span>] = (min(seats, default=-<span class="n">99.0</span>), max(seats, default=<span class="n">99.0</span>))
+    out[<span class="s">&quot;n_seated&quot;</span>] = len(seats)
+
+    <span class="c"># Headroom: the top of each book (bands included) under the member above.</span>
+    heads = []
+    <span class="k">for</span> u <span class="k">in</span> units:
+        c = u[<span class="s">&quot;cover&quot;</span>]
+        top = max([c[<span class="s">&quot;hi&quot;</span>].z] + [r[<span class="s">&quot;hi&quot;</span>].z <span class="k">for</span> r <span class="k">in</span> u[<span class="s">&quot;band&quot;</span>]])
+        above = [h <span class="k">for</span> h <span class="k">in</span> horizontals <span class="k">if</span> h[<span class="s">&quot;lo&quot;</span>].z &gt; c[<span class="s">&quot;lo&quot;</span>].z + <span class="n">0.05</span>]
+        <span class="k">if</span> above:
+            heads.append(min(h[<span class="s">&quot;lo&quot;</span>].z <span class="k">for</span> h <span class="k">in</span> above) - top)
+    out[<span class="s">&quot;headroom&quot;</span>] = min(heads, default=-<span class="n">99.0</span>)
+
+    <span class="c"># Size spread: thickness across the boards, height along the board face.</span>
+    th = [u[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;thick&quot;</span>] <span class="k">for</span> u <span class="k">in</span> units]
+    hs = [u[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;face_len&quot;</span>] <span class="k">for</span> u <span class="k">in</span> units]
+    out[<span class="s">&quot;thick_spread&quot;</span>] = max(th) / min(th) <span class="k">if</span> th <span class="k">else</span> <span class="n">0.0</span>
+    out[<span class="s">&quot;height_spread&quot;</span>] = max(hs) / min(hs) <span class="k">if</span> hs <span class="k">else</span> <span class="n">0.0</span>
+
+    <span class="c"># Lean contact: the neighbour&#x27;s head edge in the leaning board, as a band.</span>
+    leans = []
+    <span class="k">for</span> u <span class="k">in</span> units:
+        c = u[<span class="s">&quot;cover&quot;</span>]
+        <span class="k">if</span> c[<span class="s">&quot;pose&quot;</span>] != <span class="s">&quot;lean&quot;</span>:
+            <span class="k">continue</span>
+        n = c[<span class="s">&quot;n&quot;</span>] <span class="k">if</span> c[<span class="s">&quot;n&quot;</span>].x &gt; <span class="n">0</span> <span class="k">else</span> -c[<span class="s">&quot;n&quot;</span>]
+        up_x = -n.z  <span class="c"># the board&#x27;s up direction, in the XZ plane, has this x</span>
+        side = <span class="n">1.0</span> <span class="k">if</span> up_x &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">1.0</span>
+        sup = u.get(<span class="s">&quot;support&quot;</span>)
+        mates = [v <span class="k">for</span> v <span class="k">in</span> units <span class="k">if</span> v[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;pose&quot;</span>] == <span class="s">&quot;up&quot;</span> <span class="k">and</span> v.get(<span class="s">&quot;support&quot;</span>) <span class="k">is</span> sup
+                 <span class="k">and</span> (v[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>].x - c[<span class="s">&quot;c&quot;</span>].x) * side &gt; <span class="n">0</span>]
+        <span class="k">if</span> <span class="k">not</span> mates:
+            leans.append(-<span class="n">99.0</span>)
+            <span class="k">continue</span>
+        mate = min(mates, key=<span class="k">lambda</span> v: abs(v[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>].x - c[<span class="s">&quot;c&quot;</span>].x))
+        u[<span class="s">&quot;lean_on&quot;</span>] = mate
+        <span class="c"># Depth past the plane of the leaning board&#x27;s outer face, read off the</span>
+        <span class="c"># mesh, over the neighbour&#x27;s vertices near that board. A plane, not</span>
+        <span class="c"># the cover solid: the board is 2.8 mm thick, and a head edge driven</span>
+        <span class="c"># right through it is in the hollow, outside the cover again.</span>
+        to_mate = mate[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>] - c[<span class="s">&quot;c&quot;</span>]
+        facing = [b <span class="k">for</span> b <span class="k">in</span> c[<span class="s">&quot;boards&quot;</span>] <span class="k">if</span> b[<span class="n">1</span>].dot(to_mate) &gt; <span class="n">0.0</span>]
+        <span class="k">if</span> <span class="k">not</span> facing:
+            leans.append(-<span class="n">99.0</span>)
+            <span class="k">continue</span>
+        p0, n = max(facing, key=<span class="k">lambda</span> b: b[<span class="n">0</span>].dot(b[<span class="n">1</span>]))
+        ds = [-(p - p0).dot(n) <span class="k">for</span> p <span class="k">in</span> mate[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;pts&quot;</span>]
+              <span class="k">if</span> u[<span class="s">&quot;tree&quot;</span>].find_nearest(p, LEAN_SEARCH)[<span class="n">0</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+        leans.append(max(ds, default=-<span class="n">99.0</span>))
+    out[<span class="s">&quot;lean&quot;</span>] = (min(leans, default=-<span class="n">99.0</span>), max(leans, default=<span class="n">99.0</span>))
+
+    <span class="c"># Books do not run into one another, nor into the carcass, except where</span>
+    <span class="c"># they are meant to: a book on the one it is stacked on, a leaning book</span>
+    <span class="c"># on its neighbour, a book in the shelf it stands on.</span>
+    utrees = [shell_tree(me, [u[<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;g&quot;</span>]] + [r[<span class="s">&quot;g&quot;</span>] <span class="k">for</span> r <span class="k">in</span> u[<span class="s">&quot;pages&quot;</span>] + u[<span class="s">&quot;band&quot;</span>]])
+              <span class="k">for</span> u <span class="k">in</span> units]
+    carcass = [r <span class="k">for</span> k <span class="k">in</span> (<span class="s">&quot;side&quot;</span>, <span class="s">&quot;back&quot;</span>, <span class="s">&quot;cross&quot;</span>, <span class="s">&quot;top&quot;</span>, <span class="s">&quot;cornice&quot;</span>) <span class="k">for</span> r <span class="k">in</span> parts[k]]
+    ctrees = [shell_tree(me, [r[<span class="s">&quot;g&quot;</span>]]) <span class="k">for</span> r <span class="k">in</span> carcass]
+    designed = set()
+    <span class="k">for</span> i, u <span class="k">in</span> enumerate(units):
+        <span class="k">for</span> j, v <span class="k">in</span> enumerate(units):
+            <span class="k">if</span> u.get(<span class="s">&quot;support&quot;</span>) <span class="k">is</span> v[<span class="s">&quot;cover&quot;</span>] <span class="k">or</span> u.get(<span class="s">&quot;lean_on&quot;</span>) <span class="k">is</span> v:
+                designed.add((min(i, j), max(i, j)))
+    hits, where = <span class="n">0</span>, []
+    <span class="k">for</span> i <span class="k">in</span> range(len(units)):
+        <span class="k">for</span> j <span class="k">in</span> range(i + <span class="n">1</span>, len(units)):
+            <span class="k">if</span> (i, j) <span class="k">in</span> designed:
+                <span class="k">continue</span>
+            <span class="k">if</span> utrees[i].overlap(utrees[j]):
+                hits += <span class="n">1</span>
+                where.append((units[i][<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>], units[j][<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>]))
+        <span class="k">for</span> r, ct <span class="k">in</span> zip(carcass, ctrees):
+            <span class="k">if</span> r <span class="k">is</span> units[i].get(<span class="s">&quot;support&quot;</span>):
+                <span class="k">continue</span>
+            <span class="k">if</span> utrees[i].overlap(ct):
+                hits += <span class="n">1</span>
+                where.append((units[i][<span class="s">&quot;cover&quot;</span>][<span class="s">&quot;c&quot;</span>], r[<span class="s">&quot;c&quot;</span>]))
+    out[<span class="s">&quot;book_hits&quot;</span>] = hits
+    out[<span class="s">&quot;hit_at&quot;</span>] = where
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> make_lod(obj, name, ratio, skip_decimate):
+    mesh = obj.data.copy()
+    lod = bpy.data.objects.new(name, mesh)
+    lod.matrix_world = obj.matrix_world.copy()
+    bpy.context.scene.collection.objects.link(lod)
+    <span class="k">if</span> <span class="k">not</span> skip_decimate <span class="k">and</span> <span class="n">0.0</span> &lt; ratio &lt; <span class="n">1.0</span>:
+        mod = lod.modifiers.new(<span class="s">&quot;DecimateBudget&quot;</span>, <span class="s">&quot;DECIMATE&quot;</span>)
+        mod.decimate_type = <span class="s">&quot;COLLAPSE&quot;</span>
+        mod.ratio = ratio
+    <span class="k">return</span> lod
+
+
+<span class="k">def</span> hull_collider(obj, name):
+    <span class="s">&quot;&quot;&quot;One convex hull over the carcass; the books sit inside it.&quot;&quot;&quot;</span>
+    me = obj.data
+    mats = {}
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">for</span> i <span class="k">in</span> p.vertices:
+            mats.setdefault(i, p.material_index)
+    pts = [me.vertices[i].co.copy() <span class="k">for</span> i <span class="k">in</span> range(len(me.vertices)) <span class="k">if</span> mats.get(i) == WOOD_IDX]
+    mesh = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        vs = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> pts]
+        ret = bmesh.ops.convex_hull(bm, input=vs)
+        drop = []
+        <span class="k">for</span> v <span class="k">in</span> ret[<span class="s">&quot;geom_interior&quot;</span>] + ret[<span class="s">&quot;geom_unused&quot;</span>]:
+            <span class="k">if</span> isinstance(v, bmesh.types.BMVert) <span class="k">and</span> v <span class="k">not</span> <span class="k">in</span> drop:
+                drop.append(v)
+        bmesh.ops.delete(bm, geom=drop, context=<span class="s">&quot;VERTS&quot;</span>)
+        bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(<span class="n">1.0</span>),
+                                 verts=list(bm.verts), edges=list(bm.edges))
+        bmesh.ops.triangulate(bm, faces=list(bm.faces))
+        bm.to_mesh(mesh)
+        mesh.update()
+    <span class="k">finally</span>:
+        bm.free()
+    col = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(col)
+    <span class="k">return</span> col
+
+
+<span class="k">def</span> setup_bake_image(obj, target_mat, size):
+    img = bpy.data.images.new(<span class="s">&quot;BookshelfNrm&quot;</span>, size, size, alpha=<span class="k">True</span>, float_buffer=<span class="k">False</span>)
+    img.colorspace_settings.name = <span class="s">&quot;Non-Color&quot;</span>
+    nodes = target_mat.node_tree.nodes
+    tex = nodes.new(<span class="s">&quot;ShaderNodeTexImage&quot;</span>)
+    tex.image = img
+    nodes.active = tex
+    tex.select = <span class="k">True</span>
+    obj.active_material_index = WOOD_IDX
+    <span class="k">return</span> img, tex
+
+
+<span class="k">def</span> bake_normal(high, low):
+    scene = bpy.context.scene
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span>
+    scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    scene.cycles.samples = <span class="n">1</span>
+    scene.cycles.use_denoising = <span class="k">False</span>
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    high.select_set(<span class="k">True</span>)
+    low.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = low
+    <span class="k">return</span> bpy.ops.object.bake(
+        type=<span class="s">&quot;NORMAL&quot;</span>, use_selected_to_active=<span class="k">True</span>, cage_extrusion=CAGE_EXTRUSION,
+        use_cage=<span class="k">False</span>, normal_space=<span class="s">&quot;TANGENT&quot;</span>, margin=<span class="n">4</span>,
+        margin_type=<span class="s">&quot;ADJACENT_FACES&quot;</span>, use_clear=<span class="k">True</span>, target=<span class="s">&quot;IMAGE_TEXTURES&quot;</span>,
+    )
+
+
+<span class="k">def</span> export_unity(path, objects):
+    <span class="k">for</span> ob <span class="k">in</span> bpy.context.view_layer.objects:
+        ob.select_set(<span class="k">False</span>)
+    <span class="k">for</span> ob <span class="k">in</span> objects:
+        ob.select_set(<span class="k">True</span>)
+    bpy.context.view_layer.objects.active = objects[<span class="n">0</span>]
+    bpy.ops.export_scene.gltf(
+        filepath=path, use_selection=<span class="k">True</span>, export_yup=<span class="k">True</span>, export_apply=<span class="k">True</span>,
+        export_draco_mesh_compression_enable=<span class="k">False</span>, export_animations=<span class="k">False</span>,
+    )
+
+
+<span class="k">def</span> check(skip_decimate, lift_z=<span class="k">False</span>, **flags):
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    nothing = (<span class="k">None</span>,) * <span class="n">5</span>
+    low = build_bookshelf_mesh(<span class="s">&quot;BookshelfLow&quot;</span>, **flags)
+    hi_flags = {k: v <span class="k">for</span> k, v <span class="k">in</span> flags.items() <span class="k">if</span> k != <span class="s">&quot;stray_vert&quot;</span>}
+    high = build_bookshelf_mesh(<span class="s">&quot;BookshelfHigh&quot;</span>, **hi_flags)
+    mats = bookshelf_materials()
+    assign_slots(low, mats)
+    assign_slots(high, mats)
+    <span class="k">if</span> lift_z:
+        <span class="k">for</span> v <span class="k">in</span> low.data.vertices:
+            v.co.z += LIFT_Z
+        low.data.update()
+        bpy.context.view_layer.update()
+    <span class="k">if</span> len(low.data.polygons) &lt; <span class="n">6</span> <span class="k">or</span> <span class="k">not</span> low.data.uv_layers:
+        <span class="k">return</span> (fail(<span class="s">&quot;bookshelf mesh did not build, or has no UV layer&quot;</span>, <span class="n">3</span>),) + nothing
+
+    base_tris = triangle_count(low.data)
+    slots = [s <span class="k">for</span> s <span class="k">in</span> low.data.materials <span class="k">if</span> s <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    nmat, distinct = len(slots), len({id(s) <span class="k">for</span> s <span class="k">in</span> slots})
+    idx_counts = {}
+    <span class="k">for</span> poly <span class="k">in</span> low.data.polygons:
+        idx_counts[poly.material_index] = idx_counts.get(poly.material_index, <span class="n">0</span>) + <span class="n">1</span>
+    u0, v0, u1, v1, overlap, nfaces = uv_stats(low.data)
+    bb = world_bbox(low)
+    size_x, size_y, size_z = bb[<span class="n">3</span>] - bb[<span class="n">0</span>], bb[<span class="n">4</span>] - bb[<span class="n">1</span>], bb[<span class="n">5</span>] - bb[<span class="n">2</span>]
+
+    img, tex = setup_bake_image(low, mats[WOOD_IDX], BAKE_RES)
+    bake_result = bake_normal(high, low)
+
+    lod1 = make_lod(low, <span class="s">&quot;BookshelfLOD1&quot;</span>, LOD1_TARGET, skip_decimate)
+    lod2 = make_lod(low, <span class="s">&quot;BookshelfLOD2&quot;</span>, LOD2_TARGET, skip_decimate)
+    bpy.context.view_layer.update()
+    lod1_tris = evaluated_triangle_count(lod1)
+    lod2_tris = evaluated_triangle_count(lod2)
+    r1 = lod1_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+    r2 = lod2_tris / base_tris <span class="k">if</span> base_tris <span class="k">else</span> <span class="n">0.0</span>
+
+    collider = hull_collider(high, <span class="s">&quot;BookshelfCollider&quot;</span>)
+    col_tris = triangle_count(collider.data)
+
+    export_path = os.path.join(tempfile.gettempdir(), <span class="s">f&quot;</span><span class="s">bdt_bookshelf_</span>{os.getpid()}<span class="s">.glb</span><span class="s">&quot;</span>)
+    <span class="k">if</span> os.path.exists(export_path):
+        os.remove(export_path)
+    export_unity(export_path, [low, collider])
+    export_size = os.path.getsize(export_path) <span class="k">if</span> os.path.isfile(export_path) <span class="k">else</span> <span class="n">0</span>
+    <span class="c"># Blender points TMPDIR at its own temp preference, which on a portable</span>
+    <span class="c"># build is the working directory, so the export must not outlive this.</span>
+    <span class="k">if</span> os.path.isfile(export_path):
+        os.remove(export_path)
+
+    hyg = hygiene_audit(low.data)
+    zf = zfight_pairs(low.data)
+    sa = bookshelf_audit(low.data)
+    right = right_angle_edges(low.data)
+
+    print(<span class="s">f&quot;</span><span class="s">blender=</span>{tuple(bpy.app.version)}<span class="s"> skip_decimate=</span>{skip_decimate}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured mat_index_counts=</span>{dict(sorted(idx_counts.items()))}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured base_tris=</span>{base_tris}<span class="s"> lod1_tris=</span>{lod1_tris}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lod2_tris=</span>{lod2_tris}<span class="s"> r1=</span>{r1:<span class="s">.4f</span>}<span class="s"> r2=</span>{r2:<span class="s">.4f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured nmat=</span>{nmat}<span class="s"> uv=(</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">overlap=</span>{overlap:<span class="s">.6f</span>}<span class="s"> nfaces=</span>{nfaces}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured bbox=(</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">outer=</span>{OUTER_SIZE}<span class="s"> zmin=</span>{bb[<span class="n">2</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured collider_tris=</span>{col_tris}<span class="s"> bake=</span>{bake_result}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bake_has_data=</span>{img.has_data}<span class="s"> export_bytes=</span>{export_size}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured hygiene loose_v=</span>{hyg[<span class="s">&#x27;loose_v&#x27;</span>]}<span class="s"> loose_e=</span>{hyg[<span class="s">&#x27;loose_e&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">nonman=</span>{hyg[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> zero_area=</span>{hyg[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">doubles=</span>{hyg[<span class="s">&#x27;doubles&#x27;</span>]}<span class="s"> ngons=</span>{hyg[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zfight=</span>{zf}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured parts sides=</span>{sa[<span class="s">&#x27;side&#x27;</span>]}<span class="s"> top=</span>{sa[<span class="s">&#x27;top&#x27;</span>]}<span class="s"> cornice=</span>{sa[<span class="s">&#x27;cornice&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">back=</span>{sa[<span class="s">&#x27;back&#x27;</span>]}<span class="s"> cross=</span>{sa[<span class="s">&#x27;cross&#x27;</span>]}<span class="s"> covers=</span>{sa[<span class="s">&#x27;cover&#x27;</span>]}<span class="s"> pages=</span>{sa[<span class="s">&#x27;pages&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">bands=</span>{sa[<span class="s">&#x27;band&#x27;</span>]}<span class="s"> other=</span>{sa[<span class="s">&#x27;other&#x27;</span>]}<span class="s"> unmatched=</span>{sa[<span class="s">&#x27;unmatched&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lean=</span>{sa[<span class="s">&#x27;n_lean&#x27;</span>]}<span class="s"> lying=</span>{sa[<span class="s">&#x27;n_lying&#x27;</span>]}<span class="s"> side_z=</span>{sa[<span class="s">&#x27;side_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured joints dado=</span>{sa[<span class="s">&#x27;dado&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> dado_far=</span>{sa[<span class="s">&#x27;dado_far&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">page_bite=(</span>{sa[<span class="s">&#x27;page_bite&#x27;</span>][<span class="n">0</span>]:<span class="s">.5f</span>}<span class="s">,</span>{sa[<span class="s">&#x27;page_bite&#x27;</span>][<span class="n">1</span>]:<span class="s">.5f</span>}<span class="s">)</span><span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured seats book=(</span>{sa[<span class="s">&#x27;seat&#x27;</span>][<span class="n">0</span>]:<span class="s">.5f</span>}<span class="s">,</span>{sa[<span class="s">&#x27;seat&#x27;</span>][<span class="n">1</span>]:<span class="s">.5f</span>}<span class="s">) n=</span>{sa[<span class="s">&#x27;n_seated&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">band_bite=(</span>{sa[<span class="s">&#x27;band_bite&#x27;</span>][<span class="n">0</span>]:<span class="s">.5f</span>}<span class="s">,</span>{sa[<span class="s">&#x27;band_bite&#x27;</span>][<span class="n">1</span>]:<span class="s">.5f</span>}<span class="s">) </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">band_proud=</span>{sa[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">measured headroom=</span>{sa[<span class="s">&#x27;headroom&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> thick_spread=</span>{sa[<span class="s">&#x27;thick_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">height_spread=</span>{sa[<span class="s">&#x27;height_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">lean=(</span>{sa[<span class="s">&#x27;lean&#x27;</span>][<span class="n">0</span>]:<span class="s">.5f</span>}<span class="s">,</span>{sa[<span class="s">&#x27;lean&#x27;</span>][<span class="n">1</span>]:<span class="s">.5f</span>}<span class="s">) book_hits=</span>{sa[<span class="s">&#x27;book_hits&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">right_angle_wood=</span>{right}<span class="s">&quot;</span>)
+
+    <span class="k">if</span> <span class="k">not</span> (BASE_TRIS_MIN &lt;= base_tris &lt;= BASE_TRIS_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">base tris </span>{base_tris}<span class="s"> not in [</span>{BASE_TRIS_MIN}<span class="s">, </span>{BASE_TRIS_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">4</span>),) + nothing
+    <span class="k">if</span> nmat != MATERIAL_COUNT <span class="k">or</span> distinct != MATERIAL_COUNT:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material slots </span>{nmat}<span class="s"> distinct </span>{distinct}<span class="s"> != </span>{MATERIAL_COUNT}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">for</span> idx, floor <span class="k">in</span> FACE_FLOORS.items():
+        <span class="k">if</span> idx_counts.get(idx, <span class="n">0</span>) &lt; floor:
+            <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">material </span>{idx}<span class="s"> faces </span>{idx_counts.get(idx, <span class="n">0</span>)}<span class="s"> &lt; </span>{floor}<span class="s">&quot;</span>, <span class="n">5</span>),) + nothing
+    <span class="k">if</span> u0 &lt; -UV_EPS <span class="k">or</span> v0 &lt; -UV_EPS <span class="k">or</span> u1 &gt; <span class="n">1.0</span> + UV_EPS <span class="k">or</span> v1 &gt; <span class="n">1.0</span> + UV_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UVs outside 0..1: (</span>{u0:<span class="s">.4f</span>}<span class="s">,</span>{v0:<span class="s">.4f</span>}<span class="s">)-(</span>{u1:<span class="s">.4f</span>}<span class="s">,</span>{v1:<span class="s">.4f</span>}<span class="s">)</span><span class="s">&quot;</span>, <span class="n">6</span>),) + nothing
+    <span class="k">if</span> overlap &gt; UV_OVERLAP_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">UV AABB overlap </span>{overlap:<span class="s">.6f</span>}<span class="s"> &gt; </span>{UV_OVERLAP_MAX}<span class="s">&quot;</span>, <span class="n">7</span>),) + nothing
+    <span class="k">if</span> (abs(size_x - OUTER_SIZE[<span class="n">0</span>]) &gt; BBOX_TOL <span class="k">or</span> abs(size_y - OUTER_SIZE[<span class="n">1</span>]) &gt; BBOX_TOL
+            <span class="k">or</span> abs(size_z - OUTER_SIZE[<span class="n">2</span>]) &gt; BBOX_TOL):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bbox (</span>{size_x:<span class="s">.4f</span>}<span class="s">,</span>{size_y:<span class="s">.4f</span>}<span class="s">,</span>{size_z:<span class="s">.4f</span>}<span class="s">) off outer </span>{OUTER_SIZE}<span class="s">&quot;</span>, <span class="n">8</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD1_RATIO_MIN &lt;= r1 &lt;= LOD1_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD1 ratio </span>{r1:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD1_RATIO_MIN}<span class="s">, </span>{LOD1_RATIO_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--skip-decimate is the designed fail)&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> <span class="k">not</span> (LOD2_RATIO_MIN &lt;= r2 &lt;= LOD2_RATIO_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">LOD2 ratio </span>{r2:<span class="s">.4f</span>}<span class="s"> not in [</span>{LOD2_RATIO_MIN}<span class="s">, </span>{LOD2_RATIO_MAX}<span class="s">]</span><span class="s">&quot;</span>, <span class="n">9</span>),) + nothing
+    <span class="k">if</span> col_tris &gt; COLLIDER_TRIS_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">collider tris </span>{col_tris}<span class="s"> &gt; </span>{COLLIDER_TRIS_MAX}<span class="s">&quot;</span>, <span class="n">11</span>),) + nothing
+    <span class="k">if</span> bake_result != {<span class="s">&quot;FINISHED&quot;</span>} <span class="k">or</span> <span class="k">not</span> img.has_data:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">bake failed result=</span>{bake_result}<span class="s"> has_data=</span>{img.has_data}<span class="s">&quot;</span>, <span class="n">12</span>),) + nothing
+    <span class="k">if</span> export_size &lt;= <span class="n">0</span>:
+        <span class="k">return</span> (fail(<span class="s">&quot;export file missing or empty&quot;</span>, <span class="n">13</span>),) + nothing
+    <span class="k">if</span> (hyg[<span class="s">&quot;loose_v&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;loose_e&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;zero_area&quot;</span>]
+            <span class="k">or</span> hyg[<span class="s">&quot;doubles&quot;</span>] <span class="k">or</span> hyg[<span class="s">&quot;ngons&quot;</span>] <span class="k">or</span> zf):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">hygiene </span>{hyg}<span class="s"> zfight=</span>{zf}<span class="s"> (--stray-vert is the designed fail)</span><span class="s">&quot;</span>, <span class="n">15</span>),) + nothing
+    <span class="k">if</span> abs(bb[<span class="n">2</span>]) &gt; ZMIN_EPS:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">zmin </span>{bb[<span class="n">2</span>]:<span class="s">.6f</span>}<span class="s"> not within </span>{ZMIN_EPS}<span class="s"> of 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--lift-z is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;side&quot;</span>] != <span class="n">2</span> <span class="k">or</span> sa[<span class="s">&quot;side_z&quot;</span>] &gt; SIDE_Z_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">sides: </span>{sa[<span class="s">&#x27;side&#x27;</span>]}<span class="s"> of 2, worst side z=</span>{sa[<span class="s">&#x27;side_z&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &gt; </span>{SIDE_Z_MAX}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--float-side is the designed fail)&quot;</span>, <span class="n">16</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;cross&quot;</span>] != N_CROSS <span class="k">or</span> sa[<span class="s">&quot;dado&quot;</span>] &lt; DADO_MIN <span class="k">or</span> sa[<span class="s">&quot;dado_far&quot;</span>] &lt; DADO_FAR_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{sa[<span class="s">&#x27;cross&#x27;</span>]}<span class="s"> of </span>{N_CROSS}<span class="s"> cross members, dado bite </span>{sa[<span class="s">&#x27;dado&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">(min </span>{DADO_MIN}<span class="s">), far face </span>{sa[<span class="s">&#x27;dado_far&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> (min </span>{DADO_FAR_MIN}<span class="s">) </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--short-shelves is the designed fail)&quot;</span>, <span class="n">17</span>),) + nothing
+    <span class="k">if</span> (sa[<span class="s">&quot;units&quot;</span>] != N_BOOKS <span class="k">or</span> sa[<span class="s">&quot;unmatched&quot;</span>] <span class="k">or</span> sa[<span class="s">&quot;page_bite&quot;</span>][<span class="n">0</span>] &lt; PAGE_BITE_MIN
+            <span class="k">or</span> sa[<span class="s">&quot;page_bite&quot;</span>][<span class="n">1</span>] &gt; PAGE_BITE_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{sa[<span class="s">&#x27;units&#x27;</span>]}<span class="s"> of </span>{N_BOOKS}<span class="s"> books, </span>{sa[<span class="s">&#x27;unmatched&#x27;</span>]}<span class="s"> without one page </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">block and two bands, page bite </span>{sa[<span class="s">&#x27;page_bite&#x27;</span>]}<span class="s"> outside </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">[</span>{PAGE_BITE_MIN}<span class="s">, </span>{PAGE_BITE_MAX}<span class="s">] (--loose-pages is the designed fail)</span><span class="s">&quot;</span>,
+                     <span class="n">17</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;n_seated&quot;</span>] != N_BOOKS <span class="k">or</span> sa[<span class="s">&quot;seat&quot;</span>][<span class="n">0</span>] &lt; SEAT_MIN <span class="k">or</span> sa[<span class="s">&quot;seat&quot;</span>][<span class="n">1</span>] &gt; SEAT_MAX:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{sa[<span class="s">&#x27;n_seated&#x27;</span>]}<span class="s"> of </span>{N_BOOKS}<span class="s"> books seated, seat </span>{sa[<span class="s">&#x27;seat&#x27;</span>]}<span class="s"> outside </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">[</span>{SEAT_MIN}<span class="s">, </span>{SEAT_MAX}<span class="s">] (--float-books is the designed fail)</span><span class="s">&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> (sa[<span class="s">&quot;band_bite&quot;</span>][<span class="n">0</span>] &lt; BAND_BITE_MIN <span class="k">or</span> sa[<span class="s">&quot;band_bite&quot;</span>][<span class="n">1</span>] &gt; BAND_BITE_MAX
+            <span class="k">or</span> sa[<span class="s">&quot;band_proud&quot;</span>] &lt; BAND_PROUD_MIN):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">band bite </span>{sa[<span class="s">&#x27;band_bite&#x27;</span>]}<span class="s"> outside [</span>{BAND_BITE_MIN}<span class="s">, </span>{BAND_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">or proud </span>{sa[<span class="s">&#x27;band_proud&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{BAND_PROUD_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--float-bands is the designed fail)&quot;</span>, <span class="n">18</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;headroom&quot;</span>] &lt; HEADROOM_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">headroom </span>{sa[<span class="s">&#x27;headroom&#x27;</span>]:<span class="s">.5f</span>}<span class="s"> &lt; </span>{HEADROOM_MIN}<span class="s"> </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--tall-book is the designed fail)&quot;</span>, <span class="n">20</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;thick_spread&quot;</span>] &lt; THICK_SPREAD_MIN <span class="k">or</span> sa[<span class="s">&quot;height_spread&quot;</span>] &lt; HEIGHT_SPREAD_MIN:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span><span class="s">book spread thickness </span>{sa[<span class="s">&#x27;thick_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> (min </span>{THICK_SPREAD_MIN}<span class="s">), </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">height </span>{sa[<span class="s">&#x27;height_spread&#x27;</span>]:<span class="s">.3f</span>}<span class="s"> (min </span>{HEIGHT_SPREAD_MIN}<span class="s">) </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--uniform-books is the designed fail)&quot;</span>, <span class="n">21</span>),) + nothing
+    <span class="k">if</span> (sa[<span class="s">&quot;n_lean&quot;</span>] != N_LEAN <span class="k">or</span> sa[<span class="s">&quot;n_lying&quot;</span>] != N_LYING
+            <span class="k">or</span> sa[<span class="s">&quot;lean&quot;</span>][<span class="n">0</span>] &lt; LEAN_BITE_MIN <span class="k">or</span> sa[<span class="s">&quot;lean&quot;</span>][<span class="n">1</span>] &gt; LEAN_BITE_MAX):
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{sa[<span class="s">&#x27;n_lean&#x27;</span>]}<span class="s"> of </span>{N_LEAN}<span class="s"> leaning and </span>{sa[<span class="s">&#x27;n_lying&#x27;</span>]}<span class="s"> of </span>{N_LYING}<span class="s"> lying </span><span class="s">&quot;</span>
+                     <span class="s">f&quot;</span><span class="s">books, lean contact </span>{sa[<span class="s">&#x27;lean&#x27;</span>]}<span class="s"> outside [</span>{LEAN_BITE_MIN}<span class="s">, </span>{LEAN_BITE_MAX}<span class="s">] </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--air-lean and --deep-lean are the designed fails)&quot;</span>, <span class="n">22</span>),) + nothing
+    <span class="k">if</span> sa[<span class="s">&quot;book_hits&quot;</span>]:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{sa[<span class="s">&#x27;book_hits&#x27;</span>]}<span class="s"> book overlaps, need 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--crowd-books is the designed fail)&quot;</span>, <span class="n">23</span>),) + nothing
+    <span class="k">if</span> right:
+        <span class="k">return</span> (fail(<span class="s">f&quot;</span>{right}<span class="s"> right-angle wood edges, need 0 </span><span class="s">&quot;</span>
+                     <span class="s">&quot;(--sharp-shelf is the designed fail)&quot;</span>, <span class="n">24</span>),) + nothing
+    <span class="k">return</span> <span class="n">0</span>, low, high, mats, tex, collider
+
+
+<span class="k">def</span> wire_normal(mat, tex):
+    nt = mat.node_tree
+    nrm = nt.nodes.new(<span class="s">&quot;ShaderNodeNormalMap&quot;</span>)
+    nt.links.new(tex.outputs[<span class="s">&quot;Color&quot;</span>], nrm.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(nrm.outputs[<span class="s">&quot;Normal&quot;</span>], nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>].inputs[<span class="s">&quot;Normal&quot;</span>])
+
+
+<span class="k">def</span> render_still(low, mats, tex, path, engine):
+    scene = bpy.context.scene
+    wire_normal(mats[WOOD_IDX], tex)
+    <span class="k">for</span> ob <span class="k">in</span> list(scene.objects):
+        <span class="k">if</span> ob.type == <span class="s">&quot;MESH&quot;</span> <span class="k">and</span> ob != low:
+            ob.hide_render = <span class="k">True</span>
+            ob.hide_viewport = <span class="k">True</span>
+    <span class="c"># Level on the floor: turned about Z only.</span>
+    low.rotation_euler.z = math.radians(-<span class="n">14.0</span>)
+
+    floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_grid(bm, x_segments=<span class="n">1</span>, y_segments=<span class="n">1</span>, size=<span class="n">60.0</span>)
+        bm.to_mesh(floor_me)
+    <span class="k">finally</span>:
+        bm.free()
+    fmat = bpy.data.materials.new(<span class="s">&quot;Floor&quot;</span>)
+    fmat.use_nodes = <span class="k">True</span>
+    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    floor_me.materials.append(fmat)
+    floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
+    scene.collection.objects.link(floor)
+    wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.5</span>, <span class="n">0.0</span>)
+    wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+    scene.collection.objects.link(wall)
+
+    world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
+    world.use_nodes = <span class="k">True</span>
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
+    scene.world = world
+
+    <span class="k">def</span> light(name, kind, loc, energy, size, col, rot=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>)):
+        ld = bpy.data.lights.new(name, kind)
+        ld.energy = energy
+        <span class="k">if</span> kind == <span class="s">&quot;AREA&quot;</span>:
+            ld.size = size
+        <span class="k">else</span>:
+            ld.shadow_soft_size = size
+        ld.color = col
+        ob = bpy.data.objects.new(name, ld)
+        ob.location = loc
+        ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
+        scene.collection.objects.link(ob)
+
+    light(<span class="s">&quot;Key&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">2.4</span>, -<span class="n">3.4</span>, <span class="n">3.2</span>), <span class="n">480.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.95</span>, <span class="n">0.88</span>), (<span class="n">50</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (<span class="n">3.2</span>, -<span class="n">2.8</span>, <span class="n">1.6</span>), <span class="n">80.0</span>, <span class="n">5.0</span>, (<span class="n">0.74</span>, <span class="n">0.84</span>, <span class="n">1.0</span>), (<span class="n">68</span>, <span class="n">0</span>, <span class="n">48</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, <span class="s">&quot;AREA&quot;</span>, (-<span class="n">1.8</span>, <span class="n">2.6</span>, <span class="n">2.6</span>), <span class="n">220.0</span>, <span class="n">3.0</span>, (<span class="n">0.62</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">200</span>))
+    ld = bpy.data.lights.new(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&quot;SPOT&quot;</span>)
+    ld.energy, ld.color = <span class="n">260.0</span>, (<span class="n">1.0</span>, <span class="n">0.66</span>, <span class="n">0.34</span>)
+    ld.spot_size, ld.spot_blend, ld.shadow_soft_size = math.radians(<span class="n">50.0</span>), <span class="n">1.0</span>, <span class="n">0.3</span>
+    wedge = bpy.data.objects.new(<span class="s">&quot;Wedge&quot;</span>, ld)
+    wedge.location = (<span class="n">0.6</span>, <span class="n">1.8</span>, <span class="n">2.2</span>)
+    wedge.rotation_euler = (Vector((<span class="n">0.2</span>, <span class="n">0.6</span>, <span class="n">0.0</span>)) - wedge.location).to_track_quat(
+        <span class="s">&quot;-Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_euler()
+    scene.collection.objects.link(wedge)
+
+    cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
+    cam_data.lens = <span class="n">50.0</span>
+    cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
+    cam.location = (<span class="n">1.27</span>, -<span class="n">3.74</span>, <span class="n">1.175</span>)
+    scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.565</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
+    con.target = aim
+    con.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
+    con.up_axis = <span class="s">&quot;UP_Y&quot;</span>
+    scene.camera = cam
+
+    scene.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
+    <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
+        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.device = <span class="s">&quot;CPU&quot;</span>
+    <span class="k">else</span>:
+        <span class="k">try</span>:
+            scene.eevee.taa_render_samples = <span class="n">64</span>
+        <span class="k">except</span> AttributeError:
+            <span class="k">pass</span>
+    scene.render.resolution_x = <span class="n">1280</span>
+    scene.render.resolution_y = <span class="n">720</span>
+    scene.render.image_settings.file_format = <span class="s">&quot;WEBP&quot;</span> <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>) <span class="k">else</span> <span class="s">&quot;PNG&quot;</span>
+    <span class="k">if</span> path.lower().endswith(<span class="s">&quot;.webp&quot;</span>):
+        scene.render.image_settings.quality = <span class="n">90</span>
+    scene.render.filepath = path
+    scene.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
+
+    fcode = gallery_framing.check_framing(scene, cam, hero=[low], elements=[low], stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    bpy.ops.render.render(write_still=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        <span class="k">return</span> fail(<span class="s">&quot;render produced no file&quot;</span>, <span class="n">14</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">def</span> main():
+    argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
+    p = argparse.ArgumentParser()
+    p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>)
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>))
+    p.add_argument(<span class="s">&quot;--skip-decimate&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--stray-vert&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--lift-z&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-side&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--short-shelves&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--loose-pages&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-books&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--float-bands&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--tall-book&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--uniform-books&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--air-lean&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--deep-lean&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--crowd-books&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    p.add_argument(<span class="s">&quot;--sharp-shelf&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>)
+    args = p.parse_args(argv)
+
+    code, low, _high, mats, tex, _col = check(
+        args.skip_decimate,
+        lift_z=args.lift_z,
+        stray_vert=args.stray_vert,
+        float_side=args.float_side,
+        short_shelves=args.short_shelves,
+        sharp_shelf=args.sharp_shelf,
+        loose_pages=args.loose_pages,
+        float_books=args.float_books,
+        float_bands=args.float_bands,
+        tall_book=args.tall_book,
+        uniform_books=args.uniform_books,
+        crowd_books=args.crowd_books,
+        air_lean=args.air_lean,
+        deep_lean=args.deep_lean,
+    )
+    <span class="k">if</span> code:
+        <span class="k">return</span> code
+    <span class="k">if</span> args.output:
+        rcode = render_still(low, mats, tex, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
+        print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
+    print(<span class="s">&quot;bookshelf OK&quot;</span>)
+    <span class="k">return</span> <span class="n">0</span>
+
+
+<span class="k">if</span> __name__ == <span class="s">&quot;__main__&quot;</span>:
+    <span class="k">try</span>:
+        sys.exit(main())
+    <span class="k">except</span> Exception <span class="k">as</span> e:
+        traceback.print_exc()
+        print(<span class="s">f&quot;</span><span class="s">FATAL: </span>{e}<span class="s">&quot;</span>, file=sys.stderr)
+        sys.exit(<span class="n">1</span>)
+</pre>
+    </section>
+  </main>
+  <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
+    <button class="lightbox-close" type="button" autofocus>Close</button>
+    <img src="../assets/bookshelf-hero.webp" alt="A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours." />
+  </dialog>
+  <footer>
+    <div class="statusbar">
+      <span>generated from <code>showcase/gallery.json</code></span>
+      <span>CC-BY-NC-ND-4.0</span>
+      <span style="color: var(--ok);">exit 0</span>
+    </div>
+  </footer>
+  <script>
+
+    (function () {
+      var hero = document.getElementById('heroZoom');
+      var box = document.getElementById('lightbox');
+      if (hero && box) {
+        // <dialog>.showModal() traps focus, closes on Escape, and returns
+        // focus to the hero button on close. Any click inside closes it.
+        hero.addEventListener('click', function () { box.showModal(); });
+        box.addEventListener('click', function () { box.close(); });
+      }
+      var copy = document.getElementById('copyRun');
+      if (copy) {
+        copy.addEventListener('click', function () {
+          var cmd = document.getElementById('runCmd').textContent;
+          navigator.clipboard.writeText(cmd).then(function () {
+            copy.textContent = 'Copied!';
+            setTimeout(function () { copy.textContent = 'Copy'; }, 1500);
+          });
+        });
+      }
+    })();
+
+  </script>
+</body>
+</html>

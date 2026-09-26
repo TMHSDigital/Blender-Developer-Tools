@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>34 showcase pieces</strong>
+  <strong>16 skills</strong> &nbsp;&bull;&nbsp; <strong>9 rules</strong> &nbsp;&bull;&nbsp; <strong>3 templates</strong> &nbsp;&bull;&nbsp; <strong>27 snippets</strong> &nbsp;&bull;&nbsp; <strong>59 examples</strong> &nbsp;&bull;&nbsp; <strong>35 showcase pieces</strong>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 34 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
+This repository ships **16 skills, 9 rules, 3 templates, 27 snippets, 59 examples, and 35 showcase pieces** for Blender Python development targeting Blender 5.2 LTS (current stable) with Blender 4.5 LTS fallback support. Blender 5.1 is prior stable.
 
 The content is consumed by AI coding agents reading these files directly from a checkout — **there is no MCP server in this repository, and none is required**. Cursor applies `rules/*.mdc` automatically wherever their scope globs match and takes skills by name in chat; Claude Code reads `skills/` and `rules/` from the project workspace, or from this repo kept as a referenced checkout. Any agent that can read files in a workspace can use it the same way. There is no build step for the content — edit the Markdown and Python files directly.
 
@@ -106,7 +106,7 @@ per-script exit-code model, are in
 Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](showcase/README.md).
 
 <details>
-<summary><strong>34 showcase pieces</strong> — click to expand the preview grid</summary>
+<summary><strong>35 showcase pieces</strong> — click to expand the preview grid</summary>
 
 <p align="center">
   <a href="showcase/shipping-crate/"><img src="showcase/shipping-crate/preview.webp" width="24%" alt="Shipping crate: a wooden slat crate with iron corner brackets on a dark studio floor, warm wedge on the back wall" /></a>
@@ -143,6 +143,7 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
   <a href="showcase/apothecary-shelf/"><img src="showcase/apothecary-shelf/preview.webp" width="24%" alt="Apothecary shelf: a stained wooden shelf unit with an arched crest, gallery rails and three drawers, stocked with labelled glass bottles, flasks and glazed jars, on a dark studio floor" /></a>
   <a href="showcase/wooden-yoke/"><img src="showcase/wooden-yoke/preview.webp" width="24%" alt="Wooden yoke: a carved oak ox yoke with upturned ends standing on two bent hickory oxbows pinned above the beam, with an iron ring hung under its centre, on a dark studio floor" /></a>
   <a href="showcase/butter-churn/"><img src="showcase/butter-churn/preview.webp" width="24%" alt="Butter churn: a tall staved oak churn narrowing toward the top, bound by three iron hoops, with a two-board lid and a maple dasher handle rising through it, on a dark studio floor" /></a>
+  <a href="showcase/bookshelf/"><img src="showcase/bookshelf/preview.webp" width="24%" alt="Bookshelf: a stained wooden bookcase of cloth and leather hardbacks, some standing, some stacked flat and two leaning on their neighbours, on a dark studio floor" /></a>
 </p>
 
 [`shipping-crate`](showcase/shipping-crate/) — procedural crate through UVs, bake, LOD, collider, and Unity glTF, asserting recomputed budgets. Falsifier `--skip-decimate` exits 9.
@@ -208,6 +209,8 @@ Budget-conformance props. Not examples. Conventions: [`showcase/README.md`](show
 [`wooden-yoke`](showcase/wooden-yoke/) — procedural double ox yoke on two bent hickory bows with a hung ring, whose neck openings are measured between the bow legs and up to the saddles, through the same pipeline. Falsifiers `--pinch-bows` exits 19, `--edge-on-ring` exits 17.
 
 [`butter-churn`](showcase/butter-churn/) — procedural staved plunge churn whose dasher stroke is recomputed from the inner wall read off the staves and the plunger's reach, through the same pipeline. Falsifiers `--wide-dasher` exits 20, `--tight-hole` exits 18.
+
+[`bookshelf`](showcase/bookshelf/) — procedural bookcase of thirty-eight rounded-spine hardbacks, standing, stacked and leaning, whose leaning books' contact with their neighbour's head edge is recomputed as a band, through the same pipeline. Falsifiers `--air-lean` and `--deep-lean` exit 22, `--crowd-books` exits 23.
 
 </details>
 
