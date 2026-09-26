@@ -65,9 +65,9 @@ Scope: the helper measures the (scene, camera) pair it is handed — pass
 the scene the still actually renders from. Multi-scene examples (e.g.
 vse-cut-list, whose gallery still renders from a dedicated ``Bay`` scene
 while ``bpy.context.scene`` is the cut-list scene) must pass that scene
-and its camera explicitly. Examples whose subject IS the world or the
-atmosphere (sky-texture-sun-elevation) have no renderable hero for the
-matte to isolate — they do not call this helper.
+and its camera explicitly. World/sky contracts still stage a renderable
+hero for the matte: sky-texture-sun-elevation measures its gnomon obelisk
+in each diptych panel, with ground and plaza passed as stage.
 """
 import os
 import sys
