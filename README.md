@@ -1046,17 +1046,17 @@ smoothed render inverts on sight if the panel binding does.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/car-mirror-symmetry/"><img src="examples/car-mirror-symmetry/preview.webp" alt="Car mirror symmetry: a red low-poly hatchback on a dark studio floor, light windshield band and white headlamp pair — lofted as one half and completed by the Mirror modifier evaluated through the depsgraph, proving 2n-c counts, exact negated-X partners, a welded watertight centerline, and wheels mirrored about origins on the plane" /></a>
+<a href="examples/car-mirror-symmetry/"><img src="examples/car-mirror-symmetry/preview.webp" alt="Car mirror symmetry: a red stylized hatchback on a dark studio floor, tinted glass, black pillars and arch cladding, spoked wheels, and a matched headlamp and door-mirror pair either side of one centered grille — lofted as one half and completed by the Mirror modifier evaluated through the depsgraph, proving 2n-c counts, exact negated-X partners, a welded watertight centerline, and wheels mirrored about origins on the plane" /></a>
 </td>
 <td valign="middle">
 
 ### [car-mirror-symmetry](examples/car-mirror-symmetry/)
 
 The Mirror + depsgraph contract: the datablock holds only the authored half
-(126/231/106, 28 centerline verts) while the evaluated mesh is the welded
+(676/1289/614, 104 centerline verts) while the evaluated mesh is the welded
 whole — exactly `2n − c` verts, watertight with Euler 2, every vertex paired
-at negated X (deviation 0.0). Wheels and lamps mirror about object origins
-parked **on** the symmetry plane — offset the data, never the object.
+at negated X (deviation 0.0). Wheels, lamps, grille, mirrors and handles mirror
+about object origins parked **on** the symmetry plane — offset the data, never the object.
 Companion to [`depsgraph-export`](examples/depsgraph-export/) (evaluated-vs-
 original) and [`shape-key-blend`](examples/shape-key-blend/) (non-destructive
 evaluation). Break the mirror and the render is literally half a car.
