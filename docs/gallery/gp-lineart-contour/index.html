@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>gp-lineart-contour — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta name="description" content="Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta property="og:description" content="Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/gp-lineart-contour/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
+  <meta property="og:image:alt" content="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="gp-lineart-contour — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
+  <meta name="twitter:description" content="Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/gp-lineart-contour-hero.webp" />
-  <meta name="twitter:image:alt" content="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
+  <meta name="twitter:image:alt" content="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,25 +265,27 @@
   </div>
   <header class="hero">
     <h1>gp-lineart-contour</h1>
-    <p>Grease Pencil LINEART modifier contours via the depsgraph on a faceted crystal. source_object is load-bearing (clear yields 0 strokes); contour+crease off yields 0; restore recovers 2 strokes / 12 points on 4.5.11, 5.1.2 and 5.2.1. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
+    <p>Grease Pencil LINEART modifier ink via the depsgraph on a cel-shaded lighthouse diorama. source_object is load-bearing (clear yields 0 strokes); every edge type off yields 0; the drawing is 255 strokes / 1393 points on 4.5.11, 5.1.2 and 5.2.1, gated above the count left when any one of contour, crease, material-border or intersection edges is dropped. Stroke width: thickness exists on 4.5, AttributeError on 5.1 — portable path is radius.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes.">
-      <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink.">
+      <img src="../assets/gp-lineart-contour-hero.webp" alt="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving contour+crease off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
+    <div class="callout"><span class="tag">witnesses</span> AI code still sets LINEART.thickness on 5.1 (AttributeError) or hand-draws strokes / enables Freestyle instead of modifiers.new(..., &#x27;LINEART&#x27;). Clearing source_object or leaving every edge type off silently yields an empty drawing — the check proves both failure modes and recovery.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/gp-lineart-contour/gp_lineart_contour.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a faceted crystal, attaches a Grease Pencil <code>LINEART</code> modifier with <code>source_type=&#x27;OBJECT&#x27;</code>, and proves the contour contract through the depsgraph — including the 4.5 → 5.1 stroke-width trap.</p>
+<p>A runnable example that builds a lighthouse on a rocky islet — tower, gallery, lantern room, keeper&#x27;s cottage, a hauled-up rowboat and a diorama sea — as one cel-shaded mesh, attaches a Grease Pencil <code>LINEART</code> modifier with <code>source_type=&#x27;OBJECT&#x27;</code>, and proves the contour contract through the depsgraph, including the 4.5 → 5.1 stroke-width trap.</p>
 <p><strong>What it witnesses:</strong> the Line Art modifier contract AI-generated NPR code most often gets wrong.</p>
-<ul><li><strong>Contours are a modifier, not Freestyle and not hand-authored strokes.</strong> <code>modifiers.new(..., &#x27;LINEART&#x27;)</code> on a GPv3 object, with <code>target_layer</code> / <code>target_material</code> set, evaluates silhouette edges into drawing strokes.</li><li><strong><code>source_object</code> is load-bearing.</strong> Clearing it yields <strong>0</strong> evaluated strokes (proven in the same check pass). Restoring it recovers the contour.</li><li><strong>Edge-type flags matter.</strong> A freshly added LINEART with <code>use_contour</code> and <code>use_crease</code> both off emits <strong>0</strong> strokes; turning contour (+ crease) back on recovers the silhouette (<strong>2</strong> strokes / <strong>12</strong> points on every binary for this crystal + camera; Line Art chains the bipyramid&#x27;s edges into long strokes, so the count is low and the gates are lower bounds).</li><li><strong>Stroke width renamed.</strong> 4.5 exposes both <code>thickness</code> (legacy px, set to 45 here) and <code>radius</code>; 5.1 removes <code>thickness</code> (<code>AttributeError</code>) and keeps <code>radius</code> only (portable path: <code>mod.radius = 0.028</code>).</li><li><strong>GPv3 address</strong> matches <code>grease-pencil-rosette</code>: <code>grease_pencils_v3</code> on 4.5, <code>grease_pencils</code> on 5.x.</li></ul>
-<p><strong>What each check catches on failure:</strong> wrong GPv3 collection (exit 2), <code>thickness</code> present/absent on the wrong side of 5.0 (exit 3), lost <code>source_object</code> assignment (exit 4), contour too thin (exit 5), source clear not zeroing strokes (exit 6), flags-off or restore failure (exit 7).</p>
-<p><strong>Version witness:</strong> stroke counts match on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS (2 strokes / 12 points). The divergence is <code>thickness</code> vs <code>radius</code>.</p>
-<p><strong>The still:</strong> the crystal is a hexagonal bipyramid (an equator ring and two apexes), set tip-down in a two-tier hex mount on the floor. The mount is render staging, derived from the crystal&#x27;s lowest evaluated vertex; it is built after the check, so it never enters the Line Art counts. The still&#x27;s camera drops its aim and dollies in along the check camera&#x27;s bearing, so the crystal fills the frame with the mount&#x27;s foot inside it.</p>
+<ul><li><strong>Contours are a modifier, not Freestyle and not hand-authored strokes.</strong> <code>modifiers.new(..., &#x27;LINEART&#x27;)</code> on a GPv3 object, with <code>target_layer</code> / <code>target_material</code> set, evaluates the source mesh&#x27;s edges into drawing strokes.</li><li><strong><code>source_object</code> is load-bearing.</strong> Clearing it yields <strong>0</strong> evaluated strokes (proven in the same check pass). Restoring it recovers the drawing.</li><li><strong>Edge-type flags matter.</strong> A freshly added LINEART with every edge type off (contour, crease, material borders, intersections, loose, edge marks) emits <strong>0</strong> strokes. The configured modifier draws <strong>255</strong> strokes / <strong>1393</strong> points on every binary, and the gates (<strong>≥ 240</strong> strokes, <strong>≥ 1320</strong> points) sit above the count left when any <em>one</em> edge type is dropped — contour 234 strokes, crease 171 / 1099, material borders 247 / 1305, intersections 179 / 921 — so each is load-bearing: the band borders on the tower are material-border ink, the waterline around each rock is intersection ink. Rebuilding the modifier must recover exactly the first pass&#x27;s counts.</li><li><strong>Stroke width renamed.</strong> 4.5 exposes both <code>thickness</code> (legacy px, set to 22 here) and <code>radius</code>; 5.1 removes <code>thickness</code> (<code>AttributeError</code>) and keeps <code>radius</code> only (portable path: <code>mod.radius = 0.021</code>).</li><li><strong>GPv3 address</strong> matches <code>grease-pencil-rosette</code>: <code>grease_pencils_v3</code> on 4.5, <code>grease_pencils</code> on 5.x.</li></ul>
+<p><strong>What each check catches on failure:</strong> wrong GPv3 collection (exit 2), <code>thickness</code> present/absent on the wrong side of 5.0 (exit 3), lost <code>source_object</code> assignment or <code>use_contour</code> (exit 4), drawing below the gates (exit 5), source clear not zeroing strokes (exit 6), flags-off not zeroing strokes or a rebuild not recovering the same counts (exit 7).</p>
+<p><strong>Version witness:</strong> stroke counts match on 4.5.11 LTS, 5.1.2 and 5.2.1 LTS (255 strokes / 1393 points). The divergence is <code>thickness</code> vs <code>radius</code>.</p>
+<p><strong>The still:</strong> the check and the still share one camera, because Line Art is view-dependent — the strokes the check counts are the strokes the still draws. The mesh is shaded flat (three cel tones), so the black ink is what makes it read as an inked illustration: clear <code>source_object</code> and the same render is a flat, lineless low-poly model — no band borders, no waterline, no outlines.</p>
+<h3>Stage deviation</h3>
+<p>Line Art is a non-photoreal contract: the hero&#x27;s materials are cel-shaded (Diffuse → Shader to RGB → constant ramp, emitted) instead of Principled, so the ink reads against flat tone fields. The stage itself — floor, wall, world, key, fill and warm wedge — is the default. The cel shading uses Shader to RGB, which is EEVEE-only, so <code>--engine cycles</code> does not render the look.</p>
 <h2>Run</h2>
 <pre><code># Depsgraph contour check — the CI check:
 blender --background --python gp_lineart_contour.py --
@@ -295,7 +297,7 @@ blender --background --python gp_lineart_contour.py -- --no-contour
 blender --background --python gp_lineart_contour.py -- --output lineart.png</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also GPv3 collection address contract</td></tr><tr><td>3</td><td>LINEART <code>thickness</code> / <code>radius</code> trap for this Blender</td></tr><tr><td>4</td><td>LINEART type, source, or <code>use_contour</code> (<code>--no-contour</code> lands here)</td></tr><tr><td>5</td><td>Evaluated contour too thin</td></tr><tr><td>6</td><td>Cleared <code>source_object</code> still produced strokes</td></tr><tr><td>7</td><td>Contour+crease off still produced strokes, or restore failed</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage; also GPv3 collection address contract</td></tr><tr><td>3</td><td>LINEART <code>thickness</code> / <code>radius</code> trap for this Blender</td></tr><tr><td>4</td><td>LINEART type, source, or <code>use_contour</code> (<code>--no-contour</code> lands here)</td></tr><tr><td>5</td><td>Evaluated drawing below the stroke/point gates</td></tr><tr><td>6</td><td>Cleared <code>source_object</code> still produced strokes</td></tr><tr><td>7</td><td>Every edge type off still produced strokes, or the rebuild did not recover the same counts</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-contour</code>.</p>
     </section>
     <section class="detail-section src">
@@ -313,15 +315,18 @@ gets wrong across the 4.5 LTS → 5.1 window:
    not from freestyle or hand-drawn strokes.
 2. ``source_type=&#x27;OBJECT&#x27;`` + ``source_object`` is load-bearing — clearing
    the source yields zero evaluated strokes.
-3. ``use_contour`` must be on for silhouette edges; with contour and crease
-   both off the evaluator emits nothing.
+3. ``use_contour`` must be on for silhouette edges; with every edge-type
+   flag off the evaluator emits nothing.
 4. Stroke width: 4.5 exposes both ``thickness`` (legacy px) and ``radius``;
    5.1 removes ``thickness`` (AttributeError) and keeps ``radius`` only.
 5. GPv3 datablock address matches grease-pencil-rosette: ``grease_pencils_v3``
    on 4.5, ``grease_pencils`` on 5.x.
 
-The check evaluates the modifier through the depsgraph (no bake required)
-and asserts stroke/point lower bounds against the known failure modes above.
+The subject is a lighthouse on a rocky islet with its keeper&#x27;s cottage —
+one mesh object, toon-shaded, so the Line Art ink is what turns it into an
+inked illustration. The check evaluates the modifier through the depsgraph
+(no bake required) from the same camera the still renders from and asserts
+stroke/point lower bounds against the known failure modes above.
 
 ``--no-contour`` clears ``use_contour`` after the modifier is built and
 still asserts it is True. That is the falsifier (``--same-axis`` in
@@ -334,28 +339,36 @@ By default it runs the correctness check only. Pass --output to render:
     blender --background --python gp_lineart_contour.py -- --no-contour
     blender --background --python gp_lineart_contour.py -- --output l.png
 &quot;&quot;&quot;</span>
-<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">import</span> bpy, bmesh, sys, os, math, argparse, random
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
-<span class="k">from</span> mathutils <span class="k">import</span> Matrix
+<span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
 
-<span class="c"># Faceted crystal (octahedron-ish) — enough silhouette edges to read at thumbnail</span>
-CRYSTAL_SCALE = <span class="n">1.15</span>
-CRYSTAL_R = <span class="n">0.72</span>        <span class="c"># bipyramid equator radius (before CRYSTAL_SCALE)</span>
-CRYSTAL_APEX = <span class="n">0.88</span>     <span class="c"># apex height above/below the equator</span>
-STROKE_MIN = <span class="n">1</span>
-POINT_MIN = <span class="n">4</span>
-RADIUS = <span class="n">0.028</span>
+<span class="c"># Gates on the evaluated drawing. Measured 255 strokes / 1393 points on 4.5.11,</span>
+<span class="c"># 5.1.2 and 5.2.1. Each gate sits above the count left when any ONE of the four</span>
+<span class="c"># edge types is dropped (contour 234 s, crease 171 s / 1099 p, material 1305 p,</span>
+<span class="c"># intersection 179 s / 921 p), so every edge type is load-bearing on the count.</span>
+STROKE_MIN = <span class="n">240</span>
+POINT_MIN = <span class="n">1320</span>
+RADIUS = <span class="n">0.021</span>        <span class="c"># ink half-width in world units (portable width path)</span>
+THICKNESS_45 = <span class="n">22</span>       <span class="c"># 4.5-only legacy px width, set before radius</span>
 
-<span class="c"># render staging only (not part of the check)</span>
-MOUNT_R = <span class="n">0.46</span>          <span class="c"># hex plinth base radius</span>
-MOUNT_BASE_H = <span class="n">0.07</span>     <span class="c"># base tier height, standing on the floor</span>
-MOUNT_SOCKET = <span class="n">0.10</span>     <span class="c"># depth the crystal&#x27;s lower tip sinks into the mount</span>
-STILL_AIM_Z = <span class="n">1.05</span>      <span class="c"># still camera aim height (the check&#x27;s is 1.15)</span>
-STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera distance, relative to the check&#x27;s</span>
+<span class="c"># Lighthouse proportions (world units; the islet stands on the floor at z=0)</span>
+TOWER_N = <span class="n">32</span>            <span class="c"># tower ring segments (fine enough: no facet creases)</span>
+TOWER_Z0 = <span class="n">0.34</span>         <span class="c"># tower foot, on top of the plinth</span>
+TOWER_H = <span class="n">2.05</span>
+TOWER_R0 = <span class="n">0.40</span>         <span class="c"># radius at the foot</span>
+TOWER_R1 = <span class="n">0.27</span>         <span class="c"># radius at the gallery</span>
+TOWER_BANDS = <span class="n">5</span>         <span class="c"># red / white / red / white / red</span>
+
+<span class="c"># Material slots on the single source mesh</span>
+RED, WHITE, IRON, GLOW, ROCK, STONE, SLATE, SEA = range(<span class="n">8</span>)
+SEA_Z = <span class="n">0.07</span>            <span class="c"># top of the diorama sea disc</span>
+
+INK = (<span class="n">0.015</span>, <span class="n">0.014</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
 
 
 <span class="k">def</span> eevee_engine_id():
@@ -392,44 +405,326 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
     <span class="k">return</span> <span class="n">0</span>
 
 
-<span class="k">def</span> build_crystal(sc):
-    <span class="s">&quot;&quot;&quot;A designed faceted crystal — not a raw cube.&quot;&quot;&quot;</span>
-    me = bpy.data.meshes.new(<span class="s">&quot;Crystal&quot;</span>)
+<span class="c"># --- the source mesh: one object, many named parts via material slots --------</span>
+
+<span class="k">def</span> toon_material(name, color):
+    <span class="s">&quot;&quot;&quot;Flat cel shading: Diffuse -&gt; Shader to RGB -&gt; constant ramp, times the
+    base colour, emitted. Three tones (shadow / mid / lit) so the key light
+    still shapes the form while the Line Art ink carries the drawing.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nt.nodes.clear()
+    diff = nt.nodes.new(<span class="s">&quot;ShaderNodeBsdfDiffuse&quot;</span>)
+    diff.inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+    to_rgb = nt.nodes.new(<span class="s">&quot;ShaderNodeShaderToRGB&quot;</span>)
+    ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+    ramp.color_ramp.interpolation = <span class="s">&quot;CONSTANT&quot;</span>
+    els = ramp.color_ramp.elements
+    els[<span class="n">0</span>].position = <span class="n">0.0</span>
+    els[<span class="n">0</span>].color = (<span class="n">0.30</span>, <span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">1.0</span>)     <span class="c"># shadow tone, slightly cool</span>
+    els[<span class="n">1</span>].position = <span class="n">0.10</span>
+    els[<span class="n">1</span>].color = (<span class="n">0.62</span>, <span class="n">0.62</span>, <span class="n">0.64</span>, <span class="n">1.0</span>)     <span class="c"># mid tone</span>
+    lit = els.new(<span class="n">0.34</span>)
+    lit.color = (<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)           <span class="c"># lit tone</span>
+    mul = nt.nodes.new(<span class="s">&quot;ShaderNodeMix&quot;</span>)
+    mul.data_type = <span class="s">&quot;RGBA&quot;</span>
+    mul.blend_type = <span class="s">&quot;MULTIPLY&quot;</span>
+    mul.inputs[<span class="s">&quot;Factor&quot;</span>].default_value = <span class="n">1.0</span>
+    mul.inputs[<span class="n">6</span>].default_value = color         <span class="c"># A</span>
+    emit = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+    emit.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">1.0</span>
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+    nt.links.new(diff.outputs[<span class="n">0</span>], to_rgb.inputs[<span class="n">0</span>])
+    nt.links.new(to_rgb.outputs[<span class="s">&quot;Color&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], mul.inputs[<span class="n">7</span>])  <span class="c"># B</span>
+    nt.links.new(mul.outputs[<span class="n">2</span>], emit.inputs[<span class="s">&quot;Color&quot;</span>])
+    nt.links.new(emit.outputs[<span class="n">0</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> glow_material(name, color, strength):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    nt.nodes.clear()
+    emit = nt.nodes.new(<span class="s">&quot;ShaderNodeEmission&quot;</span>)
+    emit.inputs[<span class="s">&quot;Color&quot;</span>].default_value = color
+    emit.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = strength
+    out = nt.nodes.new(<span class="s">&quot;ShaderNodeOutputMaterial&quot;</span>)
+    nt.links.new(emit.outputs[<span class="n">0</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> _tag(bm, verts, mat):
+    faces = {f <span class="k">for</span> v <span class="k">in</span> verts <span class="k">for</span> f <span class="k">in</span> v.link_faces}
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        f.material_index = mat
+
+
+<span class="k">def</span> _cyl(bm, mat, r1, r2, z0, z1, segs, x=<span class="n">0.0</span>, y=<span class="n">0.0</span>, rot=<span class="n">0.0</span>):
+    res = bmesh.ops.create_cone(
+        bm, cap_ends=<span class="k">True</span>, segments=segs, radius1=r1, radius2=r2,
+        depth=z1 - z0,
+        matrix=Matrix.Translation((x, y, (z0 + z1) / <span class="n">2</span>)) @ Matrix.Rotation(rot, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>),
+    )
+    _tag(bm, res[<span class="s">&quot;verts&quot;</span>], mat)
+    <span class="k">return</span> res[<span class="s">&quot;verts&quot;</span>]
+
+
+<span class="k">def</span> _box(bm, mat, center, size, rot_z=<span class="n">0.0</span>):
+    m = (Matrix.Translation(center) @ Matrix.Rotation(rot_z, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+         @ Matrix.Diagonal((size[<span class="n">0</span>], size[<span class="n">1</span>], size[<span class="n">2</span>], <span class="n">1.0</span>)))
+    res = bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>, matrix=m)
+    _tag(bm, res[<span class="s">&quot;verts&quot;</span>], mat)
+    <span class="k">return</span> res[<span class="s">&quot;verts&quot;</span>]
+
+
+<span class="k">def</span> tower_radius(z):
+    t = (z - TOWER_Z0) / TOWER_H
+    <span class="k">return</span> TOWER_R0 + (TOWER_R1 - TOWER_R0) * t
+
+
+<span class="k">def</span> _tower(bm):
+    <span class="s">&quot;&quot;&quot;Tapered, banded tower: shared rings, so the only line between bands is
+    the material border Line Art reads from the slots.&quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(TOWER_BANDS + <span class="n">1</span>):
+        z = TOWER_Z0 + TOWER_H * i / TOWER_BANDS
+        r = tower_radius(z)
+        rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * k / TOWER_N),
+                                    r * math.sin(<span class="n">2</span> * math.pi * k / TOWER_N), z))
+                      <span class="k">for</span> k <span class="k">in</span> range(TOWER_N)])
+    <span class="k">for</span> i <span class="k">in</span> range(TOWER_BANDS):
+        lo, hi = rings[i], rings[i + <span class="n">1</span>]
+        <span class="k">for</span> k <span class="k">in</span> range(TOWER_N):
+            f = bm.faces.new((lo[k], lo[(k + <span class="n">1</span>) % TOWER_N],
+                              hi[(k + <span class="n">1</span>) % TOWER_N], hi[k]))
+            f.material_index = RED <span class="k">if</span> i % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> WHITE
+    bm.faces.new(list(reversed(rings[<span class="n">0</span>]))).material_index = WHITE
+    bm.faces.new(rings[-<span class="n">1</span>]).material_index = IRON
+
+
+<span class="k">def</span> _on_tower(az, z, depth):
+    <span class="s">&quot;&quot;&quot;Placement matrix for a fixture set into the tower wall at azimuth az.&quot;&quot;&quot;</span>
+    r = tower_radius(z) - depth * <span class="n">0.35</span>
+    <span class="k">return</span> Vector((r * math.cos(az), r * math.sin(az), z)), az
+
+
+<span class="k">def</span> _lantern(bm, z_top):
+    <span class="s">&quot;&quot;&quot;Gallery deck, railing, lantern room with mullions, roof and vent ball.&quot;&quot;&quot;</span>
+    deck_z1 = z_top + <span class="n">0.07</span>
+    _cyl(bm, IRON, <span class="n">0.46</span>, <span class="n">0.46</span>, z_top, deck_z1, <span class="n">32</span>)
+    <span class="c"># railing: posts + top rail</span>
+    rail_r, post_h = <span class="n">0.43</span>, <span class="n">0.19</span>
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">18</span>):
+        a = <span class="n">2</span> * math.pi * k / <span class="n">18</span>
+        _cyl(bm, IRON, <span class="n">0.011</span>, <span class="n">0.011</span>, deck_z1, deck_z1 + post_h, <span class="n">6</span>,
+             rail_r * math.cos(a), rail_r * math.sin(a))
+    _cyl(bm, IRON, rail_r + <span class="n">0.018</span>, rail_r + <span class="n">0.018</span>, deck_z1 + post_h - <span class="n">0.02</span>,
+         deck_z1 + post_h + <span class="n">0.005</span>, <span class="n">32</span>)
+    <span class="c"># lantern base, glass, mullions</span>
+    base_z1 = deck_z1 + <span class="n">0.09</span>
+    _cyl(bm, RED, <span class="n">0.26</span>, <span class="n">0.25</span>, deck_z1, base_z1, <span class="n">8</span>, rot=math.pi / <span class="n">8</span>)
+    glass_z1 = base_z1 + <span class="n">0.36</span>
+    _cyl(bm, GLOW, <span class="n">0.215</span>, <span class="n">0.215</span>, base_z1, glass_z1, <span class="n">8</span>, rot=math.pi / <span class="n">8</span>)
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>):
+        a = <span class="n">2</span> * math.pi * k / <span class="n">8</span>
+        r = <span class="n">0.215</span> / math.cos(math.pi / <span class="n">8</span>) * <span class="n">0.99</span>
+        _box(bm, IRON, (r * math.cos(a), r * math.sin(a), (base_z1 + glass_z1) / <span class="n">2</span>),
+             (<span class="n">0.03</span>, <span class="n">0.03</span>, glass_z1 - base_z1), a)
+    <span class="c"># roof: eaves ring, cone, vent ball</span>
+    _cyl(bm, IRON, <span class="n">0.29</span>, <span class="n">0.29</span>, glass_z1, glass_z1 + <span class="n">0.035</span>, <span class="n">8</span>, rot=math.pi / <span class="n">8</span>)
+    roof_z1 = glass_z1 + <span class="n">0.035</span> + <span class="n">0.27</span>
+    _cyl(bm, RED, <span class="n">0.30</span>, <span class="n">0.02</span>, glass_z1 + <span class="n">0.035</span>, roof_z1, <span class="n">8</span>, rot=math.pi / <span class="n">8</span>)
+    res = bmesh.ops.create_uvsphere(
+        bm, u_segments=<span class="n">12</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.055</span>,
+        matrix=Matrix.Translation((<span class="n">0.0</span>, <span class="n">0.0</span>, roof_z1 + <span class="n">0.03</span>)))
+    _tag(bm, res[<span class="s">&quot;verts&quot;</span>], IRON)
+    _cyl(bm, IRON, <span class="n">0.008</span>, <span class="n">0.008</span>, roof_z1 + <span class="n">0.07</span>, roof_z1 + <span class="n">0.2</span>, <span class="n">6</span>)
+
+
+<span class="k">def</span> _rock(bm, rng, center, scale, rot):
+    res = bmesh.ops.create_icosphere(bm, subdivisions=<span class="n">1</span>, radius=<span class="n">1.0</span>)
+    <span class="k">for</span> v <span class="k">in</span> res[<span class="s">&quot;verts&quot;</span>]:
+        v.co *= <span class="n">1.0</span> + rng.uniform(-<span class="n">0.16</span>, <span class="n">0.16</span>)
+    m = (Matrix.Translation(center) @ Matrix.Rotation(rot, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+         @ Matrix.Diagonal((scale[<span class="n">0</span>], scale[<span class="n">1</span>], scale[<span class="n">2</span>], <span class="n">1.0</span>)))
+    bmesh.ops.transform(bm, matrix=m, verts=res[<span class="s">&quot;verts&quot;</span>])
+    _tag(bm, res[<span class="s">&quot;verts&quot;</span>], ROCK)
+
+
+<span class="k">def</span> _wave(bm, cx, cy, r, a0, span, steps=<span class="n">12</span>, width=<span class="n">0.11</span>, lift=<span class="n">0.025</span>):
+    <span class="s">&quot;&quot;&quot;A stylised wave crest: a thin curved bar lying on the sea, tapering
+    to points at both ends — the comic shorthand for a wave.&quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> i <span class="k">in</span> range(steps + <span class="n">1</span>):
+        s = i / steps
+        a = a0 + span * s
+        w = width * max(<span class="n">0.08</span>, math.sin(math.pi * s))
+        d = Vector((math.cos(a), math.sin(a), <span class="n">0.0</span>))
+        c = Vector((cx, cy, SEA_Z)) + d * r
+        rings.append([bm.verts.new(c - d * w / <span class="n">2</span> + Vector((<span class="n">0</span>, <span class="n">0</span>, -<span class="n">0.01</span>))),
+                      bm.verts.new(c + d * w / <span class="n">2</span> + Vector((<span class="n">0</span>, <span class="n">0</span>, -<span class="n">0.01</span>))),
+                      bm.verts.new(c + d * w / <span class="n">2</span> + Vector((<span class="n">0</span>, <span class="n">0</span>, lift))),
+                      bm.verts.new(c - d * w / <span class="n">2</span> + Vector((<span class="n">0</span>, <span class="n">0</span>, lift)))])
+    <span class="k">for</span> i <span class="k">in</span> range(steps):
+        a, b = rings[i], rings[i + <span class="n">1</span>]
+        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+            bm.faces.new((a[k], a[(k + <span class="n">1</span>) % <span class="n">4</span>], b[(k + <span class="n">1</span>) % <span class="n">4</span>], b[k])).material_index = WHITE
+    bm.faces.new(list(reversed(rings[<span class="n">0</span>]))).material_index = WHITE
+    bm.faces.new(rings[-<span class="n">1</span>]).material_index = WHITE
+
+
+<span class="k">def</span> _islet(bm):
+    rng = random.Random(<span class="n">1907</span>)
+    rocks = [
+        ((<span class="n">0.05</span>, <span class="n">0.05</span>, <span class="n">0.02</span>), (<span class="n">1.05</span>, <span class="n">0.95</span>, <span class="n">0.30</span>), <span class="n">0.2</span>),
+        ((-<span class="n">0.95</span>, <span class="n">0.30</span>, <span class="n">0.0</span>), (<span class="n">0.95</span>, <span class="n">0.70</span>, <span class="n">0.26</span>), <span class="n">0.9</span>),
+        ((<span class="n">0.78</span>, -<span class="n">0.20</span>, <span class="n">0.0</span>), (<span class="n">0.55</span>, <span class="n">0.48</span>, <span class="n">0.30</span>), <span class="n">0.5</span>),
+        ((<span class="n">0.55</span>, <span class="n">0.55</span>, <span class="n">0.0</span>), (<span class="n">0.50</span>, <span class="n">0.45</span>, <span class="n">0.36</span>), <span class="n">1.3</span>),
+        ((-<span class="n">0.40</span>, -<span class="n">0.72</span>, <span class="n">0.0</span>), (<span class="n">0.42</span>, <span class="n">0.35</span>, <span class="n">0.24</span>), <span class="n">2.1</span>),
+        ((<span class="n">1.18</span>, <span class="n">0.30</span>, <span class="n">0.0</span>), (<span class="n">0.30</span>, <span class="n">0.26</span>, <span class="n">0.22</span>), <span class="n">0.4</span>),
+        ((-<span class="n">1.55</span>, <span class="n">0.05</span>, <span class="n">0.0</span>), (<span class="n">0.34</span>, <span class="n">0.30</span>, <span class="n">0.20</span>), <span class="n">2.6</span>),
+        ((<span class="n">0.20</span>, -<span class="n">0.95</span>, <span class="n">0.0</span>), (<span class="n">0.22</span>, <span class="n">0.20</span>, <span class="n">0.14</span>), <span class="n">1.7</span>),
+    ]
+    <span class="k">for</span> c, s, r <span class="k">in</span> rocks:
+        _rock(bm, rng, c, s, r)
+    <span class="c"># diorama sea: a shallow disc the rocks break through, so Line Art&#x27;s</span>
+    <span class="c"># intersection edges ink the waterline around every rock</span>
+    _cyl(bm, SEA, <span class="n">2.05</span>, <span class="n">2.0</span>, <span class="n">0.0</span>, SEA_Z, <span class="n">48</span>)
+    <span class="k">for</span> cx, cy, r, a0, span <span class="k">in</span> ((-<span class="n">1.30</span>, -<span class="n">0.70</span>, <span class="n">0.30</span>, <span class="n">205</span>, <span class="n">115</span>),
+                                (-<span class="n">0.45</span>, -<span class="n">1.30</span>, <span class="n">0.34</span>, <span class="n">225</span>, <span class="n">110</span>),
+                                (<span class="n">0.55</span>, -<span class="n">1.30</span>, <span class="n">0.28</span>, <span class="n">250</span>, <span class="n">110</span>),
+                                (<span class="n">1.50</span>, -<span class="n">0.55</span>, <span class="n">0.26</span>, <span class="n">280</span>, <span class="n">100</span>),
+                                (<span class="n">1.35</span>, <span class="n">0.85</span>, <span class="n">0.24</span>, <span class="n">300</span>, <span class="n">100</span>),
+                                (-<span class="n">1.45</span>, <span class="n">1.00</span>, <span class="n">0.24</span>, <span class="n">180</span>, <span class="n">110</span>)):
+        _wave(bm, cx, cy, r, math.radians(a0), math.radians(span))
+    <span class="c"># stepped stone plinth the tower stands on</span>
+    _cyl(bm, STONE, <span class="n">0.60</span>, <span class="n">0.58</span>, <span class="n">0.10</span>, <span class="n">0.24</span>, <span class="n">12</span>, rot=math.pi / <span class="n">12</span>)
+    _cyl(bm, STONE, <span class="n">0.50</span>, <span class="n">0.46</span>, <span class="n">0.24</span>, TOWER_Z0 + <span class="n">0.02</span>, <span class="n">12</span>, rot=math.pi / <span class="n">12</span>)
+
+
+<span class="k">def</span> _cottage(bm):
+    <span class="s">&quot;&quot;&quot;Keeper&#x27;s cottage behind-left of the tower: walls, pitched roof with
+    overhang, chimney, door and two windows.&quot;&quot;&quot;</span>
+    cx, cy, rot = -<span class="n">1.15</span>, <span class="n">0.30</span>, math.radians(-<span class="n">14</span>)
+    w, d, h = <span class="n">0.95</span>, <span class="n">0.62</span>, <span class="n">0.46</span>
+    z0 = <span class="n">0.16</span>
+    R = Matrix.Rotation(rot, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+    base = Matrix.Translation((cx, cy, <span class="n">0.0</span>)) @ R
+
+    <span class="k">def</span> local(p):
+        <span class="k">return</span> base @ Vector(p)
+
+    _box(bm, WHITE, local((<span class="n">0</span>, <span class="n">0</span>, z0 + h / <span class="n">2</span>)), (w, d, h), rot)
+    <span class="c"># pitched roof prism with overhang</span>
+    ow, od, rh = w / <span class="n">2</span> + <span class="n">0.07</span>, d / <span class="n">2</span> + <span class="n">0.08</span>, <span class="n">0.30</span>
+    zr = z0 + h
+    pts = [(-ow, -od, zr - <span class="n">0.02</span>), (ow, -od, zr - <span class="n">0.02</span>), (ow, <span class="n">0</span>, zr + rh),
+           (-ow, <span class="n">0</span>, zr + rh), (-ow, od, zr - <span class="n">0.02</span>), (ow, od, zr - <span class="n">0.02</span>)]
+    v = [bm.verts.new(local(p)) <span class="k">for</span> p <span class="k">in</span> pts]
+    faces = [(v[<span class="n">0</span>], v[<span class="n">1</span>], v[<span class="n">2</span>], v[<span class="n">3</span>]), (v[<span class="n">3</span>], v[<span class="n">2</span>], v[<span class="n">5</span>], v[<span class="n">4</span>]),
+             (v[<span class="n">0</span>], v[<span class="n">3</span>], v[<span class="n">4</span>]), (v[<span class="n">1</span>], v[<span class="n">5</span>], v[<span class="n">2</span>]), (v[<span class="n">0</span>], v[<span class="n">4</span>], v[<span class="n">5</span>], v[<span class="n">1</span>])]
+    <span class="k">for</span> f <span class="k">in</span> faces:
+        bm.faces.new(f).material_index = SLATE
+    <span class="c"># chimney</span>
+    _box(bm, STONE, local((<span class="n">0.24</span>, <span class="n">0.12</span>, zr + <span class="n">0.26</span>)), (<span class="n">0.11</span>, <span class="n">0.11</span>, <span class="n">0.36</span>), rot)
+    _box(bm, IRON, local((<span class="n">0.24</span>, <span class="n">0.12</span>, zr + <span class="n">0.45</span>)), (<span class="n">0.14</span>, <span class="n">0.14</span>, <span class="n">0.04</span>), rot)
+    <span class="c"># door + windows on the camera-facing wall (local -y)</span>
+    _box(bm, SLATE, local((<span class="n">0.20</span>, -d / <span class="n">2</span>, z0 + <span class="n">0.15</span>)), (<span class="n">0.15</span>, <span class="n">0.04</span>, <span class="n">0.30</span>), rot)
+    <span class="k">for</span> x <span class="k">in</span> (-<span class="n">0.25</span>, -<span class="n">0.02</span>):
+        _box(bm, GLOW, local((x, -d / <span class="n">2</span>, z0 + <span class="n">0.25</span>)), (<span class="n">0.12</span>, <span class="n">0.035</span>, <span class="n">0.12</span>), rot)
+
+
+<span class="k">def</span> _rowboat(bm):
+    <span class="s">&quot;&quot;&quot;A clinker-style rowboat hauled up on the rocks: an open hull lofted
+    through U-shaped sections, a thwart and a painted gunwale strip.&quot;&quot;&quot;</span>
+    L, W, D = <span class="n">1.0</span>, <span class="n">0.21</span>, <span class="n">0.14</span>
+    n_sec, n_prof = <span class="n">9</span>, <span class="n">9</span>
+    yaw = <span class="n">0.35</span>
+    <span class="c"># heeled toward the camera so the open hull and thwart read</span>
+    place = (Matrix.Translation((<span class="n">1.22</span>, -<span class="n">0.58</span>, <span class="n">0.10</span>)) @ Matrix.Rotation(yaw, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+             @ Matrix.Rotation(math.radians(<span class="n">14</span>), <span class="n">4</span>, <span class="s">&quot;X&quot;</span>))
+    secs = []
+    <span class="k">for</span> i <span class="k">in</span> range(n_sec):
+        t = -<span class="n">1.0</span> + <span class="n">2.0</span> * i / (n_sec - <span class="n">1</span>)
+        half_w = W * max(<span class="n">0.04</span>, (<span class="n">1.0</span> - t * t) ** <span class="n">0.6</span>)
+        sheer = D * (<span class="n">1.0</span> + <span class="n">0.35</span> * t * t)          <span class="c"># bow and stern rise</span>
+        depth = D * (<span class="n">1.0</span> - <span class="n">0.55</span> * t * t)
+        ring = []
+        <span class="k">for</span> j <span class="k">in</span> range(n_prof):
+            a = math.pi * j / (n_prof - <span class="n">1</span>)
+            y = -half_w * math.cos(a)
+            z = sheer - (sheer - (D - depth)) * math.sin(a)
+            ring.append(bm.verts.new(place @ Vector((t * L / <span class="n">2</span>, y, z))))
+        secs.append(ring)
+    <span class="k">for</span> i <span class="k">in</span> range(n_sec - <span class="n">1</span>):
+        <span class="k">for</span> j <span class="k">in</span> range(n_prof - <span class="n">1</span>):
+            f = bm.faces.new((secs[i][j], secs[i + <span class="n">1</span>][j],
+                              secs[i + <span class="n">1</span>][j + <span class="n">1</span>], secs[i][j + <span class="n">1</span>]))
+            f.material_index = RED <span class="k">if</span> j <span class="k">in</span> (<span class="n">0</span>, n_prof - <span class="n">2</span>) <span class="k">else</span> SLATE
+    <span class="c"># thwart (seat) across the middle</span>
+    c = place @ Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, D * <span class="n">0.78</span>))
+    _box(bm, STONE, c, (<span class="n">0.08</span>, <span class="n">2</span> * W * <span class="n">0.95</span>, <span class="n">0.025</span>), yaw)
+
+
+<span class="k">def</span> build_lighthouse(sc):
+    me = bpy.data.meshes.new(<span class="s">&quot;Lighthouse&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        <span class="c"># Hexagonal bipyramid: one equator ring, an apex above and below.</span>
-        <span class="c"># (Two overlapped open cones, the earlier build, crossed into an</span>
-        <span class="c"># hourglass with open ends and an inner spike.)</span>
-        ring = [bm.verts.new((CRYSTAL_R * math.cos(math.pi * k / <span class="n">3</span>),
-                              CRYSTAL_R * math.sin(math.pi * k / <span class="n">3</span>), <span class="n">0.0</span>))
-                <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>)]
-        <span class="k">for</span> apex_z <span class="k">in</span> (CRYSTAL_APEX, -CRYSTAL_APEX):
-            apex = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, apex_z))
-            <span class="k">for</span> k <span class="k">in</span> range(<span class="n">6</span>):
-                bm.faces.new((ring[k], ring[(k + <span class="n">1</span>) % <span class="n">6</span>], apex))
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bmesh.ops.scale(bm, vec=(CRYSTAL_SCALE,) * <span class="n">3</span>, verts=bm.verts)
+        _islet(bm)
+        _tower(bm)
+        <span class="c"># door and two windows set into the tower on the camera side</span>
+        <span class="k">for</span> az, z, size, mat <span class="k">in</span> ((-<span class="n">1.02</span>, TOWER_Z0 + <span class="n">0.17</span>, (<span class="n">0.08</span>, <span class="n">0.17</span>, <span class="n">0.32</span>), SLATE),
+                                 (-<span class="n">0.80</span>, TOWER_Z0 + <span class="n">0.95</span>, (<span class="n">0.06</span>, <span class="n">0.11</span>, <span class="n">0.17</span>), GLOW),
+                                 (-<span class="n">1.25</span>, TOWER_Z0 + <span class="n">1.62</span>, (<span class="n">0.06</span>, <span class="n">0.10</span>, <span class="n">0.15</span>), GLOW)):
+            c, rot = _on_tower(az, z, size[<span class="n">0</span>])
+            _box(bm, mat, c, size, rot)
+        _lantern(bm, TOWER_Z0 + TOWER_H)
+        _cottage(bm)
+        _rowboat(bm)
+        bm.normal_update()
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()
     <span class="k">for</span> p <span class="k">in</span> me.polygons:
         p.use_smooth = <span class="k">False</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;CrystalMat&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.12</span>, <span class="n">0.38</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
-    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.42</span>
-    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
-    emit = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs.get(<span class="s">&quot;Emission&quot;</span>)
-    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        emit.default_value = (<span class="n">0.05</span>, <span class="n">0.2</span>, <span class="n">0.28</span>, <span class="n">1.0</span>)
-        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = <span class="n">0.15</span>
-    me.materials.append(mat)
-    ob = bpy.data.objects.new(<span class="s">&quot;Crystal&quot;</span>, me)
-    ob.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
-    ob.rotation_euler = (math.radians(<span class="n">8</span>), math.radians(<span class="n">12</span>), math.radians(<span class="n">22</span>))
+    <span class="k">for</span> name, col <span class="k">in</span> ((<span class="s">&quot;Lighthouse.Red&quot;</span>, (<span class="n">0.72</span>, <span class="n">0.07</span>, <span class="n">0.05</span>, <span class="n">1.0</span>)),
+                      (<span class="s">&quot;Lighthouse.White&quot;</span>, (<span class="n">0.93</span>, <span class="n">0.90</span>, <span class="n">0.82</span>, <span class="n">1.0</span>)),
+                      (<span class="s">&quot;Lighthouse.Iron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.12</span>, <span class="n">0.15</span>, <span class="n">1.0</span>)),
+                      (<span class="k">None</span>, <span class="k">None</span>),
+                      (<span class="s">&quot;Lighthouse.Rock&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.15</span>, <span class="n">0.24</span>, <span class="n">1.0</span>)),
+                      (<span class="s">&quot;Lighthouse.Stone&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.55</span>, <span class="n">0.44</span>, <span class="n">1.0</span>)),
+                      (<span class="s">&quot;Lighthouse.Slate&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.30</span>, <span class="n">0.34</span>, <span class="n">1.0</span>)),
+                      (<span class="s">&quot;Lighthouse.Sea&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.14</span>, <span class="n">0.32</span>, <span class="n">1.0</span>))):
+        <span class="k">if</span> name <span class="k">is</span> <span class="k">None</span>:
+            me.materials.append(glow_material(<span class="s">&quot;Lighthouse.Lamp&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.62</span>, <span class="n">0.14</span>, <span class="n">1.0</span>), <span class="n">1.0</span>))
+        <span class="k">else</span>:
+            me.materials.append(toon_material(name, col))
+    ob = bpy.data.objects.new(<span class="s">&quot;Lighthouse&quot;</span>, me)
     sc.collection.objects.link(ob)
     <span class="k">return</span> ob
+
+
+<span class="c"># --- the Line Art object ------------------------------------------------------</span>
+
+<span class="k">def</span> configure_lineart(mod, source, gp_mat):
+    mod.source_type = <span class="s">&quot;OBJECT&quot;</span>
+    mod.source_object = source
+    mod.use_contour = <span class="k">True</span>
+    mod.use_crease = <span class="k">True</span>
+    <span class="k">if</span> hasattr(mod, <span class="s">&quot;use_material&quot;</span>):
+        mod.use_material = <span class="k">True</span>          <span class="c"># ink between the red and white bands</span>
+    <span class="k">if</span> hasattr(mod, <span class="s">&quot;use_intersection&quot;</span>):
+        mod.use_intersection = <span class="k">True</span>      <span class="c"># ink where fixtures meet the tower</span>
+    mod.crease_threshold = math.radians(<span class="n">130</span>)
+    mod.target_layer = <span class="s">&quot;Ink&quot;</span>
+    mod.target_material = gp_mat
+    <span class="c"># Width: radius is portable; thickness is 4.5-only</span>
+    <span class="k">if</span> hasattr(mod, <span class="s">&quot;thickness&quot;</span>):
+        mod.thickness = THICKNESS_45
+    mod.radius = RADIUS
 
 
 <span class="k">def</span> build_lineart(sc, source):
@@ -437,46 +732,36 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
     ob = bpy.data.objects.new(<span class="s">&quot;LineArt&quot;</span>, gp)
     sc.collection.objects.link(ob)
 
-    layer = gp.layers.new(<span class="s">&quot;Contours&quot;</span>)
+    layer = gp.layers.new(<span class="s">&quot;Ink&quot;</span>)
     layer.frames.new(<span class="n">1</span>)
 
-    mat = bpy.data.materials.new(<span class="s">&quot;NeonContour&quot;</span>)
+    mat = bpy.data.materials.new(<span class="s">&quot;Ink&quot;</span>)
     bpy.data.materials.create_gpencil_data(mat)
-    <span class="c"># Neon cyan ink</span>
     gp_set = mat.grease_pencil
     <span class="k">if</span> hasattr(gp_set, <span class="s">&quot;color&quot;</span>):
-        gp_set.color = (<span class="n">0.05</span>, <span class="n">0.95</span>, <span class="n">1.0</span>, <span class="n">1.0</span>)
+        gp_set.color = INK
     gp.materials.append(mat)
 
     mod = ob.modifiers.new(<span class="s">&quot;LineArt&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
-    mod.source_type = <span class="s">&quot;OBJECT&quot;</span>
-    mod.source_object = source
-    mod.use_contour = <span class="k">True</span>
-    mod.use_crease = <span class="k">True</span>
-    <span class="k">if</span> hasattr(mod, <span class="s">&quot;use_material&quot;</span>):
-        mod.use_material = <span class="k">False</span>
-    mod.target_layer = <span class="s">&quot;Contours&quot;</span>
-    mod.target_material = mat
-    <span class="c"># Width: radius is portable; thickness is 4.5-only</span>
-    <span class="k">if</span> hasattr(mod, <span class="s">&quot;thickness&quot;</span>):
-        mod.thickness = <span class="n">45</span>
-    mod.radius = RADIUS
+    configure_lineart(mod, source, mat)
 
-    <span class="c"># Disable lights on the GP layer so neon stays vivid</span>
+    <span class="c"># Ink is flat black: keep scene lights off the GP layer</span>
     <span class="k">if</span> hasattr(layer, <span class="s">&quot;use_lights&quot;</span>):
         layer.use_lights = <span class="k">False</span>
     <span class="k">return</span> ob, mod, gp
 
 
 <span class="k">def</span> setup_camera(sc):
+    <span class="s">&quot;&quot;&quot;One camera for the check and the still: Line Art is view-dependent, so
+    the counts the check gates are the strokes the still draws.&quot;&quot;&quot;</span>
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">3.95</span>, -<span class="n">4.9</span>, <span class="n">2.62</span>)
+    cam.location = (<span class="n">5.78</span>, -<span class="n">10.25</span>, <span class="n">3.5</span>)
     sc.collection.objects.link(cam)
     sc.camera = cam
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.15</span>)
+    aim.location = (-<span class="n">0.12</span>, <span class="n">0.0</span>, <span class="n">1.52</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
@@ -571,64 +856,49 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
         <span class="k">return</span> <span class="n">6</span>
     print(<span class="s">&quot;nosource_ok strokes=0 points=0&quot;</span>)
 
-    <span class="c"># Failure mode B: rebuild modifier with contour+crease off → zero strokes</span>
+    <span class="c"># Failure mode B: rebuild modifier with every edge type off → zero strokes</span>
+    gp_mat = la_ob.data.materials[<span class="n">0</span>]
     <span class="k">while</span> la_ob.modifiers:
         la_ob.modifiers.remove(la_ob.modifiers[<span class="n">0</span>])
     mod_off = la_ob.modifiers.new(<span class="s">&quot;LineArtOff&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
-    mod_off.source_type = <span class="s">&quot;OBJECT&quot;</span>
-    mod_off.source_object = source
-    mod_off.use_contour = <span class="k">False</span>
-    mod_off.use_crease = <span class="k">False</span>
-    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_loose&quot;</span>):
-        mod_off.use_loose = <span class="k">False</span>
-    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_intersection&quot;</span>):
-        mod_off.use_intersection = <span class="k">False</span>
-    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_material&quot;</span>):
-        mod_off.use_material = <span class="k">False</span>
-    <span class="k">if</span> hasattr(mod_off, <span class="s">&quot;use_edge_mark&quot;</span>):
-        mod_off.use_edge_mark = <span class="k">False</span>
-    mod_off.target_layer = <span class="s">&quot;Contours&quot;</span>
-    gp_mat = la_ob.data.materials[<span class="n">0</span>]
-    mod_off.target_material = gp_mat
-    mod_off.radius = RADIUS
+    configure_lineart(mod_off, source, gp_mat)
+    <span class="k">for</span> flag <span class="k">in</span> (<span class="s">&quot;use_contour&quot;</span>, <span class="s">&quot;use_crease&quot;</span>, <span class="s">&quot;use_loose&quot;</span>, <span class="s">&quot;use_intersection&quot;</span>,
+                 <span class="s">&quot;use_material&quot;</span>, <span class="s">&quot;use_edge_mark&quot;</span>):
+        <span class="k">if</span> hasattr(mod_off, flag):
+            setattr(mod_off, flag, <span class="k">False</span>)
     z_s, z_p = eval_stroke_counts(la_ob)
     <span class="k">if</span> z_s != <span class="n">0</span> <span class="k">or</span> z_p != <span class="n">0</span>:
         print(
-            <span class="s">f&quot;</span><span class="s">ERROR: contour+crease off still produced strokes=</span>{z_s}<span class="s"> points=</span>{z_p}<span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">ERROR: every edge type off still produced strokes=</span>{z_s}<span class="s"> points=</span>{z_p}<span class="s">&quot;</span>,
             file=sys.stderr,
         )
         <span class="k">return</span> <span class="n">7</span>
     print(<span class="s">&quot;noflags_ok strokes=0 points=0&quot;</span>)
 
-    <span class="c"># Restore working Line Art modifier for optional still</span>
+    <span class="c"># Restore the working Line Art modifier for the optional still</span>
     <span class="k">while</span> la_ob.modifiers:
         la_ob.modifiers.remove(la_ob.modifiers[<span class="n">0</span>])
     mod_on = la_ob.modifiers.new(<span class="s">&quot;LineArt&quot;</span>, <span class="s">&quot;LINEART&quot;</span>)
-    mod_on.source_type = <span class="s">&quot;OBJECT&quot;</span>
-    mod_on.source_object = source
-    mod_on.use_contour = <span class="k">True</span>
-    mod_on.use_crease = <span class="k">True</span>
-    mod_on.target_layer = <span class="s">&quot;Contours&quot;</span>
-    mod_on.target_material = gp_mat
-    <span class="k">if</span> hasattr(mod_on, <span class="s">&quot;thickness&quot;</span>):
-        mod_on.thickness = <span class="n">45</span>
-    mod_on.radius = RADIUS
+    configure_lineart(mod_on, source, gp_mat)
     n_s2, n_p2 = eval_stroke_counts(la_ob)
-    <span class="k">if</span> n_s2 &lt; STROKE_MIN <span class="k">or</span> n_p2 &lt; POINT_MIN:
+    <span class="k">if</span> (n_s2, n_p2) != (n_s, n_p):
         print(
             <span class="s">f&quot;</span><span class="s">ERROR: contours did not recover after restore: </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s">&quot;</span>,
+            <span class="s">f&quot;</span><span class="s">strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s"> (first pass </span>{n_s}<span class="s">/</span>{n_p}<span class="s">)</span><span class="s">&quot;</span>,
             file=sys.stderr,
         )
         <span class="k">return</span> <span class="n">7</span>
     print(
-        <span class="s">f&quot;</span><span class="s">restored_ok strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s"> radius=</span>{mod_on.radius}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">restored_ok strokes=</span>{n_s2}<span class="s"> points=</span>{n_p2}<span class="s"> radius=</span>{mod_on.radius:<span class="s">.4f</span>}<span class="s">&quot;</span>
     )
     <span class="k">return</span> <span class="n">0</span>
 
 
+<span class="c"># --- render staging (not part of the check) -----------------------------------</span>
+
 <span class="k">def</span> build_studio(sc):
-    <span class="c"># Default-stage-ish dark floor + wall — Line Art neon is the proof</span>
+    <span class="s">&quot;&quot;&quot;Default stage floor, wall and world; lighting re-weighted for toon
+    shading (see the README&#x27;s Stage deviation line).&quot;&quot;&quot;</span>
     <span class="k">def</span> plane(name, size, loc, rot):
         me = bpy.data.meshes.new(name)
         bm = bmesh.new()
@@ -650,7 +920,7 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
         <span class="k">return</span> ob
 
     plane(<span class="s">&quot;Floor&quot;</span>, <span class="n">30.0</span>, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>))
-    plane(<span class="s">&quot;Wall&quot;</span>, <span class="n">30.0</span>, (<span class="n">0</span>, <span class="n">9</span>, <span class="n">0</span>), (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>))
+    plane(<span class="s">&quot;Wall&quot;</span>, <span class="n">30.0</span>, (<span class="n">0</span>, <span class="n">8</span>, <span class="n">0</span>), (math.radians(<span class="n">90</span>), <span class="n">0</span>, <span class="n">0</span>))
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
@@ -669,59 +939,12 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         sc.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">6</span>), <span class="n">420.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4</span>, -<span class="n">5</span>, <span class="n">6</span>), <span class="n">520.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
     light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">280.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-
-
-<span class="k">def</span> build_mount(sc, crystal):
-    <span class="s">&quot;&quot;&quot;Render staging only: a two-tier hex plinth seated on the floor whose
-    top swallows the crystal&#x27;s lower tip, so the crystal is set in a mount
-    instead of hovering. Derived from the evaluated crystal; the crystal
-    itself (and so every Line Art count above) is untouched.&quot;&quot;&quot;</span>
-    bpy.context.view_layer.update()
-    mw = crystal.matrix_world
-    tip = min((mw @ v.co <span class="k">for</span> v <span class="k">in</span> crystal.data.vertices), key=<span class="k">lambda</span> p: p.z)
-    top = tip.z + MOUNT_SOCKET
-    me = bpy.data.meshes.new(<span class="s">&quot;Mount&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        <span class="k">for</span> r, z0, z1 <span class="k">in</span> ((MOUNT_R, -<span class="n">0.003</span>, MOUNT_BASE_H),
-                          (MOUNT_R * <span class="n">0.72</span>, MOUNT_BASE_H - <span class="n">0.003</span>, top)):
-            bmesh.ops.create_cone(
-                bm, cap_ends=<span class="k">True</span>, segments=<span class="n">6</span>, radius1=r, radius2=r,
-                depth=z1 - z0,
-                matrix=Matrix.Translation((tip.x, tip.y, (z0 + z1) / <span class="n">2</span>))
-                @ Matrix.Rotation(crystal.rotation_euler.z, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>),
-            )
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
-    <span class="k">for</span> p <span class="k">in</span> me.polygons:
-        p.use_smooth = <span class="k">False</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;MountStone&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.06</span>, <span class="n">0.062</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
-    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.55</span>
-    me.materials.append(mat)
-    ob = bpy.data.objects.new(<span class="s">&quot;Mount&quot;</span>, me)
-    sc.collection.objects.link(ob)
-    <span class="k">return</span> ob
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">1.8</span>, <span class="n">4.6</span>, <span class="n">4.2</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">62</span>, <span class="n">0</span>, <span class="n">190</span>))
 
 
 <span class="k">def</span> render_still(sc, path, engine):
-    source = sc.objects[<span class="s">&quot;Crystal&quot;</span>]
-    mount = build_mount(sc, source)
-    <span class="c"># reframe for the still only (the check ran from the setup_camera view):</span>
-    <span class="c"># lower the aim so the mount&#x27;s foot clears the bottom edge, and dolly in</span>
-    <span class="c"># along the same bearing so the crystal still fills the frame</span>
-    aim = sc.objects[<span class="s">&quot;Aim&quot;</span>]
-    cam = sc.camera
-    bearing = cam.location - aim.location
-    aim.location.z = STILL_AIM_Z
-    cam.location = aim.location + bearing * STILL_DOLLY
-    bpy.context.view_layer.update()
     sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
         sc.cycles.device = <span class="s">&quot;CPU&quot;</span>
@@ -736,21 +959,16 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
     sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     sc.render.filepath = path
+    <span class="c"># Standard, not AgX: the toon tones are emitted colours and must land</span>
+    <span class="c"># on screen as authored, not desaturated toward pastel</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
-    <span class="c"># the beauty render so a defective composition ships no artifact. The two</span>
-    <span class="c"># hero subjects are the crystal source mesh and the GP stroke object; the</span>
-    <span class="c"># mount is staging, so it must clear the edges but does not count as fill.</span>
+    <span class="c"># the beauty render so a defective composition ships no artifact. The</span>
+    <span class="c"># hero is the source mesh plus the GP ink object it evaluates into.</span>
     stage = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name <span class="k">in</span> {<span class="s">&quot;Floor&quot;</span>, <span class="s">&quot;Wall&quot;</span>}]
-    hero = [
-        o <span class="k">for</span> o <span class="k">in</span> sc.objects
-        <span class="k">if</span> o.type <span class="k">in</span> {<span class="s">&quot;MESH&quot;</span>, <span class="s">&quot;GREASEPENCIL&quot;</span>} <span class="k">and</span> o <span class="k">not</span> <span class="k">in</span> stage <span class="k">and</span> o != mount
-    ]
+    hero = [sc.objects[<span class="s">&quot;Lighthouse&quot;</span>], sc.objects[<span class="s">&quot;LineArt&quot;</span>]]
     fcode = gallery_framing.check_framing(
-        sc, sc.camera,
-        hero=hero,
-        elements=hero + [mount],
-        stage=stage,
+        sc, sc.camera, hero=hero, elements=hero, stage=stage,
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -765,10 +983,10 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     sc = bpy.context.scene
     build_studio(sc)
-    crystal = build_crystal(sc)
-    la_ob, mod, gp = build_lineart(sc, crystal)
+    source = build_lighthouse(sc)
     setup_camera(sc)
-    <span class="k">return</span> sc, crystal, la_ob, mod
+    la_ob, mod, gp = build_lineart(sc, source)
+    <span class="k">return</span> sc, source, la_ob, mod
 
 
 <span class="k">def</span> main():
@@ -779,7 +997,7 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
         <span class="s">&quot;--engine&quot;</span>,
         default=<span class="s">&quot;eevee&quot;</span>,
         choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
-        help=<span class="s">&quot;render engine for --output&quot;</span>,
+        help=<span class="s">&quot;render engine for --output (the toon shading is EEVEE-only)&quot;</span>,
     )
     p.add_argument(
         <span class="s">&quot;--no-contour&quot;</span>,
@@ -789,11 +1007,11 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
     args = p.parse_args(argv)
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
-    sc, crystal, la_ob, mod = build_scene()
+    sc, source, la_ob, mod = build_scene()
     <span class="k">if</span> args.no_contour:
         mod.use_contour = <span class="k">False</span>
 
-    code = check(sc, crystal, la_ob, mod)
+    code = check(sc, source, la_ob, mod)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
@@ -821,7 +1039,7 @@ STILL_DOLLY = <span class="n">0.94</span>     <span class="c"># still camera dis
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/gp-lineart-contour-hero.webp" alt="A translucent teal crystal, a six-sided double pyramid set tip-down in a dark hex mount, its edges traced by cyan Line Art contour strokes." />
+    <img src="../assets/gp-lineart-contour-hero.webp" alt="A red-and-white lighthouse on a rocky islet with a keeper&#x27;s cottage and a rowboat, on a round blue sea with white wave crests, drawn like a comic panel in bold black Line Art ink." />
   </dialog>
   <footer>
     <div class="statusbar">
