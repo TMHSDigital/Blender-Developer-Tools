@@ -72,6 +72,7 @@ SELECT = {
     "prop-origin-transform": (r"^(Pedestal|Conduit)\.Keep$", None),
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
     "mesh-hygiene-audit": (r"^Valve\.", None),
+    "gltf-export-roundtrip": (r"^Crate\.Authored$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)

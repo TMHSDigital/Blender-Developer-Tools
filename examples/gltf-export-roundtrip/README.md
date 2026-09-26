@@ -1,7 +1,8 @@
 # glTF Export Round-Trip
 
-A runnable example that builds a sci-fi supply crate — 35 beveled box shells with
-three material slots and box-mapped UVs — exports it with
+A runnable example that builds a sci-fi supply crate — 43 beveled box shells (body, lid with
+stiffening ribs, corner armour, carry handles over vent slats, latches, rivets,
+a status plate with glowing pips) with three material slots and box-mapped UVs — exports it with
 `bpy.ops.export_scene.gltf`, parses the file on disk, re-imports it, and verifies
 the whole round-trip against the depsgraph-evaluated mesh, following
 [`depsgraph-and-evaluated-data`](../../skills/depsgraph-and-evaluated-data/SKILL.md)
@@ -22,9 +23,9 @@ often gets silently wrong.
   lying on its back.
 - **`export_apply=True` ships the evaluated mesh, not the base cage.** The
   crate's bevel modifier lives only in the depsgraph; with flat shading and UV
-  seams the exporter splits exactly one vertex per evaluated loop (7,560), so
+  seams the exporter splits exactly one vertex per evaluated loop (9,288), so
   the on-disk POSITION count is an exact witness. `export_apply=False` silently
-  writes the 624-vertex cage.
+  writes the 344-vertex cage.
 - **The round-trip is faithful.** Re-imported positions (bit-exact here), loop
   normals (≤2e-4), box-mapped UVs (≤3e-5), and per-triangle material bindings
   all match the evaluated mesh. UVs are V-flipped on disk (glTF texture origin
@@ -46,18 +47,31 @@ between kit-bashed shells weld loops on export (the count check catches it), and
 `read_factory_settings` mid-check frees the original mesh — touching a freed RNA
 raises `ReferenceError`, so counts are captured before the wipe.
 
-The render stages the authored crate beside the actual re-imported one — same
-bevels, same materials carried through the file itself. If the axis conversion
-broke, the right twin would lie on its side; if the modifier contract broke, its
-silhouette would lose the rounded edges. Both twins are turned 22° off
-square so each shows a side and its corner armour; dead-on, the pair read
-as two flat front elevations. The re-imported object comes back in
-`QUATERNION` rotation mode, so the render path switches it to `XYZ`
-before turning it — presentation only, after every check has run.
+The render shows **one** crate. The solid crate is the authored one, rebuilt
+in place after the check. Laid over it is the actual re-imported mesh — the
+file's own triangles — drawn as a thin amber wire cage (a render-only Weld +
+Wireframe display stack on the imported object) and masked to the right of a
+vertical cut, so the left half reads as the authored asset and the right half
+as the file's geometry sitting on it. Neither object is moved: both keep the
+identity transform check 13 proved, and the camera does the turning. The cage
+lands on every bevel, rivet and vent slat only because the importer undid the
++Y-up bake exactly and the file carried the evaluated (beveled) mesh. If the
+axis conversion broke, the cage would be rotated a quarter turn off the solid
+crate; a probe that re-applies that quarter turn to the imported object before
+rendering drops the cage through the floor and also fails the framing gate
+(bottom margin 0.000). If the modifier contract broke, the cage would trace
+square corners across the rounded ones.
 
-The render path gates framing through `gallery_framing.check_framing`.
-The helper returns 10, which is already a check code here, so the call
-site remaps a framing violation to 22.
+Presentation only, after every check has run: the authored crate's bevel is
+baked into its display mesh (the asset-quality edge measure reads
+`Object.data`, which is still the square cage while the bevel lives in the
+modifier stack), and its paint and trim get a noise-mottled base colour and
+roughness. The exported file only ever carried the flat Principled values.
+
+The render path gates framing through `gallery_framing.check_framing` and the
+asset floors through `gallery_asset_quality.check_asset_quality` on the
+authored crate. Both helpers' codes (10, 11) are already check codes here, so
+the call site remaps them to 22 and 23.
 
 ## Run
 
@@ -103,6 +117,7 @@ against it.
 | 20 | Per-triangle material bindings drifted |
 | 21 | `--output` produced no file |
 | 22 | Gallery framing violation (render path only; the helper's 10, remapped) |
+| 23 | Gallery asset-quality violation (render path only; the helper's 11, remapped) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

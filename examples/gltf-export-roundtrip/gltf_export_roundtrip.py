@@ -45,6 +45,7 @@ import mathutils
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 # ---------------------------------------------------------------------------
 # Crate specification. Every part is an axis-aligned box, so every base-cage
@@ -56,7 +57,7 @@ PAINT, TRIM, GLOW = 0, 1, 2
 BEVEL_WIDTH = 0.03
 BEVEL_SEGMENTS = 2
 
-# (name, center, size, material) — 35 shells. Geometry rules that keep the
+# (name, center, size, material) — 43 shells. Geometry rules that keep the
 # exporter's seam-splitting exact: no two shells share a face plane (exact
 # float coincidences weld loops on export), interpenetration is fine, and the
 # bevel width stays under half of every box dimension.
@@ -88,6 +89,12 @@ PARTS += [("rivet", (sx * 0.66, -0.78, sz), (0.08, 0.08, 0.08), TRIM)
 # three status pips on the lid plate share the strip's emissive language
 PARTS += [("pip", (sx * 0.18, 0.0, 1.60), (0.08, 0.08, 0.08), GLOW)
           for sx in (-1, 0, 1)]
+# vent slats stacked under each carry handle
+PARTS += [("vent", (sx * 1.078, 0.0, sz), (0.068, 0.70, 0.07), TRIM)
+          for sx in (-1, 1) for sz in (0.50, 0.62, 0.74)]
+# stiffening ribs across the lid, either side of the status plate
+PARTS += [("lid_rib", (sx * 0.75, 0.0, 1.572), (0.10, 1.40, 0.066), TRIM)
+          for sx in (-1, 1)]
 
 UV_SCALE = 0.4          # box-map scale; authored UVs are a closed form of position
 EXPORT_KWARGS = dict(
@@ -127,7 +134,7 @@ def boxmap_uv(co, normal):
 
 
 def build_crate():
-    """The supply crate: 35 beveled box shells, 3 material slots, box-mapped UVs."""
+    """The supply crate: 43 beveled box shells, 3 material slots, box-mapped UVs."""
     me = bpy.data.meshes.new("SupplyCrate")
     bm = bmesh.new()
     try:
@@ -171,8 +178,8 @@ def make_materials():
             b.inputs["Emission Strength"].default_value = strength
         return mat
     return [
-        pbr("Paint", (0.16, 0.18, 0.12), 0.15, 0.50),
-        pbr("Trim", (0.12, 0.13, 0.15), 0.90, 0.35),
+        pbr("Paint", (0.17, 0.20, 0.10), 0.10, 0.50),
+        pbr("Trim", (0.20, 0.21, 0.24), 0.75, 0.38),
         pbr("Glow", (0.02, 0.20, 0.25), 0.0, 0.40,
             emission=(0.10, 0.75, 0.85), strength=3.0),
     ]
@@ -235,9 +242,10 @@ def candidates(m, p):
 # glTF JSON + buffer reading (GLTF_SEPARATE layout).
 # ---------------------------------------------------------------------------
 def read_gltf(path):
-    g = json.load(open(path))
-    blob = open(os.path.join(os.path.dirname(path),
-                             g["buffers"][0]["uri"]), "rb").read()
+    with open(path, encoding="utf-8") as fh:
+        g = json.load(fh)
+    with open(os.path.join(os.path.dirname(path), g["buffers"][0]["uri"]), "rb") as fh:
+        blob = fh.read()
 
     def accessor_floats(idx, ncomp):
         acc = g["accessors"][idx]
@@ -264,7 +272,7 @@ def check(crate, export_kwargs):
         return 3
 
     me = crate.data
-    # base cage is exactly the authored closed form: 35 boxes x 8 corners
+    # base cage is exactly the authored closed form: 43 boxes x 8 corners
     expect = sorted(key_of(c) for _n, ce, s, _m in PARTS for c in box_corners(ce, s))
     got = sorted(key_of(v.co) for v in me.vertices)
     if got != expect:
@@ -493,48 +501,110 @@ def eevee_engine_id():
     return 'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'
 
 
+WIRE_THICKNESS = 0.006   # render-only overlay strip width (scene units)
+SCAN_X = -0.10           # object-space x where the overlay begins (render only)
+
+
+def wire_material():
+    """Emissive amber strips, masked to the scanned side of SCAN_X.
+
+    The mask reads Object texture coordinates of the re-imported object,
+    which carries an identity transform (check 13) — so the cut sits at the
+    same place on both crates only because nothing moved them.
+    """
+    mat = bpy.data.materials.new("ScanWire")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    emit = nt.nodes.new("ShaderNodeEmission")
+    emit.inputs["Color"].default_value = (1.0, 0.36, 0.05, 1.0)
+    emit.inputs["Strength"].default_value = 1.3
+    clear = nt.nodes.new("ShaderNodeBsdfTransparent")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    gt = nt.nodes.new("ShaderNodeMath")
+    gt.operation = 'GREATER_THAN'
+    gt.inputs[1].default_value = SCAN_X
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(tc.outputs["Object"], sep.inputs[0])
+    nt.links.new(sep.outputs["X"], gt.inputs[0])
+    nt.links.new(gt.outputs[0], mix.inputs["Fac"])
+    nt.links.new(clear.outputs[0], mix.inputs[1])
+    nt.links.new(emit.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs["Surface"])
+    return mat
+
+
+def weather(mat, scale, amount):
+    """Render-only surface breakup: noise-mottled base color and roughness.
+
+    Applied to the authored crate's display materials after every check has
+    run; the exported file only ever carried the flat Principled values.
+    """
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    base = tuple(b.inputs["Base Color"].default_value)
+    rough = b.inputs["Roughness"].default_value
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = 6.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.35
+    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[0].color = tuple(c * (1.0 - amount) for c in base[:3]) + (1.0,)
+    ramp.color_ramp.elements[1].color = tuple(min(1.0, c * (1.0 + amount)) for c in base[:3]) + (1.0,)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    rmap = nt.nodes.new("ShaderNodeMapRange")
+    rmap.inputs["To Min"].default_value = rough - 0.12
+    rmap.inputs["To Max"].default_value = rough + 0.15
+    nt.links.new(noise.outputs["Fac"], rmap.inputs["Value"])
+    nt.links.new(rmap.outputs["Result"], b.inputs["Roughness"])
+
+
 def render_still(authored, roundtrip, path, engine):
     scene = bpy.context.scene
 
-    # the authored twin keeps its materials; the re-imported twin renders with
-    # whatever the file carried back — the same look through the format itself
-    # turned a quarter off square so each crate shows a side and its corner
-    # guards read as solid; dead-on, the pair was two flat front elevations
-    authored.location.x = -1.35
-    roundtrip.location.x = 1.35
-    # the importer leaves objects in QUATERNION mode, where rotation_euler
-    # is ignored
-    for ob in (authored, roundtrip):
-        ob.rotation_mode = 'XYZ'
-        ob.rotation_euler.z = math.radians(-22.0)
-
-    pm = bpy.data.materials.new("PlaqueMetal")
-    pm.use_nodes = True
-    pb = pm.node_tree.nodes["Principled BSDF"]
-    # diffuse light-grey, not metal: the AUTHORED/ROUND-TRIP labels are the
-    # render's argument and must survive thumbnail scale on the dark floor
-    pb.inputs["Base Color"].default_value = (0.42, 0.44, 0.48, 1.0)
-    pb.inputs["Metallic"].default_value = 0.2
-    pb.inputs["Roughness"].default_value = 0.6
-
-    def plaque(text, x):
-        cu = bpy.data.curves.new("Plaque", 'FONT')
-        cu.body = text
-        cu.align_x = 'CENTER'
-        cu.size = 0.30
-        cu.extrude = 0.008
-        ob = bpy.data.objects.new("Plaque", cu)
-        ob.location = (x, -1.55, 0.01)
-        ob.data.materials.append(pm)
-        scene.collection.objects.link(ob)
-        return ob
-
-    plaques = [plaque("AUTHORED", -1.35), plaque("ROUND-TRIP", 1.35)]
+    # Neither crate is moved: both sit at the identity transform the check
+    # proved for the re-import (check 13), and the camera does the turning.
+    # The re-imported mesh — the file's own triangles — is drawn as a thin
+    # amber wire cage over the authored crate. It lands on every bevel only
+    # because the import undid the +Y-up bake exactly; a broken axis
+    # conversion would stand the cage on its back beside a solid crate.
+    authored.name = "Crate.Authored"
+    roundtrip.name = "Crate.RoundTrip"
+    # Bake the authored bevel into the display mesh: the asset-quality edge
+    # measure reads Object.data, which is the square-cornered cage while the
+    # bevel still lives in the modifier stack.
+    deps = bpy.context.evaluated_depsgraph_get()
+    baked = bpy.data.meshes.new_from_object(authored.evaluated_get(deps))
+    authored.modifiers.clear()
+    authored.data = baked
+    authored.data.name = "Crate.Authored"
+    for mat in authored.data.materials:
+        if mat.name.startswith("Paint"):
+            weather(mat, 7.0, 0.20)
+        elif mat.name.startswith("Trim"):
+            weather(mat, 14.0, 0.35)
+    wire = wire_material()
+    for i in range(len(roundtrip.data.materials)):
+        roundtrip.data.materials[i] = wire
+    # glTF splits every loop into its own vertex; weld the display copy so
+    # the frame strips run along shared edges instead of doubling up
+    weld = roundtrip.modifiers.new("DisplayWeld", 'WELD')
+    weld.merge_threshold = 1e-5
+    wf = roundtrip.modifiers.new("DisplayWire", 'WIREFRAME')
+    wf.thickness = WIRE_THICKNESS
+    wf.offset = 0.0
+    wf.use_even_offset = True
+    wf.use_boundary = True
 
     floor_me = bpy.data.meshes.new("Floor")
     bm = bmesh.new()
     try:
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
         bm.to_mesh(floor_me)
     finally:
         bm.free()
@@ -547,7 +617,7 @@ def render_still(authored, roundtrip, path, engine):
     floor = bpy.data.objects.new("Floor", floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 9.0, 0.0)
+    wall.location = (0.0, 8.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     scene.collection.objects.link(wall)
 
@@ -566,18 +636,19 @@ def render_still(authored, roundtrip, path, engine):
 
     # shaped warm key, faint cool fill, cool rim, warm wedge on the back wall
     # (docs/VISUAL-STYLE.md)
-    light("Key", (-4.0, -5.0, 6.0), 560.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
-    light("Fill", (5.0, -4.0, 3.0), 100.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
-    light("Rim", (0.5, 4.5, 5.0), 360.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
-    light("Wedge", (2.5, 3.5, 4.2), 460.0, 5.5, (1.0, 0.76, 0.5), (-72, 0, 195))
+    light("Key", (-4.0, -5.0, 6.0), 520.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -38))
+    light("Fill", (5.0, -4.0, 3.0), 90.0, 9.0, (0.75, 0.85, 1.0), (62, 0, 50))
+    light("Rim", (0.5, 4.5, 5.0), 320.0, 4.0, (0.6, 0.78, 1.0), (-55, 0, 175))
+    light("Wedge", (2.0, 3.5, 4.2), 420.0, 5.5, (1.0, 0.76, 0.5), (-72, 0, 195))
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 53.0
+    cam_data.lens = 50.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (0.0, -8.9, 3.3)
+    yaw = math.radians(CAM_YAW)
+    cam.location = (CAM_DIST * math.sin(yaw), -CAM_DIST * math.cos(yaw), CAM_Z)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new("Aim", None)
-    target.location = (0.0, 0.0, 0.75)
+    target.location = (0.0, 0.0, 0.66)
     scene.collection.objects.link(target)
     con = cam.constraints.new('TRACK_TO')
     con.target = target
@@ -595,22 +666,30 @@ def render_still(authored, roundtrip, path, engine):
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = 'PNG'
     scene.render.filepath = path
-    # AgX would wash the olive drab and teal glow toward pastel
+    # AgX would wash the olive drab, teal glow and amber cage toward pastel
     # (docs/VISUAL-STYLE.md)
     scene.view_settings.view_transform = 'Standard'
+    bpy.context.view_layer.update()
     # Layer 1 framing gate (silhouette matte), before the beauty render so a
     # defective composition ships no artifact. The helper returns 10, which is
     # a check code here (POSITION count), so the call site remaps it to 22.
     fcode = gallery_framing.check_framing(
-        scene, cam,
-        hero=[authored, roundtrip],
-        elements=[authored, roundtrip] + plaques,
-        stage=[floor, wall],
-    )
+        scene, cam, hero=[authored], elements=[authored, roundtrip],
+        stage=[floor, wall])
     if fcode:
         return 22
+    # asset-quality floors on the authored crate; its 11 is also a check
+    # code here (UV V-flip), so the call site remaps it to 23
+    if gallery_asset_quality.check_asset_quality(scene, cam, hero=[authored],
+                                                 stage=[floor, wall]):
+        return 23
     bpy.ops.render.render(write_still=True)
     return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 21
+
+
+CAM_YAW = 34.0     # degrees the camera orbits off the crate's front
+CAM_DIST = 6.4
+CAM_Z = 3.0
 
 
 def main():
@@ -636,7 +715,8 @@ def main():
 
     if args.output:
         # the re-imported crate is still in the file (check wiped and
-        # re-imported); build an authored twin beside it
+        # re-imported); rebuild the authored crate in the same place so the
+        # file's geometry can be laid over it
         roundtrip = [o for o in bpy.data.objects if o.type == 'MESH'][0]
         authored = build_crate()
         for m in make_materials():
