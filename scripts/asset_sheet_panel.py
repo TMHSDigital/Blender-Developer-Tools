@@ -74,6 +74,16 @@ mats = aq.measure_materials(asset)[0]
 edge90 = aq.measure_edge90(asset)[0]
 print(f"sheet: floors parts={parts} materials={mats} edge90={edge90:.3f}")
 
+# A skinned asset deforms through an Armature modifier whose rig is removed
+# below; without this it would fall back to its rest pose (a scorpion with
+# its tail stretched out flat). Bake the pose it was staged in.
+_deps = bpy.context.evaluated_depsgraph_get()
+for ob in asset:
+    if any(m.type == "ARMATURE" for m in ob.modifiers):
+        baked = bpy.data.meshes.new_from_object(ob.evaluated_get(_deps))
+        ob.modifiers.clear()
+        ob.data = baked
+
 # Restage in place. Deleting the scene would wipe the datablocks the asset
 # needs, so unparent the asset (world transform kept) and remove the rest.
 for ob in asset:
