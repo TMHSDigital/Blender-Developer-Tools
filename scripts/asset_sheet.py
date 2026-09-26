@@ -69,6 +69,7 @@ SELECT = {
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
+    "prop-origin-transform": (r"^(Pedestal|Conduit)\.Keep$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)

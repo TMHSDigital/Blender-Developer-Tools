@@ -5,7 +5,7 @@ ingest: origin at the local base center, scale applied through the data API
 to exactly (1,1,1), world bbox unchanged across the bake, and
 `matrix_parent_inverse` so a parented accessory does not teleport. Extends
 `parent-inverse-orrery` (MPI idiom + stale `matrix_world`) without retreading
-orbits — subject is a street utility pedestal with a bolted conduit accessory.
+orbits — subject is a street utility pedestal with a flanged conduit elbow.
 
 ``--skip-mpi`` parents the accessory without MPI and still asserts the restore.
 That is the falsifier (``--same-axis`` in export-preset-axis).
@@ -20,16 +20,36 @@ to also render a still:
 import bpy, bmesh, sys, os, math, argparse
 from mathutils import Matrix, Vector
 
-# Shared Layer 1 framing measurement (render path only) — see gallery_framing.py
+# Shared Layer 1 measurement (render path only) — see gallery_framing.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = True  # keep examples/__pycache__ out of the repo tree
 import gallery_framing
+import gallery_asset_quality
 
 BBOX_EPS = 1e-6
 WORLD_EPS = 1e-5
 MPI_EPS = 1e-6
 STALE_EPS = 1e-9
 JUMP_MIN = 0.05
+
+# The pedestal arrives the way an import often does: origin at the geometric
+# centre and a non-uniform object scale compensating mesh data authored in
+# the wrong units. The bake must land the mesh on exactly the designed shape.
+PROP_SCALE = (1.15, 0.92, 1.08)
+
+# Designed dimensions (metres, base-centre origin).
+PAD = (1.04, 0.62, 0.10)            # precast concrete footing
+BODY_XY = (0.46, 0.36)
+BODY_Z = (0.125, 1.05)
+MOUNT_Z = 0.45                       # conduit boss on the +X side face
+MOUNT = Vector((BODY_XY[0] / 2 + 0.012, 0.0, MOUNT_Z))   # flange seat face
+SLEEVE = Vector((0.41, 0.0, PAD[2]))  # pad sleeve the conduit drops into
+SLEEVE_H = 0.05
+SLAB_H = 0.20                       # render only: sidewalk slab under both copies
+
+# Material slots
+M_PAINT, M_GALV, M_CONCRETE, M_DARK, M_LABEL = range(5)
+A_PVC, A_GALV = range(2)
 
 
 def eevee_engine_id():
@@ -48,6 +68,260 @@ def make_material(name, rgb, rough=0.45, metallic=0.35, emit=None, estr=0.0):
         sock.default_value = (*emit, 1.0)
         b.inputs["Emission Strength"].default_value = estr
     return mat
+
+
+def pedestal_materials(tag=""):
+    return [
+        make_material(f"PedestalPaint{tag}", (0.05, 0.36, 0.20), rough=0.42, metallic=0.15),
+        make_material(f"GalvSteel{tag}", (0.62, 0.64, 0.66), rough=0.32, metallic=0.85),
+        make_material(f"Concrete{tag}", (0.36, 0.35, 0.33), rough=0.88, metallic=0.0),
+        make_material(f"BlackRubber{tag}", (0.025, 0.026, 0.028), rough=0.55, metallic=0.0),
+        make_material(f"HazardLabel{tag}", (0.95, 0.66, 0.02), rough=0.45, metallic=0.0),
+    ]
+
+
+def conduit_materials(tag=""):
+    return [
+        make_material(f"ConduitPVC{tag}", (0.92, 0.30, 0.03), rough=0.38, metallic=0.0),
+        make_material(f"ConduitGalv{tag}", (0.62, 0.64, 0.66), rough=0.32, metallic=0.85),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Modelling. Every part is built in one bmesh; each helper tags the faces it
+# creates with a material slot and a shading mode.
+
+
+class Part:
+    """Context for one part: new verts/faces are the set difference."""
+
+    def __init__(self, bm):
+        self.bm = bm
+        self.v0 = set(bm.verts)
+        self.f0 = set(bm.faces)
+
+    def verts(self):
+        return [v for v in self.bm.verts if v not in self.v0]
+
+    def finish(self, mat, smooth_axis=None):
+        for f in self.bm.faces:
+            if f in self.f0:
+                continue
+            f.material_index = mat
+            if smooth_axis is None:
+                f.smooth = False
+            else:
+                f.normal_update()
+                f.smooth = abs(f.normal.dot(smooth_axis)) < 0.9
+
+
+def box(bm, center, size, mat, bevel=0.0, rot=None):
+    part = Part(bm)
+    geom = bmesh.ops.create_cube(bm, size=1.0)
+    for v in geom["verts"]:
+        v.co = Vector((v.co.x * size[0], v.co.y * size[1], v.co.z * size[2]))
+    if bevel > 0.0:
+        edges = list({e for v in geom["verts"] for e in v.link_edges})
+        bmesh.ops.bevel(
+            bm, geom=edges, offset=bevel, segments=2, profile=0.5, affect="EDGES",
+            clamp_overlap=True,
+        )
+    m = Matrix.Translation(Vector(center))
+    if rot is not None:
+        m = m @ rot
+    bmesh.ops.transform(bm, matrix=m, verts=part.verts())
+    part.finish(mat)
+
+
+def _axis_matrix(axis):
+    """Rotation taking +Z onto *axis* (a unit Vector)."""
+    return Vector((0.0, 0.0, 1.0)).rotation_difference(axis).to_matrix().to_4x4()
+
+
+def cyl(bm, start, axis, length, r0, r1, mat, segs=24, smooth=True, bevel=0.0):
+    """Frustum from *start* along unit *axis*, radius r0 -> r1."""
+    part = Part(bm)
+    axis = Vector(axis).normalized()
+    geom = bmesh.ops.create_cone(
+        bm, cap_ends=True, cap_tris=False, segments=segs,
+        radius1=r0, radius2=r1, depth=length,
+    )
+    if bevel > 0.0:
+        # Chamfer the two cap rims so machined parts catch a highlight.
+        rims = [e for e in {e for v in geom["verts"] for e in v.link_edges}
+                if abs(e.verts[0].co.z - e.verts[1].co.z) < 1e-9]
+        bmesh.ops.bevel(
+            bm, geom=rims, offset=bevel, segments=2, profile=0.5, affect="EDGES",
+            clamp_overlap=True,
+        )
+    mat4 = Matrix.Translation(Vector(start) + axis * (length * 0.5)) @ _axis_matrix(axis)
+    bmesh.ops.transform(bm, matrix=mat4, verts=part.verts())
+    part.finish(mat, axis if smooth else None)
+
+
+def frustum_box(bm, z0, z1, lo, hi, mat):
+    """Hip lid: rectangle *lo* (x,y) at z0 rising to rectangle *hi* at z1."""
+    part = Part(bm)
+    ring = []
+    for (hx, hy), z in ((lo, z0), (hi, z1)):
+        ring.append([bm.verts.new((sx * hx / 2, sy * hy / 2, z))
+                     for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))])
+    a, b = ring
+    for k in range(4):
+        n = (k + 1) % 4
+        bm.faces.new((a[k], a[n], b[n], b[k]))
+    bm.faces.new((a[0], a[3], a[2], a[1]))
+    bm.faces.new((b[0], b[1], b[2], b[3]))
+    part.finish(mat)
+
+
+def elbow(bm, start, radius, bend_r, mat, segs=20, steps=10):
+    """Quarter bend from *start* heading +X, turning down to -Z (XZ plane)."""
+    part = Part(bm)
+    rings = []
+    for i in range(steps + 1):
+        a = (math.pi / 2) * i / steps
+        c = Vector(start) + Vector((bend_r * math.sin(a), 0.0, -bend_r + bend_r * math.cos(a)))
+        t = Vector((math.cos(a), 0.0, -math.sin(a)))
+        n = t.cross(Vector((0.0, 1.0, 0.0))).normalized()  # in-plane normal
+        b = Vector((0.0, 1.0, 0.0))
+        rings.append([bm.verts.new(c + radius * (math.cos(2 * math.pi * k / segs) * n
+                                                 + math.sin(2 * math.pi * k / segs) * b))
+                      for k in range(segs)])
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(segs):
+            m = (k + 1) % segs
+            f = bm.faces.new((r0[k], r0[m], r1[m], r1[k]))
+    part.finish(mat)
+    for f in bm.faces:
+        if f not in part.f0:
+            f.smooth = True
+
+
+def build_pedestal_design(bm):
+    """Street utility pedestal, designed shape, origin at the base centre."""
+    up = (0.0, 0.0, 1.0)
+    # Precast footing and the galvanised base plate with four anchor nuts.
+    box(bm, (0, 0, PAD[2] / 2), PAD, M_CONCRETE, bevel=0.025)
+    box(bm, (0, 0, PAD[2] + 0.0125), (0.58, 0.46, 0.025), M_GALV, bevel=0.006)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            c = Vector((sx * 0.25, sy * 0.19, PAD[2] + 0.025))
+            cyl(bm, c, up, 0.006, 0.026, 0.026, M_GALV, segs=16)
+            cyl(bm, c + Vector((0, 0, 0.006)), up, 0.02, 0.019, 0.019, M_DARK,
+                segs=6, smooth=False)
+            cyl(bm, c + Vector((0, 0, 0.026)), up, 0.012, 0.008, 0.006, M_GALV, segs=10)
+    # Cabinet body over a black kick skirt.
+    zc = 0.5 * (BODY_Z[0] + BODY_Z[1])
+    box(bm, (0, 0, zc), (BODY_XY[0], BODY_XY[1], BODY_Z[1] - BODY_Z[0]), M_PAINT,
+        bevel=0.022)
+    box(bm, (0, 0, BODY_Z[0] + 0.045), (BODY_XY[0] + 0.02, BODY_XY[1] + 0.02, 0.09),
+        M_DARK, bevel=0.01)
+    # Overhanging lid with a hipped cap.
+    box(bm, (0, 0, BODY_Z[1] + 0.02), (0.52, 0.42, 0.04), M_PAINT, bevel=0.012)
+    frustum_box(bm, BODY_Z[1] + 0.04, BODY_Z[1] + 0.11, (0.50, 0.40), (0.30, 0.20),
+                M_PAINT)
+    # Front access door: dark shadow gap, raised panel, hinges, T-handle lock.
+    fy = -BODY_XY[1] / 2
+    box(bm, (0, fy - 0.002, 0.60), (0.37, 0.006, 0.70), M_DARK, bevel=0.002)
+    box(bm, (0, fy - 0.009, 0.60), (0.35, 0.012, 0.68), M_PAINT, bevel=0.005)
+    for z in (0.36, 0.84):
+        cyl(bm, (-0.182, fy - 0.012, z - 0.04), up, 0.08, 0.009, 0.009, M_GALV, segs=12)
+    cyl(bm, (0.12, fy - 0.015, 0.62), (0, -1, 0), 0.014, 0.022, 0.022, M_GALV, segs=20,
+        bevel=0.003)
+    box(bm, (0.12, fy - 0.034, 0.62), (0.018, 0.012, 0.10), M_GALV, bevel=0.004)
+    # Hazard plate high on the door: black border, yellow face, black mark.
+    box(bm, (0, fy - 0.016, 0.87), (0.17, 0.003, 0.11), M_DARK, bevel=0.001)
+    box(bm, (0, fy - 0.018, 0.87), (0.155, 0.003, 0.095), M_LABEL, bevel=0.001)
+    cyl(bm, (0, fy - 0.0195, 0.862), (0, -1, 0), 0.002, 0.034, 0.034, M_DARK, segs=3,
+        smooth=False)
+    # Louvred vents high on both sides.
+    for sx in (-1, 1):
+        x = sx * BODY_XY[0] / 2
+        box(bm, (x + sx * 0.002, 0, 0.87), (0.006, 0.24, 0.17), M_DARK, bevel=0.001)
+        for i in range(5):
+            box(bm, (x + sx * 0.012, 0, 0.805 + i * 0.032), (0.022, 0.23, 0.012), M_PAINT,
+                bevel=0.003, rot=Matrix.Rotation(sx * math.radians(-35), 4, "Y"))
+    # Conduit boss on the +X face (the accessory's seat) and the pad sleeve.
+    cyl(bm, (BODY_XY[0] / 2, 0, MOUNT_Z), (1, 0, 0), MOUNT.x - BODY_XY[0] / 2, 0.108,
+        0.108, M_GALV, segs=32, bevel=0.003)
+    cyl(bm, SLEEVE, up, SLEEVE_H, 0.076, 0.076, M_GALV, segs=28, bevel=0.004)
+    cyl(bm, SLEEVE + Vector((0, 0, SLEEVE_H)), up, 0.002, 0.06, 0.06, M_DARK, segs=28)
+
+
+def build_pedestal_mesh(name="StreetPedestal"):
+    """Pedestal mesh in its as-imported state (see PROP_SCALE)."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        build_pedestal_design(bm)
+        # Origin at the geometric centre, coordinates divided by the object
+        # scale the import will carry.
+        xs = [v.co.x for v in bm.verts]
+        ys = [v.co.y for v in bm.verts]
+        zs = [v.co.z for v in bm.verts]
+        c = Vector((0.5 * (min(xs) + max(xs)), 0.5 * (min(ys) + max(ys)),
+                    0.5 * (min(zs) + max(zs))))
+        for v in bm.verts:
+            p = v.co - c
+            v.co = Vector((p.x / PROP_SCALE[0], p.y / PROP_SCALE[1], p.z / PROP_SCALE[2]))
+        bm.normal_update()
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for m in pedestal_materials():
+        me.materials.append(m)
+    return me
+
+
+def build_conduit_design(bm):
+    """Flanged conduit elbow. Origin at the flange's mounting face, +X out of
+    the pedestal, the drop leg ending in a coupling that seats in the sleeve."""
+    xa = Vector((1, 0, 0))
+    down = Vector((0, 0, -1))
+    r = 0.05                         # conduit outside radius
+    bend_r = 0.10
+    leg_x = SLEEVE.x - MOUNT.x
+    x_bend = leg_x - bend_r
+    z_seat = SLEEVE.z + SLEEVE_H - MOUNT.z
+    # Flange with four bolt heads.
+    cyl(bm, (0, 0, 0), xa, 0.02, 0.095, 0.095, A_GALV, segs=32, bevel=0.004)
+    for k in range(4):
+        a = math.radians(45 + 90 * k)
+        cyl(bm, (0.02, 0.068 * math.cos(a), 0.068 * math.sin(a)), xa, 0.012, 0.014,
+            0.014, A_GALV, segs=6, smooth=False)
+    # Hub, horizontal run, bend, drop leg.
+    cyl(bm, (0.02, 0, 0), xa, 0.03, r + 0.012, r + 0.012, A_PVC, segs=28, bevel=0.004)
+    cyl(bm, (0.05, 0, 0), xa, x_bend - 0.05, r, r, A_PVC, segs=28)
+    elbow(bm, (x_bend, 0, 0), r, bend_r, A_PVC, segs=28)
+    leg_top = Vector((leg_x, 0, -bend_r))
+    leg_len = (-bend_r) - (z_seat + 0.05)
+    cyl(bm, leg_top, down, leg_len, r, r, A_PVC, segs=28)
+    # Strap clamp mid-leg and the coupling that sits on the sleeve.
+    cyl(bm, leg_top + down * (leg_len * 0.45), down, 0.022, r + 0.008, r + 0.008, A_GALV,
+        segs=28, bevel=0.003)
+    box(bm, leg_top + down * (leg_len * 0.45 + 0.011) + Vector((0, r + 0.014, 0)),
+        (0.022, 0.024, 0.022), A_GALV, bevel=0.004)
+    cyl(bm, Vector((leg_x, 0, z_seat + 0.05)), down, 0.05, r + 0.012, r + 0.012, A_GALV,
+        segs=28, bevel=0.004)
+
+
+def build_accessory_mesh(name="ConduitElbow"):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        build_conduit_design(bm)
+        bm.normal_update()
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    for m in conduit_materials():
+        me.materials.append(m)
+    return me
+
+
+# ---------------------------------------------------------------------------
+# Contract
 
 
 def local_bbox(me):
@@ -80,112 +354,6 @@ def bbox_delta(a, b):
         abs(amin.x - bmin.x), abs(amin.y - bmin.y), abs(amin.z - bmin.z),
         abs(amax.x - bmax.x), abs(amax.y - bmax.y), abs(amax.z - bmax.z),
     )
-
-
-def build_pedestal_mesh():
-    """Stepped street pedestal mesh in local space (origin roughly at center)."""
-    rings = [
-        (0.55, 0.45, -0.70),
-        (0.55, 0.45, -0.52),
-        (0.42, 0.34, -0.52),
-        (0.42, 0.34, 0.55),
-        (0.48, 0.38, 0.55),
-        (0.48, 0.38, 0.70),
-    ]
-    me = bpy.data.meshes.new("Pedestal")
-    bm = bmesh.new()
-    try:
-        ring_verts = []
-        for hx, hy, z in rings:
-            ring_verts.append([
-                bm.verts.new((-hx, -hy, z)),
-                bm.verts.new((hx, -hy, z)),
-                bm.verts.new((hx, hy, z)),
-                bm.verts.new((-hx, hy, z)),
-            ])
-        for i in range(len(ring_verts) - 1):
-            a, b = ring_verts[i], ring_verts[i + 1]
-            for k in range(4):
-                n = (k + 1) % 4
-                bm.faces.new((a[k], a[n], b[n], b[k]))
-        bot, top = ring_verts[0], ring_verts[-1]
-        bm.faces.new((bot[0], bot[3], bot[2], bot[1]))
-        bm.faces.new((top[0], top[1], top[2], top[3]))
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    return me
-
-
-def build_accessory_mesh():
-    """Flanged conduit stub — short pipe + mounting flange + bolt heads."""
-    me = bpy.data.meshes.new("Conduit")
-    bm = bmesh.new()
-    try:
-        # Barrel along +Y (away from prop face when mounted); origin at flange face
-        barrel = bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=16, radius1=0.09, radius2=0.08, depth=0.48,
-        )
-        bmesh.ops.rotate(
-            bm, verts=barrel["verts"], cent=(0, 0, 0),
-            matrix=Matrix.Rotation(math.radians(90), 4, "X"),
-        )
-        bmesh.ops.translate(bm, vec=(0.0, -0.24, 0.0), verts=barrel["verts"])
-        # Thick mounting flange at the prop-facing (+Y local before rotate → y≈0)
-        flange = bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=20, radius1=0.20, radius2=0.20, depth=0.06,
-        )
-        bmesh.ops.rotate(
-            bm, verts=flange["verts"], cent=(0, 0, 0),
-            matrix=Matrix.Rotation(math.radians(90), 4, "X"),
-        )
-        bmesh.ops.translate(bm, vec=(0.0, 0.03, 0.0), verts=flange["verts"])
-        # Four bolt heads on the flange face (camera-visible when seated)
-        for ang in (45, 135, 225, 315):
-            rad = math.radians(ang)
-            bx, bz = 0.14 * math.cos(rad), 0.14 * math.sin(rad)
-            br = bmesh.ops.create_cone(
-                bm, cap_ends=True, segments=8, radius1=0.032, radius2=0.032, depth=0.04,
-            )
-            bmesh.ops.rotate(
-                bm, verts=br["verts"], cent=(0, 0, 0),
-                matrix=Matrix.Rotation(math.radians(90), 4, "X"),
-            )
-            bmesh.ops.translate(bm, vec=(bx, 0.07, bz), verts=br["verts"])
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    return me
-
-
-def build_socket_mesh():
-    """Deep mount well — shadowed interior reads as the vacated seat."""
-    me = bpy.data.meshes.new("Socket")
-    bm = bmesh.new()
-    try:
-        # Outer collar (matches flange OD)
-        bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=24, radius1=0.24, radius2=0.24, depth=0.07,
-        )
-        # Deep dark well — into the prop after rotate
-        well = bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=20, radius1=0.13, radius2=0.11, depth=0.18,
-        )
-        bmesh.ops.translate(bm, vec=(0.0, 0.0, -0.06), verts=well["verts"])
-        # Backstop disk (shadowed pocket floor)
-        floor = bmesh.ops.create_cone(
-            bm, cap_ends=True, segments=16, radius1=0.10, radius2=0.10, depth=0.025,
-        )
-        bmesh.ops.translate(bm, vec=(0.0, 0.0, -0.16), verts=floor["verts"])
-        bmesh.ops.rotate(
-            bm, verts=bm.verts, cent=(0, 0, 0),
-            matrix=Matrix.Rotation(math.radians(90), 4, "X"),
-        )
-        bm.to_mesh(me)
-    finally:
-        bm.free()
-    return me
 
 
 def apply_scale_data_api(obj):
@@ -224,22 +392,13 @@ def build_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    body_m = make_material("Body", (0.20, 0.38, 0.34), rough=0.42, metallic=0.55)
-    acc_m = make_material("Conduit", (0.45, 0.42, 0.28), rough=0.4, metallic=0.7)
-
-    me = build_pedestal_mesh()
-    me.materials.append(body_m)
-    for p in me.polygons:
-        p.use_smooth = False
-    prop = bpy.data.objects.new("StreetPedestal", me)
+    prop = bpy.data.objects.new("StreetPedestal", build_pedestal_mesh())
     # Intentionally wrong for ingest: non-uniform scale, origin at geometry center
-    prop.scale = (1.15, 0.92, 1.08)
+    prop.scale = PROP_SCALE
     prop.location = (0.0, 0.0, 0.0)
     sc.collection.objects.link(prop)
 
-    ame = build_accessory_mesh()
-    ame.materials.append(acc_m)
-    acc = bpy.data.objects.new("Accessory", ame)
+    acc = bpy.data.objects.new("ConduitElbow", build_accessory_mesh())
     # World pose before parenting — bolted to the front face mid-height
     acc.location = (0.0, -0.55, 0.15)
     acc.rotation_euler = (0.0, 0.0, 0.0)
@@ -365,68 +524,61 @@ def check(prop, acc, skip_mpi=False):
     return 0
 
 
-def origin_marker(sc, loc):
-    """Emissive triad at the object origin — scene evidence, not a light.
+# ---------------------------------------------------------------------------
+# Render
 
-    The origin sits at the base centre, inside the plinth, so a bead alone is
-    buried. The X and Y stubs are centred on it and run long enough to exit
-    the plinth on both sides along the floor: where they cross, under the
-    pedestal, is the origin.
-    """
-    mat = make_material(
-        "OriginMark", (1.0, 0.55, 0.1), rough=0.35, metallic=0.0,
-        emit=(1.0, 0.6, 0.1), estr=2.2,
-    )
-    me = bpy.data.meshes.new("OriginBead")
+
+def ghost_of(sc, src, name, mat):
+    """Glowing wire outline of *src* at its current world pose: where the
+    accessory belongs. A Wireframe modifier on a copy, every slot the ghost
+    material."""
+    me = src.data.copy()
+    me.name = name
+    for i in range(len(me.materials)):
+        me.materials[i] = mat
+    ob = bpy.data.objects.new(name, me)
+    ob.matrix_world = src.matrix_world.copy()
+    sc.collection.objects.link(ob)
+    wf = ob.modifiers.new("Outline", "WIREFRAME")
+    wf.thickness = 0.005
+    wf.use_replace = True
+    wf.use_even_offset = True
+    return ob
+
+
+def pivot_marker(sc, name, origin, rot_z, mats, reach):
+    """Floor pivot target centred on the object origin: a thin ring around
+    the footing with crosshair notches on the object's X and Y axes. The
+    origin itself is under the base, so the marker frames it."""
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     try:
-        bmesh.ops.create_uvsphere(bm, u_segments=10, v_segments=8, radius=0.09)
+        up = Vector((0, 0, 1))
+        part = Part(bm)
+        bmesh.ops.create_circle(bm, cap_ends=False, segments=96, radius=reach)
+        ring_edges = [e for e in bm.edges]
+        ext = bmesh.ops.extrude_edge_only(bm, edges=ring_edges)
+        nv = [g for g in ext["geom"] if isinstance(g, bmesh.types.BMVert)]
+        bmesh.ops.scale(bm, vec=(1 + 0.018 / reach, 1 + 0.018 / reach, 1), verts=nv)
+        bmesh.ops.translate(bm, vec=(0, 0, 0.003), verts=part.verts())
+        part.finish(2)
+        # Crosshair notches on the object's own X (red) and Y (green) axes:
+        # the lines they sight along cross at the origin, under the base.
+        for k in range(4):
+            a = k * math.pi / 2
+            d = Vector((math.cos(a), math.sin(a), 0.0))
+            mid = d * (reach - 0.05) + up * 0.006
+            box(bm, mid, (0.17, 0.028, 0.008), k % 2,
+                bevel=0.003, rot=Matrix.Rotation(a, 4, "Z"))
         bm.to_mesh(me)
     finally:
         bm.free()
-    me.materials.append(mat)
-    ob = bpy.data.objects.new("OriginBead", me)
-    ob.location = loc
+    for m in mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    ob.location = origin
+    ob.rotation_euler.z = rot_z
     sc.collection.objects.link(ob)
-    # Axis stubs
-    for axis, rgb, rot, depth in (
-        ("X", (1.0, 0.2, 0.15), (0, math.radians(90), 0), 1.7),
-        ("Y", (0.2, 1.0, 0.25), (math.radians(-90), 0, 0), 1.7),
-        ("Z", (0.25, 0.45, 1.0), (0, 0, 0), 0.56),
-    ):
-        ame = bpy.data.meshes.new(f"Axis{axis}")
-        abm = bmesh.new()
-        try:
-            bmesh.ops.create_cone(
-                abm, cap_ends=True, segments=8, radius1=0.022, radius2=0.022, depth=depth,
-            )
-            if axis == "Z":
-                bmesh.ops.translate(abm, vec=(0, 0, depth / 2.0), verts=abm.verts)
-            abm.to_mesh(ame)
-        finally:
-            abm.free()
-        am = make_material(
-            f"Axis{axis}", rgb, rough=0.4, metallic=0.0, emit=rgb, estr=1.5,
-        )
-        ame.materials.append(am)
-        aob = bpy.data.objects.new(f"Axis{axis}", ame)
-        # X and Y are centred on the origin, lifted one radius onto the floor
-        aob.location = loc + Vector((0.0, 0.0, 0.022 if axis != "Z" else 0.0))
-        aob.rotation_euler = rot
-        sc.collection.objects.link(aob)
-
-
-def placard(sc, text, loc, size=0.18):
-    cu = bpy.data.curves.new(text, "FONT")
-    cu.body = text
-    cu.size = size
-    cu.align_x = "CENTER"
-    cu.extrude = 0.006
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
-    sc.collection.objects.link(ob)
-    mat = make_material("Label", (0.92, 0.92, 0.94), rough=0.6, metallic=0.0)
-    ob.data.materials.append(mat)
     return ob
 
 
@@ -443,7 +595,7 @@ def build_studio(sc):
     floor = bpy.data.objects.new("Floor", floor_me)
     sc.collection.objects.link(floor)
     wall = bpy.data.objects.new("Wall", floor_me.copy())
-    wall.location = (0.0, 9.0, 0.0)
+    wall.location = (0.0, 7.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
     sc.collection.objects.link(wall)
 
@@ -454,129 +606,118 @@ def build_studio(sc):
     )
     sc.world = world
 
-    def light(name, loc, energy, size, col, rot):
+    def light(name, loc, energy, size, col, target):
         ld = bpy.data.lights.new(name, "AREA")
         ld.energy = energy
         ld.size = size
         ld.color = col
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
+        ob.rotation_euler = (Vector(target) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
         sc.collection.objects.link(ob)
 
-    light("Key", (-3.5, -4.5, 5.5), 480.0, 4.5, (1.0, 0.96, 0.9), (48, 0, -35))
-    light("Fill", (5.0, -3.5, 2.5), 120.0, 9.0, (0.75, 0.85, 1.0), (65, 0, 50))
-    light("Rim", (1.5, 4.5, 3.5), 280.0, 3.0, (0.6, 0.78, 1.0), (-55, 0, 170))
-    light("Wedge", (2.5, 5.5, 4.0), 400.0, 6.0, (1.0, 0.72, 0.42), (-68, 0, 190))
+    light("Key", (-3.0, -4.0, 5.0), 340.0, 3.0, (1.0, 0.86, 0.68), (0.2, 0, 0.6))
+    light("Fill", (4.5, -4.0, 2.2), 45.0, 8.0, (0.75, 0.85, 1.0), (0.2, 0, 0.6))
+    light("Rim", (1.0, 3.0, 4.2), 150.0, 2.5, (0.6, 0.78, 1.0), (0.2, 0, 1.0))
+    light("Wedge", (2.0, 4.0, 3.5), 380.0, 6.0, (1.0, 0.68, 0.36), (0.5, 7.0, 0.7))
     return floor, wall
 
 
 def render_still(path, engine):
-    """Dual panel: bare-parent TRAP (left) vs MPI KEEP (right) + origin at base."""
+    """Two baked pedestals. Left: the conduit parented with MPI stays seated.
+    Right: bare `child.parent = parent` double-applies the parent transform
+    and the elbow is left hanging off its mount, a glowing outline marking
+    the seat it left."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
 
-    # Teal pedestal — accessory shares metal fitting in the same family (no
-    # primary-color emission blobs). Empty socket is a dark recessed well.
-    body_m = make_material("BodyR", (0.14, 0.48, 0.42), rough=0.4, metallic=0.55)
-    acc_m = make_material("AccR", (0.42, 0.44, 0.40), rough=0.32, metallic=0.88)
-    sock_m = make_material("Socket", (0.06, 0.07, 0.08), rough=0.7, metallic=0.2)
-    sock_empty_m = make_material(
-        "SocketEmpty", (0.015, 0.018, 0.02), rough=0.95, metallic=0.0,
-    )
-
-    def make_prop(name, loc, rot_z=0.0):
-        me = build_pedestal_mesh()
-        me.materials.append(body_m)
-        for p in me.polygons:
-            p.use_smooth = False
-        ob = bpy.data.objects.new(name, me)
-        ob.scale = (1.15, 0.92, 1.08)
+    def make_prop(name, loc, rot_z):
+        ob = bpy.data.objects.new(name, build_pedestal_mesh(name))
+        ob.scale = PROP_SCALE
         ob.location = loc
         sc.collection.objects.link(ob)
-        bpy.context.view_layer.update()
-        apply_scale_data_api(ob)
-        bpy.context.view_layer.update()
-        origin_to_base_center(ob)
-        bpy.context.view_layer.update()
-        wb = world_bbox(ob)
-        ob.location.z -= wb[0].z
+        bake_prop(ob)
+        # Sit the baked base on the floor and turn it to its placement.
+        ob.location = loc
         ob.rotation_euler.z = rot_z
         bpy.context.view_layer.update()
         return ob
 
-    def make_acc(name, world_loc, mat):
-        me = build_accessory_mesh()
-        me.materials.append(mat)
-        ob = bpy.data.objects.new(name, me)
-        ob.location = world_loc
-        sc.collection.objects.link(ob)
-        return ob
-
-    def make_socket(name, world_loc, mat, parent=None):
-        me = build_socket_mesh()
-        me.materials.append(mat)
-        ob = bpy.data.objects.new(name, me)
-        ob.location = world_loc
+    def seat_conduit(name, prop):
+        ob = bpy.data.objects.new(name, build_accessory_mesh(name))
+        ob.matrix_world = prop.matrix_world @ Matrix.Translation(MOUNT)
         sc.collection.objects.link(ob)
         bpy.context.view_layer.update()
-        if parent is not None:
-            parent_keep_world(ob, parent)
-            bpy.context.view_layer.update()
         return ob
 
-    left = make_prop("TrapProp", (0.0, 0.0, 0.0), rot_z=math.radians(55))
-    right = make_prop("KeepProp", (2.2, 0.0, 0.0), rot_z=math.radians(-10))
+    # Both stand on a kerbed sidewalk slab, so their origins sit SLAB_H above
+    # the studio floor: the bare parent's doubled translation lifts the
+    # stranded elbow off the slab instead of sliding it along the floor.
+    slab_me = bpy.data.meshes.new("Sidewalk")
+    bm = bmesh.new()
+    try:
+        box(bm, (-0.2, 0.15, SLAB_H / 2), (3.3, 1.8, SLAB_H), 0, bevel=0.02)
+        bm.to_mesh(slab_me)
+    finally:
+        bm.free()
+    slab_me.materials.append(make_material("Paving", (0.035, 0.035, 0.038), rough=0.9,
+                                           metallic=0.0))
+    slab = bpy.data.objects.new("Sidewalk", slab_me)
+    sc.collection.objects.link(slab)
 
+    keep = make_prop("Pedestal.Keep", Vector((-0.95, 0.35, SLAB_H)), math.radians(-18))
+    trap = make_prop("Pedestal.Trap", Vector((0.62, 0.05, SLAB_H)), math.radians(-12))
+
+    keep_acc = seat_conduit("Conduit.Keep", keep)
+    parent_keep_world(keep_acc, keep)
     bpy.context.view_layer.update()
-    left_front = left.matrix_world @ Vector((0.0, -0.52, 0.78))
-    right_front = right.matrix_world @ Vector((0.0, -0.52, 0.78))
 
-    trap_sock = make_socket("TrapSocket", left_front, sock_empty_m, parent=left)
-    keep_sock = make_socket("KeepSocket", right_front, sock_m, parent=right)
-
-    trap_acc = make_acc("TrapAcc", left_front + Vector((0.0, -0.05, 0.0)), acc_m)
-    keep_acc = make_acc("KeepAcc", right_front + Vector((0.0, -0.05, 0.0)), acc_m)
-    trap_acc.scale = (1.55, 1.55, 1.55)
-    keep_acc.scale = (1.55, 1.55, 1.55)
+    trap_acc = seat_conduit("Conduit.Trap", trap)
+    seat_world = trap_acc.matrix_world.copy()
+    trap_acc.parent = trap  # bare — the trap
     bpy.context.view_layer.update()
-
-    w_before = trap_acc.matrix_world.translation.copy()
-    trap_acc.parent = left
-    bpy.context.view_layer.update()
-    jumped = (trap_acc.matrix_world.translation - w_before).length
     jumped_world = trap_acc.matrix_world.copy()
+    jumped = (jumped_world.translation - seat_world.translation).length
+    # Freeze the teleported pose so the still does not depend on the parent.
     trap_acc.parent = None
-    bpy.context.view_layer.update()
     trap_acc.matrix_world = jumped_world
     bpy.context.view_layer.update()
-    print(
-        f"render_trap_jump={jumped:.4f} "
-        f"acc_at={tuple(round(c, 3) for c in trap_acc.matrix_world.translation)} "
-        f"sock_at={tuple(round(c, 3) for c in left_front)} "
-        f"sep={(trap_acc.matrix_world.translation - left_front).length:.4f}"
-    )
+    print(f"render_trap_jump={jumped:.4f} "
+          f"seat={tuple(round(c, 3) for c in seat_world.translation)} "
+          f"landed={tuple(round(c, 3) for c in jumped_world.translation)}")
 
-    parent_keep_world(keep_acc, right)
-    bpy.context.view_layer.update()
+    ghost_m = make_material("SeatGhost", (0.2, 0.75, 1.0), rough=0.5, metallic=0.0,
+                            emit=(0.25, 0.8, 1.0), estr=3.0)
+    ghost = bpy.data.objects.new("Conduit.Trap.Seat", trap_acc.data)
+    ghost.matrix_world = seat_world
+    sc.collection.objects.link(ghost)
+    ghost = ghost_of(sc, ghost, "SeatOutline", ghost_m)
+    bpy.data.objects.remove(bpy.data.objects["Conduit.Trap.Seat"])
 
-    origin_marker(sc, Vector(left.matrix_world.translation))
-    origin_marker(sc, Vector(right.matrix_world.translation))
-
-    # Big enough to read at card size; at 0.11 they vanished in the thumbnail.
-    p_trap = placard(sc, "TRAP", (0.1, -1.2, 0.02), size=0.21)
-    p_keep = placard(sc, "MPI KEEP", (2.15, -1.2, 0.02), size=0.21)
+    pmats = [
+        make_material("PivotX", (0.9, 0.08, 0.06), rough=0.4, metallic=0.0,
+                      emit=(0.9, 0.08, 0.06), estr=0.4),
+        make_material("PivotY", (0.25, 0.85, 0.08), rough=0.4, metallic=0.0,
+                      emit=(0.25, 0.85, 0.08), estr=0.4),
+        make_material("PivotRing", (0.6, 0.5, 0.36), rough=0.5, metallic=0.0,
+                      emit=(1.0, 0.78, 0.5), estr=0.12),
+    ]
+    markers = [
+        pivot_marker(sc, "Pivot.Keep", keep.matrix_world.translation, keep.rotation_euler.z,
+                     pmats, 0.72),
+        pivot_marker(sc, "Pivot.Trap", trap.matrix_world.translation, trap.rotation_euler.z,
+                     pmats, 0.72),
+    ]
 
     floor, wall = build_studio(sc)
 
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 48.0
+    cam_data.lens = 56.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    # Pulled back until the framing gate's margins clear — not further.
-    cam.location = (1.15, -5.9, 1.55)
+    cam.location = (1.1, -5.6, 2.05)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (1.1, 0.0, 0.72)
+    aim.location = (0.2, 0.1, 0.66)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
@@ -598,19 +739,23 @@ def render_still(path, engine):
     sc.render.resolution_y = 720
     sc.render.image_settings.file_format = "PNG"
     sc.render.filepath = path
+    # Standard, not AgX: AgX pales the paint and conduit and lifts the stage.
     sc.view_settings.view_transform = "Standard"
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact.
-    hero = [left, right, trap_acc, keep_acc, trap_sock, keep_sock]
-    markers = [o for o in sc.objects if o.name.startswith(("OriginBead", "Axis"))]
+    hero = [keep, trap, keep_acc, trap_acc]
     fcode = gallery_framing.check_framing(
         sc, cam,
         hero=hero,
-        elements=hero + [p_trap, p_keep] + markers,
-        stage=[floor, wall],
+        elements=hero + [ghost] + markers,
+        stage=[floor, wall, slab],
     )
     if fcode:
         return fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=[keep, keep_acc], stage=[floor, wall, slab])
+    if aqcode:
+        return aqcode
     bpy.ops.render.render(write_still=True)
     if not (os.path.exists(path) and os.path.getsize(path) > 0):
         print("ERROR: render produced no file", file=sys.stderr)
