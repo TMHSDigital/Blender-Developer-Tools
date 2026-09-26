@@ -11,7 +11,7 @@ Not run directly. The host script passes everything through the environment
 so the argv after ``--`` stays exactly the example's documented flags:
 
     BDT_SHEET_SCRIPT  path to the example's .py
-    BDT_SHEET_SELECT  regex matched against mesh object names (the asset)
+    BDT_SHEET_SELECT  regex matched against mesh/curve object names (the asset)
     BDT_SHEET_EXCLUDE optional regex of names to drop from that match
     BDT_SHEET_OUT     panel PNG to write
 """
@@ -55,11 +55,11 @@ if code not in (None, 0):
 
 sc = bpy.data.scenes[captured[-1]] if captured else bpy.context.scene
 asset = [ob for ob in sc.objects
-         if ob.type == "MESH" and re.search(inc_re, ob.name)
+         if ob.type in ("MESH", "CURVE") and re.search(inc_re, ob.name)
          and not (exc_re and re.search(exc_re, ob.name))]
 print(f"sheet: asset objects {[ob.name for ob in asset]}")
 if not asset:
-    print(f"sheet: no mesh object matches {inc_re!r}", file=sys.stderr)
+    print(f"sheet: no mesh or curve object matches {inc_re!r}", file=sys.stderr)
     sys.exit(4)
 
 # The measurable floors of the isolated asset, as information for the

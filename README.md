@@ -246,15 +246,16 @@ mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: a teal sphere and a magenta sphere sharing one TintedGloss node group with different Tint parameters" /></a>
+<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt sharing one DippedGlaze node group with different Tint parameters" /></a>
 </td>
 <td valign="middle">
 
 ### [shader-node-group](examples/shader-node-group/)
 
-One reusable `TintedGloss` group declared via `tree.interface.new_socket`, instanced in two
+One reusable `DippedGlaze` group declared via `tree.interface.new_socket`, instanced in five
 materials with different Tint values. Witnesses the grouping contract: shared datablock
-(`users == 2`), parameters on the group **node** — two spheres, one group, two colors.
+(`users == 5`), parameters on the group **node** — five mugs share one foot band, dip line
+and speckle, and differ only in colour.
 
 </td>
 </tr>
@@ -407,7 +408,7 @@ lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` 
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a rose beveled Bezier semicircle tube resting on a dark studio floor, both filled end caps facing the camera" /></a>
+<a href="examples/curve-bevel-arc/"><img src="examples/curve-bevel-arc/preview.webp" alt="Curve bevel arc: a red horseshoe magnet built from one beveled Bezier curve, its filled end caps turned to the camera as steel pole faces, iron filings arcing between the poles and Bezier-wire paper clips clinging to them" /></a>
 </td>
 <td valign="middle">
 
@@ -415,8 +416,9 @@ lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` 
 
 A beveled Bezier semicircle authored on `bpy.types.Curve` — `splines.new('BEZIER')`,
 `bezier_points`, `bevel_depth`, `use_fill_caps` — so the curve renders as a solid tube
-without a prior mesh conversion. Asserts eight points, `bevel_depth == 0.15`, and
-evaluated topology 1044 verts / 1028 faces.
+without a prior mesh conversion — staged as a horseshoe magnet whose capped ends
+are the pole faces. Asserts eight points, `bevel_depth == 0.15`, and evaluated
+topology 1044 verts / 1028 faces.
 
 </td>
 </tr>
@@ -440,15 +442,16 @@ semver on LTS builds (`"4.5.11 LTS"`), and that a Mesh reference dies at
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: a teal base cube beside the smooth teal sphere of its subdivision-surface evaluated form - one shared material, two silhouettes - on a dark studio floor with a warm light pool behind" /></a>
+<a href="examples/depsgraph-export/"><img src="examples/depsgraph-export/preview.webp" alt="Depsgraph-evaluated export: the sparse control cage of a game controller drawn as orange wire and vertex beads over faint blue facets, beside the smooth subdivided cobalt controller with sticks, d-pad and colored face buttons that the OBJ export contains, on a dark studio floor with a warm light pool behind" /></a>
 </td>
 <td valign="middle">
 
 ### [depsgraph-export](examples/depsgraph-export/)
 
-A depsgraph-evaluated export — builds a cube with `SUBSURF`, measures the evaluated mesh via
-`evaluated_get().to_mesh()` / `to_mesh_clear()`, and asserts `wm.obj_export` ships the
-modifier-applied geometry (exported vertex count == evaluated > base).
+A depsgraph-evaluated export — builds a game controller whose shell is a 90-vertex quad cage
+under `SUBSURF`, measures every mesh via `evaluated_get().to_mesh()` / `to_mesh_clear()`,
+asserts the evaluated shell matches the Catmull-Clark closed form (1,410 vertices), and asserts
+`wm.obj_export` ships the modifier-applied geometry (exported vertex count == evaluated > base).
 
 </td>
 </tr>
@@ -566,15 +569,16 @@ and that a `Set Material` node carries the material through the remesh.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: nine lime-green cubes in a 3x3 grid on a dark studio floor, instanced via Geometry Nodes Instance on Points" /></a>
+<a href="examples/gn-instance-grid/"><img src="examples/gn-instance-grid/preview.webp" alt="GN instance grid: a cobalt-blue 3x3 macropad whose nine cream keycaps are instanced onto a Geometry Nodes Mesh Grid, one orange accent key picked out by a position-field Set Material" /></a>
 </td>
 <td valign="middle">
 
 ### [gn-instance-grid](examples/gn-instance-grid/)
 
-A generative Geometry Nodes tree — Mesh Grid → Instance on Points → Realize Instances —
-attached as a `NODES` modifier with no Group Input. Asserts evaluated topology is
-verts = 72, faces = 54, and `Set Material` carries the lime accent.
+A generative Geometry Nodes tree — Mesh Grid → Instance on Points (a modeled keycap via
+`Object Info`) → Realize Instances — attached as a `NODES` modifier with no Group Input.
+Asserts evaluated topology is verts = faces = 1089 (9 keycaps × 121), and a position-field
+`Set Material` lands the orange accent on exactly one keycap.
 
 </td>
 </tr>
@@ -809,17 +813,18 @@ round-trips through the raw `POINT` buffer.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gp-lineart-contour/"><img src="examples/gp-lineart-contour/preview.webp" alt="GP Line Art contour: a faceted teal crystal on a dark studio floor outlined in neon cyan Grease Pencil Line Art strokes, proving modifiers.new LINEART with source_object silhouette evaluation" /></a>
+<a href="examples/gp-lineart-contour/"><img src="examples/gp-lineart-contour/preview.webp" alt="GP Line Art contour: a cel-shaded red-and-white lighthouse on a rocky islet with a keeper's cottage and rowboat, inked in bold black Grease Pencil Line Art strokes, proving modifiers.new LINEART with source_object evaluation" /></a>
 </td>
 <td valign="middle">
 
 ### [gp-lineart-contour](examples/gp-lineart-contour/)
 
-Grease Pencil `LINEART` modifier contours via the depsgraph — not Freestyle and
-not hand-drawn strokes. `source_object` is load-bearing (clear → 0 strokes);
-contour+crease off → 0; restore recovers **10** strokes / **34** points on both
-binaries. Stroke width: `thickness` exists on 4.5, `AttributeError` on 5.1 —
-portable path is `radius`.
+Grease Pencil `LINEART` modifier ink via the depsgraph on a cel-shaded
+lighthouse diorama — not Freestyle and not hand-drawn strokes. `source_object`
+is load-bearing (clear → 0 strokes); every edge type off → 0; the drawing is
+**255** strokes / **1393** points on all three binaries, gated so dropping any
+one edge type fails. Stroke width: `thickness` exists on 4.5, `AttributeError`
+on 5.1 — portable path is `radius`.
 
 </td>
 </tr>

@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>shader-node-group — Examples — Blender Developer Tools</title>
-  <meta name="description" content="One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors." />
+  <meta name="description" content="One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shader-node-group/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="shader-node-group — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors." />
+  <meta property="og:description" content="One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/shader-node-group/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shader-node-group-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two glossy spheres, one teal and one magenta, sharing one shader group." />
+  <meta property="og:image:alt" content="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="shader-node-group — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors." />
+  <meta name="twitter:description" content="One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/shader-node-group-hero.webp" />
-  <meta name="twitter:image:alt" content="Two glossy spheres, one teal and one magenta, sharing one shader group." />
+  <meta name="twitter:image:alt" content="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,23 +265,24 @@
   </div>
   <header class="hero">
     <h1>shader-node-group</h1>
-    <p>One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.</p>
+    <p>One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two glossy spheres, one teal and one magenta, sharing one shader group.">
-      <img src="../assets/shader-node-group-hero.webp" alt="Two glossy spheres, one teal and one magenta, sharing one shader group." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group.">
+      <img src="../assets/shader-node-group-hero.webp" alt="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.</div>
+    <div class="callout"><span class="tag">witnesses</span> Grouping contract: interface sockets appear on every instance, all five materials share one group datablock (users == 5), and per-material parameters live on the group node, not inside the tree.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/shader-node-group/shader_node_group.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that declares a reusable <code>TintedGloss</code> shader group through <code>tree.interface.new_socket</code> — the 4.x/5.x API that replaced <code>tree.inputs</code>/<code>tree.outputs</code> — and instances it in two materials with different parameters, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/shader-node-group.py"><code>shader-node-group</code></a> snippet.</p>
-<p><strong>What it witnesses:</strong> the grouping contract. Sockets declared on the interface appear on every group-node instance; both materials share ONE group datablock (<code>users == 2</code>); and the per-material Tint lives on the group <strong>node</strong>, not inside the group — set it inside the tree and every material changes at once. The render is the proof: two spheres, one group, two colors.</p>
+<p>A runnable example that declares a reusable <code>DippedGlaze</code> shader group through <code>tree.interface.new_socket</code> — the 4.x/5.x API that replaced <code>tree.inputs</code>/<code>tree.outputs</code> — and instances it in five mug materials with different parameters, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/procedural-materials-and-shaders/SKILL.md"><code>procedural-materials-and-shaders</code></a> and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/snippets/shader-node-group.py"><code>shader-node-group</code></a> snippet.</p>
+<p><strong>What it witnesses:</strong> the grouping contract. Sockets declared on the interface appear on every group-node instance; all five materials share ONE group datablock (<code>users == 5</code>); and the per-material Tint lives on the group <strong>node</strong>, not inside the group — set it inside the tree and every mug changes at once.</p>
+<p><strong>The render is the proof.</strong> The group is a dipped stoneware glaze: bare buff clay at the foot, a wavy dip line, iron speckle through clay and glaze alike, and a glaze that breaks back toward clay over the rim. All of that lives inside the group, so the five mugs — a warm-to-cool lineup of oxblood, amber, celadon, teal and cobalt — carry the same foot band, the same dip line, the same speckle field and the same rim break. Only the instance-level Tint differs. If Tint were baked into the group, the lineup would be one colour; if each material built its own tree, the shared character would be a copy rather than one datablock (the check&#x27;s <code>users</code> gate).</p>
 <h2>Staging</h2>
-<p>The still renders under the Standard view transform on the dark house stage; it had no view transform set, so AgX washed both tints toward pastel over a lighter floor. The key is larger and softer (the glossy spheres had mirrored it as a hard white square), and the camera aims at the sphere centres. Render path only.</p>
+<p>A staggered shop-display lineup on the dark house stage: the odd mugs stand on a low walnut riser behind the even ones, so five mugs fill the frame without shrinking to a thin strip. Handles all turn the same way so the only thing that changes along the row is colour. The still renders under the Standard view transform (AgX would wash the five tints toward pastel); the key&#x27;s spread is narrowed so it lights the mugs, not the back wall, and a warm wedge sits between the riser and the wall. Render path only.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python shader_node_group.py --
@@ -290,11 +291,11 @@ blender --background --python shader_node_group.py --
 blender --background --python shader_node_group.py -- --same-tint
 
 # Also render a still (EEVEE on a GPU host; use --engine cycles on GPU-less hosts):
-blender --background --python shader_node_group.py -- --output spheres.png
-blender --background --python shader_node_group.py -- --output spheres.png --engine cycles</code></pre>
+blender --background --python shader_node_group.py -- --output mugs.png
+blender --background --python shader_node_group.py -- --output mugs.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Interface sockets missing Tint / Roughness / Shader</td></tr><tr><td>4</td><td>Group datablock <code>users</code> ≠ 2</td></tr><tr><td>5</td><td>Instance points at a different node tree</td></tr><tr><td>6</td><td>Instance Tint values identical (<code>--same-tint</code> lands here)</td></tr><tr><td>7</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Interface sockets missing Tint / Roughness / Shader</td></tr><tr><td>4</td><td>Group datablock <code>users</code> ≠ number of mug materials (5)</td></tr><tr><td>5</td><td>Instance points at a different node tree</td></tr><tr><td>6</td><td>Instance Tint values not pairwise distinct (<code>--same-tint</code> lands here)</td></tr><tr><td>7</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--same-tint</code>.</p>
     </section>
     <section class="detail-section src">
@@ -303,18 +304,28 @@ blender --background --python shader_node_group.py -- --output spheres.png --eng
         <code>examples/shader-node-group/shader_node_group.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/shader-node-group/shader_node_group.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;One shader node group, two materials — a runnable example.
+      <pre><span class="s">&quot;&quot;&quot;One shader node group, five materials — a runnable example.
 
 Witnesses the node-group socket workflow from procedural-materials-and-shaders:
 group sockets are declared through `tree.interface.new_socket` (the 4.x/5.x
 API that replaced `tree.inputs`/`tree.outputs`), and per-material parameters
-live on the GROUP NODE instance, not inside the group. The check asserts the
-interface carries the declared sockets, both materials share the same group
-datablock (users == 2), and their instance-level Tint values differ — the
-whole point of grouping.
+live on the GROUP NODE instance, not inside the group.
 
-``--same-tint`` copies SphereA&#x27;s Tint onto both instances and still asserts
-the values differ. That is the falsifier (``--same-axis`` in
+The subject is a glaze library: one `DippedGlaze` stoneware shader group —
+bare buff clay at the foot, a wavy dip line, iron speckle, a glaze that
+breaks back toward clay at the rim — instanced in five mug materials. Only
+the instance-level Tint differs, so the five mugs carry an identical foot
+band, dip line, speckle field and rim break in five colours. If the Tint
+lived inside the group every mug would be the same colour; if each material
+built its own tree the shared character would be a copy, not one datablock.
+
+The check asserts the interface carries the declared sockets, every material
+shares the same group datablock (users == number of mugs), each instance
+points at that tree, and the instance-level Tint values are pairwise
+distinct — the whole point of grouping.
+
+``--same-tint`` copies the first mug&#x27;s Tint onto every instance and still
+asserts the values differ. That is the falsifier (``--same-axis`` in
 export-preset-axis).
 
 By default it runs only the correctness check (no render) — the CI smoke
@@ -322,36 +333,113 @@ check. Pass --output to also render a still:
 
     blender --background --python shader_node_group.py --                 # check only
     blender --background --python shader_node_group.py -- --same-tint     # must fail
-    blender --background --python shader_node_group.py -- --output s.png  # + render
+    blender --background --python shader_node_group.py -- --output m.png  # + render
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
 
 <span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
 
+<span class="c"># One glaze library, five tints, ordered as a warm-to-cool progression.</span>
 TINTS = {
-    <span class="s">&quot;SphereA&quot;</span>: (<span class="n">0.012</span>, <span class="n">0.32</span>, <span class="n">0.30</span>, <span class="n">1.0</span>),   <span class="c"># teal</span>
-    <span class="s">&quot;SphereB&quot;</span>: (<span class="n">0.42</span>, <span class="n">0.02</span>, <span class="n">0.20</span>, <span class="n">1.0</span>),    <span class="c"># magenta</span>
+    <span class="s">&quot;Mug.Oxblood&quot;</span>: (<span class="n">0.42</span>, <span class="n">0.035</span>, <span class="n">0.03</span>, <span class="n">1.0</span>),
+    <span class="s">&quot;Mug.Amber&quot;</span>:   (<span class="n">0.62</span>, <span class="n">0.26</span>, <span class="n">0.025</span>, <span class="n">1.0</span>),
+    <span class="s">&quot;Mug.Celadon&quot;</span>: (<span class="n">0.16</span>, <span class="n">0.34</span>, <span class="n">0.16</span>, <span class="n">1.0</span>),
+    <span class="s">&quot;Mug.Teal&quot;</span>:    (<span class="n">0.015</span>, <span class="n">0.26</span>, <span class="n">0.28</span>, <span class="n">1.0</span>),
+    <span class="s">&quot;Mug.Cobalt&quot;</span>:  (<span class="n">0.03</span>, <span class="n">0.08</span>, <span class="n">0.40</span>, <span class="n">1.0</span>),
 }
+
+RISER_H, RISER_Y = <span class="n">0.34</span>, <span class="n">0.62</span>      <span class="c"># display riser the back-row mugs stand on</span>
+
+CLAY = (<span class="n">0.50</span>, <span class="n">0.37</span>, <span class="n">0.24</span>, <span class="n">1.0</span>)     <span class="c"># buff stoneware body</span>
+IRON = (<span class="n">0.07</span>, <span class="n">0.04</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)    <span class="c"># iron speckle</span>
 
 
 <span class="k">def</span> build_group():
-    <span class="s">&quot;&quot;&quot;A reusable &#x27;TintedGloss&#x27; shader group: Tint + Roughness in, Shader out.&quot;&quot;&quot;</span>
-    tree = bpy.data.node_groups.new(<span class="s">&quot;TintedGloss&quot;</span>, <span class="s">&#x27;ShaderNodeTree&#x27;</span>)
+    <span class="s">&quot;&quot;&quot;A reusable &#x27;DippedGlaze&#x27; shader group: Tint + Roughness in, Shader out.
+
+    Everything that makes the glaze a glaze — the unglazed foot, the wavy dip
+    line, the iron speckle, the rim break — lives INSIDE the group, so every
+    instance shares it. Only Tint and Roughness are exposed per instance.
+    &quot;&quot;&quot;</span>
+    tree = bpy.data.node_groups.new(<span class="s">&quot;DippedGlaze&quot;</span>, <span class="s">&#x27;ShaderNodeTree&#x27;</span>)
     tree.interface.new_socket(name=<span class="s">&quot;Tint&quot;</span>, in_out=<span class="s">&#x27;INPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketColor&#x27;</span>)
     rough = tree.interface.new_socket(name=<span class="s">&quot;Roughness&quot;</span>, in_out=<span class="s">&#x27;INPUT&#x27;</span>,
                                       socket_type=<span class="s">&#x27;NodeSocketFloat&#x27;</span>)
-    rough.default_value = <span class="n">0.2</span>
+    rough.default_value = <span class="n">0.12</span>
     tree.interface.new_socket(name=<span class="s">&quot;Shader&quot;</span>, in_out=<span class="s">&#x27;OUTPUT&#x27;</span>, socket_type=<span class="s">&#x27;NodeSocketShader&#x27;</span>)
 
-    gi = tree.nodes.new(<span class="s">&#x27;NodeGroupInput&#x27;</span>)
-    go = tree.nodes.new(<span class="s">&#x27;NodeGroupOutput&#x27;</span>)
-    bsdf = tree.nodes.new(<span class="s">&#x27;ShaderNodeBsdfPrincipled&#x27;</span>)
-    tree.links.new(gi.outputs[<span class="s">&quot;Tint&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
-    tree.links.new(gi.outputs[<span class="s">&quot;Roughness&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
-    tree.links.new(bsdf.outputs[<span class="s">&quot;BSDF&quot;</span>], go.inputs[<span class="s">&quot;Shader&quot;</span>])
+    N, L = tree.nodes, tree.links
+    gi = N.new(<span class="s">&#x27;NodeGroupInput&#x27;</span>)
+    go = N.new(<span class="s">&#x27;NodeGroupOutput&#x27;</span>)
+    coord = N.new(<span class="s">&#x27;ShaderNodeTexCoord&#x27;</span>)
+    sep = N.new(<span class="s">&#x27;ShaderNodeSeparateXYZ&#x27;</span>)
+    L.new(coord.outputs[<span class="s">&quot;Generated&quot;</span>], sep.inputs[<span class="n">0</span>])
+
+    <span class="c"># wavy dip line: glaze covers Generated Z above ~0.2, wobbled by noise</span>
+    wobble = N.new(<span class="s">&#x27;ShaderNodeTexNoise&#x27;</span>)
+    wobble.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">2.2</span>
+    wobble.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">1.0</span>
+    L.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], wobble.inputs[<span class="s">&quot;Vector&quot;</span>])
+    wob_s = N.new(<span class="s">&#x27;ShaderNodeMath&#x27;</span>); wob_s.operation = <span class="s">&#x27;MULTIPLY_ADD&#x27;</span>
+    L.new(wobble.outputs[<span class="s">&quot;Fac&quot;</span>], wob_s.inputs[<span class="n">0</span>])
+    wob_s.inputs[<span class="n">1</span>].default_value = <span class="n">0.16</span>
+    wob_s.inputs[<span class="n">2</span>].default_value = <span class="n">0.13</span>           <span class="c"># line sits at z ~0.21 +- 0.04</span>
+    dip = N.new(<span class="s">&#x27;ShaderNodeMapRange&#x27;</span>)
+    dip.interpolation_type = <span class="s">&#x27;SMOOTHSTEP&#x27;</span>
+    zline = N.new(<span class="s">&#x27;ShaderNodeMath&#x27;</span>); zline.operation = <span class="s">&#x27;SUBTRACT&#x27;</span>
+    L.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], zline.inputs[<span class="n">0</span>])
+    L.new(wob_s.outputs[<span class="n">0</span>], zline.inputs[<span class="n">1</span>])
+    L.new(zline.outputs[<span class="n">0</span>], dip.inputs[<span class="s">&quot;Value&quot;</span>])
+    dip.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = -<span class="n">0.004</span>
+    dip.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.006</span>   <span class="c"># glaze mask 0 (clay) .. 1 (glaze)</span>
+
+    <span class="c"># rim break: glaze thins toward clay over the lip</span>
+    brk = N.new(<span class="s">&#x27;ShaderNodeMapRange&#x27;</span>)
+    brk.interpolation_type = <span class="s">&#x27;SMOOTHSTEP&#x27;</span>
+    L.new(sep.outputs[<span class="s">&quot;Z&quot;</span>], brk.inputs[<span class="s">&quot;Value&quot;</span>])
+    brk.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.90</span>
+    brk.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.985</span>
+    brk.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = <span class="n">0.55</span>
+    tint_broken = N.new(<span class="s">&#x27;ShaderNodeMix&#x27;</span>); tint_broken.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    L.new(brk.outputs[<span class="s">&quot;Result&quot;</span>], tint_broken.inputs[<span class="s">&quot;Factor&quot;</span>])
+    L.new(gi.outputs[<span class="s">&quot;Tint&quot;</span>], tint_broken.inputs[<span class="s">&quot;A&quot;</span>])
+    tint_broken.inputs[<span class="s">&quot;B&quot;</span>].default_value = CLAY
+
+    <span class="c"># glaze vs clay</span>
+    body = N.new(<span class="s">&#x27;ShaderNodeMix&#x27;</span>); body.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    L.new(dip.outputs[<span class="s">&quot;Result&quot;</span>], body.inputs[<span class="s">&quot;Factor&quot;</span>])
+    body.inputs[<span class="s">&quot;A&quot;</span>].default_value = CLAY
+    L.new(tint_broken.outputs[<span class="s">&quot;Result&quot;</span>], body.inputs[<span class="s">&quot;B&quot;</span>])
+
+    <span class="c"># iron speckle: small dark dots through clay and glaze alike</span>
+    vor = N.new(<span class="s">&#x27;ShaderNodeTexVoronoi&#x27;</span>)
+    vor.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">26.0</span>
+    L.new(coord.outputs[<span class="s">&quot;Object&quot;</span>], vor.inputs[<span class="s">&quot;Vector&quot;</span>])
+    spk = N.new(<span class="s">&#x27;ShaderNodeMapRange&#x27;</span>)
+    L.new(vor.outputs[<span class="s">&quot;Distance&quot;</span>], spk.inputs[<span class="s">&quot;Value&quot;</span>])
+    spk.inputs[<span class="s">&quot;From Min&quot;</span>].default_value = <span class="n">0.10</span>
+    spk.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.06</span>
+    speckled = N.new(<span class="s">&#x27;ShaderNodeMix&#x27;</span>); speckled.data_type = <span class="s">&#x27;RGBA&#x27;</span>
+    L.new(spk.outputs[<span class="s">&quot;Result&quot;</span>], speckled.inputs[<span class="s">&quot;Factor&quot;</span>])
+    L.new(body.outputs[<span class="s">&quot;Result&quot;</span>], speckled.inputs[<span class="s">&quot;A&quot;</span>])
+    speckled.inputs[<span class="s">&quot;B&quot;</span>].default_value = IRON
+
+    <span class="c"># roughness: glaze takes the instance Roughness, bare clay stays matte</span>
+    rmix = N.new(<span class="s">&#x27;ShaderNodeMix&#x27;</span>); rmix.data_type = <span class="s">&#x27;FLOAT&#x27;</span>
+    L.new(dip.outputs[<span class="s">&quot;Result&quot;</span>], rmix.inputs[<span class="s">&quot;Factor&quot;</span>])
+    rmix.inputs[<span class="s">&quot;A&quot;</span>].default_value = <span class="n">0.85</span>
+    L.new(gi.outputs[<span class="s">&quot;Roughness&quot;</span>], rmix.inputs[<span class="s">&quot;B&quot;</span>])
+
+    bsdf = N.new(<span class="s">&#x27;ShaderNodeBsdfPrincipled&#x27;</span>)
+    L.new(speckled.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>])
+    L.new(rmix.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    L.new(dip.outputs[<span class="s">&quot;Result&quot;</span>], bsdf.inputs[<span class="s">&quot;Coat Weight&quot;</span>])   <span class="c"># glossy glaze coat</span>
+    bsdf.inputs[<span class="s">&quot;Coat Roughness&quot;</span>].default_value = <span class="n">0.06</span>
+    L.new(bsdf.outputs[<span class="s">&quot;BSDF&quot;</span>], go.inputs[<span class="s">&quot;Shader&quot;</span>])
     <span class="k">return</span> tree
 
 
@@ -369,24 +457,83 @@ TINTS = {
     <span class="k">return</span> mat
 
 
+<span class="c"># (radius, z) lathe profile of a thrown stoneware mug, closed: foot ring,</span>
+<span class="c"># bellied wall, rolled lip, inner wall, well floor.</span>
+MUG_PROFILE = [
+    (<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.30</span>, <span class="n">0.0</span>), (<span class="n">0.335</span>, <span class="n">0.012</span>), (<span class="n">0.35</span>, <span class="n">0.045</span>), (<span class="n">0.365</span>, <span class="n">0.075</span>),
+    (<span class="n">0.40</span>, <span class="n">0.14</span>), (<span class="n">0.435</span>, <span class="n">0.32</span>), (<span class="n">0.445</span>, <span class="n">0.52</span>), (<span class="n">0.435</span>, <span class="n">0.72</span>), (<span class="n">0.425</span>, <span class="n">0.88</span>),
+    (<span class="n">0.425</span>, <span class="n">0.96</span>), (<span class="n">0.418</span>, <span class="n">0.99</span>), (<span class="n">0.402</span>, <span class="n">1.0</span>), (<span class="n">0.386</span>, <span class="n">0.99</span>), (<span class="n">0.382</span>, <span class="n">0.96</span>),
+    (<span class="n">0.388</span>, <span class="n">0.80</span>), (<span class="n">0.395</span>, <span class="n">0.52</span>), (<span class="n">0.380</span>, <span class="n">0.30</span>), (<span class="n">0.345</span>, <span class="n">0.16</span>), (<span class="n">0.28</span>, <span class="n">0.105</span>),
+    (<span class="n">0.0</span>, <span class="n">0.095</span>),
+]
+
+
+<span class="k">def</span> _bezier(p0, p1, p2, p3, t):
+    u = <span class="n">1.0</span> - t
+    <span class="k">return</span> p0 * u ** <span class="n">3</span> + p1 * <span class="n">3</span> * u * u * t + p2 * <span class="n">3</span> * u * t * t + p3 * t ** <span class="n">3</span>
+
+
+<span class="k">def</span> build_mug_mesh(name):
+    <span class="s">&quot;&quot;&quot;Lathe body plus a swept loop handle in one mesh (one Generated space).&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        verts = [bm.verts.new((r, <span class="n">0.0</span>, z)) <span class="k">for</span> r, z <span class="k">in</span> MUG_PROFILE]
+        edges = [bm.edges.new((verts[i], verts[i + <span class="n">1</span>])) <span class="k">for</span> i <span class="k">in</span> range(len(verts) - <span class="n">1</span>)]
+        bmesh.ops.spin(bm, geom=verts + edges, cent=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>), axis=(<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>),
+                       angle=math.tau, steps=<span class="n">72</span>, use_merge=<span class="k">True</span>)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=<span class="n">1e-5</span>)
+
+        <span class="c"># handle: an oval section swept along a cubic C from the upper to the</span>
+        <span class="c"># lower wall, both ends buried in the body</span>
+        p0, p1 = Vector((<span class="n">0.36</span>, <span class="n">0.0</span>, <span class="n">0.80</span>)), Vector((<span class="n">0.80</span>, <span class="n">0.0</span>, <span class="n">0.86</span>))
+        p2, p3 = Vector((<span class="n">0.78</span>, <span class="n">0.0</span>, <span class="n">0.26</span>)), Vector((<span class="n">0.37</span>, <span class="n">0.0</span>, <span class="n">0.30</span>))
+        rings, seg = [], <span class="n">14</span>
+        steps = <span class="n">28</span>
+        <span class="k">for</span> i <span class="k">in</span> range(steps + <span class="n">1</span>):
+            t = i / steps
+            c = _bezier(p0, p1, p2, p3, t)
+            tan = (_bezier(p0, p1, p2, p3, min(t + <span class="n">0.01</span>, <span class="n">1.0</span>))
+                   - _bezier(p0, p1, p2, p3, max(t - <span class="n">0.01</span>, <span class="n">0.0</span>))).normalized()
+            nrm = tan.cross(Vector((<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>))).normalized()
+            ring = []
+            <span class="k">for</span> k <span class="k">in</span> range(seg):
+                a = math.tau * k / seg
+                off = nrm * (<span class="n">0.042</span> * math.cos(a)) + Vector((<span class="n">0</span>, <span class="n">1</span>, <span class="n">0</span>)) * (<span class="n">0.075</span> * math.sin(a))
+                ring.append(bm.verts.new(c + off))
+            rings.append(ring)
+        <span class="k">for</span> ra, rb <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+            <span class="k">for</span> k <span class="k">in</span> range(seg):
+                bm.faces.new((ra[k], ra[(k + <span class="n">1</span>) % seg], rb[(k + <span class="n">1</span>) % seg], rb[k]))
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    <span class="k">return</span> me
+
+
 <span class="k">def</span> build_scene(same_tint=<span class="k">False</span>):
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     tree = build_group()
     objs = []
+    first = next(iter(TINTS.values()))
+    n = len(TINTS)
     <span class="k">for</span> i, (name, tint) <span class="k">in</span> enumerate(TINTS.items()):
-        me = bpy.data.meshes.new(name)
-        bm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_uvsphere(bm, u_segments=<span class="n">48</span>, v_segments=<span class="n">24</span>, radius=<span class="n">1.0</span>)
-            bm.to_mesh(me)
-        <span class="k">finally</span>:
-            bm.free()
+        me = build_mug_mesh(name)
         obj = bpy.data.objects.new(name, me)
-        obj.location = (-<span class="n">1.35</span> + i * <span class="n">2.7</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
-        <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-            poly.use_smooth = <span class="k">True</span>
-        inst_tint = TINTS[<span class="s">&quot;SphereA&quot;</span>] <span class="k">if</span> same_tint <span class="k">else</span> tint
-        me.materials.append(material_from_group(<span class="s">f&quot;</span><span class="s">Mat.</span>{name}<span class="s">&quot;</span>, tree, inst_tint))
+        <span class="c"># a staggered shop-display lineup read left to right: even mugs on</span>
+        <span class="c"># the floor in front, odd mugs on the riser behind, handles all right</span>
+        u = i - (n - <span class="n">1</span>) / <span class="n">2</span>
+        back = i % <span class="n">2</span> == <span class="n">1</span>
+        obj.location = (u * <span class="n">0.98</span>, RISER_Y <span class="k">if</span> back <span class="k">else</span> -<span class="n">0.45</span>, RISER_H <span class="k">if</span> back <span class="k">else</span> <span class="n">0.0</span>)
+        obj.rotation_euler = (<span class="n">0.0</span>, <span class="n">0.0</span>, math.radians(-<span class="n">38</span>))
+        sub = obj.modifiers.new(<span class="s">&quot;Smooth&quot;</span>, <span class="s">&#x27;SUBSURF&#x27;</span>)
+        sub.levels = <span class="n">1</span>
+        sub.render_levels = <span class="n">2</span>
+        inst_tint = first <span class="k">if</span> same_tint <span class="k">else</span> tint
+        me.materials.append(material_from_group(<span class="s">f&quot;</span><span class="s">Glaze.</span>{name.split(<span class="s">&#x27;.&#x27;</span>)[<span class="n">1</span>]}<span class="s">&quot;</span>, tree,
+                                                inst_tint))
         bpy.context.collection.objects.link(obj)
         objs.append(obj)
     <span class="k">return</span> tree, objs
@@ -401,12 +548,12 @@ TINTS = {
         print(<span class="s">f&quot;</span><span class="s">ERROR: interface sockets </span>{names}<span class="s"> missing </span>{expect - names}<span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
 
-    <span class="c"># one shared group datablock, instanced by both materials</span>
-    <span class="k">if</span> tree.users != <span class="n">2</span>:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: group users </span>{tree.users}<span class="s"> != 2 (not shared)</span><span class="s">&quot;</span>, file=sys.stderr)
+    <span class="c"># one shared group datablock, instanced by every material</span>
+    <span class="k">if</span> tree.users != len(objs):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: group users </span>{tree.users}<span class="s"> != </span>{len(objs)}<span class="s"> (not shared)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
 
-    <span class="c"># per-instance parameters live on the group NODE, and they differ</span>
+    <span class="c"># per-instance parameters live on the group NODE, and they all differ</span>
     tints = []
     <span class="k">for</span> obj <span class="k">in</span> objs:
         node = next(n <span class="k">for</span> n <span class="k">in</span> obj.data.materials[<span class="n">0</span>].node_tree.nodes
@@ -415,12 +562,12 @@ TINTS = {
             print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{obj.name}<span class="s"> instance points at a different tree</span><span class="s">&quot;</span>, file=sys.stderr)
             <span class="k">return</span> <span class="n">5</span>
         tints.append(tuple(round(c, <span class="n">3</span>) <span class="k">for</span> c <span class="k">in</span> node.inputs[<span class="s">&quot;Tint&quot;</span>].default_value))
-    <span class="k">if</span> tints[<span class="n">0</span>] == tints[<span class="n">1</span>]:
-        print(<span class="s">&quot;ERROR: instance Tint values are identical — parameters leaked into &quot;</span>
-              <span class="s">&quot;the group instead of the instance&quot;</span>, file=sys.stderr)
+    <span class="k">if</span> len(set(tints)) != len(tints):
+        print(<span class="s">f&quot;</span><span class="s">ERROR: instance Tint values not pairwise distinct </span>{tints}<span class="s"> — parameters </span><span class="s">&quot;</span>
+              <span class="s">&quot;leaked into the group instead of the instance&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
-    print(<span class="s">f&quot;</span><span class="s">group=TintedGloss users=</span>{tree.users}<span class="s"> instance_tints=</span>{tints[<span class="n">0</span>]}<span class="s"> vs </span>{tints[<span class="n">1</span>]}<span class="s">&quot;</span>)
+    print(<span class="s">f&quot;</span><span class="s">group=</span>{tree.name}<span class="s"> users=</span>{tree.users}<span class="s"> instance_tints=</span>{tints}<span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
 
@@ -440,44 +587,68 @@ TINTS = {
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.018</span>, <span class="n">0.019</span>, <span class="n">0.022</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.8</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">3.2</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
+
+    <span class="c"># a low dark-walnut display riser for the back row (staging, not hero)</span>
+    riser_me = bpy.data.meshes.new(<span class="s">&quot;Riser&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>)
+        bmesh.ops.scale(bm, vec=(<span class="n">5.4</span>, <span class="n">0.9</span>, RISER_H), verts=bm.verts[:])
+        bmesh.ops.translate(bm, vec=(<span class="n">0.0</span>, RISER_Y, RISER_H / <span class="n">2</span>), verts=bm.verts[:])
+        bmesh.ops.bevel(bm, geom=bm.edges[:], offset=<span class="n">0.025</span>, segments=<span class="n">3</span>,
+                        affect=<span class="s">&#x27;EDGES&#x27;</span>, profile=<span class="n">0.5</span>)
+        bm.to_mesh(riser_me)
+    <span class="k">finally</span>:
+        bm.free()
+    <span class="k">for</span> poly <span class="k">in</span> riser_me.polygons:
+        poly.use_smooth = <span class="k">True</span>
+    rmat = bpy.data.materials.new(<span class="s">&quot;Walnut&quot;</span>)
+    rmat.use_nodes = <span class="k">True</span>
+    rb = rmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    rb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.045</span>, <span class="n">0.026</span>, <span class="n">0.016</span>, <span class="n">1.0</span>)
+    rb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    riser_me.materials.append(rmat)
+    riser = bpy.data.objects.new(<span class="s">&quot;Riser&quot;</span>, riser_me)
+    scene.collection.objects.link(riser)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    <span class="k">def</span> light(name, loc, energy, size, col, rot):
+    <span class="k">def</span> light(name, loc, energy, size, col, rot, spread=<span class="n">180.0</span>):
         ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
         ld.energy = energy; ld.size = size; ld.color = col
+        ld.spread = math.radians(spread)
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         scene.collection.objects.link(ob)
 
-    <span class="c"># a large soft key: at 5.5 m the glossy spheres mirrored it as a hard</span>
-    <span class="c"># white square</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.5</span>), <span class="n">1100.0</span>, <span class="n">9.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">280.0</span>, <span class="n">8.0</span>, (<span class="n">0.82</span>, <span class="n">0.88</span>, <span class="n">1.0</span>), (<span class="n">63</span>, <span class="n">0</span>, <span class="n">48</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">6.0</span>, <span class="n">4.0</span>), <span class="n">900.0</span>, <span class="n">3.5</span>, (<span class="n">1.0</span>, <span class="n">0.74</span>, <span class="n">0.46</span>), (-<span class="n">62</span>, <span class="n">0</span>, <span class="n">175</span>))
+    <span class="c"># a soft key so the glossy glaze mirrors a soft window, not a hard white</span>
+    <span class="c"># square; its spread is narrowed so it lights the mugs, not the back wall</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">540.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">46</span>, <span class="n">0</span>, -<span class="n">35</span>), spread=<span class="n">55</span>)
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.5</span>, -<span class="n">4.0</span>, <span class="n">2.0</span>), <span class="n">30.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">52</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.8</span>, <span class="n">1.9</span>, <span class="n">3.8</span>), <span class="n">170.0</span>, <span class="n">2.5</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">40</span>, <span class="n">0</span>, -<span class="n">25</span>), spread=<span class="n">45</span>)
+    <span class="c"># wedge: between the riser and the wall, raking a warm pool behind the mugs</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (-<span class="n">0.6</span>, <span class="n">2.2</span>, <span class="n">0.7</span>), <span class="n">170.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">105</span>, <span class="n">0</span>, <span class="n">0</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">8.4</span>, <span class="n">3.3</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">8.5</span>, <span class="n">3.15</span>)
     scene.collection.objects.link(cam)
-    <span class="c"># aim at the spheres&#x27; centres so they sit mid-frame, not above a band of</span>
-    <span class="c"># empty floor</span>
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.15</span>, <span class="n">0.78</span>)
     scene.collection.objects.link(aim)
     track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     track.target = aim
@@ -487,7 +658,7 @@ TINTS = {
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">48</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -497,7 +668,7 @@ TINTS = {
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash both tints toward pastel (docs/VISUAL-STYLE.md)</span>
+    <span class="c"># AgX would wash the five glaze tints toward pastel (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact.</span>
@@ -505,7 +676,7 @@ TINTS = {
         scene, cam,
         hero=list(objs),
         elements=list(objs),
-        stage=[floor, wall],
+        stage=[floor, wall, riser],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
@@ -552,7 +723,7 @@ TINTS = {
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/shader-node-group-hero.webp" alt="Two glossy spheres, one teal and one magenta, sharing one shader group." />
+    <img src="../assets/shader-node-group-hero.webp" alt="Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group." />
   </dialog>
   <footer>
     <div class="statusbar">
