@@ -934,13 +934,13 @@ hazard that silently corrupts measurements on 4.5.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/gltf-skin-roundtrip/"><img src="examples/gltf-skin-roundtrip/preview.webp" alt="glTF skin round-trip: two identical mech scorpions on a dark studio floor - orange armor, black segmented tails curled over their backs with glowing stinger tips, teal eyes - proving skeleton, weights, and deformation survive the export" /></a>
+<a href="examples/gltf-skin-roundtrip/"><img src="examples/gltf-skin-roundtrip/preview.webp" alt="glTF skin round-trip: two orange-plated mech scorpions face off on a dark studio floor - the authored one on the left with its tail coiled over its back and claws tucked, the re-imported one on the right driven through its imported bones into a strike, tail reared high and claws raised" /></a>
 </td>
 <td valign="middle">
 
 ### [gltf-skin-roundtrip](examples/gltf-skin-roundtrip/)
 
-The skinning counterpart to `gltf-export-roundtrip`: a seven-bone rigged
+The skinning counterpart to `gltf-export-roundtrip`: a 21-bone rigged mech
 scorpion exported with `export_skins` and re-imported, asserting the joint
 list, JOINTS_0/WEIGHTS_0 unit sums, bone/parent/rest-matrix round-trip,
 bit-exact weights, and identical deformation of the re-imported rig — plus

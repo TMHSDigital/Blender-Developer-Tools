@@ -1,7 +1,9 @@
 # glTF Skin Round-Trip
 
-A runnable example that rigs a mech scorpion — seven-bone chain from pedestal
-root to stinger, blend rings at every joint seam — exports it with
+A runnable example that rigs a mech scorpion — 21 bones: a body, a
+five-segment tail and stinger, two three-bone claws (arm, hand, movable
+finger), eight legs; two-bone blends in the rubber boots at every flexing
+joint — exports it with
 `bpy.ops.export_scene.gltf` (`export_skins=True`), parses the file, re-imports
 it, and verifies the whole skinning contract against the authored rig,
 following [`depsgraph-and-evaluated-data`](../../skills/depsgraph-and-evaluated-data/SKILL.md).
@@ -16,18 +18,22 @@ maps are in [`triangulate-tangents`](../triangulate-tangents/).
 round-trip left uncovered.
 
 - **The skeleton survives.** `skins[0].joints` names every bone; the
-  re-imported armature carries the same 7 bones, the same parent chain, and
-  rest matrices within 2.4e-07 — the +Y-up conversion applies to bone nodes
-  exactly as it does to meshes (their translations convert, no rotation is
-  written).
+  re-imported armature carries the same 21 bones, the same parent chain,
+  and rest matrices within 2.3e-06 — the +Y-up conversion applies to bone
+  nodes exactly as it does to meshes, whichever way a bone points (tail
+  +Y, claws -Y, legs +/-X).
 - **The weights survive.** Every primitive carries JOINTS_0/WEIGHTS_0;
-  per-vertex weights on disk sum to 1 (err 3.0e-08); the re-imported vertex
-  groups match the authored groups **bit-exactly** (w_err 0.0), compared as
-  straddle-safe position keys, the same protocol as the crate example.
+  per-vertex weights on disk sum to 1 (err 3.0e-08; 840 disk vertices carry
+  two influences); the re-imported vertex groups match the authored groups
+  **bit-exactly** (w_err 0.0), compared as straddle-safe position keys, the
+  same protocol as the crate example. Every split copy at a position is
+  compared, not just one: the exporter splits vertices per normal, and each
+  copy carries its own JOINTS_0/WEIGHTS_0, so one corrupted copy must not
+  hide behind a good twin.
 - **The deformation survives.** Posed identically, the re-imported rig's
-  evaluated mesh matches the original's within 4.8e-07 — linear blend
+  evaluated mesh matches the original's within 6.0e-07 — linear blend
   skinning through the file format. The comparison is by rest-position key,
-  never sorted multisets: the exporter welds duplicate loops (32 here), so
+  never sorted multisets: the exporter welds duplicate loops (9960 here), so
   cardinalities differ and a naive sorted zip mispairs vertices (a phantom
   2.29 "deviation" measured and fixed during authoring).
 - **The mesh must be parented to the armature.** The exporter warns
@@ -36,21 +42,40 @@ round-trip left uncovered.
 
 **What each check catches on failure:** exporting with `export_skins=False`
 (exit 5 — no skin on disk), stripping the weights (exit 4 — no vertex
-groups), and posing the re-imported rig differently (exit 19 — deformation
-deviates 0.90).
+groups), nudging one re-imported weight (exit 18 — 0.99), moving one
+re-imported bone's rest tail 1 mm (exit 14 — 3.9e-03), and posing the
+re-imported rig differently (exit 19 — deformation deviates 0.13).
 
-**Version witness:** the skins pipeline is stable between Blender 4.5 LTS and
-5.1 — the exporter/importer RNA is byte-identical (probed with
-`gltf-export-roundtrip`), and every measured value matches to the digit on
-4.5.11 and 5.1.2.
+**Straddle-safe keys, for real.** A float32 round-trip can land a
+coordinate on the far side of a 1e-4 rounding boundary, so lookups also try
+the 26 neighbouring keys. Those neighbours must themselves be rounded:
+`0.3601 + 1e-4` in binary floating point is not the key `0.3602`. The first
+version of this example added the offset without rounding, so only the
+exact key ever matched. It passed by luck until the redesign lowered the
+body to z = 0.36, and then it reported a phantom weight loss (exit 18, 1.0).
 
-The render stages the authored scorpion beside the actual re-imported one —
-same curl, same glowing stinger — proof the skin rode the format through.
-Both rigs are turned three-quarters to the camera. The tail curls in the
-rig's own Y-Z plane, so a head-on view saw the curl end-on: the tail stood
-straight up behind the body like a chimney. The yaw is composed into each
-armature's world matrix, because the glTF importer leaves its armature in
-quaternion mode, where `rotation_euler` does nothing.
+**Version witness:** the skins pipeline is stable across Blender 4.5 LTS,
+5.1 and 5.2 LTS — every measured value matches to the digit on 4.5.11,
+5.1.2 and 5.2.1.
+
+The render is a standoff. On the left, the authored scorpion holds the
+guard pose the check compares: tail coiled tight over its back, claws
+tucked, pincers shut. On the right is the actual re-imported mesh, driven
+through its **imported** armature into a different pose: the tail rears
+high to strike, the claws are raised and the pincers gape. A file that lost
+the skin, the joints, or the weights could not follow that pose. The
+rubber boots at the joints bend smoothly and the plates stay rigid, which
+is the linear blend skinning surviving the format. The two poses differ on
+purpose, so the eye has something to compare. Two identical copies would
+render the same whether or not the round-trip worked.
+
+Both rigs are posed by rest-space axes in quaternions, and the yaw is
+composed into each armature's world matrix, because the glTF importer
+leaves its armature in quaternion mode, where `rotation_euler` does
+nothing. Framing is measured by `gallery_framing` (fill 0.856 x, minimum
+margin 0.072). The asset floors are measured by `gallery_asset_quality`
+(5 materials: hazard paint, gunmetal, chrome, rubber, venom glow; edge90
+0.001).
 
 ## Run
 
@@ -94,6 +119,11 @@ against it.
 | 18 | Weight round-trip drifted |
 | 19 | Deformation round-trip drifted |
 | 20 | `--output` produced no file |
+
+On the `--output` path only, which runs after every check has passed, 10
+also means a `gallery_framing` violation and 11 a `gallery_asset_quality`
+floor violation. The shared helpers own those codes, and the log line says
+which one fired.
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).
