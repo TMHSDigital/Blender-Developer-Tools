@@ -82,7 +82,10 @@ for ob in asset:
     ob.matrix_world = mw
 keep = set(asset)
 for ob in list(sc.objects):
-    if ob not in keep:
+    # Armatures stay: they never render, and removing one drops a skinned
+    # asset back to its rest pose (vertex-weight-limit's arm stands straight
+    # up with its balancer rod detached from the barrel).
+    if ob not in keep and ob.type != "ARMATURE":
         bpy.data.objects.remove(ob, do_unlink=True)
 bpy.context.view_layer.update()
 
