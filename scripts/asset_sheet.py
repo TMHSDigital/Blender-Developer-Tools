@@ -65,6 +65,7 @@ SELECT = {
     "grain-sacks": (r"^SacksLow$", None),
     "rope-bridge": (r"^BridgeLow$", None),
     "wheelbarrow": (r"^BarrowLow$", None),
+    "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
