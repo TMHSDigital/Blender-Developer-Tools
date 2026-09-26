@@ -165,7 +165,7 @@
       "name": "curve-bevel-arc",
       "dir": "examples/curve-bevel-arc",
       "teaches": "A beveled Bezier semicircle authored on bpy.types.Curve — splines.new('BEZIER'), bezier_points, bevel_depth, use_fill_caps — so the curve renders as a solid tube without a prior mesh conversion.",
-      "alt": "A magenta beveled curve tube lying in a semicircle on a dark floor, both filled end caps facing the camera.",
+      "alt": "A red horseshoe magnet made of one beveled Bezier curve on a dark floor, its filled end caps facing the camera as steel pole faces, iron filings arcing between them.",
       "witnessesFix": "Curve tubes are curve datablocks: eight Bezier points, bevel_depth == 0.15, filled caps, and the evaluated mesh has deterministic topology (1044 verts, 1028 faces) resting on the floor.",
       "hero": "docs/gallery/assets/curve-bevel-arc-hero.webp",
       "preview": "examples/curve-bevel-arc/preview.webp",
