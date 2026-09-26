@@ -246,15 +246,16 @@ mapping (`BLENDER_EEVEE` on 5.x, `BLENDER_EEVEE_NEXT` on 4.2-4.5).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: a teal sphere and a magenta sphere sharing one TintedGloss node group with different Tint parameters" /></a>
+<a href="examples/shader-node-group/"><img src="examples/shader-node-group/preview.webp" alt="Shader node group: five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt sharing one DippedGlaze node group with different Tint parameters" /></a>
 </td>
 <td valign="middle">
 
 ### [shader-node-group](examples/shader-node-group/)
 
-One reusable `TintedGloss` group declared via `tree.interface.new_socket`, instanced in two
+One reusable `DippedGlaze` group declared via `tree.interface.new_socket`, instanced in five
 materials with different Tint values. Witnesses the grouping contract: shared datablock
-(`users == 2`), parameters on the group **node** — two spheres, one group, two colors.
+(`users == 5`), parameters on the group **node** — five mugs share one foot band, dip line
+and speckle, and differ only in colour.
 
 </td>
 </tr>

@@ -99,9 +99,9 @@
     {
       "name": "shader-node-group",
       "dir": "examples/shader-node-group",
-      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in two materials with different Tint values — two spheres, one group, two colors.",
-      "alt": "Two glossy spheres, one teal and one magenta, sharing one shader group.",
-      "witnessesFix": "Grouping contract: interface sockets appear on every instance, both materials share one group datablock (users == 2), and per-material parameters live on the group node, not inside the tree.",
+      "teaches": "One reusable shader group declared via tree.interface.new_socket, instanced in five materials with different Tint values — one dipped-glaze group, five stoneware mugs, five colors.",
+      "alt": "Five speckled stoneware mugs in oxblood, amber, celadon, teal and cobalt on a walnut riser, each with the same bare clay foot and wavy dip line from one shared glaze group.",
+      "witnessesFix": "Grouping contract: interface sockets appear on every instance, all five materials share one group datablock (users == 5), and per-material parameters live on the group node, not inside the tree.",
       "hero": "docs/gallery/assets/shader-node-group-hero.webp",
       "preview": "examples/shader-node-group/preview.webp",
       "tags": [
