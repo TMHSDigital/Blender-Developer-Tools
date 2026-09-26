@@ -112,9 +112,9 @@
     {
       "name": "temp-override-join",
       "dir": "examples/temp-override-join",
-      "teaches": "Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
-      "alt": "Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths.",
-      "witnessesFix": "temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.",
+      "teaches": "Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.",
+      "alt": "A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor.",
+      "witnessesFix": "temp_override actually applies: join consumes all six sources, exactly one mesh remains, no geometry is lost, the five part materials merge into one slot each with every face still on its own material, and local Z spans foot to grip.",
       "hero": "docs/gallery/assets/temp-override-join-hero.webp",
       "preview": "examples/temp-override-join/preview.webp",
       "tags": [

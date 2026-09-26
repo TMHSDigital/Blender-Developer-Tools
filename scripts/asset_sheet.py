@@ -80,6 +80,7 @@ SELECT = {
     "gn-instance-grid": (r"^Macropad\.", None),
     "curve-bevel-arc": (r"^(Magnet|Clip\w+|PoleBearings)$", None),
     "shape-key-blend": (r"^Vase$", None),
+    "temp-override-join": (r"^Lantern$", None),
     "depsgraph-export": (r"^Gamepad\.", None),
 }
 

@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>temp-override-join — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta name="description" content="Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/temp-override-join/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="temp-override-join — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta property="og:description" content="Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/temp-override-join/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
+  <meta property="og:image:alt" content="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="temp-override-join — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
+  <meta name="twitter:description" content="Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/temp-override-join-hero.webp" />
-  <meta name="twitter:image:alt" content="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
+  <meta name="twitter:image:alt" content="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,21 +265,23 @@
   </div>
   <header class="hero">
     <h1>temp-override-join</h1>
-    <p>Join three unit cubes into a staircase under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
+    <p>Join seven lantern parts into one object under bpy.context.temp_override — the supported replacement for the removed context.copy() dict-pass form.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths.">
-      <img src="../assets/temp-override-join-hero.webp" alt="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor.">
+      <img src="../assets/temp-override-join-hero.webp" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes the sources, exactly one mesh remains, topology is verts = 8 × steps, and local Z spans all three steps.</div>
+    <div class="callout"><span class="tag">witnesses</span> temp_override actually applies: join consumes all six sources, exactly one mesh remains, no geometry is lost, the five part materials merge into one slot each with every face still on its own material, and local Z spans foot to grip.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/temp-override-join/temp_override_join.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that joins three unit cubes into a staircase using <code>bpy.context.temp_override</code>, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/prefer-temp-override-over-context-copy.mdc"><code>prefer-temp-override-over-context-copy</code></a> rule and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> skill: operators that need a fabricated active/selection context run under <code>temp_override(**kwargs)</code>, not the deprecated <code>bpy.context.copy()</code> dict-pass form removed in Blender 5.x.</p>
-<p><strong>What it witnesses:</strong> <code>object.join</code> under <code>temp_override</code> actually consumes the sources. The check asserts closed-form topology (verts = 8 × steps, faces = 6 × steps), that exactly one mesh remains, that the sources are gone, and that the local Z span covers all three steps (<code>[-0.5, 2.5]</code>). A no-op override (the 5.x failure mode of the old dict-pass path) leaves only step 0 and the Z span fails.</p>
+<p>A runnable example that assembles a hurricane lantern from seven separate part objects with one <code>object.join</code> under <code>bpy.context.temp_override</code>, following the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/rules/prefer-temp-override-over-context-copy.mdc"><code>prefer-temp-override-over-context-copy</code></a> rule and the <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/operators/SKILL.md"><code>operators</code></a> skill: operators that need a fabricated active/selection context run under <code>temp_override(**kwargs)</code>, not the deprecated <code>bpy.context.copy()</code> dict-pass form removed in Blender 5.x.</p>
+<p>The parts are the way a prop artist blocks the lantern out: a red enamel fount, an amber glass globe, an iron wire guard, the two hurricane side air tubes, the bell cap, the wire bail with its wooden grip, and the brass wick knob and filler cap. Each is its own object with its own mesh, materials and transform. The join produces the single <code>Lantern</code> object an engine wants.</p>
+<p><strong>What it witnesses:</strong> <code>object.join</code> under <code>temp_override</code> actually consumes the sources and merges their material slots. The check asserts that exactly one mesh remains and it is the target, that all six sources are gone, and that no geometry was lost (verts and faces equal the sum over the parts). The joined mesh must carry exactly the five part materials, once each, and every material must still own exactly the faces its parts brought. So the glass is still glass and the grip is still wood. The local Z span must run from the fount&#x27;s foot (0) to the top of the grip (closed form 2.303), which proves the part transforms were applied. A no-op override (the 5.x failure mode of the old dict-pass path) leaves seven objects.</p>
+<p><strong>The render is the joined object.</strong> Everything in the still is one mesh object. It shows five materials because the slots merged and the per-face indices were remapped. If they had not been, the lantern would render in the target&#x27;s red enamel from grip to foot. A shadowless warm point light inside the globe (render-only) stands in for the lit wick.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python temp_override_join.py --
@@ -292,7 +294,7 @@ blender --background --python temp_override_join.py -- --output join.png
 blender --background --python temp_override_join.py -- --output join.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh object count after join ≠ 1 (<code>--no-override</code> lands here)</td></tr><tr><td>4</td><td>Joined target is not the sole remaining mesh</td></tr><tr><td>5</td><td>Topology ≠ 24 verts / 18 faces</td></tr><tr><td>6</td><td>Source objects still present</td></tr><tr><td>7</td><td>Local Z span did not cover all steps</td></tr><tr><td>8</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Mesh object count after join ≠ 1 (<code>--no-override</code> lands here)</td></tr><tr><td>4</td><td>Joined target is not the sole remaining mesh</td></tr><tr><td>5</td><td>Verts / faces ≠ the sum over the seven parts</td></tr><tr><td>6</td><td>Source objects still present</td></tr><tr><td>7</td><td>Local Z span ≠ [0, 2.303]: a part transform was not applied</td></tr><tr><td>8</td><td>Material slots ≠ the five part materials, once each</td></tr><tr><td>9</td><td>Faces per material ≠ what the parts brought (indices not remapped)</td></tr><tr><td>10</td><td><code>--output</code> framing gate (<code>gallery_framing</code>)</td></tr><tr><td>11</td><td><code>--output</code> asset-quality floors (<code>gallery_asset_quality</code>)</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-override</code>.</p>
     </section>
     <section class="detail-section src">
@@ -306,10 +308,22 @@ blender --background --python temp_override_join.py -- --output join.png --engin
 Witnesses the prefer-temp-override-over-context-copy contract: operators that
 need a fabricated active/selection context must run under
 `bpy.context.temp_override(**kwargs)`, not the deprecated
-`bpy.ops.*(bpy.context.copy())` dict-pass form (removed in 5.x). Three unit
-cubes are joined into a staircase; the check asserts closed-form topology,
-that only the target remains, and that the local Z span spans all three steps
-(proving every source contributed geometry).
+`bpy.ops.*(bpy.context.copy())` dict-pass form (removed in 5.x).
+
+A hurricane lantern is modeled the way a prop artist blocks one out: seven
+separate part objects (fount, glass globe, wire guard, side air tubes, cap,
+bail with its wooden grip, brasswork), each with its own material and its own
+object transform. One `object.join` under `temp_override` assembles them into
+the single `Lantern` object an engine wants. The check asserts:
+
+- exactly one mesh object remains, and it is the join target;
+- every source object is gone;
+- no geometry was lost (verts / faces equal the sum over the parts);
+- material slots merged: the joined mesh carries exactly the five distinct
+  part materials, once each, and every material still owns exactly the faces
+  its parts brought in (so the glass is still glass, the grip still wood);
+- the part transforms were applied: the joined mesh&#x27;s local Z span runs from
+  the fount&#x27;s foot (0) to the top of the bail grip (closed form).
 
 ``--no-override`` calls ``object.join`` without ``temp_override``. If the
 operator raises, that is caught and the existing object-count check still
@@ -322,38 +336,321 @@ check. Pass --output to also render a still:
     blender --background --python temp_override_join.py -- --no-override   # must fail
     blender --background --python temp_override_join.py -- --output j.png  # + render
 &quot;&quot;&quot;</span>
-<span class="k">import</span> bpy, bmesh, sys, os, math, argparse
+<span class="k">import</span> argparse
+<span class="k">import</span> math
+<span class="k">import</span> os
+<span class="k">import</span> sys
+<span class="k">from</span> collections <span class="k">import</span> Counter
 
-CUBE_SIZE = <span class="n">1.0</span>
-HALF = CUBE_SIZE / <span class="n">2</span>
-STEPS = <span class="n">3</span>
-<span class="c"># staircase along +X: step i sits on the previous, center at (i, 0, i+0.5) * CUBE_SIZE</span>
-EXPECT_VERTS = <span class="n">8</span> * STEPS
-EXPECT_FACES = <span class="n">6</span> * STEPS
-<span class="c"># target origin is step 0; joined local Z spans [-HALF, (STEPS-1)*CUBE_SIZE + HALF]</span>
-EXPECT_Z_LO = -HALF
-EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
+<span class="k">import</span> bmesh
+<span class="k">import</span> bpy
+<span class="k">from</span> mathutils <span class="k">import</span> Vector
+
+<span class="c"># Shared Layer 1 framing + asset-quality measurement (render path only) — see</span>
+<span class="c"># gallery_framing.py for the __file__-relative import shim this relies on.</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+<span class="k">import</span> gallery_framing  <span class="c"># noqa: E402</span>
+<span class="k">import</span> gallery_asset_quality  <span class="c"># noqa: E402</span>
+
+SEGS = <span class="n">32</span>            <span class="c"># lathe segments; divisible by 4 so a vertex sits on +Z of the grip</span>
+WIRE_SIDES = <span class="n">8</span>
+
+<span class="c"># Bail: a wire arc in the XZ plane from the side tubes up over the cap.</span>
+BAIL_X = <span class="n">0.745</span>
+BAIL_Z0 = <span class="n">1.25</span>
+BAIL_H = <span class="n">1.0</span>
+<span class="c"># Wooden grip threaded on the top of the bail, axis along X.</span>
+GRIP_R = <span class="n">0.065</span>
+GRIP_HALF = <span class="n">0.17</span>
+GRIP_CZ = BAIL_Z0 + BAIL_H - <span class="n">0.012</span>
+<span class="c"># Closed-form local Z span of the joined lantern: fount foot to grip top.</span>
+EXPECT_Z_LO = <span class="n">0.0</span>
+EXPECT_Z_HI = GRIP_CZ + GRIP_R
+
+<span class="c"># Camera yaw (degrees off the -Y front); the wick knob faces the camera.</span>
+CAM_YAW = <span class="n">32.0</span>
+
+<span class="c"># (part object name, material key). The first entry is the join target.</span>
+PARTS = (<span class="s">&quot;Fount&quot;</span>, <span class="s">&quot;Globe&quot;</span>, <span class="s">&quot;Guard&quot;</span>, <span class="s">&quot;Tubes&quot;</span>, <span class="s">&quot;Cap&quot;</span>, <span class="s">&quot;Bail&quot;</span>, <span class="s">&quot;Brasswork&quot;</span>)
+MATERIALS = (<span class="s">&quot;Paint&quot;</span>, <span class="s">&quot;Glass&quot;</span>, <span class="s">&quot;Iron&quot;</span>, <span class="s">&quot;Brass&quot;</span>, <span class="s">&quot;Wood&quot;</span>)
 
 
-<span class="k">def</span> build_cubes():
-    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
-    me = bpy.data.meshes.new(<span class="s">&quot;Block&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bmesh.ops.create_cube(bm, size=CUBE_SIZE)
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
+<span class="c"># ------------------------------------------------------------------ modeling</span>
 
+<span class="k">def</span> lathe(bm, profile, segs=SEGS, closed_profile=<span class="k">False</span>, mat=<span class="n">0</span>):
+    <span class="s">&quot;&quot;&quot;Revolve an (r, z) profile about local Z. Points with r == 0 become
+    poles. Profile order bottom -&gt; out -&gt; up -&gt; in gives outward normals.&quot;&quot;&quot;</span>
+    angles = [<span class="n">2.0</span> * math.pi * i / segs <span class="k">for</span> i <span class="k">in</span> range(segs)]
+    rings = []
+    <span class="k">for</span> r, z <span class="k">in</span> profile:
+        <span class="k">if</span> r &lt; <span class="n">1e-9</span>:
+            rings.append([bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, z))])
+        <span class="k">else</span>:
+            rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+                          <span class="k">for</span> a <span class="k">in</span> angles])
+    pairs = list(zip(rings, rings[<span class="n">1</span>:]))
+    <span class="k">if</span> closed_profile:
+        pairs.append((rings[-<span class="n">1</span>], rings[<span class="n">0</span>]))
+    faces = []
+    <span class="k">for</span> a, b <span class="k">in</span> pairs:
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            j = (i + <span class="n">1</span>) % segs
+            <span class="k">if</span> len(a) == <span class="n">1</span> <span class="k">and</span> len(b) == <span class="n">1</span>:
+                <span class="k">continue</span>
+            <span class="k">if</span> len(a) == <span class="n">1</span>:
+                vs = (a[<span class="n">0</span>], b[j], b[i])
+            <span class="k">elif</span> len(b) == <span class="n">1</span>:
+                vs = (a[i], a[j], b[<span class="n">0</span>])
+            <span class="k">else</span>:
+                vs = (a[i], a[j], b[j], b[i])
+            f = bm.faces.new(vs)
+            f.material_index = mat
+            f.smooth = <span class="k">True</span>
+            faces.append(f)
+    <span class="k">return</span> [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring]
+
+
+<span class="k">def</span> tube(bm, pts, radius, sides=WIRE_SIDES, mat=<span class="n">0</span>):
+    <span class="s">&quot;&quot;&quot;Sweep a round wire along a polyline (parallel-transport frames).&quot;&quot;&quot;</span>
+    pts = [Vector(p) <span class="k">for</span> p <span class="k">in</span> pts]
+    tans = []
+    <span class="k">for</span> i <span class="k">in</span> range(len(pts)):
+        a = pts[max(i - <span class="n">1</span>, <span class="n">0</span>)]
+        b = pts[min(i + <span class="n">1</span>, len(pts) - <span class="n">1</span>)]
+        tans.append((b - a).normalized())
+    ref = Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)) <span class="k">if</span> abs(tans[<span class="n">0</span>].z) &lt; <span class="n">0.9</span> <span class="k">else</span> Vector((<span class="n">1</span>, <span class="n">0</span>, <span class="n">0</span>))
+    n = (ref - tans[<span class="n">0</span>] * ref.dot(tans[<span class="n">0</span>])).normalized()
+    rings = []
+    <span class="k">for</span> i, p <span class="k">in</span> enumerate(pts):
+        t = tans[i]
+        n = (n - t * n.dot(t)).normalized()
+        b = t.cross(n)
+        rings.append([bm.verts.new(p + radius * (n * math.cos(<span class="n">2</span> * math.pi * k / sides)
+                                                 + b * math.sin(<span class="n">2</span> * math.pi * k / sides)))
+                      <span class="k">for</span> k <span class="k">in</span> range(sides)])
+    <span class="k">for</span> r0, r1 <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> k <span class="k">in</span> range(sides):
+            m = (k + <span class="n">1</span>) % sides
+            f = bm.faces.new((r0[k], r0[m], r1[m], r1[k]))
+            f.material_index = mat
+            f.smooth = <span class="k">True</span>
+
+
+<span class="k">def</span> torus(bm, r_major, r_minor, z, mat=<span class="n">0</span>, segs=SEGS, sides=WIRE_SIDES):
+    prof = [(r_major + r_minor * math.cos(math.radians(-<span class="n">90</span> + <span class="n">360</span> * k / sides)),
+             z + r_minor * math.sin(math.radians(-<span class="n">90</span> + <span class="n">360</span> * k / sides)))
+            <span class="k">for</span> k <span class="k">in</span> range(sides)]
+    lathe(bm, prof, segs=segs, closed_profile=<span class="k">True</span>, mat=mat)
+
+
+<span class="k">def</span> aligned(bm, verts, axis, origin):
+    <span class="s">&quot;&quot;&quot;Rotate verts built along +Z so +Z points along `axis`, then move to origin.&quot;&quot;&quot;</span>
+    rot = Vector((<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)).rotation_difference(Vector(axis).normalized()).to_matrix()
+    <span class="k">for</span> v <span class="k">in</span> verts:
+        v.co = rot @ v.co + Vector(origin)
+
+
+<span class="k">def</span> build_fount(bm):
+    <span class="c"># squat painted fuel fount: foot ring, drum, domed shoulder, burner collar</span>
+    lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.56</span>, <span class="n">0.0</span>), (<span class="n">0.60</span>, <span class="n">0.012</span>), (<span class="n">0.62</span>, <span class="n">0.045</span>), (<span class="n">0.60</span>, <span class="n">0.075</span>),
+               (<span class="n">0.58</span>, <span class="n">0.10</span>), (<span class="n">0.62</span>, <span class="n">0.15</span>), (<span class="n">0.655</span>, <span class="n">0.215</span>), (<span class="n">0.685</span>, <span class="n">0.232</span>), (<span class="n">0.685</span>, <span class="n">0.248</span>),
+               (<span class="n">0.662</span>, <span class="n">0.265</span>), (<span class="n">0.67</span>, <span class="n">0.33</span>), (<span class="n">0.64</span>, <span class="n">0.41</span>),
+               (<span class="n">0.55</span>, <span class="n">0.49</span>), (<span class="n">0.43</span>, <span class="n">0.545</span>), (<span class="n">0.35</span>, <span class="n">0.57</span>), (<span class="n">0.345</span>, <span class="n">0.60</span>),
+               (<span class="n">0.36</span>, <span class="n">0.625</span>), (<span class="n">0.36</span>, <span class="n">0.665</span>), (<span class="n">0.0</span>, <span class="n">0.665</span>)])
+
+
+<span class="k">def</span> build_globe(bm):
+    <span class="c"># blown glass chimney, open at both ends where collar and cap clamp it</span>
+    lathe(bm, [(<span class="n">0.30</span>, <span class="n">0.655</span>), (<span class="n">0.34</span>, <span class="n">0.70</span>), (<span class="n">0.42</span>, <span class="n">0.80</span>), (<span class="n">0.49</span>, <span class="n">0.92</span>), (<span class="n">0.52</span>, <span class="n">1.06</span>),
+               (<span class="n">0.51</span>, <span class="n">1.18</span>), (<span class="n">0.46</span>, <span class="n">1.30</span>), (<span class="n">0.37</span>, <span class="n">1.40</span>), (<span class="n">0.29</span>, <span class="n">1.47</span>), (<span class="n">0.26</span>, <span class="n">1.52</span>),
+               (<span class="n">0.26</span>, <span class="n">1.56</span>)])
+
+
+<span class="k">def</span> build_guard(bm):
+    <span class="c"># four bowed guard wires plus a belt ring and a seat ring, all iron</span>
+    z0, z1 = <span class="n">0.66</span>, <span class="n">1.55</span>
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">4</span>):
+        a = math.radians(<span class="n">45</span> + <span class="n">90</span> * k)
+        pts = []
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">17</span>):
+            z = z0 + (z1 - z0) * i / <span class="n">16</span>
+            r = <span class="n">0.36</span> + <span class="n">0.24</span> * math.sin(math.pi * (z - z0) / (z1 - z0))
+            pts.append((r * math.cos(a), r * math.sin(a), z))
+        tube(bm, pts, <span class="n">0.02</span>)
+    torus(bm, <span class="n">0.595</span>, <span class="n">0.018</span>, <span class="n">1.10</span>)
+    torus(bm, <span class="n">0.37</span>, <span class="n">0.022</span>, <span class="n">0.655</span>)
+
+
+<span class="k">def</span> build_tubes(bm):
+    <span class="c"># the hurricane side air tubes: fount shoulder -&gt; up past the globe -&gt; cap</span>
+    <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1.0</span>, <span class="n">1.0</span>):
+        pts = [(s * <span class="n">0.66</span>, <span class="n">0.0</span>, <span class="n">0.26</span>), (s * <span class="n">0.70</span>, <span class="n">0.0</span>, <span class="n">0.36</span>), (s * <span class="n">0.705</span>, <span class="n">0.0</span>, <span class="n">0.50</span>)]
+        pts += [(s * <span class="n">0.705</span>, <span class="n">0.0</span>, <span class="n">0.50</span> + <span class="n">1.0</span> * i / <span class="n">8</span>) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, <span class="n">9</span>)]
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, <span class="n">7</span>):
+            t = math.radians(<span class="n">90</span> * i / <span class="n">6</span>)
+            pts.append((s * (<span class="n">0.705</span> - <span class="n">0.36</span> * math.sin(t)), <span class="n">0.0</span>,
+                        <span class="n">1.50</span> + <span class="n">0.12</span> * (<span class="n">1</span> - math.cos(t)) + <span class="n">0.06</span> * math.sin(t)))
+        pts.append((s * <span class="n">0.28</span>, <span class="n">0.0</span>, <span class="n">1.69</span>))
+        tube(bm, pts, <span class="n">0.042</span>, sides=<span class="n">12</span>)
+        <span class="c"># pivot boss where the bail hooks in</span>
+        vs = lathe(bm, [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.05</span>, <span class="n">0.0</span>), (<span class="n">0.055</span>, <span class="n">0.02</span>), (<span class="n">0.05</span>, <span class="n">0.05</span>),
+                        (<span class="n">0.03</span>, <span class="n">0.06</span>), (<span class="n">0.0</span>, <span class="n">0.06</span>)], segs=<span class="n">16</span>)
+        aligned(bm, vs, (s, <span class="n">0.0</span>, <span class="n">0.0</span>), (s * <span class="n">0.70</span>, <span class="n">0.0</span>, BAIL_Z0))
+
+
+<span class="k">def</span> build_cap(bm):
+    <span class="c"># vented bell cap with a chimney stack and a rolled rim</span>
+    lathe(bm, [(<span class="n">0.0</span>, <span class="n">1.50</span>), (<span class="n">0.30</span>, <span class="n">1.50</span>), (<span class="n">0.36</span>, <span class="n">1.515</span>), (<span class="n">0.375</span>, <span class="n">1.55</span>), (<span class="n">0.35</span>, <span class="n">1.585</span>),
+               (<span class="n">0.30</span>, <span class="n">1.645</span>), (<span class="n">0.23</span>, <span class="n">1.715</span>), (<span class="n">0.16</span>, <span class="n">1.755</span>), (<span class="n">0.14</span>, <span class="n">1.775</span>),
+               (<span class="n">0.14</span>, <span class="n">1.84</span>), (<span class="n">0.185</span>, <span class="n">1.855</span>), (<span class="n">0.20</span>, <span class="n">1.885</span>), (<span class="n">0.18</span>, <span class="n">1.915</span>),
+               (<span class="n">0.0</span>, <span class="n">1.925</span>)])
+
+
+<span class="k">def</span> build_bail(bm):
+    <span class="c"># wire bail arc, pivoting on the tube bosses, plus the wooden grip</span>
+    pts = []
+    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">33</span>):
+        t = math.pi * i / <span class="n">32</span>
+        pts.append((BAIL_X * math.cos(t), <span class="n">0.0</span>, BAIL_Z0 + BAIL_H * math.sin(t)))
+    tube(bm, pts, <span class="n">0.026</span>)
+    prof = [(<span class="n">0.0</span>, -GRIP_HALF), (<span class="n">0.045</span>, -GRIP_HALF), (<span class="n">0.058</span>, -GRIP_HALF + <span class="n">0.012</span>),
+            (<span class="n">0.063</span>, -<span class="n">0.13</span>), (GRIP_R, -<span class="n">0.10</span>), (<span class="n">0.058</span>, -<span class="n">0.075</span>), (GRIP_R, -<span class="n">0.05</span>),
+            (GRIP_R, <span class="n">0.05</span>), (<span class="n">0.058</span>, <span class="n">0.075</span>), (GRIP_R, <span class="n">0.10</span>), (<span class="n">0.063</span>, <span class="n">0.13</span>),
+            (<span class="n">0.058</span>, GRIP_HALF - <span class="n">0.012</span>), (<span class="n">0.045</span>, GRIP_HALF), (<span class="n">0.0</span>, GRIP_HALF)]
+    vs = lathe(bm, prof, segs=SEGS, mat=<span class="n">1</span>)
+    aligned(bm, vs, (<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, GRIP_CZ))
+
+
+<span class="k">def</span> build_brasswork(bm):
+    yaw = math.radians(-<span class="n">90</span> - CAM_YAW + <span class="n">12</span>)
+    d = Vector((math.cos(yaw), math.sin(yaw), <span class="n">0.0</span>))
+    <span class="c"># wick-raiser knob on the burner collar, facing the camera</span>
+    knurl = [(<span class="n">0.0</span>, <span class="n">0.0</span>), (<span class="n">0.024</span>, <span class="n">0.0</span>), (<span class="n">0.024</span>, <span class="n">0.14</span>), (<span class="n">0.05</span>, <span class="n">0.145</span>), (<span class="n">0.07</span>, <span class="n">0.155</span>)]
+    knurl += [(<span class="n">0.075</span> <span class="k">if</span> k % <span class="n">2</span> == <span class="n">0</span> <span class="k">else</span> <span class="n">0.068</span>, <span class="n">0.16</span> + <span class="n">0.004</span> * k) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">8</span>)]
+    knurl += [(<span class="n">0.07</span>, <span class="n">0.195</span>), (<span class="n">0.05</span>, <span class="n">0.205</span>), (<span class="n">0.0</span>, <span class="n">0.205</span>)]
+    vs = lathe(bm, knurl, segs=<span class="n">24</span>)
+    aligned(bm, vs, d, d * <span class="n">0.30</span> + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.60</span>)))
+    <span class="c"># filler cap on the fount shoulder</span>
+    f = Vector((math.cos(yaw - <span class="n">1.3</span>), math.sin(yaw - <span class="n">1.3</span>), <span class="n">0.0</span>))
+    vs = lathe(bm, [(<span class="n">0.0</span>, -<span class="n">0.02</span>), (<span class="n">0.085</span>, -<span class="n">0.02</span>), (<span class="n">0.09</span>, <span class="n">0.03</span>), (<span class="n">0.08</span>, <span class="n">0.05</span>),
+                    (<span class="n">0.05</span>, <span class="n">0.06</span>), (<span class="n">0.045</span>, <span class="n">0.085</span>), (<span class="n">0.02</span>, <span class="n">0.095</span>), (<span class="n">0.0</span>, <span class="n">0.095</span>)], segs=<span class="n">24</span>)
+    aligned(bm, vs, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>), f * <span class="n">0.50</span> + Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.47</span>)))
+
+
+BUILDERS = {
+    <span class="s">&quot;Fount&quot;</span>: (build_fount, (<span class="s">&quot;Paint&quot;</span>,)),
+    <span class="s">&quot;Globe&quot;</span>: (build_globe, (<span class="s">&quot;Glass&quot;</span>,)),
+    <span class="s">&quot;Guard&quot;</span>: (build_guard, (<span class="s">&quot;Iron&quot;</span>,)),
+    <span class="s">&quot;Tubes&quot;</span>: (build_tubes, (<span class="s">&quot;Paint&quot;</span>,)),
+    <span class="s">&quot;Cap&quot;</span>: (build_cap, (<span class="s">&quot;Paint&quot;</span>,)),
+    <span class="s">&quot;Bail&quot;</span>: (build_bail, (<span class="s">&quot;Iron&quot;</span>, <span class="s">&quot;Wood&quot;</span>)),
+    <span class="s">&quot;Brasswork&quot;</span>: (build_brasswork, (<span class="s">&quot;Brass&quot;</span>,)),
+}
+
+
+<span class="k">def</span> make_material(key):
+    spec = {
+        <span class="s">&quot;Paint&quot;</span>: dict(base=(<span class="n">0.36</span>, <span class="n">0.022</span>, <span class="n">0.014</span>), rough=<span class="n">0.40</span>, noise=(<span class="n">9.0</span>, <span class="n">0.30</span>)),
+        <span class="s">&quot;Glass&quot;</span>: dict(base=(<span class="n">0.12</span>, <span class="n">0.04</span>, <span class="n">0.01</span>), rough=<span class="n">0.06</span>,
+                      emit=(<span class="n">1.0</span>, <span class="n">0.31</span>, <span class="n">0.035</span>), strength=(<span class="n">1.2</span>, <span class="n">0.06</span>)),
+        <span class="s">&quot;Iron&quot;</span>: dict(base=(<span class="n">0.075</span>, <span class="n">0.075</span>, <span class="n">0.08</span>), rough=<span class="n">0.48</span>, metal=<span class="n">0.85</span>, noise=(<span class="n">22.0</span>, <span class="n">0.45</span>)),
+        <span class="s">&quot;Brass&quot;</span>: dict(base=(<span class="n">0.78</span>, <span class="n">0.52</span>, <span class="n">0.18</span>), rough=<span class="n">0.30</span>, metal=<span class="n">1.0</span>, noise=(<span class="n">30.0</span>, <span class="n">0.20</span>)),
+        <span class="s">&quot;Wood&quot;</span>: dict(base=(<span class="n">0.34</span>, <span class="n">0.15</span>, <span class="n">0.06</span>), rough=<span class="n">0.62</span>, noise=(<span class="n">40.0</span>, <span class="n">0.40</span>)),
+    }[key]
+    mat = bpy.data.materials.new(<span class="s">f&quot;</span><span class="s">Lantern.</span>{key}<span class="s">&quot;</span>)
+    mat.use_nodes = <span class="k">True</span>
+    nt = mat.node_tree
+    b = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = spec[<span class="s">&quot;base&quot;</span>] + (<span class="n">1.0</span>,)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = spec[<span class="s">&quot;rough&quot;</span>]
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = spec.get(<span class="s">&quot;metal&quot;</span>, <span class="n">0.0</span>)
+    <span class="k">if</span> <span class="s">&quot;emit&quot;</span> <span class="k">in</span> spec:
+        b.inputs[<span class="s">&quot;Emission Color&quot;</span>].default_value = spec[<span class="s">&quot;emit&quot;</span>] + (<span class="n">1.0</span>,)
+        <span class="c"># hot where the globe faces the eye, cooling to deep amber at the</span>
+        <span class="c"># silhouette, so the glass reads as a lit volume, not a flat disc</span>
+        core, rim = spec[<span class="s">&quot;strength&quot;</span>]
+        lw = nt.nodes.new(<span class="s">&quot;ShaderNodeLayerWeight&quot;</span>)
+        lw.inputs[<span class="s">&quot;Blend&quot;</span>].default_value = <span class="n">0.20</span>
+        emap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        emap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = core
+        emap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = rim
+        emap.inputs[<span class="s">&quot;From Max&quot;</span>].default_value = <span class="n">0.55</span>
+        nt.links.new(lw.outputs[<span class="s">&quot;Facing&quot;</span>], emap.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(emap.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Emission Strength&quot;</span>])
+    <span class="k">if</span> <span class="s">&quot;noise&quot;</span> <span class="k">in</span> spec:
+        <span class="c"># wear: noise-mottled base color and roughness, never a flat slot</span>
+        scale, amount = spec[<span class="s">&quot;noise&quot;</span>]
+        noise = nt.nodes.new(<span class="s">&quot;ShaderNodeTexNoise&quot;</span>)
+        noise.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = scale
+        noise.inputs[<span class="s">&quot;Detail&quot;</span>].default_value = <span class="n">6.0</span>
+        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+        ramp.color_ramp.elements[<span class="n">0</span>].position = <span class="n">0.35</span>
+        ramp.color_ramp.elements[<span class="n">1</span>].position = <span class="n">0.70</span>
+        base = spec[<span class="s">&quot;base&quot;</span>]
+        ramp.color_ramp.elements[<span class="n">0</span>].color = tuple(c * (<span class="n">1</span> - amount) <span class="k">for</span> c <span class="k">in</span> base) + (<span class="n">1.0</span>,)
+        ramp.color_ramp.elements[<span class="n">1</span>].color = tuple(min(<span class="n">1.0</span>, c * (<span class="n">1</span> + amount)) <span class="k">for</span> c <span class="k">in</span> base) + (<span class="n">1.0</span>,)
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], b.inputs[<span class="s">&quot;Base Color&quot;</span>])
+        rmap = nt.nodes.new(<span class="s">&quot;ShaderNodeMapRange&quot;</span>)
+        rmap.inputs[<span class="s">&quot;To Min&quot;</span>].default_value = spec[<span class="s">&quot;rough&quot;</span>] - <span class="n">0.10</span>
+        rmap.inputs[<span class="s">&quot;To Max&quot;</span>].default_value = spec[<span class="s">&quot;rough&quot;</span>] + <span class="n">0.15</span>
+        nt.links.new(noise.outputs[<span class="s">&quot;Fac&quot;</span>], rmap.inputs[<span class="s">&quot;Value&quot;</span>])
+        nt.links.new(rmap.outputs[<span class="s">&quot;Result&quot;</span>], b.inputs[<span class="s">&quot;Roughness&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_parts(prefix=<span class="s">&quot;Lantern&quot;</span>, mats=<span class="k">None</span>, collection=<span class="k">None</span>):
+    <span class="s">&quot;&quot;&quot;Seven part objects, each with its own mesh, materials and transform.
+
+    Geometry is authored in lantern space and then re-centred on the part&#x27;s
+    own pivot (its bounds centre), so the join has real transforms to apply.
+    &quot;&quot;&quot;</span>
+    <span class="k">if</span> mats <span class="k">is</span> <span class="k">None</span>:
+        mats = {k: make_material(k) <span class="k">for</span> k <span class="k">in</span> MATERIALS}
+    collection = collection <span class="k">or</span> bpy.context.collection
     objs = []
-    <span class="k">for</span> i <span class="k">in</span> range(STEPS):
-        obj = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Block.</span>{i}<span class="s">&quot;</span>, me.copy())
-        obj.location = (i * CUBE_SIZE, <span class="n">0.0</span>, (i + <span class="n">0.5</span>) * CUBE_SIZE)
-        bpy.context.collection.objects.link(obj)
+    <span class="k">for</span> name <span class="k">in</span> PARTS:
+        fn, keys = BUILDERS[name]
+        me = bpy.data.meshes.new(<span class="s">f&quot;</span>{prefix}<span class="s">.</span>{name}<span class="s">&quot;</span>)
+        bm = bmesh.new()
+        <span class="k">try</span>:
+            fn(bm)
+            bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=<span class="n">1e-6</span>)
+            lo = Vector([min(v.co[i] <span class="k">for</span> v <span class="k">in</span> bm.verts) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+            hi = Vector([max(v.co[i] <span class="k">for</span> v <span class="k">in</span> bm.verts) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)])
+            pivot = (lo + hi) / <span class="n">2</span>
+            <span class="k">if</span> name == PARTS[<span class="n">0</span>]:
+                pivot = Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))  <span class="c"># the target keeps the floor origin</span>
+            bmesh.ops.translate(bm, vec=-pivot, verts=bm.verts)
+            <span class="c"># machined profile corners stay crisp under smooth shading</span>
+            bm.normal_update()
+            <span class="k">for</span> e <span class="k">in</span> bm.edges:
+                <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">32</span>):
+                    e.smooth = <span class="k">False</span>
+            bm.to_mesh(me)
+        <span class="k">finally</span>:
+            bm.free()
+        <span class="k">for</span> k <span class="k">in</span> keys:
+            me.materials.append(mats[k])
+        <span class="c"># target is named for what it becomes; sources for what they are</span>
+        obj = bpy.data.objects.new(prefix <span class="k">if</span> name == PARTS[<span class="n">0</span>] <span class="k">else</span> <span class="s">f&quot;</span>{prefix}<span class="s">.</span>{name}<span class="s">&quot;</span>, me)
+        obj.location = pivot
+        collection.objects.link(obj)
         objs.append(obj)
-    bpy.data.meshes.remove(me)
     <span class="k">return</span> objs
 
+
+<span class="k">def</span> material_faces(objs):
+    <span class="s">&quot;&quot;&quot;Faces owned by each material name, across the given mesh objects.&quot;&quot;&quot;</span>
+    c = Counter()
+    <span class="k">for</span> o <span class="k">in</span> objs:
+        slots = o.data.materials
+        <span class="k">for</span> p <span class="k">in</span> o.data.polygons:
+            c[slots[p.material_index].name] += <span class="n">1</span>
+    <span class="k">return</span> c
+
+
+<span class="c"># ------------------------------------------------------------------ contract</span>
 
 <span class="k">def</span> join_with_temp_override(target, sources):
     <span class="s">&quot;&quot;&quot;The contract this example witnesses: temp_override, not context.copy().
@@ -370,7 +667,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     <span class="k">return</span> target
 
 
-<span class="k">def</span> check(joined, source_names):
+<span class="k">def</span> check(joined, source_names, expect):
     mesh_objs = [o <span class="k">for</span> o <span class="k">in</span> bpy.data.objects <span class="k">if</span> o.type == <span class="s">&#x27;MESH&#x27;</span>]
     <span class="k">if</span> len(mesh_objs) != <span class="n">1</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: expected 1 mesh object after join, got </span>{len(mesh_objs)}<span class="s">&quot;</span>,
@@ -383,9 +680,9 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
 
     got_v = len(joined.data.vertices)
     got_f = len(joined.data.polygons)
-    <span class="k">if</span> got_v != EXPECT_VERTS <span class="k">or</span> got_f != EXPECT_FACES:
+    <span class="k">if</span> got_v != expect[<span class="s">&quot;verts&quot;</span>] <span class="k">or</span> got_f != expect[<span class="s">&quot;faces&quot;</span>]:
         print(<span class="s">f&quot;</span><span class="s">ERROR: topology verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> != </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">expected verts=</span>{EXPECT_VERTS}<span class="s"> faces=</span>{EXPECT_FACES}<span class="s">&quot;</span>,
+              <span class="s">f&quot;</span><span class="s">sum over parts verts=</span>{expect[<span class="s">&#x27;verts&#x27;</span>]}<span class="s"> faces=</span>{expect[<span class="s">&#x27;faces&#x27;</span>]}<span class="s">&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
 
@@ -395,65 +692,46 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
               file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
 
-    <span class="c"># Z span proves every step contributed — a no-op override leaves only step 0</span>
+    <span class="c"># Z span proves the part transforms were applied: the target alone stops</span>
+    <span class="c"># at the collar, and an unapplied pivot would drop the grip to the floor</span>
     zs = [v.co.z <span class="k">for</span> v <span class="k">in</span> joined.data.vertices]
     z_lo, z_hi = min(zs), max(zs)
     <span class="k">if</span> abs(z_lo - EXPECT_Z_LO) &gt; <span class="n">1e-4</span> <span class="k">or</span> abs(z_hi - EXPECT_Z_HI) &gt; <span class="n">1e-4</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: local z [</span>{z_lo:<span class="s">.4f</span>}<span class="s">, </span>{z_hi:<span class="s">.4f</span>}<span class="s">] != </span><span class="s">&quot;</span>
-              <span class="s">f&quot;</span><span class="s">[</span>{EXPECT_Z_LO:<span class="s">.4f</span>}<span class="s">, </span>{EXPECT_Z_HI:<span class="s">.4f</span>}<span class="s">] — join did not merge all steps</span><span class="s">&quot;</span>,
+              <span class="s">f&quot;</span><span class="s">[</span>{EXPECT_Z_LO:<span class="s">.4f</span>}<span class="s">, </span>{EXPECT_Z_HI:<span class="s">.4f</span>}<span class="s">] — join did not place every part</span><span class="s">&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">7</span>
 
-    print(<span class="s">f&quot;</span><span class="s">steps=</span>{STEPS}<span class="s"> verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s"> override=temp_override</span><span class="s">&quot;</span>)
+    <span class="c"># slots merged: each distinct part material exactly once, nothing else</span>
+    slots = [m.name <span class="k">if</span> m <span class="k">else</span> <span class="k">None</span> <span class="k">for</span> m <span class="k">in</span> joined.data.materials]
+    want = sorted(<span class="s">f&quot;</span><span class="s">Lantern.</span>{k}<span class="s">&quot;</span> <span class="k">for</span> k <span class="k">in</span> MATERIALS)
+    <span class="k">if</span> sorted(slots) != want:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: joined material slots </span>{slots}<span class="s"> != one slot per part </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">material </span>{want}<span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">8</span>
+
+    <span class="c"># ... and every material still owns exactly the faces its parts brought</span>
+    got_mf = material_faces([joined])
+    <span class="k">if</span> got_mf != expect[<span class="s">&quot;mat_faces&quot;</span>]:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: faces per material </span>{dict(got_mf)}<span class="s"> != </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span>{dict(expect[<span class="s">&#x27;mat_faces&#x27;</span>])}<span class="s"> — slot indices were not remapped</span><span class="s">&quot;</span>,
+              file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
+
+    print(<span class="s">f&quot;</span><span class="s">parts=</span>{len(PARTS)}<span class="s"> verts=</span>{got_v}<span class="s"> faces=</span>{got_f}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">z=</span>{z_lo:<span class="s">.3f</span>}<span class="s">..</span>{z_hi:<span class="s">.3f</span>}<span class="s"> slots=</span>{len(slots)}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">faces/material=</span>{dict(sorted(got_mf.items()))}<span class="s"> override=temp_override</span><span class="s">&quot;</span>)
     <span class="k">return</span> <span class="n">0</span>
 
+
+<span class="c"># ------------------------------------------------------------------ render</span>
 
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(obj, path, engine):
+<span class="k">def</span> render_still(lantern, path, engine):
     scene = bpy.context.scene
-    <span class="k">for</span> poly <span class="k">in</span> obj.data.polygons:
-        poly.use_smooth = <span class="k">False</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;Amber&quot;</span>)
-    mat.use_nodes = <span class="k">True</span>
-    bsdf = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.98</span>, <span class="n">0.38</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)  <span class="c"># amber</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.20</span>
-    obj.data.materials.clear()
-    obj.data.materials.append(mat)
-    <span class="c"># center the staircase footprint; origin is step-0 center</span>
-    obj.location = (-(STEPS - <span class="n">1</span>) * CUBE_SIZE / <span class="n">2</span>, <span class="n">0.0</span>, HALF)
-
-    <span class="c"># Stepped plinths under steps 1 and up. The joined steps meet only</span>
-    <span class="c"># along an edge (the geometry the check asserts), so without support</span>
-    <span class="c"># the upper cubes hung in the air. Render-only scaffolding, slimmer</span>
-    <span class="c"># than a step and stopping 2 mm short so no face is shared.</span>
-    plinth_mat = bpy.data.materials.new(<span class="s">&quot;Plinth&quot;</span>)
-    plinth_mat.use_nodes = <span class="k">True</span>
-    pb = plinth_mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.11</span>, <span class="n">0.115</span>, <span class="n">0.125</span>, <span class="n">1.0</span>)
-    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.75</span>
-    plinths = []
-    <span class="k">for</span> i <span class="k">in</span> range(<span class="n">1</span>, STEPS):
-        top = i * CUBE_SIZE - <span class="n">0.002</span>
-        pme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>)
-        pbm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cube(pbm, size=<span class="n">1.0</span>)
-            bmesh.ops.scale(pbm, vec=(CUBE_SIZE * <span class="n">0.86</span>, CUBE_SIZE * <span class="n">0.86</span>, top),
-                            verts=pbm.verts)
-            bmesh.ops.translate(pbm, vec=(<span class="n">0.0</span>, <span class="n">0.0</span>, top / <span class="n">2.0</span>), verts=pbm.verts)
-            pbm.to_mesh(pme)
-        <span class="k">finally</span>:
-            pbm.free()
-        pme.materials.append(plinth_mat)
-        pob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Plinth</span>{i}<span class="s">&quot;</span>, pme)
-        pob.location = (obj.location.x + i * CUBE_SIZE, <span class="n">0.0</span>, <span class="n">0.0</span>)
-        scene.collection.objects.link(pob)
-        plinths.append(pob)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -465,61 +743,64 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
     fmat.use_nodes = <span class="k">True</span>
     fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.055</span>, <span class="n">0.06</span>, <span class="n">0.07</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
+    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">7.5</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
-    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.008</span>, <span class="n">0.009</span>, <span class="n">0.012</span>, <span class="n">1.0</span>)
+    world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (<span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     scene.world = world
 
-    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, STEPS * CUBE_SIZE * <span class="n">0.4</span>)
-    scene.collection.objects.link(aim)
-
-    <span class="k">def</span> light(name, loc, energy, size, col):
-        ld = bpy.data.lights.new(name, <span class="s">&#x27;AREA&#x27;</span>)
+    <span class="k">def</span> light(name, kind, loc, energy, col, at=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.1</span>), size=<span class="n">1.0</span>):
+        ld = bpy.data.lights.new(name, kind)
         ld.energy = energy
-        ld.size = size
         ld.color = col
+        <span class="k">if</span> kind == <span class="s">&#x27;AREA&#x27;</span>:
+            ld.size = size
+        <span class="k">else</span>:
+            ld.shadow_soft_size = size
         ob = bpy.data.objects.new(name, ld)
         ob.location = loc
+        ob.rotation_euler = (Vector(at) - Vector(loc)).to_track_quat(<span class="s">&#x27;-Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler()
         scene.collection.objects.link(ob)
-        lc = ob.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
-        lc.target = aim
-        lc.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
-        lc.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
+        <span class="k">return</span> ld
 
-    <span class="c"># 1500 W was tuned under the default AgX view; under Standard it lifted</span>
-    <span class="c"># the frame above the calibration luma band.</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">950.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.98</span>, <span class="n">0.94</span>))
-    <span class="c"># Fill and rim softened: at 340 / 480 they threw a hot pool onto the</span>
-    <span class="c"># floor to the right of the steps, the brightest thing in frame.</span>
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">3.0</span>), <span class="n">200.0</span>, <span class="n">8.0</span>, (<span class="n">0.8</span>, <span class="n">0.87</span>, <span class="n">1.0</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">5.0</span>, <span class="n">2.5</span>), <span class="n">220.0</span>, <span class="n">4.0</span>, (<span class="n">1.0</span>, <span class="n">0.75</span>, <span class="n">0.45</span>))
+    <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge raking the back</span>
+    <span class="c"># wall right behind the lantern as the camera sees it (docs/VISUAL-STYLE.md)</span>
+    light(<span class="s">&quot;Key&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">480.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), size=<span class="n">4.5</span>)
+    light(<span class="s">&quot;Fill&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), size=<span class="n">9.0</span>)
+    light(<span class="s">&quot;Rim&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>, (-<span class="n">1.6</span>, <span class="n">3.4</span>, <span class="n">6.0</span>), <span class="n">260.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), at=(<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.9</span>), size=<span class="n">4.0</span>)
+    light(<span class="s">&quot;Wedge&quot;</span>, <span class="s">&#x27;AREA&#x27;</span>, (-<span class="n">1.2</span>, <span class="n">4.8</span>, <span class="n">4.4</span>), <span class="n">420.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>),
+          at=(-<span class="n">4.2</span>, <span class="n">7.5</span>, <span class="n">1.6</span>), size=<span class="n">6.0</span>)
+    <span class="c"># the lit wick: a shadowless warm point inside the globe, so the flame</span>
+    <span class="c"># throws its glow onto the fount, the guard wires and the floor</span>
+    flame = light(<span class="s">&quot;Flame&quot;</span>, <span class="s">&#x27;POINT&#x27;</span>, (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>), <span class="n">60.0</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.2</span>), size=<span class="n">0.08</span>)
+    flame.use_shadow = <span class="k">False</span>
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Pulled back so the plinths, which reach the floor, clear the bottom edge.</span>
-    cam.location = (<span class="n">5.7</span>, -<span class="n">7.3</span>, <span class="n">5.1</span>)
+    yaw = math.radians(CAM_YAW)
+    dist = <span class="n">7.3</span>
+    cam.location = (dist * math.sin(yaw), -dist * math.cos(yaw), <span class="n">2.7</span>)
     scene.collection.objects.link(cam)
+    aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.13</span>)
+    scene.collection.objects.link(aim)
+    con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
+    con.target = aim
     scene.camera = cam
-    track = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
-    track.target = aim
-    track.track_axis = <span class="s">&#x27;TRACK_NEGATIVE_Z&#x27;</span>
-    track.up_axis = <span class="s">&#x27;UP_Y&#x27;</span>
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">48</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -529,9 +810,22 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>  <span class="c"># docs/VISUAL-STYLE.md</span>
+    <span class="c"># AgX would wash the red enamel and the amber glass toward pastel</span>
+    <span class="c"># (docs/VISUAL-STYLE.md)</span>
+    scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+    <span class="c"># Layer 1 gates before the beauty render, so a defective composition</span>
+    <span class="c"># ships no artifact: framing (exit 10) and asset-quality floors (exit 11)</span>
+    fcode = gallery_framing.check_framing(scene, cam, hero=[lantern],
+                                          elements=[lantern], stage=[floor, wall])
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    qcode = gallery_asset_quality.check_asset_quality(scene, cam, hero=[lantern],
+                                                      stage=[floor, wall])
+    <span class="k">if</span> qcode:
+        <span class="k">return</span> qcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span> <span class="k">if</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span> <span class="k">else</span> <span class="n">12</span>
 
 
 <span class="k">def</span> main():
@@ -544,9 +838,15 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
                    help=<span class="s">&quot;join without temp_override (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
-    objs = build_cubes()
+    bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
+    objs = build_parts()
     target, sources = objs[<span class="n">0</span>], objs[<span class="n">1</span>:]
     source_names = [s.name <span class="k">for</span> s <span class="k">in</span> sources]
+    expect = {
+        <span class="s">&quot;verts&quot;</span>: sum(len(o.data.vertices) <span class="k">for</span> o <span class="k">in</span> objs),
+        <span class="s">&quot;faces&quot;</span>: sum(len(o.data.polygons) <span class="k">for</span> o <span class="k">in</span> objs),
+        <span class="s">&quot;mat_faces&quot;</span>: material_faces(objs),
+    }
     <span class="k">if</span> args.no_override:
         <span class="k">try</span>:
             bpy.ops.object.join()
@@ -556,14 +856,16 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
         joined = target
     <span class="k">else</span>:
         joined = join_with_temp_override(target, sources)
-    code = check(joined, source_names)
+    code = check(joined, source_names, expect)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(joined, os.path.abspath(args.output), args.engine):
+        rcode = render_still(joined, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> rcode == <span class="n">12</span>:
             print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+        <span class="k">if</span> rcode:
+            <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;temp-override-join OK&quot;</span>)
@@ -580,7 +882,7 @@ EXPECT_Z_HI = (STEPS - <span class="n">1</span>) * CUBE_SIZE + HALF
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/temp-override-join-hero.webp" alt="Three amber cubes joined into a single diagonal staircase object, the upper steps standing on grey plinths." />
+    <img src="../assets/temp-override-join-hero.webp" alt="A red enamel hurricane lantern with a glowing amber glass globe, black wire guard, side air tubes, brass wick knob and a wire bail with a wooden grip, all one joined object on a dark studio floor." />
   </dialog>
   <footer>
     <div class="statusbar">
