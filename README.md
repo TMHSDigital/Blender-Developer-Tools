@@ -971,7 +971,7 @@ concave grooves are free.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry can props with pressed X ribs and red spout rings on a dark studio floor - one faceted flat, one smeared by smooth-everything, one crisp with correct hard edges - proving the post-4.1 shading contract" /></a>
+<a href="examples/custom-normals-shade/"><img src="examples/custom-normals-shade/preview.webp" alt="Custom normals and shade by angle: three olive-drab jerry cans with X-pressed panels, triple handles and red-sealed spouts on a dark studio floor - one faceted flat, one smeared glossy by smooth-everything, one crisp by-angle with its sharp edges traced in thin cyan lines - proving the post-4.1 shading contract" /></a>
 </td>
 <td valign="middle">
 
@@ -984,7 +984,7 @@ on **both** 4.5 LTS and 5.1. `set_sharp_from_angle` marks sharp exactly the
 edges an independent dihedral recompute predicts; evaluated loop normals
 weld across smooth edges and split by the dihedral across sharp ones;
 custom split normals survive depsgraph evaluation within their int16
-quantization (1.407e-04, not float-exact). Documents the legacy
+quantization (3.904e-05, not float-exact). Documents the legacy
 `shade_auto_smooth` operator trap: CANCELLED headless on 4.5, FINISHED
 with the Smooth-by-Angle modifier on 5.1.
 
@@ -992,7 +992,7 @@ with the Smooth-by-Angle modifier on 5.1.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: dual-panel dirty vs clean brass street valves filling the frame — left with backlit through-hole, emissive boundary tubes and loose-vert bead over a DIRTY placard, right intact CLEAN manifold — proving the engine-ingest topology checklist" /></a>
+<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: two blue flanged street valves with brass handwheels — the left dirty copy with a red-outlined hole, a red flipped patch on the bonnet, an amber ngon on the base flange and three red loose-vert beads, the right one intact — proving the engine-ingest topology checklist" /></a>
 </td>
 <td valign="middle">
 
@@ -1000,11 +1000,13 @@ with the Smooth-by-Angle modifier on 5.1.
 
 The mesh-cleanliness contract a prop pipeline relies on before engine ingest:
 no ngons, no loose vertices, every edge bordering exactly two faces, no
-zero-area faces, positive signed volume, and Euler `V − E + F == 2` for a
-closed solid (measured 66/136/72, volume 0.652001). Companion to
+zero-area faces, contiguous and outward winding on all eight parts of a
+flanged street valve, and Euler `V − E + F == 2` on its body casting
+(measured 802/1632/832, volume 0.453344). Companion to
 [`collision-hull-proxy`](examples/collision-hull-proxy/) (hull watertightness)
-and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Dual-panel
-still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
+and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Still: a
+dirty copy with a hole, flipped patch, ngon and loose verts marked from live
+audit data beside the intact valve; the paint glows red on any back face.
 
 </td>
 </tr>
@@ -1067,7 +1069,7 @@ evaluation). Break the mirror and the render is literally half a car.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two eight-petal pinwheels side by side — left CORNER-domain with crisp colored petals to the hub, right naive POINT-domain smeared into a swirl, proving last-write-wins shear at shared vertices" /></a>
+<a href="examples/attribute-domain-shear/"><img src="examples/attribute-domain-shear/preview.webp" alt="Attribute domain shear: two striped patio parasols side by side — left CORNER-domain with crisp crimson and cream stripes, right naive POINT-domain with the stripes smeared pink along the seams and the front red panel gone white, proving last-write-wins shear at shared vertices" /></a>
 </td>
 <td valign="middle">
 
@@ -1081,8 +1083,10 @@ vertex once per neighbor and the **last write wins** — the hub reads
 palette[K−1], and the measured shear matches the palette closed form
 (0.751031) exactly. Companion to
 [`color-attribute-wheel`](examples/color-attribute-wheel/) (domain sizing,
-`active_color`, the shader Attribute node). The broken state is in-frame:
-the right pinwheel is the falsification variant.
+`active_color`, the shader Attribute node). The render paints two striped
+parasols with the same authoring functions. The broken state is in frame:
+the right parasol's stripes smear along the seams and one crimson panel
+turns cream.
 
 </td>
 </tr>
