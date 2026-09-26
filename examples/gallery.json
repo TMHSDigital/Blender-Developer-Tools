@@ -9,7 +9,7 @@
       "name": "swatch-grid",
       "dir": "examples/swatch-grid",
       "teaches": "Procedural Principled materials — metal and dielectric, the emission pattern, and the cross-version set_specular shim.",
-      "alt": "Six material spheres in two rows against a dark backdrop: mirror gold, brushed copper, red, blue, flat orange emission and white.",
+      "alt": "Six material spheres on graphite plinths in two tiers: mirror gold, brushed copper and red behind; blue, a glowing orange emissive globe and matte white in front.",
       "witnessesFix": "EEVEE engine-id mapping: BLENDER_EEVEE on 5.x, BLENDER_EEVEE_NEXT on 4.2–4.5.",
       "hero": "docs/gallery/assets/swatch-grid-hero.webp",
       "preview": "examples/swatch-grid/preview.webp",

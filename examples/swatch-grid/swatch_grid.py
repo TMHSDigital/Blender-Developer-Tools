@@ -1,6 +1,6 @@
 """Procedural-materials swatch grid -- a runnable BDT example.
 
-Renders a 3x2 grid of spheres, one per material, demonstrating the
+Renders a tiered 3x2 display of material spheres on plinths, one per material, demonstrating the
 `procedural-materials-and-shaders` patterns end to end: Principled BSDF (metal +
 dielectric), the emission pattern, the cross-version `set_specular` shim, string socket
 lookups, and 4-tuple colors. It also doubles as a live proof of the EEVEE engine-id fix:
@@ -71,7 +71,7 @@ def make_principled(name, base_color, metallic, roughness, specular=None):
     return mat, resolved
 
 
-def make_emissive(name, color, strength):
+def make_emissive(name, color, strength, shell_color=None):
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -80,7 +80,28 @@ def make_emissive(name, color, strength):
     emis.inputs['Color'].default_value = color
     emis.inputs['Strength'].default_value = strength
     out = nt.nodes.new('ShaderNodeOutputMaterial')
-    nt.links.new(emis.outputs['Emission'], out.inputs['Surface'])
+    if shell_color is None:
+        nt.links.new(emis.outputs['Emission'], out.inputs['Surface'])
+        return mat
+    # A glowing core inside a darker shell: the emission owns the face that
+    # looks at the camera and hands over to a deep, matte dielectric toward
+    # the silhouette. The sphere keeps a limb and a rim instead of rendering
+    # as one flat disk of constant radiance, and nothing has to clip to glow.
+    shell = nt.nodes.new('ShaderNodeBsdfPrincipled')
+    shell.inputs['Base Color'].default_value = shell_color
+    shell.inputs['Roughness'].default_value = 0.45
+    set_specular(shell, 0.2)
+    facing = nt.nodes.new('ShaderNodeLayerWeight')
+    facing.inputs['Blend'].default_value = 0.8
+    ramp = nt.nodes.new('ShaderNodeValToRGB')
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[1].position = 0.9
+    nt.links.new(facing.outputs['Facing'], ramp.inputs['Fac'])
+    mix = nt.nodes.new('ShaderNodeMixShader')
+    nt.links.new(ramp.outputs['Color'], mix.inputs['Fac'])
+    nt.links.new(emis.outputs['Emission'], mix.inputs[1])
+    nt.links.new(shell.outputs['BSDF'], mix.inputs[2])
+    nt.links.new(mix.outputs['Shader'], out.inputs['Surface'])
     return mat
 
 
@@ -93,96 +114,168 @@ def build_materials():
     # for verify_png, and a mirror finish vs a broad soft highlight does it
     m, specular_socket = make_principled("Gold", (1.00, 0.77, 0.34, 1), 1.0, 0.08)
     mats.append(m)
-    m, _ = make_principled("Copper", (0.92, 0.47, 0.36, 1), 1.0, 0.55)
+    m, _ = make_principled("Copper", (0.92, 0.47, 0.36, 1), 1.0, 0.62)
     mats.append(m)
     m, sr = make_principled("RedPlastic", (0.80, 0.05, 0.05, 1), 0.0, 0.40, specular=0.5)
     mats.append(m)
     specular_socket = specular_socket or sr
     m, _ = make_principled("BluePlastic", (0.05, 0.20, 0.80, 1), 0.0, 0.30, specular=0.5)
     mats.append(m)
-    # strength stays low enough that the Standard view transform keeps the
-    # hue: at 6.0 every channel clips and the swatch reads white-yellow
-    mats.append(make_emissive("EmissiveOrange", (1.0, 0.35, 0.05, 1), 1.4))
+    # Standard does not compress highlights, so the core radiance stays under
+    # 1.0 in every channel: at 1.4 the red channel clipped across the whole
+    # face and the swatch read as a flat orange disk with no form
+    mats.append(make_emissive("EmissiveOrange", (1.0, 0.35, 0.05, 1), 0.95,
+                              shell_color=(0.22, 0.035, 0.006, 1)))
     m, _ = make_principled("WhiteRough", (0.90, 0.90, 0.92, 1), 0.0, 0.70, specular=0.3)
     mats.append(m)
     return mats, specular_socket
 
 
+SPHERE_R = 0.5
+COL_X = (-1.62, 0.0, 1.62)
+# (y, plinth height) per row: the back row stands on tall plinths so every
+# sphere clears the one in front of it -- a tiered library display, read
+# left to right, back row first
+ROWS = ((1.25, 1.02), (-0.35, 0.34))
+
+
+def make_cylinder(name, radius, height, bevel, segments=64):
+    """A capped cylinder standing on z=0 with bevelled rims: flat caps,
+    smooth walls, sharp cap seams, so it reads machined, not primitive."""
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    try:
+        bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=segments,
+                              radius1=radius, radius2=radius, depth=height)
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, height / 2))
+        bm.normal_update()
+        rims = [e for e in bm.edges if not e.is_boundary and len(e.link_faces) == 2
+                and abs(e.link_faces[0].normal.z) != abs(e.link_faces[1].normal.z)]
+        bmesh.ops.bevel(bm, geom=rims, offset=bevel, segments=4, profile=0.5,
+                        affect='EDGES')
+        bm.normal_update()
+        for f in bm.faces:
+            f.smooth = abs(f.normal.z) < 0.999
+        for e in bm.edges:
+            if len(e.link_faces) == 2 and e.link_faces[0].smooth != e.link_faces[1].smooth:
+                e.smooth = False
+        bm.to_mesh(me)
+    finally:
+        bm.free()
+    return me
+
+
 def build_scene(mats):
-    xs = [-2.3, 0.0, 2.3]
-    zs = [1.15, -1.15]
+    sc = bpy.context.scene
+    coll = bpy.context.collection
+    plinth_mat, _ = make_principled("PlinthGraphite", (0.055, 0.056, 0.062, 1), 0.0, 0.42,
+                                    specular=0.5)
+    collar_mat, _ = make_principled("CollarGunmetal", (0.30, 0.30, 0.32, 1), 1.0, 0.32)
+    swatches, stands = [], []
     i = 0
-    for r in range(GRID_ROWS):
-        for c in range(GRID_COLS):
-            me = bpy.data.meshes.new(f"S{i}")
+    for r, (y, h) in enumerate(ROWS):
+        for c, x in enumerate(COL_X):
+            plinth = bpy.data.objects.new(f"Plinth{i}", make_cylinder(f"Plinth{i}", 0.44, h, 0.035))
+            plinth.location = (x, y, 0.0)
+            plinth.data.materials.append(plinth_mat)
+            collar = bpy.data.objects.new(f"Collar{i}", make_cylinder(f"Collar{i}", 0.30, 0.07, 0.02))
+            collar.location = (x, y, h)
+            collar.data.materials.append(collar_mat)
+            me = bpy.data.meshes.new(f"Swatch{i}")
             bm = bmesh.new()
             try:
-                bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=24, radius=0.92)
+                bmesh.ops.create_uvsphere(bm, u_segments=64, v_segments=32, radius=SPHERE_R)
                 bm.to_mesh(me)
             finally:
                 bm.free()
             for poly in me.polygons:
                 poly.use_smooth = True
-            ob = bpy.data.objects.new(f"S{i}", me)
-            ob.location = (xs[c], 0.0, zs[r])
-            bpy.context.collection.objects.link(ob)
+            ob = bpy.data.objects.new(f"Swatch{i}", me)
+            # seated in the collar: the sphere rests on its rim, 0.4 in from
+            # the equator, so it reads as mounted rather than balanced
+            seat = h + 0.07 + math.sqrt(SPHERE_R ** 2 - 0.26 ** 2)
+            ob.location = (x, y, seat)
             ob.data.materials.append(mats[i])
+            for o in (plinth, collar, ob):
+                coll.objects.link(o)
+            swatches.append(ob)
+            stands += [plinth, collar]
             i += 1
-    # ortho camera framed on the grid cells: verify_png() samples the image at
-    # each cell center, so every sphere must stay inside its third/half of the
-    # frame. ortho height = ortho_scale * 9/16 = 4.73 units for a grid that
-    # spans 4.14 -- nothing clips, nothing drifts out of its cell, and the
-    # grid fills 0.876 of the frame height (inside the Layer 1 band).
-    cam_d = bpy.data.cameras.new("cam")
-    cam_d.type = 'ORTHO'
-    cam_d.ortho_scale = 8.4
-    cam = bpy.data.objects.new("cam", cam_d)
-    cam.location = (0.0, -10.0, 0.0)
-    cam.rotation_euler = (math.radians(90), 0, 0)
-    bpy.context.collection.objects.link(cam)
-    bpy.context.scene.camera = cam
 
-    # dark staged backdrop behind the grid (docs/VISUAL-STYLE.md)
-    wall_me = bpy.data.meshes.new("Wall")
+    # default stage: floor + back wall share the studio material
+    stage_me = bpy.data.meshes.new("Stage")
     bm = bmesh.new()
     try:
         bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30.0)
-        bm.to_mesh(wall_me)
+        bm.to_mesh(stage_me)
     finally:
         bm.free()
-    wmat, _ = make_principled("Studio", (0.03, 0.032, 0.037, 1), 0.0, 0.7)
-    wall_me.materials.append(wmat)
-    wall = bpy.data.objects.new("Wall", wall_me)
-    # just behind the spheres (0.16 clear of their backs) so each casts a
-    # soft contact shadow and reads as mounted; at y=2.5 they hung 1.58 in
-    # front of the backdrop with nothing under them
-    wall.location = (0.0, 1.08, 0.0)
+    smat, _ = make_principled("Studio", (0.03, 0.032, 0.037, 1), 0.0, 0.7)
+    stage_me.materials.append(smat)
+    floor = bpy.data.objects.new("Floor", stage_me)
+    coll.objects.link(floor)
+    wall = bpy.data.objects.new("Wall", stage_me.copy())
+    wall.location = (0.0, 9.0, 0.0)
     wall.rotation_euler = (math.radians(90), 0.0, 0.0)
-    bpy.context.collection.objects.link(wall)
+    coll.objects.link(wall)
 
     aim = bpy.data.objects.new("Aim", None)
-    bpy.context.collection.objects.link(aim)
-    # warm shaped key, faint cool fill, and a warm wedge pooling on the
-    # backdrop -- the gallery's staged look
-    for lname, loc, energy, size, col in [
-        ("KeyL", (-5, -6, 4), 900, 5.0, (1.0, 0.96, 0.9)),
-        ("FillL", (5, -6, -2), 220, 6.0, (0.75, 0.85, 1.0)),
-        ("WedgeL", (2.6, 1.3, 4.4), 260, 5.0, (1.0, 0.76, 0.5)),
-    ]:
-        ld = bpy.data.lights.new(lname, 'AREA')
+    aim.location = (0.0, 0.45, 1.05)
+    coll.objects.link(aim)
+    cam_d = bpy.data.cameras.new("cam")
+    cam_d.lens = 50.0
+    cam = bpy.data.objects.new("cam", cam_d)
+    cam.location = (0.0, -7.7, 4.5)
+    coll.objects.link(cam)
+    con = cam.constraints.new('TRACK_TO')
+    con.target = aim
+    con.track_axis = 'TRACK_NEGATIVE_Z'
+    con.up_axis = 'UP_Y'
+    sc.camera = cam
+
+    def light(name, loc, energy, size, col, rot):
+        ld = bpy.data.lights.new(name, 'AREA')
         ld.energy = energy
         ld.size = size
         ld.color = col
-        lo = bpy.data.objects.new(lname, ld)
+        lo = bpy.data.objects.new(name, ld)
         lo.location = loc
-        bpy.context.collection.objects.link(lo)
-        con = lo.constraints.new('TRACK_TO')
-        con.target = aim
-        con.track_axis = 'TRACK_NEGATIVE_Z'
-        con.up_axis = 'UP_Y'
-    # the wedge aims past the spheres at the wall, not at the grid
-    bpy.data.objects["WedgeL"].constraints.clear()
-    bpy.data.objects["WedgeL"].rotation_euler = (math.radians(-56), 0.0, math.radians(190))
+        lo.rotation_euler = tuple(math.radians(a) for a in rot)
+        coll.objects.link(lo)
+
+    # warm shaped key upper left, faint cool fill low right, cool rim behind,
+    # and the warm wedge pooling on the back wall (docs/VISUAL-STYLE.md)
+    light("Key", (-4.2, -4.6, 5.6), 330.0, 5.5, (1.0, 0.96, 0.9), (48, 0, -40))
+    light("Fill", (5.0, -4.0, 2.2), 70.0, 9.0, (0.75, 0.85, 1.0), (70, 0, 52))
+    light("Rim", (1.5, 4.5, 4.2), 110.0, 4.0, (0.6, 0.78, 1.0), (-52, 0, 172))
+    light("Wedge", (1.0, 7.6, 3.4), 320.0, 5.0, (1.0, 0.76, 0.5), (0, 0, 0))
+    # the camera looks down on the display, so the backdrop it sees is mostly
+    # floor: the wedge pools there, just behind the back row, and stays off
+    # the swatches themselves
+    pool = bpy.data.objects.new("WedgePool", None)
+    pool.location = (0.3, 4.9, 0.0)
+    coll.objects.link(pool)
+    wcon = bpy.data.objects["Wedge"].constraints.new('TRACK_TO')
+    wcon.target = pool
+    wcon.track_axis = 'TRACK_NEGATIVE_Z'
+    wcon.up_axis = 'UP_Y'
+
+    # The emissive swatch is a lamp, so it lights its own collar, plinth and
+    # the floor around it. A shadowless point at its center stands in for
+    # that spill (the shell is lit from inside only on back faces, so the
+    # asserted emission is still the only thing the camera sees on the ball).
+    for ob in swatches:
+        if any(n.type == 'EMISSION' for n in ob.data.materials[0].node_tree.nodes):
+            gd = bpy.data.lights.new("GlowSpill", 'POINT')
+            gd.energy = 45.0
+            gd.shadow_soft_size = 0.45
+            gd.color = (1.0, 0.45, 0.12)
+            gd.use_shadow = False
+            gd.specular_factor = 0.15
+            glow = bpy.data.objects.new("GlowSpill", gd)
+            glow.location = ob.location
+            coll.objects.link(glow)
+
     world = bpy.data.worlds.new("W")
     world.use_nodes = True
     nt = world.node_tree
@@ -201,14 +294,15 @@ def build_scene(mats):
     sky.color_ramp.elements[0].position = 0.0
     sky.color_ramp.elements[0].color = (0.02, 0.021, 0.025, 1)
     sky.color_ramp.elements[1].position = 0.7
-    sky.color_ramp.elements[1].color = (0.70, 0.63, 0.55, 1)
+    sky.color_ramp.elements[1].color = (0.50, 0.45, 0.39, 1)
     nt.links.new(sep.outputs["Z"], sky.inputs["Fac"])
     pick = nt.nodes.new("ShaderNodeMixRGB")
     pick.inputs[1].default_value = (0.02, 0.021, 0.025, 1)
     nt.links.new(sky.outputs["Color"], pick.inputs[2])
     nt.links.new(path.outputs["Is Glossy Ray"], pick.inputs[0])
     nt.links.new(pick.outputs[0], bg.inputs[0])
-    bpy.context.scene.world = world
+    sc.world = world
+    return swatches, stands, [floor, wall]
 
 
 def swatch_rgb(mat):
@@ -244,18 +338,28 @@ def check_distinct_swatches(mats):
     return 0
 
 
-def verify_png(path):
-    """Honest capture: not uniformly black AND distinct swatch regions == MATERIAL_COUNT."""
+def verify_png(path, scene, swatches):
+    """Honest capture: not uniformly black AND distinct swatch regions == MATERIAL_COUNT.
+
+    Each swatch is sampled where the camera actually sees it: its center is
+    projected through the render camera, so the check follows the layout
+    rather than assuming a flat grid of image cells."""
+    from bpy_extras.object_utils import world_to_camera_view
     img = bpy.data.images.load(path)
     w, h = img.size
     arr = np.array(img.pixels[:], dtype=np.float32).reshape(h, w, 4)[..., :3]
     gmax = float(arr.max())
-    cw, ch, ph = w // GRID_COLS, h // GRID_ROWS, 24
+    ph = max(4, round(w * 0.012))  # half-size of the sampled patch, in pixels
     means = []
-    for r in range(GRID_ROWS):
-        for c in range(GRID_COLS):
-            cx, cy = c * cw + cw // 2, r * ch + ch // 2
-            means.append(arr[cy - ph:cy + ph, cx - ph:cx + ph, :].reshape(-1, 3).mean(axis=0))
+    for ob in swatches:
+        # rows are bottom-up in bpy image pixels, as in camera-view y
+        v = world_to_camera_view(scene, scene.camera, ob.matrix_world.translation)
+        cx, cy = int(v.x * w), int(v.y * h)
+        means.append(arr[cy - ph:cy + ph, cx - ph:cx + ph, :].reshape(-1, 3).mean(axis=0))
+    print("swatch patch means: " + "  ".join(
+        f"{ob.name}=({m[0]:.2f},{m[1]:.2f},{m[2]:.2f})" for ob, m in zip(swatches, means)))
+    closest = min(float(np.linalg.norm(a - b)) for i, a in enumerate(means) for b in means[i + 1:])
+    print(f"swatch closest pair distance={closest:.3f} (distinct needs > 0.10)")
     kept = []
     for cm in means:
         if all(np.linalg.norm(cm - k) > 0.10 for k in kept):
@@ -283,7 +387,7 @@ def main():
     dcode = check_distinct_swatches(mats)
     if dcode:
         return dcode
-    build_scene(mats)
+    swatches, stands, stage = build_scene(mats)
 
     sc = bpy.context.scene
     # EEVEE engine-id proof: frame-independent, must hold even when we render with
@@ -321,12 +425,12 @@ def main():
     sc.view_settings.view_transform = 'Standard'
     # Layer 1 framing gate (silhouette matte) — exit 10 on violation, before
     # the beauty render so a defective composition ships no artifact.
-    spheres = [o for o in sc.objects if o.type == "MESH" and o.name.startswith("S")]
-    stage = [o for o in sc.objects if o.name == "Wall"]
+    # the hero is the whole display: every swatch and the plinth it stands on
+    display = swatches + stands
     fcode = gallery_framing.check_framing(
         sc, sc.camera,
-        hero=spheres,
-        elements=spheres,
+        hero=display,
+        elements=display,
         stage=stage,
     )
     if fcode:
@@ -338,7 +442,7 @@ def main():
         return 4
     print(f"rendered {args.output} with {render_engine} ({os.path.getsize(args.output)} bytes)")
 
-    gmax, regions = verify_png(args.output)
+    gmax, regions = verify_png(args.output, sc, swatches)
     non_black = gmax > 0.05
     regions_ok = regions == MATERIAL_COUNT
     print(f"verify: max_pixel={gmax:.3f} non_black={non_black} "

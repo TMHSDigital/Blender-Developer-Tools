@@ -1,13 +1,14 @@
 # Swatch Grid
 
-A runnable example that renders a 3×2 grid of spheres — one material per cell — to a single
-PNG. It demonstrates the [`procedural-materials-and-shaders`](../../skills/procedural-materials-and-shaders/SKILL.md)
+A runnable example that renders a tiered 3×2 material library — one sphere per material, each
+seated in a chrome collar on a graphite plinth — to a single PNG. It demonstrates the [`procedural-materials-and-shaders`](../../skills/procedural-materials-and-shaders/SKILL.md)
 patterns end to end:
 
 - **Principled BSDF** metals (gold, copper: high metallic, low roughness) and dielectrics
   (red/blue plastic, white rough), configured with **string socket lookups** and **4-tuple
   colors**.
-- The **emission** pattern (an emissive orange swatch).
+- The **emission** pattern (an emissive orange swatch, its `ShaderNodeEmission` core mixed
+  toward a dark dielectric shell at the silhouette so it reads as a glowing globe).
 - The cross-version **`set_specular` shim** (`Specular` → `Specular IOR Level`, renamed in
   Blender 4.0).
 
@@ -36,14 +37,31 @@ blender --background --python swatch_grid.py -- --output swatch.png --engine cyc
 
 ## Staging
 
-The backdrop stands 0.16 behind the spheres, so each casts a soft contact
-shadow. It used to stand 1.58 behind them, and the grid floated. The world is
-a reflection-only sky: glossy rays see a warm overhead gradient above a dark
-horizon, and camera and diffuse rays see the dark stage. The mirror-finish
-gold otherwise reflected the near-black world and rendered as a black ball
-with two light-card glints. Sphere positions, materials, the camera and the
-six-region pixel check are unchanged; `verify_png` still reads six distinct
-regions on 4.5.11, 5.1.2 and 5.2.1.
+The swatches stand as a tiered material library on the default stage (floor,
+wall at y = 9, warm key, cool fill and rim, warm wedge pooling on the floor
+behind the display). Each sphere sits in a gunmetal collar on a bevelled
+graphite plinth; the back row stands on tall plinths so every sphere clears
+the one in front of it. A 50 mm camera looks down on the display with a
+`TRACK_TO` aim, which keeps the floor/wall seam above the back row.
+
+The emissive swatch used to be a bare `Emission` at strength 1.4: under the
+Standard view transform its red channel clipped across the whole face and it
+rendered as a flat orange disk. Now the same `ShaderNodeEmission` (color and
+strength asserted) owns the face toward the camera at strength 0.95, below
+clipping, and a `Layer Weight` facing ramp hands it over to a dark dielectric
+shell at the silhouette, so the globe has a limb. A shadowless warm point
+light at its center stands in for the glow it throws on its own collar,
+plinth and the floor; the shell is lit from inside only on back faces, so the
+ball itself still shows only the asserted emission.
+
+The world is a reflection-only sky: glossy rays see a warm overhead gradient
+above a dark horizon, and camera and diffuse rays see the dark stage. The
+mirror-finish gold otherwise reflects the near-black world as a black ball.
+
+`verify_png` samples each swatch where the camera sees it: the sphere center
+is projected through the render camera (`world_to_camera_view`) rather than
+assumed to sit at the center of a third of the frame, so the six-region check
+follows the layout.
 
 ## Exit codes
 
