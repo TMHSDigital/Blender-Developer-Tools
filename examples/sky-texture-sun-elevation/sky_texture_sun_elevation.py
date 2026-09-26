@@ -17,13 +17,20 @@ the chain. That is the falsifier (``--same-axis`` in export-preset-axis).
 The sky_type / dust_density version traps are untouched.
 
 By default it runs the correctness check (tiny Cycles CPU renders, no gallery
-still). Pass --output to also render a still:
+still). Pass --output to also render the gallery still: a red-granite gnomon
+obelisk on a paved plaza, lit only by the sky, as an 8 deg | 55 deg diptych.
+The render path gates framing (exit 10, per panel) and clipped highlights
+under Standard (exit 12):
 
     blender --background --python sky_texture_sun_elevation.py --
     blender --background --python sky_texture_sun_elevation.py -- --unlink-sky
     blender --background --python sky_texture_sun_elevation.py -- --output s.png
 """
 import bpy, bmesh, sys, os, math, argparse, tempfile, shutil
+from mathutils import Matrix
+
+# Shared framing gate (render path only); see examples/gallery_framing.py.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 
 # Radians: low sun vs high sun for the A/B zenith luminance probe
 ELEV_LOW = math.radians(8.0)
@@ -37,6 +44,8 @@ PROBE_STRENGTH = 0.05
 ZENITH_RISE_MIN = 1.25
 # Absolute floor so a black / unlinked world cannot sneak through
 HIGH_ZENITH_MIN = 0.05
+# Gallery still samples per panel (Cycles CPU, denoised)
+STILL_SAMPLES = 96
 
 
 def eevee_engine_id():
@@ -76,7 +85,7 @@ def build_sky_world(elevation):
     bg = nt.nodes.new("ShaderNodeBackground")
     bg.name = "Background"
     bg.location = (0, 0)
-    # Gallery still restores Strength=1.0 in render_still; probe uses PROBE_STRENGTH
+    # The probe drops this to PROBE_STRENGTH; the still uses STILL_STRENGTH
     bg.inputs["Strength"].default_value = 1.0
 
     out = nt.nodes.new("ShaderNodeOutputWorld")
@@ -123,46 +132,204 @@ def _mesh_obj(sc, name, build_bm, loc, mat, smooth=True):
     return ob
 
 
-def build_ceramic(sc):
-    """A turned jar in pale glaze, so it takes the colour of the sky's light.
+# Gnomon-obelisk proportions (metres). The obelisk is a sundial gnomon: its
+# shadow along the bronze meridian scale is how the still reads elevation.
+STEP_SIZES = ((1.56, 0.16), (1.18, 0.15), (0.82, 0.16))  # (square side, height)
+SHAFT_BASE = 0.40
+SHAFT_TOP = 0.27
+SHAFT_H = 2.35
+PYRAMIDION_H = 0.24
+# Horizontal direction the shadow falls, from +X counter-clockwise. The camera
+# looks roughly along +Y, so -40 deg throws the shadow to the right and toward
+# the lens: the sun sits behind the obelisk's left shoulder, far enough
+# off-axis that its disc stays out of frame and only the dusk glow on the
+# horizon enters the 8 deg panel.
+SHADOW_AZIMUTH = math.radians(-40.0)
+# Obelisk yaw: one visible face turned toward the sun, the other in shade.
+HERO_YAW = math.radians(30.0)
 
-    Saturated terracotta looked the same under both skies: the clay's own
-    orange swamped the change in the light, which is the thing on show.
+
+def _box(bm, sx, sy, sz, z0=0.0, taper_top=None):
+    """Axis-aligned box, base at z0. taper_top scales the top face (a frustum)."""
+    geom = bmesh.ops.create_cube(bm, size=1.0)
+    verts = [v for v in geom["verts"]]
+    for v in verts:
+        top = v.co.z > 0.0
+        s = taper_top if (top and taper_top is not None) else 1.0
+        v.co.x = v.co.x * sx * s
+        v.co.y = v.co.y * sy * s
+        v.co.z = (v.co.z + 0.5) * sz + z0
+    return verts
+
+
+def _bevel(ob, width, segments=2):
+    mod = ob.modifiers.new("Chamfer", "BEVEL")
+    mod.width = width
+    mod.segments = segments
+    mod.limit_method = "ANGLE"
+    return mod
+
+
+def _stone_material(name, dark, light, rough, scale):
+    """Principled stone with a noise-mixed two-tone base, so it is not a flat fill."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = rough
+    spec = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+    if spec is not None:
+        spec.default_value = 0.3
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = 6.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.35
+    ramp.color_ramp.elements[0].color = (*dark, 1.0)
+    ramp.color_ramp.elements[1].position = 0.70
+    ramp.color_ramp.elements[1].color = (*light, 1.0)
+    nt.links.new(tc.outputs["Object"], noise.inputs["Vector"])
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
+def _paving_material():
+    """Limestone pavers: a Brick texture with a soft mortar, object-space."""
+    mat = bpy.data.materials.new("Paving")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = 0.82
+    spec = b.inputs.get("Specular IOR Level") or b.inputs.get("Specular")
+    if spec is not None:
+        spec.default_value = 0.2
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    brick = nt.nodes.new("ShaderNodeTexBrick")
+    brick.inputs["Scale"].default_value = 0.9
+    brick.inputs["Mortar Size"].default_value = 0.012
+    brick.inputs["Color1"].default_value = (0.46, 0.40, 0.32, 1.0)
+    brick.inputs["Color2"].default_value = (0.39, 0.34, 0.27, 1.0)
+    brick.inputs["Mortar"].default_value = (0.16, 0.14, 0.11, 1.0)
+    brick.offset = 0.5
+    brick.squash = 1.0
+    nt.links.new(tc.outputs["Object"], brick.inputs["Vector"])
+    nt.links.new(brick.outputs["Color"], b.inputs["Base Color"])
+    return mat
+
+
+def build_ground(sc):
+    """Paved plaza on open ground that runs to the horizon: no void below it."""
+    ground_mat = _stone_material(
+        "Ground", (0.20, 0.15, 0.10), (0.30, 0.24, 0.17), rough=0.95, scale=0.8,
+    )
+
+    def plane(bm):
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=2500.0)
+
+    ground = _mesh_obj(sc, "Ground", plane, (0.0, 0.0, 0.0), ground_mat, smooth=False)
+
+    def disc(bm):
+        bmesh.ops.create_cone(
+            bm, cap_ends=True, cap_tris=False,
+            segments=96, radius1=6.5, radius2=6.5, depth=0.04,
+        )
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, 0.02))
+
+    plaza = _mesh_obj(sc, "Plaza", disc, (0.0, 0.0, 0.0), _paving_material(), smooth=False)
+    return ground, plaza
+
+
+def build_gnomon(sc):
+    """Red-granite obelisk on a stepped limestone plinth, matte-gilt pyramidion,
+    and a bronze meridian scale inlaid in the paving along the shadow line.
+
+    Returns (hero parts, meridian scale). The hero parts are what the
+    framing matte measures; the scale is ground inlay (stage).
     """
-    clay = _principled("Clay", (0.80, 0.78, 0.74), rough=0.38, metallic=0.0, specular=0.4)
-    glaze = _principled("Glaze", (0.60, 0.58, 0.55), rough=0.22, metallic=0.0, specular=0.5)
+    granite = _stone_material(
+        "RedGranite", (0.34, 0.11, 0.07), (0.52, 0.22, 0.15), rough=0.58, scale=38.0,
+    )
+    limestone = _stone_material(
+        "Limestone", (0.40, 0.36, 0.29), (0.50, 0.46, 0.37), rough=0.78, scale=6.0,
+    )
+    # Matte gilt, not metallic: a metallic cap Fresnel-glinted the 55 deg sun
+    # to pure white at grazing, whatever its roughness.
+    gilt = _principled("MatteGilt", (0.42, 0.28, 0.09), rough=0.6, metallic=0.0, specular=0.3)
+    bronze = _principled("Bronze", (0.26, 0.17, 0.10), rough=0.7, metallic=0.85)
 
-    def body(bm):
+    parts = []
+    z = 0.04  # plaza top
+    for i, (side, h) in enumerate(STEP_SIZES):
+        def step(bm, side=side, h=h, z=z):
+            _box(bm, side, side, h, z0=z)
+        ob = _mesh_obj(sc, f"PlinthStep{i + 1}", step, (0.0, 0.0, 0.0), limestone, smooth=False)
+        _bevel(ob, 0.018)
+        parts.append(ob)
+        z += h
+
+    # Dedication plaque on the die face that turns toward the camera.
+    die_side, die_h = STEP_SIZES[-1]
+
+    def plaque(bm, z=z):
+        verts = _box(bm, 0.40, 0.014, 0.085, z0=z - die_h / 2.0 - 0.0425)
+        for v in verts:
+            v.co.y -= die_side / 2.0 + 0.007
+
+    ob = _mesh_obj(sc, "DedicationPlaque", plaque, (0.0, 0.0, 0.0), bronze, smooth=False)
+    _bevel(ob, 0.004, segments=1)
+    parts.append(ob)
+
+    def collar(bm, z=z):
+        _box(bm, SHAFT_BASE + 0.07, SHAFT_BASE + 0.07, 0.07, z0=z)
+
+    ob = _mesh_obj(sc, "BronzeCollar", collar, (0.0, 0.0, 0.0), bronze, smooth=False)
+    _bevel(ob, 0.012)
+    parts.append(ob)
+    z += 0.07
+
+    def shaft(bm, z=z):
+        _box(bm, SHAFT_BASE, SHAFT_BASE, SHAFT_H, z0=z, taper_top=SHAFT_TOP / SHAFT_BASE)
+
+    ob = _mesh_obj(sc, "ObeliskShaft", shaft, (0.0, 0.0, 0.0), granite, smooth=False)
+    _bevel(ob, 0.010)
+    parts.append(ob)
+    z += SHAFT_H
+
+    def pyramidion(bm, z=z):
         bmesh.ops.create_cone(
-            bm, cap_ends=True, cap_tris=False,
-            segments=64, radius1=0.62, radius2=0.42, depth=1.35,
+            bm, cap_ends=True, cap_tris=False, segments=4,
+            radius1=SHAFT_TOP / math.sqrt(2.0), radius2=0.0, depth=PYRAMIDION_H,
         )
-        # base on the floor (the cone is centred on its depth)
-        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, 0.675))
-
-    vessel = _mesh_obj(sc, "Vessel", body, (0.0, 0.0, 0.0), clay)
-    bev = vessel.modifiers.new("Bev", "BEVEL")
-    bev.width = 0.025
-    bev.segments = 3
-    bev.limit_method = "ANGLE"
-
-    def lid(bm):
-        bmesh.ops.create_cone(
-            bm, cap_ends=True, cap_tris=False,
-            segments=48, radius1=0.40, radius2=0.10, depth=0.32,
+        bmesh.ops.rotate(
+            bm, verts=bm.verts, cent=(0.0, 0.0, 0.0),
+            matrix=Matrix.Rotation(math.radians(45.0), 3, "Z"),
         )
+        bmesh.ops.translate(bm, verts=bm.verts, vec=(0.0, 0.0, z + PYRAMIDION_H / 2.0))
 
-    knob = _mesh_obj(sc, "Lid", lid, (0.0, 0.0, 1.48), glaze)
-    return vessel, knob
+    ob = _mesh_obj(sc, "Pyramidion", pyramidion, (0.0, 0.0, 0.0), gilt, smooth=False)
+    parts.append(ob)
+    for ob in parts:
+        ob.rotation_euler.z = HERO_YAW
 
+    # Meridian scale: a bronze strip from the plinth edge along the shadow
+    # line, with a cross-tick every metre (one hour-line per tick).
+    def scale_bm(bm):
+        start, end = 0.95, 6.3
+        length = end - start
+        strip = _box(bm, length, 0.07, 0.012, z0=0.035)
+        for v in strip:
+            v.co.x += start + length / 2.0
+        for m in range(1, 7):
+            tick = _box(bm, 0.035, 0.30 if m % 2 == 0 else 0.20, 0.012, z0=0.035)
+            for v in tick:
+                v.co.x += float(m)
+        rot = Matrix.Rotation(SHADOW_AZIMUTH, 3, "Z")
+        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=rot)
 
-def build_floor(sc):
-    mat = _principled("Floor", (0.025, 0.026, 0.030), rough=0.85, specular=0.05)
-
-    def grid(bm):
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=60.0)
-
-    return _mesh_obj(sc, "Floor", grid, (0.0, 0.0, 0.0), mat, smooth=False)
+    meridian = _mesh_obj(sc, "MeridianScale", scale_bm, (0.0, 0.0, 0.0), bronze, smooth=False)
+    return parts, meridian
 
 
 def setup_probe_camera(sc):
@@ -379,65 +546,71 @@ def check(sc, world, sky, bg, unlink_sky=False):
     return 0
 
 
+# Still: one Background Strength for both panels, so the only variable
+# between them is sun_elevation. Tuned so the brightest pixel in either
+# panel stays below clipping under Standard (which does not compress).
+STILL_STRENGTH = 0.035
+PANEL_W, PANEL_H = 640, 720
+GUTTER = 12  # px; a deliberate dark rule between the two panels
+GUTTER_RGB = (0.02, 0.021, 0.025)
+# Clip gate: fraction of pixels allowed at 8-bit full scale in any channel.
+CLIP_LEVEL = 254.5 / 255.0
+CLIP_MAX_FRACTION = 0.0005
+EXIT_CLIPPED = 12
+
+
+def _sun_rotation_for_shadow(shadow_azimuth):
+    """Sky sun_rotation that puts the sun opposite the given shadow azimuth.
+
+    sun_rotation is a compass bearing: measured clockwise from +Y, so the
+    sun's horizontal angle from +X (counter-clockwise) is 90 deg - rotation.
+    Measured, not assumed: the first draft used rotation + 90 deg and threw
+    the shadow to the wrong side of the obelisk.
+    """
+    sun_azimuth = shadow_azimuth + math.pi
+    return math.pi / 2.0 - sun_azimuth
+
+
 def _stage_for_still(sc, world, sky, elevation):
-    """Shared beauty staging; elevation is the variable under test."""
+    """Shared staging; sun_elevation is the only thing that differs per panel.
+
+    The sky is the only light: its sun disc is the key (hard shadow from
+    the gnomon) and its dome is the fill. No studio lights, so a
+    sun_elevation that did not take would render two identical panels.
+    """
     sky.sun_elevation = elevation
-    sky.sun_rotation = math.radians(-45.0)
+    sky.sun_rotation = _sun_rotation_for_shadow(SHADOW_AZIMUTH)
     sky.sun_intensity = 1.0
-    sky.sun_disc = False
-    sky.ozone_density = 5.0
+    sky.sun_disc = True  # the disc is the key light; it stays off-frame
     sky.air_density = 1.0
+    sky.ozone_density = 1.0
     if bpy.app.version >= (5, 0, 0):
-        sky.aerosol_density = 0.45
+        sky.aerosol_density = 1.0
     else:
-        sky.dust_density = 0.45
-    bg = world.node_tree.nodes["Background"]
-    bg.inputs["Strength"].default_value = 0.14
+        sky.dust_density = 1.0
+    world.node_tree.nodes["Background"].inputs["Strength"].default_value = STILL_STRENGTH
     sc.world = world
 
-    # Remove prior still lights / cams from earlier calls
-    for ob in list(sc.objects):
-        if ob.name.startswith(("Key", "Fill", "Rim", "Cam", "Aim", "ProbeCam", "Label")):
-            bpy.data.objects.remove(ob, do_unlink=True)
-    for cam in list(bpy.data.cameras):
-        if cam.users == 0:
-            bpy.data.cameras.remove(cam)
-    for ld in list(bpy.data.lights):
-        if ld.users == 0:
-            bpy.data.lights.remove(ld)
-
-    def area(name, loc, energy, size, col, rot):
-        ld = bpy.data.lights.new(name, "AREA")
-        ld.energy = energy
-        ld.size = size
-        ld.color = col
-        ob = bpy.data.objects.new(name, ld)
-        ob.location = loc
-        ob.rotation_euler = tuple(math.radians(a) for a in rot)
-        sc.collection.objects.link(ob)
-
-    # The sky is the light under test, so the studio lights only model the
-    # form. At 420 W the key drowned the sky and both panels matched.
-    area("Key", (-3.0, -3.5, 4.0), 70.0, 4.0, (1.0, 1.0, 1.0), (50, 0, -32))
-    area("Fill", (3.5, -2.2, 1.8), 10.0, 8.0, (1.0, 1.0, 1.0), (70, 0, 42))
-
+    cam = sc.objects.get("Cam")
+    if cam is not None:
+        return cam
     aim = bpy.data.objects.new("Aim", None)
-    aim.location = (0.0, 0.0, 0.8)
+    aim.location = (0.5, 0.0, 1.6)
     sc.collection.objects.link(aim)
-
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 40.0
+    cam_data.lens = 35.0
     cam = bpy.data.objects.new("Cam", cam_data)
-    cam.location = (2.15, -3.55, 1.2)
+    cam.location = (0.42, -4.2, 1.0)
     sc.collection.objects.link(cam)
     sc.camera = cam
     tr = cam.constraints.new("TRACK_TO")
     tr.target = aim
     tr.track_axis = "TRACK_NEGATIVE_Z"
     tr.up_axis = "UP_Y"
+    return cam
 
 
-def _render_panel(sc, path, engine, samples=64):
+def _render_panel(sc, path, engine, samples):
     sc.render.engine = "CYCLES" if engine == "cycles" else eevee_engine_id()
     if engine == "cycles":
         sc.cycles.device = "CPU"
@@ -448,54 +621,112 @@ def _render_panel(sc, path, engine, samples=64):
             sc.eevee.taa_render_samples = 64
         except AttributeError:
             pass
-    sc.render.resolution_x = 640
-    sc.render.resolution_y = 720
+    sc.render.resolution_x = PANEL_W
+    sc.render.resolution_y = PANEL_H
+    sc.render.resolution_percentage = 100
+    sc.render.film_transparent = False
     sc.render.image_settings.file_format = "PNG"
+    sc.render.image_settings.color_mode = "RGB"
     sc.render.filepath = path
+    # Standard, not AgX: AgX desaturates the granite and the sky toward
+    # pastel. Standard does not compress, hence the clip gate below.
     sc.view_settings.view_transform = "Standard"
+    sc.view_settings.look = "None"
+    sc.view_settings.exposure = 0.0
     bpy.ops.render.render(write_still=True)
 
 
-def _diptych(left_path, right_path, out_path):
-    """Pack two 640x720 panels into a 1280x720 gallery still."""
-    left = bpy.data.images.load(left_path)
-    right = bpy.data.images.load(right_path)
-    w, h = 1280, 720
-    canvas = bpy.data.images.new("Diptych", width=w, height=h, alpha=False)
-    lp = list(left.pixels)
-    rp = list(right.pixels)
+def _diptych(left_path, right_path):
+    """Two PANEL_W x PANEL_H panels side by side with a dark gutter rule."""
+    left = bpy.data.images.load(left_path, check_existing=False)
+    right = bpy.data.images.load(right_path, check_existing=False)
+    try:
+        lp = left.pixels[:]
+        rp = right.pixels[:]
+    finally:
+        bpy.data.images.remove(left)
+        bpy.data.images.remove(right)
+    w, h, pw = PANEL_W * 2, PANEL_H, PANEL_W
     out = [0.0] * (w * h * 4)
-    pw = 640
+    row = pw * 4
     for y in range(h):
-        for x in range(pw):
-            si = (y * pw + x) * 4
-            di_l = (y * w + x) * 4
-            di_r = (y * w + (x + pw)) * 4
-            out[di_l:di_l + 4] = lp[si:si + 4]
-            out[di_r:di_r + 4] = rp[si:si + 4]
-    canvas.pixels = out
-    canvas.filepath_raw = out_path
-    canvas.file_format = "PNG"
-    canvas.save()
-    bpy.data.images.remove(left)
-    bpy.data.images.remove(right)
-    bpy.data.images.remove(canvas)
+        s = y * row
+        d = y * w * 4
+        out[d:d + row] = lp[s:s + row]
+        out[d + row:d + 2 * row] = rp[s:s + row]
+    g0 = pw - GUTTER // 2
+    for y in range(h):
+        for x in range(g0, g0 + GUTTER):
+            i = (y * w + x) * 4
+            out[i:i + 4] = (*GUTTER_RGB, 1.0)
+    return w, h, out, lp, rp
 
 
-def render_still(sc, world, sky, path, engine):
-    """Gallery still: low vs high sun_elevation diptych — the contract at a glance."""
+def clip_fraction(pixels):
+    """Fraction of pixels with any RGB channel at 8-bit full scale."""
+    n = len(pixels) // 4
+    hot = 0
+    for i in range(0, len(pixels), 4):
+        if max(pixels[i], pixels[i + 1], pixels[i + 2]) >= CLIP_LEVEL:
+            hot += 1
+    return hot / max(n, 1)
+
+
+def mean_luma(pixels):
+    n = len(pixels) // 4
+    acc = 0.0
+    for i in range(0, len(pixels), 4):
+        acc += 0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]
+    return acc / max(n, 1)
+
+
+def render_still(sc, world, sky, path, engine, hero, stage):
+    """Gallery still: 8 deg | 55 deg diptych of the gnomon under the sky.
+
+    Returns an exit code: 0, 10 (framing), 12 (clipped highlights), 9 (no file).
+    """
+    import gallery_framing
+
+    cam = _stage_for_still(sc, world, sky, ELEV_LOW)
+    sc.render.resolution_x, sc.render.resolution_y = PANEL_W, PANEL_H
+    sc.render.resolution_percentage = 100
+    # Each panel is its own frame: the gnomon must fill it and clear its edges.
+    code = gallery_framing.check_framing(sc, cam, hero=hero, elements=hero, stage=stage)
+    if code:
+        return code
+
     tmp = tempfile.mkdtemp(prefix="sky_still_")
     try:
         left = os.path.join(tmp, "low.png")
         right = os.path.join(tmp, "high.png")
-        _stage_for_still(sc, world, sky, ELEV_LOW)
-        _render_panel(sc, left, engine, samples=72)
+        _render_panel(sc, left, engine, samples=STILL_SAMPLES)
         _stage_for_still(sc, world, sky, ELEV_HIGH)
-        _render_panel(sc, right, engine, samples=72)
-        _diptych(left, right, path)
+        _render_panel(sc, right, engine, samples=STILL_SAMPLES)
+        w, h, px, left_px, right_px = _diptych(left, right)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    return os.path.exists(path) and os.path.getsize(path) > 0
+
+    for label, p in (("8deg", left_px), ("55deg", right_px)):
+        print(f"panel {label}: mean_luma={mean_luma(p):.3f} clip={clip_fraction(p):.6f}")
+    clipped = clip_fraction(px)
+    print(f"clip_fraction={clipped:.6f} (gate<={CLIP_MAX_FRACTION}) strength={STILL_STRENGTH}")
+    if clipped > CLIP_MAX_FRACTION:
+        print(
+            f"ERROR: {clipped:.4%} of the still clips to white under Standard — "
+            f"lower the sky Background Strength",
+            file=sys.stderr,
+        )
+        return EXIT_CLIPPED
+
+    canvas = bpy.data.images.new("Diptych", width=w, height=h, alpha=False)
+    try:
+        canvas.pixels = px
+        canvas.filepath_raw = path
+        canvas.file_format = "PNG"
+        canvas.save()
+    finally:
+        bpy.data.images.remove(canvas)
+    return 0 if os.path.exists(path) and os.path.getsize(path) > 0 else 9
 
 
 def build_scene():
@@ -503,9 +734,10 @@ def build_scene():
     sc = bpy.context.scene
     world, sky, bg = build_sky_world(ELEV_LOW)
     sc.world = world
-    build_floor(sc)
-    build_ceramic(sc)
-    return sc, world, sky, bg
+    ground, plaza = build_ground(sc)
+    hero, meridian = build_gnomon(sc)
+    stage = [ground, plaza, meridian]
+    return sc, world, sky, bg, hero, stage
 
 
 def main():
@@ -526,15 +758,19 @@ def main():
     args = p.parse_args(argv)
 
     print(f"binary version: {bpy.app.version} ({bpy.app.version_string})")
-    sc, world, sky, bg = build_scene()
+    sc, world, sky, bg, hero, stage = build_scene()
     code = check(sc, world, sky, bg, unlink_sky=args.unlink_sky)
     if code:
         return code
 
     if args.output:
-        if not render_still(sc, world, sky, os.path.abspath(args.output), args.engine):
+        code = render_still(
+            sc, world, sky, os.path.abspath(args.output), args.engine, hero, stage,
+        )
+        if code == 9:
             print("ERROR: render produced no file", file=sys.stderr)
-            return 9
+        if code:
+            return code
         print(f"rendered still {args.output}")
 
     print("sky-texture-sun-elevation OK")
