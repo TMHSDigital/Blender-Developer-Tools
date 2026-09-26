@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>lod-decimate-chain — Examples — Blender Developer Tools</title>
-  <meta name="description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <meta name="description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lod-decimate-chain/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="lod-decimate-chain — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <meta property="og:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/lod-decimate-chain/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lod-decimate-chain-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Three red and white rockets labelled LOD0, LOD1 and LOD2, each more coarsely faceted than the last." />
+  <meta property="og:image:alt" content="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="lod-decimate-chain — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
+  <meta name="twitter:description" content="A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/lod-decimate-chain-hero.webp" />
-  <meta name="twitter:image:alt" content="Three red and white rockets labelled LOD0, LOD1 and LOD2, each more coarsely faceted than the last." />
+  <meta name="twitter:image:alt" content="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,25 +265,25 @@
   </div>
   <header class="hero">
     <h1>lod-decimate-chain</h1>
-    <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
+    <p>A retro rocket at LOD0/1/2 via the Decimate modifier evaluated through the depsgraph, with a wireframe of each evaluated mesh. The check proves the reduction is non-destructive, the triangle count hits ratio x base within bounds, and silhouette-critical dimensions survive.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three red and white rockets labelled LOD0, LOD1 and LOD2, each more coarsely faceted than the last.">
-      <img src="../assets/lod-decimate-chain-hero.webp" alt="Three red and white rockets labelled LOD0, LOD1 and LOD2, each more coarsely faceted than the last." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris.">
+      <img src="../assets/lod-decimate-chain-hero.webp" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); an aggressive ratio collapses the nose tip (caught).</div>
+    <div class="callout"><span class="tag">witnesses</span> Evaluated-vs-original: the depsgraph carries the reduction while obj.data keeps the closed-form counts. A stacked Decimate halves the effective ratio (caught); a fin extreme on an oblique plate corner is shaved at ratio 0.18 (caught).</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/lod-decimate-chain/lod_decimate_chain.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a retro toy rocket — a lathed body with an ogive nose, three swept fin plates, a porthole, every dimension a closed form — and evaluates it at LOD0/1/2 through the Decimate modifier via the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p>A runnable example that builds a retro rocket — a lathed hull with a hollow nozzle bell, brass collar, red skirt, recessed panel seams, a raised brass shoulder band, a tangent-ogive nose and a brass antenna; four swept fins with chamfered brass-trimmed rims; a flanged porthole with a domed glass; two rows of rivets; six materials, every count a closed form — and evaluates it at LOD0/1/2 through the Decimate modifier via the depsgraph, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/depsgraph-and-evaluated-data/SKILL.md"><code>depsgraph-and-evaluated-data</code></a> and <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc:</strong> modeling/LOD here, weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a>.</p>
 <p><strong>What it witnesses:</strong> the modifier-based LOD contract that game asset pipelines rely on.</p>
-<ul><li><strong>Decimate is non-destructive and lives in the depsgraph.</strong> The evaluated mesh carries the reduction; the original datablock is byte-identical before and after evaluation. The check proves both — evaluated counts drop while <code>obj.data</code> keeps the closed-form counts (1,147 verts / 2,260 tris) — and every evaluated reference is released with <code>to_mesh_clear()</code>. An LOD chain that bakes the reduction into <code>obj.data</code> destroys the asset&#x27;s LOD0.</li><li><strong>The COLLAPSE ratio is a target, not a guarantee.</strong> Each LOD&#x27;s evaluated triangle count must land within 5% of <code>ratio x base_tris</code> — measured 0.00% at ratio 0.5 (1,130 tris) and 0.44% at ratio 0.18 (405 tris). A stacked second Decimate halves the effective ratio (50% excursion, caught); a dropped modifier leaves evaluated == original (caught).</li><li><strong>LODs preserve silhouette-critical dimensions.</strong> Height (3.12) and fin span are the rocket&#x27;s readability; the evaluated bbox holds the base bbox within 1e-3 at every level (measured 7.7e-6). Decimate has no vertex pinning, so this is a real risk, not a formality: at an aggressive ratio 0.02 the nose tip collapses (bbox drift 0.0206, caught).</li></ul>
-<p>The Decimate modifier API (<code>decimate_type=&#x27;COLLAPSE&#x27;</code>, <code>ratio</code>) is stable between Blender 4.5 LTS and 5.1 — the example runs identically on both, which is itself the version witness (measured values match to the digit).</p>
-<p>The render stages the three LODs in a row: LOD0&#x27;s smooth lathe, LOD1&#x27;s nearly free halving, LOD2&#x27;s visible crunch — the porthole degrades to a hexagon and the nose facets coarsen, exactly the geometry the triangle counts assert.</p>
+<ul><li><strong>Decimate is non-destructive and lives in the depsgraph.</strong> The evaluated mesh carries the reduction; the original datablock is byte-identical before and after evaluation. The check proves both — evaluated counts drop while <code>obj.data</code> keeps the closed-form counts (2,511 verts / 2,488 faces / 4,784 tris) — and every evaluated reference is released with <code>to_mesh_clear()</code>. An LOD chain that bakes the reduction into <code>obj.data</code> destroys the asset&#x27;s LOD0 (applying the modifier instead: exit 7, caught).</li><li><strong>The COLLAPSE ratio is a target, not a guarantee.</strong> Each LOD&#x27;s evaluated triangle count must land within 5% of <code>ratio x base_tris</code> — measured 0.00% at ratio 0.5 (2,392 tris) and 0.13% at ratio 0.18 (860 tris). A stacked second Decimate halves the effective ratio (50.0% excursion, caught); a dropped modifier leaves evaluated == original (caught).</li><li><strong>LODs preserve silhouette-critical dimensions.</strong> Height (the antenna tip at 3.40) and fin span (2.04) are the rocket&#x27;s readability; the evaluated bbox holds the base bbox within 1e-3 at every level (measured 2.6e-10). Decimate has no vertex pinning, so this is a real risk, not a formality, and it shaped the model: each fin ends in a straight tip cap and a flat foot, and the four fins sit on the local axes, so every bbox extreme is a fin&#x27;s mid-rim vertex on a straight edge. The three-fin layout this replaced put an extreme on an oblique fin&#x27;s plate corner, and a collapse at 0.18 shaved it by 4.7e-3 (caught).</li></ul>
+<p>The Decimate modifier API (<code>decimate_type=&#x27;COLLAPSE&#x27;</code>, <code>ratio</code>) is stable across Blender 4.5 LTS, 5.1 and 5.2 — the example runs identically on all three, which is itself the version witness (measured values match to the digit).</p>
+<p>The render stages the three LODs left to right with a dark triangle wireframe laid over each: the same mesh through the same Decimate, then Triangulate and Wireframe, so the overlay draws exactly the triangles the check counts (measured 4,784 / 2,392 / 860 faces on the overlay&#x27;s input). The density drop reads at thumbnail size — a fine mesh on LOD0, large facets on LOD2, where the porthole flange collapses to an octagon — while the silhouettes stay identical, which is contract 3 made visible. One label per LOD carries the evaluated triangle count from the check.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python lod_decimate_chain.py --
@@ -296,7 +296,7 @@ blender --background --python lod_decimate_chain.py -- --output rocket.png
 blender --background --python lod_decimate_chain.py -- --output rocket.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
 <p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Base topology ≠ closed form</td></tr><tr><td>4</td><td>Base bbox ≠ closed form</td></tr><tr><td>5</td><td>LOD0 evaluated counts ≠ base</td></tr><tr><td>6</td><td>Evaluated tris ≥ base (<code>--no-decimate</code> lands here)</td></tr><tr><td>7</td><td>Original datablock mutated after evaluation</td></tr><tr><td>8</td><td>LOD tris outside ratio bounds</td></tr><tr><td>9</td><td>LOD bbox lost silhouette-critical dimensions</td></tr><tr><td>10</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Base topology ≠ closed form</td></tr><tr><td>4</td><td>Base bbox ≠ closed form</td></tr><tr><td>5</td><td>LOD0 evaluated counts ≠ base</td></tr><tr><td>6</td><td>Evaluated tris ≥ base (<code>--no-decimate</code> lands here)</td></tr><tr><td>7</td><td>Original datablock mutated after evaluation</td></tr><tr><td>8</td><td>LOD tris outside ratio bounds</td></tr><tr><td>9</td><td>LOD bbox lost silhouette-critical dimensions</td></tr><tr><td>10</td><td><code>--output</code> framing outside the Layer 1 band (<code>gallery_framing</code>)</td></tr><tr><td>11</td><td><code>--output</code> asset below the quality floors (<code>gallery_asset_quality</code>)</td></tr><tr><td>12</td><td><code>--output</code> produced no file</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--no-decimate</code>.</p>
     </section>
     <section class="detail-section src">
@@ -321,14 +321,26 @@ AI-generated code most often gets wrong:
    The check derives the bounds from the measured behavior of a known mesh and
    fails on any excursion (a wrong ratio, a dropped modifier, or an exporter
    that silently shipped the base mesh all trip it).
-3. LODs preserve silhouette-critical dimensions. A rocket&#x27;s height and fin
-   span are its readability; the evaluated bounding boxes must hold the base
-   bbox within tolerance at every level. Decimate offers no vertex pinning, so
-   this is a real, measurable risk — not a formality.
+3. LODs preserve silhouette-critical dimensions. A rocket&#x27;s height (the
+   antenna tip) and its fin span are its readability; the evaluated bounding
+   boxes must hold the base bbox within tolerance at every level. Decimate
+   offers no vertex pinning, so this is a real, measurable risk — not a
+   formality.
+
+The rocket is one mesh assembled from closed-form parts: a lathed hull
+(hollow nozzle bell, brass collar, red skirt, two recessed panel seams, a
+raised brass shoulder band, a tangent-ogive nose, a brass finial and
+antenna), four swept fins with chamfered brass-trimmed rims, a flanged
+porthole with a domed glass, and two rows of rivets along the seams. Six
+materials. Every vertex and face count is a formula of the build constants.
 
 The Decimate modifier API (``decimate_type=&#x27;COLLAPSE&#x27;``, ``ratio``) is stable
-between Blender 4.5 LTS and 5.1 — the example runs identically on both, which
-is itself the version witness.
+across Blender 4.5 LTS, 5.1 and 5.2 — the example runs identically on all
+three, which is itself the version witness.
+
+The render lays a triangle wireframe over each LOD — the same mesh through
+the same Decimate, then Triangulate and Wireframe — so the density drop is
+visible, and labels each with the evaluated triangle count the check measured.
 
 ``--no-decimate`` leaves the LOD copies without a Decimate modifier and
 still runs the reduction check, so evaluated tris equal the base. That is
@@ -344,144 +356,277 @@ check. Pass --output to also render a still:
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">import</span> mathutils
 
-CREAM, RED, TRIM, GLASS = <span class="n">0</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>
-SIDES = <span class="n">64</span>                      <span class="c"># lathe resolution of LOD0</span>
-FIN_ANGLES = (<span class="n">90.0</span>, <span class="n">210.0</span>, <span class="n">330.0</span>)  <span class="c"># back fin + two forward-splayed fins</span>
+<span class="c"># Shared Layer 1 framing + asset-quality measurement (render path only) —</span>
+<span class="c"># see gallery_framing.py for the import-shim contract</span>
+sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+
+CREAM, RED, BRASS, GUN, GLASS, SOOT = range(<span class="n">6</span>)
+SIDES = <span class="n">48</span>                      <span class="c"># lathe resolution of LOD0 (divisible by 4)</span>
 LODS = (<span class="n">0.5</span>, <span class="n">0.18</span>)              <span class="c"># LOD1 / LOD2 collapse ratios (LOD0 is the base)</span>
-RATIO_BOUNDS = <span class="n">0.05</span>             <span class="c"># measured 0.44% worst-case; 10x margin, still fails a real drift</span>
-BBOX_TOL = <span class="n">1e-3</span>                 <span class="c"># measured 7.7e-6 worst-case; silhouette preservation, absolute units</span>
+RATIO_BOUNDS = <span class="n">0.05</span>             <span class="c"># measured worst case well under 1%; still fails a real drift</span>
+BBOX_TOL = <span class="n">1e-3</span>                 <span class="c"># measured worst case ~1e-5; silhouette preservation, absolute units</span>
 
-<span class="c"># lathe profile: (z, radius, material) from nozzle exit to shoulder, plus the</span>
-<span class="c"># ogive nose rings and a single tip vertex — every ring a closed form</span>
+HULL_R = <span class="n">0.46</span>                   <span class="c"># body radius</span>
+
+
+<span class="k">def</span> seam(z):
+    <span class="s">&quot;&quot;&quot;A recessed panel seam: four rings stepping 9 mm into the hull.&quot;&quot;&quot;</span>
+    <span class="k">return</span> [(z - <span class="n">0.012</span>, HULL_R, GUN), (z - <span class="n">0.006</span>, HULL_R - <span class="n">0.009</span>, GUN),
+            (z + <span class="n">0.006</span>, HULL_R - <span class="n">0.009</span>, GUN), (z + <span class="n">0.012</span>, HULL_R, CREAM)]
+
+
+<span class="c"># lathe profile: (z, radius, material of the band ABOVE this ring), from the</span>
+<span class="c"># nozzle throat interior, down and around the bell lip, up the hull to the</span>
+<span class="c"># shoulder band. The ogive nose and finial are appended by hull_rings().</span>
+SEAMS = (<span class="n">1.00</span>, <span class="n">1.95</span>)
 PROFILE = [
-    (<span class="n">0.00</span>, <span class="n">0.34</span>, TRIM),         <span class="c"># nozzle exit bell</span>
-    (<span class="n">0.06</span>, <span class="n">0.30</span>, TRIM),
-    (<span class="n">0.28</span>, <span class="n">0.22</span>, TRIM),         <span class="c"># throat</span>
-    (<span class="n">0.38</span>, <span class="n">0.26</span>, TRIM),         <span class="c"># nozzle-body joint</span>
-    (<span class="n">0.46</span>, <span class="n">0.42</span>, CREAM),        <span class="c"># body flare</span>
-    (<span class="n">0.70</span>, <span class="n">0.44</span>, CREAM),
-    (<span class="n">1.90</span>, <span class="n">0.44</span>, CREAM),
-    (<span class="n">2.05</span>, <span class="n">0.42</span>, CREAM),        <span class="c"># body top</span>
-    (<span class="n">2.16</span>, <span class="n">0.36</span>, RED),          <span class="c"># shoulder</span>
-    (<span class="n">2.26</span>, <span class="n">0.28</span>, RED),          <span class="c"># nose base</span>
+    (<span class="n">0.40</span>, <span class="n">0.07</span>, SOOT),         <span class="c"># throat interior (fanned to NOZZLE_CORE)</span>
+    (<span class="n">0.26</span>, <span class="n">0.15</span>, SOOT),
+    (<span class="n">0.14</span>, <span class="n">0.23</span>, SOOT),
+    (<span class="n">0.09</span>, <span class="n">0.285</span>, GUN),         <span class="c"># inner lip</span>
+    (<span class="n">0.075</span>, <span class="n">0.305</span>, GUN),        <span class="c"># lip bottom</span>
+    (<span class="n">0.09</span>, <span class="n">0.325</span>, GUN),         <span class="c"># lip outer</span>
+    (<span class="n">0.18</span>, <span class="n">0.28</span>, GUN),          <span class="c"># bell outer</span>
+    (<span class="n">0.30</span>, <span class="n">0.215</span>, GUN),
+    (<span class="n">0.38</span>, <span class="n">0.19</span>, GUN),          <span class="c"># outer throat</span>
+    (<span class="n">0.41</span>, <span class="n">0.20</span>, BRASS),        <span class="c"># collar flange</span>
+    (<span class="n">0.43</span>, <span class="n">0.34</span>, BRASS),
+    (<span class="n">0.45</span>, <span class="n">0.40</span>, BRASS),
+    (<span class="n">0.47</span>, <span class="n">0.43</span>, RED),          <span class="c"># hull base bevel: red lower skirt</span>
+    (<span class="n">0.50</span>, HULL_R, RED),
+    *seam(SEAMS[<span class="n">0</span>]),
+    *seam(SEAMS[<span class="n">1</span>]),
+    (<span class="n">2.12</span>, HULL_R, BRASS),      <span class="c"># raised shoulder band</span>
+    (<span class="n">2.135</span>, <span class="n">0.478</span>, BRASS),
+    (<span class="n">2.205</span>, <span class="n">0.478</span>, BRASS),
+    (<span class="n">2.22</span>, HULL_R, RED),        <span class="c"># nose base (ogive h = 0)</span>
 ]
-NOSE_RINGS = <span class="n">7</span>                  <span class="c"># ogive sampled k/8 for k in 1..7</span>
-NOSE_LEN = <span class="n">0.86</span>
-TIP_Z = <span class="n">2.26</span> + NOSE_LEN         <span class="c"># 3.12 — silhouette-critical height</span>
-FIN_R_OUT = <span class="n">0.98</span>                <span class="c"># silhouette-critical fin span</span>
-<span class="c"># fin plate profile in the (radius, z) plane: long root chord, short tip chord</span>
-FIN_PROFILE = [(<span class="n">0.38</span>, <span class="n">0.40</span>), (<span class="n">0.98</span>, <span class="n">0.40</span>), (<span class="n">0.98</span>, <span class="n">0.55</span>), (<span class="n">0.42</span>, <span class="n">1.02</span>)]
-FIN_THICK = <span class="n">0.07</span>
-PORT_POS = (<span class="n">0.0</span>, -<span class="n">0.415</span>, <span class="n">1.55</span>)  <span class="c"># porthole on the camera-facing hull</span>
-PORT_R = <span class="n">0.16</span>
-PORT_DEPTH = <span class="n">0.09</span>
+NOZZLE_CORE = <span class="n">0.43</span>              <span class="c"># interior fan centre, above the throat ring</span>
+NOSE_Z0 = <span class="n">2.22</span>
+NOSE_L = <span class="n">0.95</span>                   <span class="c"># tangent-ogive length to its virtual point</span>
+NOSE_H = <span class="n">0.88</span>                   <span class="c"># sampled ogive height (stops short of the point)</span>
+NOSE_RINGS = <span class="n">8</span>
+FINIAL = [(<span class="n">0.02</span>, <span class="n">0.095</span>), (<span class="n">0.05</span>, <span class="n">0.06</span>), (<span class="n">0.09</span>, <span class="n">0.034</span>)]   <span class="c"># (dz above nose top, r), brass</span>
+TIP_Z = NOSE_Z0 + NOSE_H + <span class="n">0.30</span>  <span class="c"># 3.40 — antenna tip, silhouette-critical height</span>
+
+<span class="c"># swept fin outline in the (radius, z) plane: quadratic leading edge from the</span>
+<span class="c"># root top out to the tip, a vertical tip cap, a flat foot, and a quadratic</span>
+<span class="c"># trailing edge back to the root. The cap and foot are the fin&#x27;s extremes; each</span>
+<span class="c"># is a straight edge, so a collapse along it cannot move the silhouette.</span>
+<span class="c"># Four fins on the local axes: each axis extreme is then a fin&#x27;s mid-rim</span>
+<span class="c"># vertex, never a plate corner offset by the fin thickness (an oblique fin&#x27;s</span>
+<span class="c"># plate corner is what a collapse shaves first — measured 4.7e-3 at 0.18).</span>
+FIN_ANGLES = (<span class="n">0.0</span>, <span class="n">90.0</span>, <span class="n">180.0</span>, <span class="n">270.0</span>)
+FIN_SEG = <span class="n">8</span>
+FIN_LE = ((<span class="n">0.40</span>, <span class="n">1.50</span>), (<span class="n">0.80</span>, <span class="n">1.05</span>), (<span class="n">1.02</span>, <span class="n">0.20</span>))
+FIN_TOE = (<span class="n">1.02</span>, <span class="n">0.0</span>)
+FIN_TE = ((<span class="n">0.84</span>, <span class="n">0.0</span>), (<span class="n">0.64</span>, <span class="n">0.42</span>), (<span class="n">0.40</span>, <span class="n">0.60</span>))
+FIN_THICK = <span class="n">0.05</span>
+FIN_CHAMFER = <span class="n">0.02</span>
+FIN_N = <span class="n">2</span> * (FIN_SEG + <span class="n">1</span>) + <span class="n">1</span>  <span class="c"># outline points</span>
+
+PORT_Z = <span class="n">1.48</span>
+PORT_AZ = <span class="n">315.0</span>                 <span class="c"># porthole azimuth: between two fins; the render turns it to camera</span>
+PORT_SEG = <span class="n">24</span>
+<span class="c"># rim cross-section (rho, y): a closed six-point flange loop, back face buried in the hull</span>
+PORT_RIM = [(<span class="n">0.15</span>, -<span class="n">0.37</span>), (<span class="n">0.15</span>, -<span class="n">0.475</span>), (<span class="n">0.165</span>, -<span class="n">0.497</span>),
+            (<span class="n">0.215</span>, -<span class="n">0.497</span>), (<span class="n">0.235</span>, -<span class="n">0.475</span>), (<span class="n">0.235</span>, -<span class="n">0.37</span>)]
+PORT_GLASS = (<span class="n">0.155</span>, -<span class="n">0.468</span>, -<span class="n">0.49</span>)   <span class="c"># ring rho, ring y, dome centre y</span>
+
+RIVET_ROWS = (SEAMS[<span class="n">0</span>] + <span class="n">0.045</span>, SEAMS[<span class="n">1</span>] - <span class="n">0.045</span>)
+RIVETS_PER_ROW = <span class="n">24</span>
+RIVET_R, RIVET_BASE, RIVET_TOP = <span class="n">0.013</span>, HULL_R - <span class="n">0.004</span>, HULL_R + <span class="n">0.013</span>
 
 
-<span class="k">def</span> lathe(bm, rings, mat_ranges=<span class="k">None</span>):
-    <span class="s">&quot;&quot;&quot;Revolve (z, r, mat) rings around Z; returns (ring_verts, tip_vert).&quot;&quot;&quot;</span>
-    sides = []
-    <span class="k">for</span> z, r, _mat <span class="k">in</span> rings:
-        sides.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
-                                    r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
-                      <span class="k">for</span> s <span class="k">in</span> range(SIDES)])
-    <span class="k">for</span> k <span class="k">in</span> range(len(sides) - <span class="n">1</span>):
-        mat = rings[k][<span class="n">2</span>]
-        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
-            f = bm.faces.new((sides[k][s], sides[k][(s + <span class="n">1</span>) % SIDES],
-                              sides[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], sides[k + <span class="n">1</span>][s]))
-            f.material_index = mat
-    <span class="k">return</span> sides
+<span class="c"># -- closed-form geometry (pure functions of the constants; no bmesh) ---------</span>
+
+<span class="k">def</span> ogive_r(h):
+    rho = (HULL_R ** <span class="n">2</span> + NOSE_L ** <span class="n">2</span>) / (<span class="n">2</span> * HULL_R)
+    <span class="k">return</span> math.sqrt(rho * rho - h * h) - (rho - HULL_R)
 
 
-<span class="k">def</span> nose_radius(t):
-    <span class="k">return</span> <span class="n">0.28</span> * math.sqrt(max(<span class="n">0.0</span>, <span class="n">1.0</span> - t * t))
+<span class="k">def</span> hull_rings():
+    rings = list(PROFILE)
+    <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, NOSE_RINGS + <span class="n">1</span>):
+        h = NOSE_H * k / NOSE_RINGS
+        rings.append((NOSE_Z0 + h, ogive_r(h), BRASS <span class="k">if</span> k == NOSE_RINGS <span class="k">else</span> RED))
+    top = NOSE_Z0 + NOSE_H
+    rings += [(top + dz, r, BRASS) <span class="k">for</span> dz, r <span class="k">in</span> FINIAL]
+    <span class="k">return</span> rings
 
 
-<span class="k">def</span> build_fin(bm, angle_deg):
-    <span class="s">&quot;&quot;&quot;One swept fin plate: FIN_PROFILE revolved into place, thickness FIN_THICK.&quot;&quot;&quot;</span>
-    a = math.radians(angle_deg)
-    u = mathutils.Vector((math.cos(a), math.sin(a), <span class="n">0.0</span>))       <span class="c"># radial out</span>
-    w = mathutils.Vector((-math.sin(a), math.cos(a), <span class="n">0.0</span>))      <span class="c"># thickness dir</span>
-    verts = []
-    <span class="k">for</span> half <span class="k">in</span> (-FIN_THICK / <span class="n">2</span>, FIN_THICK / <span class="n">2</span>):
-        <span class="k">for</span> r, z <span class="k">in</span> FIN_PROFILE:
-            p = u * r + w * half + mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, z))
-            verts.append(bm.verts.new(p))
-    n = len(FIN_PROFILE)
-    faces = [bm.faces.new((verts[<span class="n">0</span>], verts[<span class="n">1</span>], verts[<span class="n">2</span>], verts[<span class="n">3</span>])),
-             bm.faces.new((verts[<span class="n">4</span>], verts[<span class="n">7</span>], verts[<span class="n">6</span>], verts[<span class="n">5</span>]))]
+<span class="k">def</span> bezier(p0, p1, p2, n):
+    <span class="k">return</span> [tuple((<span class="n">1</span> - t) ** <span class="n">2</span> * a + <span class="n">2</span> * (<span class="n">1</span> - t) * t * b + t * t * c
+                  <span class="k">for</span> a, b, c <span class="k">in</span> zip(p0, p1, p2))
+            <span class="k">for</span> t <span class="k">in</span> (i / n <span class="k">for</span> i <span class="k">in</span> range(n + <span class="n">1</span>))]
+
+
+<span class="k">def</span> fin_outline():
+    <span class="k">return</span> bezier(*FIN_LE, FIN_SEG) + [FIN_TOE] + bezier(*FIN_TE, FIN_SEG)
+
+
+<span class="k">def</span> fin_loops(angle_deg):
+    <span class="s">&quot;&quot;&quot;Three 3D loops for one fin: front face (inset), mid rim, back face (inset).&quot;&quot;&quot;</span>
+    pts = fin_outline()
+    n = len(pts)
+    <span class="c"># signed area -&gt; which side is outward for the 2D edge normals</span>
+    area = sum(pts[i][<span class="n">0</span>] * pts[(i + <span class="n">1</span>) % n][<span class="n">1</span>] - pts[(i + <span class="n">1</span>) % n][<span class="n">0</span>] * pts[i][<span class="n">1</span>]
+               <span class="k">for</span> i <span class="k">in</span> range(n))
+    sgn = <span class="n">1.0</span> <span class="k">if</span> area &gt; <span class="n">0</span> <span class="k">else</span> -<span class="n">1.0</span>
+    <span class="k">def</span> normal(p, q):                                   <span class="c"># outward normal of edge p-&gt;q</span>
+        tx, ty = q[<span class="n">0</span>] - p[<span class="n">0</span>], q[<span class="n">1</span>] - p[<span class="n">1</span>]
+        ln = math.hypot(tx, ty)
+        <span class="k">return</span> sgn * ty / ln, -sgn * tx / ln
+    <span class="c"># mitred inset: each chamfer strip stays planar, so the rim is a set of</span>
+    <span class="c"># flat bevel faces rather than a twisted band</span>
+    inset = []
     <span class="k">for</span> i <span class="k">in</span> range(n):
-        j = (i + <span class="n">1</span>) % n
-        faces.append(bm.faces.new((verts[i], verts[i + n], verts[j + n], verts[j])))
-    <span class="k">for</span> f <span class="k">in</span> faces:
-        f.material_index = RED
+        n1 = normal(pts[i - <span class="n">1</span>], pts[i])
+        n2 = normal(pts[i], pts[(i + <span class="n">1</span>) % n])
+        k = <span class="n">1.0</span> + n1[<span class="n">0</span>] * n2[<span class="n">0</span>] + n1[<span class="n">1</span>] * n2[<span class="n">1</span>]
+        inset.append((pts[i][<span class="n">0</span>] - FIN_CHAMFER * (n1[<span class="n">0</span>] + n2[<span class="n">0</span>]) / k,
+                      pts[i][<span class="n">1</span>] - FIN_CHAMFER * (n1[<span class="n">1</span>] + n2[<span class="n">1</span>]) / k))
+    a = math.radians(angle_deg)
+    u = (math.cos(a), math.sin(a))
+    w = (-math.sin(a), math.cos(a))
+
+    <span class="k">def</span> place(r, z, off):
+        <span class="k">return</span> (u[<span class="n">0</span>] * r + w[<span class="n">0</span>] * off, u[<span class="n">1</span>] * r + w[<span class="n">1</span>] * off, z)
+    <span class="k">return</span> ([place(r, z, -FIN_THICK / <span class="n">2</span>) <span class="k">for</span> r, z <span class="k">in</span> inset],
+            [place(r, z, <span class="n">0.0</span>) <span class="k">for</span> r, z <span class="k">in</span> pts],
+            [place(r, z, FIN_THICK / <span class="n">2</span>) <span class="k">for</span> r, z <span class="k">in</span> inset])
 
 
-<span class="k">def</span> build_rocket():
-    <span class="s">&quot;&quot;&quot;The LOD0 rocket: lathed body, 3 fin plates, one porthole — all closed form.&quot;&quot;&quot;</span>
-    me = bpy.data.meshes.new(<span class="s">&quot;Rocket&quot;</span>)
+<span class="k">def</span> port_point(rho, y, s):
+    <span class="s">&quot;&quot;&quot;Porthole frame: -y is outward along PORT_AZ, rho sweeps the port plane.&quot;&quot;&quot;</span>
+    t = <span class="n">2</span> * math.pi * s / PORT_SEG
+    a = math.radians(PORT_AZ)
+    d = (math.cos(a), math.sin(a))
+    lat = (-math.sin(a), math.cos(a))
+    x = rho * math.cos(t)
+    <span class="k">return</span> (lat[<span class="n">0</span>] * x - d[<span class="n">0</span>] * y, lat[<span class="n">1</span>] * x - d[<span class="n">1</span>] * y, PORT_Z + rho * math.sin(t))
+
+
+<span class="k">def</span> rivet_points(z, k):
+    <span class="s">&quot;&quot;&quot;Hex base (6) + apex, oriented radially at rivet k of the row at height z.&quot;&quot;&quot;</span>
+    a = <span class="n">2</span> * math.pi * (k + <span class="n">0.5</span>) / RIVETS_PER_ROW
+    rad = (math.cos(a), math.sin(a))
+    tan = (-math.sin(a), math.cos(a))
+    base = []
+    <span class="k">for</span> j <span class="k">in</span> range(<span class="n">6</span>):
+        t = <span class="n">2</span> * math.pi * j / <span class="n">6</span>
+        dt, dz = RIVET_R * math.cos(t), RIVET_R * math.sin(t)
+        base.append((rad[<span class="n">0</span>] * RIVET_BASE + tan[<span class="n">0</span>] * dt,
+                     rad[<span class="n">1</span>] * RIVET_BASE + tan[<span class="n">1</span>] * dt, z + dz))
+    <span class="k">return</span> base, (rad[<span class="n">0</span>] * RIVET_TOP, rad[<span class="n">1</span>] * RIVET_TOP, z)
+
+
+<span class="c"># -- build --------------------------------------------------------------------</span>
+
+<span class="k">def</span> build_rocket(name):
+    <span class="s">&quot;&quot;&quot;The LOD0 rocket: one mesh assembled from closed-form parts.&quot;&quot;&quot;</span>
+    me = bpy.data.meshes.new(name)
     bm = bmesh.new()
     <span class="k">try</span>:
-        rings = list(PROFILE)
-        <span class="k">for</span> k <span class="k">in</span> range(<span class="n">1</span>, NOSE_RINGS + <span class="n">1</span>):
-            t = k / (NOSE_RINGS + <span class="n">1</span>)
-            rings.append((<span class="n">2.26</span> + NOSE_LEN * t, nose_radius(t), RED))
-        sides = lathe(bm, rings)
+        <span class="c"># hull: lathe every ring, fan the throat interior and the antenna tip</span>
+        rings = hull_rings()
+        sides = [[bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
+                                r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
+                  <span class="k">for</span> s <span class="k">in</span> range(SIDES)] <span class="k">for</span> z, r, _m <span class="k">in</span> rings]
+        <span class="k">for</span> k <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
+            <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+                f = bm.faces.new((sides[k][s], sides[k][(s + <span class="n">1</span>) % SIDES],
+                                  sides[k + <span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], sides[k + <span class="n">1</span>][s]))
+                f.material_index = rings[k][<span class="n">2</span>]
+        core = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, NOZZLE_CORE))
         tip = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, TIP_Z))
         <span class="k">for</span> s <span class="k">in</span> range(SIDES):
-            f = bm.faces.new((sides[-<span class="n">1</span>][s], sides[-<span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], tip))
-            f.material_index = RED
-        bottom = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
-            f = bm.faces.new((sides[<span class="n">0</span>][(s + <span class="n">1</span>) % SIDES], sides[<span class="n">0</span>][s], bottom))
-            f.material_index = TRIM
+            bm.faces.new((sides[<span class="n">0</span>][(s + <span class="n">1</span>) % SIDES], sides[<span class="n">0</span>][s], core)).material_index = SOOT
+            bm.faces.new((sides[-<span class="n">1</span>][s], sides[-<span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], tip)).material_index = BRASS
+        <span class="c"># fins: red faces, chamfered brass rim</span>
         <span class="k">for</span> ang <span class="k">in</span> FIN_ANGLES:
-            build_fin(bm, ang)
-        <span class="c"># porthole: rim tube + glass disc, axis along Y, interpenetrating the hull</span>
-        py = [PORT_POS[<span class="n">1</span>] - PORT_DEPTH / <span class="n">2</span>, PORT_POS[<span class="n">1</span>] + PORT_DEPTH / <span class="n">2</span>]
-        rim = [[bm.verts.new((PORT_R * math.cos(<span class="n">2</span> * math.pi * s / <span class="n">16</span>) + PORT_POS[<span class="n">0</span>],
-                              y, PORT_R * math.sin(<span class="n">2</span> * math.pi * s / <span class="n">16</span>) + PORT_POS[<span class="n">2</span>]))
-                <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>)] <span class="k">for</span> y <span class="k">in</span> py]
-        <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>):
-            f = bm.faces.new((rim[<span class="n">0</span>][s], rim[<span class="n">0</span>][(s + <span class="n">1</span>) % <span class="n">16</span>],
-                              rim[<span class="n">1</span>][(s + <span class="n">1</span>) % <span class="n">16</span>], rim[<span class="n">1</span>][s]))
-            f.material_index = TRIM
-        center = bm.verts.new((PORT_POS[<span class="n">0</span>], py[<span class="n">0</span>] - <span class="n">0.005</span>, PORT_POS[<span class="n">2</span>]))
-        <span class="k">for</span> s <span class="k">in</span> range(<span class="n">16</span>):
-            f = bm.faces.new((rim[<span class="n">0</span>][(s + <span class="n">1</span>) % <span class="n">16</span>], rim[<span class="n">0</span>][s], center))
-            f.material_index = GLASS
+            loops = [[bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> lp] <span class="k">for</span> lp <span class="k">in</span> fin_loops(ang)]
+            n = len(loops[<span class="n">0</span>])
+            bm.faces.new(loops[<span class="n">0</span>]).material_index = RED
+            bm.faces.new(list(reversed(loops[<span class="n">2</span>]))).material_index = RED
+            <span class="k">for</span> a, b <span class="k">in</span> ((<span class="n">0</span>, <span class="n">1</span>), (<span class="n">1</span>, <span class="n">2</span>)):
+                <span class="k">for</span> i <span class="k">in</span> range(n):
+                    j = (i + <span class="n">1</span>) % n
+                    bm.faces.new((loops[a][i], loops[a][j], loops[b][j],
+                                  loops[b][i])).material_index = BRASS
+        <span class="c"># porthole: swept flange loop + domed glass fan</span>
+        m = len(PORT_RIM)
+        rim = [[bm.verts.new(port_point(rho, y, s)) <span class="k">for</span> rho, y <span class="k">in</span> PORT_RIM]
+               <span class="k">for</span> s <span class="k">in</span> range(PORT_SEG)]
+        <span class="k">for</span> s <span class="k">in</span> range(PORT_SEG):
+            t = (s + <span class="n">1</span>) % PORT_SEG
+            <span class="k">for</span> i <span class="k">in</span> range(m):
+                j = (i + <span class="n">1</span>) % m
+                bm.faces.new((rim[s][i], rim[s][j], rim[t][j], rim[t][i])).material_index = BRASS
+        g_rho, g_y, g_c = PORT_GLASS
+        glass = [bm.verts.new(port_point(g_rho, g_y, s)) <span class="k">for</span> s <span class="k">in</span> range(PORT_SEG)]
+        dome = bm.verts.new(port_point(<span class="n">0.0</span>, g_c, <span class="n">0</span>))
+        <span class="k">for</span> s <span class="k">in</span> range(PORT_SEG):
+            bm.faces.new((glass[s], glass[(s + <span class="n">1</span>) % PORT_SEG], dome)).material_index = GLASS
+        <span class="c"># rivets: hex domes along both seams</span>
+        <span class="k">for</span> z <span class="k">in</span> RIVET_ROWS:
+            <span class="k">for</span> k <span class="k">in</span> range(RIVETS_PER_ROW):
+                base_p, top_p = rivet_points(z, k)
+                base = [bm.verts.new(p) <span class="k">for</span> p <span class="k">in</span> base_p]
+                top = bm.verts.new(top_p)
+                bm.faces.new(base).material_index = BRASS
+                <span class="k">for</span> j <span class="k">in</span> range(<span class="n">6</span>):
+                    bm.faces.new((base[j], base[(j + <span class="n">1</span>) % <span class="n">6</span>], top)).material_index = BRASS
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        <span class="c"># smooth hull, crisp trim: mark creases past 40 degrees sharp</span>
+        bm.normal_update()
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> \
+                    e.link_faces[<span class="n">0</span>].normal.angle(e.link_faces[<span class="n">1</span>].normal, <span class="n">0.0</span>) &gt; math.radians(<span class="n">40</span>):
+                e.smooth = <span class="k">False</span>
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()  <span class="c"># the ownership contract, as always</span>
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">False</span>  <span class="c"># faceted toy-rocket finish; facets carry the LOD story</span>
-    obj = bpy.data.objects.new(<span class="s">&quot;Rocket&quot;</span>, me)
+    obj = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(obj)
     <span class="k">return</span> obj
 
 
 <span class="k">def</span> closed_form_counts():
     <span class="s">&quot;&quot;&quot;Expected base-mesh counts, derived from the build constants.&quot;&quot;&quot;</span>
-    rings = len(PROFILE) + NOSE_RINGS
-    verts = rings * SIDES + <span class="n">2</span> + <span class="n">3</span> * <span class="n">8</span> + <span class="n">2</span> * <span class="n">16</span> + <span class="n">1</span>        <span class="c"># +tip +bottom +fins +rim +port center</span>
-    quads = (rings - <span class="n">1</span>) * SIDES + <span class="n">3</span> * <span class="n">6</span> + <span class="n">16</span>
-    tris = <span class="n">2</span> * SIDES + <span class="n">16</span>                                  <span class="c"># tip fan + bottom fan + port glass</span>
-    faces = quads + tris
-    total_tris = <span class="n">2</span> * quads + tris
+    rings = len(PROFILE) + NOSE_RINGS + len(FINIAL)
+    fins, m, rivets = len(FIN_ANGLES), len(PORT_RIM), <span class="n">2</span> * RIVETS_PER_ROW
+    verts = (rings * SIDES + <span class="n">2</span>                      <span class="c"># hull + throat core + antenna tip</span>
+             + fins * <span class="n">3</span> * FIN_N                     <span class="c"># three loops per fin</span>
+             + PORT_SEG * m + PORT_SEG + <span class="n">1</span>          <span class="c"># flange + glass ring + dome</span>
+             + rivets * <span class="n">7</span>)                          <span class="c"># hex base + apex</span>
+    quads = (rings - <span class="n">1</span>) * SIDES + fins * <span class="n">2</span> * FIN_N + PORT_SEG * m
+    tri_faces = <span class="n">2</span> * SIDES + PORT_SEG + rivets * <span class="n">6</span>
+    ngons = fins * <span class="n">2</span> + rivets                       <span class="c"># fin faces (FIN_N-gons) + rivet bases (hex)</span>
+    faces = quads + tri_faces + ngons
+    total_tris = (<span class="n">2</span> * quads + tri_faces
+                  + fins * <span class="n">2</span> * (FIN_N - <span class="n">2</span>) + rivets * <span class="n">4</span>)
     <span class="k">return</span> verts, faces, total_tris
 
 
 <span class="k">def</span> closed_form_bbox():
-    <span class="s">&quot;&quot;&quot;Exact bbox from the build constants: 3 fins at 120° is not x/y-symmetric.&quot;&quot;&quot;</span>
-    pts = [(math.cos(a) * FIN_R_OUT - math.sin(a) * (FIN_THICK / <span class="n">2</span>) * s,
-            math.sin(a) * FIN_R_OUT + math.cos(a) * (FIN_THICK / <span class="n">2</span>) * s)
-           <span class="k">for</span> a <span class="k">in</span> (math.radians(d) <span class="k">for</span> d <span class="k">in</span> FIN_ANGLES) <span class="k">for</span> s <span class="k">in</span> (-<span class="n">1</span>, <span class="n">1</span>)]
-    pts += [(<span class="n">0.44</span>, <span class="n">0.44</span>), (-<span class="n">0.44</span>, -<span class="n">0.44</span>), (PORT_R, PORT_POS[<span class="n">1</span>]),
-            (-PORT_R, PORT_POS[<span class="n">1</span>])]
-    xs = [p[<span class="n">0</span>] <span class="k">for</span> p <span class="k">in</span> pts]
-    ys = [p[<span class="n">1</span>] <span class="k">for</span> p <span class="k">in</span> pts]
-    <span class="k">return</span> ((min(xs), min(ys), <span class="n">0.0</span>), (max(xs), max(ys), TIP_Z))
+    <span class="s">&quot;&quot;&quot;Exact bbox from the build constants (every candidate extreme vertex).&quot;&quot;&quot;</span>
+    pts = []
+    <span class="k">for</span> z, r, _m <span class="k">in</span> hull_rings():                   <span class="c"># SIDES % 4 == 0: axis extremes hit</span>
+        pts += [(r, <span class="n">0.0</span>, z), (-r, <span class="n">0.0</span>, z), (<span class="n">0.0</span>, r, z), (<span class="n">0.0</span>, -r, z)]
+    pts += [(<span class="n">0.0</span>, <span class="n">0.0</span>, NOZZLE_CORE), (<span class="n">0.0</span>, <span class="n">0.0</span>, TIP_Z)]
+    <span class="k">for</span> ang <span class="k">in</span> FIN_ANGLES:
+        <span class="k">for</span> lp <span class="k">in</span> fin_loops(ang):
+            pts += lp
+    pts += [port_point(rho, y, s) <span class="k">for</span> rho, y <span class="k">in</span> PORT_RIM <span class="k">for</span> s <span class="k">in</span> range(PORT_SEG)]
+    <span class="k">for</span> z <span class="k">in</span> RIVET_ROWS:
+        <span class="k">for</span> k <span class="k">in</span> range(RIVETS_PER_ROW):
+            base_p, top_p = rivet_points(z, k)
+            pts += base_p + [top_p]
+    <span class="k">return</span> (tuple(min(p[i] <span class="k">for</span> p <span class="k">in</span> pts) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)),
+            tuple(max(p[i] <span class="k">for</span> p <span class="k">in</span> pts) <span class="k">for</span> i <span class="k">in</span> range(<span class="n">3</span>)))
 
 
 <span class="k">def</span> eval_mesh(obj):
@@ -508,13 +653,14 @@ PORT_DEPTH = <span class="n">0.09</span>
 
 
 <span class="k">def</span> check(rocket, lod1, lod2, no_decimate=<span class="k">False</span>):
+    <span class="s">&quot;&quot;&quot;Returns (exit code, {object name: evaluated tris}).&quot;&quot;&quot;</span>
     me = rocket.data
     want_v, want_f, want_t = closed_form_counts()
     got = (len(me.vertices), len(me.polygons))
     <span class="k">if</span> got != (want_v, want_f):
         print(<span class="s">f&quot;</span><span class="s">ERROR: base topology </span>{got}<span class="s"> != closed form </span>{(want_v, want_f)}<span class="s">&quot;</span>,
               file=sys.stderr)
-        <span class="k">return</span> <span class="n">3</span>
+        <span class="k">return</span> <span class="n">3</span>, <span class="k">None</span>
     bb_min, bb_max = closed_form_bbox()
     xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> me.vertices]
     ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> me.vertices]
@@ -526,15 +672,16 @@ PORT_DEPTH = <span class="n">0.09</span>
     <span class="k">if</span> bb_err &gt; <span class="n">1e-6</span>:
         print(<span class="s">f&quot;</span><span class="s">ERROR: base bbox deviates </span>{bb_err:<span class="s">.3e</span>}<span class="s"> from its closed form</span><span class="s">&quot;</span>,
               file=sys.stderr)
-        <span class="k">return</span> <span class="n">4</span>
+        <span class="k">return</span> <span class="n">4</span>, <span class="k">None</span>
 
     <span class="c"># LOD0 sanity: no modifier, evaluated == original counts</span>
     snap0 = eval_mesh(rocket)
     <span class="k">if</span> (snap0[<span class="s">&quot;verts&quot;</span>], snap0[<span class="s">&quot;tris&quot;</span>]) != (want_v, want_t):
         print(<span class="s">f&quot;</span><span class="s">ERROR: LOD0 evaluated counts </span>{(snap0[<span class="s">&#x27;verts&#x27;</span>], snap0[<span class="s">&#x27;tris&#x27;</span>])}<span class="s"> != </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">base </span>{(want_v, want_t)}<span class="s">&quot;</span>, file=sys.stderr)
-        <span class="k">return</span> <span class="n">5</span>
+        <span class="k">return</span> <span class="n">5</span>, <span class="k">None</span>
 
+    tris = {rocket.name: snap0[<span class="s">&quot;tris&quot;</span>]}
     measured = []
     <span class="k">for</span> lod, ratio <span class="k">in</span> ((lod1, LODS[<span class="n">0</span>]), (lod2, LODS[<span class="n">1</span>])):
         <span class="k">if</span> <span class="k">not</span> no_decimate:
@@ -548,16 +695,16 @@ PORT_DEPTH = <span class="n">0.09</span>
             print(<span class="s">f&quot;</span><span class="s">ERROR: evaluated tris </span>{snap[<span class="s">&#x27;tris&#x27;</span>]}<span class="s"> &gt;= base </span>{want_t}<span class="s"> — </span><span class="s">&quot;</span>
                   <span class="s">&quot;the modifier did not reduce (evaluated == original)&quot;</span>,
                   file=sys.stderr)
-            <span class="k">return</span> <span class="n">6</span>
+            <span class="k">return</span> <span class="n">6</span>, <span class="k">None</span>
         <span class="k">if</span> (len(lod.data.vertices), len(lod.data.polygons)) != (want_v, want_f):
             print(<span class="s">&quot;ERROR: original datablock changed after evaluation — &quot;</span>
                   <span class="s">&quot;Decimate must be non-destructive&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">7</span>
+            <span class="k">return</span> <span class="n">7</span>, <span class="k">None</span>
         <span class="k">if</span> dev &gt; RATIO_BOUNDS:
             print(<span class="s">f&quot;</span><span class="s">ERROR: LOD tris </span>{snap[<span class="s">&#x27;tris&#x27;</span>]}<span class="s"> deviates </span>{dev:<span class="s">.1%</span>}<span class="s"> from </span><span class="s">&quot;</span>
                   <span class="s">f&quot;</span><span class="s">ratio target </span>{target:<span class="s">.0f</span>}<span class="s"> (bounds </span>{RATIO_BOUNDS:<span class="s">.0%</span>}<span class="s">)</span><span class="s">&quot;</span>,
                   file=sys.stderr)
-            <span class="k">return</span> <span class="n">8</span>
+            <span class="k">return</span> <span class="n">8</span>, <span class="k">None</span>
         <span class="c"># contract 3: silhouette-critical dimensions survive</span>
         bbox_dev = max(abs(snap[<span class="s">&quot;bbox&quot;</span>][i][k] - base_bb[i][k])
                        <span class="k">for</span> i <span class="k">in</span> (<span class="n">0</span>, <span class="n">1</span>) <span class="k">for</span> k <span class="k">in</span> range(<span class="n">3</span>))
@@ -565,16 +712,17 @@ PORT_DEPTH = <span class="n">0.09</span>
             print(<span class="s">f&quot;</span><span class="s">ERROR: LOD bbox deviates </span>{bbox_dev:<span class="s">.4f</span>}<span class="s"> from base </span><span class="s">&quot;</span>
                   <span class="s">f&quot;</span><span class="s">(tol </span>{BBOX_TOL}<span class="s">) — silhouette-critical dims lost</span><span class="s">&quot;</span>,
                   file=sys.stderr)
-            <span class="k">return</span> <span class="n">9</span>
+            <span class="k">return</span> <span class="n">9</span>, <span class="k">None</span>
+        tris[lod.name] = snap[<span class="s">&quot;tris&quot;</span>]
         measured.append((ratio, snap[<span class="s">&quot;tris&quot;</span>], target, dev, bbox_dev))
 
-    print(<span class="s">f&quot;</span><span class="s">sides=</span>{SIDES}<span class="s"> base_verts=</span>{want_v}<span class="s"> base_tris=</span>{want_t}<span class="s"> </span><span class="s">&quot;</span>
-          <span class="s">f&quot;</span><span class="s">bbox_err=</span>{bb_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
-    <span class="k">for</span> ratio, tris, target, dev, bbox_dev <span class="k">in</span> measured:
-        print(<span class="s">f&quot;</span><span class="s">lod ratio=</span>{ratio}<span class="s"> tris=</span>{tris}<span class="s"> target=</span>{target:<span class="s">.0f</span>}<span class="s"> </span><span class="s">&quot;</span>
+    print(<span class="s">f&quot;</span><span class="s">sides=</span>{SIDES}<span class="s"> base_verts=</span>{want_v}<span class="s"> base_faces=</span>{want_f}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">base_tris=</span>{want_t}<span class="s"> bbox_err=</span>{bb_err:<span class="s">.2e</span>}<span class="s">&quot;</span>)
+    <span class="k">for</span> ratio, t, target, dev, bbox_dev <span class="k">in</span> measured:
+        print(<span class="s">f&quot;</span><span class="s">lod ratio=</span>{ratio}<span class="s"> tris=</span>{t}<span class="s"> target=</span>{target:<span class="s">.0f</span>}<span class="s"> </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">dev=</span>{dev:<span class="s">.2%</span>}<span class="s"> (bounds </span>{RATIO_BOUNDS:<span class="s">.0%</span>}<span class="s">) </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">bbox_dev=</span>{bbox_dev:<span class="s">.2e</span>}<span class="s"> (tol </span>{BBOX_TOL}<span class="s">)</span><span class="s">&quot;</span>)
-    <span class="k">return</span> <span class="n">0</span>
+    <span class="k">return</span> <span class="n">0</span>, tris
 
 
 <span class="k">def</span> make_materials():
@@ -591,11 +739,13 @@ PORT_DEPTH = <span class="n">0.09</span>
             b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
         <span class="k">return</span> mat
     <span class="k">return</span> [
-        pbr(<span class="s">&quot;Cream&quot;</span>, (<span class="n">0.85</span>, <span class="n">0.80</span>, <span class="n">0.68</span>), <span class="n">0.05</span>, <span class="n">0.45</span>),
-        pbr(<span class="s">&quot;Red&quot;</span>, (<span class="n">0.72</span>, <span class="n">0.10</span>, <span class="n">0.08</span>), <span class="n">0.15</span>, <span class="n">0.40</span>),
-        pbr(<span class="s">&quot;Gunmetal&quot;</span>, (<span class="n">0.11</span>, <span class="n">0.12</span>, <span class="n">0.14</span>), <span class="n">0.9</span>, <span class="n">0.32</span>),
-        pbr(<span class="s">&quot;Glass&quot;</span>, (<span class="n">0.05</span>, <span class="n">0.30</span>, <span class="n">0.36</span>), <span class="n">0.0</span>, <span class="n">0.25</span>,
-            emission=(<span class="n">0.12</span>, <span class="n">0.60</span>, <span class="n">0.68</span>), strength=<span class="n">0.8</span>),
+        pbr(<span class="s">&quot;HullEnamel&quot;</span>, (<span class="n">0.86</span>, <span class="n">0.80</span>, <span class="n">0.66</span>), <span class="n">0.0</span>, <span class="n">0.42</span>),
+        pbr(<span class="s">&quot;NoseLacquer&quot;</span>, (<span class="n">0.74</span>, <span class="n">0.07</span>, <span class="n">0.05</span>), <span class="n">0.1</span>, <span class="n">0.36</span>),
+        pbr(<span class="s">&quot;BrassTrim&quot;</span>, (<span class="n">0.80</span>, <span class="n">0.56</span>, <span class="n">0.24</span>), <span class="n">1.0</span>, <span class="n">0.30</span>),
+        pbr(<span class="s">&quot;NozzleSteel&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.17</span>, <span class="n">0.19</span>), <span class="n">0.9</span>, <span class="n">0.38</span>),
+        pbr(<span class="s">&quot;PortGlass&quot;</span>, (<span class="n">0.04</span>, <span class="n">0.26</span>, <span class="n">0.32</span>), <span class="n">0.0</span>, <span class="n">0.12</span>,
+            emission=(<span class="n">0.10</span>, <span class="n">0.55</span>, <span class="n">0.66</span>), strength=<span class="n">0.6</span>),
+        pbr(<span class="s">&quot;NozzleSoot&quot;</span>, (<span class="n">0.02</span>, <span class="n">0.018</span>, <span class="n">0.016</span>), <span class="n">0.0</span>, <span class="n">0.9</span>),
     ]
 
 
@@ -603,34 +753,68 @@ PORT_DEPTH = <span class="n">0.09</span>
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(rockets, path, engine):
+<span class="k">def</span> wire_shell(lod, ratio, wire_mat):
+    <span class="s">&quot;&quot;&quot;A mesh overlay of *lod*&#x27;s evaluated topology: same mesh datablock, the
+    same Decimate, then a Wireframe. The rocket itself stays unmodified.&quot;&quot;&quot;</span>
+    ob = bpy.data.objects.new(<span class="s">f&quot;</span>{lod.name}<span class="s">_Wire</span><span class="s">&quot;</span>, lod.data)
+    ob.location = lod.location
+    ob.rotation_euler = lod.rotation_euler
+    bpy.context.scene.collection.objects.link(ob)
+    <span class="k">if</span> ratio <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        add_decimate(ob, ratio)
+    <span class="c"># draw triangles, the unit the check counts: splitting every quad and</span>
+    <span class="c"># n-gon makes the overlay&#x27;s faces equal the LOD&#x27;s loop_triangles</span>
+    <span class="c"># (measured 4784 / 2392 / 860, identical to the check)</span>
+    ob.modifiers.new(<span class="s">&quot;Tris&quot;</span>, <span class="s">&#x27;TRIANGULATE&#x27;</span>)
+    wf = ob.modifiers.new(<span class="s">&quot;Wire&quot;</span>, <span class="s">&#x27;WIREFRAME&#x27;</span>)
+    wf.thickness = <span class="n">0.009</span>
+    wf.offset = <span class="n">1.0</span>
+    wf.use_even_offset = <span class="k">True</span>
+    wf.use_replace = <span class="k">True</span>
+    <span class="k">for</span> slot <span class="k">in</span> ob.material_slots:
+        slot.link = <span class="s">&#x27;OBJECT&#x27;</span>
+        slot.material = wire_mat
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(rockets, tris, path, engine):
+    <span class="k">import</span> gallery_framing
+    <span class="k">import</span> gallery_asset_quality
     scene = bpy.context.scene
-    xs = (-<span class="n">2.8</span>, <span class="n">0.0</span>, <span class="n">2.8</span>)
+    xs = (-<span class="n">2.55</span>, <span class="n">0.0</span>, <span class="n">2.55</span>)
     <span class="k">for</span> ob, x <span class="k">in</span> zip(rockets, xs):
         ob.location.x = x
+        <span class="c"># turn the porthole to the camera (-Y); the check reads local coords</span>
+        ob.rotation_euler.z = math.radians(<span class="n">270.0</span> - PORT_AZ)
 
-    pm = bpy.data.materials.new(<span class="s">&quot;PlaqueMetal&quot;</span>)
-    pm.use_nodes = <span class="k">True</span>
-    pb = pm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    <span class="c"># diffuse light-grey, not metal: plaques must read against the dark floor</span>
-    <span class="c"># regardless of what the environment reflects</span>
-    pb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.42</span>, <span class="n">0.44</span>, <span class="n">0.48</span>, <span class="n">1.0</span>)
-    pb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.2</span>
-    pb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    wm = bpy.data.materials.new(<span class="s">&quot;WireInk&quot;</span>)
+    wm.use_nodes = <span class="k">True</span>
+    wb = wm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    wb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.015</span>, <span class="n">0.016</span>, <span class="n">0.02</span>, <span class="n">1.0</span>)
+    wb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.6</span>
+    wires = [wire_shell(ob, r, wm) <span class="k">for</span> ob, r <span class="k">in</span> zip(rockets, (<span class="k">None</span>,) + LODS)]
 
-    <span class="k">def</span> plaque(text, x):
-        cu = bpy.data.curves.new(<span class="s">&quot;Plaque&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
-        cu.body = text
+    <span class="c"># one label per LOD: the evaluated triangle count the check just measured</span>
+    lm = bpy.data.materials.new(<span class="s">&quot;LabelInk&quot;</span>)
+    lm.use_nodes = <span class="k">True</span>
+    lb = lm.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    lb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.62</span>, <span class="n">0.60</span>, <span class="n">0.56</span>, <span class="n">1.0</span>)
+    lb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.8</span>
+    labels = []
+    <span class="k">for</span> ob <span class="k">in</span> rockets:
+        cu = bpy.data.curves.new(<span class="s">f&quot;</span>{ob.name}<span class="s">_Label</span><span class="s">&quot;</span>, <span class="s">&#x27;FONT&#x27;</span>)
+        cu.body = <span class="s">f&quot;</span>{tris[ob.name]}<span class="s"> tris</span><span class="s">&quot;</span>
         cu.align_x = <span class="s">&#x27;CENTER&#x27;</span>
-        cu.size = <span class="n">0.30</span>
-        cu.extrude = <span class="n">0.008</span>
-        ob = bpy.data.objects.new(<span class="s">&quot;Plaque&quot;</span>, cu)
-        ob.location = (x, -<span class="n">1.5</span>, <span class="n">0.01</span>)
-        ob.data.materials.append(pm)
-        scene.collection.objects.link(ob)
-
-    <span class="k">for</span> label, x <span class="k">in</span> zip((<span class="s">&quot;LOD0&quot;</span>, <span class="s">&quot;LOD1&quot;</span>, <span class="s">&quot;LOD2&quot;</span>), xs):
-        plaque(label, x)
+        cu.size = <span class="n">0.34</span>
+        cu.extrude = <span class="n">0.01</span>
+        lab = bpy.data.objects.new(<span class="s">f&quot;</span>{ob.name}<span class="s">_Label</span><span class="s">&quot;</span>, cu)
+        <span class="c"># nearer the camera (y = -12) than the rockets, so pull x in by the</span>
+        <span class="c"># depth ratio to sit each label under its rocket in the frame</span>
+        lab.location = (ob.location.x * (<span class="n">12.0</span> - <span class="n">1.95</span>) / <span class="n">12.0</span>, -<span class="n">1.95</span>, <span class="n">0.0</span>)
+        lab.rotation_euler = (math.radians(<span class="n">62</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
+        lab.data.materials.append(lm)
+        scene.collection.objects.link(lab)
+        labels.append(lab)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -648,7 +832,7 @@ PORT_DEPTH = <span class="n">0.09</span>
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">8.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     scene.collection.objects.link(wall)
 
@@ -667,18 +851,18 @@ PORT_DEPTH = <span class="n">0.09</span>
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">600.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">110.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">350.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">520.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">320.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">12.6</span>, <span class="n">2.5</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">12.0</span>, <span class="n">3.1</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.35</span>)
+    target.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.55</span>)
     scene.collection.objects.link(target)
     con = cam.constraints.new(<span class="s">&#x27;TRACK_TO&#x27;</span>)
     con.target = target
@@ -686,7 +870,7 @@ PORT_DEPTH = <span class="n">0.09</span>
 
     scene.render.engine = <span class="s">&#x27;CYCLES&#x27;</span> <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&#x27;cycles&#x27;</span>:
-        scene.cycles.samples = <span class="n">32</span>
+        scene.cycles.samples = <span class="n">64</span>
     <span class="k">else</span>:
         <span class="k">try</span>:
             scene.eevee.taa_render_samples = <span class="n">64</span>
@@ -696,11 +880,26 @@ PORT_DEPTH = <span class="n">0.09</span>
     scene.render.resolution_y = <span class="n">720</span>
     scene.render.image_settings.file_format = <span class="s">&#x27;PNG&#x27;</span>
     scene.render.filepath = path
-    <span class="c"># AgX would wash the cream body and red fins toward pastel</span>
+    <span class="c"># AgX would wash the cream hull and red nose toward pastel</span>
     <span class="c"># (docs/VISUAL-STYLE.md)</span>
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
+    bpy.context.view_layer.update()
+
+    stage = [floor, wall]
+    fcode = gallery_framing.check_framing(scene, cam, hero=rockets,
+                                          elements=rockets + wires + labels, stage=stage)
+    <span class="k">if</span> fcode:
+        <span class="k">return</span> fcode
+    <span class="c"># the asset is the rocket itself — the LOD copies and overlays are staging</span>
+    aqcode = gallery_asset_quality.check_asset_quality(scene, cam, hero=[rockets[<span class="n">0</span>]],
+                                                       stage=stage)
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
-    <span class="k">return</span> os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>
+    <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
+        print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">12</span>
+    <span class="k">return</span> <span class="n">0</span>
 
 
 <span class="k">def</span> main():
@@ -713,23 +912,24 @@ PORT_DEPTH = <span class="n">0.09</span>
                    help=<span class="s">&quot;skip adding Decimate to the LOD copies (must fail)&quot;</span>)
     args = p.parse_args(argv)
 
+    print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
     bpy.ops.wm.read_factory_settings(use_empty=<span class="k">True</span>)
     mats = make_materials()
     rockets = []
-    <span class="k">for</span> _ <span class="k">in</span> range(<span class="n">3</span>):
-        r = build_rocket()
+    <span class="k">for</span> name <span class="k">in</span> (<span class="s">&quot;Rocket&quot;</span>, <span class="s">&quot;Rocket_LOD1&quot;</span>, <span class="s">&quot;Rocket_LOD2&quot;</span>):
+        r = build_rocket(name)
         <span class="k">for</span> m <span class="k">in</span> mats:
             r.data.materials.append(m)
         rockets.append(r)
-    code = check(rockets[<span class="n">0</span>], rockets[<span class="n">1</span>], rockets[<span class="n">2</span>],
-                 no_decimate=args.no_decimate)
+    code, tris = check(rockets[<span class="n">0</span>], rockets[<span class="n">1</span>], rockets[<span class="n">2</span>],
+                       no_decimate=args.no_decimate)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        <span class="k">if</span> <span class="k">not</span> render_still(rockets, os.path.abspath(args.output), args.engine):
-            print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
-            <span class="k">return</span> <span class="n">10</span>
+        code = render_still(rockets, tris, os.path.abspath(args.output), args.engine)
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
 
     print(<span class="s">&quot;lod-decimate-chain OK&quot;</span>)
@@ -746,7 +946,7 @@ PORT_DEPTH = <span class="n">0.09</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/lod-decimate-chain-hero.webp" alt="Three red and white rockets labelled LOD0, LOD1 and LOD2, each more coarsely faceted than the last." />
+    <img src="../assets/lod-decimate-chain-hero.webp" alt="Three identical cream-and-red retro rockets with brass trim and a porthole, each covered in a dark triangle wireframe that grows coarser left to right, labelled 4784, 2392 and 860 tris." />
   </dialog>
   <footer>
     <div class="statusbar">
