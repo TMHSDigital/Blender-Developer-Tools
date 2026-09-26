@@ -69,6 +69,7 @@ SELECT = {
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
+    "prop-origin-transform": (r"^(Pedestal|Conduit)\.Keep$", None),
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
 }
 

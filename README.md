@@ -1010,7 +1010,7 @@ still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: dual-panel TRAP vs MPI KEEP street pedestals with margins all around — left bare-parent conduit accessory teleports off its dark mount well, right accessory stays seated, origin axes crossing on the floor under each base — proving scale apply, base origin, and matrix_parent_inverse" /></a>
+<a href="examples/prop-origin-transform/"><img src="examples/prop-origin-transform/preview.webp" alt="Prop origin transform: two green street utility pedestals, each centred in a floor pivot ring — left, the orange conduit elbow parented with matrix_parent_inverse stays bolted to its mount; right, bare child.parent = parent throws the elbow into the air beyond the slab while a glowing cyan outline marks its empty seat — proving scale apply, base origin, and matrix_parent_inverse" /></a>
 </td>
 <td valign="middle">
 
@@ -1019,7 +1019,7 @@ still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
 The origin / scale-apply / MPI contract a prop pipeline relies on before
 engine ingest: data-API scale bake to exactly `(1,1,1)`, local bbox
 `min.z == 0` (origin at base), world AABB unchanged across the bake, and
-`matrix_parent_inverse` so a flanged conduit stays on its mount socket.
+`matrix_parent_inverse` so a flanged conduit elbow stays on its mount.
 Extends [`parent-inverse-orrery`](examples/parent-inverse-orrery/) without
 retreading orbits. Dual-panel still: TRAP (bare parent — empty socket +
 teleported flange) vs MPI KEEP.

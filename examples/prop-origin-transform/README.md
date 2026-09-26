@@ -1,7 +1,7 @@
 # Prop Origin Transform
 
-A runnable example that builds a street utility pedestal with a bolted
-conduit accessory and proves the **origin / scale-apply / MPI** contract a
+A runnable example that builds a street utility pedestal with a flanged
+conduit elbow and proves the **origin / scale-apply / MPI** contract a
 prop pipeline relies on before engine ingest — following
 [`operators`](../../skills/operators/SKILL.md) and the data-API parenting
 idiom from [`parent-inverse-orrery`](../parent-inverse-orrery/).
@@ -27,24 +27,37 @@ engine exporter — it proves the transform properties such an asset must have.
 - **Origin at base center.** Local bbox `min.z == 0`, XY centered; world AABB
   delta across the bake is **0** (gate `1e-5`).
 - **Bare-parent trap.** Parenting the accessory without MPI jumps it
-  (~0.43 m measured); setting `matrix_parent_inverse` restores world location
-  (err ~3e-8).
+  (0.298 m measured); setting `matrix_parent_inverse` restores world
+  location (err 0).
 
 **What each check catches on failure:** skipping scale apply leaves
-non-identity scale; skipping origin bake leaves `min.z ≈ -0.756`; skipping
-MPI leaves the accessory teleported.
+`(1.15, 0.92, 1.08)` (exit 5); skipping the origin bake leaves
+`min.z = -0.58` (exit 6); skipping MPI leaves the accessory 0.298 m off
+(exit 8).
 
-**Version witness:** byte-identical numbers on Blender 4.5.11 LTS and 5.1.2.
+**Version witness:** identical numbers on Blender 5.2.1 LTS, 5.1.2 and
+4.5.11 LTS.
 
-The render is a dual panel: left **TRAP** (bare parent — flanged conduit
-teleports off a deep shadowed mount socket) vs right **MPI KEEP** (same metal
-fitting seated in the socket), with emissive origin markers at each pedestal's
-base. The origin is inside the plinth, so the red X and green Y stubs are
-centred on it and run 1.7 m along the floor, exiting the plinth on both
-sides: where they cross, under the base, is the origin. The first cut drew
-0.28 m stubs from the origin outward, all buried, and 0.11 m labels that
-vanished at card size; the labels are 0.21 m now. Accessory and pedestal stay in one material family so displacement — not
-color — carries the proof. Check closed forms are unchanged.
+**The asset.** The pedestal is one mesh with five materials: a precast concrete footing,
+a galvanised base plate with anchor nuts, a green cabinet on a black kick
+skirt, a hipped lid, a door with hinges, a T-handle and a hazard plate, louvred
+side vents, a conduit boss on the +X face and a sleeve in the pad. It is
+authored the way an import often arrives: origin at the geometric centre and
+coordinates divided by a non-uniform object scale. The bake lands it on
+exactly the designed shape. The accessory is a flanged PVC conduit elbow
+with bolt heads, a strap clamp and a coupling that drops into the sleeve.
+
+**The render.** Two baked pedestals stand on a sidewalk slab. On the left the elbow is
+parented with MPI and stays bolted to its boss, seated in the sleeve. On the
+right, bare `child.parent = parent` applies the pedestal's transform a
+second time. The elbow is thrown 0.65 m, past the slab edge and into the
+air, and a glowing cyan outline (a Wireframe modifier on a copy)
+marks the seat it left. The slab raises both origins 0.20 m, so the doubled
+translation lifts the elbow instead of sliding it along the floor. A
+pivot ring on the floor is centred on each pedestal's origin, with red
+notches on its X axis and green notches on Y. The origin is under the base,
+so the ring frames it. There are no text labels: the ghost and the stranded
+elbow carry the proof. The check's closed forms are unchanged.
 
 ## Run
 
@@ -73,6 +86,7 @@ against it. `10` is the shared framing helper.
 | 8 | MPI did not restore world location (`--skip-mpi` lands here) |
 | 9 | `--output` produced no file |
 | 10 | Gallery framing violation |
+| 11 | Gallery asset-quality violation (render path only) |
 
 The `blender-smoke` workflow runs the check on Blender 5.2 LTS and 4.5 LTS
 (5.1 on the weekly cron, the `needs-5.1` PR label, or manual dispatch).

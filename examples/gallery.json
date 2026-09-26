@@ -501,8 +501,8 @@
     {
       "name": "prop-origin-transform",
       "dir": "examples/prop-origin-transform",
-      "teaches": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit accessory. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent jumps the accessory off an empty mount socket; MPI keeps it seated.",
-      "alt": "Two teal pedestals labelled TRAP and MPI KEEP, origin axes crossing on the floor under each base: on the left a conduit fitting has jumped out of its socket, on the right it sits seated.",
+      "teaches": "Street pedestal origin-to-base-center + data-API scale apply + matrix_parent_inverse for a flanged conduit elbow. After bake: scale (1,1,1), local min.z==0, world AABB unchanged. Bare parent throws the elbow off its mount; MPI keeps it seated.",
+      "alt": "Two green street utility pedestals in floor pivot rings: the left one keeps its orange conduit elbow bolted on, the right one's elbow hangs in the air beside a glowing cyan outline of its seat.",
       "witnessesFix": "Bare child.parent = parent teleports accessories off their mounts; skipping view_layer.update() before matrix_world, or leaving non-uniform scale / centered origin, breaks engine ingest placement.",
       "hero": "docs/gallery/assets/prop-origin-transform-hero.webp",
       "preview": "examples/prop-origin-transform/preview.webp",
