@@ -137,7 +137,8 @@ isolated asset by `scripts/asset_sheet_panel.py` (the sheet renderer prints
 the floors per panel); compactness was not re-measured for them. The three
 former references passed every floor and were still demoted by eye in the
 2026-09 gallery review — the floors cannot tell a primitive-built rocket
-from a designed wheelbarrow, which is the Status section below in practice:
+from a designed wheelbarrow, which is the Status section below in practice. All three were then redesigned (PRs #264, #266, #271); their rows
+keep the pre-redesign measurements as the record behind the demotion:
 
 | asset | parts | materials | edge90 | compactness (info only) |
 | --- | --- | --- | --- | --- |
