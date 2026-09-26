@@ -4,25 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>mesh-hygiene-audit — Examples — Blender Developer Tools</title>
-  <meta name="description" content="Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof." />
+  <meta name="description" content="Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face." />
   <link rel="canonical" href="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/mesh-hygiene-audit/" />
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#1a1b1e" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="mesh-hygiene-audit — Examples — Blender Developer Tools" />
-  <meta property="og:description" content="Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof." />
+  <meta property="og:description" content="Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face." />
   <meta property="og:url" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/mesh-hygiene-audit/" />
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/mesh-hygiene-audit-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it." />
+  <meta property="og:image:alt" content="Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="mesh-hygiene-audit — Examples — Blender Developer Tools" />
-  <meta name="twitter:description" content="Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof." />
+  <meta name="twitter:description" content="Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/mesh-hygiene-audit-hero.webp" />
-  <meta name="twitter:image:alt" content="Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it." />
+  <meta name="twitter:image:alt" content="Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -265,37 +265,38 @@
   </div>
   <header class="hero">
     <h1>mesh-hygiene-audit</h1>
-    <p>Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof.</p>
+    <p>Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it.">
-      <img src="../assets/mesh-hygiene-audit-hero.webp" alt="Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact.">
+      <img src="../assets/mesh-hygiene-audit-hero.webp" alt="Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
-    <div class="callout"><span class="tag">witnesses</span> Pipelines that skip topology gates ship open boundaries, loose verts, or non-sphere Euler into engine ingest. The still makes the boundary hole and loose vert readable; ngon / zero-area / full winding invert remain check-only.</div>
+    <div class="callout"><span class="tag">witnesses</span> Pipelines that skip topology gates ship open boundaries, flipped patches, ngons, loose verts or stray shells into engine ingest. The still shows the first four on a dirty copy; zero-area faces and a buried second shell remain check-only.</div>
     <div class="runline">
       <pre id="runCmd">blender --background --python examples/mesh-hygiene-audit/mesh_hygiene_audit.py --</pre>
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds an octagonal street valve body and runs the <strong>engine-ingest mesh hygiene checklist</strong> as executable topology checks, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p>A runnable example that builds an upright flanged street valve — body casting, side outlet, 22 flange bolts, gland nut, threaded stem, brass handwheel hub, rim and spokes — and runs the <strong>engine-ingest mesh hygiene checklist</strong> on every part as executable topology checks, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc neighbors:</strong> watertight / Euler on collision <em>hulls</em> in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/collision-hull-proxy"><code>collision-hull-proxy</code></a>, parametric closed solids in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/bmesh-gear"><code>bmesh-gear</code></a>, LOD face budgets in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/lod-decimate-chain"><code>lod-decimate-chain</code></a>, and join context in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/temp-override-join"><code>temp-override-join</code></a>. Hygiene is the gate a prop pipeline runs on the <em>render</em> mesh before hull / LOD / export.</p>
-<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (tris+quads, no loose verts, manifold edges, no zero-area faces, outward winding, Euler 2 for a closed solid). It is not an engine exporter.</p>
-<p><strong>What it witnesses:</strong> every gate is derived from mesh combinatorics or the divergence-theorem volume — never from a prior-run capture:</p>
-<ul><li><strong>No ngons.</strong> <code>len(poly.vertices) &lt;= 4</code> for every face.</li><li><strong>No loose vertices.</strong> Every vert has degree ≥ 1.</li><li><strong>Manifold edges.</strong> Every edge borders exactly 2 faces (closed solid).</li><li><strong>No zero-area faces.</strong> Face area &gt; 1e-10; prints measured <code>min_area</code>.</li><li><strong>Outward winding.</strong> Positive signed volume (divergence theorem).</li><li><strong>Euler sphere.</strong> <code>V − E + F == 2</code> for the clean closed manifold (measured: verts=66 edges=136 faces=72, volume≈0.652001, min_area≈1.146e-02).</li></ul>
-<p><strong>What each check catches on failure:</strong> loose vert injected (exit 4); face deleted → boundary edges (exit 5); edge dissolved → ngon (exit 3); all faces flipped → signed volume negated (exit 7); face collapsed → zero-area (exit 6).</p>
-<p><strong>Version witness:</strong> output is byte-identical on Blender 4.5.11 LTS and 5.1.2 — same counts, same volume, same <code>min_area</code>.</p>
-<p><strong>Render as proof:</strong> dual panel, same brass on both. DIRTY stages a camera-facing through-hole (boundary edges) plus a loose vert; emissive beads/edge tubes are built from the live mesh incidence the check uses — not decorative paint. CLEAN is the intact manifold. An out-of-frame AREA light rakes through the hole from behind so the aperture reads warm without a visible light panel in frame.</p>
-<p><strong>Not depicted in the still (check-proven only):</strong> ngon dissolve, zero-area collapse, and full-mesh winding invert — they do not read as geometry at thumbnail scale without faking annotation.</p>
+<p><strong>Scope:</strong> this witnesses the bpy-level contract a prop pipeline relies on (tris+quads, no loose verts, manifold edges, no zero-area faces, consistent and outward winding, Euler 2 for the genus-0 body casting). It is not an engine exporter.</p>
+<p><strong>What it witnesses:</strong> every gate is derived from mesh combinatorics or the divergence-theorem volume — never from a prior-run capture. Gates 3–7 run on all eight parts; the Euler gate runs on the body casting, the one closed genus-0 shell the other parts mount on (the handwheel rim is a torus, the bolt and spoke meshes are many shells, so a single-sphere Euler test does not describe them):</p>
+<ul><li><strong>No ngons.</strong> <code>len(poly.vertices) &lt;= 4</code> for every face.</li><li><strong>No loose vertices.</strong> Every vert has degree ≥ 1.</li><li><strong>Manifold edges.</strong> Every edge borders exactly 2 faces (closed solid).</li><li><strong>No zero-area faces.</strong> Face area &gt; 1e-10; prints measured <code>min_area</code>.</li><li><strong>Consistent winding.</strong> Every manifold edge is <code>BMEdge.is_contiguous</code> — a flipped patch leaves seam edges whose two faces traverse it the same way.</li><li><strong>Outward winding.</strong> Positive signed volume (divergence theorem).</li><li><strong>Euler sphere.</strong> <code>V − E + F == 2</code> on the body casting (measured: verts=802 edges=1632 faces=832, volume≈0.453344, min_area≈1.223e-03).</li></ul>
+<p><strong>What each check catches on failure</strong> (<code>--inject KIND</code>, default target the body casting, <code>--inject-part NAME</code> for any other part): <code>ngon</code> → exit 3; <code>loose</code> → exit 4; <code>boundary</code> (one face deleted) → exit 5; <code>zero_area</code> (face collapsed) → exit 6; <code>flip_patch</code> (one face flipped) → exit 7 on winding seams; <code>flip</code> (all faces) → exit 7 on negative volume; <code>shell</code> (a leftover second closed shell buried inside) → exit 8, the one defect every per-edge gate misses. <code>--inject-ngon</code> is kept as an alias for <code>--inject ngon</code>.</p>
+<p><strong>Version witness:</strong> the check output is identical on Blender 5.2.1 LTS, 5.1.2 and 4.5.11 LTS — same counts, same volume, same <code>min_area</code>.</p>
+<p><strong>Render as proof:</strong> a dirty copy of the same valve (left) beside the clean valve (right), same paint on both. The dirty body casting carries four real gate failures, each placed on the camera-facing side: a hole through the globe (open boundary), a flipped patch on the bonnet dome, an ngon merged into the base-flange annulus, and three stray loose vertices. The markers are read back from the dirty mesh&#x27;s audit incidence, not from the staging code: boundary edges become glowing red tubes, loose verts red beads, ngon faces an amber material slot. The flipped patch and the inside of the hole need no marker — the paint mixes to red on the shader&#x27;s own <code>Backfacing</code> output, so the renderer shows every face it sees from behind. On the clean valve that same material shows no red anywhere, because no back side is visible on a closed, outward-wound shell. The render path refuses to write a still (exit 9) if staging loses any of the four defect classes.</p>
+<p><strong>Not depicted in the still (check-proven only):</strong> zero-area collapse and the buried second shell — neither changes a single pixel.</p>
 <h2>Run</h2>
 <pre><code>blender --background --python mesh_hygiene_audit.py --
-blender --background --python mesh_hygiene_audit.py -- --inject-ngon
+blender --background --python mesh_hygiene_audit.py -- --inject ngon
+blender --background --python mesh_hygiene_audit.py -- --inject flip_patch --inject-part Valve.HandwheelRim
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png
 blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Ngon present (<code>--inject-ngon</code> lands here)</td></tr><tr><td>4</td><td>Loose vertices</td></tr><tr><td>5</td><td>Non-manifold or boundary edges</td></tr><tr><td>6</td><td>Zero-area faces</td></tr><tr><td>7</td><td>Signed volume ≤ 0</td></tr><tr><td>8</td><td>Euler characteristic ≠ 2</td></tr><tr><td>9</td><td><code>--output</code> produced no file</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr></tbody></table></div>
-<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--inject-ngon</code>.</p>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper, <code>11</code> the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Ngon present (<code>--inject ngon</code> lands here)</td></tr><tr><td>4</td><td>Loose vertices</td></tr><tr><td>5</td><td>Non-manifold or boundary edges</td></tr><tr><td>6</td><td>Zero-area faces</td></tr><tr><td>7</td><td>Winding seam edges, or signed volume ≤ 0</td></tr><tr><td>8</td><td>Body casting Euler characteristic ≠ 2</td></tr><tr><td>9</td><td><code>--output</code> produced no file, or dirty staging lost a defect class</td></tr><tr><td>10</td><td>Gallery framing violation</td></tr><tr><td>11</td><td>Gallery asset-quality floor violation</td></tr></tbody></table></div>
+<p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--inject</code>.</p>
     </section>
     <section class="detail-section src">
       <h2>Source</h2>
@@ -306,38 +307,58 @@ blender --background --python mesh_hygiene_audit.py -- --output hygiene.png --en
       <pre><span class="s">&quot;&quot;&quot;Mesh hygiene audit — engine-ingest topology as a runnable contract.
 
 Witnesses the mesh-cleanliness checklist a prop pipeline relies on before
-engine ingest: no ngons, no loose vertices, no non-manifold edges, no
-zero-area faces, consistent outward winding, and Euler characteristic 2 for
-a closed manifold solid. Every gate is derived from mesh combinatorics or
-the divergence-theorem volume — never from a prior-run capture.
+engine ingest, on every part of an authored upright street valve (flanged
+body casting, bonnet, gland nut, threaded stem, brass handwheel, side
+outlet, flange bolts):
+
+- no ngons (tris/quads only)
+- no loose vertices
+- manifold edges (every edge borders exactly two faces)
+- no zero-area faces
+- consistent winding (every manifold edge contiguous) and outward winding
+  (positive divergence-theorem signed volume)
+- Euler characteristic V-E+F == 2 on the body casting, the genus-0 shell
+  the other parts mount on
+
+Every gate is derived from mesh combinatorics or the divergence-theorem
+volume — never from a prior-run capture.
 
 Companion to collision-hull-proxy (watertight / Euler on *hulls*) and
-bmesh-gear (watertight parametric solid): this example audits an authored
-utility-pedestal prop and stages a dirty-vs-clean dual panel so a broken
-path reads in the thumbnail.
+bmesh-gear (watertight parametric solid). The render stages a dirty copy of
+the same valve beside the clean one; every defect marker on the dirty copy
+is built from the live audit data, and the flipped / open faces glow red
+through the shader&#x27;s own Backfacing output, so the winding evidence is the
+renderer&#x27;s, not paint.
 
 By default it runs only the correctness check (no render). Pass --output
 to also render a still:
 
     blender --background --python mesh_hygiene_audit.py --
-    blender --background --python mesh_hygiene_audit.py -- --inject-ngon
+    blender --background --python mesh_hygiene_audit.py -- --inject ngon
     blender --background --python mesh_hygiene_audit.py -- --output h.png
 &quot;&quot;&quot;</span>
 <span class="k">import</span> bpy, bmesh, sys, os, math, argparse
 <span class="k">from</span> mathutils <span class="k">import</span> Matrix, Vector
 
-<span class="c"># Shared Layer 1 framing measurement (render path only) — see gallery_framing.py</span>
+<span class="c"># Shared Layer 1 helpers (render path only) — see gallery_framing.py</span>
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
 AREA_EPS = <span class="n">1e-10</span>
 VOL_EPS = <span class="n">1e-8</span>
+BODY = <span class="s">&quot;Valve.Body&quot;</span>
+SEG = <span class="n">32</span>  <span class="c"># radial segments of the revolved castings</span>
+
+INJECT_KINDS = (<span class="s">&quot;ngon&quot;</span>, <span class="s">&quot;loose&quot;</span>, <span class="s">&quot;boundary&quot;</span>, <span class="s">&quot;flip&quot;</span>, <span class="s">&quot;flip_patch&quot;</span>, <span class="s">&quot;zero_area&quot;</span>, <span class="s">&quot;shell&quot;</span>)
 
 
 <span class="k">def</span> eevee_engine_id():
     <span class="k">return</span> <span class="s">&quot;BLENDER_EEVEE&quot;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&quot;BLENDER_EEVEE_NEXT&quot;</span>
 
+
+<span class="c"># ---------------------------------------------------------------- measurement</span>
 
 <span class="k">def</span> signed_volume(me):
     <span class="s">&quot;&quot;&quot;Divergence-theorem volume; positive when face winding points outward.&quot;&quot;&quot;</span>
@@ -361,99 +382,6 @@ VOL_EPS = <span class="n">1e-8</span>
     <span class="k">return</span> area
 
 
-<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.35</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>):
-    mat = bpy.data.materials.new(name)
-    mat.use_nodes = <span class="k">True</span>
-    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
-    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
-    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
-    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
-        sock.default_value = (*emit, <span class="n">1.0</span>)
-        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
-    <span class="k">return</span> mat
-
-
-<span class="k">def</span> build_utility_pedestal():
-    <span class="s">&quot;&quot;&quot;Backward-compat alias — subject is now a street valve body.&quot;&quot;&quot;</span>
-    <span class="k">return</span> build_street_valve()
-
-
-<span class="k">def</span> build_street_valve():
-    <span class="s">&quot;&quot;&quot;Single closed manifold: octagonal street valve body (not a box pedestal).
-
-    Explicit quad ring-stack with 8-sided flanges + stem so the solid stays
-    quads-only, every edge borders exactly two faces, and Euler V-E+F == 2.
-    Differentiated from prop-origin-transform&#x27;s rectangular pedestal silhouette.
-    &quot;&quot;&quot;</span>
-    <span class="c"># (radius, z) rings bottom → top; each ring is a regular octagon</span>
-    n = <span class="n">8</span>
-    rings = [
-        (<span class="n">0.62</span>, <span class="n">0.00</span>),  <span class="c"># base flange</span>
-        (<span class="n">0.62</span>, <span class="n">0.14</span>),
-        (<span class="n">0.40</span>, <span class="n">0.14</span>),  <span class="c"># body inset</span>
-        (<span class="n">0.40</span>, <span class="n">0.95</span>),
-        (<span class="n">0.55</span>, <span class="n">0.95</span>),  <span class="c"># top flange</span>
-        (<span class="n">0.55</span>, <span class="n">1.08</span>),
-        (<span class="n">0.18</span>, <span class="n">1.08</span>),  <span class="c"># stem</span>
-        (<span class="n">0.18</span>, <span class="n">1.32</span>),
-    ]
-
-    me = bpy.data.meshes.new(<span class="s">&quot;StreetValve&quot;</span>)
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        ring_verts = []
-        <span class="k">for</span> r, z <span class="k">in</span> rings:
-            ring = []
-            <span class="k">for</span> i <span class="k">in</span> range(n):
-                a = <span class="n">2.0</span> * math.pi * i / n + math.pi / n  <span class="c"># flat-to-camera bias</span>
-                ring.append(bm.verts.new((r * math.cos(a), r * math.sin(a), z)))
-            ring_verts.append(ring)
-        <span class="k">for</span> i <span class="k">in</span> range(len(ring_verts) - <span class="n">1</span>):
-            a, b = ring_verts[i], ring_verts[i + <span class="n">1</span>]
-            <span class="k">for</span> k <span class="k">in</span> range(n):
-                kn = (k + <span class="n">1</span>) % n
-                bm.faces.new((a[k], a[kn], b[kn], b[k]))
-        bot, top = ring_verts[<span class="n">0</span>], ring_verts[-<span class="n">1</span>]
-        <span class="c"># fan caps as quads via center verts would add poles; use triangle fan</span>
-        <span class="c"># from a center → tris only on caps (still &lt;=4). Prefer center poles.</span>
-        bot_c = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, rings[<span class="n">0</span>][<span class="n">1</span>]))
-        top_c = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, rings[-<span class="n">1</span>][<span class="n">1</span>]))
-        <span class="k">for</span> k <span class="k">in</span> range(n):
-            kn = (k + <span class="n">1</span>) % n
-            bm.faces.new((bot_c, bot[kn], bot[k]))  <span class="c"># outward -Z</span>
-            bm.faces.new((top_c, top[k], top[kn]))  <span class="c"># outward +Z</span>
-
-        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-        tmp = bpy.data.meshes.new(<span class="s">&quot;_tmp_vol&quot;</span>)
-        bm.to_mesh(tmp)
-        <span class="k">if</span> signed_volume(tmp) &lt; <span class="n">0.0</span>:
-            <span class="k">for</span> f <span class="k">in</span> bm.faces:
-                f.normal_flip()
-        bpy.data.meshes.remove(tmp)
-
-        bm.verts.ensure_lookup_table()
-        xs = [v.co.x <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        ys = [v.co.y <span class="k">for</span> v <span class="k">in</span> bm.verts]
-        cx = <span class="n">0.5</span> * (min(xs) + max(xs))
-        cy = <span class="n">0.5</span> * (min(ys) + max(ys))
-        bmesh.ops.translate(bm, vec=(-cx, -cy, <span class="n">0.0</span>), verts=bm.verts)
-
-        bm.to_mesh(me)
-    <span class="k">finally</span>:
-        bm.free()
-
-    <span class="c"># Brass / copper — distinct from prop-origin teal pedestal</span>
-    mat = make_material(<span class="s">&quot;ValveBrass&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.14</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.85</span>)
-    me.materials.append(mat)
-    <span class="k">for</span> p <span class="k">in</span> me.polygons:
-        p.use_smooth = abs(p.normal.z) &lt; <span class="n">0.85</span>
-    ob = bpy.data.objects.new(<span class="s">&quot;StreetValve&quot;</span>, me)
-    bpy.context.collection.objects.link(ob)
-    <span class="k">return</span> ob
-
-
 <span class="k">def</span> audit(me):
     <span class="s">&quot;&quot;&quot;Return a dict of hygiene metrics for the mesh datablock.&quot;&quot;&quot;</span>
     nv, ne, nf = len(me.vertices), len(me.edges), len(me.polygons)
@@ -465,130 +393,333 @@ VOL_EPS = <span class="n">1e-8</span>
     bm = bmesh.new()
     <span class="k">try</span>:
         bm.from_mesh(me)
-        bm.verts.ensure_lookup_table()
-        bm.edges.ensure_lookup_table()
         loose = sum(<span class="n">1</span> <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>)
         nonman = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) != <span class="n">2</span>)
         boundary = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">1</span>)
+        <span class="c"># a manifold edge whose two faces traverse it in the SAME direction</span>
+        <span class="c"># is a winding seam: one side is flipped relative to the other</span>
+        seams = sum(<span class="n">1</span> <span class="k">for</span> e <span class="k">in</span> bm.edges
+                    <span class="k">if</span> len(e.link_faces) == <span class="n">2</span> <span class="k">and</span> <span class="k">not</span> e.is_contiguous)
     <span class="k">finally</span>:
         bm.free()
 
-    vol = signed_volume(me)
-    euler = nv - ne + nf
     <span class="k">return</span> {
         <span class="s">&quot;nv&quot;</span>: nv, <span class="s">&quot;ne&quot;</span>: ne, <span class="s">&quot;nf&quot;</span>: nf,
-        <span class="s">&quot;ngons&quot;</span>: ngons,
-        <span class="s">&quot;loose&quot;</span>: loose,
-        <span class="s">&quot;nonman&quot;</span>: nonman,
-        <span class="s">&quot;boundary&quot;</span>: boundary,
-        <span class="s">&quot;zero_area&quot;</span>: zero_area,
-        <span class="s">&quot;min_area&quot;</span>: min_area,
-        <span class="s">&quot;volume&quot;</span>: vol,
-        <span class="s">&quot;euler&quot;</span>: euler,
+        <span class="s">&quot;ngons&quot;</span>: ngons, <span class="s">&quot;loose&quot;</span>: loose, <span class="s">&quot;nonman&quot;</span>: nonman,
+        <span class="s">&quot;boundary&quot;</span>: boundary, <span class="s">&quot;seams&quot;</span>: seams, <span class="s">&quot;zero_area&quot;</span>: zero_area,
+        <span class="s">&quot;min_area&quot;</span>: min_area, <span class="s">&quot;volume&quot;</span>: signed_volume(me),
+        <span class="s">&quot;euler&quot;</span>: nv - ne + nf,
     }
 
 
-<span class="k">def</span> check(me):
-    <span class="s">&quot;&quot;&quot;Assert the clean-prop hygiene contract. Exit codes 3–8 on failure.&quot;&quot;&quot;</span>
+<span class="k">def</span> check(me, label, euler=<span class="k">True</span>):
+    <span class="s">&quot;&quot;&quot;Assert the hygiene contract on one mesh. Exit codes 3–8 on failure.&quot;&quot;&quot;</span>
     m = audit(me)
     print(
-        <span class="s">f&quot;</span><span class="s">topology verts=</span>{m[<span class="s">&#x27;nv&#x27;</span>]}<span class="s"> edges=</span>{m[<span class="s">&#x27;ne&#x27;</span>]}<span class="s"> faces=</span>{m[<span class="s">&#x27;nf&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span>{label}<span class="s">: verts=</span>{m[<span class="s">&#x27;nv&#x27;</span>]}<span class="s"> edges=</span>{m[<span class="s">&#x27;ne&#x27;</span>]}<span class="s"> faces=</span>{m[<span class="s">&#x27;nf&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
         <span class="s">f&quot;</span><span class="s">euler=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> volume=</span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s">&quot;</span>
     )
-
     <span class="k">if</span> m[<span class="s">&quot;ngons&quot;</span>]:
-        print(
-            <span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> ngon(s) — engine ingest wants tris/quads only</span><span class="s">&quot;</span>,
-            file=sys.stderr,
-        )
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: </span>{m[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> ngon(s) — engine ingest wants </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">tris/quads only</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">3</span>
     <span class="k">if</span> m[<span class="s">&quot;loose&quot;</span>]:
-        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;loose&#x27;</span>]}<span class="s"> loose vertex(es) — degree 0 verts</span><span class="s">&quot;</span>, file=sys.stderr)
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: </span>{m[<span class="s">&#x27;loose&#x27;</span>]}<span class="s"> loose vertex(es) — degree 0 verts</span><span class="s">&quot;</span>,
+              file=sys.stderr)
         <span class="k">return</span> <span class="n">4</span>
     <span class="k">if</span> m[<span class="s">&quot;nonman&quot;</span>] <span class="k">or</span> m[<span class="s">&quot;boundary&quot;</span>]:
-        print(
-            <span class="s">f&quot;</span><span class="s">ERROR: non-manifold topology — nonman_edges=</span>{m[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">boundary_edges=</span>{m[<span class="s">&#x27;boundary&#x27;</span>]}<span class="s"> (closed solid needs every edge </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">bordering exactly 2 faces)</span><span class="s">&quot;</span>,
-            file=sys.stderr,
-        )
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: non-manifold topology — nonman_edges=</span>{m[<span class="s">&#x27;nonman&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">boundary_edges=</span>{m[<span class="s">&#x27;boundary&#x27;</span>]}<span class="s"> (closed solid needs every edge </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">bordering exactly 2 faces)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">5</span>
     <span class="k">if</span> m[<span class="s">&quot;zero_area&quot;</span>]:
-        print(
-            <span class="s">f&quot;</span><span class="s">ERROR: </span>{m[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> zero-area face(s) </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">(min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s"> &lt;= </span>{AREA_EPS}<span class="s">)</span><span class="s">&quot;</span>,
-            file=sys.stderr,
-        )
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: </span>{m[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s"> zero-area face(s) </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">(min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s"> &lt;= </span>{AREA_EPS}<span class="s">)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">6</span>
-    <span class="k">if</span> m[<span class="s">&quot;volume&quot;</span>] &lt;= VOL_EPS:
-        print(
-            <span class="s">f&quot;</span><span class="s">ERROR: signed volume </span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> &lt;= </span>{VOL_EPS}<span class="s"> — </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">winding inverted or open shell</span><span class="s">&quot;</span>,
-            file=sys.stderr,
-        )
+    <span class="k">if</span> m[<span class="s">&quot;seams&quot;</span>]:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: </span>{m[<span class="s">&#x27;seams&#x27;</span>]}<span class="s"> winding seam edge(s) — faces on </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">either side disagree on orientation (flipped patch)</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">7</span>
-    <span class="k">if</span> m[<span class="s">&quot;euler&quot;</span>] != <span class="n">2</span>:
-        print(
-            <span class="s">f&quot;</span><span class="s">ERROR: Euler characteristic V-E+F=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> != 2 — </span><span class="s">&quot;</span>
-            <span class="s">f&quot;</span><span class="s">not a closed manifold sphere topology</span><span class="s">&quot;</span>,
-            file=sys.stderr,
-        )
+    <span class="k">if</span> m[<span class="s">&quot;volume&quot;</span>] &lt;= VOL_EPS:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: signed volume </span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> &lt;= </span>{VOL_EPS}<span class="s"> — </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">winding inverted or open shell</span><span class="s">&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">7</span>
+    <span class="k">if</span> euler <span class="k">and</span> m[<span class="s">&quot;euler&quot;</span>] != <span class="n">2</span>:
+        print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{label}<span class="s">: Euler characteristic V-E+F=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> != 2 — </span><span class="s">&quot;</span>
+              <span class="s">f&quot;</span><span class="s">not a single closed genus-0 shell</span><span class="s">&quot;</span>, file=sys.stderr)
         <span class="k">return</span> <span class="n">8</span>
+    <span class="k">return</span> <span class="n">0</span>
 
+
+<span class="k">def</span> check_valve(parts):
+    <span class="s">&quot;&quot;&quot;Every part passes gates 3–7; the body casting also passes Euler (8).&quot;&quot;&quot;</span>
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        code = check(ob.data, ob.name, euler=(ob.name == BODY))
+        <span class="k">if</span> code:
+            <span class="k">return</span> code
+    body = next(ob <span class="k">for</span> ob <span class="k">in</span> parts <span class="k">if</span> ob.name == BODY)
+    m = audit(body.data)
     print(
-        <span class="s">f&quot;</span><span class="s">hygiene_ok ngons=0 loose=0 nonman=0 boundary=0 zero_area=0 </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">euler=2 volume=</span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">hygiene_ok parts=</span>{len(parts)}<span class="s"> ngons=0 loose=0 nonman=0 boundary=0 </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">seams=0 zero_area=0 body_euler=</span>{m[<span class="s">&#x27;euler&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+        <span class="s">f&quot;</span><span class="s">body_volume=</span>{m[<span class="s">&#x27;volume&#x27;</span>]:<span class="s">.6f</span>}<span class="s"> body_min_area=</span>{m[<span class="s">&#x27;min_area&#x27;</span>]:<span class="s">.3e</span>}<span class="s">&quot;</span>
     )
     <span class="k">return</span> <span class="n">0</span>
 
 
+<span class="c"># ------------------------------------------------------------------- modeling</span>
+
+<span class="k">def</span> _orient_outward(bm):
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    tmp = bpy.data.meshes.new(<span class="s">&quot;_tmp_vol&quot;</span>)
+    <span class="k">try</span>:
+        bm.to_mesh(tmp)
+        <span class="k">if</span> signed_volume(tmp) &lt; <span class="n">0.0</span>:
+            <span class="k">for</span> f <span class="k">in</span> bm.faces:
+                f.normal_flip()
+    <span class="k">finally</span>:
+        bpy.data.meshes.remove(tmp)
+
+
+<span class="k">def</span> lathe_into(bm, profile, segs, matrix=<span class="k">None</span>, phase=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;Revolve (r, z) profile about local Z into bm; fan-cap both ends.
+
+    Quads on the sides, triangle fans on the caps: tris/quads only, every
+    edge shared by exactly two faces, one closed genus-0 shell per call.
+    &quot;&quot;&quot;</span>
+    rings = []
+    <span class="k">for</span> r, z <span class="k">in</span> profile:
+        ring = []
+        <span class="k">for</span> i <span class="k">in</span> range(segs):
+            a = <span class="n">2.0</span> * math.pi * i / segs + phase
+            ring.append(bm.verts.new((r * math.cos(a), r * math.sin(a), z)))
+        rings.append(ring)
+    new_faces = []
+    <span class="k">for</span> a, b <span class="k">in</span> zip(rings, rings[<span class="n">1</span>:]):
+        <span class="k">for</span> k <span class="k">in</span> range(segs):
+            kn = (k + <span class="n">1</span>) % segs
+            new_faces.append(bm.faces.new((a[k], a[kn], b[kn], b[k])))
+    bc = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[<span class="n">0</span>][<span class="n">1</span>]))
+    tc = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, profile[-<span class="n">1</span>][<span class="n">1</span>]))
+    <span class="k">for</span> k <span class="k">in</span> range(segs):
+        kn = (k + <span class="n">1</span>) % segs
+        new_faces.append(bm.faces.new((bc, rings[<span class="n">0</span>][kn], rings[<span class="n">0</span>][k])))
+        new_faces.append(bm.faces.new((tc, rings[-<span class="n">1</span>][k], rings[-<span class="n">1</span>][kn])))
+    verts = [v <span class="k">for</span> ring <span class="k">in</span> rings <span class="k">for</span> v <span class="k">in</span> ring] + [bc, tc]
+    <span class="k">if</span> matrix <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        bmesh.ops.transform(bm, matrix=matrix, verts=verts)
+    <span class="k">return</span> new_faces
+
+
+<span class="k">def</span> torus_into(bm, major, minor, useg, vseg, matrix=<span class="k">None</span>):
+    grid = []
+    <span class="k">for</span> i <span class="k">in</span> range(useg):
+        u = <span class="n">2.0</span> * math.pi * i / useg
+        row = []
+        <span class="k">for</span> j <span class="k">in</span> range(vseg):
+            v = <span class="n">2.0</span> * math.pi * j / vseg
+            rr = major + minor * math.cos(v)
+            row.append(bm.verts.new((rr * math.cos(u), rr * math.sin(u),
+                                     minor * math.sin(v))))
+        grid.append(row)
+    <span class="k">for</span> i <span class="k">in</span> range(useg):
+        inx = (i + <span class="n">1</span>) % useg
+        <span class="k">for</span> j <span class="k">in</span> range(vseg):
+            jn = (j + <span class="n">1</span>) % vseg
+            bm.faces.new((grid[i][j], grid[inx][j], grid[inx][jn], grid[i][jn]))
+    <span class="k">if</span> matrix <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        bmesh.ops.transform(bm, matrix=matrix,
+                            verts=[v <span class="k">for</span> row <span class="k">in</span> grid <span class="k">for</span> v <span class="k">in</span> row])
+
+
+<span class="k">def</span> make_material(name, rgb, rough=<span class="n">0.45</span>, metallic=<span class="n">0.0</span>, emit=<span class="k">None</span>, estr=<span class="n">0.0</span>,
+                  coat=<span class="n">0.0</span>):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = <span class="k">True</span>
+    b = mat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    b.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    b.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    b.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    <span class="k">if</span> coat:
+        sock = b.inputs.get(<span class="s">&quot;Coat Weight&quot;</span>) <span class="k">or</span> b.inputs.get(<span class="s">&quot;Clearcoat&quot;</span>)
+        <span class="k">if</span> sock <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            sock.default_value = coat
+    <span class="k">if</span> emit <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        sock = b.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> b.inputs[<span class="s">&quot;Emission&quot;</span>]
+        sock.default_value = (*emit, <span class="n">1.0</span>)
+        b.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = estr
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> add_backface_witness(mat, rgb=(<span class="n">0.85</span>, <span class="n">0.002</span>, <span class="n">0.004</span>), strength=<span class="n">0.35</span>):
+    <span class="s">&quot;&quot;&quot;Mix to a red emission wherever the renderer sees a face&#x27;s back side.
+
+    On a closed, outward-wound shell no back side is ever visible, so this
+    changes nothing on the clean valve. On the dirty copy the renderer&#x27;s own
+    Backfacing output lights up flipped faces and the inside of the hole.
+    &quot;&quot;&quot;</span>
+    nt = mat.node_tree
+    out = nt.nodes[<span class="s">&quot;Material Output&quot;</span>]
+    bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
+    geo = nt.nodes.new(<span class="s">&quot;ShaderNodeNewGeometry&quot;</span>)
+    <span class="c"># lit red plus a little glow: the inside of a hole falls dark (only the</span>
+    <span class="c"># opening admits light) while a flipped patch in the key reads bright</span>
+    back = nt.nodes.new(<span class="s">&quot;ShaderNodeBsdfPrincipled&quot;</span>)
+    back.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    back.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.5</span>
+    sock = back.inputs.get(<span class="s">&quot;Emission Color&quot;</span>) <span class="k">or</span> back.inputs[<span class="s">&quot;Emission&quot;</span>]
+    sock.default_value = (*rgb, <span class="n">1.0</span>)
+    back.inputs[<span class="s">&quot;Emission Strength&quot;</span>].default_value = strength
+    mix = nt.nodes.new(<span class="s">&quot;ShaderNodeMixShader&quot;</span>)
+    nt.links.new(geo.outputs[<span class="s">&quot;Backfacing&quot;</span>], mix.inputs[<span class="s">&quot;Fac&quot;</span>])
+    nt.links.new(bsdf.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">1</span>])
+    nt.links.new(back.outputs[<span class="s">&quot;BSDF&quot;</span>], mix.inputs[<span class="n">2</span>])
+    nt.links.new(mix.outputs[<span class="s">&quot;Shader&quot;</span>], out.inputs[<span class="s">&quot;Surface&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> _finish_part(name, build, mat, smooth_angle=<span class="n">35.0</span>):
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        build(bm)
+        _orient_outward(bm)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        p.use_smooth = <span class="k">True</span>
+    <span class="k">if</span> hasattr(me, <span class="s">&quot;set_sharp_from_angle&quot;</span>):
+        me.set_sharp_from_angle(angle=math.radians(smooth_angle))
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    <span class="k">return</span> ob
+
+
+<span class="c"># Body casting profile (r, z): chamfered base flange, flared neck, globe,</span>
+<span class="c"># waist, chamfered bonnet flange, domed bonnet. Every step corner is broken</span>
+<span class="c"># by a chamfer so no ring meets its neighbour at a raw right angle.</span>
+BODY_PROFILE = [
+    (<span class="n">0.500</span>, <span class="n">0.000</span>), (<span class="n">0.520</span>, <span class="n">0.020</span>), (<span class="n">0.520</span>, <span class="n">0.085</span>), (<span class="n">0.500</span>, <span class="n">0.105</span>),
+    (<span class="n">0.400</span>, <span class="n">0.105</span>), (<span class="n">0.300</span>, <span class="n">0.105</span>), (<span class="n">0.280</span>, <span class="n">0.125</span>), (<span class="n">0.270</span>, <span class="n">0.180</span>),
+    (<span class="n">0.330</span>, <span class="n">0.260</span>), (<span class="n">0.395</span>, <span class="n">0.350</span>), (<span class="n">0.430</span>, <span class="n">0.470</span>), (<span class="n">0.420</span>, <span class="n">0.590</span>),
+    (<span class="n">0.360</span>, <span class="n">0.690</span>), (<span class="n">0.285</span>, <span class="n">0.755</span>), (<span class="n">0.270</span>, <span class="n">0.795</span>),
+    (<span class="n">0.370</span>, <span class="n">0.795</span>), (<span class="n">0.390</span>, <span class="n">0.815</span>), (<span class="n">0.390</span>, <span class="n">0.885</span>), (<span class="n">0.370</span>, <span class="n">0.905</span>),
+    (<span class="n">0.300</span>, <span class="n">0.905</span>), (<span class="n">0.240</span>, <span class="n">0.905</span>), (<span class="n">0.225</span>, <span class="n">0.950</span>), (<span class="n">0.200</span>, <span class="n">1.040</span>),
+    (<span class="n">0.160</span>, <span class="n">1.095</span>), (<span class="n">0.120</span>, <span class="n">1.115</span>),
+]
+BASE_TOP_Z = <span class="n">0.105</span>
+BONNET_TOP_Z = <span class="n">0.905</span>
+
+
+<span class="k">def</span> _bolt_profile(s=<span class="n">1.0</span>):
+    <span class="c"># hex head with chamfered crown, then a short threaded stud end</span>
+    <span class="k">return</span> [(<span class="n">0.046</span> * s, <span class="n">0.000</span>), (<span class="n">0.046</span> * s, <span class="n">0.030</span> * s), (<span class="n">0.036</span> * s, <span class="n">0.042</span> * s),
+            (<span class="n">0.019</span> * s, <span class="n">0.042</span> * s), (<span class="n">0.019</span> * s, <span class="n">0.066</span> * s), (<span class="n">0.014</span> * s, <span class="n">0.072</span> * s)]
+
+
+<span class="k">def</span> build_street_valve():
+    <span class="s">&quot;&quot;&quot;Assemble the valve. Returns the list of part objects (body first).&quot;&quot;&quot;</span>
+    paint = add_backface_witness(
+        make_material(<span class="s">&quot;ValvePaint&quot;</span>, (<span class="n">0.025</span>, <span class="n">0.14</span>, <span class="n">0.42</span>), rough=<span class="n">0.42</span>, coat=<span class="n">0.35</span>))
+    steel = make_material(<span class="s">&quot;BoltSteel&quot;</span>, (<span class="n">0.62</span>, <span class="n">0.63</span>, <span class="n">0.66</span>), rough=<span class="n">0.32</span>, metallic=<span class="n">0.95</span>)
+    iron = make_material(<span class="s">&quot;GlandIron&quot;</span>, (<span class="n">0.10</span>, <span class="n">0.10</span>, <span class="n">0.11</span>), rough=<span class="n">0.5</span>, metallic=<span class="n">0.7</span>)
+    brass = make_material(<span class="s">&quot;HandwheelBrass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.52</span>, <span class="n">0.18</span>), rough=<span class="n">0.3</span>, metallic=<span class="n">1.0</span>)
+
+    parts = [_finish_part(BODY, <span class="k">lambda</span> bm: lathe_into(bm, BODY_PROFILE, SEG,
+                                                      phase=math.pi / SEG), paint)]
+
+    <span class="k">def</span> outlet(bm):
+        <span class="c"># side outlet along +X: pipe buried in the globe, chamfered flange</span>
+        prof = [(<span class="n">0.150</span>, <span class="n">0.20</span>), (<span class="n">0.150</span>, <span class="n">0.56</span>), (<span class="n">0.235</span>, <span class="n">0.56</span>), (<span class="n">0.250</span>, <span class="n">0.575</span>),
+                (<span class="n">0.250</span>, <span class="n">0.625</span>), (<span class="n">0.235</span>, <span class="n">0.64</span>), (<span class="n">0.110</span>, <span class="n">0.64</span>)]
+        rot = Matrix.Translation((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.47</span>)) @ Matrix.Rotation(math.pi / <span class="n">2</span>, <span class="n">4</span>, <span class="s">&quot;Y&quot;</span>)
+        lathe_into(bm, prof, <span class="n">24</span>, matrix=rot)
+    parts.append(_finish_part(<span class="s">&quot;Valve.Outlet&quot;</span>, outlet, paint))
+
+    <span class="k">def</span> bolts(bm):
+        <span class="k">for</span> ring_r, z, n <span class="k">in</span> ((<span class="n">0.445</span>, BASE_TOP_Z, <span class="n">8</span>), (<span class="n">0.330</span>, BONNET_TOP_Z, <span class="n">8</span>)):
+            <span class="k">for</span> i <span class="k">in</span> range(n):
+                a = <span class="n">2.0</span> * math.pi * (i + <span class="n">0.5</span>) / n
+                m = Matrix.Translation((ring_r * math.cos(a), ring_r * math.sin(a), z))
+                lathe_into(bm, _bolt_profile(), <span class="n">6</span>, matrix=m, phase=a)
+        <span class="c"># outlet flange bolts, heads on the flange face pointing +X</span>
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">6</span>):
+            a = <span class="n">2.0</span> * math.pi * (i + <span class="n">0.5</span>) / <span class="n">6</span>
+            m = (Matrix.Translation((<span class="n">0.64</span>, <span class="n">0.195</span> * math.cos(a), <span class="n">0.47</span> + <span class="n">0.195</span> * math.sin(a)))
+                 @ Matrix.Rotation(math.pi / <span class="n">2</span>, <span class="n">4</span>, <span class="s">&quot;Y&quot;</span>) @ Matrix.Scale(<span class="n">0.8</span>, <span class="n">4</span>))
+            lathe_into(bm, _bolt_profile(), <span class="n">6</span>, matrix=m)
+    parts.append(_finish_part(<span class="s">&quot;Valve.FlangeBolts&quot;</span>, bolts, steel, smooth_angle=<span class="n">20.0</span>))
+
+    <span class="k">def</span> gland(bm):
+        lathe_into(bm, [(<span class="n">0.115</span>, <span class="n">1.090</span>), (<span class="n">0.115</span>, <span class="n">1.160</span>), (<span class="n">0.100</span>, <span class="n">1.180</span>),
+                        (<span class="n">0.060</span>, <span class="n">1.180</span>)], <span class="n">6</span>, phase=math.pi / <span class="n">6</span>)
+    parts.append(_finish_part(<span class="s">&quot;Valve.GlandNut&quot;</span>, gland, iron, smooth_angle=<span class="n">20.0</span>))
+
+    <span class="k">def</span> stem(bm):
+        prof = [(<span class="n">0.034</span>, <span class="n">1.150</span>)]
+        z = <span class="n">1.180</span>
+        <span class="k">while</span> z &lt; <span class="n">1.360</span>:  <span class="c"># threaded section: alternating crest / root rings</span>
+            prof += [(<span class="n">0.034</span>, z), (<span class="n">0.041</span>, z + <span class="n">0.008</span>), (<span class="n">0.034</span>, z + <span class="n">0.016</span>)]
+            z += <span class="n">0.020</span>
+        prof += [(<span class="n">0.034</span>, <span class="n">1.470</span>), (<span class="n">0.026</span>, <span class="n">1.480</span>)]
+        lathe_into(bm, prof, <span class="n">16</span>)
+    parts.append(_finish_part(<span class="s">&quot;Valve.Stem&quot;</span>, stem, steel))
+
+    <span class="k">def</span> hub(bm):
+        lathe_into(bm, [(<span class="n">0.060</span>, <span class="n">1.380</span>), (<span class="n">0.078</span>, <span class="n">1.395</span>), (<span class="n">0.078</span>, <span class="n">1.435</span>),
+                        (<span class="n">0.060</span>, <span class="n">1.450</span>)], <span class="n">20</span>)
+    parts.append(_finish_part(<span class="s">&quot;Valve.HandwheelHub&quot;</span>, hub, brass))
+
+    <span class="k">def</span> rim(bm):
+        torus_into(bm, <span class="n">0.330</span>, <span class="n">0.032</span>, <span class="n">48</span>, <span class="n">12</span>,
+                   matrix=Matrix.Translation((<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.390</span>)))
+    parts.append(_finish_part(<span class="s">&quot;Valve.HandwheelRim&quot;</span>, rim, brass))
+
+    <span class="k">def</span> spokes(bm):
+        <span class="k">for</span> i <span class="k">in</span> range(<span class="n">5</span>):
+            a = <span class="n">2.0</span> * math.pi * i / <span class="n">5</span> + <span class="n">0.3</span>
+            d = Vector((math.cos(a), math.sin(a), -<span class="n">0.10</span>)).normalized()
+            prof = [(<span class="n">0.020</span>, <span class="n">0.0</span>), (<span class="n">0.020</span>, <span class="n">0.300</span>), (<span class="n">0.016</span>, <span class="n">0.315</span>)]
+            rot = d.to_track_quat(<span class="s">&quot;Z&quot;</span>, <span class="s">&quot;Y&quot;</span>).to_matrix().to_4x4()
+            m = Matrix.Translation((<span class="n">0.05</span> * math.cos(a), <span class="n">0.05</span> * math.sin(a), <span class="n">1.418</span>)) @ rot
+            lathe_into(bm, prof, <span class="n">10</span>, matrix=m)
+    parts.append(_finish_part(<span class="s">&quot;Valve.HandwheelSpokes&quot;</span>, spokes, brass))
+    <span class="k">return</span> parts
+
+
+<span class="c"># --------------------------------------------------------- defect injection</span>
+
 <span class="k">def</span> inject_defect(me, kind):
-    <span class="s">&quot;&quot;&quot;Mutate a mesh copy for falsification / dirty-panel staging.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;Mutate a mesh for falsification. Each kind breaks exactly one gate.&quot;&quot;&quot;</span>
     bm = bmesh.new()
     <span class="k">try</span>:
         bm.from_mesh(me)
         bm.faces.ensure_lookup_table()
-        bm.verts.ensure_lookup_table()
-        bm.edges.ensure_lookup_table()
         <span class="k">if</span> kind == <span class="s">&quot;loose&quot;</span>:
-            <span class="c"># Local space beside the front face so the dirty-panel bead reads</span>
-            <span class="c"># next to the subject (not halfway to the clean panel).</span>
-            bm.verts.new((<span class="n">0.0</span>, -<span class="n">0.55</span>, <span class="n">0.85</span>))
+            bm.verts.new((<span class="n">0.0</span>, -<span class="n">0.8</span>, <span class="n">0.6</span>))
         <span class="k">elif</span> kind == <span class="s">&quot;boundary&quot;</span>:
-            <span class="c"># Prefer a large camera-facing (-Y) face so the hole reads through</span>
-            <span class="c"># to the lit backdrop in the dual-panel still.</span>
-            faces = sorted(bm.faces, key=<span class="k">lambda</span> f: -f.calc_area())
-            target = <span class="k">None</span>
-            <span class="k">for</span> f <span class="k">in</span> faces:
-                n = f.normal
-                <span class="k">if</span> n.y &lt; -<span class="n">0.55</span>:
-                    target = f
-                    <span class="k">break</span>
-            <span class="k">if</span> target <span class="k">is</span> <span class="k">None</span>:
-                <span class="k">for</span> f <span class="k">in</span> faces:
-                    <span class="k">if</span> abs(f.normal.x) &gt; <span class="n">0.7</span>:
-                        target = f
-                        <span class="k">break</span>
-            <span class="k">if</span> target <span class="k">is</span> <span class="k">None</span> <span class="k">and</span> faces:
-                target = faces[<span class="n">0</span>]
-            <span class="k">if</span> target <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-                bmesh.ops.delete(bm, geom=[target], context=<span class="s">&quot;FACES_ONLY&quot;</span>)
+            bmesh.ops.delete(bm, geom=[bm.faces[<span class="n">0</span>]], context=<span class="s">&quot;FACES_ONLY&quot;</span>)
         <span class="k">elif</span> kind == <span class="s">&quot;ngon&quot;</span>:
-            <span class="k">for</span> e <span class="k">in</span> list(bm.edges):
-                <span class="k">if</span> len(e.link_faces) == <span class="n">2</span>:
-                    bmesh.ops.dissolve_edges(bm, edges=[e])
-                    <span class="k">break</span>
+            quads = [f <span class="k">for</span> f <span class="k">in</span> bm.faces <span class="k">if</span> len(f.verts) == <span class="n">4</span>]
+            e = next(e <span class="k">for</span> e <span class="k">in</span> quads[<span class="n">0</span>].edges <span class="k">if</span> len(e.link_faces) == <span class="n">2</span>
+                     <span class="k">and</span> all(len(f.verts) == <span class="n">4</span> <span class="k">for</span> f <span class="k">in</span> e.link_faces))
+            bmesh.ops.dissolve_edges(bm, edges=[e])
         <span class="k">elif</span> kind == <span class="s">&quot;flip&quot;</span>:
             <span class="k">for</span> f <span class="k">in</span> bm.faces:
                 f.normal_flip()
+        <span class="k">elif</span> kind == <span class="s">&quot;flip_patch&quot;</span>:
+            bm.faces[len(bm.faces) // <span class="n">2</span>].normal_flip()
         <span class="k">elif</span> kind == <span class="s">&quot;zero_area&quot;</span>:
-            <span class="k">if</span> bm.faces:
-                f = bm.faces[<span class="n">0</span>]
-                verts = list(f.verts)
-                <span class="k">if</span> len(verts) &gt;= <span class="n">3</span>:
-                    target = verts[<span class="n">0</span>].co.copy()
-                    <span class="k">for</span> v <span class="k">in</span> verts[<span class="n">1</span>:<span class="n">3</span>]:
-                        v.co = target
+            verts = list(bm.faces[<span class="n">0</span>].verts)
+            <span class="k">for</span> v <span class="k">in</span> verts[<span class="n">1</span>:<span class="n">3</span>]:
+                v.co = verts[<span class="n">0</span>].co.copy()
+        <span class="k">elif</span> kind == <span class="s">&quot;shell&quot;</span>:
+            <span class="c"># a leftover second closed shell buried inside: every per-edge</span>
+            <span class="c"># gate stays green, only V-E+F (2 per shell) can see it</span>
+            lathe_into(bm, [(<span class="n">0.1</span>, <span class="n">0.4</span>), (<span class="n">0.1</span>, <span class="n">0.5</span>)], <span class="n">8</span>)
+            _orient_outward(bm)
         <span class="k">else</span>:
             <span class="k">raise</span> ValueError(kind)
         bm.to_mesh(me)
@@ -596,6 +727,56 @@ VOL_EPS = <span class="n">1e-8</span>
     <span class="k">finally</span>:
         bm.free()
 
+
+<span class="k">def</span> _faces_in(bm, view_angle, half_width, zmin, zmax, pred=<span class="k">None</span>):
+    out = []
+    <span class="k">for</span> f <span class="k">in</span> bm.faces:
+        c = f.calc_center_median()
+        <span class="k">if</span> <span class="k">not</span> (zmin &lt;= c.z &lt;= zmax) <span class="k">or</span> math.hypot(c.x, c.y) &lt; <span class="n">1e-6</span>:
+            <span class="k">continue</span>
+        d = (math.atan2(c.y, c.x) - view_angle + math.pi) % (<span class="n">2</span> * math.pi) - math.pi
+        <span class="k">if</span> abs(d) &lt;= half_width <span class="k">and</span> (pred <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> pred(f)):
+            out.append(f)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> stage_dirty_body(me, view_angle):
+    <span class="s">&quot;&quot;&quot;Render staging: author the defects an unaudited export would carry.
+
+    view_angle is the camera azimuth in the body&#x27;s local frame, so each
+    defect lands on the camera-facing side. Every one of these is a gate
+    failure the check path proves (see --inject); the render markers are
+    then read back from audit incidence, not from this function.
+    &quot;&quot;&quot;</span>
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bm.from_mesh(me)
+        <span class="c"># ngon: merge a run of the planar base-flange annulus into one face</span>
+        run = _faces_in(bm, view_angle - math.radians(<span class="n">40</span>), math.radians(<span class="n">30</span>),
+                        BASE_TOP_Z - <span class="n">1e-4</span>, BASE_TOP_Z + <span class="n">1e-4</span>,
+                        pred=<span class="k">lambda</span> f: f.normal.z &gt; <span class="n">0.9</span> <span class="k">and</span> len(f.verts) == <span class="n">4</span>)
+        <span class="k">if</span> run:
+            bmesh.ops.dissolve_faces(bm, faces=run)
+        <span class="c"># flipped patch on the bonnet dome</span>
+        <span class="k">for</span> f <span class="k">in</span> _faces_in(bm, view_angle + math.radians(<span class="n">40</span>), math.radians(<span class="n">26</span>),
+                           <span class="n">0.93</span>, <span class="n">1.11</span>):
+            f.normal_flip()
+        <span class="c"># open boundary: a hole through the front of the globe</span>
+        hole = _faces_in(bm, view_angle - math.radians(<span class="n">4</span>), math.radians(<span class="n">19</span>),
+                         <span class="n">0.30</span>, <span class="n">0.66</span>)
+        bmesh.ops.delete(bm, geom=hole, context=<span class="s">&quot;FACES_ONLY&quot;</span>)
+        <span class="c"># loose verts: stray points left floating off the casting</span>
+        a = view_angle + math.radians(<span class="n">62</span>)
+        <span class="k">for</span> r, z <span class="k">in</span> ((<span class="n">0.66</span>, <span class="n">0.60</span>), (<span class="n">0.74</span>, <span class="n">0.46</span>), (<span class="n">0.63</span>, <span class="n">0.34</span>)):
+            bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+            a += math.radians(<span class="n">7</span>)
+        bm.to_mesh(me)
+        me.update()
+    <span class="k">finally</span>:
+        bm.free()
+
+
+<span class="c"># --------------------------------------------------------------------- render</span>
 
 <span class="k">def</span> build_studio(sc):
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
@@ -605,20 +786,19 @@ VOL_EPS = <span class="n">1e-8</span>
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>, metallic=<span class="n">0.0</span>)
+    fmat = make_material(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), rough=<span class="n">0.7</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     sc.collection.objects.link(floor)
     wall = bpy.data.objects.new(<span class="s">&quot;Wall&quot;</span>, floor_me.copy())
-    wall.location = (<span class="n">0.0</span>, <span class="n">9.0</span>, <span class="n">0.0</span>)
+    wall.location = (<span class="n">0.0</span>, <span class="n">11.0</span>, <span class="n">0.0</span>)
     wall.rotation_euler = (math.radians(<span class="n">90</span>), <span class="n">0.0</span>, <span class="n">0.0</span>)
     sc.collection.objects.link(wall)
 
     world = bpy.data.worlds.new(<span class="s">&quot;World&quot;</span>)
     world.use_nodes = <span class="k">True</span>
     world.node_tree.nodes[<span class="s">&quot;Background&quot;</span>].inputs[<span class="s">&quot;Color&quot;</span>].default_value = (
-        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>,
-    )
+        <span class="n">0.02</span>, <span class="n">0.021</span>, <span class="n">0.025</span>, <span class="n">1.0</span>)
     sc.world = world
 
     <span class="k">def</span> light(name, loc, energy, size, col, rot):
@@ -631,211 +811,143 @@ VOL_EPS = <span class="n">1e-8</span>
         ob.rotation_euler = tuple(math.radians(a) <span class="k">for</span> a <span class="k">in</span> rot)
         sc.collection.objects.link(ob)
 
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">3.5</span>, -<span class="n">4.5</span>, <span class="n">5.5</span>), <span class="n">480.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">35</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.5</span>), <span class="n">120.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">65</span>, <span class="n">0</span>, <span class="n">50</span>))
-    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">1.5</span>, <span class="n">4.5</span>, <span class="n">3.5</span>), <span class="n">280.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">170</span>))
-    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">5.5</span>, <span class="n">4.0</span>), <span class="n">420.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.72</span>, <span class="n">0.42</span>), (-<span class="n">68</span>, <span class="n">0</span>, <span class="n">190</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (-<span class="n">2.0</span>, -<span class="n">4.0</span>, <span class="n">3.2</span>), <span class="n">220.0</span>, <span class="n">2.0</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">55</span>, <span class="n">0</span>, -<span class="n">20</span>))
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">460.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">45</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">3.5</span>, <span class="n">2.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">70</span>, <span class="n">0</span>, <span class="n">55</span>))
+    light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.0</span>, <span class="n">3.2</span>, <span class="n">3.6</span>), <span class="n">220.0</span>, <span class="n">3.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">50</span>, <span class="n">0</span>, <span class="n">180</span>))
+    <span class="c"># the camera looks down on the pair, so the backdrop in frame is floor:</span>
+    <span class="c"># the wedge pools warm on the floor behind and between the two valves</span>
+    light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">0.0</span>, <span class="n">3.8</span>, <span class="n">2.2</span>), <span class="n">130.0</span>, <span class="n">3.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (<span class="n">22</span>, <span class="n">0</span>, <span class="n">0</span>))
     <span class="k">return</span> floor, wall
 
 
-<span class="k">def</span> _duplicate_mesh_obj(sc, src, name, loc):
-    me = src.data.copy()
+<span class="k">def</span> _marker_mat(name, rgb, strength):
+    <span class="c"># dark base so the lit diffuse and specular do not wash the glow to pink</span>
+    <span class="k">return</span> make_material(name, tuple(c * <span class="n">0.1</span> <span class="k">for</span> c <span class="k">in</span> rgb), rough=<span class="n">0.65</span>,
+                         emit=rgb, estr=strength)
+
+
+<span class="k">def</span> _tube(sc, name, a, b, radius, mat):
+    d = b - a
+    <span class="k">if</span> d.length &lt; <span class="n">1e-8</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        bmesh.ops.create_cone(bm, cap_ends=<span class="k">True</span>, segments=<span class="n">8</span>, radius1=radius,
+                              radius2=radius, depth=d.length + radius * <span class="n">1.5</span>)
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    me.materials.append(mat)
     ob = bpy.data.objects.new(name, me)
-    ob.location = loc
+    ob.location = (a + b) * <span class="n">0.5</span>
+    ob.rotation_mode = <span class="s">&quot;QUATERNION&quot;</span>
+    ob.rotation_quaternion = d.normalized().to_track_quat(<span class="s">&quot;Z&quot;</span>, <span class="s">&quot;Y&quot;</span>)
     sc.collection.objects.link(ob)
     <span class="k">return</span> ob
 
 
-<span class="k">def</span> _inject_through_hole(me):
-    <span class="s">&quot;&quot;&quot;Render staging: delete a front/back body-face pair so the void reads.
+<span class="k">def</span> mark_defects_from_audit(sc, ob):
+    <span class="s">&quot;&quot;&quot;Overlay markers read back from the dirty mesh&#x27;s audit incidence.
 
-    Produces boundary edges (same gate class as inject_defect(&#x27;boundary&#x27;)).
-    Does not change the check path — only the dual-panel still.
+    Boundary edges -&gt; glowing red tubes, loose verts -&gt; red beads, ngon
+    faces -&gt; amber material slot. Flipped faces and the inside of the hole
+    need no marker: the paint&#x27;s Backfacing mix lights them red on its own.
     &quot;&quot;&quot;</span>
+    me = ob.data
+    metrics = audit(me)
+    print(<span class="s">f&quot;</span><span class="s">render_defects loose=</span>{metrics[<span class="s">&#x27;loose&#x27;</span>]}<span class="s"> boundary=</span>{metrics[<span class="s">&#x27;boundary&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
+          <span class="s">f&quot;</span><span class="s">seams=</span>{metrics[<span class="s">&#x27;seams&#x27;</span>]}<span class="s"> ngons=</span>{metrics[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s">&quot;</span>)
+    mw = ob.matrix_world
+    markers = []
+
+    ngon_mat = make_material(<span class="s">&quot;NgonTint&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">0.04</span>), rough=<span class="n">0.45</span>,
+                             emit=(<span class="n">1.0</span>, <span class="n">0.5</span>, <span class="n">0.03</span>), estr=<span class="n">1.0</span>)
+    me.materials.append(ngon_mat)
+    slot = len(me.materials) - <span class="n">1</span>
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        <span class="k">if</span> len(p.vertices) &gt; <span class="n">4</span>:
+            p.material_index = slot
+
+    red = _marker_mat(<span class="s">&quot;DefectRed&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.002</span>, <span class="n">0.004</span>), <span class="n">2.5</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
         bm.from_mesh(me)
-        bm.faces.ensure_lookup_table()
-        <span class="c"># Prefer mid-height body faces (not flanges/caps)</span>
-        body = [
-            f <span class="k">for</span> f <span class="k">in</span> bm.faces
-            <span class="k">if</span> abs(f.normal.z) &lt; <span class="n">0.35</span> <span class="k">and</span> <span class="n">0.2</span> &lt; f.calc_center_median().z &lt; <span class="n">0.9</span>
-        ]
-        <span class="k">if</span> <span class="k">not</span> body:
-            body = list(bm.faces)
-        front = max(body, key=<span class="k">lambda</span> f: -f.normal.y * f.calc_area())
-        back = max(body, key=<span class="k">lambda</span> f: f.normal.y * f.calc_area())
-        doomed = [front] <span class="k">if</span> front <span class="k">is</span> back <span class="k">else</span> [front, back]
-        bmesh.ops.delete(bm, geom=doomed, context=<span class="s">&quot;FACES_ONLY&quot;</span>)
-        bm.to_mesh(me)
-        me.update()
+        loose = [mw @ v.co <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> <span class="k">not</span> v.link_edges]
+        boundary = [(mw @ e.verts[<span class="n">0</span>].co, mw @ e.verts[<span class="n">1</span>].co)
+                    <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">1</span>]
     <span class="k">finally</span>:
         bm.free()
-
-
-<span class="k">def</span> _defect_geometry(me):
-    <span class="s">&quot;&quot;&quot;Loose-vert coords and boundary edge pairs — same incidence as audit().&quot;&quot;&quot;</span>
-    bm = bmesh.new()
-    <span class="k">try</span>:
-        bm.from_mesh(me)
-        bm.verts.ensure_lookup_table()
-        bm.edges.ensure_lookup_table()
-        loose = [v.co.copy() <span class="k">for</span> v <span class="k">in</span> bm.verts <span class="k">if</span> len(v.link_edges) == <span class="n">0</span>]
-        boundary = [
-            (e.verts[<span class="n">0</span>].co.copy(), e.verts[<span class="n">1</span>].co.copy())
-            <span class="k">for</span> e <span class="k">in</span> bm.edges <span class="k">if</span> len(e.link_faces) == <span class="n">1</span>
-        ]
-    <span class="k">finally</span>:
-        bm.free()
-    <span class="k">return</span> loose, boundary
-
-
-<span class="k">def</span> mark_defects_from_audit(ob):
-    <span class="s">&quot;&quot;&quot;Overlay markers from live mesh defects — not decorative paint.
-
-    Loose verts → emissive beads at measured local coords.
-    Boundary edges → emissive tubes along those edge endpoints.
-    Body keeps the same brass as CLEAN so the difference is topological.
-    &quot;&quot;&quot;</span>
-    sc = bpy.context.scene
-    loose, boundary = _defect_geometry(ob.data)
-    metrics = audit(ob.data)
-    print(
-        <span class="s">f&quot;</span><span class="s">render_defects loose=</span>{metrics[<span class="s">&#x27;loose&#x27;</span>]}<span class="s"> boundary_edges=</span>{metrics[<span class="s">&#x27;boundary&#x27;</span>]}<span class="s"> </span><span class="s">&quot;</span>
-        <span class="s">f&quot;</span><span class="s">ngons=</span>{metrics[<span class="s">&#x27;ngons&#x27;</span>]}<span class="s"> zero_area=</span>{metrics[<span class="s">&#x27;zero_area&#x27;</span>]}<span class="s">&quot;</span>
-    )
-
-    brass = make_material(<span class="s">&quot;DirtyBrass&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.14</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.85</span>)
-    ob.data.materials.clear()
-    ob.data.materials.append(brass)
-
-    bead_mat = make_material(
-        <span class="s">&quot;LooseBead&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.75</span>, <span class="n">0.2</span>), rough=<span class="n">0.35</span>, metallic=<span class="n">0.1</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.85</span>, <span class="n">0.25</span>), estr=<span class="n">0.85</span>,
-    )
+    <span class="k">for</span> i, (a, b) <span class="k">in</span> enumerate(boundary):
+        t = _tube(sc, <span class="s">f&quot;</span><span class="s">Defect.Boundary</span>{i}<span class="s">&quot;</span>, a, b, <span class="n">0.014</span>, red)
+        <span class="k">if</span> t:
+            markers.append(t)
     <span class="k">for</span> i, co <span class="k">in</span> enumerate(loose):
-        sme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">LooseBead</span>{i}<span class="s">&quot;</span>)
+        sme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Defect.Loose</span>{i}<span class="s">&quot;</span>)
         sbm = bmesh.new()
         <span class="k">try</span>:
-            bmesh.ops.create_uvsphere(sbm, u_segments=<span class="n">10</span>, v_segments=<span class="n">8</span>, radius=<span class="n">0.055</span>)
+            bmesh.ops.create_uvsphere(sbm, u_segments=<span class="n">16</span>, v_segments=<span class="n">10</span>, radius=<span class="n">0.038</span>)
             sbm.to_mesh(sme)
         <span class="k">finally</span>:
             sbm.free()
-        sme.materials.append(bead_mat)
-        sob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">LooseBead</span>{i}<span class="s">&quot;</span>, sme)
-        sob.location = Vector(ob.location) + co
-        sc.collection.objects.link(sob)
-
-    edge_mat = make_material(
-        <span class="s">&quot;BoundaryEdge&quot;</span>, (<span class="n">0.95</span>, <span class="n">0.35</span>, <span class="n">0.1</span>), rough=<span class="n">0.4</span>, metallic=<span class="n">0.15</span>,
-        emit=(<span class="n">1.0</span>, <span class="n">0.4</span>, <span class="n">0.1</span>), estr=<span class="n">0.7</span>,
-    )
-    <span class="k">for</span> i, (a, b) <span class="k">in</span> enumerate(boundary):
-        mid = (a + b) * <span class="n">0.5</span>
-        direction = b - a
-        length = direction.length
-        <span class="k">if</span> length &lt; <span class="n">1e-8</span>:
-            <span class="k">continue</span>
-        eme = bpy.data.meshes.new(<span class="s">f&quot;</span><span class="s">Bnd</span>{i}<span class="s">&quot;</span>)
-        ebm = bmesh.new()
-        <span class="k">try</span>:
-            bmesh.ops.create_cone(
-                ebm, cap_ends=<span class="k">True</span>, segments=<span class="n">6</span>,
-                radius1=<span class="n">0.018</span>, radius2=<span class="n">0.018</span>, depth=length,
-            )
-            ebm.to_mesh(eme)
-        <span class="k">finally</span>:
-            ebm.free()
-        eme.materials.append(edge_mat)
-        eob = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Bnd</span>{i}<span class="s">&quot;</span>, eme)
-        eob.location = Vector(ob.location) + mid
-        quat = direction.normalized().to_track_quat(<span class="s">&quot;Z&quot;</span>, <span class="s">&quot;Y&quot;</span>)
-        eob.rotation_mode = <span class="s">&quot;QUATERNION&quot;</span>
-        eob.rotation_quaternion = quat
-        sc.collection.objects.link(eob)
-
-    <span class="k">return</span> metrics
+        sme.materials.append(red)
+        <span class="k">for</span> p <span class="k">in</span> sme.polygons:
+            p.use_smooth = <span class="k">True</span>
+        s = bpy.data.objects.new(<span class="s">f&quot;</span><span class="s">Defect.Loose</span>{i}<span class="s">&quot;</span>, sme)
+        s.location = co
+        sc.collection.objects.link(s)
+        markers.append(s)
+    <span class="k">return</span> metrics, markers
 
 
-<span class="k">def</span> placard(sc, text, loc, size=<span class="n">0.18</span>):
-    cu = bpy.data.curves.new(text, <span class="s">&quot;FONT&quot;</span>)
-    cu.body = text
-    cu.size = size
-    cu.align_x = <span class="s">&quot;CENTER&quot;</span>
-    ob = bpy.data.objects.new(text, cu)
-    ob.location = loc
-    sc.collection.objects.link(ob)
-    mat = make_material(<span class="s">&quot;Label&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.9</span>, <span class="n">0.92</span>), rough=<span class="n">0.6</span>, metallic=<span class="n">0.0</span>)
-    ob.data.materials.append(mat)
-    <span class="k">return</span> ob
+<span class="k">def</span> _place(parts, loc, rot_z):
+    m = Matrix.Translation(loc) @ Matrix.Rotation(rot_z, <span class="n">4</span>, <span class="s">&quot;Z&quot;</span>)
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        ob.matrix_world = m
 
 
-<span class="k">def</span> render_still(clean_ob, path, engine):
-    <span class="s">&quot;&quot;&quot;Dual-panel dirty vs clean — topology defects visible in the pixels.
-
-    DIRTY: camera-facing boundary hole + loose vert; overlays from audit data.
-    CLEAN: intact manifold. Same brass on both so color alone cannot carry proof.
-
-    Ngons / zero-area / full winding invert are check-proven but not staged
-    (see README) — they do not read as geometry at thumbnail scale without faking.
-    &quot;&quot;&quot;</span>
+<span class="k">def</span> render_still(parts, path, engine):
+    <span class="s">&quot;&quot;&quot;Dirty copy (left) beside the clean valve (right), same paint on both.&quot;&quot;&quot;</span>
     sc = bpy.context.scene
-    clean_ob.hide_render = <span class="k">True</span>
-    clean_ob.hide_viewport = <span class="k">True</span>
-
-    left = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Dirty&quot;</span>, (-<span class="n">0.88</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-    left.rotation_euler.z = math.radians(<span class="n">20</span>)
-    bpy.context.view_layer.update()
-    _inject_through_hole(left.data)
-    inject_defect(left.data, <span class="s">&quot;loose&quot;</span>)
-    mark_defects_from_audit(left)
-
-    right = _duplicate_mesh_obj(sc, clean_ob, <span class="s">&quot;Clean&quot;</span>, (<span class="n">0.88</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
-    right.rotation_euler.z = math.radians(-<span class="n">10</span>)
-    right.data.materials.clear()
-    right.data.materials.append(
-        make_material(<span class="s">&quot;CleanBrass&quot;</span>, (<span class="n">0.55</span>, <span class="n">0.38</span>, <span class="n">0.14</span>), rough=<span class="n">0.38</span>, metallic=<span class="n">0.85</span>)
-    )
-    <span class="k">for</span> p <span class="k">in</span> right.data.polygons:
-        p.use_smooth = abs(p.normal.z) &lt; <span class="n">0.85</span>
-
-    p_dirty = placard(sc, <span class="s">&quot;DIRTY&quot;</span>, (-<span class="n">0.88</span>, -<span class="n">1.15</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
-    p_clean = placard(sc, <span class="s">&quot;CLEAN&quot;</span>, (<span class="n">0.88</span>, -<span class="n">1.15</span>, <span class="n">0.02</span>), size=<span class="n">0.11</span>)
-
     floor, wall = build_studio(sc)
-    <span class="c"># Out-of-frame POINT behind DIRTY — aperture glow without a rectangular AREA</span>
-    <span class="c"># footprint on the floor (Layer 1: no visible light shapes).</span>
-    hole_ld = bpy.data.lights.new(<span class="s">&quot;HoleBack&quot;</span>, <span class="s">&quot;POINT&quot;</span>)
-    hole_ld.energy = <span class="n">95.0</span>
-    hole_ld.color = (<span class="n">1.0</span>, <span class="n">0.70</span>, <span class="n">0.40</span>)
-    <span class="k">try</span>:
-        hole_ld.shadow_soft_size = <span class="n">1.6</span>
-    <span class="k">except</span> AttributeError:
-        <span class="k">pass</span>
-    hole_back = bpy.data.objects.new(<span class="s">&quot;HoleBack&quot;</span>, hole_ld)
-    hole_back.location = (-<span class="n">0.88</span>, <span class="n">4.6</span>, <span class="n">0.75</span>)
-    sc.collection.objects.link(hole_back)
-    <span class="c"># Pull key slightly so brass highlights don&#x27;t clip with the hole glow</span>
-    <span class="k">for</span> ob <span class="k">in</span> sc.objects:
-        <span class="k">if</span> ob.type == <span class="s">&quot;LIGHT&quot;</span> <span class="k">and</span> ob.name == <span class="s">&quot;Key&quot;</span>:
-            ob.data.energy = <span class="n">380.0</span>
-        <span class="k">if</span> ob.type == <span class="s">&quot;LIGHT&quot;</span> <span class="k">and</span> ob.name == <span class="s">&quot;Glint&quot;</span>:
-            ob.data.energy = <span class="n">140.0</span>
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">50.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    cam.location = (<span class="n">0.0</span>, -<span class="n">5.0</span>, <span class="n">1.5</span>)
+    cam.location = (<span class="n">0.0</span>, -<span class="n">5.3</span>, <span class="n">3.0</span>)
     sc.collection.objects.link(cam)
     aim = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
-    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.55</span>)
+    aim.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.64</span>)
     sc.collection.objects.link(aim)
     tr = cam.constraints.new(<span class="s">&quot;TRACK_TO&quot;</span>)
     tr.target = aim
     tr.track_axis = <span class="s">&quot;TRACK_NEGATIVE_Z&quot;</span>
     tr.up_axis = <span class="s">&quot;UP_Y&quot;</span>
     sc.camera = cam
+
+    clean_loc, dirty_loc = Vector((<span class="n">0.98</span>, <span class="n">0.15</span>, <span class="n">0.0</span>)), Vector((-<span class="n">0.98</span>, <span class="n">0.0</span>, <span class="n">0.0</span>))
+    <span class="c"># outlets swing outward-back on each side so the pair reads as a mirror</span>
+    _place(parts, clean_loc, math.radians(<span class="n">30</span>))
+    dirty = []
+    <span class="k">for</span> ob <span class="k">in</span> parts:
+        d = bpy.data.objects.new(<span class="s">&quot;Dirty.&quot;</span> + ob.name, ob.data.copy())
+        d.data.materials.clear()
+        <span class="k">for</span> mat <span class="k">in</span> ob.data.materials:
+            d.data.materials.append(mat)
+        sc.collection.objects.link(d)
+        dirty.append(d)
+    dirty_rot = math.radians(<span class="n">150</span>)
+    _place(dirty, dirty_loc, dirty_rot)
+    bpy.context.view_layer.update()
+
+    body = next(d <span class="k">for</span> d <span class="k">in</span> dirty <span class="k">if</span> d.name == <span class="s">&quot;Dirty.&quot;</span> + BODY)
+    to_cam = body.matrix_world.inverted() @ cam.location
+    stage_dirty_body(body.data, math.atan2(to_cam.y, to_cam.x))
+    metrics, markers = mark_defects_from_audit(sc, body)
+    <span class="k">if</span> <span class="k">not</span> (metrics[<span class="s">&quot;boundary&quot;</span>] <span class="k">and</span> metrics[<span class="s">&quot;loose&quot;</span>] <span class="k">and</span> metrics[<span class="s">&quot;seams&quot;</span>]
+            <span class="k">and</span> metrics[<span class="s">&quot;ngons&quot;</span>]):
+        print(<span class="s">&quot;ERROR: dirty staging lost a defect class&quot;</span>, file=sys.stderr)
+        <span class="k">return</span> <span class="n">9</span>
 
     sc.render.engine = <span class="s">&quot;CYCLES&quot;</span> <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span> <span class="k">else</span> eevee_engine_id()
     <span class="k">if</span> engine == <span class="s">&quot;cycles&quot;</span>:
@@ -851,18 +963,20 @@ VOL_EPS = <span class="n">1e-8</span>
     sc.render.resolution_y = <span class="n">720</span>
     sc.render.image_settings.file_format = <span class="s">&quot;PNG&quot;</span>
     sc.render.filepath = path
+    <span class="c"># Standard, not AgX: AgX pulls the paint and the red markers to pastel</span>
     sc.view_settings.view_transform = <span class="s">&quot;Standard&quot;</span>
-    <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
-    <span class="c"># the beauty render so a defective composition ships no artifact.</span>
-    overlays = [o <span class="k">for</span> o <span class="k">in</span> sc.objects <span class="k">if</span> o.name.startswith((<span class="s">&quot;LooseBead&quot;</span>, <span class="s">&quot;Bnd&quot;</span>))]
+
+    <span class="c"># Layer 1 framing gate (exit 10) and asset-quality floors (exit 11) run</span>
+    <span class="c"># before the beauty render so a defective composition ships no artifact.</span>
     fcode = gallery_framing.check_framing(
-        sc, cam,
-        hero=[left, right],
-        elements=[left, right, p_dirty, p_clean] + overlays,
-        stage=[floor, wall],
-    )
+        sc, cam, hero=parts + dirty, elements=parts + dirty + markers,
+        stage=[floor, wall])
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    aqcode = gallery_asset_quality.check_asset_quality(
+        sc, cam, hero=parts, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -879,24 +993,33 @@ VOL_EPS = <span class="n">1e-8</span>
     argv = sys.argv[sys.argv.index(<span class="s">&quot;--&quot;</span>) + <span class="n">1</span>:] <span class="k">if</span> <span class="s">&quot;--&quot;</span> <span class="k">in</span> sys.argv <span class="k">else</span> []
     p = argparse.ArgumentParser()
     p.add_argument(<span class="s">&quot;--output&quot;</span>, default=<span class="k">None</span>, help=<span class="s">&quot;optional: render a still PNG here&quot;</span>)
-    p.add_argument(
-        <span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
-        help=<span class="s">&quot;render engine for --output&quot;</span>,
-    )
+    p.add_argument(<span class="s">&quot;--engine&quot;</span>, default=<span class="s">&quot;eevee&quot;</span>, choices=(<span class="s">&quot;eevee&quot;</span>, <span class="s">&quot;cycles&quot;</span>),
+                   help=<span class="s">&quot;render engine for --output&quot;</span>)
+    p.add_argument(<span class="s">&quot;--inject&quot;</span>, choices=INJECT_KINDS, default=<span class="k">None</span>,
+                   help=<span class="s">&quot;falsifier: break one gate on a part before the check&quot;</span>)
+    p.add_argument(<span class="s">&quot;--inject-part&quot;</span>, default=BODY,
+                   help=<span class="s">&quot;part to inject into (default: the body casting)&quot;</span>)
     p.add_argument(<span class="s">&quot;--inject-ngon&quot;</span>, action=<span class="s">&quot;store_true&quot;</span>,
-                   help=<span class="s">&quot;dissolve one edge into an ngon (must fail)&quot;</span>)
+                   help=<span class="s">&quot;alias for --inject ngon&quot;</span>)
     args = p.parse_args(argv)
+    <span class="k">if</span> args.inject_ngon:
+        args.inject = <span class="s">&quot;ngon&quot;</span>
 
     print(<span class="s">f&quot;</span><span class="s">binary version: </span>{bpy.app.version}<span class="s"> (</span>{bpy.app.version_string}<span class="s">)</span><span class="s">&quot;</span>)
-    sc, ob = build_scene()
-    <span class="k">if</span> args.inject_ngon:
-        inject_defect(ob.data, <span class="s">&quot;ngon&quot;</span>)
-    code = check(ob.data)
+    sc, parts = build_scene()
+    <span class="k">if</span> args.inject:
+        target = bpy.data.objects.get(args.inject_part)
+        <span class="k">if</span> target <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> target <span class="k">not</span> <span class="k">in</span> parts:
+            print(<span class="s">f&quot;</span><span class="s">ERROR: no part named </span>{args.inject_part!r}<span class="s">&quot;</span>, file=sys.stderr)
+            <span class="k">return</span> <span class="n">2</span>
+        inject_defect(target.data, args.inject)
+        print(<span class="s">f&quot;</span><span class="s">injected </span>{args.inject}<span class="s"> into </span>{args.inject_part}<span class="s">&quot;</span>)
+    code = check_valve(parts)
     <span class="k">if</span> code:
         <span class="k">return</span> code
 
     <span class="k">if</span> args.output:
-        rcode = render_still(ob, os.path.abspath(args.output), args.engine)
+        rcode = render_still(parts, os.path.abspath(args.output), args.engine)
         <span class="k">if</span> rcode:
             <span class="k">return</span> rcode
         print(<span class="s">f&quot;</span><span class="s">rendered still </span>{args.output}<span class="s">&quot;</span>)
@@ -919,7 +1042,7 @@ VOL_EPS = <span class="n">1e-8</span>
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/mesh-hygiene-audit-hero.webp" alt="Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it." />
+    <img src="../assets/mesh-hygiene-audit-hero.webp" alt="Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact." />
   </dialog>
   <footer>
     <div class="statusbar">

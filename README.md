@@ -992,7 +992,7 @@ with the Smooth-by-Angle modifier on 5.1.
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: dual-panel dirty vs clean brass street valves filling the frame — left with backlit through-hole, emissive boundary tubes and loose-vert bead over a DIRTY placard, right intact CLEAN manifold — proving the engine-ingest topology checklist" /></a>
+<a href="examples/mesh-hygiene-audit/"><img src="examples/mesh-hygiene-audit/preview.webp" alt="Mesh hygiene audit: two blue flanged street valves with brass handwheels — the left dirty copy with a red-outlined hole, a red flipped patch on the bonnet, an amber ngon on the base flange and three red loose-vert beads, the right one intact — proving the engine-ingest topology checklist" /></a>
 </td>
 <td valign="middle">
 
@@ -1000,11 +1000,13 @@ with the Smooth-by-Angle modifier on 5.1.
 
 The mesh-cleanliness contract a prop pipeline relies on before engine ingest:
 no ngons, no loose vertices, every edge bordering exactly two faces, no
-zero-area faces, positive signed volume, and Euler `V − E + F == 2` for a
-closed solid (measured 66/136/72, volume 0.652001). Companion to
+zero-area faces, contiguous and outward winding on all eight parts of a
+flanged street valve, and Euler `V − E + F == 2` on its body casting
+(measured 802/1632/832, volume 0.453344). Companion to
 [`collision-hull-proxy`](examples/collision-hull-proxy/) (hull watertightness)
-and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Dual-panel
-still: DIRTY through-hole + loose-vert bead vs CLEAN manifold (same brass).
+and [`bmesh-gear`](examples/bmesh-gear/) (parametric closed solids). Still: a
+dirty copy with a hole, flipped patch, ngon and loose verts marked from live
+audit data beside the intact valve; the paint glows red on any back face.
 
 </td>
 </tr>
