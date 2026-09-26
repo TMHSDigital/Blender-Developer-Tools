@@ -393,14 +393,14 @@ the Z span matches the amplitude, and a probe vertex matches the closed-form wav
 </tr>
 <tr>
 <td width="46%" valign="middle">
-<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: three violet blocks on a dark studio floor showing a relative Tall shape key at values 0, 0.25, and 0.5 - plain cube to lifted, flared truncated pyramid, left to right" /></a>
+<a href="examples/shape-key-blend/"><img src="examples/shape-key-blend/preview.webp" alt="Shape-key blend: three cobalt-glazed ceramic vases with an ochre band on a dark studio floor - the same vase at Tall shape-key values 0, 0.5 and 1, squat jar to amphora to flared trumpet vase, left to right, with thin pale rings of the jar's belly around the tallest" /></a>
 </td>
 <td valign="middle">
 
 ### [shape-key-blend](examples/shape-key-blend/)
 
-A relative Tall shape key that lifts and flares the top face — authored through
-`shape_key_add` / `key_blocks` / `.value`. Witnesses that shape keys do not rewrite
+A relative Tall shape key that turns a squat ceramic jar into a trumpet vase,
+lifting and flaring the rim — authored through `shape_key_add` / `key_blocks` / `.value`. Witnesses that shape keys do not rewrite
 `mesh.vertices`: every evaluated vert matches `basis + value × (key − basis)`.
 
 </td>
