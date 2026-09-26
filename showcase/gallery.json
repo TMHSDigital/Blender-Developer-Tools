@@ -452,6 +452,19 @@
         "mesh",
         "export"
       ]
+    },
+    {
+      "name": "bookshelf",
+      "dir": "showcase/bookshelf",
+      "teaches": "A procedural bookcase — two housed shelves, a base on a recessed plinth, lapped back boards and a stepped cornice, filled with thirty-eight rounded-spine hardbacks standing, stacked and leaning — carried through UVs, bake, LOD, convex collider, and Unity glTF, asserting recomputed budgets rather than an API contract.",
+      "alt": "A stained wooden bookcase with three shelves of cloth and leather hardbacks with gilt spine bands, some standing, some stacked flat, and two leaning against their neighbours.",
+      "witnessesFix": "Recomputed: 10908 tris, five materials with 338 wood, 2050 cloth, 1066 leather, 228 paper and 1976 gilt faces, UVs in 0..1 with zero AABB overlap, outer AABB 0.972×0.332×1.176 m, zmin 0, hygiene 0 including zero coplanar cross-shell pairs, both sides on the floor, four cross members 8 mm into both sides, 38 books each with one page block 0.6 mm into its boards and two gilt bands 0.3 mm into the spine and 0.8 mm proud, every book seated 1.0–3.2 mm, 44 mm headroom, thickness and height spread 2.90 and 1.65, both leaning books 0.8 mm onto their neighbour's head edge, zero unplanned book overlaps, zero right-angle wood edges, convex collider 68 tris. --air-lean and --deep-lean exit 22 on the lean contact while every seat, the envelope and the overlap budget still pass; --crowd-books exits 23; --uniform-books 21; --tall-book 20.",
+      "hero": "docs/gallery/assets/bookshelf-hero.webp",
+      "preview": "showcase/bookshelf/preview.webp",
+      "tags": [
+        "mesh",
+        "export"
+      ]
     }
   ]
 }

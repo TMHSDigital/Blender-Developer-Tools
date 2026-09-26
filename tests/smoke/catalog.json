@@ -107,5 +107,6 @@
   {"name": "brazier", "script": "showcase/brazier/brazier.py"},
   {"name": "apothecary-shelf", "script": "showcase/apothecary-shelf/apothecary_shelf.py"},
   {"name": "wooden-yoke", "script": "showcase/wooden-yoke/wooden_yoke.py"},
-  {"name": "butter-churn", "script": "showcase/butter-churn/butter_churn.py"}
+  {"name": "butter-churn", "script": "showcase/butter-churn/butter_churn.py"},
+  {"name": "bookshelf", "script": "showcase/bookshelf/bookshelf.py"}
 ]
