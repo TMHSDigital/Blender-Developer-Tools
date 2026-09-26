@@ -94,8 +94,10 @@ the default stage.
   describe — and the falsification pass is satisfied by naming why no visual
   difference exists. Precedents: `vertex-weight-limit` (the prune preserves
   the pose by design, so the 4-influence cap is numeric) and
-  `triangulate-tangents` (the ring sweep is UV/bump-driven, so a
-  tangent-field break does not move pixels). This is for contracts that
+  `triangulate-tangents` (the lathe grooves are a bump read off UV v and
+  the anisotropic streak follows the renderer's own UV-map tangent, so a
+  break in the `calc_tangents()` loop data the check reads does not move
+  pixels). This is for contracts that
   genuinely cannot be seen, not for scenes that were not designed hard
   enough: where a visual witness is possible, it is required.
 - Presentation may be staged; evidence may not. When the witnessed artifact

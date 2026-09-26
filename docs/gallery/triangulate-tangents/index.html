@@ -16,13 +16,13 @@
   <meta property="og:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/triangulate-tangents-hero.webp" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
-  <meta property="og:image:alt" content="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
+  <meta property="og:image:alt" content="A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets." />
   <meta property="og:site_name" content="Blender Developer Tools" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="triangulate-tangents — Examples — Blender Developer Tools" />
   <meta name="twitter:description" content="A machined buckler verifying the tangent-space contract a game engine&#x27;s normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance." />
   <meta name="twitter:image" content="https://tmhsdigital.github.io/Blender-Developer-Tools/gallery/assets/triangulate-tangents-hero.webp" />
-  <meta name="twitter:image:alt" content="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
+  <meta name="twitter:image:alt" content="A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets." />
   <style>
     /* fonts are deployed by the landing build (docs/fonts/) */
     @font-face { font-family: 'Barlow Condensed'; font-weight: 600; font-display: swap;
@@ -268,8 +268,8 @@
     <p>A machined buckler verifying the tangent-space contract a game engine&#x27;s normal mapping depends on. Deterministic triangulation, unit orthogonal tangent frames, and the edge/UV-delta formula matching mikktspace within welding tolerance.</p>
   </header>
   <main id="main">
-    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight.">
-      <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." width="1280" height="720" />
+    <button class="detail-hero" id="heroZoom" type="button" aria-label="View full size: A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets.">
+      <img src="../assets/triangulate-tangents-hero.webp" alt="A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets." width="1280" height="720" />
     </button>
     <p class="zoom-hint">Rendered headless by the example itself — click to zoom.</p>
     <div class="callout"><span class="tag">witnesses</span> calc_tangents aborts on any ngon; planar UVs on a cylindrical wall collapse tangents onto normals; a MeshUVLoopLayer handle held across calc_tangents dangles on 4.5 (471 phantom flips, silent exit 0) while the mikktspace math is byte-identical on both versions.</div>
@@ -278,13 +278,13 @@
       <button class="copy-btn" id="copyRun" type="button">Copy</button>
     </div>
     <section class="detail-section md">
-<p>A runnable example that builds a machined buckler — lathed dome with polar UVs, unwrapped rim and underside strips, a fanned back cap — and verifies the tangent-space contract a game engine&#x27;s normal mapping depends on, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
+<p>A runnable example that builds a machined buckler — one closed lathe mesh: turned boss, flange, domed face and rolled rim with polar UVs, unwrapped rim and underside strips, fanned back and apex caps — and verifies the tangent-space contract a game engine&#x27;s normal mapping depends on, following <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/skills/mesh-editing-and-bmesh/SKILL.md"><code>mesh-editing-and-bmesh</code></a>.</p>
 <p><strong>Pipeline arc neighbor:</strong> weighting in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/vertex-weight-limit"><code>vertex-weight-limit</code></a>, export in <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/gltf-export-roundtrip"><code>gltf-export-roundtrip</code></a> — tangent space is what the exported normal maps are baked against.</p>
 <p><strong>What it witnesses:</strong> the mikktspace contract engines implement, and the hazards around it.</p>
-<ul><li><strong>Deterministic triangulation and the engine basis.</strong> <code>calc_loop_triangles</code> yields the closed-form count (two tris per quad + the cap fan, 720), and every loop tangent is unit length (err 1.3e-07) and exactly orthogonal to its loop normal (err 6.0e-08), with the bitangent exactly <code>bitangent_sign * (normal x tangent)</code> (err 0.0). One ngon anywhere in the mesh and <code>calc_tangents</code> <strong>aborts the whole call</strong> — the back cap is an explicit fan for exactly that reason.</li><li><strong>The tangent frame follows the UVs.</strong> On smooth-field triangles the per-loop tangents match the independently derived edge/UV-delta formula within mikktspace&#x27;s vertex-welding tolerance (measured 2.3e-06, tol 0.15); a flipped frame inside a smooth field is never legal (0 measured). At UV seams the frame orientation is implementation-defined — 42 seam flips, 9 at chart seams, identical on both versions — and planar UVs on a cylindrical wall are degenerate: they collapse the tangent onto the normal (dot 0.998, measured and fixed by unwrapping strips).</li><li><strong>The reference-lifetime hazard (the real divergence).</strong> A <code>MeshUVLoopLayer</code> handle held across <code>calc_tangents()</code> dangles: on Blender 4.5 reads through it return tangent floats, not UVs — measured while authoring as a phantom <strong>471 flipped frames and 385 phantom seam positions, exit 0, a silent wrong answer</strong>. On 5.1 the same stale read survives by memory-layout luck. The mikktspace math itself is byte-identical on 4.5.11 and 5.1.2; the apparent version divergence was entirely the corrupt handle. Never hold layer handles across CustomData-reallocating calls — re-fetch by name.</li></ul>
-<p><strong>What each check catches on failure:</strong> a remeshed asset breaking the triangulation count (probe: dropped profile ring, exit 3, 624 vs 720); a wrong tangent formula in the independent derivation (probe: swapped du/dv, exit 7, weld 1.459); and the stale-handle read (probe: no re-fetch — corrupt measurements on 4.5, correct values on 5.1 by luck).</p>
-<p><strong>Version witness:</strong> mikktspace output is identical on Blender 4.5.11 LTS and 5.1.2 (same weld deviations, same seam flips). The <code>calc_tangents(uvmap=)</code> signature is stable. The lifetime hazard above is the only behavioral split, and it corrupts measurements rather than raising.</p>
-<p>The render shows the buckler on its cradle: brushed grooves circulating the boss with the anisotropic sweep riding them — the circulating tangent field made visible. The staging is derived from the posed mesh: the stand rests on the floor, the rim&#x27;s lowest vertex sits 1 cm into its top, and a kickstand strut runs from the buckler&#x27;s back (found by a local-space ray) to the floor behind it.</p>
+<ul><li><strong>Deterministic triangulation and the engine basis.</strong> <code>calc_loop_triangles</code> yields the closed-form count (two tris per quad + the two cap fans, 4992), and every loop tangent is unit length (err 1.3e-07) and exactly orthogonal to its loop normal (err 9.9e-08), with the bitangent exactly <code>bitangent_sign * (normal x tangent)</code> (err 0.0). One ngon anywhere in the mesh and <code>calc_tangents</code> <strong>aborts the whole call</strong> — both caps are explicit fans for exactly that reason.</li><li><strong>The tangent frame follows the UVs.</strong> On smooth-field triangles the per-loop tangents match the independently derived edge/UV-delta formula within mikktspace&#x27;s vertex-welding tolerance (measured 3.3e-02, tol 0.15 — the face is smooth-shaded with sharp edges at the machined breaks, so mikktspace genuinely welds frames across shared vertices); a flipped frame inside a smooth field is never legal (0 measured). At UV seams the frame orientation is implementation-defined — 150 seam flips, 12 at chart seams, identical on all three versions — and planar UVs on a cylindrical wall are degenerate: they collapse the tangent onto the normal (dot 0.998, measured and fixed by unwrapping strips).</li><li><strong>The reference-lifetime hazard (the real divergence).</strong> A <code>MeshUVLoopLayer</code> handle held across <code>calc_tangents()</code> dangles: on Blender 4.5 reads through it return tangent floats, not UVs — measured while authoring as a phantom <strong>471 flipped frames and 385 phantom seam positions, exit 0, a silent wrong answer</strong> (on the current buckler: 2829 phantom seam flips over 2497 phantom seam positions, still exit 0). On 5.1 and 5.2 the same stale read survives by memory-layout luck. The mikktspace math itself is identical on 4.5.11, 5.1.2 and 5.2.1; the apparent version divergence was entirely the corrupt handle. Never hold layer handles across CustomData-reallocating calls — re-fetch by name.</li></ul>
+<p><strong>What each check catches on failure:</strong> a remeshed asset breaking the triangulation count (probe: dropped profile ring, exit 3, 624 vs 720); a wrong tangent formula in the independent derivation (probe: swapped du/dv, exit 7, weld 1.460); and the stale-handle read (probe: no re-fetch — corrupt measurements on 4.5, correct values on 5.1/5.2 by luck).</p>
+<p><strong>Version witness:</strong> mikktspace output is identical on Blender 4.5.11 LTS, 5.1.2 and 5.2.1 LTS (same weld deviation, same seam flips). The <code>calc_tangents(uvmap=)</code> signature is stable. The lifetime hazard above is the only behavioral split, and it corrupts measurements rather than raising.</p>
+<p>The render shows the buckler turned three-quarter on a walnut stand: a pointed brass boss on a riveted blued-steel flange, a turned-steel dome, and a brass rolled rim ringed with steel rivets. Materials are assigned per lathe ring. The dome&#x27;s lathe grooves are a bump read straight off UV v (the radius), so they are exact circles, with no procedural distortion. Its anisotropic highlight follows the renderer&#x27;s own UV-map tangent, so it fans out radially from the boss. This is a numeric-only contract (docs/VISUAL-STYLE.md): the renderer derives its tangents from the UVs, so a break in the <code>calc_tangents()</code> loop data the check reads does not move pixels. The staging is derived from the posed mesh: the stand rests on the floor, the rim&#x27;s lowest vertex sits 1 cm into its top, and a kickstand strut runs from the buckler&#x27;s back (found by a local-space ray) to the floor behind it, angled away from the camera.</p>
 <h2>Run</h2>
 <pre><code># Cheap correctness check (no render) — the CI check:
 blender --background --python triangulate_tangents.py --
@@ -296,8 +296,8 @@ blender --background --python triangulate_tangents.py -- --zero-uv
 blender --background --python triangulate_tangents.py -- --output buckler.png
 blender --background --python triangulate_tangents.py -- --output buckler.png --engine cycles</code></pre>
 <h2>Exit codes</h2>
-<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper.</p>
-<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Loop-triangle count ≠ closed form</td></tr><tr><td>4</td><td>Re-fetched UV layer drifted from the polar field (<code>--zero-uv</code> lands here)</td></tr><tr><td>5</td><td>Tangent basis not orthonormal</td></tr><tr><td>6</td><td>Bitangent ≠ sign × (n × t)</td></tr><tr><td>7</td><td>Tangents deviate from the edge/UV closed form</td></tr><tr><td>8</td><td>Flipped tangent inside a clean triangle</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr></tbody></table></div>
+<p>Per-script sequential checks. <code>9</code> is a valid check code; there is no rule against it. <code>10</code> is the shared framing helper, <code>11</code> the shared asset-quality helper.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Code</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>0</td><td>Success</td></tr><tr><td>1</td><td>Uncaught exception (FATAL wrapper)</td></tr><tr><td>2</td><td>argparse / usage</td></tr><tr><td>3</td><td>Loop-triangle count ≠ closed form</td></tr><tr><td>4</td><td>Re-fetched UV layer drifted from the polar field (<code>--zero-uv</code> lands here)</td></tr><tr><td>5</td><td>Tangent basis not orthonormal</td></tr><tr><td>6</td><td>Bitangent ≠ sign × (n × t)</td></tr><tr><td>7</td><td>Tangents deviate from the edge/UV closed form</td></tr><tr><td>8</td><td>Flipped tangent inside a clean triangle</td></tr><tr><td>10</td><td>Gallery framing violation; also <code>--output</code> produced no file</td></tr><tr><td>11</td><td>Asset-quality floor violation (<code>--output</code> only; shared helper)</td></tr></tbody></table></div>
 <p>The <code>blender-smoke</code> workflow runs the check on Blender 5.2 LTS and 4.5 LTS (5.1 on the weekly cron, the <code>needs-5.1</code> PR label, or manual dispatch). Smoke does not pass <code>--output</code> or <code>--zero-uv</code>.</p>
     </section>
     <section class="detail-section src">
@@ -306,7 +306,7 @@ blender --background --python triangulate_tangents.py -- --output buckler.png --
         <code>examples/triangulate-tangents/triangulate_tangents.py</code>
         <a href="https://github.com/TMHSDigital/Blender-Developer-Tools/tree/main/examples/triangulate-tangents/triangulate_tangents.py">View on GitHub &rarr;</a>
       </div>
-      <pre><span class="s">&quot;&quot;&quot;A buckler whose brushed grooves follow its tangent field — a runnable example.
+      <pre><span class="s">&quot;&quot;&quot;A machined buckler verifying the tangent-space contract — a runnable example.
 
 Witnesses the tangent-space contract a game engine&#x27;s normal mapping depends
 on, computed through the same mikktspace path engines use:
@@ -327,9 +327,9 @@ on, computed through the same mikktspace path engines use:
    survives by memory-layout luck). Never hold layer handles across
    CustomData-reallocating calls; re-fetch by name.
 
-The mikktspace tangent field is byte-identical between Blender 4.5 LTS and
-5.1 (verified on both: same weld deviations, same 42 seam flips, same 9
-chart-seam flips). An earlier draft of this very check appeared to measure
+The mikktspace tangent field is identical across Blender 4.5 LTS, 5.1 and
+5.2 (verified on all three: same weld deviation, same 150 seam flips, same
+12 chart-seam flips). An earlier draft of this very check appeared to measure
 a 471-vs-9 flip divergence between the versions — every one of those
 &quot;flips&quot; was the stale UV handle of point 4 corrupting the seam
 classification. The reference lifetime is the real hazard; the math does
@@ -349,10 +349,11 @@ check. Pass --output to also render a still:
 sys.path.insert(<span class="n">0</span>, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 sys.dont_write_bytecode = <span class="k">True</span>  <span class="c"># keep examples/__pycache__ out of the repo tree</span>
 <span class="k">import</span> gallery_framing
+<span class="k">import</span> gallery_asset_quality
 
-SIDES = <span class="n">48</span>                      <span class="c"># buckler lathe resolution</span>
-RINGS = <span class="n">6</span>                       <span class="c"># dome profile rings (closed form below)</span>
-BOSS_R = <span class="n">1.0</span>
+SIDES = <span class="n">96</span>                      <span class="c"># buckler lathe resolution</span>
+RINGS = <span class="n">24</span>                      <span class="c"># face profile rings (closed form below)</span>
+BOSS_R = <span class="n">1.0</span>                    <span class="c"># buckler radius: the polar-UV v normaliser</span>
 UNIT_TOL = <span class="n">1e-4</span>                 <span class="c"># |length(t) - 1| per loop</span>
 DOT_TOL = <span class="n">1e-4</span>                  <span class="c"># |t . n| per loop</span>
 WELD_TOL = <span class="n">0.15</span>                 <span class="c"># mikktspace vertex welding vs per-triangle formula</span>
@@ -362,13 +363,31 @@ UV_TOL = <span class="n">1e-6</span>                   <span class="c"># re-fetc
 <span class="c"># render staging only (not part of the check)</span>
 STAND_H = <span class="n">0.12</span>                  <span class="c"># display stand height, resting on the floor</span>
 SEAT_BITE = <span class="n">0.01</span>                <span class="c"># rim&#x27;s lowest vertex sunk into the stand top</span>
-STRUT_V = <span class="n">0.25</span>                  <span class="c"># local v where the kickstand meets the back</span>
+STRUT_V = <span class="n">0.00</span>                  <span class="c"># local v where the kickstand meets the back</span>
 STRUT_BITE = <span class="n">0.02</span>               <span class="c"># strut ends buried in the back face / floor</span>
-STRUT_LEAN = <span class="n">0.45</span>               <span class="c"># horizontal run per metre of strut height</span>
+STRUT_LEAN = <span class="n">0.30</span>               <span class="c"># horizontal run per metre of strut height</span>
 
-<span class="c"># dome profile: (r, z) rings from center out, then the raised rim lip</span>
-PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span class="n">0.30</span>, <span class="n">0.30</span>), (<span class="n">0.55</span>, <span class="n">0.22</span>), (<span class="n">0.78</span>, <span class="n">0.12</span>),
-           (<span class="n">0.95</span>, <span class="n">0.05</span>), (<span class="n">1.00</span>, <span class="n">0.05</span>)]
+<span class="c"># face profile, (r, z) rings from the centre out: a turned boss, a flat</span>
+<span class="c"># flange stepped down from it, a cosine dome falling to a cut groove, then</span>
+<span class="c"># a rolled rim band. Every ring carries the polar UVs; the ring index also</span>
+<span class="c"># picks the render material (boss / flange / dome / rim).</span>
+BOSS_RINGS = <span class="n">8</span>                  <span class="c"># rings 0..7: the boss cap</span>
+FLANGE_RINGS = <span class="n">3</span>                <span class="c"># rings 8..10: the flat flange</span>
+DOME_RINGS = <span class="n">6</span>                  <span class="c"># rings 11..16: the lathe-grooved dome field</span>
+PROFILE = (
+    <span class="c"># boss: a tall turned onion cap</span>
+    [(<span class="n">0.015</span>, <span class="n">0.700</span>), (<span class="n">0.050</span>, <span class="n">0.686</span>), (<span class="n">0.090</span>, <span class="n">0.652</span>), (<span class="n">0.130</span>, <span class="n">0.604</span>),
+     (<span class="n">0.170</span>, <span class="n">0.544</span>), (<span class="n">0.205</span>, <span class="n">0.482</span>), (<span class="n">0.230</span>, <span class="n">0.430</span>), (<span class="n">0.245</span>, <span class="n">0.395</span>)]
+    <span class="c"># flange: steps down off the boss, flat, then breaks into the dome</span>
+    + [(<span class="n">0.252</span>, <span class="n">0.375</span>), (<span class="n">0.315</span>, <span class="n">0.370</span>), (<span class="n">0.322</span>, <span class="n">0.358</span>)]
+    <span class="c"># dome: z = 0.07 + 0.288 cos(pi/2 t), flat at the flange, steep at the rim</span>
+    + [(<span class="n">0.322</span> + <span class="n">0.558</span> * t, <span class="n">0.070</span> + <span class="n">0.288</span> * math.cos(math.pi / <span class="n">2</span> * t))
+       <span class="k">for</span> t <span class="k">in</span> (<span class="n">0.18</span>, <span class="n">0.36</span>, <span class="n">0.54</span>, <span class="n">0.70</span>, <span class="n">0.85</span>, <span class="n">1.0</span>)]
+    <span class="c"># cut groove, then the narrow rolled rim band</span>
+    + [(<span class="n">0.892</span>, <span class="n">0.058</span>), (<span class="n">0.905</span>, <span class="n">0.075</span>), (<span class="n">0.922</span>, <span class="n">0.100</span>), (<span class="n">0.945</span>, <span class="n">0.112</span>),
+       (<span class="n">0.968</span>, <span class="n">0.108</span>), (<span class="n">0.985</span>, <span class="n">0.093</span>), (<span class="n">0.997</span>, <span class="n">0.070</span>)]
+)
+BACK_Z = <span class="n">0.015</span>                 <span class="c"># flat back plane (rim wall runs down to it)</span>
 
 
 <span class="k">def</span> dome_uv(co):
@@ -380,19 +399,19 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
 
 
 <span class="k">def</span> build_buckler():
-    <span class="s">&quot;&quot;&quot;A round buckler: lathed dome with raised rim, polar-UV dome face.&quot;&quot;&quot;</span>
+    <span class="s">&quot;&quot;&quot;A round buckler: turned boss, flange, lathed dome, rolled rim — one
+    closed lathe mesh with a polar-UV face.&quot;&quot;&quot;</span>
     me = bpy.data.meshes.new(<span class="s">&quot;Buckler&quot;</span>)
     bm = bmesh.new()
     <span class="k">try</span>:
-        rings = []
-        <span class="k">for</span> r, z <span class="k">in</span> PROFILE:
-            rings.append([bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
-                                        r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
-                          <span class="k">for</span> s <span class="k">in</span> range(SIDES)])
-        <span class="c"># underside: mirror of the outer two rings, then a flat back</span>
-        back = [[bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
-                               r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z - <span class="n">0.10</span>))
-                 <span class="k">for</span> s <span class="k">in</span> range(SIDES)] <span class="k">for</span> r, z <span class="k">in</span> ((<span class="n">1.00</span>, <span class="n">0.05</span>), (<span class="n">0.30</span>, <span class="n">0.02</span>))]
+        <span class="k">def</span> ring(r, z):
+            <span class="k">return</span> [bm.verts.new((r * math.cos(<span class="n">2</span> * math.pi * s / SIDES),
+                                  r * math.sin(<span class="n">2</span> * math.pi * s / SIDES), z))
+                    <span class="k">for</span> s <span class="k">in</span> range(SIDES)]
+
+        rings = [ring(r, z) <span class="k">for</span> r, z <span class="k">in</span> PROFILE]
+        <span class="c"># underside: the rim wall drops straight to a flat back plate</span>
+        back = [ring(PROFILE[-<span class="n">1</span>][<span class="n">0</span>], BACK_Z), ring(<span class="n">0.30</span>, BACK_Z)]
         <span class="k">for</span> k <span class="k">in</span> range(len(rings) - <span class="n">1</span>):
             <span class="k">for</span> s <span class="k">in</span> range(SIDES):
                 bm.faces.new((rings[k][s], rings[k][(s + <span class="n">1</span>) % SIDES],
@@ -404,32 +423,45 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
         <span class="k">for</span> s <span class="k">in</span> range(SIDES):
             bm.faces.new((back[<span class="n">0</span>][s], back[<span class="n">0</span>][(s + <span class="n">1</span>) % SIDES],
                           back[<span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], back[<span class="n">1</span>][s]))
-        <span class="c"># the back cap must be an explicit fan: calc_tangents aborts on any</span>
+        <span class="c"># both caps must be explicit fans: calc_tangents aborts on any</span>
         <span class="c"># ngon (&quot;only tris/quads&quot;) — one n-gon kills the whole call</span>
-        center = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">0.08</span>))
+        center = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, BACK_Z))
         <span class="k">for</span> s <span class="k">in</span> range(SIDES):
             bm.faces.new((back[<span class="n">1</span>][(s + <span class="n">1</span>) % SIDES], back[<span class="n">1</span>][s], center))
+        apex = bm.verts.new((<span class="n">0.0</span>, <span class="n">0.0</span>, PROFILE[<span class="n">0</span>][<span class="n">1</span>]))
+        <span class="k">for</span> s <span class="k">in</span> range(SIDES):
+            bm.faces.new((rings[<span class="n">0</span>][s], rings[<span class="n">0</span>][(s + <span class="n">1</span>) % SIDES], apex))
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        <span class="c"># smooth lathe surfaces, hard machined breaks: an edge is sharp where</span>
+        <span class="c"># its faces turn more than 30 degrees (boss step, flange lip, groove,</span>
+        <span class="c"># rim wall). Mesh normals honour sharp edges since 4.1.</span>
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
+        <span class="k">for</span> e <span class="k">in</span> bm.edges:
+            <span class="k">if</span> e.is_manifold <span class="k">and</span> e.calc_face_angle(<span class="n">0.0</span>) &gt; math.radians(<span class="n">30</span>):
+                e.smooth = <span class="k">False</span>
         bm.to_mesh(me)
     <span class="k">finally</span>:
         bm.free()  <span class="c"># the ownership contract, as always</span>
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons:
-        poly.use_smooth = <span class="k">False</span>  <span class="c"># faceted boss plates keep the basis unambiguous</span>
     uv = me.uv_layers.new(name=<span class="s">&quot;UVMap&quot;</span>)
     n_dome = (RINGS - <span class="n">1</span>) * SIDES
     <span class="k">for</span> poly <span class="k">in</span> me.polygons[:n_dome]:
         <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
             co = me.vertices[me.loops[li].vertex_index].co
             uv.data[li].uv = dome_uv(co)
+    z_top = PROFILE[-<span class="n">1</span>][<span class="n">1</span>]
     <span class="k">for</span> poly <span class="k">in</span> me.polygons[n_dome:n_dome + <span class="n">2</span> * SIDES]:
         <span class="c"># rim wall + underside: unwrap as strips (u sweeps the angle, v the</span>
         <span class="c"># depth) — a planar projection is DEGENERATE on a cylindrical wall</span>
-        <span class="c"># and collapses the tangent onto the normal (dot ~1.0, measured)</span>
+        <span class="c"># and collapses the tangent onto the normal (dot ~1.0, measured).</span>
+        <span class="c"># The flat underside strip runs v along the radius instead.</span>
         <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
             co = me.vertices[me.loops[li].vertex_index].co
             theta = math.atan2(co.y, co.x) / (<span class="n">2</span> * math.pi)
-            uv.data[li].uv = (theta % <span class="n">1.0</span>, (<span class="n">0.05</span> - co.z) / <span class="n">0.23</span>)
-    <span class="k">for</span> poly <span class="k">in</span> me.polygons[n_dome + <span class="n">2</span> * SIDES:]:  <span class="c"># back fan: flat, planar</span>
+            r = math.hypot(co.x, co.y)
+            uv.data[li].uv = (theta % <span class="n">1.0</span>,
+                              (z_top - co.z) + (PROFILE[-<span class="n">1</span>][<span class="n">0</span>] - r))
+    <span class="k">for</span> poly <span class="k">in</span> me.polygons[n_dome + <span class="n">2</span> * SIDES:]:  <span class="c"># both cap fans: planar</span>
         <span class="k">for</span> li <span class="k">in</span> poly.loop_indices:
             co = me.vertices[me.loops[li].vertex_index].co
             uv.data[li].uv = (co.x * <span class="n">0.5</span> + <span class="n">0.5</span>, co.y * <span class="n">0.5</span> + <span class="n">0.5</span>)
@@ -461,8 +493,8 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     me.calc_loop_triangles()
 
     <span class="c"># contract 1: closed-form topology: two triangles per quad plus the</span>
-    <span class="c"># explicit SIDES-triangle fan in the back cap</span>
-    want_tris = <span class="n">2</span> * ((RINGS - <span class="n">1</span>) * SIDES + <span class="n">2</span> * SIDES) + SIDES
+    <span class="c"># explicit SIDES-triangle fans closing the back plate and the boss apex</span>
+    want_tris = <span class="n">2</span> * ((RINGS - <span class="n">1</span>) * SIDES + <span class="n">2</span> * SIDES) + <span class="n">2</span> * SIDES
     <span class="k">if</span> len(me.loop_triangles) != want_tris:
         print(<span class="s">f&quot;</span><span class="s">ERROR: </span>{len(me.loop_triangles)}<span class="s"> loop triangles != closed </span><span class="s">&quot;</span>
               <span class="s">f&quot;</span><span class="s">form </span>{want_tris}<span class="s">&quot;</span>, file=sys.stderr)
@@ -577,8 +609,8 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
               <span class="s">&quot;triangles — the tangent field does not follow the UVs&quot;</span>,
               file=sys.stderr)
         <span class="k">return</span> <span class="n">8</span>
-    <span class="c"># version witness: none in the math — 4.5.11 and 5.1.2 produce identical</span>
-    <span class="c"># counts here (42 seam flips, 9 at chart seams). The earlier draft that</span>
+    <span class="c"># version witness: none in the math — 4.5.11, 5.1.2 and 5.2.1 produce</span>
+    <span class="c"># identical counts here (150 seam flips, 12 at chart seams). The earlier draft that</span>
     <span class="c"># &quot;measured&quot; a 471-vs-9 divergence was reading the stale UV handle from</span>
     <span class="c"># point 4; the hazard corrupted the measurement itself.</span>
 
@@ -595,44 +627,142 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     <span class="k">return</span> <span class="s">&#x27;BLENDER_EEVEE&#x27;</span> <span class="k">if</span> bpy.app.version &gt;= (<span class="n">5</span>, <span class="n">0</span>, <span class="n">0</span>) <span class="k">else</span> <span class="s">&#x27;BLENDER_EEVEE_NEXT&#x27;</span>
 
 
-<span class="k">def</span> render_still(obj, path, engine):
-    scene = bpy.context.scene
-
-    <span class="c"># brushed steel: the groove rings follow V, so the anisotropic sweep</span>
-    <span class="c"># only reads concentric if the tangent field circulates with the UVs</span>
-    mat = bpy.data.materials.new(<span class="s">&quot;BrushedSteel&quot;</span>)
+<span class="k">def</span> principled(name, rgb, metallic, rough, aniso=<span class="n">0.0</span>, grooves=<span class="n">0.0</span>):
+    <span class="s">&quot;&quot;&quot;A designed Principled material. ``aniso`` &gt; 0 wires the UV-map
+    Tangent node into the BSDF, so the anisotropic streak runs along the
+    UV u direction — around the boss on the polar face. ``grooves`` &gt; 0 adds
+    a lathe-groove bump read straight off the UV v (the radius): the rings
+    are exact circles by construction, no procedural distortion.&quot;&quot;&quot;</span>
+    mat = bpy.data.materials.new(name)
     mat.use_nodes = <span class="k">True</span>
     nt = mat.node_tree
     bsdf = nt.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.30</span>, <span class="n">0.32</span>, <span class="n">0.36</span>, <span class="n">1.0</span>)
-    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">1.0</span>
-    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.40</span>
-    aniso = bsdf.inputs.get(<span class="s">&quot;Anisotropic IOR Level&quot;</span>) <span class="k">or</span> bsdf.inputs.get(<span class="s">&quot;Anisotropic&quot;</span>)
-    <span class="k">if</span> aniso <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        aniso.default_value = <span class="n">0.6</span>
-    tangent = nt.nodes.new(<span class="s">&quot;ShaderNodeTangent&quot;</span>)
-    tangent.direction_type = <span class="s">&#x27;UV_MAP&#x27;</span>
-    tan_in = bsdf.inputs.get(<span class="s">&quot;Tangent&quot;</span>)
-    <span class="k">if</span> tan_in <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
-        nt.links.new(tangent.outputs[<span class="s">&quot;Tangent&quot;</span>], tan_in)
-    wave = nt.nodes.new(<span class="s">&quot;ShaderNodeTexWave&quot;</span>)
-    wave.wave_type = <span class="s">&#x27;RINGS&#x27;</span>
-    wave.rings_direction = <span class="s">&#x27;SPHERICAL&#x27;</span>
-    wave.inputs[<span class="s">&quot;Scale&quot;</span>].default_value = <span class="n">9.0</span>
-    wave.inputs[<span class="s">&quot;Distortion&quot;</span>].default_value = <span class="n">3.0</span>
-    bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
-    bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.07</span>
-    bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.03</span>
-    nt.links.new(wave.outputs[<span class="s">&quot;Fac&quot;</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
-    nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
-    obj.data.materials.append(mat)
+    bsdf.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (*rgb, <span class="n">1.0</span>)
+    bsdf.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = metallic
+    bsdf.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = rough
+    <span class="k">if</span> aniso:
+        bsdf.inputs[<span class="s">&quot;Anisotropic&quot;</span>].default_value = aniso
+        tangent = nt.nodes.new(<span class="s">&quot;ShaderNodeTangent&quot;</span>)
+        tangent.direction_type = <span class="s">&#x27;UV_MAP&#x27;</span>
+        tangent.uv_map = <span class="s">&quot;UVMap&quot;</span>
+        nt.links.new(tangent.outputs[<span class="s">&quot;Tangent&quot;</span>], bsdf.inputs[<span class="s">&quot;Tangent&quot;</span>])
+    <span class="k">if</span> grooves:
+        uvn = nt.nodes.new(<span class="s">&quot;ShaderNodeUVMap&quot;</span>)
+        uvn.uv_map = <span class="s">&quot;UVMap&quot;</span>
+        sep = nt.nodes.new(<span class="s">&quot;ShaderNodeSeparateXYZ&quot;</span>)
+        nt.links.new(uvn.outputs[<span class="s">&quot;UV&quot;</span>], sep.inputs[<span class="n">0</span>])
+        <span class="c"># height = |sin(pi * N * v)|: a sharp-bottomed V cut every 1/N of</span>
+        <span class="c"># the radius, like a parting tool&#x27;s pass</span>
+        mul = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        mul.operation = <span class="s">&#x27;MULTIPLY&#x27;</span>
+        mul.inputs[<span class="n">1</span>].default_value = math.pi * grooves
+        nt.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], mul.inputs[<span class="n">0</span>])
+        sin = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        sin.operation = <span class="s">&#x27;SINE&#x27;</span>
+        nt.links.new(mul.outputs[<span class="n">0</span>], sin.inputs[<span class="n">0</span>])
+        ab = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        ab.operation = <span class="s">&#x27;ABSOLUTE&#x27;</span>
+        nt.links.new(sin.outputs[<span class="n">0</span>], ab.inputs[<span class="n">0</span>])
+        <span class="c"># the cuts sit in two decorative bands (inner and outer dome), with</span>
+        <span class="c"># plain turned steel between: a constant ramp on v is the band mask</span>
+        ramp = nt.nodes.new(<span class="s">&quot;ShaderNodeValToRGB&quot;</span>)
+        ramp.color_ramp.interpolation = <span class="s">&#x27;CONSTANT&#x27;</span>
+        els = ramp.color_ramp.elements
+        els[<span class="n">0</span>].position, els[<span class="n">0</span>].color = <span class="n">0.0</span>, (<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">1</span>)
+        els[<span class="n">1</span>].position, els[<span class="n">1</span>].color = <span class="n">0.38</span>, (<span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>, <span class="n">1</span>)
+        <span class="k">for</span> pos, c <span class="k">in</span> ((<span class="n">0.50</span>, <span class="n">0.0</span>), (<span class="n">0.70</span>, <span class="n">1.0</span>), (<span class="n">0.84</span>, <span class="n">0.0</span>)):
+            e = els.new(pos)
+            e.color = (c, c, c, <span class="n">1.0</span>)
+        nt.links.new(sep.outputs[<span class="s">&quot;Y&quot;</span>], ramp.inputs[<span class="s">&quot;Fac&quot;</span>])
+        band = nt.nodes.new(<span class="s">&quot;ShaderNodeMath&quot;</span>)
+        band.operation = <span class="s">&#x27;MULTIPLY&#x27;</span>
+        nt.links.new(ab.outputs[<span class="n">0</span>], band.inputs[<span class="n">0</span>])
+        nt.links.new(ramp.outputs[<span class="s">&quot;Color&quot;</span>], band.inputs[<span class="n">1</span>])
+        bump = nt.nodes.new(<span class="s">&quot;ShaderNodeBump&quot;</span>)
+        bump.inputs[<span class="s">&quot;Strength&quot;</span>].default_value = <span class="n">0.3</span>
+        bump.inputs[<span class="s">&quot;Distance&quot;</span>].default_value = <span class="n">0.004</span>
+        nt.links.new(band.outputs[<span class="n">0</span>], bump.inputs[<span class="s">&quot;Height&quot;</span>])
+        nt.links.new(bump.outputs[<span class="s">&quot;Normal&quot;</span>], bsdf.inputs[<span class="s">&quot;Normal&quot;</span>])
+    <span class="k">return</span> mat
+
+
+<span class="k">def</span> build_rivets(buckler):
+    <span class="s">&quot;&quot;&quot;Domed rivet heads: a ring on the rim band and a ring on the flange,
+    each seated on the profile at its radius and sunk 2 mm into it.&quot;&quot;&quot;</span>
+    <span class="k">def</span> z_at(r):
+        <span class="k">for</span> (r0, z0), (r1, z1) <span class="k">in</span> zip(PROFILE, PROFILE[<span class="n">1</span>:]):
+            <span class="k">if</span> r0 &lt;= r &lt;= r1:
+                <span class="k">return</span> z0 + (z1 - z0) * (r - r0) / (r1 - r0)
+        <span class="k">raise</span> ValueError(r)
+
+    me = bpy.data.meshes.new(<span class="s">&quot;Buckler.Rivets&quot;</span>)
+    bm = bmesh.new()
+    <span class="k">try</span>:
+        <span class="k">for</span> count, radius, head <span class="k">in</span> ((<span class="n">16</span>, <span class="n">0.945</span>, <span class="n">0.024</span>), (<span class="n">8</span>, <span class="n">0.284</span>, <span class="n">0.018</span>)):
+            z = z_at(radius) - <span class="n">0.002</span>
+            <span class="k">for</span> i <span class="k">in</span> range(count):
+                a = <span class="n">2</span> * math.pi * (i + <span class="n">0.5</span>) / count
+                geom = bmesh.ops.create_uvsphere(
+                    bm, u_segments=<span class="n">16</span>, v_segments=<span class="n">8</span>, radius=head,
+                    matrix=mathutils.Matrix.Translation(
+                        (radius * math.cos(a), radius * math.sin(a), z))
+                    @ mathutils.Matrix.Diagonal((<span class="n">1.0</span>, <span class="n">1.0</span>, <span class="n">0.55</span>, <span class="n">1.0</span>)))
+                below = [v <span class="k">for</span> v <span class="k">in</span> geom[<span class="s">&quot;verts&quot;</span>] <span class="k">if</span> v.co.z &lt; z - <span class="n">1e-6</span>]
+                bmesh.ops.delete(bm, geom=below, context=<span class="s">&#x27;VERTS&#x27;</span>)
+        <span class="k">for</span> f <span class="k">in</span> bm.faces:
+            f.smooth = <span class="k">True</span>
+        bm.to_mesh(me)
+    <span class="k">finally</span>:
+        bm.free()
+    ob = bpy.data.objects.new(<span class="s">&quot;Buckler.Rivets&quot;</span>, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.parent = buckler
+    <span class="k">return</span> ob
+
+
+<span class="k">def</span> render_still(obj, path, engine):
+    scene = bpy.context.scene
+    me = obj.data
+
+    <span class="c"># materials by lathe ring: turned brass boss, blued-steel flange and rim,</span>
+    <span class="c"># a lathe-grooved steel dome field, leather-faced back. The dome carries</span>
+    <span class="c"># the tangent-space story: its grooves are cut along UV v and its</span>
+    <span class="c"># anisotropic streak runs along UV u, so the highlight fans out radially</span>
+    <span class="c"># from the boss only because the tangent field circulates with the UVs.</span>
+    steel = principled(<span class="s">&quot;Buckler.TurnedSteel&quot;</span>, (<span class="n">0.56</span>, <span class="n">0.57</span>, <span class="n">0.60</span>), <span class="n">1.0</span>, <span class="n">0.32</span>,
+                       aniso=<span class="n">0.85</span>, grooves=<span class="n">40</span>)
+    blued = principled(<span class="s">&quot;Buckler.BluedSteel&quot;</span>, (<span class="n">0.16</span>, <span class="n">0.19</span>, <span class="n">0.25</span>), <span class="n">1.0</span>, <span class="n">0.34</span>, aniso=<span class="n">0.5</span>)
+    brass = principled(<span class="s">&quot;Buckler.TurnedBrass&quot;</span>, (<span class="n">0.78</span>, <span class="n">0.52</span>, <span class="n">0.20</span>), <span class="n">1.0</span>, <span class="n">0.26</span>, aniso=<span class="n">0.7</span>)
+    leather = principled(<span class="s">&quot;Buckler.Leather&quot;</span>, (<span class="n">0.20</span>, <span class="n">0.09</span>, <span class="n">0.035</span>), <span class="n">0.0</span>, <span class="n">0.62</span>)
+    <span class="k">for</span> m <span class="k">in</span> (steel, blued, brass, leather):
+        me.materials.append(m)
+    n_dome = (RINGS - <span class="n">1</span>) * SIDES
+    boss_end = BOSS_RINGS * SIDES                       <span class="c"># quads up to the boss step</span>
+    flange_end = (BOSS_RINGS + FLANGE_RINGS - <span class="n">1</span>) * SIDES
+    dome_end = (BOSS_RINGS + FLANGE_RINGS + DOME_RINGS - <span class="n">1</span>) * SIDES
+    <span class="k">for</span> p <span class="k">in</span> me.polygons:
+        i = p.index
+        <span class="k">if</span> i &lt; boss_end:
+            p.material_index = <span class="n">2</span>                        <span class="c"># brass boss</span>
+        <span class="k">elif</span> i &lt; flange_end:
+            p.material_index = <span class="n">1</span>                        <span class="c"># blued flange</span>
+        <span class="k">elif</span> i &lt; dome_end:
+            p.material_index = <span class="n">0</span>                        <span class="c"># turned steel dome</span>
+        <span class="k">elif</span> i &lt; n_dome + SIDES:                        <span class="c"># groove, rim, rim wall</span>
+            p.material_index = <span class="n">2</span>
+        <span class="k">elif</span> i &lt; n_dome + <span class="n">3</span> * SIDES:                    <span class="c"># underside + back fan</span>
+            p.material_index = <span class="n">3</span>
+        <span class="k">else</span>:                                           <span class="c"># boss apex fan</span>
+            p.material_index = <span class="n">2</span>
+    rivets = build_rivets(obj)
+    rivets.data.materials.append(steel)
 
     <span class="c"># presentation: the buckler leaning back on a low display stand, held by</span>
     <span class="c"># a kickstand strut behind it. Every contact is derived from the posed</span>
     <span class="c"># mesh: the stand sits on the floor, the rim&#x27;s lowest vertex bites into</span>
     <span class="c"># the stand&#x27;s top, and the strut runs from the buckler&#x27;s back to the floor.</span>
-    yaw = math.radians(-<span class="n">12</span>)
-    obj.rotation_euler = (math.radians(<span class="n">70</span>), <span class="n">0.0</span>, yaw)
+    yaw = math.radians(<span class="n">48</span>)
+    obj.rotation_euler = (math.radians(<span class="n">68</span>), <span class="n">0.0</span>, yaw)
     obj.location = (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">0.0</span>)
     bpy.context.view_layer.update()
     low = min((obj.matrix_world @ v.co <span class="k">for</span> v <span class="k">in</span> obj.data.vertices), key=<span class="k">lambda</span> p: p.z)
@@ -642,23 +772,20 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     mw = obj.matrix_world
     low.z += lift
 
-    smat = bpy.data.materials.new(<span class="s">&quot;StandMetal&quot;</span>)
-    smat.use_nodes = <span class="k">True</span>
-    sb = smat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    sb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.09</span>, <span class="n">0.10</span>, <span class="n">0.12</span>, <span class="n">1.0</span>)
-    sb.inputs[<span class="s">&quot;Metallic&quot;</span>].default_value = <span class="n">0.85</span>
-    sb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.45</span>
+    wood = principled(<span class="s">&quot;Stand.Walnut&quot;</span>, (<span class="n">0.13</span>, <span class="n">0.065</span>, <span class="n">0.03</span>), <span class="n">0.0</span>, <span class="n">0.45</span>)
 
-    <span class="k">def</span> box(name, dims, loc, rot):
+    <span class="k">def</span> box(name, dims, loc, rot, bevel):
         me = bpy.data.meshes.new(name)
         bm = bmesh.new()
         <span class="k">try</span>:
             bmesh.ops.create_cube(bm, size=<span class="n">1.0</span>,
                                   matrix=mathutils.Matrix.Diagonal((*dims, <span class="n">1.0</span>)))
+            bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=<span class="n">2</span>,
+                            affect=<span class="s">&#x27;EDGES&#x27;</span>, profile=<span class="n">0.5</span>)
             bm.to_mesh(me)
         <span class="k">finally</span>:
             bm.free()
-        me.materials.append(smat)
+        me.materials.append(wood)
         ob = bpy.data.objects.new(name, me)
         ob.location = loc
         ob.rotation_euler = rot
@@ -666,17 +793,20 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
         <span class="k">return</span> ob
 
     <span class="c"># the stand: on the floor, centred under the rim&#x27;s contact vertex</span>
-    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">0.9</span>, <span class="n">0.5</span>, STAND_H), (low.x, low.y, STAND_H / <span class="n">2</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, yaw))
+    box(<span class="s">&quot;Stand&quot;</span>, (<span class="n">1.0</span>, <span class="n">0.46</span>, STAND_H), (low.x, low.y, STAND_H / <span class="n">2</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, yaw), <span class="n">0.02</span>)
     <span class="c"># the strut: its top buried in the buckler&#x27;s back face (found by a</span>
     <span class="c"># local-space ray), its foot bitten into the floor behind</span>
     hit = obj.ray_cast((<span class="n">0.0</span>, STRUT_V, -<span class="n">1.0</span>), (<span class="n">0.0</span>, <span class="n">0.0</span>, <span class="n">1.0</span>))[<span class="n">1</span>]
     back_n = (mw.to_3x3() @ mathutils.Vector((<span class="n">0.0</span>, <span class="n">0.0</span>, -<span class="n">1.0</span>))).normalized()
     top = mw @ hit - back_n * STRUT_BITE
-    out = mathutils.Vector((back_n.x, back_n.y, <span class="n">0.0</span>)).normalized()
+    <span class="c"># the foot runs out between the back normal and straight away from the</span>
+    <span class="c"># camera (+Y), so the strut stays hidden behind the turned shield</span>
+    out = (mathutils.Vector((back_n.x, back_n.y, <span class="n">0.0</span>)).normalized()
+           + mathutils.Vector((<span class="n">0.0</span>, <span class="n">1.0</span>, <span class="n">0.0</span>))).normalized()
     foot = mathutils.Vector((top.x, top.y, -STRUT_BITE)) + out * top.z * STRUT_LEAN
     axis = top - foot
     box(<span class="s">&quot;Strut&quot;</span>, (<span class="n">0.08</span>, <span class="n">0.04</span>, axis.length), (top + foot) / <span class="n">2</span>,
-        axis.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler())
+        axis.to_track_quat(<span class="s">&#x27;Z&#x27;</span>, <span class="s">&#x27;Y&#x27;</span>).to_euler(), <span class="n">0.008</span>)
 
     floor_me = bpy.data.meshes.new(<span class="s">&quot;Floor&quot;</span>)
     bm = bmesh.new()
@@ -685,11 +815,7 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
         bm.to_mesh(floor_me)
     <span class="k">finally</span>:
         bm.free()
-    fmat = bpy.data.materials.new(<span class="s">&quot;Studio&quot;</span>)
-    fmat.use_nodes = <span class="k">True</span>
-    fb = fmat.node_tree.nodes[<span class="s">&quot;Principled BSDF&quot;</span>]
-    fb.inputs[<span class="s">&quot;Base Color&quot;</span>].default_value = (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>, <span class="n">1.0</span>)
-    fb.inputs[<span class="s">&quot;Roughness&quot;</span>].default_value = <span class="n">0.7</span>
+    fmat = principled(<span class="s">&quot;Studio&quot;</span>, (<span class="n">0.03</span>, <span class="n">0.032</span>, <span class="n">0.037</span>), <span class="n">0.0</span>, <span class="n">0.7</span>)
     floor_me.materials.append(fmat)
     floor = bpy.data.objects.new(<span class="s">&quot;Floor&quot;</span>, floor_me)
     scene.collection.objects.link(floor)
@@ -712,21 +838,19 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
         scene.collection.objects.link(ob)
 
     <span class="c"># shaped warm key, faint cool fill, cool rim, warm wedge on the back wall</span>
-    <span class="c"># (docs/VISUAL-STYLE.md); the glint is the anisotropic streak&#x27;s driver</span>
-    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">320.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.96</span>, <span class="n">0.9</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
-    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">100.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    <span class="c"># (docs/VISUAL-STYLE.md); the key&#x27;s reflection is what the anisotropic</span>
+    <span class="c"># dome stretches into the radial streak</span>
+    light(<span class="s">&quot;Key&quot;</span>, (-<span class="n">4.0</span>, -<span class="n">5.0</span>, <span class="n">6.0</span>), <span class="n">320.0</span>, <span class="n">4.5</span>, (<span class="n">1.0</span>, <span class="n">0.86</span>, <span class="n">0.68</span>), (<span class="n">48</span>, <span class="n">0</span>, -<span class="n">38</span>))
+    light(<span class="s">&quot;Fill&quot;</span>, (<span class="n">5.0</span>, -<span class="n">4.0</span>, <span class="n">3.0</span>), <span class="n">90.0</span>, <span class="n">9.0</span>, (<span class="n">0.75</span>, <span class="n">0.85</span>, <span class="n">1.0</span>), (<span class="n">62</span>, <span class="n">0</span>, <span class="n">50</span>))
+    light(<span class="s">&quot;Top&quot;</span>, (-<span class="n">1.2</span>, -<span class="n">2.6</span>, <span class="n">6.5</span>), <span class="n">110.0</span>, <span class="n">5.0</span>, (<span class="n">1.0</span>, <span class="n">0.97</span>, <span class="n">0.92</span>), (<span class="n">20</span>, <span class="n">0</span>, -<span class="n">12</span>))
     light(<span class="s">&quot;Rim&quot;</span>, (<span class="n">0.5</span>, <span class="n">4.5</span>, <span class="n">5.0</span>), <span class="n">340.0</span>, <span class="n">4.0</span>, (<span class="n">0.6</span>, <span class="n">0.78</span>, <span class="n">1.0</span>), (-<span class="n">55</span>, <span class="n">0</span>, <span class="n">175</span>))
     light(<span class="s">&quot;Wedge&quot;</span>, (<span class="n">2.5</span>, <span class="n">3.5</span>, <span class="n">4.2</span>), <span class="n">480.0</span>, <span class="n">6.0</span>, (<span class="n">1.0</span>, <span class="n">0.76</span>, <span class="n">0.5</span>), (-<span class="n">72</span>, <span class="n">0</span>, <span class="n">195</span>))
-    light(<span class="s">&quot;Glint&quot;</span>, (<span class="n">1.5</span>, -<span class="n">5.5</span>, <span class="n">5.5</span>), <span class="n">150.0</span>, <span class="n">1.2</span>, (<span class="n">1.0</span>, <span class="n">0.9</span>, <span class="n">0.75</span>), (<span class="n">42</span>, <span class="n">0</span>, <span class="n">15</span>))
 
     cam_data = bpy.data.cameras.new(<span class="s">&quot;Cam&quot;</span>)
     cam_data.lens = <span class="n">55.0</span>
     cam = bpy.data.objects.new(<span class="s">&quot;Cam&quot;</span>, cam_data)
-    <span class="c"># Reframed: the old (0.6,-8.8,2.8) left the buckler at 0.334 fill adrift</span>
-    <span class="c"># in the stage; moved in ~2.2x so the brushed-steel tangent sweep fills</span>
-    <span class="c"># the frame — the grooves are the tangent-field evidence.</span>
-    <span class="c"># Seated on the floor (was hung 0.49 m up): camera and aim ride with the</span>
-    <span class="c"># buckler&#x27;s derived lift, so the composition is unchanged.</span>
+    <span class="c"># camera and aim ride with the buckler&#x27;s derived lift, so the</span>
+    <span class="c"># composition holds if the stand height changes</span>
     cam.location = (<span class="n">0.6</span>, -<span class="n">6.35</span>, lift + <span class="n">1.07</span>)
     scene.collection.objects.link(cam)
     target = bpy.data.objects.new(<span class="s">&quot;Aim&quot;</span>, <span class="k">None</span>)
@@ -752,15 +876,22 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
     scene.view_settings.view_transform = <span class="s">&#x27;Standard&#x27;</span>
     <span class="c"># Layer 1 framing gate (silhouette matte) — exit 10 on violation, before</span>
     <span class="c"># the beauty render so a defective composition ships no artifact.</span>
+    hero = [obj, rivets]
     props = [scene.objects[n] <span class="k">for</span> n <span class="k">in</span> (<span class="s">&quot;Stand&quot;</span>, <span class="s">&quot;Strut&quot;</span>)]
     fcode = gallery_framing.check_framing(
         scene, cam,
-        hero=[obj],
-        elements=[obj] + props,
+        hero=hero,
+        elements=hero + props,
         stage=[floor, wall],
     )
     <span class="k">if</span> fcode:
         <span class="k">return</span> fcode
+    <span class="c"># asset-quality floors (naming, material variation, edge treatment) —</span>
+    <span class="c"># exit 11 on violation</span>
+    aqcode = gallery_asset_quality.check_asset_quality(
+        scene, cam, hero=hero, stage=[floor, wall])
+    <span class="k">if</span> aqcode:
+        <span class="k">return</span> aqcode
     bpy.ops.render.render(write_still=<span class="k">True</span>)
     <span class="k">if</span> <span class="k">not</span> (os.path.exists(path) <span class="k">and</span> os.path.getsize(path) &gt; <span class="n">0</span>):
         print(<span class="s">&quot;ERROR: render produced no file&quot;</span>, file=sys.stderr)
@@ -808,7 +939,7 @@ PROFILE = [(<span class="n">0.02</span>, <span class="n">0.34</span>), (<span cl
   </main>
   <dialog class="lightbox" id="lightbox" aria-label="Full-size render">
     <button class="lightbox-close" type="button" autofocus>Close</button>
-    <img src="../assets/triangulate-tangents-hero.webp" alt="A round silver buckler leaning back on a low stand, its face brushed in circular grooves with an anisotropic highlight." />
+    <img src="../assets/triangulate-tangents-hero.webp" alt="A steel buckler on a walnut stand, turned three-quarter: pointed brass boss, domed face cut with two bands of concentric lathe grooves, brass rim ringed with steel rivets." />
   </dialog>
   <footer>
     <div class="statusbar">

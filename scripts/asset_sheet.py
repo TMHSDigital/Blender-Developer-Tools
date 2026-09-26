@@ -65,6 +65,7 @@ SELECT = {
     "grain-sacks": (r"^SacksLow$", None),
     "rope-bridge": (r"^BridgeLow$", None),
     "wheelbarrow": (r"^BarrowLow$", None),
+    "triangulate-tangents": (r"^Buckler(\.Rivets)?$", None),
     "car-mirror-symmetry": (r"^(CarBody|Wheel(Front|Rear)|Headlamp|Taillamp|Grille"
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
