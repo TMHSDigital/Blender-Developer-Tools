@@ -487,9 +487,9 @@
     {
       "name": "mesh-hygiene-audit",
       "dir": "examples/mesh-hygiene-audit",
-      "teaches": "Engine-ingest mesh hygiene on an octagonal street valve: no ngons, no loose verts, manifold edges, no zero-area faces, positive signed volume, Euler V-E+F==2. Dual-panel still shows a through-hole and loose-vert bead derived from live mesh incidence — same brass on both so color alone cannot carry the proof.",
-      "alt": "Two brass spool-shaped props labelled DIRTY and CLEAN; the dirty one has glowing orange stray edges inside it.",
-      "witnessesFix": "Pipelines that skip topology gates ship open boundaries, loose verts, or non-sphere Euler into engine ingest. The still makes the boundary hole and loose vert readable; ngon / zero-area / full winding invert remain check-only.",
+      "teaches": "Engine-ingest mesh hygiene on every part of a flanged street valve: no ngons, no loose verts, manifold edges, no zero-area faces, contiguous and outward winding, Euler V-E+F==2 on the body casting. A dirty copy carries a hole, a flipped patch, an ngon and loose verts, each marked from live audit incidence; the paint glows red wherever the renderer sees a back face.",
+      "alt": "Two blue street valves with brass handwheels: the left has a red-outlined hole, a red bonnet patch, an amber flange patch and three red beads beside it; the right is intact.",
+      "witnessesFix": "Pipelines that skip topology gates ship open boundaries, flipped patches, ngons, loose verts or stray shells into engine ingest. The still shows the first four on a dirty copy; zero-area faces and a buried second shell remain check-only.",
       "hero": "docs/gallery/assets/mesh-hygiene-audit-hero.webp",
       "preview": "examples/mesh-hygiene-audit/preview.webp",
       "tags": [

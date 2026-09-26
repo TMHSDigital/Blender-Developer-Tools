@@ -70,6 +70,7 @@ SELECT = {
                             r"|DoorMirror|DoorHandle(Front|Rear))$", None),
     "export-preset-axis": (r"^RadioMast\.Unity$", None),
     "gltf-skin-roundtrip": (r"^ScorpionAuthored$", None),
+    "mesh-hygiene-audit": (r"^Valve\.", None),
 }
 
 _REF_LINE = re.compile(r"Asset-sheet gate.*?reference set — currently (.+?) — rendered", re.S)
